@@ -142,17 +142,21 @@ class Dictionary
 
     /**
 	 * Get dictionary as JavaScript code representation
-	 * @param boolean $addAll — add value 'All' with a blank key,
-	 * @param boolean $addBlank - add empty value
-	 * is used in drop-down lists
+	 * @param boolean $addAll - add value 'All' with a blank key,
+	 * @param boolean $addBlank - add empty value is used in drop-down lists
+	 * @param string, optional - text for not selected value 
 	 * @return string
 	 */
-	public function __toJs($addAll = false , $addBlank = false)
+	public function __toJs($addAll = false , $addBlank = false , $allText = false)
 	{
 		$result = array();
 
-		if($addAll)
-			$result[] = array('id' => '' , 'title' => Lang::lang()->get('ALL'));
+		if($addAll){
+		    if($allText === false){
+		      $allText = Lang::lang()->get('ALL');
+		    }
+			$result[] = array('id' => '' , 'title' => $allText);
+		}
 
 		if(!$addAll && $addBlank)
 		    $result[] = array('id' => '' , 'title' => '');

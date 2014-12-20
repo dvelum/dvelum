@@ -7,7 +7,7 @@ $docRoot = DVELUM_ROOT;
 $len = strlen($docRoot);
 
 // should be without last slash
-if($docRoot[$len - 1] == '/')
+if ($docRoot[$len - 1] == '/')
     $docRoot = substr($docRoot, 0, -1);
 
 $language = 'en';
@@ -65,7 +65,7 @@ return array(
     /*
      * Url paths delimiter  "_" , "-" or "/"
      */
-    'urlDelimetr' => '/',
+    'urlDelimeter' => '/',
     'urlExtension' => '.html',
     /*
      * System language
@@ -94,10 +94,10 @@ return array(
     /*
      * Main directory for config files
      */
-    'configs' => $docRoot . '/system/config/',  // configs path
+    'configs' => $docRoot . '/system/config/', // configs path
     /*
-     * ORM configs directory
-     */
+    * ORM configs directory
+    */
     'object_configs' => $docRoot . '/system/config/objects/',
     /*
      * Report configs directory
@@ -151,17 +151,17 @@ return array(
      * 'module' — using tree-like page structure  (‘Pages’ section of the administrative panel);
      * 'path' — the router based on the file structure of client controllers.
      */
-    'frontend_router_type' => 'module',  // 'module','path','config'
+    'frontend_router_type' => 'module', // 'module','path','config'
     /*
-     * Use memcached
-     */
+    * Use memcached
+    */
     'use_cache' => false,
     /*
      * Hard caching time (without validation) for frondend , seconds
      */
     'frontend_hardcache' => 30,
     'themes' => $docRoot . '/templates/public/',
-    'usersOnline' => false,  // Collect users online info,
+    'usersOnline' => false, // Collect users online info,
     // Autoloader config
     'autoloader' => array(
         // Paths for autoloading
@@ -171,13 +171,13 @@ return array(
             './system/library'
         ),
         /*
-         * Use class map
-         */
+        * Use class map
+        */
         'useMap' => false,
         /*
-         *	Use precompiled code packages
-         *	requires useMap property to be set to true
-         */
+          *	Use precompiled code packages
+          *	requires useMap property to be set to true
+          */
         'usePackages' => false,
         // Use class map (Reduce IO load during autoload)
         // Class map file path (string / false)
@@ -264,4 +264,8 @@ return array(
      * ORM system object used as version storage
      */
     'orm_version_object' => 'Vc',
+    /*
+     * Db_Object for error log 
+     */
+    'erorr_log_object' => 'error_log'
 );

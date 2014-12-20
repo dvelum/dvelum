@@ -25,7 +25,7 @@ class Task_Deploy_Dbsync extends Bgtask_Abstract
 		$config = Registry::get('main' , 'config');
 		$deployCfg = Config::factory(Config::File_Array, $config->get('configs').'deploy.php');
 
-		$delimiter = $config->get('urlDelimetr');
+		$delimiter = $config->get('urlDelimeter');
 		
 		$url = 'http://' . str_replace(
 				array('http://' , $delimiter.$delimiter , $config->get('urlExtension')),

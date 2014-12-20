@@ -19,7 +19,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 	    modal: false,
 	    layout:'fit',
 	    width: app.checkWidth(700),
-	    height:app.checkHeight(500),
+	    height:app.checkHeight(520),
 	    closeAction: 'destroy',
 	}, config || {});
 
@@ -540,6 +540,37 @@ Ext.define('app.crud.orm.ObjectWindow', {
 		    render:{fn:this.initTooltip,scope:this}
 		}
 	    },{
+		xtype:'combobox',
+		name:'slave_connection',
+		fieldLabel:appLang.DB_SLAVE_CONNECTION,
+		queryMode:'local',
+		displayField:'id',
+		forceSelection:true,
+		allowBlank:true,
+		valueField:'id',
+		value:'',
+		store:Ext.create('Ext.data.Store',{
+		    fields:[{name:'id' , type:'string'}],
+		            autoLoad:true,
+		            proxy: {
+		        	type: 'ajax',
+		        	url:app.crud.orm.Actions.listConnections,
+		        	reader: {
+		        	    type: 'json',
+		        	    root: 'data',
+		        	    idProperty: 'id'
+		        	}
+		            },
+		            remoteSort:false,
+		            sorters: [{
+		        	property : 'id',
+		        	direction: 'ASC'
+		            }]
+		}),
+		listeners:{
+		    render:{fn:this.initTooltip,scope:this}
+		}
+	    },{
 		xtype:'textfield',
 		allowBlank:false,
 		vtype:'alpha',
@@ -601,7 +632,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			    }else{
 				form.findField('acl').hide();
 			    }
-			    
+
 			},
 			scope:this
 		    }
@@ -752,7 +783,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
                 		}
                 	    },this);
                 	    break;
-                	    
+
 	case 'memory':
                 	    this.dataStore.each(function(rec){
                 		var type = rec.get('type');
@@ -762,14 +793,14 @@ Ext.define('app.crud.orm.ObjectWindow', {
                 		    xFields.push(rec.get('name'));
                 		}
                 	    },this);
-                
+
                 	    this.indexStore.each(function(rec){
                 		if (rec.get('fulltext')){
                 		    xIndexes.push(rec.get('name'));
                 		}
                 	    },this);
                 	    break;
-                	    
+
 	default:   	    return;
 			    break;
 	}

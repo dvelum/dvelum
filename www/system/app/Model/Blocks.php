@@ -5,8 +5,8 @@ class Model_Blocks extends Model
 
   /**
    * Set block mapping for page
-   * 
-   * @param integer $pageId          
+   *
+   * @param integer $pageId
    * @param array $map
    *          like array(
    *          'code'=>array('blockid1','blockid2'),... or
@@ -18,10 +18,10 @@ class Model_Blocks extends Model
   {
     $bMapping = Model::factory('Blockmapping');
     $bMapping->clearMap($pageId);
-    
+
     if(empty($map))
       return true;
-    
+
     foreach($map as $code => $items){
       $ids = array();
       if(! empty($items)){
@@ -32,17 +32,17 @@ class Model_Blocks extends Model
             $ids[] = $v;
         }
       }
-      
+
       $bMapping->addBlocks($pageId, $code, $ids);
     }
-    
+
     return true;
   }
 
   /**
    * Get block list for page
-   * 
-   * @param integer $page          
+   *
+   * @param integer $page
    * @param integer $version - optional
    * @return array - block list sorted by place code
    */
@@ -50,10 +50,10 @@ class Model_Blocks extends Model
   {
     if($version)
       return $this->extractBlocks($pageId, $version);
-    
+
     $bMapping = Model::factory('Blockmapping');
-    
-    $sql = $this->_db->select()
+
+    $sql = $this->_dbSlave->select()
       ->from(array(
             't' => $this->table()
     ))
@@ -62,60 +62,60 @@ class Model_Blocks extends Model
     ), 't.id = map.block_id', array(
             'place'
     ));
-    
+
     if(! $pageId){
       $sql->where('map.page_id  IS NULL');
     }else{
       $sql->where('map.page_id = ' . intval($pageId));
     }
     $sql->order('map.order_no ASC');
-    
-    $data = $this->_db->fetchAll($sql);
-    
+
+    $data = $this->_dbSlave->fetchAll($sql);
+
     if(! empty($data))
       $data = Utils::groupByKey('place', $data);
-    
+
     return $data;
   }
 
   /**
    * Get blocks map from object vesrion
-   * 
-   * @param integer $pageId          
-   * @param integer $version          
+   *
+   * @param integer $pageId
+   * @param integer $version
    * @return array
    */
   public function extractBlocks($pageId , $version)
   {
     $vcModel = Model::factory('Vc');
     $data = $vcModel->getData('page', $pageId, $version);
-    
+
     if(! isset($data['blocks']) || empty($data['blocks']))
       return array();
-    
+
     $data = unserialize($data['blocks']);
-    
+
     if(empty($data))
       return array();
-    
+
     $ids = array();
     $info = array();
     foreach($data as $place => $items){
       if(!empty($items)){
         foreach($items as $index => $config)
           $ids[] = $config['id'];
-        
-        $sql = $this->_db->select()
+
+        $sql = $this->_dbSlave->select()
           ->from($this->table())
           ->where('`id` IN(' . Model::listIntegers($ids) . ')');
-        
-        $info = $this->_db->fetchAll($sql);
+
+        $info = $this->_dbSlave->fetchAll($sql);
       }
     }
-    
+
     if(! empty($info))
       $info = Utils::rekey('id', $info);
-    
+
     foreach($data as $place => $items){
       if(! empty($items)){
         foreach($items as $index => $config){
@@ -131,7 +131,7 @@ class Model_Blocks extends Model
 
   /**
    * Get default blocks map
-   * 
+   *
    * @return array
    */
   public function getDefaultBlocks()

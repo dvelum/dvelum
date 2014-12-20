@@ -146,6 +146,16 @@
       'required' => false,
       'db_type' => 'datetime',
     ),
+    'confirmation_expiried' => 
+    array (
+      'type' => '',
+      'unique' => '',
+      'db_isNull' => true,
+      'required' => false,
+      'validator' => '',
+      'db_type' => 'datetime',
+      'db_default' => false,
+    ),
   ),
   'indexes' => 
   array (
@@ -175,4 +185,5 @@
   'primary_key' => 'id',
   'use_db_prefix' => true,
   'acl' => false,
+  'slave_connection' => 'default',
 ); 

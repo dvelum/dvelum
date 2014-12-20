@@ -7,38 +7,70 @@ class Sysdocs_Info
      * @param integer $version
      * @return array
      */
-    public function getClassInfoByFileHid($fileHid , $version)
+    public function getClassInfoByFileHid($fileHid , $language , $version)
     {
         $classId = Model::factory('sysdocs_class')->getList(array('limit'=>1) , array('fileHid'=>$fileHid,'vers'=>$version) , array('id'));
         if(empty($classId))
             return array();
 
-        return $this->getClassInfo($classId[0]['id']);
+        return $this->getClassInfo($classId[0]['id'] , $language);
     }
-
+    /**
+     * Find previous localization
+     * @param string $objectClass
+     * @param string $field
+     * @param string $language
+     * @return string | false
+     */
+    public function findLocale($objectClass , $field , $language , $hid)
+    {
+        $data = Model::factory('sysdocs_localization')->getList(
+            array('start'=>0,'limit'=>1,'sort'=>'vers','dir'=>'DESC'),
+            array(
+                'lang'=>$language,
+                'object_class'=>$objectClass,
+                'hid'=>$hid,
+                'field'=>$field
+            ),
+            array('value')
+        );
+    
+        if(empty($data))
+            return false;
+    
+        return $data[0]['value'];
+    }
     /**
      * Get class info by id
      * @param integer $id
+     * @param string $lanuage
      * @return array
      */
-    protected function getClassInfo($id)
+    protected function getClassInfo($id , $language)
     {
         $classModel = Model::factory('sysdocs_class');
         $info =  $classModel->getItem($id);
 
         if(empty($info))
             return array();
-
+      
+        $desc = $this->findLocale('sysdocs_class' , 'description' , $language, $info['hid']);
+        if(empty($desc)){
+          $desc = nl2br($info['description']);
+        }
+        
         $result = array(
+                        'object_id'=>$info['id'],
+                        'hid'=>$info['hid'],
         				'name' => $info['name'],
         		        'extends' => $info['extends'],
         		        'itemType'=> $info['itemType'],
         		        'abstract' => $info['abstract'],
         		        'deprecated' => $info['deprecated'],
                         'hierarchy' => array(),
-        		        'description' => nl2br($info['description']),
+        		        'description' => $desc,
                         'properties' => $this->getClassProperties($id),
-                        'methods' => $this->getClassMethods($id)
+                        'methods' => $this->getClassMethods($id , $language)
         );
 
         if(!empty($info['parentId']))
@@ -127,9 +159,10 @@ class Sysdocs_Info
     /**
      * Get class methods info by class id
      * @param integer $classId
+     * @param string $lanuage
      * @return array
      */
-    public function getClassMethods($classId)
+    public function getClassMethods($classId , $language)
     {
       $propModel = Model::factory('sysdocs_class_method');
       $list = $propModel->getList(
@@ -147,6 +180,7 @@ class Sysdocs_Info
               'visibility',
               'returnType',
               'returnsReference',
+              'hid',
               'final'
           )
       );
@@ -156,9 +190,21 @@ class Sysdocs_Info
 
       $list = Utils::rekey('id', $list);
 
-      foreach ($list as $k=>$v){
-      	$list[$k]['description'] = nl2br($v['description']);
-      }
+      foreach ($list as $k=>&$v)
+      {
+        /**
+         * @todo Optimize slow operation
+         * recursive queries!
+         */
+        $desc = $this->findLocale('sysdocs_class_method' , 'description' , $language, $list[$k]['hid']);
+        if(empty($desc)){
+            $desc = nl2br($list[$k]['description']);
+        }
+                
+      	$list[$k]['description'] = $desc;
+      	$list[$k]['object_id'] = $list[$k]['id'];
+      	
+      }unset($v);
 
       $params = Model::factory('sysdocs_class_method_param')->getList(
         array(
@@ -200,5 +246,54 @@ class Sysdocs_Info
       }unset($data);
 
       return array_values($list);
+    }
+    
+    /**
+     * Update description
+     * @param string $fileHid
+     * @param integer $vers
+     * @param string $language
+     * @param string $text
+     */
+    public function setDescription($objectId , $fileHid, $vers , $language , $text , $docObject)
+    {
+      $data = Model::factory('sysdocs_localization')->getList(
+          array('start'=>0,'limit'=>1,'sort'=>'vers','dir'=>'DESC'),
+          array(
+              'lang'=>$language,
+              'object_class'=>$docObject,
+              'hid'=>$fileHid,
+              'object_id'=>$objectId,
+              'field'=>'description',
+              'vers'=>$vers
+          ),
+          array('id')
+      );
+      if(!empty($data)){
+        $id = $data[0]['id'];
+      }else{
+        $id = false;
+      }
+      
+      try{
+        $o = new Db_Object('sysdocs_localization' , $id);
+        $o->setValues(array(
+          'field'=>'description',
+          'hid'=>$fileHid,
+          'lang'=>$language,
+          'object_class'=>$docObject,
+          'object_id'=>$objectId,
+          'value'=>$text,
+          'vers'=>$vers
+        ));
+        
+        if(!$o->save())
+          throw new Exception('Cannot update class description');
+        
+        return true;
+      }catch (Exception $e){
+        Model::factory('sysdocs_localization')->logError($e->getMessage());
+        return false;
+      }
     }
 }

@@ -304,6 +304,50 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	  $this->_storeProject();
 	  Response::jsonSuccess();	  
 	}
+	/**
+	 * Generate and add components
+	 */
+	public function addtemplateAction()
+	{
+
+	  $this->_checkLoaded();
+	  $name = Request::post('name', 'alphanum', false);
+	  $adapter = Request::post('adapter', 'alphanum', false);
+	  $parent = Request::post('parent', 'alphanum', 0);
+	  
+	  if(!class_exists($adapter))
+	    Response::jsonError($this->_lang->get('WRONG_REQUEST').' invalid adapter '.$adapter);
+	  
+	  $adapterObject = new $adapter();
+	  
+      if(!$adapterObject instanceof Backend_Designer_Generator_Component)
+        Response::jsonError($this->_lang->get('WRONG_REQUEST').' invalid adapter interface');
+       
+	  $project = $this->_getProject();
+	  
+	  if(!strlen($parent))
+	      $parent = 0;
+	  
+	  if($name == false)
+	      Response::jsonError($this->_lang->INVALID_VALUE);
+	  /*
+	   * Check if name starts with digits
+	  */
+	  if(intval($name)>0)
+	      Response::jsonError($this->_lang->INVALID_VALUE);
+	  
+	  /*
+	   * Check if parent object exists and can has childs
+	  */
+	  if(!$project->objectExists($parent) || !Designer_Project::isContainer($project->getObject($parent)->getClass()))
+	      $parent = 0;
+
+	  if(!$adapterObject->addComponent($project, $name , $parent))
+	    Response::jsonError($this->_lang->get('CANT_EXEC'));
+	  
+	  $this->_storeProject();
+	  Response::jsonSuccess();
+	}
 	
 	/**
 	 * Set default properties for new object
@@ -332,7 +376,6 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 				$object->height = 700;
 
 		}
-
 	}
 
 	/**

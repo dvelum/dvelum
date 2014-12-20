@@ -101,14 +101,14 @@ class Filestorage_Simple extends Filestorage_Abstract
 
     	return unlink($fullPath);
     }
-    /**
+   /**
      * (non-PHPdoc)
      * @see Filestorage_Abstract::add()
      */
-    public function add($filePath)
+    public function add($filePath , $useName = false)
     {
         if(!file_exists($filePath))
-        	return true;
+        	return false;
 
         $path = $this->generateFilePath();
 
@@ -119,19 +119,23 @@ class Filestorage_Simple extends Filestorage_Abstract
 
         $uploadAdapter = $this->_config->get('uploader');
         $uploaderConfig = $this->_config->get('uploader_config');
-
         $uploader = new $uploadAdapter($uploaderConfig);
 
-
         $fileName = basename($filePath);
+        $oldName = basename($filePath);
 
-        if($this->_config->get('rename'))
+        if($useName !== false){
+        	$oldName = $useName;
+        }
+
+        if($this->_config->get('rename')){
             $fileName = time() . File::getExt($fileName);
+        }
 
         $files = array(
         	 'file' => array(
                         'name' => $fileName,
-        	            'old_name'=> basename($filePath),
+        	            'old_name'=> $oldName,
                         'type' => '',
                         'tmp_name' => $filePath,
                         'error' => 0,

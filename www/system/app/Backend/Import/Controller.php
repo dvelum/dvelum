@@ -47,22 +47,12 @@ class Backend_Import_Controller extends Backend_Controller
     public function uploadAction()
     {
     	$object = Request::post('object', 'string', false);
-    	$files = Request::files();
 
-
-    	if(!isset($files['file']) || empty($files['file']))
-    		Response::jsonError($this->_lang->get('FILL_FORM'));
 
     	if(!$object || !Db_Object_Config::configExists($object))
     		Response::jsonError($this->_lang->get('FILL_FORM'));
 
-    	$fileCfg = $files['file'];
-    	$ext = 	File::getExt($fileCfg['name']);
 
-    	if($ext!=='.csv' && $ext!=='.xls' && $ext!=='.xlsx')
-    		Response::jsonError($this->_iLang->get('UNSUPPORTED_FORMAT'));
-
-    	$newName = md5(time()).File::getExt($fileCfg['name']);
 
     	$cfg = Db_Object_Config::getInstance($object);
     	$fields = $cfg->getFieldsConfig(false);

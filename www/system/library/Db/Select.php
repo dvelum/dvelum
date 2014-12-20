@@ -296,10 +296,16 @@ class Db_Select
 	/**
      * Adding an ORDER clause to the query
      * @param mixed $spec
+     * @param boolean asIs optional
      * @return Db_Select
      */
-	public function order($spec)
+	public function order($spec , $asIs = false)
 	{	
+	    if($asIs){
+	      $this->_order = array($spec);
+	      return $this;
+	    }
+	  
 		$result = array();
 		if(!is_array($spec))
 		{

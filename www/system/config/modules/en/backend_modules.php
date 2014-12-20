@@ -79,36 +79,6 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Docs' => 
-  array (
-    'id' => 'Backend_Docs_Controller',
-    'class' => 'Backend_Docs_Controller',
-    'dev' => true,
-    'active' => true,
-    'title' => 'Documentation',
-    'designer' => './system/config/layouts/system/documentation.designer.dat',
-    'in_menu' => true,
-  ),
-  'Sysdocs_Localization' => 
-  array (
-    'id' => 'Backend_Sysdocs_Localization_Controller',
-    'class' => 'Backend_Sysdocs_Localization_Controller',
-    'dev' => true,
-    'active' => true,
-    'title' => 'Documentation editor',
-    'designer' => './system/config/layouts/system/sysdocs_localization.designer.dat',
-    'in_menu' => true,
-  ),
-  'Externals' => 
-  array (
-    'id' => 'Backend_Externals_Controller',
-    'class' => 'Backend_Externals_Controller',
-    'dev' => true,
-    'active' => true,
-    'title' => 'External Modules',
-    'designer' => '',
-    'in_menu' => true,
-  ),
   'Fmodules' => 
   array (
     'id' => 'Backend_Fmodules_Controller',
@@ -219,4 +189,13 @@
     'designer' => '',
     'in_menu' => true,
   ),
+  'Error_Log' =>
+    array (
+        'class' => 'Backend_Error_Log_Controller',
+        'dev' => false,
+        'active' => true,
+        'title' => 'Error Log',
+        'designer' => './system/config/layouts/system/error_log.designer.dat',
+        'in_menu' => true,
+    ),
 ); 

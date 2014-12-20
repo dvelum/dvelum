@@ -127,6 +127,7 @@
   'DB' => 'Database',
   'DB_ENGINE' => 'DB Engine',
   'DB_LENGTH' => 'DB length',
+  'DB_SLAVE_CONNECTION' => 'DB connection (read)',
   'DB_SCALE' => 'DB scale',
   'DB_PRECISION' => 'DB precision',
   'DB_TABLES' => 'DB Tables',
@@ -527,8 +528,7 @@
   'SKIP_OPERATION' => 'Skip operation',
   'en' => 'test_r',
   'TEST_R' => 'test_r',
-  'SET_DEFAULT' => 'Set default
-',
+  'SET_DEFAULT' => 'Set default',
   'REFRESH' => 'Refresh',
   'DB_USE_ACL' => 'Use ACL',
   'DB_ACL_ADAPTER' => 'ACL Adapter',
@@ -540,4 +540,6 @@
   'OBJECT_ID' => 'Object ID',
   'ADD_SUB_DICTIONARY' => 'Add sub dictionary',
   'ENTER_DICTIONARY_NAME' => 'Please enter dictionary name',
+  'ERROR_LOG' => 'Error log',
+  'SOURCE' => 'Source',
 ); 

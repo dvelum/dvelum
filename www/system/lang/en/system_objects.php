@@ -451,6 +451,7 @@
       'value' => 'Value',
       'vers' => 'Version',
       'object_class' => 'Object Class',
+      'hid' => 'Hash Code',
     ),
   ),
   'sysdocs_file' => 
@@ -481,6 +482,16 @@
       'description' => 'Description (in code)',
       'methodHid' => 'Method Hid',
       'optional' => 'Optional',
+    ),
+  ),
+  'error_log' => 
+  array (
+    'title' => 'Error log',
+    'fields' => 
+    array (
+      'name' => 'Source name',
+      'message' => 'Message',
+      'date' => 'Date',
     ),
   ),
 ); 

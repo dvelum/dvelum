@@ -6,7 +6,7 @@ class Backend_Sysdocs_Localization_Controller extends Backend_Controller_Crud im
    * (non-PHPdoc)
    * @see Router::run()
    */
-  public function run()
+  public function route()
   {
       $controller = new Backend_Sysdocs_Editor($this->_configMain ,2 , false);
       return $controller->run();

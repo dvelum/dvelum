@@ -18,7 +18,7 @@ class Model_Historylog extends Model
         6 => 'Unpublish',
         7 => 'New Version'
     );
-    
+
     const Delete = 1;
     const Create = 2;
     const Update = 3;
@@ -49,7 +49,7 @@ class Model_Historylog extends Model
                     'table_name' =>$table_name
                 ));
 			return $obj->save(false , false);
-    }   
+    }
      /**
       * Get log for the  data item
       * @param string $table_name
@@ -57,22 +57,22 @@ class Model_Historylog extends Model
       * @param integer $start - optional
       * @param integer $limit - optional
       * @return array
-      */  
+      */
     public function getLog($table_name , $record_id , $start = 0 , $limit = 25){
-         
-         $sql =  $this->_db->select()
+
+         $sql =  $this->_dbSlave->select()
                   ->from(array('l'=>$this->table()) , array('type','date'))
                   ->where('l.table_name = ?', $table_name)
                   ->where('l.record_id = ?' , $record_id)
                   ->joinLeft(array('u'=> Model::factory('User')->table()),
                                     ' l.user_id = u.id',
-                                    array('user'=>'u.name)')  
+                                    array('user'=>'u.name)')
                    )
                    ->order('l.date DESC')
                    ->limit($limit , $start);
-                   
-          $data = $this->_db->fetchAll($sql);
-          
+
+          $data = $this->_dbSlave->fetchAll($sql);
+
           if(!empty($data)){
               foreach ($data as $k=>&$v){
                       if(isset(self::$actions[$v['type']])){
@@ -84,7 +84,7 @@ class Model_Historylog extends Model
               return $data;
           }  else{
               return  array();
-          }  
+          }
      }
     /**
      * (non-PHPdoc)

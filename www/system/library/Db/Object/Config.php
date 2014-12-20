@@ -233,6 +233,7 @@ class Db_Object_Config
             'db_unsigned'=>true,
             'db_auto_increment'=>true,
             'unique'=>'PRIMARY',
+            'is_search' =>true,
             'lazyLang'=>true
         );
         /*
@@ -260,6 +261,8 @@ class Db_Object_Config
            $dataLink['use_db_prefix'] = true;
        if(!isset($dataLink['acl']) || empty($dataLink['acl']))
            $dataLink['acl'] = false;
+       if(!isset($dataLink['slave_connection']) || empty($dataLink['slave_connection']))
+           $dataLink['slave_connection'] = $dataLink['connection'];
 
         /*
          * Load additional fields for object under revision control
@@ -288,14 +291,15 @@ class Db_Object_Config
      */
     public function getSearchFields()
     {
-        $fields = array();
-        $fieldsConfig = $this->get('fields');
+    	$fields = array();
+    	$fieldsConfig = $this->get('fields');
 
-        foreach ($fieldsConfig as $k=>$v)
-            if(isset($v['is_search']) && $v['is_search'])
-                $fields[] = $k;
-        return $fields;
+    	foreach ($fieldsConfig as $k=>$v)
+    	   if($this->isSearch($k))
+    		  $fields[] = $k;
+    	return $fields;
     }
+
 
     /**
      * Get a configuration element by key (system method)
@@ -636,10 +640,19 @@ class Db_Object_Config
     /**
      * Check whether the field is a text field
      * @param boolean $field
+     * @param boolean $charTypes optional
      */
-    public function isText($field)
+    public function isText($field , $charTypes = false)
     {
-       return (isset($this->_config['fields'][$field]['db_type']) && in_array($this->_config['fields'][$field]['db_type'] , Db_Object_Builder::$textTypes , true));
+       if(!isset($this->_config['fields'][$field]['db_type']))
+       		return false;
+
+       $isText =  (in_array($this->_config['fields'][$field]['db_type'] , Db_Object_Builder::$textTypes , true));
+
+       if($charTypes && !$isText)
+       		$isText =  (in_array($this->_config['fields'][$field]['db_type'] , Db_Object_Builder::$charTypes, true));
+
+       return $isText;
     }
 
     /**

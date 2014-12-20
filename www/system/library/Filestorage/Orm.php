@@ -110,13 +110,13 @@ class Filestorage_Orm extends Filestorage_Simple
     {
     	return $this->_config->get('filepath') . '/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $this->_config->get('user_id').'/';
     }
-    
+
     /**
      * (non-PHPdoc)
      * @see Filestorage_Simple::remove()
      */
     public function remove($fileId)
-    {      
+    {
         if(!Db_Object::objectExists($this->_object, $fileId))
            return true;
 
@@ -130,16 +130,16 @@ class Filestorage_Orm extends Filestorage_Simple
 
     	if(!$o->delete())
     		return false;
-    	
+
     	return parent::remove($path);
     }
     /**
      * (non-PHPdoc)
      * @see Filestorage_Simple::add()
      */
-    public function add($filePath)
+    public function add($filePath , $useName = false)
     {
-    	$data = parent::add($filePath);
+    	$data = parent::add($filePath , $useName);
 
     	if(empty($data))
     	   return array();

@@ -2,7 +2,7 @@
 /*
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * Copyright (C) 2011-2012  Kirill A Egorov
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +32,7 @@ class Resource
 	 * @var Cache_Interface
 	 */
 	protected static $_cache = false;
-	
+
 	protected $_jsFiles = array();
 	protected $_rawFiles = array();
 	protected $_cssFiles = array();
@@ -80,7 +80,7 @@ class Resource
 	{
 		self::$_docRoot = $path;
 	}
-	
+
 	/**
 	 * Set resources url path
 	 * @param string $path
@@ -89,49 +89,36 @@ class Resource
 	{
 		self::$_wwwRoot = $path;
 	}
-	/**
-	 * Items sort function
-	 * @param object $el1
-	 * @param object $el2
-	 * @return integer
-	 */
-	public static function sortingByOrder($el1 , $el2)
-	{
-		if($el1['order'] == $el2['order'])
-			return 0;
-		if($el1['order'] < $el2['order'])
-			return - 1;
-		return 1;
-	}
+
+    /**
+     * Add javascript file to the contentent
+     *
+     * @param string $file- file path relate to document root
+     * @param integer $order  - include order
+     * @param boolean $minified - file already minified
+     * @param string $tag - file ident
+     */
+    public function addJs($file, $order = false, $minified = false, $tag = false)
+    {
+        if ($file[0] === '/')
+            $file = substr($file, 1);
+
+        $hash = md5($file);
+
+        if($order === false)
+            $order = sizeof($this->_jsFiles);
+
+        if(!isset($this->_jsFiles[$hash]))
+            $this->_jsFiles[$hash] = array(
+                'file' => $file,
+                'order' => $order,
+                'tag' => $tag,
+                'minified' => $minified
+            );
+    }
 
 	/**
-	 * Add javascript file to the contentent 
-	 * @param string $file	- file path relate to document root
-	 * @param integer $order - include order
-	 * @param boolean $minified - file already minified
-	 * @param string $tag - file ident
-	 */
-	public function addJs($file , $order = false , $minified = false, $tag = false)
-	{
-	    if($file[0] === '/')
-	        $file = substr($file, 1);
-	    
-		$hash = md5($file);
-		
-		if($order === false)
-			$order = sizeof($this->_jsFiles);
-		
-		if(!isset($this->_jsFiles[$hash]))
-			$this->_jsFiles[$hash] = array(
-					'file' => $file , 
-					'order' => $order ,
-			    'tag' => $tag,
-					'minified' => $minified
-			);
-	}
-
-	/**
-	 * Add css file to the contentent 
+	 * Add css file to the contentent
 	 * @param string $file
 	 * @param integer $order
 	 */
@@ -139,18 +126,18 @@ class Resource
 	{
 	    if($file[0] === '/')
 	        $file = substr($file, 1);
-	    
+
 		$hash = md5($file);
 		if($order === false)
 			$order = sizeof($this->_cssFiles);
-		
+
 		if(!isset($this->_cssFiles[$hash]))
 			$this->_cssFiles[$hash] = array(
-					'file' => $file , 
+					'file' => $file ,
 					'order' => $order
 			);
 	}
-	
+
 	/**
 	 * Add Java Script code
 	 * (will be minified and cached)
@@ -169,11 +156,11 @@ class Resource
 	{
 	    if($file[0] === '/')
 	        $file = substr($file, 1);
-	    
+
 		if(! in_array($file , $this->_rawFiles , true))
 			$this->_rawFiles[] = $file;
 	}
-	
+
 	/**
 	 * Add inline Java Script code
 	 * @param string $script
@@ -182,7 +169,7 @@ class Resource
 	{
 		$this->_inlineJs .= $script;
 	}
-	
+
 	/**
 	 * Add inline css syles
 	 * @param string $script
@@ -211,14 +198,14 @@ class Resource
 	   */
 	  if(!empty($fileList))
 	  {
-	      uasort($fileList , array('self' , 'sortingByOrder'));
+	      $fileList = Utils::sortByField($fileList, 'order');
           if($compile)
               $s .= '<script type="text/javascript" src="' .  self::$_wwwRoot . $this->_compileJsFiles($fileList , $useMin) . '"></script>' . "\n";
           else
               foreach($fileList as $file)
               $s .= '<script type="text/javascript" src="' .  self::$_wwwRoot . $file['file'] . '"></script>' . "\n";
 	  }
-	  
+
 	  return $s;
 	}
 	/**
@@ -230,11 +217,11 @@ class Resource
 	public function includeJs($useMin = false , $compile = false , $tag = false)
 	{
 	   $fileList = $this->_jsFiles;
-	   
+
 	   foreach ($fileList as $k=>$v)
 	     if($v['tag']!=$tag)
 	       unset($fileList[$k]);
-	   	   
+
 		$s = '';
 		/*
 		 * Raw files
@@ -252,12 +239,12 @@ class Resource
 			$hash = md5($this->_rawJs);
 			$cacheFile = $hash . '.js';
 			$cacheFile = Utils::createCachePath(self::$_jsCachePath , $cacheFile);
-					
+
 			if(!file_exists($cacheFile))
 			{
 				if($useMin)
 					$this->_rawJs = Code_Js_Minify::minify($this->_rawJs);
-								
+
 				file_put_contents($cacheFile, $this->_rawJs);
 			}
 			$cachePath = str_replace(self::$_jsCachePath, self::$_wwwRoot . self::$_jsCacheUrl , $cacheFile);
@@ -286,28 +273,28 @@ class Resource
 	protected function _compileJsFiles($files , $minify)
 	{
 		$validHash = $this->_getFileHash(Utils::fetchCol('file' , $files));
-		
+
 		$cacheFile = Utils::createCachePath(self::$_jsCachePath, $validHash . '.js');
-			
+
 		$cachedUrl = str_replace(self::$_jsCachePath , self::$_jsCacheUrl , $cacheFile);
-		
+
 		if(file_exists($cacheFile))
 			return $cachedUrl;
-		
+
 		$str = '';
 		foreach($files as $file)
 		{
 			$str .= "\n";
-			
+
 			$fileName = $file['file'];
 			$paramsPos = strpos($fileName , '?' , true);
-			
+
 			if($paramsPos!==false){
 			    $fileName = substr($fileName, 0 , $paramsPos);
 			}
-			
+
 			$content = file_get_contents(self::$_docRoot . '/' . $fileName);
-			
+
 			if($minify && ! $file['minified'])
 				$str .= Code_Js_Minify::minify($content);
 			else
@@ -326,7 +313,7 @@ class Resource
 	{
 		$listHash = md5(serialize($array));
 		/*
-		 * Checking if hash is cached 
+		 * Checking if hash is cached
 		 * (IO operations is too expensive)
 		 */
 		if(self::$_cache)
@@ -335,7 +322,7 @@ class Resource
 			if($dataHash)
 				return $dataHash;
 		}
-		
+
 		$dataHash = '';
 		foreach($array as $file)
 		{
@@ -343,17 +330,17 @@ class Resource
 		    if($paramsPos!==false)
 		    {
 		      $file = substr($file, 0 , $paramsPos);
-		    }  
+		    }
 			$dataHash .= $file . ':' . filemtime(self::$_docRoot . '/' . $file);
 		}
 		if(self::$_cache)
 			self::$_cache->save(md5($dataHash) , $listHash , array(
 					'jsFilesHash'
 			) , null);
-		
+
 		return md5($dataHash);
 	}
-	
+
     /**
      * Get html code for css files include
      * @return string
@@ -361,24 +348,21 @@ class Resource
 	public function includeCss()
 	{
 		$s = '';
-		
+
 		if(!empty($this->_cssFiles))
 		{
-			uasort($this->_cssFiles , array(
-					'self' , 
-					'sortingByOrder'
-			));
-			
+		    $this->_cssFiles = Utils::sortByField($this->_cssFiles, 'order');
+
 			foreach($this->_cssFiles as $k => $v)
 				$s .= '<link rel="stylesheet" type="text/css" href="' . self::$_wwwRoot . $v['file'] . '" />' . "\n";
 		}
-		
+
 		if(strlen($this->_rawCss))
 			$s .= '<style type="text/css">' . "\n" . $this->_rawCss . "\n" . '</style>' . "\n";
-		
+
 		return $s;
 	}
-	
+
 	/**
 	 * Get raw JS code
 	 * @return string
@@ -387,7 +371,7 @@ class Resource
 	{
 		return $this->_rawJs;
 	}
-	
+
 	/**
 	 * Clean raw js
 	 */

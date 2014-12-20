@@ -31,6 +31,7 @@ class Filter
 	const FILTER_CLEANED_STR = 'cleaned_string';
 	const FILTER_EMAIL = 'email';
 	const FILTER_ALPHANUM = 'alphanum';
+	const FILTER_NUM = 'num';
 	const FILTER_ALPHA = 'alpha';
 	const FILTER_LOGIN = 'login';
 	const FILTER_PAGECODE = 'pagecode';
@@ -39,14 +40,14 @@ class Filter
 	
 	protected static $_autoConvertFloatSeparator = true;
 	
-	protected static $_urlDelimetr = '/';
+	protected static $_urlDelimeter = '/';
 	/**
 	 * Set url params delimetr
-	 * @param string $urlDelimetr
+	 * @param string $urlDelimeter
 	 */
-	static public function setDelimetr($urlDelimetr)
+	static public function setDelimeter($urlDelimeter)
 	{
-		self::$_urlDelimetr = $urlDelimetr;
+		self::$_urlDelimeter = $urlDelimeter;
 	}
 	/**
 	 * String cleanup
@@ -109,12 +110,15 @@ class Filter
 			case 'alphanum' :
 			    $value = preg_replace ( "/[^A-Za-z0-9_]/i", '', $value );
 			    break;
+			case 'num'    :
+			    $value = preg_replace ( "/[^0-9]/i", '', $value );
+			    break;
 			case 'login' :
 				$value = preg_replace ( "/[^A-Za-z0-9_@\.\-]/i", '', $value );
 				break;
 			case 'pagecode' :
 				$value = preg_replace ( "/[^a-z0-9_-]/i", '', strtolower ( $value ) );
-				switch (self::$_urlDelimetr) {
+				switch (self::$_urlDelimeter) {
 					case '_' :
 						$value = str_replace ( array (' ', '_' ), "-", $value );
 						break;

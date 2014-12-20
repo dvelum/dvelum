@@ -2,7 +2,7 @@
 class Model_Medialib extends Model
 {
 	static protected $_scriptsIncluded = false;
-	
+
   /**
    * Get item record by its path
    * @param string $path
@@ -11,14 +11,14 @@ class Model_Medialib extends Model
    */
   public function getIdByPath($path)
   {
-     $recId = $this->_db->fetchOne(
-          $this->_db->select()
+     $recId = $this->_dbSlave->fetchOne(
+          $this->_dbSlave->select()
                     ->from($this->table() , array('id'))
                     ->where('`path` =?', $path)
      );
-     return intval($recId);            
+     return intval($recId);
   }
-    
+
   /**
    * Add media item
    * @param string $name
@@ -31,7 +31,7 @@ class Model_Medialib extends Model
   public function addItem($name , $path , $size , $type, $ext , $category = null)
   {
       $size = number_format(($size/1024/1024) , 3);
-      
+
       $data = array(
           'title'=>$name,
           'path'=>$path,
@@ -42,16 +42,16 @@ class Model_Medialib extends Model
           'date'=>date('Y-m-d H:i:s'),
           'category'=>$category
       );
-      
+
       $obj = new Db_Object($this->_name);
-	    $obj->setValues($data); 
+	    $obj->setValues($data);
       if($obj->save()){
           return $obj->getId();
       } else{
           return false;
-      }   
+      }
    }
-    
+
   /**
    * Delete item from library
    * @param integer $id
@@ -60,15 +60,15 @@ class Model_Medialib extends Model
   {
     if(!$id)
         return false;
-        
+
     $obj = new Db_Object($this->_name, $id);
     $data = $obj->getData();
-    
+
     if(empty($data))
         return false;
 
-    $docRoot = Registry::get('main' , 'config')->get('docroot');  
-        
+    $docRoot = Registry::get('main' , 'config')->get('docroot');
+
     if(strlen($data['path']))
     {
        @unlink($docRoot . $data['path']);
@@ -77,12 +77,12 @@ class Model_Medialib extends Model
            foreach ($conf['image']['sizes'] as $k=>$v){
                 @unlink($docRoot . self::getImgPath($data['path'],$data['ext'], $k));
            }
-        }  
+        }
     }
     $obj->delete();
-    return true;  
+    return true;
   }
-  
+
 	/**
    * Calculate image path
    * @param string $path
@@ -94,9 +94,9 @@ class Model_Medialib extends Model
   static public function getImgPath($path, $ext , $type , $prependWebRoot = false)
   {
      $str = str_replace($ext, '-' . $type . $ext , $path);
-     
+
      if($prependWebRoot)
-       return self::addWebRoot($str);   
+       return self::addWebRoot($str);
      else
        return $str;
   }
@@ -111,12 +111,12 @@ class Model_Medialib extends Model
     {
       if($itemPath[0] === '/')
         $itemPath = substr($itemPath, 1);
-      
+
       $itemPath =  Request::wwwRoot() . $itemPath;
     }
     return $itemPath;
   }
-  
+
 	/**
 	 * Add author selection join to the query.
 	 * Used with rev_control objects
@@ -132,7 +132,7 @@ class Model_Medialib extends Model
 			array($fieldAlias => 'u1.name')
 		);
 	}
-	
+
   /**
    * Update media item
    * @param integer $id
@@ -148,30 +148,30 @@ class Model_Medialib extends Model
       	$obj->setValues($data);
       	$obj->save();
         $hLog = Model::factory('Historylog');
-        $hLog->log(User::getInstance()->id,$id,Model_Historylog::Update , $this->table()); 
+        $hLog->log(User::getInstance()->id,$id,Model_Historylog::Update , $this->table());
         return true;
       }catch (Exception $e){
         return false;
-      }    
+      }
   }
-  
+
   /**
    * Include required sources
    */
   public function includeScripts()
-  {   	
+  {
     $version = Config::factory(Config::File_Array, Registry::get('main' , 'config')->get('configs') . 'versions.php')->get('medialib');
-      
+
   	if(self::$_scriptsIncluded)
   		return;
-  	
+
     $conf = $this->getConfig()->__toArray();
-    
-    $resource = Resource::getInstance();      
+
+    $resource = Resource::getInstance();
     $resource->addCss('/js/lib/jquery.Jcrop.css');
-    
+
     $editor = Registry::get('main' , 'config')->get('html_editor');
-       
+
     if($editor === 'tinymce'){
     	$resource->addJs('/js/lib/tiny_mce/tiny_mce.js',0,true);
     	$resource->addJs('/js/lib/ext_ux/Ext.ux.TinyMCE.js',1,true);
@@ -181,25 +181,25 @@ class Model_Medialib extends Model
     	$resource->addJs('/js/lib/ext_ux/ckplugin.js',1,true);
     	$resource->addJs('/js/app/system/medialib/HtmlPanel_ckeditor.js'  , 3);
     }
-    
+
     $resource->addJs('/js/lib/ext_ux/AjaxFileUpload.js',1,false);
     $resource->addJs('/js/app/system/SearchPanel.js',1);
     $resource->addJs('/js/app/system/ImageField.js',1);
     $resource->addJs('/js/app/system/MedialinkField.js'  , 1);
     $resource->addJs('/js/app/system/Medialib.js?v='.$version, 2);
     $resource->addJs('/js/lib/jquery.Jcrop.min.js', 2,true);
-      
+
     $resource->addInlineJs('
       	app.maxFileSize = "'.ini_get('upload_max_filesize').'";
       	app.mediaConfig = '.json_encode($conf).';
       	app.imageSize = '.json_encode($conf['image']['sizes']).';
       	app.medialibControllerName = "medialib";
-    ');    
-    self::$_scriptsIncluded = true;        
+    ');
+    self::$_scriptsIncluded = true;
   }
-  
+
 	/**
-	 * 
+	 *
 	 * @param array $types
 	 * @return int
 	 */
@@ -209,52 +209,52 @@ class Model_Medialib extends Model
       ini_set('max_execution_time' , 18000);
       ini_set('ignore_user_abort' ,'On');
       ini_set('memory_limit', '384M');
-      
+
       $conf = $this->getConfig()->__toArray();
-      
+
       $thumbSizes = $conf['image']['sizes'];
       $count =0;
-      
+
       foreach ($data as $v)
       {
         $path = DOC_ROOT.$v['path'];
         if(!file_exists($path))
             continue;
-    
+
         if($types && is_array($types))
-        { 
+        {
            foreach ($types as $typename)
            {
              if(isset($thumbSizes[$typename]))
              {
                 $saveName = str_replace($v['ext'], '-'.$typename.$v['ext'], $path);
-                                
+
                 if($conf['image']['thumb_types'][$typename] == 'crop'){
                     Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1],$saveName, true,true);
-                } else{ 
+                } else{
                     Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1],$saveName, true,false);
-                }             
+                }
              }
-           }                 
+           }
         }
         else
         {
           foreach ($thumbSizes as $k=>$item)
           {
             $saveName = str_replace($v['ext'], '-'.$k.$v['ext'], $path);
-            
+
             if($conf['image']['thumb_types'][$typename] == 'crop'){
                Image_Resize::resize($path, $item[0], $item[1], $saveName, true,true);
-            }else{ 
+            }else{
                Image_Resize::resize($path, $item[0], $item[1], $saveName, true,false);
             }
           }
-        }    
+        }
         $count ++;
       }
       return $count;
    }
-   
+
   /**
    * Crop image and create thumbs
    * @param array $srcData  - media library record
@@ -270,32 +270,32 @@ class Model_Medialib extends Model
       ini_set('memory_limit', '384M');
       $docRoot = $appConfig['docroot'];
       $conf = $this->getConfig()->__toArray();
-      $thumbSizes = $conf['image']['sizes'];  
-      
+      $thumbSizes = $conf['image']['sizes'];
+
       // sub dir fix
       if($srcData['path'][0]!=='/')
           $srcData['path'] = '/'.$srcData['path'];
-                  
+
       $path = $docRoot.$srcData['path'];
-      
+
       if(!file_exists($path))
         false;
-           
+
       $tmpPath = $appConfig['tmp'].basename($path);
-  
+
       Image_Resize::cropImage($path, $tmpPath , $x, $y, $w, $h);
-      
+
       if(!isset($thumbSizes[$type]))
         return false;
-          
-      $saveName = str_replace($srcData['ext'], '-'.$type.$srcData['ext'], $path);  
+
+      $saveName = str_replace($srcData['ext'], '-'.$type.$srcData['ext'], $path);
       if(!Image_Resize::resize($tmpPath, $thumbSizes[$type][0], $thumbSizes[$type][1], $saveName, true,false))
       	return false;
 
       unlink($tmpPath);
       return true;
    }
-    
+
   /**
    * Update modification date
    * @param integer $id
@@ -307,7 +307,7 @@ class Model_Medialib extends Model
     $obj->set('modified', date('Y-m-d h:i:s'));
     $obj->save();
   }
-  
+
   /**
    * Mark object as hand croped
    * @param integer $id
@@ -319,7 +319,7 @@ class Model_Medialib extends Model
  		$obj->set('croped', 1);
     $obj->save();
   }
-  
+
   /**
    * Get media library config
    * @return Config_File_Array
@@ -329,7 +329,7 @@ class Model_Medialib extends Model
     $docRoot = Registry::get('main' , 'config')->get('docroot');
     return Config::factory(Config::File_Array , $docRoot . '/system/config/media_library.php');
   }
-    
+
   /**
    * Update media items, set category to null
    * @param integer id
@@ -338,7 +338,7 @@ class Model_Medialib extends Model
   {
     $this->_db->update($this->table(), array('category'=>null), '`category` = '.intval($id));
   }
-  
+
   /**
    * Update category for set of items
    * @param array $items
@@ -348,10 +348,10 @@ class Model_Medialib extends Model
   public function updateItemsCategory(array $items , $catalog)
   {
     $items = array_map('intval', $items);
-    
+
     if($catalog==0)
        $catalog = null;
-    
+
     try{
       $this->_db->update($this->table(), array('category'=>$catalog),' `'.$this->getPrimaryKey().'` IN('.implode(',', $items).')');
       return true;
@@ -359,5 +359,5 @@ class Model_Medialib extends Model
       $this->logError('updateItemsCategory: ' . $e->getMessage());
       return false;
     }
-  }   
+  }
 }

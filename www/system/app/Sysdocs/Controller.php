@@ -45,6 +45,16 @@ class Sysdocs_Controller
     * @var Lang
     */
    protected $lang;
+   /**
+    * Edit permissions
+    * @var boolean
+    */
+   protected $canEdit = false;
+   /**
+    * Cache adapter
+    * @var Cache_Abstract
+    */
+   protected $cache = false;
 
    public function __construct($mainConfig , $paramsIndex = 0, $container = false)
    {
@@ -76,13 +86,29 @@ class Sysdocs_Controller
       $this->versionIndex = $vList[$this->version];
    }
    /**
+    * Set edit permissions
+    * @param boolean $flag
+    */
+   public function setCanEdit($flag)
+   {
+     $this->canEdit = (boolean) $flag;
+   }
+   /**
+    * Set Cache adapter
+    * @param Cache_Abstract $cache
+    */
+   public function setCacheAdapter(Cache_Abstract $cache)
+   {
+     $this->cache = $cache;
+   }
+   
+   /**
     * Run controller
     */
    public function run()
-   {
-     
+   {    
       $action = Request::getInstance()->getPart(($this->paramsIndex+2));
- 
+
       if($action && method_exists($this, $action.'Action')){
         $this->{$action.'Action'}();
       }else{        
@@ -103,8 +129,10 @@ class Sysdocs_Controller
      Resource::getInstance()->addInlineJs('
            app.docLang = "'.$this->language.'";
            app.docVersion = "'.$this->version.'";
+           var canEdit = '.intval($this->canEdit).';    
       ');
      $this->_runDesignerProject($this->configMain->get('configs').'layouts/system/documentation.designer.dat', $this->container);
+     
    }
 
    public function setDefaultVersion($versNum)
@@ -127,9 +155,32 @@ class Sysdocs_Controller
      $fileHid = Request::post('fileHid', Filter::FILTER_STRING, false);
 
      $info = new Sysdocs_Info();
-     $classInfo = $info->getClassInfoByFileHid($fileHid, $this->versionIndex);
+     $classInfo = $info->getClassInfoByFileHid($fileHid, $this->language ,$this->versionIndex);
 
      Response::jsonSuccess($classInfo);
+   }
+   /**
+    * Set class desctiption
+    */
+   public function setdescriptionAction()
+   {
+     if(!$this->canEdit){
+       Response::jsonError($this->lang->get('CANT_MODIFY'));
+     }
+     $fileHid = Request::post('hid', Filter::FILTER_STRING, false);
+     $text = Request::post('text', 'raw', '');
+     $objectId = Request::post('object_id', Filter::FILTER_INTEGER, false);
+     $objectClass = Request::post('object_class', Filter::FILTER_STRING, false);
+     
+     if(!$objectId){
+       Response::jsonError($this->lang->get('WRONG_REQUEST'));
+     }
+     
+     $info = new Sysdocs_Info();
+     if($info->setDescription($objectId , $fileHid, $this->versionIndex , $this->language , $text , $objectClass)){
+       Response::jsonSuccess();
+     }
+     Response::jsonError($this->lang->get('CANT_EXEC'));
    }
    /**
     * Get interface config
@@ -174,7 +225,7 @@ class Sysdocs_Controller
    
        $resource->addJs('/js/lib/jquery.js',0 , true , 'head');
    
-       $resource->addJs('/js/lib/extjs4/ext-all-debug.js' , 0 , true , 'head');
+       $resource->addJs('/js/lib/extjs4/ext-all.js' , 0 , true , 'head');
        $resource->addJs('/js/lang/'.$this->configMain['language'].'.js', 1 , true , 'head');
        $resource->addJs('/js/lib/extjs4/locale/ext-lang-'.$this->configMain['language'].'.js', 2 , true , 'head');
        $resource->addJs('/js/app/system/common.js', 3 , false ,  'head');

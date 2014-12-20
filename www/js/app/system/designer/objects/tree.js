@@ -2,7 +2,7 @@
 Ext.define('designer.objects.Tree',{
     extend:'Ext.Panel',
     controllerUrl:'',
-    listType:'visual',	
+    listType:'visual',
     layout:'fit',
     firstLoad:true,
     selectedNode: false,
@@ -59,16 +59,17 @@ Ext.define('designer.objects.Tree',{
 	this.treePanel.on('select',function(tree, record, index, eOpts){
 	    this.selectedNode = record;
 	},this);
-	
+
 	this.dataStore.on('load',function(){
 	    if(this.selectedNode){
 		this.treePanel.getSelectionModel().select(this.selectedNode);
 		this.treePanel.getSelectionModel().setLastFocused(this.selectedNode);
+		this.treePanel.getView().focusRow(this.treePanel.getView().store.indexOf(this.selectedNode));
 	    }
 	},this);
-	
+
 	this.treePanel.addListener('itemclick',function(view, record, element , index , e , eOpts){
-	    this.fireEvent('itemSelected' , record.get('id') , record.get('objClass'), record.get('text') , record.get('isInstance'));			
+	    this.fireEvent('itemSelected' , record.get('id') , record.get('objClass'), record.get('text') , record.get('isInstance'));
 	},this,{buffer:400});
 
 	this.collapseBtn = Ext.create('Ext.Button',{
@@ -107,7 +108,7 @@ Ext.define('designer.objects.Tree',{
 	    iconCls:'deleteIcon',
 	    handler:this.removeObject,
 	    scope:this
-	}           
+	}
 	];
 
 	this.items = [this.treePanel];
@@ -128,7 +129,7 @@ Ext.define('designer.objects.Tree',{
 		 * @event objectRemoved
 		 */
 		'objectRemoved'
-	); 
+	);
 
 	this.treePanel.on('scrollershow', function(scroller) {
 	    if (scroller && scroller.scrollEl) {
@@ -157,8 +158,8 @@ Ext.define('designer.objects.Tree',{
 	}else{
 	    parentId = overModel.parentNode.get('id');
 	    parentNode = overModel.parentNode;
-	}		
-	var childsOrder = []; 
+	}
+	var childsOrder = [];
 	parentNode.eachChild(function(node){
 	    childsOrder.push(node.getId());
 	},this);
@@ -174,12 +175,12 @@ Ext.define('designer.objects.Tree',{
 	    scope:this,
 	    success: function(response, request) {
 		response =  Ext.JSON.decode(response.responseText);
-		if(response.success){				
+		if(response.success){
 		    this.fireEvent('dataChanged');
 		    this.forceComponentLayout();
 		}else{
 		    Ext.Msg.alert(appLang.MESSAGE, response.msg);
-		}	
+		}
 	    },
 	    failure: app.formFailure
 	});
@@ -215,7 +216,7 @@ Ext.define('designer.objects.Tree',{
 		    me.reload();
 		}else{
 		    Ext.Msg.alert(appLang.MESSAGE, response.msg);
-		}	
+		}
 	    },
 	    failure: app.formFailure
 	});

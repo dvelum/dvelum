@@ -51,13 +51,15 @@ abstract class Filestorage_Abstract
      * @return boolen
      */
     abstract public function remove($fileId);
+
     /**
      * Add file (copy to storage)
      * @param string $filePath
+     * @param sting $useName, optional set specific file name
      * @throws Exception
      * @return integer id | boolean false
      */
-    abstract public function add($filePath);
+    abstract public function add($filePath , $useName);
 
     /**
      * Set logs adapter

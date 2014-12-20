@@ -30,15 +30,12 @@ class Backend_Router extends Router
 	 			$controller = 'Backend_Index_Controller';
 	 		}
 	 	}	 	
-	 	
-	 	if(class_implements($controller , 'Router_Interface')){
-	 	    $controller = new $controller();
-	 	    return $controller->run();
-	 	}else{
-	 	    $this->runController($controller,  $this->_request->getPart(2));		 	  
-	 	}	 	
+	 	$this->runController($controller,  $this->_request->getPart(2));		 	  	 		 	
 	 }
-	 
+	 /**
+	  * (non-PHPdoc)
+	  * @see Router::findUrl()
+	  */
 	 public function findUrl($module)
 	 {
 	 	$cfg = Registry::get('main' , 'config');

@@ -124,9 +124,6 @@ Ext.define('app.medialib.CropWindow',{
 		continue;
 	    }
 
-	    if(i == 'large'){
-		continue;
-	    }
 
 	    cbItems.push({
 		title:i+ ' ('+this.extList[i][0]+'x'+this.extList[i][1]+')' ,

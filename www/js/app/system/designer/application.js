@@ -664,10 +664,26 @@ Ext.define('designer.application',{
 	               tooltip:desLang.addInstanceTip,
 	               handler:this.addInstance,
 	               scope:this
+	           },'-',
+	           {
+	               text:desLang.templates,
+	               iconCls:'containerIcon',
+	               oClass:'',
+	               showType:'loaded',
+	               tooltip:desLang.componentTemplates,
+	               scope:this,
+	               menu: Ext.create('Ext.menu.Menu', {
+	        	   style: {
+	        	       overflow: 'visible'
+	        	   },
+	        	   defaults:{
+	        	       scope:this,
+	        	       handler:this.addTemplateObject
+	        	   },
+	        	   items:componentTemplates
+	               })
 	           }
-
-
-	           /*,
+	                            /*,
 			            {
 			            	icon:'/i/system/designer/chart.png',
 			            	 tooltip: desLang.add + ' ' + desLang.chart
@@ -1088,6 +1104,50 @@ Ext.define('designer.application',{
 		}
 	    }
 	}).show();
+    },
+    /**
+     * Add template
+     * @param {Ext.Button} btn
+     */
+    addTemplateObject:function(btn){
+	var me = this;
+	var parent = 0;
+	Ext.MessageBox.prompt(appLang.MESSAGE , desLang.enterObjectName,function(resultBtn , text){
+	    if(resultBtn !='ok'){
+		return;
+	    }
+
+	    var selection = me.objectsTabs.panelsTab.treePanel.getSelectionModel();
+
+	    if(selection.hasSelection()){
+		selected = selection.getSelection()[0];
+		if(!selected.leaf){
+		    parent = selected.get('id');
+		}
+	    }
+	    
+	    Ext.Ajax.request({
+		url:app.createUrl([designer.controllerUrl ,'project','addtemplate']),
+		method: 'post',
+		params:{
+		    'name':text,
+		    'adapter':btn.adapter,
+		    'parent':parent
+		},
+		success: function(response, request) {
+		    response =  Ext.JSON.decode(response.responseText);
+		    if(response.success){
+			me.onChange();
+			designer.msg(desLang.success , desLang.objectAdded);
+		    }else{
+			Ext.Msg.alert(appLang.MESSAGE, response.msg);
+		    }
+		},
+		failure:function() {
+		    Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
+		}
+	    });
+	});
     },
     /**
      * Show object properties Panel
