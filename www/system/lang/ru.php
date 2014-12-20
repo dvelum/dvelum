@@ -540,4 +540,4 @@
   'OBJECT_ID' => 'ID  Объекта',
   'ADD_SUB_DICTIONARY' => 'Добавить вложенный словарь',
   'ENTER_DICTIONARY_NAME' => 'Введите имя словаря',
-);
+); 
