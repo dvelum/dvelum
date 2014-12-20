@@ -1,0 +1,16 @@
+<?php return array (
+  '=' => '=',
+  '<' => '<',
+  '<=' => '<=',
+  '>' => '>',
+  '>=' => '>=',
+  '!=' => '!=',
+  'IS_NULL' => 'IS NULL',
+  'IS_NOT_NULL' => 'IS NOT NULL',
+  'IN' => 'IN',
+  'NOT_IN' => 'NOT IN',
+  'LIKE' => 'LIKE',
+  'NOT_LIKE' => 'NOT LIKE',
+  'BETWEEN' => 'BETWEEN',
+  'NOT_BETWEEN' => ' NOT BETWEEN',
+); 

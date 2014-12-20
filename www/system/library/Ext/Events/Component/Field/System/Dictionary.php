@@ -1,0 +1,4 @@
+<?php
+class Ext_Events_Component_Field_System_Dictionary extends Ext_Events_Form_Field_Combobox
+{
+}

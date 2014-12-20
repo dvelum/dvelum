@@ -1,0 +1,10 @@
+AddDefaultCharset UTF-8
+RewriteEngine on
+#RewriteBase /subdir/
+Options -Indexes
+Options +FollowSymLinks
+DirectoryIndex index.php
+
+
+RewriteRule !(^js/.*|^i/.*|^res/.*|^media/.*|^templates/.*|^install/.*|^favicon\.ico)$ index.php [NC,L]
+

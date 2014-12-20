@@ -1,0 +1,399 @@
+<?php
+
+class Backend_Designer_Import
+{
+    /**
+     *
+     * @param string $objectName            
+     * @param array $fields
+     *            - fields to check
+     * @return array or false on error
+     */
+    static public function checkImportORMFields($objectName , array $fields)
+    {
+        if(!$objectName || empty($fields))
+            return false;
+        
+        $data = array();
+        $config = Db_Object::factory($objectName)->getConfig();
+        foreach($fields as $field)
+        {
+            if(!$config->fieldExists($field)){
+                continue;
+            }
+            
+            $fieldConfig = $config->getFieldConfig($field);
+            
+            $o = Ext_Factory::object('Data_Field',array(
+               'name'=>$field,
+               'type' => self::convetDBFieldTypeToJS($fieldConfig['db_type'])
+            ));
+                      
+            switch($fieldConfig['db_type'])
+            {
+                case 'date': $o->dateFormat = 'Y-m-d';
+                    break;
+                case 'datetime': $o->dateFormat = 'Y-m-d H:i:s';
+                    break;
+                case 'time': $o->dateFormat = 'H:i:s';    
+                    break;
+                          
+            }
+                                  
+            $data[] = $o;
+        }
+        return $data;
+    }
+
+    /**
+     *
+     * @param array $config - fot Zend_Db::factory
+     * @param array $fields - fields to check
+     * @param string $table            
+     * @return array or false on error
+     */
+    static public function checkImportDBFields(array $config , array $fields , $table)
+    {
+        if(empty($config) || empty($fields) || ! strlen($table))
+            return false;
+        
+        $data = array();
+        $adapter = 'Mysqli';
+        if(isset($config['adapter']))
+            $adapter = $config['adapter'];
+        
+        try{
+            $db = Zend_Db::factory($adapter , $config);
+        }catch(Exception $e){
+            return false;
+        }
+        
+        $desc = $db->describeTable($table);
+        $dbFields = array_keys($desc);
+        
+        foreach($fields as $field)
+        {         
+            if(!in_array($field , $dbFields , true))
+                return false;
+            
+            $o = Ext_Factory::object('Data_Field',array(
+                    'name' => $field,
+                    'type' => self::convetDBFieldTypeToJS($desc[$field]['DATA_TYPE'])
+            ));
+            
+            switch($desc[$field]['DATA_TYPE'])
+            {
+            	case 'date': $o->dateFormat = 'Y-m-d';
+            	    break;
+            	case 'datetime': $o->dateFormat = 'Y-m-d H:i:s';
+            	    break;  
+            	case 'time' : $o->dateFormat = 'H:i:s';          
+            }            
+            $data[] = $o;
+        }
+        return $data;
+    }
+
+    /**
+     *
+     * @param string $type            
+     * @return string
+     */
+    static public function convetDBFieldTypeToJS($type)
+    {
+        switch($type){
+            case 'tinyint':
+            case 'smallint':
+            case 'mediumint':
+            case 'int':
+            case 'bigint':
+            case 'bit':
+                $type = 'integer';
+                break;
+            
+            case 'boolean':
+                $type = 'boolean';
+                break;
+            
+            case 'real':
+            case 'float':
+            case 'double':
+            case 'decimal':
+                $type = 'float';
+                break;
+            
+            case 'date':
+            case 'timestamp':
+            case 'datetime':
+            case 'time':
+                $type = 'date';
+                break;
+            
+            default:
+                $type = 'string';
+                break;
+        }
+        return $type;
+    }
+
+    /**
+     * Get table fields
+     * 
+     * @param array $config - connection config
+     * @param string $table            
+     * @return array or false
+     */
+    static public function getTableFields($config , $table)
+    {      
+        $adapter = 'Mysqli';
+        if(isset($config['adapter']))
+            $adapter = $config['adapter'];
+        
+        try{
+            $db = Zend_Db::factory($adapter , $config);
+        }catch(Exception $e){
+            return false;
+        }
+
+        return $db->describeTable($table);
+    }
+
+    /**
+     * Convert db column info (from Zend_Db describe table) into ExtJs Field
+     * 
+     * @param array $info            
+     * @return Ext_Object or false
+     */
+    static public function convertDbFieldToExtField($info)
+    {
+        $type = strtolower($info['DATA_TYPE']);
+        $newField = false;
+        
+        /*
+         * Boolean
+         */
+        if($type === 'boolean')
+        {
+            $newField = Ext_Factory::object('Form_Field_Checkbox');
+        }
+        /*
+         * Integer
+         */
+        elseif(in_array($type , Db_Object_Builder::$intTypes , true) || $type === 'timestamp')
+        {
+            $newField = Ext_Factory::object('Form_Field_Number');
+            $newField->allowDecimals = false;
+        }
+        /*
+         * Float
+         */
+        elseif(in_array($type , Db_Object_Builder::$floatTypes , true))
+        {
+            $newField = Ext_Factory::object('Form_Field_Number');
+            $newField->allowDecimals = true;
+            $newField->decimalSeparator = ',';
+            $newField->decimalPrecision = 2;
+        }
+        /*
+         * String
+         */
+        elseif(in_array($type , Db_Object_Builder::$charTypes , true))
+        {
+            $newField = Ext_Factory::object('Form_Field_Text');
+        }
+        /*
+         * Text
+         */
+        elseif(in_array($type , Db_Object_Builder::$textTypes , true))
+        {
+            $newField = Ext_Factory::object('Form_Field_Textarea');
+        }
+        /*
+         * Date time
+         */
+        elseif(in_array($type , Db_Object_Builder::$dateTypes , true))
+        {
+            switch($type){
+                case 'date':
+                    $newField = Ext_Factory::object('Form_Field_Date');
+                    $newField->format = 'Y-m-d';
+                    $newField->submitFormat = 'Y-m-d';
+                    $newField->altFormats = 'Y-m-d';
+                    break;
+                case 'datetime':
+                case 'timestamp':
+                    $newField = Ext_Factory::object('Form_Field_Date');
+                    $newField->format = 'Y-m-d H:i:s';
+                    $newField->submitFormat = 'Y-m-d H:i:s';
+                    $newField->altFormats = 'Y-m-d H:i:s';
+                    break;
+                case 'time':                    
+                    $newField = Ext_Factory::object('Form_Field_Time');
+                    $newField->format = 'H:i:s';
+                    $newField->submitFormat = 'H:i:s';
+                    $newField->altFormats = 'H:i:s';
+                    break;
+            }
+        }
+        /*
+         * Undefined type
+         */
+        else
+        {
+            $newField = Ext_Factory::object('Form_Field_Text');
+        }
+        
+        if($newField)
+            $newField->fieldLabel = $info['COLUMN_NAME'];
+        
+        return $newField;
+    }
+
+    /**
+     * Convert orm field into ext object
+     * 
+     * @param string $name            
+     * @param array $fieldConfig
+     *            - field info from Db_Object_Config
+     * @return Ext_Object or false
+     */
+    static public function convertOrmFieldToExtField($name , $fieldConfig , $controllerUrl = '')
+    {
+        $type = $fieldConfig['db_type'];
+        $newField = false;
+        
+        /*
+         * Adapter
+         */
+        if(isset($fieldConfig['type']) && $fieldConfig['type'] === 'link')
+        {
+            if($fieldConfig['link_config']['link_type'] == 'dictionary'){
+                $newField = Ext_Factory::object('Component_Field_System_Dictionary');
+                if($fieldConfig['required']){
+                  $newField->forceSelection = true;
+                }else{
+                  $newField->forceSelection = false;
+                }
+                $newField->dictionary = $fieldConfig['link_config']['object'];
+            }elseif($fieldConfig['link_config']['link_type'] == Db_Object_Config::LINK_OBJECT && $fieldConfig['link_config']['object'] == 'medialib'){
+                $newField = Ext_Factory::object('Ext_Component_Field_System_Medialibitem');
+            }elseif($fieldConfig['link_config']['link_type'] == Db_Object_Config::LINK_OBJECT){
+                $newField = Ext_Factory::object('Ext_Component_Field_System_Objectlink');
+                $newField->objectName = $fieldConfig['link_config']['object'];
+            }elseif($fieldConfig['link_config']['link_type'] == Db_Object_Config::LINK_OBJECT_LIST){
+                $newField = Ext_Factory::object('Ext_Component_Field_System_Objectslist');
+                $newField->objectName = $fieldConfig['link_config']['object'];
+            }else{
+                $newField = Ext_Factory::object('Form_Field_Text');
+            }
+        }
+        /*
+         * Boolean
+         */
+        elseif($type === 'boolean')
+        {
+            $newField = Ext_Factory::object('Form_Field_Checkbox');
+            $newField->inputValue = 1;
+            $newField->uncheckedValue = 0;
+        }
+        /*
+         * Integer
+         */
+        elseif(in_array($type , Db_Object_Builder::$intTypes , true))
+        {
+            $newField = Ext_Factory::object('Form_Field_Number');
+            $newField->allowDecimals = false;
+        }
+        /*
+         * Float
+         */
+        elseif(in_array($type , Db_Object_Builder::$floatTypes , true))
+        {
+            $newField = Ext_Factory::object('Form_Field_Number');
+            $newField->allowDecimals = true;
+            $newField->decimalSeparator = ',';
+            
+            if(isset($fieldConfig['db_precision']))
+              $newField->decimalPrecision = $fieldConfig['db_precision'];
+            else
+              $newField->decimalPrecision = 2;
+        }
+        /*
+         * String
+         */
+        elseif(in_array($type , Db_Object_Builder::$charTypes , true))
+        {
+            $newField = Ext_Factory::object('Form_Field_Text');
+        }
+        /*
+         * Text
+         */
+        elseif(in_array($type , Db_Object_Builder::$textTypes , true))
+        {
+            if(isset($fieldConfig['allow_html']) && $fieldConfig['allow_html']){
+                $newField = Ext_Factory::object('Component_Field_System_Medialibhtml');
+                $newField->editorName = $name;
+                $newField->title = $fieldConfig['title'];
+                $newField->frame = false;
+            }else{
+                $newField = Ext_Factory::object('Form_Field_Textarea');
+            }
+        }
+        /*
+         * Date time
+         */
+        elseif(in_array($type , Db_Object_Builder::$dateTypes , true))
+        {
+            switch($type){
+                case 'date':
+                    $newField = Ext_Factory::object('Form_Field_Date');
+                    $newField->format = 'Y-m-d';
+                    $newField->submitFormat = 'Y-m-d';
+                    $newField->altFormats = 'Y-m-d';
+                    break;
+                case 'datetime':
+                case 'timestamp':
+                    $newField = Ext_Factory::object('Form_Field_Date');
+                    $newField->format = 'Y-m-d H:i:s';
+                    $newField->submitFormat = 'Y-m-d H:i:s';
+                    $newField->altFormats = 'Y-m-d H:i:s';
+                    break;
+                case 'time':
+                    $newField = Ext_Factory::object('Form_Field_Time');
+                    $newField->format = 'H:i:s';
+                    $newField->submitFormat = 'H:i:s';
+                    $newField->altFormats = 'H:i:s';
+                    break;
+            }
+        }
+        /*
+         * Undefined type
+         */
+        else
+        {
+            $newField = Ext_Factory::object('Form_Field_Text');
+        }
+        
+        $newFieldConfig = $newField->getConfig();
+        
+        if($newFieldConfig->isValidProperty('name'))
+           $newField->name = $name;
+              
+        if(isset($fieldConfig['db_default']) && $fieldConfig['db_default']!==false && $newFieldConfig->isValidProperty('value'))
+          $newField->value  = $fieldConfig['db_default'];
+         
+        if(in_array($type, Db_Object_Builder::$numTypes , true) && isset($fieldConfig['db_unsigned']) && $fieldConfig['db_unsigned'] && $newFieldConfig->isValidProperty('minValue'))
+          $newField->minValue = 0;
+                           
+        if($newField->getClass() != 'Component_Field_System_Medialibhtml' && $newFieldConfig->isValidProperty('fieldLabel'))
+          $newField->fieldLabel = $fieldConfig['title'];
+        
+        if($newField->getClass() === 'Component_Field_System_Objectslist')
+          $newField->title = $fieldConfig['title'];
+        
+        if(isset($fieldConfig['required']) && $fieldConfig['required'] && $newFieldConfig->isValidProperty('allowBlank'))
+          $newField->allowBlank = false;
+        
+        return $newField;
+    }
+}

@@ -1,0 +1,29 @@
+<?php
+return array(
+	'columns'=>2,
+	'items'=>array(
+		'topblocks'=>array(
+			'colspan'=>2,
+			'isElContainer'=>true,
+            'width'=>600,
+            'height'=>80,
+			'html'=>''
+		),
+		'content'=>array(
+			'isElContainer'=>false,
+		    'width'=>400,
+            'height'=>200
+		),
+		'rightblocks'=>array(
+			'isElContainer'=>true,
+		    'width'=>200,
+            'height'=>200
+		),
+		'bottomblocks'=>array(
+			'colspan'=>2,
+			'isElContainer'=>true,
+		    'width'=>600,
+            'height'=>80,
+		)
+	 )
+);
