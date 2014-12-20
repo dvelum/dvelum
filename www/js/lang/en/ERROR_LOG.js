@@ -1,0 +1,1 @@
+var ERROR_LOGLang = {};
