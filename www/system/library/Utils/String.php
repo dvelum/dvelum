@@ -71,4 +71,26 @@ class Utils_String
         else
           return $indent . str_replace("\n", "\n".$indent, $string);
     }
+    
+    /**
+     * Limit text
+     * @param string $string
+     * @param intager $maxLength
+     * @return  string
+     */
+    static public function limitText($string , $maxLength)
+    {
+        $strlen = strlen($string);
+        if($strlen <= $maxLength)
+            return $string;
+    
+        $string = substr($string, 0 , $maxLength);
+        $wordStart = strrpos($string, ' ');
+    
+        if($wordStart)
+            $string = substr($string, 0 , $wordStart);
+    
+        $string.='...';
+        return $string;
+    }
 }

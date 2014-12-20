@@ -1,9 +1,4 @@
 <?php return array (
-  'docs' => 
-  array (
-    'class' => 'Frontend_Docs_Controller',
-    'title' => ' Documentation',
-  ),
   'api' => 
   array (
     'id' => 'api',

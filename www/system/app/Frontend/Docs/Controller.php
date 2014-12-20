@@ -1,41 +1,58 @@
 <?php
-class Frontend_Docs_Controller extends Frontend_Controller
+class Frontend_Docs_Controller extends Frontend_Controller implements Router_Interface
 {
-
-  protected $docController;
+  protected $docsController;
   
   public function __construct()
   {
-    $this->docsController = new Sysdocs_Controller($this->_configMain , 'content');
+    $controller = new Sysdocs_Controller($this->_configMain ,1 , false);
+    $controller->setCanEdit(User::getInstance()->canEdit(false));
+    $this->docsController = $controller;
+    parent::__construct();
   }
-    
-  // Interface implementation
-  public function indexAction()
-  {
-    $this->docsController->indexAction();
-  }
+   /**
+    * (non-PHPdoc)
+    * @see Router::run()
+    */
+   public function route()
+   {
+     $request = Request::getInstance();
+     $action = $request->getPart(1);
+
+     if(!Request::isAjax()){
+       $this->indexAction();
+     }else{
+       $this->docsController->run();
+     }    
+   }
+
   /**
    * (non-PHPdoc)
-   * @see Sysdocs_Controller_Interface::apitreeAction()
+   * 
+   * @see Backend_Controller::indexAction()
    */
-  public function apitreeAction()
+  public function indexAction()
   {
-      $this->docsController->apitreeAction();
-  }
-  /**
-   * non-PHPdoc)
-   * @see Sysdocs_Controller_Interface::infoAction()
-   */
-  public function infoAction()
-  {
-      $this->docsController->infoAction();
-  }
-  /**
-   * non-PHPdoc)
-   * @see Sysdocs_Controller_Interface::configAction()
-   */
-  public function configAction()
-  {
-     $this->docsController->configAction();
+    $template = new Template();
+    $template->setData(array(
+        'page' => $this->_page , 
+        'resource' => $this->_resource
+    ));
+    
+    $this->_page->page_title = 'DVelum Documentation';
+    $this->_page->theme = 'docs';
+    // $this->_page->text =
+    // $template->render($this->_page->getTemplatePath('layout.php');
+    $this->_resource->addJs('/js/application.js' , 1);
+    $this->_resource->addInlineJs('
+            Ext.ns("app");
+            app.wwwRoot = "/";
+            var canEdit = false; 
+            app.delimeter = "' . $this->_configMain->get('urlDelimeter') . '";
+            app.root = "' . $this->_configMain->get('wwwroot') . $this->_configMain->get('urlDelimeter') . 'docs' . $this->_configMain->get('urlDelimeter') . '";
+     
+         ');
+    $this->docsController->run();
+    $this->_router->showPage($this->_page , new Blockmanager());
   }
 }

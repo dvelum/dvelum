@@ -49,7 +49,7 @@ class Designer_Project_Code
 	    ' . $code['layout'];
 	}
 
-	/**
+    /**
 	 * Update store property for all objects. Find instance token, update namespace
 	 */
 	protected function applyStoreInstances()
@@ -58,7 +58,22 @@ class Designer_Project_Code
 	    return;
 
 	  $items = $this->_project->getObjects();
-	  foreach ($items as $k=>$v){
+
+	  foreach ($items as $k=>$v)
+	  {
+	  	 if(method_exists($v, 'getViewObject')){
+	  	 	$o = $v->getViewObject();
+
+	  	 	if($o->isValidProperty('store')){
+	  	 		$store = trim($o->store);
+	  	 		if(strpos($store , Designer_Project_Code::$NEW_INSTANCE_TOKEN) !==false){
+	  	 			$o->store = 'Ext.create("'.Ext_Code::appendNamespace(trim(str_replace(Designer_Project_Code::$NEW_INSTANCE_TOKEN, '', $store))).'",{})';
+	  	 		}elseif (strlen($store)){
+	  	 			$o->store = Ext_Code::appendRunNamespace($store);
+	  	 		}
+	  	 	}
+	  	 }
+
 	     if($v->isValidProperty('store')){
 	       $store = trim($v->store);
 	       if(strpos($store , Designer_Project_Code::$NEW_INSTANCE_TOKEN) !==false){

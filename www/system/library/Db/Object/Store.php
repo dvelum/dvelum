@@ -529,7 +529,14 @@ class Db_Object_Store
 
     protected function _insertOperation(Db_Object $object)
     {
-    	$updates =  $object->getUpdates();
+    	$insertId = $object->getInssertId();
+
+    	if($insertId){
+    		$updates = array_merge($object->getData() , $object->getUpdates());
+    		$updates[$object->getConfig()->getPrimaryKey()] = $insertId;
+    	}else{
+    		$updates =  $object->getUpdates();
+    	}
 
         if(empty($updates))
             return false;
@@ -630,10 +637,11 @@ class Db_Object_Store
     			foreach($data as $k => $v)
     				if(!is_null($v))
     					$oldObject->set($k , $v);
-
-    			if(!$oldObject->save(false , $useTransaction))
-    				return false;
     		}
+
+    		if(!$oldObject->save(false , $useTransaction))
+    		 	return false;
+
     	}catch(Exception $e){
     		return false;
     	}

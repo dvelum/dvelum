@@ -14,7 +14,7 @@
 /**
  * Base class for routing of requests 
  */
-abstract class Router
+abstract class Router implements Router_Interface
 {
 	/**
      * @var Request
@@ -52,6 +52,10 @@ abstract class Router
 	 	$controller = new $controller();	 	
 	 	$controller->setRouter($this);
 	 		
+	 	if($controller instanceof Router_Interface){
+	 	  return $controller->route();
+	 	}
+	 	 	
 	 	if($action===false || !strlen($action) || !method_exists($controller , $action.'Action'))
 	 	{ 		
 	 		if(strlen($action) && Request::isAjax()){

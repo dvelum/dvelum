@@ -158,16 +158,6 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Externals' => 
-  array (
-    'id' => 'Backend_Externals_Controller',
-    'class' => 'Backend_Externals_Controller',
-    'dev' => true,
-    'active' => true,
-    'title' => 'Сторонние модули',
-    'designer' => '',
-    'in_menu' => true,
-  ),
   'Page' => 
   array (
     'id' => 'Backend_Page_Controller',
@@ -198,24 +188,13 @@
     'designer' => './system/config/layouts/system/localization.designer.dat',
     'in_menu' => true,
   ),
-    'Docs' =>
+    'Error_Log' =>
     array (
-        'id' => 'Backend_Docs_Controller',
-        'class' => 'Backend_Docs_Controller',
-        'dev' => true,
+        'class' => 'Backend_Error_Log_Controller',
+        'dev' => false,
         'active' => true,
-        'title' => 'Документация',
-        'designer' => './system/config/layouts/system/documentation.designer.dat',
-        'in_menu' => true,
-    ),
-    'Sysdocs_Localization' =>
-    array (
-        'id' => 'Backend_Sysdocs_Localization_Controller',
-        'class' => 'Backend_Sysdocs_Localization_Controller',
-        'dev' => true,
-        'active' => true,
-        'title' => 'Редактор документации',
-        'designer' => './system/config/layouts/system/sysdocs_localization.designer.dat',
+        'title' => 'Лог ошибок',
+        'designer' => './system/config/layouts/system/error_log.designer.dat',
         'in_menu' => true,
     ),
 ); 

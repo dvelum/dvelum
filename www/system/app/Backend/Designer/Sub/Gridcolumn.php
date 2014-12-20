@@ -199,7 +199,7 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 				$result[] = array(
 								'id'=>$name,
 								'icon'=>Designer_Factory::replaceCodeTemplates($designerManager->getReplaceConfig(), $object->icon),
-								'text'=>$object->text
+								'tooltip'=>$object->tooltip
 							);
 			}
 		}

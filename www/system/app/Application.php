@@ -107,8 +107,8 @@ class Application
         /*
          * Apply configs
          */
-        Filter::setDelimetr($this->_config->get('urlDelimetr'));
-        Request::setDelimetr($this->_config->get('urlDelimetr'));
+        Filter::setDelimeter($this->_config->get('urlDelimeter'));
+        Request::setDelimeter($this->_config->get('urlDelimeter'));
         Request::setExtension($this->_config->get('urlExtension'));
         Request::setRoot($this->_config->get('wwwroot'));
         Resource::setCachePaths($this->_config->get('jsCacheSysUrl') , $this->_config->get('jsCacheSysPath'));
@@ -179,6 +179,25 @@ class Application
         if($this->_config->get('allow_externals'))
             $this->_initExternals();
 
+        
+       /*
+        * Switch to Db_Object error log
+        */
+        if($this->_config->get('db_object_error_log'))
+        {
+            $errorModel = Model::factory($this->_config->get('erorr_log_object'));
+            $errorTable = $errorModel->table(true);
+            $errorDb = $errorModel->getDbConnection();
+        
+            $logOrmDb = new Log_Db('db_object_error_log' , $errorDb , $errorTable);
+        
+            Db_Object::setLog(new Log_Mixed($log, $logOrmDb));
+        
+            $logModelDb = new Log_Db('model' , $errorDb , $errorTable);
+        
+            Model::setDefaultLog(new Log_Mixed($log, $logModelDb));
+        }
+        
         $this->_init = true;
     }
 
@@ -307,8 +326,8 @@ class Application
         $res->addInlineJs('
             app.wwwRoot = "'.$this->_config->get('wwwroot').'";
         	app.admin = "' . $this->_config->get('wwwroot') . $this->_config->get('adminPath') . '";
-        	app.delimeter = "' . $this->_config->get('urlDelimetr') . '";
-        	app.root = "' . $this->_config->get('wwwroot') .  $this->_config->get('adminPath') . $this->_config->get('urlDelimetr') . $controller . $this->_config->get('urlDelimetr') . '";
+        	app.delimeter = "' . $this->_config->get('urlDelimeter') . '";
+        	app.root = "' . $this->_config->get('wwwroot') .  $this->_config->get('adminPath') . $this->_config->get('urlDelimeter') . $controller . $this->_config->get('urlDelimeter') . '";
         ');
 
         /*

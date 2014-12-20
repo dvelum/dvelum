@@ -61,10 +61,10 @@ class Backend_Designer_Code
 		}
 		$url[]='';
 		
-		Request::setDelimetr($templates['urldelimeter']);
+		Request::setDelimeter($templates['urldelimeter']);
 		Request::setRoot($templates['wwwroot']);
 		$url = Request::url($url , false);	
-		Request::setDelimetr($appCfg['urlDelimetr']);
+		Request::setDelimeter($appCfg['urlDelimeter']);
 		Request::setRoot($appCfg['wwwroot']);
 		return $url;
 	}
@@ -158,7 +158,7 @@ class Backend_Designer_Code
 				);
 			}
 			
-			Request::setDelimetr($appCfg['urlDelimetr']);
+			Request::setDelimeter($appCfg['urlDelimeter']);
 			Request::setRoot($appCfg['wwwroot']);
 		}
 		return $actions;

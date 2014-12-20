@@ -69,7 +69,7 @@ class Sysdocs_Generator
 		    $this->findParentClass($v);
 		  }
 		}
-		$this->output('Updating localisation...');
+		$this->output('Updating localization...');
 		$this->migrateLocale();
 
 		$this->output(number_format((microtime(true) - $time) , 3) .'s.');
@@ -440,7 +440,6 @@ class Sysdocs_Generator
      */
 	public function migrateRecords($objectClass , $version, $lang , $fields)
 	{
-
 		$list = Model::factory($objectClass)->getList(false,array('vers'=>$version));
 
 		$locModel = Model::factory('sysdocs_localization');
@@ -453,9 +452,14 @@ class Sysdocs_Generator
 	    	foreach ($fields as $fieldName)
 	    	{
     			$loc = $this->findLocale($objectClass , $fieldName , $lang , $item['hid']);
-    			if($loc === false){
-    				$loc = $item['description'];
-    			}
+
+    			if($loc === false)
+    			    continue;
+
+    			$loc = trim($loc);
+
+    			if(!strlen($loc))
+                    continue;
 
     			$newItems[] = array(
     				'field'=>$fieldName,
@@ -468,12 +472,15 @@ class Sysdocs_Generator
     			);
 	    	}
 
-	    	if(count($newItems) >  300){
+	    	if(count($newItems) >  500){
 	    	    if(!Model::factory('sysdocs_localization')->multiInsert($newItems)){
 	    	    	throw new Exception('Cannot save sysdocs_localization '.$lang);
 	    	    }
 	    	    $newItems = array();
 	    	}
+	    }
+	    if(count($newItems) && !Model::factory('sysdocs_localization')->multiInsert($newItems)){
+	    	throw new Exception('Cannot save sysdocs_localization '.$lang);
 	    }
 	}
 	/**

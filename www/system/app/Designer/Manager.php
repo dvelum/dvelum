@@ -67,7 +67,7 @@ class Designer_Manager
         ),
         array(
                         'tpl' => $templates['urldelimeter'],
-                        'value' => $this->_appConfig->get('urlDelimetr')
+                        'value' => $this->_appConfig->get('urlDelimeter')
         )
      );
   }

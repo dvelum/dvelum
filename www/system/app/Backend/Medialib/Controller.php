@@ -232,7 +232,7 @@ class Backend_Medialib_Controller extends Backend_Controller
     	Response::jsonSuccess(array('exists'=>false));
     	
       if($item['type'] == 'image')     
-        $icon = Model_Medialib::getImgPath($item['path'] , $item['ext'] , 'thumbnail' , true);     
+          $icon = Model_Medialib::getImgPath($item['path'] , $item['ext'] , 'thumbnail' , true).'?m='.date('ymdhis' , strtotime($item['modified']));       
       else     
         $icon = $this->_configMain->get('wwwroot') . 'i/unknown.png';
       

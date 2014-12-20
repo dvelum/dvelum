@@ -28,7 +28,7 @@ class Backend_Designer_Sub_Code extends Backend_Designer_Sub
         ) ,
         array(
             'tpl' => $templates['urldelimeter'] ,
-            'value' => $this->_configMain->get('urlDelimetr')
+            'value' => $this->_configMain->get('urlDelimeter')
         )
     );
 
@@ -55,7 +55,7 @@ class Backend_Designer_Sub_Code extends Backend_Designer_Sub
             ) ,
             array(
                     'tpl' => $templates['urldelimeter'] ,
-                    'value' => $this->_configMain->get('urlDelimetr')
+                    'value' => $this->_configMain->get('urlDelimeter')
             )
     );
     Ext_Code::setRunNamespace($projectCfg['runnamespace']);

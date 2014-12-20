@@ -600,12 +600,14 @@ class Backend_Orm_Controller extends Backend_Controller
     	$pimaryKey = Request::post('primary_key', 'string', 'id');
 
     	$connection = Request::post('connection', 'string', '');
+    	$slaveConnection = Request::post('slave_connection', 'string', '');
     	$readonly = Request::post('readonly', 'boolean', false);
     	$locked = Request::post('locked', 'boolean', false);
 
     	$usePrefix = Request::post('use_db_prefix', 'boolean', false);
     	$useAcl = Request::post('use_acl', 'boolean', false);
     	$acl =  Request::post('acl', 'string', false);
+
 
     	$reqStrings = array('name','title','table', 'engine','connection');
     	$errors = array();
@@ -645,6 +647,7 @@ class Backend_Orm_Controller extends Backend_Controller
     	$data['locked'] = $locked;
     	$data['primary_key'] = $pimaryKey;
     	$data['use_db_prefix'] = $usePrefix;
+    	$data['slave_connection'] = $slaveConnection;
 
     	$name = strtolower($name);
 

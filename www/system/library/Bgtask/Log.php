@@ -23,6 +23,6 @@ abstract class Bgtask_Log implements Log
 	 * Log
 	 * @param string $message
 	 */
-	abstract public function log($message);
+	public function log($message){}
 
 }

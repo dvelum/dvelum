@@ -160,12 +160,12 @@ class Designer_Project
 		else
 			return false;
 	}
-	
+
 	static public function isVisibleComponent($class)
-	{  
+	{
 	  if(in_array($class , self::$storeClasses , true) || $class=='Model' && strpos($class, 'Data_') !== false){
 	    return false;
-	  } 
+	  }
 	  return true;
 	}
 
@@ -482,6 +482,10 @@ class Designer_Project
 		{
 			$object = $v['data'];
 			$class = $object->getClass();
+
+			if($class === 'Object_Instance')
+				$class = $object->getObject()->getClass();
+
 			if(in_array($class , Designer_Project::$_containers , true) && $class !== 'Window' && $class!='Menu' && !Designer_Project::isWindowComponent($class))
 				$names[] = $object->getName();
 		}
@@ -495,5 +499,22 @@ class Designer_Project
 	public function getActionsFile()
 	{
 		return str_replace(array('./','//') , '/' , $this->actionjs);
+	}
+	/**
+	 * Create unique component id
+	 * @param string $prefix
+	 * @return string
+	 */
+	public function uniqueId($prefix)
+	{
+	  if(!$this->objectExists($prefix)){
+	    return $prefix;
+	  }
+	  
+	  $postfix = 1; 
+	  while ($this->objectExists($prefix.$postfix)){
+	    $postfix++;
+	  }
+	  return $prefix.$postfix;
 	}
 }

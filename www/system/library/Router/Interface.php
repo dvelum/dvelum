@@ -9,7 +9,7 @@ interface Router_Interface
   /**
    * Run action
    */
-  public function run();
+  public function route();
 }
 
 ?>

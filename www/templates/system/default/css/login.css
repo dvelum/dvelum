@@ -245,3 +245,8 @@ input[readonly], input[disabled] { background: #FCFCFC; border: 1px solid #DADAD
   line-height: 40px;
   text-shadow: 0px 1px 0px #7BE07B, 0px 2px 0px #75D175, 0px 3px 0px #6DC46D, 0px 4px 0px #66B766, 0px 5px 0px #5EA85E, 0px 6px 0px #4F934F, 0px 7px 0px #468246, 0px 8px 7px #366036;
 }
+
+fieldset label{
+	float:left;
+	padding: 5px 0 0 0;
+}

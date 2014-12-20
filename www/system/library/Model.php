@@ -34,6 +34,12 @@ class Model
     protected $_db;
 
     /**
+     * Slave DB connection
+     * @var Zend_Db_Adapter_Abstract
+     */
+    protected $_dbSlave;
+
+    /**
      * Db_Object config
      * @var Db_Object_Config
      */
@@ -135,7 +141,7 @@ class Model
     	$this->_name = strtolower($objectName);
     	$this->_cacheTime = static::$_hardCacheTime;
     	$this->_cache = static::$_dataCache;
-      $this->_dbManager = self::$_defaultDbManager;
+        $this->_dbManager = self::$_defaultDbManager;
 
     	try{
     	    $this->_objectConfig = Db_Object_Config::getInstance($this->_name);
@@ -145,6 +151,7 @@ class Model
 
     	$conName = $this->_objectConfig->get('connection');
     	$this->_db = $this->_dbManager->getDbConnection($conName);
+    	$this->_dbSlave = $this->_dbManager->getDbConnection($this->_objectConfig->get('slave_connection'));
 
     	if($this->_objectConfig->hasDbPrefix())
     	    $this->_dbPrefix = $this->_dbManager->getDbConfig($conName)->get('prefix');
@@ -220,12 +227,21 @@ class Model
     }
 
     /**
-     * Get Db connector
+     * Get Master Db connector
      * return Zend_Db_Adapter_Abstract
      */
     public function getDbConnection()
     {
     	return $this->_db;
+    }
+
+    /**
+     * Get Slave Db Connection
+     * @return Zend_Db_Adapter_Abstract
+     */
+    public function getSlaveDbConnection()
+    {
+    	return $this->_dbSlave;
     }
 
     /**
@@ -307,9 +323,9 @@ class Model
      */
     final public function getItem($id , $fields = '*')
     {
-    	$sql = $this->_db->select()->from($this->table() , $fields);
-    	$sql->where($this->_db->quoteIdentifier($this->getPrimaryKey()) . ' = '.intval($id));
-    	return $this->_db->fetchRow($sql);
+    	$sql = $this->_dbSlave->select()->from($this->table() , $fields);
+    	$sql->where($this->_dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' = '.intval($id));
+    	return $this->_dbSlave->fetchRow($sql);
     }
 
     /**
@@ -376,9 +392,9 @@ class Model
     	  $this->logError($eText);
     		throw new Exception($eText);
     	}
-    	$sql = $this->_db->select()->from($this->table() , $fields);
-    	$sql->where($this->_db->quoteIdentifier($fieldName).' = ?' , $value);
-    	return $this->_db->fetchRow($sql);
+    	$sql = $this->_dbSlave->select()->from($this->table() , $fields);
+    	$sql->where($this->_dbSlave->quoteIdentifier($fieldName).' = ?' , $value);
+    	return $this->_dbSlave->fetchRow($sql);
     }
 
     /**
@@ -401,10 +417,10 @@ class Model
 
         if($data === false)
         {
-        	$sql = $this->_db->select()
+        	$sql = $this->_dbSlave->select()
         				 ->from($this->table() , $fields)
-        				 ->where($this->_db->quoteIdentifier($this->getPrimaryKey()) .' IN('.self::listIntegers($ids).')');
-        	$data = $this->_db->fetchAll($sql);
+        				 ->where($this->_dbSlave->quoteIdentifier($this->getPrimaryKey()) .' IN('.self::listIntegers($ids).')');
+        	$data = $this->_dbSlave->fetchAll($sql);
 
         	if(!$data)
         	    $data = array();
@@ -556,7 +572,7 @@ class Model
 
     	if($data === false)
     	{
-    		$sql = $this->_db->select();
+    		$sql = $this->_dbSlave->select();
     		$sql->from($this->table() , array('count' => 'COUNT(*)'));
 
     		$this->queryAddFilters($sql , $filters);
@@ -564,7 +580,7 @@ class Model
     		if($query && strlen($query))
     			$this->_queryAddQuery($sql , $query);
 
-    		$data = $this->_db->fetchOne($sql);
+    		$data = $this->_dbSlave->fetchOne($sql);
 
     		if($useCache && $this->_cache)
     			$this->_cache->save($data , $cacheKey ,  self::$_hardCacheTime);
@@ -596,7 +612,7 @@ class Model
       if(is_array($filters) && !empty($filters))
         $filters = $this->_cleanFilters($filters);
 
-    	if($this->_db === Model::factory('User')->getDbConnection())
+    	if($this->_dbSlave === Model::factory('User')->getSlaveDbConnection())
     		return $this->_getListVcLocal($params , $filters , $query , $fields , $author, $lastEditor, $joins);
     	else
     		return $this->_getListVcRemote($params , $filters , $query , $fields , $author, $lastEditor, $joins);
@@ -625,7 +641,7 @@ class Model
 
     protected function _getListVcLocal($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
     {
-    	$sql = $this->_db->select()->from($this->table(), $fields);
+    	$sql = $this->_dbSlave->select()->from($this->table(), $fields);
 
     	if($filters)
     		$this->queryAddFilters($sql , $filters);
@@ -645,7 +661,7 @@ class Model
     	if(is_array($joins) && !empty($joins))
     		$this->_queryAddJoins($sql, $joins);
 
-    	return $this->_db->fetchAll($sql);
+    	return $this->_dbSlave->fetchAll($sql);
     }
 
     protected function _getListVcRemote($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
@@ -661,7 +677,7 @@ class Model
     				$fields[] = 'editor_id';
     	}
 
-    	$sql = $this->_db->select()->from($this->table(), $fields);
+    	$sql = $this->_dbSlave->select()->from($this->table(), $fields);
 
     	if($filters)
     		$this->queryAddFilters($sql , $filters);
@@ -675,7 +691,7 @@ class Model
     	if(is_array($joins) && !empty($joins))
     		$this->_queryAddJoins($sql, $joins);
 
-    	$data = $this->_db->fetchAll($sql);
+    	$data = $this->_dbSlave->fetchAll($sql);
 
     	if(!$author && !$lastEditor)
     		return $data;
@@ -742,7 +758,7 @@ class Model
 
     	if($data === false)
     	{
-    		$sql = $this->_db->select()->from($this->table() , $fields);
+    		$sql = $this->_dbSlave->select()->from($this->table() , $fields);
 
     		if(is_array($filters) && !empty($filters))
     		  $this->queryAddFilters($sql ,$this->_cleanFilters($filters));
@@ -753,7 +769,7 @@ class Model
     		if($query && strlen($query))
     			$this->_queryAddQuery($sql , $query);
 
-    		$data = $this->_db->fetchAll($sql);
+    		$data = $this->_dbSlave->fetchAll($sql);
 
     		if(!$data)
     			$data = array();
@@ -849,11 +865,11 @@ class Model
      */
     public function checkUnique($recordId , $fieldName , $fieldValue)
     {
-    	return !(boolean) $this->_db->fetchOne(
-    			$this->_db->select()
+    	return !(boolean) $this->_dbSlave->fetchOne(
+    			$this->_dbSlave->select()
     					  ->from($this->table() , array('count' => 'COUNT(*)'))
-    					  ->where($this->_db->quoteIdentifier($this->getPrimaryKey()) .' != ?' , $recordId)
-    					  ->where($this->_db->quoteIdentifier($fieldName) . ' =?' , $fieldValue)
+    					  ->where($this->_dbSlave->quoteIdentifier($this->getPrimaryKey()) .' != ?' , $recordId)
+    					  ->where($this->_dbSlave->quoteIdentifier($fieldName) . ' =?' , $fieldValue)
     	);
     }
     /**
@@ -883,6 +899,7 @@ class Model
         $conName = $this->_objectConfig->get('connection');
         $this->_dbManager =  $manager;
         $this->_db = $this->_dbManager->getDbConnection($conName);
+        $this->_dbSlave = $this->_dbManager->getDbConnection($this->_objectConfig->get('slave_connection'));
         $this->refreshTableInfo();
     }
 

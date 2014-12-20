@@ -2,7 +2,7 @@
 /*
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * Copyright (C) 2011-2012  Kirill A Egorov
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -43,7 +43,7 @@ class Request
    {
        if(!isset(self::$instance))
            self::$instance = new self();
-       
+
        return self::$instance;
    }
 
@@ -56,7 +56,7 @@ class Request
 	 * @param string $delimeter
 	 * @return void
 	 */
-   static public function setDelimetr($delimeter)
+   static public function setDelimeter($delimeter)
    {
         self::$_delimiter = $delimeter;
    }
@@ -85,7 +85,7 @@ class Request
     {
         if(!isset($_SERVER['REQUEST_URI']))
             $_SERVER['REQUEST_URI'] = '/';
-        
+
         $this->_parseUri($_SERVER['REQUEST_URI']);
         $this->_findPaths();
     }
@@ -94,16 +94,16 @@ class Request
     {
         if(strpos($string , '?'))
             $string = substr($string , 0 , strpos($string , '?'));
-        
+
         $string = str_ireplace(array(
-                '.html' , 
-                '.php' , 
-                '.xml' , 
-                '.phtml' , 
+                '.html' ,
+                '.php' ,
+                '.xml' ,
+                '.phtml' ,
                 '.json'
         ) , '' , $string);
-        
-        $this->_uri = preg_replace("/[^A-Za-z0-9_\.\-\/]/i" , '' , $string);     
+
+        $this->_uri = preg_replace("/[^A-Za-z0-9_\.\-\/]/i" , '' , $string);
     }
 
   /**
@@ -134,7 +134,7 @@ class Request
      $uri = $this->_uri;
 
      $rootLen = strlen(self::$_wwwRoot);
-       
+
 	   if(substr($uri, 0 , $rootLen) === self::$_wwwRoot)
 	     $uri = substr($uri, $rootLen);
 
@@ -151,28 +151,28 @@ class Request
 	 * @return mixed string / false
 	 */
    public function getPart($index)
-   { 
+   {
        if(isset($this->_path[$index]) && !empty($this->_path[$index]))
            return $this->_path[$index];
        else
            return false;
    }
 
-  /**
-	 * Build system request URL
-	 * The method creates a string based on the defined parameter delimiter and
-	 * the parameter values array
-	 * @param array $paths — request parameters array
-	 * @return string — add postfix file extension 
-	 */
-   static public function url(array $paths , $useExstension = true)
-   {
-     $str = self::$_wwwRoot . implode(self::$_delimiter , array_map('strtolower' , $paths));
-     
-     if($useExstension)
-         $str .= self::$_extension;
-     
-     return $str;
+    /**
+     * Build system request URL
+     * The method creates a string based on the defined parameter delimiter and
+     * the parameter values array
+     * @param array $paths — request parameters array
+     * @return string — add postfix file extension
+     */
+    static public function url(array $paths , $useExstension = true)
+    {
+        $str = self::$_wwwRoot . implode(self::$_delimiter , $paths);
+
+        if($useExstension)
+            $str .= self::$_extension;
+
+        return strtolower($str);
     }
 
   /**
@@ -183,17 +183,17 @@ class Request
    {
       if(!isset($_FILES) || empty($_FILES))
           return array();
-      
+
       $result = array();
-      
+
       if(empty($_FILES))
           return $result;
-      
+
       foreach($_FILES as $key => $data)
       {
           if(!isset($data['name']))
               continue;
-          
+
           if(!is_array($data['name']))
           {
               $result[$key] = $data;
@@ -203,10 +203,10 @@ class Request
               foreach($data['name'] as $subkey => $subval)
               {
                   $result[$key][$subkey] = array(
-                          'name' => $data['name'][$subkey] , 
-                          'type' => $data['type'][$subkey] , 
-                          'tmp_name' => $data['tmp_name'][$subkey] , 
-                          'error' => $data['error'][$subkey] , 
+                          'name' => $data['name'][$subkey] ,
+                          'type' => $data['type'][$subkey] ,
+                          'tmp_name' => $data['tmp_name'][$subkey] ,
+                          'error' => $data['error'][$subkey] ,
                           'size' => $data['size'][$subkey]
                   );
               }
@@ -228,7 +228,7 @@ class Request
    {
         if(isset(self::$_updatedGet[$name]))
             return Filter::filterValue($type , self::$_updatedGet[$name]);
-        
+
         if(!isset($_GET[$name]))
             return $default;
         else
@@ -248,7 +248,7 @@ class Request
    {
         if(isset(self::$_updatedPost[$name]))
             return Filter::filterValue($type , self::$_updatedPost[$name]);
-        
+
         if(!isset($_POST[$name]))
             return $default;
         else
@@ -258,11 +258,19 @@ class Request
   /**
 	 * Redefine $_POST parameter
 	 * @param string $name — parameter name
-	 * @param mixed $value — parameter value 
+	 * @param mixed $value — parameter value
 	 */
    static public function updatePost($name , $value)
    {
        self::$_updatedPost[$name] = $value;
+   }
+
+   /**
+    * Set POST data
+    * @param array $data
+    */
+   static public function setPost(array $data){
+   	self::$_updatedPost = $data;
    }
 
   /**
@@ -318,7 +326,7 @@ class Request
    {
         if(!isset($_SERVER[$name]))
             return $default;
-        
+
         return Filter::filterValue($type , $_SERVER[$name]);
    }
 
@@ -330,10 +338,10 @@ class Request
    {
         if(empty($_POST) && empty(self::$_updatedPost))
             return false;
-        
+
         return true;
    }
-   
+
    /**
     * Get application base url
     * @return string
@@ -343,10 +351,10 @@ class Request
     	$protocol = 'http://';
     	if(strpos(strtolower($_SERVER['SERVER_PROTOCOL']), 'https')!==false)
     	    $protocol = 'https://';
-    	
+
     	return $protocol.$_SERVER['HTTP_HOST'].self::$_wwwRoot;
    }
-   
+
    /**
     * Get web toot path
     * @return string
@@ -355,7 +363,7 @@ class Request
    {
       return self::$_wwwRoot;
    }
-   
+
    /**
     * Get data from Ext Grid Filters Feature
     * @param string $container
@@ -368,46 +376,46 @@ class Request
      }else{
        $filter = self::get($container, 'array', array());
      }
-     
+
      if(empty($filter))
        return array();
-     
+
      $result = array();
-         
-     
+
+
      foreach ($filter as $data)
      {
        $type = $data['data']['type'];
        $value = $data['data']['value'];
        $field = $data['field'];
-       
+
        switch($type)
        {
          case 'string' :    $result[] = new Db_Select_Filter($field , '%'.$value.'%' , Db_Select_Filter::LIKE);
                             break;
-                            
-                          
+
+
          case 'list' :      if(is_array($value))
                             {
                                 $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::IN);
                                 break;
                             }
-                        
+
                             if(strpos($value, ',')!==false)
                             {
                                 $list = explode(',' , $value);
                                 $result[] = new Db_Select_Filter($field , $list , Db_Select_Filter::IN);
                                 break;
-                            }        
-                                
+                            }
+
                             $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::EQ);
                             break;
-                          
-                            
+
+
           case 'boolean' :  $result[] = new Db_Select_Filter($field , Filter::filterValue(Filter::FILTER_BOOLEAN, $value), Db_Select_Filter::EQ);
                             break;
-                          
-                          
+
+
           case 'numeric' :  switch ($data['data']['comparison'])
                             {
                             	case 'ne' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::NOT);
@@ -420,7 +428,7 @@ class Request
                             	  break;
                             }
                             break;
-                          
+
           case 'datetime':
                             $value = date('Y-m-d H:i:s',strtotime($value));
                             switch ($data['data']['comparison'])
@@ -436,7 +444,7 @@ class Request
                             }
                             break;
           case 'date' :
-            
+
                             $value = date('Y-m-d',strtotime($value));
                             switch ($data['data']['comparison'])
                             {
@@ -448,11 +456,11 @@ class Request
                                  break;
                                case 'gt' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::GT);
                                  break;
-                            }                          
-                            break;                     
-       }       
-     }     
+                            }
+                            break;
+       }
+     }
      return $result;
    }
-} 
-   
+}
+

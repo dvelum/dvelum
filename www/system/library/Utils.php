@@ -13,7 +13,7 @@
  */
 /**
  * System Utils class Do not include into packages!
- * 
+ *
  * @author Kirill A Egorov
  */
 class Utils
@@ -22,8 +22,8 @@ class Utils
 
   /**
    * Define system hash salt
-   * 
-   * @param string $salt          
+   *
+   * @param string $salt
    */
   static public function setSalt($salt)
   {
@@ -32,33 +32,33 @@ class Utils
 
   /**
    * Create an array from another array using field as key
-   * 
-   * @param string $key          
-   * @param array $data          
+   *
+   * @param string $key
+   * @param array $data
    * @throws Exception
    * @return array
    */
   static public function rekey($key , array $data)
   {
     $result = array();
-    
+
     foreach($data as $k => $v)
     {
       if(! isset($v[$key]))
         throw new Exception('Invalid key');
-      
+
       $result[$v[$key]] = $v;
     }
-    
+
     return $result;
   }
 
   /**
    * Collect data from resultset
-   * 
-   * @param string $keyField          
-   * @param string $valueField          
-   * @param array $data          
+   *
+   * @param string $keyField
+   * @param string $valueField
+   * @param array $data
    * @return array
    */
   static public function collectData($keyField , $valueField , $data)
@@ -75,39 +75,39 @@ class Utils
 
   /**
    * Fetch array column
-   * 
-   * @param string $key          
-   * @param array $data          
+   *
+   * @param string $key
+   * @param array $data
    * @throws Exception
    * @return array
    */
   static public function fetchCol($key , array $data)
   {
     $result = array();
-    
+
     if(empty($data))
       return array();
-    
+
     foreach($data as $v)
       $result[] = $v[$key];
-    
+
     return $result;
   }
 
   /**
    * Group array by column, used for db results sorting
-   * 
-   * @param string $key          
-   * @param array $data          
+   *
+   * @param string $key
+   * @param array $data
    * @return array
    */
   static public function groupByKey($key , array $data)
   {
     $result = array();
-    
+
     if(empty($data))
       return array();
-    
+
     foreach($data as $v)
     {
       if(! isset($v[$key]))
@@ -119,8 +119,8 @@ class Utils
 
   /**
    * Get hash for the string
-   * 
-   * @param string $string          
+   *
+   * @param string $string
    * @throws Exception
    * @return string
    */
@@ -131,7 +131,7 @@ class Utils
 
   /**
    * Scan files and create class map for autoloader
-   * 
+   *
    * @param array $startPaths
    *          - paths for scan (relative paths)
    * @param string $mapFile
@@ -149,8 +149,8 @@ class Utils
 
   /**
    * Format file size in user friendly
-   * 
-   * @param integer $size          
+   *
+   * @param integer $size
    * @return string
    */
   static public function formatFileSize($size)
@@ -160,8 +160,8 @@ class Utils
 
   /**
    * Format time
-   * 
-   * @param integer $difference          
+   *
+   * @param integer $difference
    * @return string
    */
   static public function formatTime($difference)
@@ -176,9 +176,9 @@ class Utils
    *
    * Please read the section on Booleans for more information.
    * Use the === operator for testing the return value of this function.
-   * 
-   * @param string $file          
-   * @param string $string          
+   *
+   * @param string $file
+   * @param string $string
    * @return integer / false
    */
   static public function exportArray($file , array $data)
@@ -193,9 +193,9 @@ class Utils
    *
    * Please read the section on Booleans for more information.
    * Use the === operator for testing the return value of this function.
-   * 
-   * @param string $file          
-   * @param string $string          
+   *
+   * @param string $file
+   * @param string $string
    * @return integer / false
    */
   static public function exportCode($file , $string)
@@ -205,8 +205,8 @@ class Utils
 
   /**
    * Create class name from filepath
-   * 
-   * @param string $path          
+   *
+   * @param string $path
    * @return string or false
    */
   static public function classFromPath($path)
@@ -216,15 +216,15 @@ class Utils
 
   /**
    * Create path for cache file
-   * 
-   * @param string $basePath          
-   * @param string $fileName          
+   *
+   * @param string $basePath
+   * @param string $fileName
    * @return string
    */
   static public function createCachePath($basePath , $fileName)
   {
     $extension = File::getExt($fileName);
-    
+
     $str = md5($fileName);
     $len = strlen($str);
     $path = '';
@@ -246,17 +246,17 @@ class Utils
       $count++;
     }
     $path = $basePath . $path;
-    
+
     if(! is_dir($path))
       mkdir($path , 0755 , true);
-    
+
     return $path . $str . $extension;
   }
 
   /**
    * Convert files list into Tree structure
-   * 
-   * @param array $data          
+   *
+   * @param array $data
    * @return Tree
    */
   static public function fileListToTree(array $data)
@@ -266,7 +266,7 @@ class Utils
 
   /**
    * Get random string
-   * 
+   *
    * @param integer $length
    *          - string length
    * @return string
@@ -278,7 +278,7 @@ class Utils
 
   /**
    * Check if operation system is windows
-   * 
+   *
    * @return boolean
    */
   static function isWindows()
@@ -291,13 +291,13 @@ class Utils
 
   /**
    * Get user IP address
-   * 
+   *
    * @return string
    */
   static public function getClientIp()
   {
     $ip = 'Unknown';
-    
+
     if(isset($_SERVER['HTTP_X_REAL_IP']))
     {
       $ip = $_SERVER['HTTP_X_REAL_IP'];
@@ -332,5 +332,28 @@ class Utils
       $ip = $ip_arr[0];
     }
     return $ip;
+  }
+  /**
+   * Sort array list by sub array field
+   * Faster then uasort
+   * @param array $data
+   * @param string $field
+   * @return array
+   */
+  static public function sortByField(array $data , $field)
+  {
+     foreach ($data as $id=>$item){
+      	 $index[$id] = $item[$field];
+     }
+
+  	 asort($index);
+
+  	 $result = array();
+
+  	 foreach ($index as $id => $value){
+  	 	$result[] = $data[$id];
+  	 }
+
+  	 return $result;
   }
 }

@@ -41,7 +41,7 @@ class Ext_Component_Filter extends Ext_Object
 			$field = $this->_config->storeField;
 
 		if($this->_config->isValidProperty('store') && strlen($this->_config->store))
-			$store = Ext_Code::appendRunNamespace($this->_config->store);
+			$store = $this->_config->store;
 
 		if($this->_config->isValidProperty('autoFilter') && intval($this->_config->autoFilter))
 			$autoFilter = true;
@@ -50,8 +50,6 @@ class Ext_Component_Filter extends Ext_Object
 
 		if(strlen($store) && strlen($field))
 		{
-			$storeName = Ext_Code::appendRunNamespace($store);
-
 			$listener = 'function(fld){
 			';
 

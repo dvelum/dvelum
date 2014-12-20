@@ -118,8 +118,10 @@ class Backend_Designer_Controller extends Backend_Controller
 		    $dbConfigs[]= array('id'=>$k , 'title'=>$this->_lang->get($v['title']));
 		}
 		
+		$componentTemplates = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'designer_templates.php')->__toArray();
 		$this->_resource->addInlineJs('
-		      var dbConfigsList = '.json_encode($dbConfigs).';     
+		      var dbConfigsList = '.json_encode($dbConfigs).';    
+		      var componentTemplates = ' . json_encode(array_values($componentTemplates)).';  
 		');
 		
 		$count = 4;

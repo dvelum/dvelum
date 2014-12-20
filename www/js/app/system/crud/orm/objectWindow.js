@@ -19,7 +19,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 	    modal: false,
 	    layout:'fit',
 	    width: app.checkWidth(700),
-	    height:app.checkHeight(500),
+	    height:app.checkHeight(520),
 	    closeAction: 'destroy',
 	}, config || {});
 
@@ -601,7 +601,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			    }else{
 				form.findField('acl').hide();
 			    }
-			    
+
 			},
 			scope:this
 		    }
@@ -752,7 +752,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
                 		}
                 	    },this);
                 	    break;
-                	    
+
 	case 'memory':
                 	    this.dataStore.each(function(rec){
                 		var type = rec.get('type');
@@ -762,14 +762,14 @@ Ext.define('app.crud.orm.ObjectWindow', {
                 		    xFields.push(rec.get('name'));
                 		}
                 	    },this);
-                
+
                 	    this.indexStore.each(function(rec){
                 		if (rec.get('fulltext')){
                 		    xIndexes.push(rec.get('name'));
                 		}
                 	    },this);
                 	    break;
-                	    
+
 	default:   	    return;
 			    break;
 	}

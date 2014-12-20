@@ -7,26 +7,26 @@ class Model_Group extends Model
 	 */
 	public function getGroups()
 	{
-		$cache = self::$_dataCache;  
+		$cache = self::$_dataCache;
 
 		/*
-		 * Check cache 
+		 * Check cache
 		 */
 		if($cache && $data = $cache->load('groups_list'))
 			return $data;
-		
+
 		$data = array();
-		$sql = $this->_db->select()->from($this->table() , array('id' , 'title'));
-		$data = $this->_db->fetchAll($sql);
+		$sql = $this->_dbSlave->select()->from($this->table() , array('id' , 'title'));
+		$data = $this->_dbSlave->fetchAll($sql);
 		if(!empty($data))
-			$data = Utils::collectData('id', 'title', $data);		
+			$data = Utils::collectData('id', 'title', $data);
 		/*
 		 * Store cache
-		 */	
+		 */
 		if($cache)
 			$cache->save($data, 'groups_list');
 
-		return $data;	
+		return $data;
 	}
 	/**
 	 * Add users group
@@ -37,17 +37,17 @@ class Model_Group extends Model
 	{
 		$obj = new Db_Object($this->_name);
 		$obj->set('title', $title);
-		
+
 		if(!$obj->save())
 			return false;
-			
-		$cache = self::$_dataCache;  
+
+		$cache = self::$_dataCache;
 		/**
 		 * Invalidate cache
-		 */	
+		 */
 		if($cache)
 			$cache->remove('groups_list');
-		
+
 		return $obj->getId();
 	}
 	/**
@@ -58,17 +58,17 @@ class Model_Group extends Model
 	public function removeGroup($id)
 	{
 		$obj = new Db_Object($this->_name, $id);
-        
+
 		if(!$obj->delete())
 			return false;
-		
-		$cache = self::$_dataCache;  
+
+		$cache = self::$_dataCache;
 		/**
 		 * Invalidate cache
-		 */	
+		 */
 		if($cache)
 			$cache->remove('groups_list');
-		
-		return true;	
+
+		return true;
 	}
 }

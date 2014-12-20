@@ -45,30 +45,31 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 
 				$object->addListener('columnresize','{
 							 fn:function( ct, column, width,eOpts){
-								frApp.app.onGridColumnResize("'.$name.'", ct, column, width, eOpts);
+								app.application.onGridColumnResize("'.$name.'", ct, column, width, eOpts);
 							 }
 				}');
 
 				$object->addListener('columnmove','{
 							fn:function(ct, column, fromIdx, toIdx, eOpts){
-								frApp.app.onGridColumnMove("'.$name.'", ct, column, fromIdx, toIdx, eOpts);
+								app.application.onGridColumnMove("'.$name.'", ct, column, fromIdx, toIdx, eOpts);
 							}
 				}');
 			}
 		}
 
-		$key = 'vf_'.Designer_Factory::getProjectCacheKey($this->_session->get('file'));
+		$dManager = new Dictionary_Manager();
+		$key = 'vf_'.md5($dManager->getDataHash().serialize($project));
 
 		$templates = $designerConfig->get('templates');
     	$replaces = array(
     			array('tpl'=>$templates['wwwroot'],'value'=>$this->_configMain->get('wwwroot')),
     			array('tpl'=>$templates['adminpath'],'value'=>$this->_configMain->get('adminPath')),
-    			array('tpl'=>$templates['urldelimeter'],'value'=>$this->_configMain->get('urlDelimetr')),
+    			array('tpl'=>$templates['urldelimeter'],'value'=>$this->_configMain->get('urlDelimeter')),
     	);
 
-    	$includes = Designer_Factory::getProjectIncludes($key, $project , false , $replaces);
+    	$includes = Designer_Factory::getProjectIncludes($key, $project , true , $replaces);
 
-		if(!empty($includes))
+	   if(!empty($includes))
 		{
 			foreach ($includes as $file)
 			{
@@ -96,8 +97,9 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$basePaths[] = 'designer';
 		$basePaths[] = 'sub';
 
+		//' . $project->getCode($replaces) . '
 		$initCode = '
-		app.delimeter = "'.$this->_configMain['urlDelimetr'].'";
+		app.delimeter = "'.$this->_configMain['urlDelimeter'].'";
 		app.admin = "' . $this->_configMain->get('wwwroot') . $this->_configMain->get('adminPath').'";
 		app.wwwRoot = "' . $this->_configMain->get('wwwroot') . '";
 
@@ -108,14 +110,9 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		var canPublish = true;
 		var canEdit = true;
 
-		' . $project->getCode($replaces) . '
-
 		Ext.onReady(function(){
-    		Ext.create("frApp.Application",{
-    			listeners:{
-    				"launch":{
-    					fn:function(){
-						';
+		    app.application.mainUrl = app.createUrl(designerUrlPaths);
+            ';
 
 		if(!empty($names))
 		{
@@ -123,20 +120,20 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 			{
 				if($project->getObject($name)->isExtendedComponent()){
 
-				    if($project->getObject($name)->getConfig()->defineOnly)
-				      continue;
+					if($project->getObject($name)->getConfig()->defineOnly)
+						continue;
 
 					$initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
 				}
-			    $initCode.='frApp.viewFrame.add('.Ext_Code::appendRunNamespace($name).');';
+				$initCode.='
+			        app.viewFrame.add('.Ext_Code::appendRunNamespace($name).');
+			    ';
 			}
 		}
-		$initCode.='
-    					}
-    				}
-    			}
-    		});
-		});';
+
+	   $initCode.='
+        	 app.application.fireEvent("projectLoaded");
+	   });';
 
 		$res->addInlineJs($initCode);
 

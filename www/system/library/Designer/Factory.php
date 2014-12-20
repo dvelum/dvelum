@@ -81,9 +81,16 @@ class Designer_Factory
 		if(!empty($names))
 		{
 			foreach ($names as $name)
+			{
 			  if($project->getObject($name)->isExtendedComponent())
+			  {
+			    if($project->getObject($name)->getConfig()->defineOnly)
+			        continue;
+			    
 			    $initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
-
+			  }
+			}
+			
 			if($renderTo)
 			{
 			  $backofficeContainer = 'app_'.$renderTo;
@@ -104,7 +111,9 @@ class Designer_Factory
 			}
 		}
 
-		$initCode.='});';
+		$initCode.='
+		              app.application.fireEvent("projectLoaded");
+	           });';
 
 		$resource = Resource::getInstance();
 

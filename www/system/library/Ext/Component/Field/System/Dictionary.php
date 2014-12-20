@@ -28,7 +28,12 @@ class Ext_Component_Field_System_Dictionary extends Ext_Component_Field
 			    	$allowBlank = true;
 			    }
 
-				$data = Dictionary::getInstance($this->dictionary)->__toJs($this->_config->showAll , $allowBlank);
+				if($this->_config->isValidProperty('showAll') && !empty($this->_config->showAllText)){
+			    	$allText = $this->_config->showAllText;
+			    }else{
+			        $allText = false;
+			    }			    
+				$data = Dictionary::getInstance($this->dictionary)->__toJs($this->_config->showAll , $allowBlank , $allText);
 
 				if(strlen($data))
 				{

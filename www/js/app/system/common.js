@@ -597,14 +597,29 @@ Ext.Ajax.on('beforerequest', function(connection, options) {
  * Adds support for CSRF protection token to ExtJS' Ext.form.Basic actions
  */
 (function() {
-    var originalHide = Ext.form.Basic.prototype.doAction;
-
     Ext.override(Ext.form.Basic, {
 	doAction: function(action, options){
 	    app.applyCSRFToken(options);
 	    //call the original hide function
-	    originalHide.apply(this, arguments);
-
+	    this.callParent(arguments);
+	}
+    });
+})();
+/*
+ * Adds support for CSRF protection token to ExtJS' Ext.form.Basic fileupload actions
+ */
+(function() {
+    Ext.override(Ext.data.Connection, {
+	 upload: function(form, url, params, options) {
+	     var token = app.getCSRFToken();
+	     if (token !== null) {
+		  if(params && params.length){
+		      params +='&xscrftoken=' + token;
+		  }else{
+		      params ='?xscrftoken=' + token;
+		  }
+	     }
+	    this.callParent(arguments);
 	}
     });
 })();

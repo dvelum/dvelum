@@ -43,6 +43,12 @@ class Db_Object
     protected $_errors = array();
 
     /**
+     * Insert ID
+     * @var integer
+     */
+    protected $_insertId = false;
+
+    /**
      * Access Control List Adapter
      * @var Db_Object_Acl
      */
@@ -207,7 +213,7 @@ class Db_Object
     }
 
     /**
-     * Set the object identifier
+     * Set the object identifier (existing DB ID)
      * @param integer $id
      */
     public function setId($id)
@@ -582,9 +588,9 @@ class Db_Object
     			self::$_log->log($text);
     		return false;
     	}
-    	  	
+
     	$values = $this->validateUniqueValues();
-    	
+
     	if(!empty($values))
     	{
   	        foreach($values as $k => $v)
@@ -592,10 +598,10 @@ class Db_Object
   	            $text = 'The Field value should be unique '.$k . ':' . $v;
   	            $this->_errors[] = $text;
   	        }
-    	        
+
     	    if(self::$_log)
     	        self::$_log->log($this->getName() . ' ' . implode(', ' , $this->_errors));
-    	    
+
     	    return false;
     	}
 
@@ -911,8 +917,8 @@ class Db_Object
     	}
     	$this->published = true;
 
-    	if($this->getVersion() == 1 || empty($object->date_published))
-    		$this->set('date_published' , date('Y-m-d H:i:s'));
+    	//if($this->getVersion() == 1 || empty($object->date_published))
+    	//	$this->set('date_published' , date('Y-m-d H:i:s'));
 
     	$this->editor_id = User::getInstance()->id;
     	$this->published_version = $this->getVersion();
@@ -1026,5 +1032,21 @@ class Db_Object
     public function getAcl()
     {
         return $this->_acl;
+    }
+    /**
+     * Set insert id for object (Should not exist in the database)
+     * @param int $id
+     */
+    public function setInsertId($id)
+    {
+    	$this->_insertId = $id;
+    }
+    /**
+     * Get insert ID
+     * @return integer
+     */
+    public function getInssertId()
+    {
+    	return $this->_insertId;
     }
 }

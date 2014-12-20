@@ -12,7 +12,7 @@ class Model_Vc extends Model
        $newVersion = ($this->getLastVersion($object->getName(),$object->getId())+ 1);
        $newData = $object->getData();
        $newData['id'] = $object->getId();
-  
+
        try{
                $vObject = new Db_Object('vc');
                $vObject->set('date' , date('Y-m-d'));
@@ -22,14 +22,14 @@ class Model_Vc extends Model
                $vObject->set('record_id' , $object->getId());
                $vObject->set('object_name' , $object->getName());
                $vObject->set('date' , date('Y-m-d H:i:s'));
-               
+
                $store = $this->_getObjectsStore();
 
                if($vObject->save())
                    return $newVersion;
-             
+
                return false;
-               
+
        } catch (Exception $e){
               return false;
        }
@@ -44,32 +44,32 @@ class Model_Vc extends Model
     {
             if(!is_array($record_id))
             {
-               
-                $sql = $this->_db->select()
+
+                $sql = $this->_dbSlave->select()
                                  ->from(
-                                     $this->table() , 
+                                     $this->table() ,
                                      array('max_version'=>'MAX(version)')
                                   )
                                  ->where('record_id =?' , $record_id)
-                                 ->where('object_name =?', $objectName);     
-                 return (integer) $this->_db->fetchOne($sql);  
-                                  
+                                 ->where('object_name =?', $objectName);
+                 return (integer) $this->_dbSlave->fetchOne($sql);
+
             } else {
-                 $sql = $this->_db->select()
+                 $sql = $this->_dbSlave->select()
                                  ->from($this->table() , array('max_version'=>'MAX(version)' ,'rec'=>'record_id'))
                                  ->where('`record_id` IN(?)' , $record_id)
                                  ->where('`object_name` =?', $objectName)
                                  ->group('record_id');
-                                    
-                 $revs = $this->_db->fetchAll($sql);    
-                         
+
+                 $revs = $this->_dbSlave->fetchAll($sql);
+
                  if(empty($revs))
                      return array();
-        
-                 $data = array();  
+
+                 $data = array();
                  foreach ($revs as $k=>$v)
-                       $data[$v['rec']] = $v['max_version'];     
-                   
+                       $data[$v['rec']] = $v['max_version'];
+
                  return $data;
             }
     }
@@ -94,13 +94,13 @@ class Model_Vc extends Model
      */
     public function getData($objectName , $recordId, $version)
     {
-         $sql = $this->_db->select()
+         $sql = $this->_dbSlave->select()
                           ->from($this->table() , array('data'))
                           ->where('object_name = ?', $objectName)
                           ->where('record_id =?' , $recordId)
                           ->where('version = ?' , $version);
-                                      
-         $data = $this->_db->fetchOne($sql);
+
+         $data = $this->_dbSlave->fetchOne($sql);
 
          if(!empty($data))
              return unserialize(base64_decode($data));
@@ -114,11 +114,11 @@ class Model_Vc extends Model
      */
     public function removeItemVc($object , $recordId)
     {
-    	$select = $this->_db->select()
+    	$select = $this->_dbSlave->select()
     						->from($this->table(), 'id')
-    						->where('`object_name` = ?', $this->_db->quote($object))
+    						->where('`object_name` = ?', $this->_dbSlave->quote($object))
     						->where('`record_id` = ?', $recordId);
-    	$vcIds = $this->_db->fetchCol($select);
+    	$vcIds = $this->_dbSlave->fetchCol($select);
     	$store = $this->_getObjectsStore();
         $store->deleteObjects($this->_name, $vcIds);
     }

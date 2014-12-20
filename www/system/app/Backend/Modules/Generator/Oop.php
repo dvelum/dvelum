@@ -2,7 +2,7 @@
 class Backend_Modules_Generator_Oop
 {
   public $tabTypes = array('Component_Field_System_Medialibhtml' , 'Component_Field_System_Related', 'Component_Field_System_Objectslist');
-  
+
   /**
    * Create controller file
    * @param string $dir - controller dirrectory
@@ -18,33 +18,33 @@ class Backend_Modules_Generator_Oop
           if(!@mkdir($dir , 0777 , true))
               throw new Exception($lang->CANT_WRITE_FS . ' ' . $dir);
       }
-       
+
       if(!@file_put_contents($dir . DIRECTORY_SEPARATOR . 'Controller.php' ,  $content))
           throw new Exception('Cant create Controller');
   }
-  
-  
+
+
   public function createVcModule($object , $projectFile , $actionFile)
   {
       $lang = Lang::lang();
-  
+
       //prepare class name
       $name = Utils_String::formatClassName($object);
-  
+
       $jsName = str_replace('_','', $name);
       $runNamespace = 'app'.$jsName.'Run';
       $classNamespace = 'app'.$jsName.'Classes';
-  
+
       $objectConfig = Db_Object_Config::getInstance($object);
       $primaryKey = $objectConfig->getPrimaryKey();
       $appConfig = Registry::get('main' , 'config');
       $designerConfig = Config::factory(Config::File_Array , $appConfig->get('configs') . 'designer.php');
-  
+
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
       $objectFields = array();
       $searchFields = array();
       $linkedObjects = array();
-  
+
       /*
        * Skip text fields
       */
@@ -53,52 +53,52 @@ class Backend_Modules_Generator_Oop
           if($objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key)){
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
-  
+
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
-  
+
           $objectFields[] = $key;
           if(isset($item['is_search']) && $item['is_search'])
               $searchFields[] = $key;
       }
-  
+
       $dataFields = array();
       foreach($objectConfig->getFieldsConfig(true) as $key => $item)
       {
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
-  
+
           $dataFields[] = $key;
       }
-  
+
       array_unshift($objectFields , $objectConfig->getPrimaryKey());
-  
+
       $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name .
       '_Controller extends Backend_Controller_Crud_Vc{' . "\n" .
       '	protected $_listFields = array("' . implode('","' , $dataFields) . '");' . "\n" .
       '  protected $_canViewObjects = array("' . implode('","' , $linkedObjects) . '");' . "\n" .
       '}	';
-  
+
       /*
        * Create controller
       */
       $controllerDir = $appConfig->get('backend_controllers') . str_replace('_' , '/' , $name);
       $this->_createControllerFile($controllerDir , $controllerContent);
       @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
-  
-  
+
+
       /*
        * Designer project
       */
       $project = new Designer_Project();
       $project->namespace = $classNamespace;
       $project->runnamespace = $runNamespace;
-  
+
       /*
        * Project events
       */
       $eventManager = $project->getEventManager();
-  
+
       /*
        * Data Storage
       */
@@ -112,46 +112,46 @@ class Backend_Modules_Generator_Oop
           Ext_Factory::object('Data_Field',array('name' => 'user','type' => 'string')),
           Ext_Factory::object('Data_Field',array('name' => 'updater','type' => 'string')),
       );
-  
+
       $storeFields = array_merge($storeFields , Backend_Designer_Import::checkImportORMFields($object ,  $dataFields));
-  
+
       $urlTemplates = $designerConfig->get('templates');
-      Request::setDelimetr($urlTemplates['urldelimeter']);
-  
+      Request::setDelimeter($urlTemplates['urldelimeter']);
+
       $controllerUrl = Request::url(array( $urlTemplates['adminpath'] , $object , '') , false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , 'list'));
-       
-      Request::setDelimetr($appConfig->get('urlDelimetr'));
-  
+
+      Request::setDelimeter($appConfig->get('urlDelimeter'));
+
       $dataStore = Ext_Factory::object('Data_Store');
       $dataStore->setName('dataStore');
       $dataStore->addFields($storeFields);
-  
+
       $dataStore->autoLoad = true;
-  
+
       $dataProxy = Ext_Factory::object('Data_Proxy_Ajax');
       $dataProxy->type = 'ajax';
-  
+
       $dataReader = Ext_Factory::object('Data_Reader_Json');
       $dataReader->root = 'data';
       $dataReader->totalProperty = 'count';
       $dataReader->idProperty = $primaryKey;
       $dataReader->type = 'json';
-  
+
       $dataProxy->reader = $dataReader;
       $dataProxy->url = $storeUrl;
-  
+
       $dataProxy->startParam = 'pager[start]';
       $dataProxy->limitParam = 'pager[limit]';
       $dataProxy->sortParam = 'pager[sort]';
       $dataProxy->directionParam = 'pager[dir]';
       $dataProxy->simpleSortMode = true;
-  
+
       $dataStore->proxy = $dataProxy;
       $dataStore->remoteSort = true;
-  
+
       $project->addObject(0 , $dataStore);
-  
+
       /*
        * Data grid
       */
@@ -162,34 +162,34 @@ class Backend_Modules_Generator_Oop
       $dataGrid->title = $objectConfig->getTitle() . ' :: ' . $lang->HOME;
       $dataGrid->setAdvancedProperty('paging' , true);
       $dataGrid->viewConfig = '{enableTextSelection: true}';
-      
+
       $dataGrid->extendedComponent(true);
-      
-      $this->addGridMethods($project , $dataGrid);
-  
+
+      $this->addGridMethods($project , $dataGrid , true);
+
       $eventManager->setEvent('dataGrid', 'itemdblclick', 'this.showEditWindow(record.get("id"));');
-  
+
       $objectFieldList = Backend_Designer_Import::checkImportORMFields($object , $objectFields);
-  
-  
+
+
       $publishedRec = new stdClass();
       $publishedRec->name = 'published';
       $publishedRec->type = 'string';
       array_unshift($objectFieldList , $publishedRec);
-  
+
       $createdRec = new stdClass();
       $createdRec->name =  'date_created';
       $createdRec->type='';
       $objectFieldList[] = $createdRec;
-  
+
       $updatedRec = new stdClass();
       $updatedRec->name =  'date_updated';
       $updatedRec->type='';
       $objectFieldList[] = $updatedRec;
-  
+
       foreach($objectFieldList as $fieldConfig)
       {
-  
+
           switch($fieldConfig->type){
           	case 'boolean':
           	    $column = Ext_Factory::object('Grid_Column_Boolean');
@@ -210,18 +210,18 @@ class Backend_Modules_Generator_Oop
           	default:
           	    $column = Ext_Factory::object('Grid_Column');
           }
-  
+
           if($objectConfig->fieldExists($fieldConfig->name)){
               $cfg = $objectConfig->getFieldConfig($fieldConfig->name);
               $column->text = $cfg['title'];
           }else{
               $column->text = $fieldConfig->name;
           }
-  
+
           $column->dataIndex = $fieldConfig->name;
           $column->setName($fieldConfig->name);
           $column->itemId = $column->getName();
-  
+
           switch($fieldConfig->name){
           	case $primaryKey:
           	    $column->renderer = 'Ext_Component_Renderer_System_Version';
@@ -229,21 +229,21 @@ class Backend_Modules_Generator_Oop
           	    $column->align = 'center';
           	    $column->width = 147;
           	    break;
-  
+
           	case 'published':
           	    $column->renderer = 'Ext_Component_Renderer_System_Publish';
           	    $column->text = $lang->STATUS;
           	    $column->align = 'center';
           	    $column->width = 50;
           	    break;
-  
+
           	case 'date_created':
           	    $column->renderer = 'Ext_Component_Renderer_System_Creator';
           	    $column->text = $lang->CREATED_BY;
           	    $column->align = 'center';
           	    $column->width = 142;
           	    break;
-  
+
           	case 'date_updated':
           	    $column->renderer = 'Ext_Component_Renderer_System_Updater';
           	    $column->text = $lang->UPDATED_BY;
@@ -254,33 +254,33 @@ class Backend_Modules_Generator_Oop
           $dataGrid->addColumn($column->getName() , $column , $parent = 0);
       }
       $project->addObject(0 , $dataGrid);
-  
+
       /*
        * Top toolbar
       */
       $dockObject = Ext_Factory::object('Docked');
       $dockObject->setName($dataGrid->getName() . '__docked');
       $project->addObject($dataGrid->getName() , $dockObject);
-  
+
       $filters = Ext_Factory::object('Toolbar');
       $filters->setName('filters');
       $project->addObject($dockObject->getName() , $filters);
-  
+
       /*
        * Top toolbar items
       */
-  
+
       $addButton = Ext_Factory::object('Button');
       $addButton->setName('addButton');
       $addButton->text = $lang->ADD_ITEM;
       $eventManager->setEvent('addButton', 'click', 'this.showEditWindow(false);');
-  
+
       $project->addObject($filters->getName() , $addButton);
-  
+
       $sep1 = Ext_Factory::object('Toolbar_Separator');
       $sep1->setName('sep1');
       $project->addObject($filters->getName() , $sep1);
-  
+
       if(!empty($searchFields)){
           $searchField = Ext_Factory::object('Component_Field_System_Searchfield');
           $searchField->setName('searchField');
@@ -288,13 +288,13 @@ class Backend_Modules_Generator_Oop
           // $searchField->local = false;
           $searchField->store = $dataStore->getName();
           $searchField->fieldNames = json_encode($searchFields);
-  
+
           $fill = Ext_Factory::object('Toolbar_Fill');
           $fill->setName('fill1');
           $project->addObject($filters->getName() , $fill);
           $project->addObject($filters->getName() , $searchField);
       }
-  
+
       /*
        * Editor window
       */
@@ -307,8 +307,8 @@ class Backend_Modules_Generator_Oop
       $editWindow->modal = true;
       $editWindow->resizable = true;
       $editWindow->extendedComponent(true);
-  
- 
+
+
       /*
        * Hide history panel
       */
@@ -316,7 +316,7 @@ class Backend_Modules_Generator_Oop
        $editWindow->hideEastPanel = true;
       */
       $project->addObject(0 , $editWindow);
-  
+
       $tab = Ext_Factory::object('Panel');
       $tab->setName($editWindow->getName() . '_generalTab');
       $tab->frame = false;
@@ -332,72 +332,72 @@ class Backend_Modules_Generator_Oop
 		            labelWidth: 160,
 		            anchor: '100%'
 		     }";
-  
+
       $project->addObject($editWindow->getName() , $tab);
-  
+
       $objectFieldList = array_keys($objectConfig->getFieldsConfig(false));
-  
+
       foreach($objectFieldList as $field)
       {
           if($field == $primaryKey)
               continue;
-  
+
           $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $objectConfig->getFieldConfig($field));
-  
+
           if($newField === false)
               continue;
-  
+
           $newField->setName($editWindow->getName() . '_' . $field);
           $fieldClass = $newField->getClass();
-  
+
           if($fieldClass == 'Component_Field_System_Objectslist' || $fieldClass == 'Component_Field_System_Objectlink')
               $newField->controllerUrl = $controllerUrl;
-  
+
           if(in_array($fieldClass , $this->tabTypes , true))
               $project->addObject($editWindow->getName() , $newField);
           else
               $project->addObject($tab->getName() , $newField);
       }
-  
+
       $project->actionjs = $actionFile;
       /*
        * Save designer project
       */
       $designerStorage = Designer_Factory::getStorage($designerConfig);
-  
+
       if(!$designerStorage->save($projectFile , $project))
           throw new Exception('Can`t create Designer project');
-  
+
       /*
        * Create ActionJS file
       */
       $this->_createActionJS($runNamespace, $classNamespace, $actionFile, $jsName , true);
-       
+
       return true;
   }
-  
+
   public function createModule($object , $projectFile , $actionFile)
   {
       $lang = Lang::lang();
-  
+
       //prepare class name
       $name = Utils_String::formatClassName($object);
-  
+
       $jsName = str_replace('_','', $name);
       $runNamespace = 'app'.$jsName.'Run';
       $classNamespace = 'app'.$jsName.'Classes';
-  
+
       $objectConfig = Db_Object_Config::getInstance($object);
       $primaryKey = $objectConfig->getPrimaryKey();
       $appConfig = Registry::get('main' , 'config');
       $designerConfig = Config::factory(Config::File_Array , $appConfig->get('configs') . 'designer.php');
-  
+
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
-  
+
       $objectFields = array();
       $searchFields = array();
       $linkedObjects = array();
-  
+
       /*
        * Skip text fields
       */
@@ -406,91 +406,91 @@ class Backend_Modules_Generator_Oop
           if($objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key)){
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
-  
+
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
-  
+
           $objectFields[] = $key;
           if(isset($item['is_search']) && $item['is_search'])
               $searchFields[] = $key;
       }
-  
+
       $dataFields = array();
       foreach($objectConfig->getFieldsConfig(true) as $key => $item){
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
-  
+
           $dataFields[] = $key;
       }
-  
+
       array_unshift($objectFields , $primaryKey);
-  
+
       $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name .
       '_Controller extends Backend_Controller_Crud{' . "\n" .
       '	protected $_listFields = array("' . implode('","' , $dataFields) . '");' . "\n" .
       ' protected $_canViewObjects = array("' . implode('","' , $linkedObjects) . '");' . "\n" .
       '} ';
-  
+
       /*
        * Create controller
       */
       $controllerDir = $appConfig->get('backend_controllers') . str_replace('_' , '/' , $name);
       $this->_createControllerFile($controllerDir , $controllerContent);
       @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
-  
-  
+
+
       /*
        * Designer project
       */
       $project = new Designer_Project();
       $project->namespace = $classNamespace;
       $project->runnamespace = $runNamespace;
-  
+
       /*
        * Project events
       */
       $eventManager = $project->getEventManager();
-  
-       
+
+
       $storeFields = Backend_Designer_Import::checkImportORMFields($object , $dataFields);
-  
+
       $urlTemplates = $designerConfig->get('templates');
-  
-      Request::setDelimetr($urlTemplates['urldelimeter']);
-  
+
+      Request::setDelimeter($urlTemplates['urldelimeter']);
+
       $controllerUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , ''),false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] , $object , 'list'));
-  
-      Request::setDelimetr($appConfig->get('urlDelimetr'));
-  
+
+      Request::setDelimeter($appConfig->get('urlDelimeter'));
+
       $dataStore = Ext_Factory::object('Data_Store');
       $dataStore->setName('dataStore');
       $dataStore->autoLoad = true;
       $dataStore->addFields($storeFields);
-  
+
       $dataProxy = Ext_Factory::object('Data_Proxy_Ajax');
       $dataProxy->type = 'ajax';
-  
+
       $dataReader = Ext_Factory::object('Data_Reader_Json');
       $dataReader->root = 'data';
       $dataReader->totalProperty = 'count';
       $dataReader->idProperty = $primaryKey;
       $dataReader->type = 'json';
-  
+
       $dataProxy->reader = $dataReader;
       $dataProxy->url = $storeUrl;
-  
+
       $dataProxy->startParam = 'pager[start]';
       $dataProxy->limitParam = 'pager[limit]';
       $dataProxy->sortParam = 'pager[sort]';
       $dataProxy->directionParam = 'pager[dir]';
       $dataProxy->simpleSortMode = true;
-  
+
       $dataStore->proxy = $dataProxy;
       $dataStore->remoteSort = true;
-  
+
       $project->addObject(0 , $dataStore);
-  
+
       /*
        * Data grid
       */
@@ -502,18 +502,18 @@ class Backend_Modules_Generator_Oop
       $dataGrid->setAdvancedProperty('paging' , true);
       $dataGrid->viewConfig = '{enableTextSelection: true}';
       $dataGrid->extendedComponent(true);
-      
+
       $this->addGridMethods($project , $dataGrid);
-  
+
       $eventManager->setEvent('dataGrid', 'itemdblclick', 'this.showEditWindow(record.get("id"));');
-  
+
       $objectFieldList = Backend_Designer_Import::checkImportORMFields($object , $objectFields);
-  
+
       if(!empty($objectFieldList))
       {
           foreach($objectFieldList as $fieldConfig)
           {
-  
+
               switch($fieldConfig->type){
               	case 'boolean':
               	    $column = Ext_Factory::object('Grid_Column_Boolean');
@@ -524,7 +524,7 @@ class Backend_Modules_Generator_Oop
               	case 'integer':
               	    $column = Ext_Factory::object('Grid_Column');
               	    break;
-  
+
               	case 'float':
               	    $column = Ext_Factory::object('Grid_Column_Number');
               	    if(isset($objectFieldsConfig[$fieldConfig->name]['db_precision']))
@@ -538,63 +538,63 @@ class Backend_Modules_Generator_Oop
               	default:
               	    $column = Ext_Factory::object('Grid_Column');
               }
-  
+
               if($objectConfig->fieldExists($fieldConfig->name)){
                   $cfg = $objectConfig->getFieldConfig($fieldConfig->name);
                   $column->text = $cfg['title'];
               }else{
                   $column->text = $fieldConfig->name;
               }
-  
+
               $column->dataIndex = $fieldConfig->name;
               $column->setName($fieldConfig->name);
               $column->itemId = $column->getName();
-  
+
               $dataGrid->addColumn($column->getName() , $column , $parent = 0);
           }
       }
       $project->addObject(0 , $dataGrid);
-  
+
       /*
        * Top toolbar
       */
       $dockObject = Ext_Factory::object('Docked');
       $dockObject->setName($dataGrid->getName() . '__docked');
       $project->addObject($dataGrid->getName() , $dockObject);
-  
+
       $filters = Ext_Factory::object('Toolbar');
       $filters->setName('filters');
       $project->addObject($dockObject->getName() , $filters);
-  
+
       /*
        * Top toolbar items
       */
-  
+
       $addButton = Ext_Factory::object('Button');
       $addButton->setName('addButton');
       $addButton->text = $lang->ADD_ITEM;
-  
+
       $eventManager->setEvent('addButton', 'click', 'this.showEditWindow(false);');
-  
+
       $project->addObject($filters->getName() , $addButton);
-  
+
       $sep1 = Ext_Factory::object('Toolbar_Separator');
       $sep1->setName('sep1');
       $project->addObject($filters->getName() , $sep1);
-  
+
       if(!empty($searchFields)){
           $searchField = Ext_Factory::object('Component_Field_System_Searchfield');
           $searchField->setName('searchField');
           $searchField->width = 200;
           $searchField->store = $dataStore->getName();
           $searchField->fieldNames = json_encode($searchFields);
-  
+
           $fill = Ext_Factory::object('Toolbar_Fill');
           $fill->setName('fill1');
           $project->addObject($filters->getName() , $fill);
           $project->addObject($filters->getName() , $searchField);
       }
-  
+
       /*
        * Editor window
       */
@@ -607,13 +607,13 @@ class Backend_Modules_Generator_Oop
       $editWindow->modal = true;
       $editWindow->resizable = true;
       $editWindow->extendedComponent(true);
-  
-  
+
+
       if(!$objectConfig->hasHistory())
           $editWindow->hideEastPanel = true;
-  
+
       $project->addObject(0 , $editWindow);
-  
+
       $tab = Ext_Factory::object('Panel');
       $tab->setName($editWindow->getName() . '_generalTab');
       $tab->frame = false;
@@ -629,53 +629,53 @@ class Backend_Modules_Generator_Oop
 		            labelWidth: 160,
 		            anchor: '100%'
 		     }";
-  
+
       $project->addObject($editWindow->getName() , $tab);
-  
+
       $objectFieldList = array_keys($objectConfig->getFieldsConfig(false));
-  
+
       foreach($objectFieldList as $field)
       {
           if($field == $primaryKey)
               continue;
-  
+
           $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $objectConfig->getFieldConfig($field));
-  
+
           if($newField === false)
               continue;
-  
+
           $newField->setName($editWindow->getName() . '_' . $field);
           $fieldClass = $newField->getClass();
-  
+
           if($fieldClass == 'Component_Field_System_Objectslist' || $fieldClass == 'Component_Field_System_Objectlink')
               $newField->controllerUrl = $controllerUrl;
-          	
-  
+
+
           if(in_array($fieldClass , $this->tabTypes , true))
               $project->addObject($editWindow->getName() , $newField);
           else
               $project->addObject($tab->getName() , $newField);
-  
+
       }
-  
+
       /*
        * Save designer project
       */
       $designerStorage = Designer_Factory::getStorage($designerConfig);
-  
+
       $project->actionjs = $actionFile;
-  
+
       if(!$designerStorage->save($projectFile , $project))
           throw new Exception('Can`t create Designer project');
-  
+
       /*
        * Create ActionJS file
       */
       $this->_createActionJS($runNamespace, $classNamespace, $actionFile, $jsName);
-  
+
       return true;
   }
-  
+
   /**
    * Create actionJs file for designer project
    * @param string $runNamespace
@@ -687,6 +687,8 @@ class Backend_Modules_Generator_Oop
    */
   protected function _createActionJS($runNamespace , $classNamespace , $fileName , $jsObjectName , $vc = false)
   {
+    //   Ext.Function.defer(function(){
+    //                }, 100);
       $actionJs = '
   		/*
   		 * Here you can define application logic
@@ -696,28 +698,29 @@ class Backend_Modules_Generator_Oop
   		 * For example: '.$runNamespace.'.Panel or Ext.create("'.$classNamespace.'.editWindow", {});
   		 */
   		 Ext.onReady(function(){
-  		     Ext.Function.defer(function(){
- 			  '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
- 			  '.$runNamespace.'.dataGrid.setCanDelete(canDelete);';
-      
+  		        // Init permissions
+  		     	app.application.on("projectLoaded",function(){
+         			  '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
+         			  '.$runNamespace.'.dataGrid.setCanDelete(canDelete);';
+
           if($vc)
             $actionJs.= '
-              '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
-      
+                    '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
+
          $actionJs.= '
-             }, 100);
-  		 });';
-  
+  		        });
+          });';
+
       if(!@file_put_contents($fileName , $actionJs))
           throw new Exception('Can`t create Action file');
-  
+
       @chmod($fileName, 0775);
   }
-  
+
   public function addGridMethods(Designer_Project $project ,  Ext_Object $grid , $vc = false)
   {
     $methodsManager =  $project->getMethodManager();
-    $m = $methodsManager->addMethod($grid->getName(), 'setCanEdit' , array(array('name'=>'canEdit','type'=>'boolean')) , ' 
+    $m = $methodsManager->addMethod($grid->getName(), 'setCanEdit' , array(array('name'=>'canEdit','type'=>'boolean')) , '
         this.canEdit = canEdit;
         if(canEdit){
           this.childObjects.addButton.show();
@@ -726,36 +729,34 @@ class Backend_Modules_Generator_Oop
         }
     ');
      $m->setDescription('Set edit permission');
-         
+
     $m = $methodsManager->addMethod($grid->getName(), 'setCanDelete' , array(array('name'=>'canDelete','type'=>'boolean')) , ' this.canDelete = canDelete;');
     $m->setDescription('Set delete permission');
-    
-    if($vc){ 
+
+    if($vc){
       $m = $methodsManager->addMethod($grid->getName(), 'setCanPublish' , array(array('name'=>'canPublish','type'=>'boolean')) , 'this.canPublish = canPublish;');
       $m->setDescription('Set publish permission');
     }
     $editCode ='
-        Ext.create("'.$project->namespace.'.editWindow", {
+        var win = Ext.create("'.$project->namespace.'.editWindow", {
   		          dataItemId:id,
   		          canDelete:this.canDelete,
   		          canEdit:this.canEdit,';
-  
+
       if($vc)
-          $editCode.=',
-                  canPublish:this.canPublish';
+          $editCode.='
+                  canPublish:this.canPublish,';
       $editCode.='
-                  listeners:{
-                    dataSaved:{
-                      fn:function(){
-                        this.getStore().load();
-                      },
-                      scope:this
-                    }
-                  }
-  		      }).show();    
+  		    });
+
+            win.on("dataSaved",function(){
+              this.getStore().load();
+            },this);
+
+            win.show();
     ';
-      
-    
+
+
     $m = $methodsManager->addMethod($grid->getName(), 'showEditWindow' ,  array(array('name'=>'id','type'=>'integer')) , $editCode);
     $m->setDescription('Show editor window');
   }

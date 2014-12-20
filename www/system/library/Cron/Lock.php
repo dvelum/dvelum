@@ -120,7 +120,7 @@ class Cron_Lock
             return false;
         }
 
-        $this->satarted = true;
+        $this->started = true;
         return true;
     }
     /**
@@ -241,7 +241,7 @@ class Cron_Lock
      */
     public function finish()
     {
-       if($this->satarted)
+        if($this->started)
              $this->releaseLock();
        exit;
     }
