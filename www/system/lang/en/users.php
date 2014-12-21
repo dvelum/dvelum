@@ -4,4 +4,7 @@
   'addUser' => 'Add user',
   'accountType' => 'Account type',
   'status' => 'Status',
+  'deleteUser' => 'Delete user',
+  'admin' => 'Admin',
+  'groupName' => 'Group',
 ); 

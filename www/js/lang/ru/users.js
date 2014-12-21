@@ -1,1 +1,1 @@
-var usersLang = {users:"Пользователи",groups:"Группы",addUser:"Новый пользователь",accountType:"Тип аккаунта",status:"Статус"};
+var usersLang = {users:"Пользователи",groups:"Группы",addUser:"Новый пользователь",accountType:"Тип аккаунта",status:"Статус",deleteUser:"Удалить пользователя",admin:"Администратор",groupName:"Группа"};
