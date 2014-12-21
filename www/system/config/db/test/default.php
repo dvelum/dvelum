@@ -1,8 +1,8 @@
 <?php
 return array(
 	'username' => 'dvelum',
-	'password' => '',
-	'dbname'   => 'dvelum',
+	'password' => 'dvelum',
+	'dbname'   => 'dvelum_test',
 	'host'     => 'localhost',
 	'charset'  => 'UTF8',
 	'prefix'   => 'sb_',

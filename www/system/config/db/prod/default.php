@@ -1,7 +1,7 @@
 <?php
 return array(
 	'username' => 'dvelum',
-	'password' => 'dvelum',
+	'password' => '',
 	'dbname'   => 'dvelum',
 	'host'     => 'localhost',
 	'charset'  => 'UTF8',
