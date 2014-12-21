@@ -19,7 +19,7 @@ return array(
      * 1 - development
      * 2 - test (development mode + test DB)
      */
-    'development' => false,
+    'development' => true,
     /*
      * Development version (used by use_orm_build_log)
      */

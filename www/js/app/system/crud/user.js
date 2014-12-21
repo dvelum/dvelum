@@ -155,10 +155,10 @@ Ext.define('app.crud.user.List',{
 		store:new Ext.data.Store({
 		    model:'app.comboStringModel',
 		    data:[
-		          {id:'' , title:appLang.ALL},
+		          {id:'',title:appLang.ALL},
 		          {id:1 , title:appLang.BACKEND_USERS},
 		          {id:0 , title:appLang.FRONTEND_USERS}
-		          ]
+		    ]
 		}),
 		listeners:{
 		    select:{

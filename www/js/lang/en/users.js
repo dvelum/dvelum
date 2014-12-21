@@ -1,1 +1,1 @@
-var usersLang = {users:"Users"};
+var usersLang = {users:"Users",groups:"Groups",addUser:"Add user",accountType:"Account type",status:"Status"};
