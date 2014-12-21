@@ -102,7 +102,8 @@
       ),
       'db_type' => 'varchar',
       'db_len' => 255,
-      'db_isNull' => 0,
+      'db_isNull' => false,
+      'db_default' => false,
     ),
     'url' => 
     array (
@@ -146,4 +147,9 @@
       'PRIMARY' => false,
     ),
   ),
+  'connection' => 'default',
+  'locked' => false,
+  'readonly' => false,
+  'primary_key' => 'id',
+  'use_db_prefix' => true,
 ); 

@@ -9,17 +9,17 @@ $len = strlen($docRoot);
 // should be without last slash
 if($docRoot[$len-1]=='/')
 	$docRoot = substr($docRoot , 0 , -1);
-	
+
 $language = 'en';
-return array(		
-		'docroot' => $docRoot ,  
+return array(
+		'docroot' => $docRoot ,
 		/*
 		 * Development mode
 		 * 0 - production
 		 * 1 - development
 		 * 2 - test (development mode + test DB)
 		 */
-		'development' => 2, 
+		'development' => 2,
 		/*
 		 * Development version (used by use_orm_build_log)
 		 */
@@ -27,12 +27,12 @@ return array(
 		/*
 		 * Write SQL commands when updating Database structure.
 		 * It can help to determine if there have been performed any rename operations.
-		 * Please note that renaming operations in ORM interface causes loss of data 
+		 * Please note that renaming operations in ORM interface causes loss of data
 		 * during server synchronization, so it's better to use SQL log.
 		 */
 		'use_orm_build_log'=>true,
 		/*
-		 * ORM SQL logs path 
+		 * ORM SQL logs path
 		 */
 		'orm_log_path'=>$docRoot.'/.log/orm/',
 		/*
@@ -50,44 +50,44 @@ return array(
 		/*
 		 * File uploads path
 		 */
-		'uploads' => $docRoot . '/media/' , 
+		'uploads' => $docRoot . '/media/' ,
 		/*
 		 * Admin panel URL
-		 * For safety reasons adminPath may be changed, however, 
-		 * keep in mind that IDE builds full paths in the current version, 
+		 * For safety reasons adminPath may be changed, however,
+		 * keep in mind that IDE builds full paths in the current version,
 		 * thus, they would have to be manually updated in the projects.
 		 */
-		'adminPath' => 'adminarea' ,  
+		'adminPath' => 'adminarea' ,
 		/*
 		 * Templates directory
 		 */
-		'templates' => $docRoot . '/templates/' , 
+		'templates' => $docRoot . '/templates/' ,
 		/*
 		 * Url paths delimiter  "_" , "-" or "/"
 		 */
 		'urlDelimiter' => '/',
-		'urlExtension' => '.html' , 
+		'urlExtension' => '.html' ,
 		/*
 		 * System language
 		 * Please note. Changing the language will switch ORM storage settings.
 		 */
 		'language' => $language ,
-		'system' => $docRoot . '/system/', 
+		'system' => $docRoot . '/system/',
 		'lang_path' => $docRoot . '/system/lang/' ,
 		'js_lang_path' => $docRoot. '/js/lang/',
 		'salt' => 'ThSc-9086' ,
-		'timezone' => 'Europe/Moscow' , 
-		
-		'jsCacheUrl' => '/js/cache/' , 
-		'jsCachePath' => $docRoot . '/js/cache/' , 
-		
+		'timezone' => 'Europe/Moscow' ,
+
+		'jsCacheUrl' => '/js/cache/' ,
+		'jsCachePath' => $docRoot . '/js/cache/' ,
+
 		'jsCacheSysUrl' => '/js/syscache/',
 		'jsCacheSysPath' => './js/syscache/',
-		 /* 
-		  * Сlear the object version history when deleting an object. 
-		  * The recommended setting is “false”.  Thus, even though the object has been deleted, 
-		  * it can be restored from the previous control system revision. 
-		  * If set to "true", the object and its history will be  totally removed. However, 
+		 /*
+		  * Сlear the object version history when deleting an object.
+		  * The recommended setting is “false”.  Thus, even though the object has been deleted,
+		  * it can be restored from the previous control system revision.
+		  * If set to "true", the object and its history will be  totally removed. However,
 		  * this allows you to get rid of redundant records in the database.
 		  */
 		'vc_clear_on_delete' => false,
@@ -98,7 +98,7 @@ return array(
 		/*
 		 * ORM configs directory
 		 */
-		'object_configs' => $docRoot . '/system/config/objects/' , 
+		'object_configs' => $docRoot . '/system/config/objects/' ,
 		/*
 		 * Report configs directory
 		 */
@@ -110,7 +110,7 @@ return array(
 		/*
 		 * Backend modules config file
 		 */
-		'backend_modules'=> $docRoot . '/system/config/modules/'.$language.'/backend_modules.php', 
+		'backend_modules'=> $docRoot . '/system/config/modules/'.$language.'/backend_modules.php',
 		/*
 		 * Backend controllers path
 		 */
@@ -151,30 +151,30 @@ return array(
 		'backups' => $docRoot . '/.backups/' ,
 		'tmp' => $docRoot . '/.tmp/' ,
 		'mysqlExecPath' => 'mysql',
-		'mysqlDumpExecPath' => 'mysqldump', 
+		'mysqlDumpExecPath' => 'mysqldump',
 		/*
 		 * Use memcached
 		 */
 		'use_cache' => 0,
 		/*
-		 *  Use individual keys for caching data from Config_File_Array. 
-		 *  Though slower than a common key, an individual key allows you to save 
-		 *  memory when a large number of config files are used 
+		 *  Use individual keys for caching data from Config_File_Array.
+		 *  Though slower than a common key, an individual key allows you to save
+		 *  memory when a large number of config files are used
 		 *  (for example: if there are more then than 50 classes in ORM)
 		 */
 		'config_cache_key_per_item'=>true,
 		/*
 		 * Hard caching time (without validation) for frondend , seconds
 		 */
-		'frontend_hardcache'=>60, 
-		'themes' => $docRoot . '/templates/public/' , 
+		'frontend_hardcache'=>60,
+		'themes' => $docRoot . '/templates/public/' ,
 		'usersOnline' => false, //Collect users online info,
 		// Autoloader config
 		'autoloader' => array(
 			 /*
 			  *	Use precompiled code packages
 			  *	requires useMap property to be set to true
-			  */ 
+			  */
 			 'usePackages' =>  0,
 		     // Use class map (Reduce IO load during autoload)
 			 'useMap' => 0,
@@ -183,7 +183,7 @@ return array(
 			 // Class map file path
 			 'map' => $docRoot . '/system/config/class_map.php',
 			 // Packages config path
-			 'packagesConfig'=>	$docRoot . '/system/config/packages.php',				  
+			 'packagesConfig'=>	$docRoot . '/system/config/packages.php',
 		),
 		/*
 		 * Stop the site with message "Essential maintenance in progress. Please check back later."
@@ -194,20 +194,20 @@ return array(
 		 */
 		'debug_panel'=> 0,
 		/*
-		 * HTML WYSIWYG Editor 
+		 * HTML WYSIWYG Editor
 		 * default  - tinymce
 		 * test mode - ckeditor (not fully compatible)
 		 */
 		'html_editor' =>'tinymce',
 		/*
-		 * Use the console command to compile the file system map 
-		 * (accelerates the compilation process; works only on Linux systems; 
-		 * execution of the system function should be allowed). 
+		 * Use the console command to compile the file system map
+		 * (accelerates the compilation process; works only on Linux systems;
+		 * execution of the system function should be allowed).
 		 */
 		'deploy_use_console'=>false,
 		/*
-		 *  Use hard cache expiration time defined in frontend_hardcache for caching blocks; 
-         *  allows to reduce the cache time of dynamic blocks; 
+		 *  Use hard cache expiration time defined in frontend_hardcache for caching blocks;
+         *  allows to reduce the cache time of dynamic blocks;
 		 *  is used if there are not enough triggers for cache invalidation
 		 */
 		'blockmanager_use_hardcache_time'=>false,
@@ -228,27 +228,35 @@ return array(
 		 */
 		'db_object_error_log' =>true,
 		'db_object_error_log_path'=>'./db_object.log.txt',
-    /*
-     * Get real rows count for innodb tables (COUNT(*))
-     * Set it "false" for large data volumes
-     */
-     'orm_innodb_real_rows_count'=>false,
-     /*
-      * Directories for storing data base connection settings as per the system mode
-      */
-     'db_configs'=> array(
-            /* key as development mode code */
-            0 => array(
-                    'title'=>'PRODUCTION',
-                    'dir'=> $docRoot . '/system/config/db/prod/'
-            ),
-            1 => array(
-                    'title'=>'DEVELOPMENT',
-                    'dir'=> $docRoot . '/system/config/db/dev/'
-            ),
-            2=> array(
-                    'title'=>'TEST',
-                    'dir'=> $docRoot . '/system/config/db/test/'
-            ),
-    ),
+        /*
+         * Get real rows count for innodb tables (COUNT(*))
+         * Set it "false" for large data volumes
+         */
+         'orm_innodb_real_rows_count'=>false,
+         /*
+          * Directories for storing data base connection settings as per the system mode
+          */
+         'db_configs'=> array(
+                /* key as development mode code */
+                0 => array(
+                        'title'=>'PRODUCTION',
+                        'dir'=> $docRoot . '/system/config/db/prod/'
+                ),
+                1 => array(
+                        'title'=>'DEVELOPMENT',
+                        'dir'=> $docRoot . '/system/config/db/dev/'
+                ),
+                2=> array(
+                        'title'=>'TEST',
+                        'dir'=> $docRoot . '/system/config/db/test/'
+                ),
+        ),
+        /*
+         * ORM system object used as version storage
+        */
+        'orm_version_object' => 'Vc',
+        /*
+         * Db_Object for error log
+        */
+        'erorr_log_object'=>'error_log'
 );

@@ -38,7 +38,7 @@
       'required' => true,
       'validator' => '',
       'db_type' => 'varchar',
-      'db_default' => '',
+      'db_default' => false,
       'db_len' => 255,
       'is_search' => true,
       'allow_html' => false,
@@ -206,4 +206,6 @@
   'readonly' => false,
   'primary_key' => 'id',
   'use_db_prefix' => true,
+  'acl' => false,
+  'slave_connection' => 'default',
 ); 

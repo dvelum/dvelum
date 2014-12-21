@@ -26,4 +26,9 @@
   'indexes' => 
   array (
   ),
+  'connection' => 'default',
+  'locked' => false,
+  'readonly' => false,
+  'primary_key' => 'id',
+  'use_db_prefix' => true,
 ); 

@@ -46,8 +46,8 @@
         'object' => 'blocks',
       ),
       'db_type' => 'bigint',
-      'db_isNull' => 0,
-      'db_default' => 0,
+      'db_isNull' => false,
+      'db_default' => false,
       'db_unsigned' => true,
     ),
     'order_no' => 
@@ -64,4 +64,9 @@
   'indexes' => 
   array (
   ),
+  'connection' => 'default',
+  'locked' => false,
+  'readonly' => false,
+  'primary_key' => 'id',
+  'use_db_prefix' => true,
 ); 

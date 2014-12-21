@@ -1,6 +1,6 @@
 <?php return array (
   'table' => 'medialib',
-  'engine' => 'MyISAM',
+  'engine' => 'InnoDB',
   'rev_control' => false,
   'link_title' => 'title',
   'save_history' => true,
@@ -147,6 +147,22 @@
       'db_type' => 'boolean',
       'db_default' => 0,
     ),
+    'category' => 
+    array (
+      'type' => 'link',
+      'unique' => '',
+      'db_isNull' => true,
+      'required' => false,
+      'validator' => '',
+      'link_config' => 
+      array (
+        'link_type' => 'object',
+        'object' => 'mediacategory',
+      ),
+      'db_type' => 'bigint',
+      'db_default' => false,
+      'db_unsigned' => true,
+    ),
   ),
   'indexes' => 
   array (
@@ -170,4 +186,10 @@
       ),
     ),
   ),
+  'connection' => 'default',
+  'locked' => false,
+  'readonly' => false,
+  'primary_key' => 'id',
+  'use_db_prefix' => true,
+  'disable_keys' => false,
 ); 

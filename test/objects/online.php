@@ -35,8 +35,8 @@
       ),
       'required' => true,
       'db_type' => 'bigint',
-      'db_isNull' => 0,
-      'db_default' => 0,
+      'db_isNull' => false,
+      'db_default' => false,
       'db_unsigned' => true,
     ),
   ),
@@ -57,4 +57,6 @@
   'locked' => false,
   'readonly' => false,
   'disable_keys' => false,
+  'primary_key' => 'id',
+  'use_db_prefix' => true,
 ); 

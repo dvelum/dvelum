@@ -20,19 +20,22 @@
       'db_type' => 'bigint',
       'db_isNull' => true,
       'db_unsigned' => true,
+      'db_default' => false,
     ),
     'group_id' => 
     array (
-      'required' => true,
       'type' => 'link',
+      'unique' => 'user_group_module',
+      'db_isNull' => true,
+      'required' => false,
+      'validator' => '',
       'link_config' => 
       array (
         'link_type' => 'object',
         'object' => 'group',
       ),
-      'unique' => 'user_group_module',
       'db_type' => 'bigint',
-      'db_isNull' => true,
+      'db_default' => false,
       'db_unsigned' => true,
     ),
     'view' => 
