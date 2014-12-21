@@ -40,14 +40,14 @@ class Filter
 	
 	protected static $_autoConvertFloatSeparator = true;
 	
-	protected static $_urlDelimeter = '/';
+	protected static $_urlDelimiter = '/';
 	/**
-	 * Set url params delimetr
-	 * @param string $urlDelimeter
+	 * Set url params delimiter
+	 * @param string $urlDelimiter
 	 */
-	static public function setDelimeter($urlDelimeter)
+	static public function setDelimiter($urlDelimiter)
 	{
-		self::$_urlDelimeter = $urlDelimeter;
+		self::$_urlDelimiter = $urlDelimiter;
 	}
 	/**
 	 * String cleanup
@@ -118,7 +118,7 @@ class Filter
 				break;
 			case 'pagecode' :
 				$value = preg_replace ( "/[^a-z0-9_-]/i", '', strtolower ( $value ) );
-				switch (self::$_urlDelimeter) {
+				switch (self::$_urlDelimiter) {
 					case '_' :
 						$value = str_replace ( array (' ', '_' ), "-", $value );
 						break;

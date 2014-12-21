@@ -99,7 +99,7 @@ class Db_Object_ConfigTest extends PHPUnit_Framework_TestCase
 	{
 	  $cfg = Db_Object_Config::getInstance('page');
 	  $this->assertTrue($cfg->isSearch('code'));
-	  $this->assertFalse($cfg->isSearch('id'));
+	  $this->assertTrue($cfg->isSearch('id'));
 	}
 	
 	public function testGetLinkTittle()

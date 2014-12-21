@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <phpunit bootstrap="./bootstrap.php"
     colors="true"
-    convertErrorsToExceptions="true"
-    convertNoticesToExceptions="true"
-    convertWarningsToExceptions="true"
-    stopOnFailure="true"
+    convertErrorsToExceptions="false"
+    convertNoticesToExceptions="false"
+    convertWarningsToExceptions="false"
+    backupGlobals="false"
+    processIsolation="false"
+    stopOnError="false"
+    stopOnFailure="false"
+    stopOnIncomplete="false"
+    stopOnSkipped="false"
     syntaxCheck="true">
- 
+
     <testsuite name="Main Test Suite">
         <directory>./</directory>
     </testsuite>
- 
+
     <filter>
         <blacklist>
             <directory suffix=".php">/usr/share/php</directory>

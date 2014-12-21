@@ -11,7 +11,7 @@ class Db_ObjectTest extends PHPUnit_Framework_TestCase
 		$o->set('code', 'index');
 		$o->save();
 	}
-	
+
 	public function testGetOld()
 	{
 		$o = new Db_Object('page' , 1);
@@ -20,7 +20,7 @@ class Db_ObjectTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($o->get('code') , $code);
 		$this->assertEquals($o->getOld('code'), 'index');
 	}
-	
+
 	public function testCreate()
 	{
 		$o = new Db_Object('bgtask');
@@ -67,7 +67,7 @@ class Db_ObjectTest extends PHPUnit_Framework_TestCase
 	  $u = User::getInstance();
 	  $u->setId(1);
 	  $u->setAuthorized();
-	  
+
 	  $code = date('ymdHis');
 	  // Add index Page
 	  $page = new Db_Object('Page');
@@ -96,14 +96,14 @@ class Db_ObjectTest extends PHPUnit_Framework_TestCase
 	      'in_site_map'=>true,
 	      'default_blocks'=>true
 	  ));
-		
+
 		$id = $page->save();
-		
+
 		$this->assertTrue($id>0);
 		$this->assertTrue(Db_Object::objectExists('Page', $id));
-		
+
 		$this->assertTrue($page->delete());
-		
+
 		$this->assertFalse(Db_Object::objectExists('Page', $id));
 	}
 
@@ -113,19 +113,19 @@ class Db_ObjectTest extends PHPUnit_Framework_TestCase
 		$linked = $o->getLinkedObject('author_id');
 		$this->assertEquals($linked , 'user');
 	}
-	
-	
+
+
 	public function test_hasRequired()
 	{
 	  $u = User::getInstance();
 	  $u->setId(1);
 	  $u->setAuthorized();
-	  
+
 		$page = new Db_Object('page');
 		$code = date('ymdHiss');
 		$page->code = $code;
 		$page->author_id = 1;
-		
+
 		$this->assertFalse($page->save());
 
 		$page->setValues(array(
@@ -153,19 +153,55 @@ class Db_ObjectTest extends PHPUnit_Framework_TestCase
 	      'in_site_map'=>true,
 	      'default_blocks'=>true
 	  ));
-		
+
 		$id = $page->save();
 		$this->assertTrue($id>0);
-		$this->assertTrue(Db_Object::objectExists('Page', $id));		
-		$this->assertTrue($page->delete());	
+		$this->assertTrue(Db_Object::objectExists('Page', $id));
+		$this->assertTrue($page->delete());
 		$this->assertFalse(Db_Object::objectExists('Page', $id));
 	}
-	
+
 	public function testExists()
 	{
 	   $this->assertTrue(Db_Object::objectExists('page' , 1));
 	   $this->assertFalse(Db_Object::objectExists('page' , 723489273));
 	   $this->assertFalse(Db_Object::objectExists('undefined' , 723489273));
 	}
-	
+
+    public function testSetInsertId()
+	{
+		$iId = time();
+		$o = new Db_Object('Page');
+		$o->setInsertId($iId);
+
+		$this->assertEquals($iId , $o->getInssertId());
+		$o->setValues(array(
+	      'code'=>$iId,
+	      'is_fixed'=>1,
+	      'html_title'=>'Index',
+	      'menu_title'=>'Index',
+	      'page_title'=>'Index',
+	      'meta_keywords'=>'',
+	      'meta_description'=>'',
+	      'parent_id'=>null,
+	      'text' =>'[Index page content]',
+	      'func_code'=>'',
+	      'order_no' => 1,
+	      'show_blocks'=>true,
+	      'published'=>true,
+	      'published_version'=>0,
+	      'editor_id'=>1,
+	      'date_created'=>date('Y-m-d H:i:s'),
+	      'date_updated'=>date('Y-m-d H:i:s'),
+	      'author_id'=>1,
+	      'blocks'=>'',
+	      'theme'=>'default',
+	      'date_published'=>date('Y-m-d H:i:s'),
+	      'in_site_map'=>true,
+	      'default_blocks'=>true
+	  ));
+	  $this->assertTrue((boolean) $o->save());
+	  $this->assertTrue(Db_Object::objectExists('Page', $iId));
+	  $this->assertEquals($iId, $o->getId());
+	}
 }

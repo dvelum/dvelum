@@ -42,7 +42,7 @@ Ext.define('app.medialib.EditWindow',{
 		}
 		var handle  = this;
 		this.editForm.getForm().load({
-			url:  app.admin + app.delimeter + 'medialib' +  app.delimeter + 'getitem',
+			url:  app.admin + app.delimiter + 'medialib' +  app.delimiter + 'getitem',
 			method: 'post',
 	 		params:{
 	 			'id':this.recordId
@@ -64,7 +64,7 @@ Ext.define('app.medialib.EditWindow',{
 			clientValidation: true,
 			waitTitle:appLang.SAVING,
 			method:'post',
-			url: app.admin + app.delimeter + 'medialib' +  app.delimeter + 'update',
+			url: app.admin + app.delimiter + 'medialib' +  app.delimiter + 'update',
 			success: function(form, action) {	
    		 		if(action.result.success){
    		 			handle.fireEvent('dataSaved');

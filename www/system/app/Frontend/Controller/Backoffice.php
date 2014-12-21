@@ -103,7 +103,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
         
         $this->_resource->addInlineJs('
            app.wwwRoot = "' . $this->_configMain->get('wwwroot') . '";    
-           app.delimeter = "'.$this->_configMain->get('urlDelimeter') . '";
+           app.delimiter = "'.$this->_configMain->get('urlDelimiter') . '";
            app.admin = "' . $this->_configMain->get('wwwroot') .  $this->_configMain->get('adminPath').'";
         ');
         

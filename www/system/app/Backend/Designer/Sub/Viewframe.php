@@ -64,7 +64,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
     	$replaces = array(
     			array('tpl'=>$templates['wwwroot'],'value'=>$this->_configMain->get('wwwroot')),
     			array('tpl'=>$templates['adminpath'],'value'=>$this->_configMain->get('adminPath')),
-    			array('tpl'=>$templates['urldelimeter'],'value'=>$this->_configMain->get('urlDelimeter')),
+    			array('tpl'=>$templates['urldelimiter'],'value'=>$this->_configMain->get('urlDelimiter')),
     	);
 
     	$includes = Designer_Factory::getProjectIncludes($key, $project , true , $replaces);
@@ -99,7 +99,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 
 		//' . $project->getCode($replaces) . '
 		$initCode = '
-		app.delimeter = "'.$this->_configMain['urlDelimeter'].'";
+		app.delimiter = "'.$this->_configMain['urlDelimiter'].'";
 		app.admin = "' . $this->_configMain->get('wwwroot') . $this->_configMain->get('adminPath').'";
 		app.wwwRoot = "' . $this->_configMain->get('wwwroot') . '";
 

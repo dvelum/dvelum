@@ -27,8 +27,8 @@ class Backend_Designer_Sub_Code extends Backend_Designer_Sub
             'value' => $this->_configMain->get('adminPath')
         ) ,
         array(
-            'tpl' => $templates['urldelimeter'] ,
-            'value' => $this->_configMain->get('urlDelimeter')
+            'tpl' => $templates['urldelimiter'] ,
+            'value' => $this->_configMain->get('urlDelimiter')
         )
     );
 
@@ -54,8 +54,8 @@ class Backend_Designer_Sub_Code extends Backend_Designer_Sub
                     'value' => $this->_configMain->get('adminPath')
             ) ,
             array(
-                    'tpl' => $templates['urldelimeter'] ,
-                    'value' => $this->_configMain->get('urlDelimeter')
+                    'tpl' => $templates['urldelimiter'] ,
+                    'value' => $this->_configMain->get('urlDelimiter')
             )
     );
     Ext_Code::setRunNamespace($projectCfg['runnamespace']);

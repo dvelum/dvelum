@@ -60,7 +60,7 @@ Ext.define('app.historyPanel',{
 			    model: 'app.historyModel',
 			    proxy: {
 			        type: 'ajax',
-			        url: app.admin + app.delimeter + 'history' +  app.delimeter + 'list',
+			        url: app.admin + app.delimiter + 'history' +  app.delimiter + 'list',
 			        reader: {
 			            type: 'json',
 			            root: 'data',

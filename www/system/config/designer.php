@@ -18,6 +18,6 @@ return array(
 	'templates' => array(
 		'wwwroot' => '[%wroot%]',
 		'adminpath' => '[%admp%]',
-		'urldelimeter' => '[%-%]'
+		'urldelimiter' => '[%-%]'
 	)
 );

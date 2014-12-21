@@ -396,7 +396,6 @@
   'Frontend_Controller_Authorised' => './system/app/Frontend/Controller/Authorised.php',
   'Frontend_Controller_Backoffice' => './system/app/Frontend/Controller/Backoffice.php',
   'Frontend_Docs_Controller' => './system/app/Frontend/Docs/Controller.php',
-  'Frontend_Index_Controller' => './system/app/Frontend/Index/Controller.php',
   'Frontend_Router' => './system/app/Frontend/Router.php',
   'Image_Resize' => './system/library/Image/Resize.php',
   'Lang' => './system/library/Lang.php',

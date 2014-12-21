@@ -100,4 +100,6 @@
   'locked' => false,
   'readonly' => false,
   'disable_keys' => false,
+  'primary_key' => 'id',
+  'use_db_prefix' => true,
 ); 

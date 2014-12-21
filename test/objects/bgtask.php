@@ -19,7 +19,8 @@
       ),
       'db_type' => 'varchar',
       'db_len' => 255,
-      'db_isNull' => 0,
+      'db_isNull' => false,
+      'db_default' => '',
     ),
     'title' => 
     array (
@@ -44,8 +45,8 @@
         'object' => 'bgtask',
       ),
       'db_type' => 'bigint',
-      'db_isNull' => 0,
-      'db_default' => 0,
+      'db_isNull' => true,
+      'db_default' => false,
       'db_unsigned' => true,
     ),
     'op_total' => 
@@ -114,4 +115,9 @@
   'indexes' => 
   array (
   ),
+  'connection' => 'default',
+  'locked' => false,
+  'readonly' => false,
+  'primary_key' => 'id',
+  'use_db_prefix' => true,
 ); 

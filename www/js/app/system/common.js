@@ -352,7 +352,7 @@ app.storeException = function(proxy, response, operation, eOpts){
  */
 app.createUrl = function(paths){
     if(Ext.isArray(paths)){
-	return paths.join(app.delimeter);
+	return paths.join(app.delimiter);
     }else{
 	return '';
     }

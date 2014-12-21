@@ -61,10 +61,10 @@ class Backend_Designer_Code
 		}
 		$url[]='';
 		
-		Request::setDelimeter($templates['urldelimeter']);
+		Request::setDelimiter($templates['urldelimiter']);
 		Request::setRoot($templates['wwwroot']);
 		$url = Request::url($url , false);	
-		Request::setDelimeter($appCfg['urlDelimeter']);
+		Request::setDelimiter($appCfg['urlDelimiter']);
 		Request::setRoot($appCfg['wwwroot']);
 		return $url;
 	}
@@ -139,7 +139,7 @@ class Backend_Designer_Code
 		
 		if(!empty($methods))
 		{
-			Request::setDelimetr($templates['urldelimeter']);
+			Request::setDelimiter($templates['urldelimiter']);
 			Request::setRoot($templates['wwwroot']);
 			foreach ($methods as $method)
 			{
@@ -158,7 +158,7 @@ class Backend_Designer_Code
 				);
 			}
 			
-			Request::setDelimeter($appCfg['urlDelimeter']);
+			Request::setDelimiter($appCfg['urlDelimiter']);
 			Request::setRoot($appCfg['wwwroot']);
 		}
 		return $actions;
