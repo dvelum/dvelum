@@ -98,7 +98,7 @@ class Filter
 				break;
 			
 			case 'email' :
-				$value = filter_var ( $value, FILTER_SANITIZE_EMAIL );		
+				$value = filter_var( $value, FILTER_SANITIZE_EMAIL);
 				break;
 				
 			case 'url' :

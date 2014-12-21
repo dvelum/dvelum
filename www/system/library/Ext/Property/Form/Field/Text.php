@@ -27,7 +27,9 @@ class Ext_Property_Form_Field_Text extends Ext_Property_Form_Field_Field
 	public $emptyCls = self::String;
 	public $componentLayout = self::Boolean;
 	public $value = self::String;
-	
+
+	public $initialPassField = self::String;
+
 	static public $extend = 'Ext.form.field.Text';
 	static public $xtype = 'textfield';
 }
