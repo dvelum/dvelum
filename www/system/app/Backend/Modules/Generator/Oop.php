@@ -116,12 +116,12 @@ class Backend_Modules_Generator_Oop
       $storeFields = array_merge($storeFields , Backend_Designer_Import::checkImportORMFields($object ,  $dataFields));
 
       $urlTemplates = $designerConfig->get('templates');
-      Request::setDelimeter($urlTemplates['urldelimeter']);
+      Request::setDelimiter($urlTemplates['urldelimiter']);
 
       $controllerUrl = Request::url(array( $urlTemplates['adminpath'] , $object , '') , false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , 'list'));
 
-      Request::setDelimeter($appConfig->get('urlDelimeter'));
+      Request::setDelimiter($appConfig->get('urlDelimiter'));
 
       $dataStore = Ext_Factory::object('Data_Store');
       $dataStore->setName('dataStore');
@@ -456,12 +456,12 @@ class Backend_Modules_Generator_Oop
 
       $urlTemplates = $designerConfig->get('templates');
 
-      Request::setDelimeter($urlTemplates['urldelimeter']);
+      Request::setDelimiter($urlTemplates['urldelimiter']);
 
       $controllerUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , ''),false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] , $object , 'list'));
 
-      Request::setDelimeter($appConfig->get('urlDelimeter'));
+      Request::setDelimiter($appConfig->get('urlDelimiter'));
 
       $dataStore = Ext_Factory::object('Data_Store');
       $dataStore->setName('dataStore');

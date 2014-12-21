@@ -50,7 +50,7 @@ Ext.define('app.revisionPanel',{
 			    model: 'app.revisionModel',
 			    proxy: {
 			        type: 'ajax',
-			        url: app.admin + app.delimeter + 'vcs' +  app.delimeter + 'list',
+			        url: app.admin + app.delimiter + 'vcs' +  app.delimiter + 'list',
 			        reader: 'json',
 			        reader: {
 			            type: 'json',

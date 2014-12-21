@@ -66,8 +66,8 @@ class Designer_Manager
                         'value' => $this->_appConfig->get('adminPath')
         ),
         array(
-                        'tpl' => $templates['urldelimeter'],
-                        'value' => $this->_appConfig->get('urlDelimeter')
+                        'tpl' => $templates['urldelimiter'],
+                        'value' => $this->_appConfig->get('urlDelimiter')
         )
      );
   }

@@ -107,8 +107,8 @@ class Application
         /*
          * Apply configs
          */
-        Filter::setDelimeter($this->_config->get('urlDelimeter'));
-        Request::setDelimeter($this->_config->get('urlDelimeter'));
+        Filter::setDelimiter($this->_config->get('urlDelimiter'));
+        Request::setDelimiter($this->_config->get('urlDelimiter'));
         Request::setExtension($this->_config->get('urlExtension'));
         Request::setRoot($this->_config->get('wwwroot'));
         Resource::setCachePaths($this->_config->get('jsCacheSysUrl') , $this->_config->get('jsCacheSysPath'));
@@ -326,8 +326,8 @@ class Application
         $res->addInlineJs('
             app.wwwRoot = "'.$this->_config->get('wwwroot').'";
         	app.admin = "' . $this->_config->get('wwwroot') . $this->_config->get('adminPath') . '";
-        	app.delimeter = "' . $this->_config->get('urlDelimeter') . '";
-        	app.root = "' . $this->_config->get('wwwroot') .  $this->_config->get('adminPath') . $this->_config->get('urlDelimeter') . $controller . $this->_config->get('urlDelimeter') . '";
+        	app.delimiter = "' . $this->_config->get('urlDelimiter') . '";
+        	app.root = "' . $this->_config->get('wwwroot') .  $this->_config->get('adminPath') . $this->_config->get('urlDelimiter') . $controller . $this->_config->get('urlDelimiter') . '";
         ');
 
         /*

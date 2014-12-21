@@ -53,12 +53,12 @@ class Request
 	 * http://yoursite.com/controller/action will be interpreted
 	 * as a parameterized request with two parameters
 	 * 0 — controller 1 - action
-	 * @param string $delimeter
+	 * @param string $delimiter
 	 * @return void
 	 */
-   static public function setDelimeter($delimeter)
+   static public function setDelimiter($delimiter)
    {
-        self::$_delimiter = $delimeter;
+        self::$_delimiter = $delimiter;
    }
 
    /**

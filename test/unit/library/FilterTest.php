@@ -18,13 +18,13 @@ class FilterTest extends PHPUnit_Framework_TestCase
 		
 		$this->assertTrue(is_array(Filter::filterValue('array', 'asd')));
 		
-		Filter::setDelimeter('-');
+		Filter::setDelimiter('-');
 		$this->assertEquals(Filter::filterValue('pagecode', 'p_Ol$ 1@_!;L') ,  'p_ol1_l');
 		
-		Filter::setDelimeter('_');
+		Filter::setDelimiter('_');
 		$this->assertEquals(Filter::filterValue('pagecode', 'p-Ol$ 1@_!;L') ,  'p-ol1-l');
 		
-		Filter::setDelimeter('/');
+		Filter::setDelimiter('/');
 	}
 	public function testFilterString(){
 		$this->assertEquals(Filter::filterString('  <b><?php echo "biber"; ?></b>what? ') , 'what?');

@@ -47,10 +47,10 @@ class Export_Adapter_Csv extends Export_Adapter_Abstract
 	}
 
 	/**
-	 * Set delimeter
+	 * Set delimiter
 	 * @param string $delimiter
 	 */
-	public function setDelimeter($delimiter)
+	public function setDelimiter($delimiter)
 	{
 		self::$_delimiter = $delimiter;
 	}

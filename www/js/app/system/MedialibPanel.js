@@ -718,7 +718,7 @@ Ext.define('app.medialibPanel',{
 		    var me = this;
 
 			Ext.Ajax.request({
-					url: app.admin + app.delimeter + 'medialib' +  app.delimeter + 'rights',
+					url: app.admin + app.delimiter + 'medialib' +  app.delimiter + 'rights',
 		    		method: 'post',
 		    		timeout:240000,
 		    		success: function(response, request) {
@@ -758,7 +758,7 @@ Ext.define('app.medialibPanel',{
 			    model: 'app.medialibModel',
 			    proxy: {
 			        type: 'ajax',
-			        url: app.admin + app.delimeter + 'medialib' +  app.delimeter + 'list',
+			        url: app.admin + app.delimiter + 'medialib' +  app.delimiter + 'list',
 			        reader: {
 			            type: 'json',
 			            root: 'data',
@@ -1045,7 +1045,7 @@ Ext.define('app.medialibPanel',{
 		deleteItem: function(record){
 			var handler = this;
 			Ext.Ajax.request({
-					url: app.admin + app.delimeter + 'medialib' +  app.delimeter + 'remove',
+					url: app.admin + app.delimiter + 'medialib' +  app.delimiter + 'remove',
 		    		method: 'post',
 		    		timeout:240000,
 		    		params: {

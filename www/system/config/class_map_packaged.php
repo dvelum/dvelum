@@ -47,7 +47,6 @@ $_pkg_Db_Select ='./system/packages/Db_Select.php';
   'Page' => $_pkg_Core,
   'Acl_Table_Simple' => './system/app/Acl/Table/Simple.php',
   'Frontend_Console_Controller' => './system/app/Frontend/Console/Controller.php',
-  'Frontend_Index_Controller' => './system/app/Frontend/Index/Controller.php',
   'Frontend_Docs_Controller' => './system/app/Frontend/Docs/Controller.php',
   'Frontend_Router' => $_pkg_Frontend,
   'Frontend_Api_Controller' => './system/app/Frontend/Api/Controller.php',

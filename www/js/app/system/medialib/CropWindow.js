@@ -82,7 +82,7 @@ Ext.define('app.medialib.CropWindow',{
     crop:function(){
 	var handle = this;
 	Ext.Ajax.request({
-	    url: app.admin + app.delimeter + 'medialib' +  app.delimeter + 'crop',
+	    url: app.admin + app.delimiter + 'medialib' +  app.delimiter + 'crop',
 	    method: 'post',
 	    waitMsg:appLang.SAVING,
 	    params:{

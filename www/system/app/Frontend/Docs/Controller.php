@@ -48,8 +48,8 @@ class Frontend_Docs_Controller extends Frontend_Controller implements Router_Int
             Ext.ns("app");
             app.wwwRoot = "/";
             var canEdit = false; 
-            app.delimeter = "' . $this->_configMain->get('urlDelimeter') . '";
-            app.root = "' . $this->_configMain->get('wwwroot') . $this->_configMain->get('urlDelimeter') . 'docs' . $this->_configMain->get('urlDelimeter') . '";
+            app.delimiter = "' . $this->_configMain->get('urlDelimiter') . '";
+            app.root = "' . $this->_configMain->get('wwwroot') . $this->_configMain->get('urlDelimiter') . 'docs' . $this->_configMain->get('urlDelimiter') . '";
      
          ');
     $this->docsController->run();
