@@ -42,7 +42,7 @@ class Filter
 	
 	protected static $_urlDelimeter = '/';
 	/**
-	 * Set url params delimetr
+	 * Set url params delimeter
 	 * @param string $urlDelimeter
 	 */
 	static public function setDelimeter($urlDelimeter)

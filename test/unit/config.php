@@ -65,7 +65,7 @@ return array(
 		/*
 		 * Url paths delimiter  "_" , "-" or "/"
 		 */
-		'urlDelimetr' => '/',
+		'urlDelimeter' => '/',
 		'urlExtension' => '.html' , 
 		/*
 		 * System language

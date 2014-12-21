@@ -56,7 +56,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
 	
 	public function testGetPart()
 	{
-	    Request::setDelimetr('/');
+	    Request::setDelimeter('/');
 	    $r = Request::getInstance();
 	    $r->setUri('/news/item/1');
 	    
@@ -68,7 +68,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
 	
 	public function testGetSpecialPart()
 	{
-	    Request::setDelimetr('-');
+	    Request::setDelimeter('-');
 	    $r = Request::getInstance();
 	    $r->setUri('/news-item-1');
 	    $this->assertEquals($r->getPart(0) , 'news');

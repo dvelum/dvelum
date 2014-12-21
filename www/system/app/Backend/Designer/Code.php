@@ -139,7 +139,7 @@ class Backend_Designer_Code
 		
 		if(!empty($methods))
 		{
-			Request::setDelimetr($templates['urldelimeter']);
+			Request::setDelimeter($templates['urldelimeter']);
 			Request::setRoot($templates['wwwroot']);
 			foreach ($methods as $method)
 			{
