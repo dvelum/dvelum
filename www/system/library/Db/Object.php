@@ -856,7 +856,7 @@ class Db_Object
     {
     	if($this->_acl){
             try{
-              $this->_checkCanPulish();
+              $this->_checkCanPublish();
             }catch (Exception $e){
               $this->_errors[] = $e->getMessage();
 
@@ -886,7 +886,7 @@ class Db_Object
     {
     	if($this->_acl){
     		try{
-    			$this->_checkCanPulish();
+    			$this->_checkCanPublish();
     		}catch (Exception $e){
     			$this->_errors[] = $e->getMessage();
 
