@@ -300,9 +300,10 @@ Ext.define('app.contentWindow',{
 				title:appLang.HISTORY
 			});
 
+
 			this.eastPanel = Ext.create('Ext.Panel',{
 				region:'east',
-				collapsible:false,
+				collapsible:true,
 				collapsed:this.eastPanelCollapsed,
 				hidden:false,
 				width:300,
