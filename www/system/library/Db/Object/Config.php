@@ -91,7 +91,7 @@ class Db_Object_Config
     {
     	$name = strtolower($name);
       if(!isset(self::$_instances[$name]))
-          self::$_instances[$name] = new self($name);
+          self::$_instances[$name] = new static($name);
 
        return self::$_instances[$name];
     }
