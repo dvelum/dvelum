@@ -307,7 +307,7 @@ Ext.define('app.contentWindow',{
 				collapsed:this.eastPanelCollapsed,
 				hidden:false,
 				width:300,
-				split:true,				
+				split:true,
 				layout:'border',
 				items:[
 				       	this.revisionPanel ,
@@ -375,7 +375,7 @@ Ext.define('app.contentWindow',{
 			
 			if(this.hideEastPanel){
 				this.items = [this.editForm];
-			}else{			
+			}else{
 				this.items = [this.editForm, this.eastPanel];
 			}
 
@@ -423,9 +423,9 @@ Ext.define('app.contentWindow',{
 	    	  this.on('show',function(){
 	    		  this.loadData(this.dataItemId); 
 	    	  },this);
-	      } 
-	      
-	      this.on('show',function(){app.checkSize(this);});
+	      }
+
+	      this.on('show', function(){app.checkSize(this);}, this);
 	  },
 	  /**
 	   * Submit form (save record)
