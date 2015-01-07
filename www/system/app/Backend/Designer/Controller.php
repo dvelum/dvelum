@@ -109,6 +109,7 @@ class Backend_Designer_Controller extends Backend_Controller
 	    $this->_resource->addJs('/js/app/system/designer/lang/'.$this->_config->get('lang').'.js'  , 1);
 		$this->_resource->addCss('/js/app/system/designer/style.css' );		
 		$this->_resource->addCss('/js/lib/CodeMirror/lib/codemirror.css');
+		$this->_resource->addCss('/js/lib/CodeMirror/lib/util/dialog.css');
 		$this->_resource->addCss('/js/lib/CodeMirror/lib/util/simple-hint.css');
 		$this->_resource->addCss('/js/lib/CodeMirror/theme/eclipse.css');
 		
