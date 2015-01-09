@@ -298,6 +298,12 @@ class Db_Object
     	if(!Db_Object_Config::configExists($name))
     		return false;
 
+        try {
+            $cfg = Db_Object_Config::getInstance($name);
+        }catch (Exception $e){
+            return false;
+        }
+
         if(!is_array($ids))
             $ids = array($ids);
 
@@ -307,7 +313,8 @@ class Db_Object
         if(empty($data))
             return false;
 
-        $data = Utils::fetchCol($obj->getConfig()->getPrimaryKey(), $data);
+
+        $data = Utils::fetchCol($cfg->getPrimaryKey(), $data);
 
         foreach ($ids as $v)
             if(!in_array(intval($v) , $data , true))
