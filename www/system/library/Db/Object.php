@@ -298,12 +298,6 @@ class Db_Object
     	if(!Db_Object_Config::configExists($name))
     		return false;
 
-    	try{
-        	$obj = new Db_Object($name);
-    	}catch (Exception $e){
-    		return false;
-    	}
-
         if(!is_array($ids))
             $ids = array($ids);
 
