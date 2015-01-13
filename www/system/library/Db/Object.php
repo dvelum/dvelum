@@ -917,8 +917,8 @@ class Db_Object
     	}
     	$this->published = true;
 
-    	//if($this->getVersion() == 1 || empty($object->date_published))
-    	//	$this->set('date_published' , date('Y-m-d H:i:s'));
+    	if(empty($object->date_published))
+    		$this->set('date_published' , date('Y-m-d H:i:s'));
 
     	$this->editor_id = User::getInstance()->id;
     	$this->published_version = $this->getVersion();
