@@ -110,7 +110,6 @@ Ext.define('app.historyPanel',{
 				        	 sortable:true
 				         },{
 					        header:appLang.USER,
-					        id:'user',
 					        dataIndex:'user_name',
 				        	sortable:true,
 				        	flex:1
