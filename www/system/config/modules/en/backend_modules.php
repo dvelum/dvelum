@@ -158,7 +158,7 @@
     'title' => 'Modules configuration',
     'designer' => '',
     'in_menu' => true,
-  ),
+  ),.cache
   'Page' => 
   array (
     'id' => 'Backend_Page_Controller',

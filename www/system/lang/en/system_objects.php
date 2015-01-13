@@ -1,17 +1,17 @@
 <?php return array (
-  'bgtask_signal' => 
+  'bgtask_signal' =>
   array (
     'title' => 'Background Task Signal',
-    'fields' => 
+    'fields' =>
     array (
       'pid' => 'Task PID',
       'signal' => 'Signal',
     ),
   ),
-  'bgtask' => 
+  'bgtask' =>
   array (
     'title' => 'Background Task',
-    'fields' => 
+    'fields' =>
     array (
       'status' => 'Status',
       'title' => 'Title',
@@ -24,10 +24,10 @@
       'memory_peak' => 'Memory Peak usage',
     ),
   ),
-  'blockmapping' => 
+  'blockmapping' =>
   array (
     'title' => 'Block mapping table',
-    'fields' => 
+    'fields' =>
     array (
       'page_id' => 'Page',
       'place' => 'Place code',
@@ -35,10 +35,10 @@
       'order_no' => 'Sort order',
     ),
   ),
-  'blocks' => 
+  'blocks' =>
   array (
     'title' => 'Blocks',
-    'fields' => 
+    'fields' =>
     array (
       'title' => 'Title',
       'text' => 'Block content',
@@ -50,34 +50,19 @@
       'menu_id' => 'Menu',
     ),
   ),
-  'comment' => 
-  array (
-    'title' => 'Comments',
-    'fields' => 
-    array (
-      'object_name' => 'Commented object name',
-      'object_id' => 'Commented object id',
-      'user_id' => 'Author',
-      'parent_id' => 'Parent Coment',
-      'text' => 'Comment text',
-      'is_hidden' => 'Is Hidden',
-      'date' => 'Date',
-      'checked' => 'Checked',
-    ),
-  ),
-  'group' => 
+  'group' =>
   array (
     'title' => 'User Groups',
-    'fields' => 
+    'fields' =>
     array (
       'title' => 'Title',
       'system' => 'Is System',
     ),
   ),
-  'historylog' => 
+  'historylog' =>
   array (
     'title' => 'History log',
-    'fields' => 
+    'fields' =>
     array (
       'user_id' => 'User',
       'date' => 'Date',
@@ -86,10 +71,10 @@
       'table_name' => 'Db Table',
     ),
   ),
-  'links' => 
+  'links' =>
   array (
     'title' => 'Association Table',
-    'fields' => 
+    'fields' =>
     array (
       'src' => 'Source Object',
       'src_id' => 'Source object ID',
@@ -99,10 +84,10 @@
       'order' => 'Sorting order',
     ),
   ),
-  'medialib' => 
+  'medialib' =>
   array (
     'title' => 'Media library',
-    'fields' => 
+    'fields' =>
     array (
       'title' => 'Title',
       'date' => 'Upload date',
@@ -119,10 +104,10 @@
       'category' => 'Category',
     ),
   ),
-  'menu_item' => 
+  'menu_item' =>
   array (
     'title' => 'Menu Item',
-    'fields' => 
+    'fields' =>
     array (
       'page_id' => 'Page',
       'title' => 'Title',
@@ -136,19 +121,19 @@
       'resource_id' => 'Resource Link',
     ),
   ),
-  'menu' => 
+  'menu' =>
   array (
     'title' => 'Menu',
-    'fields' => 
+    'fields' =>
     array (
       'code' => 'Code',
       'title' => 'Title',
     ),
   ),
-  'online' => 
+  'online' =>
   array (
     'title' => 'Users Online',
-    'fields' => 
+    'fields' =>
     array (
       'ssid' => 'Session Id hash',
       'update_time' => 'Update time',
@@ -156,10 +141,10 @@
       'ids' => '',
     ),
   ),
-  'page' => 
+  'page' =>
   array (
     'title' => 'Pages',
-    'fields' => 
+    'fields' =>
     array (
       'is_fixed' => 'Is Fixed?',
       'parent_id' => 'Parent Page',
@@ -179,10 +164,10 @@
       'default_blocks' => 'Default blocks map',
     ),
   ),
-  'permissions' => 
+  'permissions' =>
   array (
     'title' => 'Permissions',
-    'fields' => 
+    'fields' =>
     array (
       'user_id' => 'User',
       'group_id' => 'User Group',
@@ -193,10 +178,10 @@
       'module' => 'Module',
     ),
   ),
-  'user' => 
+  'user' =>
   array (
     'title' => 'Users',
-    'fields' => 
+    'fields' =>
     array (
       'name' => 'User name',
       'email' => 'Email',
@@ -214,10 +199,10 @@
       'confirmation_date' => 'Confirmation Date',
     ),
   ),
-  'vc' => 
+  'vc' =>
   array (
     'title' => 'Versions storage',
-    'fields' => 
+    'fields' =>
     array (
       'date' => 'Date',
       'record_id' => 'Record id',
@@ -227,134 +212,30 @@
       'version' => 'Version',
     ),
   ),
-  'apikeys' => 
+  'apikeys' =>
   array (
     'title' => 'API Keys',
-    'fields' => 
+    'fields' =>
     array (
       'name' => 'Name',
       'hash' => 'Hash',
       'active' => 'Active',
     ),
   ),
-  'vendor_news' => 
-  array (
-    'title' => 'Vendor News Storage',
-    'fields' => 
-    array (
-      'title' => 'Title',
-      'text' => 'Text',
-      'news_date' => 'Date',
-    ),
-  ),
-  'dvelum_articles' => 
-  array (
-    'title' => 'Articles',
-    'fields' => 
-    array (
-      'text' => 'Text',
-      'main_topic' => 'Topic',
-      'title' => 'Headline',
-      'brief' => 'Brief',
-      'code' => 'Code',
-      'allow_comments' => 'Allow comments',
-      'related_topics' => 'Related Topics',
-      'allow_votes' => 'Allow votes',
-      'meta_keywords' => 'Meta Keywords',
-      'meta_description' => 'Meta description',
-      'image' => 'Image',
-    ),
-  ),
-  'dvelum_comments' => 
-  array (
-    'title' => 'Comments',
-    'fields' => 
-    array (
-      'object_name' => 'Commented object name',
-      'object_id' => 'Commented object id',
-      'user_id' => 'Author',
-      'parent_id' => 'Parent Coment',
-      'text' => 'Comment text',
-      'is_hidden' => 'Is Hidden',
-      'date' => 'Date',
-      'checked' => 'Checked',
-    ),
-  ),
-  'dvelum_topics' => 
-  array (
-    'title' => 'Topics',
-    'fields' => 
-    array (
-      'code' => 'Code',
-      'title' => 'Title',
-      'parent_id' => 'Parent Topic',
-      'order_no' => 'Sorting Order',
-    ),
-  ),
-  'dvelum_vote' => 
-  array (
-    'title' => 'Votes',
-    'fields' => 
-    array (
-      'object_name' => 'Commented object name',
-      'object_id' => 'Commented object id',
-      'user_id' => 'Author',
-      'value' => 'Vote value',
-    ),
-  ),
-  'dvelum_news' => 
-  array (
-    'title' => 'DVelum News',
-    'fields' => 
-    array (
-      'title' => 'Title',
-      'text' => 'Text',
-      'news_date' => 'Date',
-    ),
-  ),
-  'dvelum_votes' => 
-  array (
-    'title' => 'Votes Data',
-    'fields' => 
-    array (
-      'object_name' => 'object_name',
-      'object_id' => 'object_id',
-      'user_id' => 'user_id',
-      'value' => 'value',
-    ),
-  ),
-  'testdate' => 
-  array (
-    'title' => 'testdate',
-    'fields' => 
-    array (
-      'title' => 'title',
-      'date' => 'date',
-    ),
-  ),
-  'testdatetwo' => 
-  array (
-    'title' => 'testdatetwo',
-    'fields' => 
-    array (
-      'title' => 'title',
-      'date' => 'date',
-    ),
-  ),
-  'mediacategory' => 
+  'mediacategory' =>
   array (
     'title' => 'Medialibrary category',
-    'fields' => 
+    'fields' =>
     array (
       'title' => 'Title',
       'parent_id' => 'Parent category',
       'order_no' => 'Sorting order',
     ),
   ),
-  'acl_simple' => 
+  'acl_simple' =>
   array (
     'title' => 'Simple ACL',
-    'fields' => 
+    'fields' =>
     array (
       'user_id' => 'user_id',
       'group_id' => 'group_id',
@@ -365,10 +246,10 @@
       'object' => 'object',
     ),
   ),
-  'filestorage' => 
+  'filestorage' =>
   array (
     'title' => 'Filestorage',
-    'fields' => 
+    'fields' =>
     array (
       'path' => 'File path',
       'date' => 'Upload date',
@@ -378,120 +259,14 @@
       'name' => 'File name',
     ),
   ),
-  'sysdocs_class' => 
-  array (
-    'title' => 'DVelum documentation. Class',
-    'fields' => 
-    array (
-      'description' => 'Description (in code)',
-      'itemType' => 'Item type',
-      'fileId' => 'File ID',
-      'parentId' => 'Parent ID',
-      'vers' => 'Version',
-      'name' => 'Name',
-      'namespace' => 'Namespace',
-      'deprecated' => 'Deprecated',
-      'hid' => 'Histrory ID',
-      'abstract' => 'Is Abstract?',
-      'fileHid' => 'File hid',
-      'implements' => 'Implements',
-      'extends' => 'Extends',
-    ),
-  ),
-  'sysdocs_class_method' => 
-  array (
-    'title' => 'DVelum documentation. Method',
-    'fields' => 
-    array (
-      'classId' => 'Class Id',
-      'name' => 'Name',
-      'deprecated' => 'Deprecated',
-      'description' => 'Description (in code)',
-      'throws' => 'Throws',
-      'hid' => 'History ID',
-      'abstract' => 'Is Abstract?',
-      'static' => 'Is Static?',
-      'visibility' => 'Visibility',
-      'vers' => 'Vesrion',
-      'returnType' => 'Return type',
-      'classHid' => 'Class Hid',
-      'final' => 'Final',
-      'inherited' => 'Inherited',
-      'returnsReference' => 'Returns Reference',
-    ),
-  ),
-  'sysdocs_class_property' => 
-  array (
-    'title' => 'DVelum documentation. Property',
-    'fields' => 
-    array (
-      'deprecated' => 'Deprecated',
-      'hid' => 'History ID',
-      'vers' => 'Version',
-      'name' => 'Name',
-      'description' => 'Description (in code)',
-      'const' => 'Constant',
-      'static' => 'Static',
-      'visibility' => 'Visibility',
-      'type' => 'Value type',
-      'classId' => 'Class ID',
-      'constValue' => 'Constant Value',
-      'classHid' => 'Class Hid',
-      'inherited' => 'Inherited',
-    ),
-  ),
-  'sysdocs_localization' => 
-  array (
-    'title' => 'DVelum documentation. Localization',
-    'fields' => 
-    array (
-      'lang' => 'Language',
-      'field' => 'Field',
-      'object_id' => 'Object ID',
-      'value' => 'Value',
-      'vers' => 'Version',
-      'object_class' => 'Object Class',
-      'hid' => 'Hash Code',
-    ),
-  ),
-  'sysdocs_file' => 
-  array (
-    'title' => 'DVelum documentation. File',
-    'fields' => 
-    array (
-      'path' => 'File path',
-      'isDir' => 'Is Dir',
-      'name' => 'Name',
-      'vers' => 'Version',
-      'hid' => 'History ID',
-      'parentId' => 'Parent ID',
-    ),
-  ),
-  'sysdocs_class_method_param' => 
-  array (
-    'title' => 'DVelum documentation. Class method param',
-    'fields' => 
-    array (
-      'methodId' => 'Method ID',
-      'hid' => 'History ID',
-      'name' => 'Name',
-      'vers' => 'Version',
-      'index' => 'Sequence number',
-      'default' => 'Default value',
-      'isRef' => 'Argument passed by reference',
-      'description' => 'Description (in code)',
-      'methodHid' => 'Method Hid',
-      'optional' => 'Optional',
-    ),
-  ),
-  'error_log' => 
+  'error_log' =>
   array (
     'title' => 'Error log',
-    'fields' => 
+    'fields' =>
     array (
       'name' => 'Source name',
       'message' => 'Message',
       'date' => 'Date',
     ),
   ),
-); 
+);
