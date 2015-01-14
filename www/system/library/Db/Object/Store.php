@@ -15,6 +15,9 @@ class Db_Object_Store
      * @var Db_Object_Event_Manager (optional)
      */
     protected $_eventManager = null;
+    /**
+     * @var Log
+     */
     protected $_log = false;
     protected $_linksObject = 'Links';
     protected $_historyObject = 'Historylog';
@@ -217,7 +220,8 @@ class Db_Object_Store
      * Unpublish Db_Objects
      * @param Db_Object $object
      * @param boolean $log - optional, log changes
-     * @param string $transaction
+     * @param boolean $transaction - optional, default false
+     * @return bool
      */
     public function unpublish(Db_Object $object , $log , $transaction = true)
     {
@@ -301,7 +305,8 @@ class Db_Object_Store
     * Publish Db_Object
     * @param Db_Object $object
     * @param boolean $log - optional, log changes
-    * @param string $transaction
+    * @param boolean $transaction - optional, default true
+    * @return boolean
     */
     public function publish(Db_Object $object  , $log , $transaction = true)
     {
@@ -403,11 +408,13 @@ class Db_Object_Store
         }
         return true;
     }
+
     /**
      * Remove object multy links
      * @param Db_Object $object
      * @param string $objectField
      * @param string $targetObjectName
+     * @return bool
      */
     protected function _clearLinks(Db_Object $object ,$objectField , $targetObjectName)
     {
@@ -439,6 +446,7 @@ class Db_Object_Store
      * @param string $objectField
      * @param string $targetObjectName
      * @param array $links
+     * @return boolean
      */
     protected function _createLinks(Db_Object $object, $objectField , $targetObjectName , array $links)
     {
@@ -586,7 +594,7 @@ class Db_Object_Store
 	 * Add new object version
 	 * @param Db_Object $object
      * @param boolean $log - optional, log changes
-     * @param boolean $transaction - optional , use transaction if available
+     * @param boolean $useTransaction - optional , use transaction if available
 	 * @return boolean|integer - vers number
 	 */
     public function addVersion(Db_Object $object , $log = true , $useTransaction = true)
@@ -623,26 +631,26 @@ class Db_Object_Store
     	* Create new revision
     	*/
     	$versNum = Model::factory($this->_versionObject)->newVersion($object);
+
     	if(!$versNum)
     		return false;
 
     	try{
-    		$oldObject = new Db_Object($object->getName() , $object->getId());
-    		/**
+            $oldObject = new Db_Object($object->getName() , $object->getId());
+            /**
     		 * Update object if not published
     		 */
-    		if(!$oldObject->get('published')){
-    			$data = $object->getData();
+            if(!$oldObject->get('published')){
+                $data = $object->getData();
 
     			foreach($data as $k => $v)
     				if(!is_null($v))
     					$oldObject->set($k , $v);
-    		}
 
-    		if(!$oldObject->save(false , $useTransaction))
-    		 	return false;
-
-    	}catch(Exception $e){
+                if(!$oldObject->save(false , $useTransaction))
+                    return false;
+            }
+        }catch(Exception $e){
     		return false;
     	}
 
@@ -735,7 +743,7 @@ class Db_Object_Store
     }
     /**
      * Delete Db object
-     * @param string $object
+     * @param string $objectName
      * @param array $ids
      * @return boolean
      */
