@@ -66,16 +66,16 @@ class Db_Object
     protected $_version = 0;
 
     /**
-      * The object constructor takes its name and identifier,
-	  * (the parameter is not required), if absent,
-	  * there will be created a new object. If ORM lacks the object with the specified
-	  * identifier, an Exception will show up
-	  * Using this method is highly undesirable,
-	  * the factory method Db_Object::factory() is more advisable to use
-	  * @param string $name
-	  * @param integer $id - optional
-	  * @throws Exception
-    */
+     * The object constructor takes its name and identifier,
+     * (the parameter is not required), if absent,
+     * there will be created a new object. If ORM lacks the object with the specified
+     * identifier, an Exception will show up
+     * Using this method is highly undesirable,
+     * the factory method Db_Object::factory() is more advisable to use
+     * @param string $name
+     * @param bool|int $id - optional
+     * @throws Exception
+     */
     public function __construct($name, $id = false)
     {
         $this->_name = strtolower($name);
@@ -289,6 +289,7 @@ class Db_Object
             	return $dictionary->isValidKey($value);
             	break;
         }
+        return false;
     }
 
     /**
@@ -343,6 +344,7 @@ class Db_Object
      * Set the object field val
      * @param string $name
      * @param mixed $value
+     * @return bool
      * @throws Exception
      */
     public function set($name , $value)
@@ -536,6 +538,7 @@ class Db_Object
      * Get the initial object field value (received from the database)
      * whether the field value was updated or not
      * @param string $name - field name
+     * @throws Exception
      * @return mixed
      */
     public function getOld($name)
@@ -666,6 +669,7 @@ class Db_Object
     /**
      * Serialize multilink properties
      * @param array $data
+     * @return array
      */
     public function serializeLinks($data)
     {
@@ -694,13 +698,18 @@ class Db_Object
             if(!$this->_config->isUnique($k))
             	continue;
 
+            $value  = $this->get($k);
+            if(is_array($value))
+                $value = serialize($value);
+
             if(is_array($v['unique']))
             {
                 foreach ($v['unique'] as $val)
                 {
                     if(!isset($uniqGroups[$val]))
                         $uniqGroups[$val] = array();
-                 	$uniqGroups[$val][$k] = $this->get($k);
+
+                 	$uniqGroups[$val][$k] = $value;
                 }
             }
             else
@@ -710,7 +719,7 @@ class Db_Object
             	if(!isset($uniqGroups[$v['unique']]))
                     $uniqGroups[$v['unique']] = array();
 
-                $uniqGroups[$v['unique']][$k] = $this->get($k);
+                $uniqGroups[$v['unique']][$k] = $value;
             }
         }
 
@@ -923,7 +932,7 @@ class Db_Object
     	}
     	$this->published = true;
 
-    	if(empty($object->date_published))
+    	if(empty($this->date_published))
     		$this->set('date_published' , date('Y-m-d H:i:s'));
 
     	$this->editor_id = User::getInstance()->id;
