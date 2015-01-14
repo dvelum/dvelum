@@ -31,6 +31,7 @@ class Model_Vc extends Model
                return false;
 
        } catch (Exception $e){
+              $this->logError('Cannot create new version for '.$object->getName().'::'.$object->getId());
               return false;
        }
     }

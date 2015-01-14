@@ -153,6 +153,10 @@ class Db_Object
 
         $data = $this->_data;
         $data[$this->_primaryKey] = $this->_id;
+
+        foreach ($this->_updates as $k=>$v)
+        	$this->_data[$k] = $v;
+
         return $data;
     }
     /**
@@ -794,6 +798,7 @@ class Db_Object
     {
         $emptyFields = array();
         $fields = $this->getFields();
+
         foreach ($fields as $name)
         {
           if(!$this->_config->isRequired($name))
@@ -1014,10 +1019,12 @@ class Db_Object
     	}
 
     	$store  = $this->_model->getStore();
+
     	if(self::$_log)
     		$store->setLog(self::$_log);
 
 		$vers = $store->addVersion($this , $log , $useTransaction);
+
 		if($vers){
 			$this->_version = $vers;
 			return true;
