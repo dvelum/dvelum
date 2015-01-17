@@ -159,6 +159,7 @@ class Backend_Modules_Generator_Oop
       $dataGrid->setName('dataGrid');
       $dataGrid->store = 'dataStore';
       $dataGrid->columnLines = true;
+      $dataGrid->minHeight = 400;
       $dataGrid->title = $objectConfig->getTitle() . ' :: ' . $lang->HOME;
       $dataGrid->setAdvancedProperty('paging' , true);
       $dataGrid->viewConfig = '{enableTextSelection: true}';
@@ -501,6 +502,7 @@ class Backend_Modules_Generator_Oop
       $dataGrid->title = $objectConfig->getTitle() . ' :: ' . $lang->HOME;
       $dataGrid->setAdvancedProperty('paging' , true);
       $dataGrid->viewConfig = '{enableTextSelection: true}';
+      $dataGrid->minHeight = 400;
       $dataGrid->extendedComponent(true);
 
       $this->addGridMethods($project , $dataGrid);
