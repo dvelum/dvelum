@@ -93,18 +93,17 @@ class Designer_Factory
 			
 			if($renderTo)
 			{
-			  $backofficeContainer = 'app_'.$renderTo;
       		  $renderTo = str_replace('-', '_', $renderTo);
       		  $initCode.= '
-      		    var '.$backofficeContainer.' = Ext.create("Ext.container.Container", {
-      		        layout:"fit",
-      		        renderTo:"'.$renderTo.'"
-      		    });
+				app.content = Ext.create("Ext.container.Container", {
+					layout:"fit",
+					renderTo:"'.$renderTo.'"
+				});
       		   ';
 
 			  $initCode.='
-			      '.$backofficeContainer.'.add('.Ext_Code::appendRunNamespace($name).');
-			      '.$backofficeContainer.'.doComponentLayout(true);
+			      app.content.add('.Ext_Code::appendRunNamespace($name).');
+			      app.content.doComponentLayout();
 			      ';
 			}else{
 			  $initCode.='app.content.add('.Ext_Code::appendRunNamespace($name).');';

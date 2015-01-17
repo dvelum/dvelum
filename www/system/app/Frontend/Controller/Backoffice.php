@@ -53,8 +53,8 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
     public function __construct()
     {
         $this->_page = Page::getInstance();
-	      $this->_resource = Resource::getInstance();  
-	      $this->_module = $this->getModule();
+        $this->_resource = Resource::getInstance();
+        $this->_module = $this->getModule();
         $this->_lang = Lang::lang();
         $this->_db = static::$_defaultDb;
         $this->_configMain = Registry::get('main' , 'config');
@@ -92,22 +92,20 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
         $this->_resource->addJs('/js/lib/extjs4/ext-all-debug.js' , 0 , true , 'head');
         $this->_resource->addJs('/js/lang/'.$this->_configMain['language'].'.js', 1 , true , 'head');
         $this->_resource->addJs('/js/lib/extjs4/locale/ext-lang-'.$this->_configMain['language'].'.js', 2 , true , 'head');
+        $this->_resource->addJs('/js/app/frontend/application.js', 3 , false ,  'head');
         $this->_resource->addJs('/js/app/system/common.js', 3 , false ,  'head');
-        
-        $this->_resource->addJs('/js/app/system/ContentWindow.js' , 1);
-        $this->_resource->addJs('/js/app/system/RevisionPanel.js' , 2);
-        
+
         $this->_resource->addJs('/js/lib/extjs4/ext-theme-gray.js' , 2);
         $this->_resource->addCss('/js/lib/extjs4/resources/css/ext-all-gray.css');
         $this->_resource->addCss('/templates/system/default/css/style.css');
-        
+
         $this->_resource->addInlineJs('
+           var developmentMode = '.intval($this->_configMain->get('development')).';
            app.wwwRoot = "' . $this->_configMain->get('wwwroot') . '";    
            app.delimiter = "'.$this->_configMain->get('urlDelimiter') . '";
            app.admin = "' . $this->_configMain->get('wwwroot') .  $this->_configMain->get('adminPath').'";
         ');
-        
-      
+
         if($cfg->getCount())
         {
            $js = $cfg->get('js');
@@ -169,11 +167,13 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
     }
 
     public function indexAction()
-    {     
+    {
+        var_dump($this->_module);
+
       $this->_resource->addInlineJs('
 	     var canEdit = ' . intval($this->_user->canEdit($this->_module)) . ';
 	     var canDelete = ' . intval($this->_user->canDelete($this->_module)) . ';
-       var canPublish = ' . intval($this->_user->canPublish($this->_module)) . ';
+         var canPublish = ' . intval($this->_user->canPublish($this->_module)) . ';
 	    ');
       $this->includeScripts();
     }
