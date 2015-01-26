@@ -21,26 +21,16 @@ class Upload
 	 */
 	static public function createDirs($root , $path)
 	{
-		$path = str_replace($root . '/' , '' , $path);
+		$path = str_replace('//' , '' , $root.'/'.$path);
 
-		$paths = explode('/' , $path);
-		$curPath = $root . '/';
-
-		foreach($paths as $k)
-		{
-			$curPath .= $k . '/';
-
-			if(!strlen($k))
-				continue;
-
-			if(!is_dir($curPath))
-			{
-				if(!@mkdir($curPath, 0775 , true))
-				{
-					return false;
-				}
-			}
+		if(file_exists($path)){
+			return true;
 		}
+
+		if(!@mkdir($path, 0775 , true)) {
+			return false;
+		}
+
 		return true;
 	}
 
