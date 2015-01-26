@@ -30,16 +30,15 @@ class Upload
 		{
 			$curPath .= $k . '/';
 
-			if(empty($k))
+			if(!strlen($k))
 				continue;
 
 			if(!is_dir($curPath))
 			{
-				if(!@mkdir($curPath))
+				if(!@mkdir($curPath, 0775 , true))
 				{
 					return false;
 				}
-				@chmod($curPath , 0775);
 			}
 		}
 		return true;
