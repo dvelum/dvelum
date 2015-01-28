@@ -12,6 +12,6 @@
 			</div>
 		</div><!--end:page-->
     </div><!--end:page_wrap-->
-	<?php echo $this->get('resource')->includeJs(true , false); ?>
+	<?php echo $this->get('resource')->includeJs(true , true); ?>
 </body>
 </html>

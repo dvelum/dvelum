@@ -66,16 +66,16 @@ class Db_Object
     protected $_version = 0;
 
     /**
-      * The object constructor takes its name and identifier,
-	  * (the parameter is not required), if absent,
-	  * there will be created a new object. If ORM lacks the object with the specified
-	  * identifier, an Exception will show up
-	  * Using this method is highly undesirable,
-	  * the factory method Db_Object::factory() is more advisable to use
-	  * @param string $name
-	  * @param integer $id - optional
-	  * @throws Exception
-    */
+     * The object constructor takes its name and identifier,
+     * (the parameter is not required), if absent,
+     * there will be created a new object. If ORM lacks the object with the specified
+     * identifier, an Exception will show up
+     * Using this method is highly undesirable,
+     * the factory method Db_Object::factory() is more advisable to use
+     * @param string $name
+     * @param bool|int $id - optional
+     * @throws Exception
+     */
     public function __construct($name, $id = false)
     {
         $this->_name = strtolower($name);
@@ -153,6 +153,10 @@ class Db_Object
 
         $data = $this->_data;
         $data[$this->_primaryKey] = $this->_id;
+
+        foreach ($this->_updates as $k=>$v)
+        	$this->_data[$k] = $v;
+
         return $data;
     }
     /**
@@ -285,6 +289,7 @@ class Db_Object
             	return $dictionary->isValidKey($value);
             	break;
         }
+        return false;
     }
 
     /**
@@ -298,11 +303,11 @@ class Db_Object
     	if(!Db_Object_Config::configExists($name))
     		return false;
 
-    	try{
-        	$obj = new Db_Object($name);
-    	}catch (Exception $e){
-    		return false;
-    	}
+        try {
+            $cfg = Db_Object_Config::getInstance($name);
+        }catch (Exception $e){
+            return false;
+        }
 
         if(!is_array($ids))
             $ids = array($ids);
@@ -313,7 +318,8 @@ class Db_Object
         if(empty($data))
             return false;
 
-        $data = Utils::fetchCol($obj->getConfig()->getPrimaryKey(), $data);
+
+        $data = Utils::fetchCol($cfg->getPrimaryKey(), $data);
 
         foreach ($ids as $v)
             if(!in_array(intval($v) , $data , true))
@@ -338,6 +344,7 @@ class Db_Object
      * Set the object field val
      * @param string $name
      * @param mixed $value
+     * @return bool
      * @throws Exception
      */
     public function set($name , $value)
@@ -531,6 +538,7 @@ class Db_Object
      * Get the initial object field value (received from the database)
      * whether the field value was updated or not
      * @param string $name - field name
+     * @throws Exception
      * @return mixed
      */
     public function getOld($name)
@@ -661,6 +669,7 @@ class Db_Object
     /**
      * Serialize multilink properties
      * @param array $data
+     * @return array
      */
     public function serializeLinks($data)
     {
@@ -689,13 +698,18 @@ class Db_Object
             if(!$this->_config->isUnique($k))
             	continue;
 
+            $value  = $this->get($k);
+            if(is_array($value))
+                $value = serialize($value);
+
             if(is_array($v['unique']))
             {
                 foreach ($v['unique'] as $val)
                 {
                     if(!isset($uniqGroups[$val]))
                         $uniqGroups[$val] = array();
-                 	$uniqGroups[$val][$k] = $this->get($k);
+
+                 	$uniqGroups[$val][$k] = $value;
                 }
             }
             else
@@ -705,7 +719,7 @@ class Db_Object
             	if(!isset($uniqGroups[$v['unique']]))
                     $uniqGroups[$v['unique']] = array();
 
-                $uniqGroups[$v['unique']][$k] = $this->get($k);
+                $uniqGroups[$v['unique']][$k] = $value;
             }
         }
 
@@ -793,6 +807,7 @@ class Db_Object
     {
         $emptyFields = array();
         $fields = $this->getFields();
+
         foreach ($fields as $name)
         {
           if(!$this->_config->isRequired($name))
@@ -856,7 +871,7 @@ class Db_Object
     {
     	if($this->_acl){
             try{
-              $this->_checkCanPulish();
+              $this->_checkCanPublish();
             }catch (Exception $e){
               $this->_errors[] = $e->getMessage();
 
@@ -886,7 +901,7 @@ class Db_Object
     {
     	if($this->_acl){
     		try{
-    			$this->_checkCanPulish();
+    			$this->_checkCanPublish();
     		}catch (Exception $e){
     			$this->_errors[] = $e->getMessage();
 
@@ -917,8 +932,8 @@ class Db_Object
     	}
     	$this->published = true;
 
-    	//if($this->getVersion() == 1 || empty($object->date_published))
-    	//	$this->set('date_published' , date('Y-m-d H:i:s'));
+    	if(empty($this->date_published))
+    		$this->set('date_published' , date('Y-m-d H:i:s'));
 
     	$this->editor_id = User::getInstance()->id;
     	$this->published_version = $this->getVersion();
@@ -1013,10 +1028,12 @@ class Db_Object
     	}
 
     	$store  = $this->_model->getStore();
+
     	if(self::$_log)
     		$store->setLog(self::$_log);
 
 		$vers = $store->addVersion($this , $log , $useTransaction);
+
 		if($vers){
 			$this->_version = $vers;
 			return true;
