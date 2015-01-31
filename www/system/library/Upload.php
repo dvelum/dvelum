@@ -21,7 +21,7 @@ class Upload
 	 */
 	static public function createDirs($root , $path)
 	{
-		$path = str_replace('//' , '' , $root.'/'.$path);
+		$path = str_replace('//' , '/' , $root.'/'.$path);
 
 		if(file_exists($path)){
 			return true;
