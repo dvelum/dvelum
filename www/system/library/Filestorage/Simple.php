@@ -46,7 +46,7 @@ class Filestorage_Simple extends Filestorage_Abstract
     			foreach ($cfg as $item){
     				$item['old_name'] = $item['name'];
     				if($this->_config->get('rename')){
-    					$item['name'] = time().File::getExt($item['name']);
+    					$item['name'] = time() . uniqid('-') .File::getExt($item['name']);
     				}
     				$files[]= $item;
     			}
@@ -54,7 +54,7 @@ class Filestorage_Simple extends Filestorage_Abstract
     		}else{
     			$cfg['old_name'] = $cfg['name'];
     			if($this->_config->get('rename')){
-    				$cfg['name'] = time().File::getExt($cfg['name']);
+    				$cfg['name'] = time() . uniqid('-') .File::getExt($cfg['name']);
     			}
     			$files[]= $cfg;
     		}
@@ -129,7 +129,7 @@ class Filestorage_Simple extends Filestorage_Abstract
         }
 
         if($this->_config->get('rename')){
-            $fileName = time() . File::getExt($fileName);
+            $fileName = time() . uniqid('-') . File::getExt($fileName);
         }
 
         $files = array(
