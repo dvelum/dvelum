@@ -136,7 +136,7 @@ Ext.define('app.crud.orm.DictionaryWindow', {
 		        url:this.controllerUrl + 'list',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        }
 		    },
@@ -214,7 +214,7 @@ Ext.define('app.crud.orm.DictionaryWindow', {
 		        url:this.controllerUrl + 'records',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        }
 		    },

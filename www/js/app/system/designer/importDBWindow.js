@@ -40,7 +40,7 @@ Ext.define('designer.importDBWindow',{
 						url:app.createUrl([app.admin , 'orm' , 'connectiontypes']),
 						reader: {
 				            type: 'json',
-				            root: 'data',
+							rootProperty: 'data',
 				            idProperty: 'id'
 				        }
 		  		    },
@@ -77,7 +77,7 @@ Ext.define('designer.importDBWindow',{
 					url:app.createUrl([app.admin , 'orm' , 'connectionslist']),
 					reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            idProperty: 'id'
 			        }
 	  		    },
@@ -113,7 +113,7 @@ Ext.define('designer.importDBWindow',{
 					url:app.createUrl([app.admin , 'orm' , 'connections','tablelist']),
 					reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            idProperty: 'id'
 			        }
 	  		    },
@@ -150,7 +150,7 @@ Ext.define('designer.importDBWindow',{
 					reader:{
 						type:'json',
 						idProperty:'name',
-						root:'data'
+						rootProperty:'data'
 					}
 				},
 				autoLoad:false,

@@ -1,4 +1,10 @@
-Ext.define('app.selectWindow',{	
+/**
+ *
+ * @event addItemCall
+ * @param record
+ *
+ */
+Ext.define('app.selectWindow',{
     extend:'Ext.Window',  
     dataPanel:null,
     constructor: function(config) {	
@@ -28,14 +34,6 @@ Ext.define('app.selectWindow',{
 	                ];
 
 	this.callParent(arguments);
-
-	this.addEvents(
-		/**
-		 * @event addItemCall
-		 * @param record
-		 */
-		'itemSelected'
-	); 
 
 	this.down('gridpanel').on('itemdblclick' ,function(view , record , number , event , options){
 	    this.sendSelected(record);

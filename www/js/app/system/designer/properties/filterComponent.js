@@ -16,7 +16,7 @@ Ext.define('designer.properties.FilterComponent',{
 			    	url:this.controllerUrl + 'storefields',
 			        reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            idProperty: 'id'
 			        },
 			        extraParams:{

@@ -25,7 +25,7 @@ Ext.define('designer.grid.column.ActionsWindow',{
 		reader: {
 		    type: 'json',
 		    idProperty: 'id',
-		    root:'data'	
+			rootProperty:'data'
 		},
 		extraParams:{
 		    object:this.objectName,

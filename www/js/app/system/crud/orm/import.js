@@ -39,7 +39,7 @@ Ext.define('app.orm.import.Window',{
 					reader:{
 						type:'json',
 						idProperty:'name',
-						root:'data'
+						rootProperty:'data'
 					},
 					extraParams:{
 						'type':0,
@@ -78,7 +78,7 @@ Ext.define('app.orm.import.Window',{
 						url:app.createUrl([app.admin , 'orm' , 'connectiontypes']),
 						reader: {
 				            type: 'json',
-				            root: 'data',
+							rootProperty: 'data',
 				            idProperty: 'id'
 				        }
 		  		    },
@@ -116,7 +116,7 @@ Ext.define('app.orm.import.Window',{
 					url:app.createUrl([app.admin , 'orm' , 'connectionslist']),
 					reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            idProperty: 'id'
 			        }
 	  		    },

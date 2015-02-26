@@ -14,6 +14,13 @@ app.medialib.typesStore = Ext.create('Ext.data.Store',{
 /**
  * Media library item edit window
  * @extend {Ext.Window}
+ *
+ *
+ * @event sizeSelected
+ * @param string size
+ *
+ * @event selectCanceled
+ *
  */
 Ext.define('app.imageSizeWindow',{
 
@@ -101,20 +108,7 @@ Ext.define('app.imageSizeWindow',{
 			     }
 			 ];
 
-
 		 	this.callParent();
-	        this.addEvents(
-	            /**
-	             * @event sizeSelected
-	             * @param string size
-	             */
-	           'sizeSelected',
-	           /**
-	            * @event selectCanceled
-	            */
-	           'selectCanceled'
-	       );
-
 	  }
 });
 
@@ -140,6 +134,8 @@ Ext.define('app.medialibFilesModel', {
  * Media library file upload  Window
  * @author Kirill Egorov 2011
  * @extend Ext.Window
+ *
+ * @event filesuploaded
  */
 Ext.define('app.fileUploadWindow',{
 	extend:'Ext.Window',
@@ -531,8 +527,6 @@ Ext.define('app.fileUploadWindow',{
 		this.items=[this.contentPanel];
 
 		this.callParent();
-
-		this.addEvents('filesuploaded');
 	},
 	onMFilesImageLoaded:function(index , icon){
 		var store = this.multipleUploadedGrid.getStore();
@@ -674,6 +668,8 @@ Ext.define('app.medialibModel', {
  * Media library panel component
  * @author Kirill Egorov 2011
  * @extend Ext.Panel
+ *
+ * @event rightsChecked
  */
 Ext.define('app.medialibPanel',{
 		extend:'Ext.Panel',
@@ -740,7 +736,6 @@ Ext.define('app.medialibPanel',{
 	   },
 	   initComponent:function(){
 		   this.callParent();
-		   this.addEvents('rightsChecked');
 
 		   if(this.checkRights){
 			   this.getRights();
@@ -761,7 +756,7 @@ Ext.define('app.medialibPanel',{
 			        url: app.admin + app.delimiter + 'medialib' +  app.delimiter + 'list',
 			        reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            totalProperty: 'count',
 			            idProperty: 'id'
 			        },
@@ -1065,7 +1060,12 @@ Ext.define('app.medialibPanel',{
 		    	});
 		}
 });
-
+/**
+ *
+ * @event itemSelected
+ * @param {Ext.data.Record} record
+ *
+ */
 Ext.define('app.selectMediaItemWindow',{
 	extend:'Ext.Window',
 	/**
@@ -1146,12 +1146,5 @@ Ext.define('app.selectMediaItemWindow',{
 		];
 
 		this.callParent(arguments);
-        this.addEvents(
-            /**
-             * @event itemSelected
-             * @param {Ext.data.Record} record
-             */
-            'itemSelected'
-        );
 	}
 });

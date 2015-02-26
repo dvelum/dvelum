@@ -54,7 +54,7 @@ Ext.define('designer.iconSelectorWindow',{
                     url: this.controllerUrl + this.imagesAction,
                     reader: {
                         type: 'json',
-                        root: 'data'
+						rootProperty: 'data'
                     },
             		autoLoad:false
                 }

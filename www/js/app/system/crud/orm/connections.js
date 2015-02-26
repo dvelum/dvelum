@@ -44,7 +44,7 @@ Ext.define('app.orm.connections.Window',{
 		    	},
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 			    simpleSortMode: true

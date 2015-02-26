@@ -438,7 +438,7 @@ Ext.define('app.crud.page.Panel',{
 		url:app.root +  'list',
 		reader: {
 		    type: 'json',
-		    root: 'data',
+			rootProperty: 'data',
 		    idProperty: 'id'
 		},
 		simpleSortMode: true

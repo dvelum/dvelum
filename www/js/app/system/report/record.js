@@ -1,3 +1,8 @@
+/**
+ *
+ * @event dataChanged
+ *
+ */
 Ext.define('app.report.RecordField',{
 	extend:'Ext.panel.Panel',
 	alias:'widget.reportfield',
@@ -126,13 +131,7 @@ Ext.define('app.report.RecordField',{
 			this.items.push(this.childPanel);
 		}
 		
-		this.callParent(arguments);		
-		this.addEvents(
-				/**
-	             * @event dataChanged
-	             */
-				'dataChanged'
-		);
+		this.callParent(arguments);
 	},
 	loadPart:function(){
 		var me = this;
@@ -204,7 +203,7 @@ Ext.define('app.report.RecordField',{
 	 		params:{
 	 			subobject : me.valueSubObject,
 	 			partid: me.valuePartId,
-	 			objectfield:me.valueField,
+	 			objectfield:me.valueField
 	 		},
 	        success: function(response, request) {
 	 			response =  Ext.JSON.decode(response.responseText);
@@ -253,7 +252,11 @@ Ext.define('app.report.RecordField',{
 		});
 	}
 });
-
+/**
+ * @event partRemoved
+ * @event dataChanged
+ *
+ */
 Ext.define('app.report.RecordJoinSelector',{
 	extend:'Ext.panel.Panel',
 	alias:'widget.joinselector',
@@ -304,17 +307,6 @@ Ext.define('app.report.RecordJoinSelector',{
 		
 		this.tbar = [this.deleteButton , appLang.JOIN_TYPE, this.dataCombo];
 		this.callParent(arguments);
-		
-		this.addEvents(
-				/**
-	             * @event objectAdded
-	             */
-				'partRemoved',
-				/**
-				 * @event Join type changed
-				 */
-				'dataChanged'
-		);  
 	},
 	joinSelected:function(){
 		var me = this;

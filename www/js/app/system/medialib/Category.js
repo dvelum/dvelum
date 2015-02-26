@@ -1,5 +1,12 @@
 Ext.ns('app.medialib');
-
+/**
+ *
+ *
+ * @event itemSelected id
+ *
+ * @event itemsPlaced
+ *
+ */
 Ext.define('app.medialib.CategoryTree',{
 	extend:'Ext.tree.Panel',
 	controllerUrl:'',
@@ -126,17 +133,6 @@ Ext.define('app.medialib.CategoryTree',{
 				}		    
 			},this);
 		}
-		
-		this.addEvents(
-	            /**
-	             * @event itemSelected id
-	             */
-	           'itemSelected',
-	           /**
-	            * @event itemsPlaced
-	            */
-	           'itemsPlaced'
-		);  
 	},
 	sortChanged:function( node, data,  overModel,  dropPosition, options){
 

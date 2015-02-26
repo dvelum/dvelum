@@ -1,4 +1,8 @@
-
+/**
+ *
+ * @event completeEdit
+ *
+ */
 Ext.define('app.crud.orm.ObjectField',{
 	extend:'Ext.form.FieldContainer',
 	alias:'widget.objectfield',
@@ -81,12 +85,6 @@ Ext.define('app.crud.orm.ObjectField',{
 		 this.items = [this.dataFieldLabel , valueContainer];
 
 		 this.callParent();
-		 this.addEvents(
-		            /**
-		             * @event completeEdit
-		             */
-		           'completeEdit'
-		 ); 
 	},
 	setValue:function(value){
 		this.dataField.setValue(value);

@@ -4,6 +4,9 @@ Ext.ns('app.medialib');
  * Media library file upload  Window
  * @author Kirill Egorov 2011
  * @extend Ext.Window
+ *
+ * @event filesuploaded
+ *
  */
 Ext.define('app.fileUploadWindow',{
 	extend:'Ext.Window', 
@@ -400,8 +403,6 @@ Ext.define('app.fileUploadWindow',{
 		this.items=[this.contentPanel];
 	
 		this.callParent();
-		
-		this.addEvents('filesuploaded');
 	},	
 	onMFilesImageLoaded:function(index , icon){
 		var store = this.multipleUploadedGrid.getStore();

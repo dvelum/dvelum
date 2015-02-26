@@ -36,7 +36,7 @@ Ext.define('designer.urlWindow',{
 					reader:{
 						type:'json',
 						idProperty:'name',
-						root:'data'
+						rootProperty:'data'
 					}
 				},
 				autoLoad:false

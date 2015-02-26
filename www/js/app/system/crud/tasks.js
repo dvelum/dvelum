@@ -36,7 +36,7 @@ Ext.define('app.crud.tasks.Main',{
 		url:app.root +  'list',
 		reader: {
 		    type: 'json',
-		    root: 'data',
+			rootProperty: 'data',
 		    idProperty: 'id'
 		},
 		simpleSortMode: true

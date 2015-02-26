@@ -1,5 +1,10 @@
 /**
  * Base class for editing objects under version control
+ *
+ * @event dataSaved
+ *
+ * @event dataLoaded
+ * @param {object} result
  */
 Ext.define('app.contentWindow',{
 	   extend:'Ext.Window',
@@ -398,17 +403,6 @@ Ext.define('app.contentWindow',{
 			});
 			
 		  this.callParent(arguments);
-	      this.addEvents(
-	            /**
-	             * @event dataSaved
-	             */
-	           'dataSaved',
-	            /**
-	             * @event dataLoaded
-	             * @param {object} result
-	             */
-	           'dataLoaded'
-	       );  
 	      
 	      
 	      var list = this.query('relatedgridpanel');

@@ -3,6 +3,13 @@ Ext.ns('app.medialib');
 /**
  * Media library item edit window
  * @extend {Ext.Window}
+ *
+ *
+ * @event sizeSelected
+ * @param string size
+ *
+ * @event selectCanceled
+ *
  */
 Ext.define('app.imageSizeWindow',{
 	
@@ -86,20 +93,6 @@ Ext.define('app.imageSizeWindow',{
 			    	 }
 			     }   
 			 ];
-			
-			
 		 	this.callParent();
-	        this.addEvents(
-	            /**
-	             * @event sizeSelected
-	             * @param string size
-	             */
-	           'sizeSelected',
-	           /**
-	            * @event selectCanceled
-	            */
-	           'selectCanceled'
-	       );  
-	       
 	  }
 });

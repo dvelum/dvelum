@@ -39,7 +39,7 @@ Ext.define('app.crud.logs.Main',{
 			    	url:app.root +  'list',
 			        reader: {
 			            type: 'json',
-			            root: 'data',
+			            rootProperty: 'data',
 			            totalProperty: 'count',
 			            idProperty: 'id'
 			        },

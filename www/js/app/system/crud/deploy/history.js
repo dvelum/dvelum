@@ -17,7 +17,7 @@ Ext.define('app.crud.orm.deploy.History',{
 				url:this.controllerUrl + 'history',
 				reader:{
 					idProperty:"id",
-					root:"data"
+					rootProperty:"data"
 				}
 			}
 		});

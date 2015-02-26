@@ -1,4 +1,9 @@
-
+/**
+ *
+ * @event itemSelected
+ * @param {Ext.data.Record} record
+ *
+ */
 Ext.define('app.selectMediaItemWindow',{
 	extend:'Ext.Window',
 	/**
@@ -84,14 +89,6 @@ Ext.define('app.selectMediaItemWindow',{
 		        	   handler:me.close
 		           }
 		];
-
 		this.callParent(arguments);
-        this.addEvents(
-            /**
-             * @event itemSelected
-             * @param {Ext.data.Record} record
-             */
-            'itemSelected'
-        );
 	}
 });

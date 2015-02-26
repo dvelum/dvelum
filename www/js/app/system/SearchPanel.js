@@ -3,6 +3,9 @@
  * Allows you to search in the set of fields.
  * Uses content filtering.
  * @author Kirill A Egorov 2011
+ *
+ * @event reset
+ *
  */
 Ext.define('SearchPanel', {
 	extend:'Ext.toolbar.Toolbar',
@@ -84,13 +87,6 @@ Ext.define('SearchPanel', {
 
 		this.items.push(this.searchField , this.resetButton);
 		this.callParent(arguments);
-
-		this.addEvents(
-	            /**
-	             * @event reset
-	             */
-	           'reset'
-	   );
 	},
 	/**
 	 * Clear filter

@@ -64,9 +64,9 @@ Ext.define('designer.model.configWindow',{
 			    },
 		    	reader:{
 		    		idProperty:"name",
-		    		root:"data",
+					rootProperty:"data",
 		    		type:"json"
-		    	},		    	
+		    	}
 		    }
 		});
 		

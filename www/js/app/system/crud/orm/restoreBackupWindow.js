@@ -38,7 +38,7 @@ Ext.define('app.crud.orm.restoreBackupWindow', {
 					url:app.crud.orm.Actions.listBackups,
 					reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            idProperty: 'title'
 			        },
 			        simpleSortMode: true

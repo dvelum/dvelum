@@ -46,7 +46,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 					url:this.dictionaryUrl + 'list',
 					reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            idProperty: 'id'
 			        }
 	  		    },
@@ -170,7 +170,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 					url:app.crud.orm.Actions.listValidators,
 					reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            idProperty: 'id'
 			        }
 	  		    },

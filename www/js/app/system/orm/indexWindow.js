@@ -1,5 +1,8 @@
 /**
  * Edit window for ORM object Index
+ *
+ * @event dataSaved
+ *
  */
 Ext.define('app.crud.orm.IndexWindow', {
 	extend: 'Ext.window.Window',	
@@ -119,13 +122,7 @@ Ext.define('app.crud.orm.IndexWindow', {
 		}
 		
 		this.items = [this.dataForm];
-		
-		this.addEvents(
-	            /**
-	             * @event dataSaved
-	             */
-	           'dataSaved'
-	    );  
+
 		
 		
 		if(this.objectName && this.indexName){

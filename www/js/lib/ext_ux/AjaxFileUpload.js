@@ -2,7 +2,17 @@
  * DVelum file uploader
  */
 Ext.ns('Ext.ux.form');
-
+/**
+ *
+ *
+ * @event filesSelected - files {Array}
+ * @event filesUploaded
+ * @event fileUploadProgress - fileIndex , uploaded , total
+ * @event fileUploaded - fileIndex , result
+ * @event fileUploadError - fileIndex , result
+ * @event fileImageLoaded - file index , icon
+ *
+ */
 Ext.define('Ext.ux.form.AjaxFileUploadField', {
 	extend:'Ext.form.field.File',
 	alias:'widget.ajaxfileuploadfield',
@@ -15,34 +25,6 @@ Ext.define('Ext.ux.form.AjaxFileUploadField', {
 	initComponent:function(){
 		this.callParent(arguments);
 		this.fileQueue = [];
-		
-		this.addEvents(
-			/**
-			 * @event filesSelected - files {Array}
-			 */	
-			'filesSelected',
-			/**
-			 * @event filesUploaded
-			 */
-			'filesUploaded',
-			/**
-			 * @event fileUploadProgress - fileIndex , uploaded , total
-			 */
-			 'fileUploadProgress',
-			 /**
-			  * @event fileUploaded - fileIndex , result
-			  */
-			 'fileUploaded',
-			 /**
-			  * @event fileUploadError - fileIndex , result
-			  */
-			 'fileUploadError',
-			 /**
-			  * @event fileImageLoaded - file index , icon
-			  */
-			 'fileImageLoaded'
-		);
-
 	},
 	
 	onRender : function() {

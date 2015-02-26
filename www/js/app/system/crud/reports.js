@@ -1,22 +1,21 @@
 Ext.ns('app.crud.reports');
 
+
+/**
+ *
+ *
+ * @event beforeexpand
+ * @param {app.FieldSet} component
+ *
+ * @event beforecollapse
+ * @param {app.FieldSet} component
+ *
+ */
 Ext.define('app.FieldSet',{
 	extend:'Ext.form.FieldSet',
 	
 	initComponent: function(){
 		this.callParent(arguments);
-		this.addEvents(
-	            /**
-	             * @event beforeexpand
-	             * @param {app.FieldSet} component
-	             */
-				'beforeexpand',
-				/**
-	             * @event beforecollapse
-	             * @param {app.FieldSet} component
-	             */
-				'beforecollapse'
-		);  
 	},
 	setExpanded:function(expanded){	
 		var me = this;

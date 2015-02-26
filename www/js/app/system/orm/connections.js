@@ -1,5 +1,10 @@
 Ext.ns('app.orm.connections');
 
+/**
+ *
+ * @event dataSaved
+ *
+ */
 Ext.define('app.orm.connections.Window',{
 	extend:'Ext.Window',
 
@@ -44,7 +49,7 @@ Ext.define('app.orm.connections.Window',{
 		    	},
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 			    simpleSortMode: true
@@ -133,22 +138,22 @@ Ext.define('app.orm.connections.Window',{
 						sortable: true,
 						text:appLang.DB_HOST,
 						dataIndex:'host',
-						align:'center',
+						align:'center'
 					 },{
 			            sortable: true,
 			            text:appLang.DB_NAME,
 			            dataIndex: 'dbname',
-			            align:'center',
+			            align:'center'
 			        },{
 			            sortable: true,
 			            text:appLang.USER,
 			            dataIndex: 'username',
-			            align:'center',
+			            align:'center'
 			        },{
 			            sortable: true,
 			            text:appLang.DB_ADAPTER,
 			            dataIndex: 'adapter',
-			            align:'center',
+			            align:'center'
 			        },{
 			            width:30,
 			            align:'center',
@@ -407,13 +412,6 @@ Ext.define('app.orm.connections.EditWindow',{
 		];
 
 		this.items = [this.dataForm];
-
-		this.addEvents(
-	            /**
-	             * @event dataSaved
-	             */
-	           'dataSaved'
-	    );
 
 		this.callParent(arguments);
 

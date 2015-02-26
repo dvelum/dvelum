@@ -26,7 +26,7 @@ Ext.define('designer.eventsEditor',{
 		    	url:this.controllerUrl +  'list',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 			    simpleSortMode: true

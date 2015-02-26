@@ -55,7 +55,7 @@ Ext.define('app.crud.acl.Permissions',{
 		type: 'ajax',
 		reader: {
 		    type: 'json',
-		    root: 'data',
+			rootProperty: 'data',
 		    idProperty: 'id'
 		},
 		writer:{
@@ -63,7 +63,7 @@ Ext.define('app.crud.acl.Permissions',{
 		    writeAllFields:true,
 		    encode: true,
 		    listful:true,
-		    root:'data'
+			rootProperty:'data'
 		},
 		extraParams:{
 		    'user_id':0,
@@ -272,7 +272,7 @@ Ext.define('app.crud.acl.Groups',{
 		url: app.root + 'grouplist',
 		reader: {
 		    type: 'json',
-		    root: 'data',
+			rootProperty: 'data',
 		    totalProperty: 'count',
 		    idProperty: 'id'
 		},

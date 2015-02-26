@@ -1,3 +1,9 @@
+/**
+ *
+ * @event dataSelected
+ * @param {Ext.data.record}
+ *
+ */
 Ext.define('Ext.form.medialinkField', {
 	extend:'Ext.Panel', 
 	alias:'widget.medialinkfield',
@@ -67,13 +73,6 @@ Ext.define('Ext.form.medialinkField', {
 	},
 	initComponent : function(){
 		  this.callParent(arguments);
-	      this.addEvents(
-	          /**
-	           * @event dataSelected
-	           * @param {Ext.data.record}
-	           */
-	         'dataSelected'
-	     );  
   }
 	
 });

@@ -9,12 +9,14 @@ app.content =  Ext.create('Ext.Panel',{
 	items:[],
 	collapsible:false
 });
-		
+/**
+ *
+ * @event  projectLoaded
+ */
 Ext.application({
     name: 'DVelum Documentation',
     launch: function() {   
 	app.application = this;
-	this.addEvents('projectLoaded');
     	app.viewport = Ext.create('Ext.container.Viewport', {
     		layout: 'fit',
     		//renderTo: Ext.getBody(),

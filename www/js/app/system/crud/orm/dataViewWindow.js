@@ -89,7 +89,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 		        reader: {
 		        	type:'json',
 		            idProperty:"id",
-	                root:"data",
+					rootProperty:"data",
 	                totalProperty:"count"	
 		        },
 		        simpleSortMode: true

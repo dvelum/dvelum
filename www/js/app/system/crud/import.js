@@ -25,7 +25,7 @@ Ext.define('app.crud.Import',{
 		            url: this.controllerUrl + 'objects',
 		            reader: {
 		        	type: 'json',
-		        	root: 'data',
+					rootProperty: 'data',
 		        	idProperty: 'name'
 		            },
 		            simpleSortMode: true

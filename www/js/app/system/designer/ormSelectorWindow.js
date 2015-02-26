@@ -25,7 +25,7 @@ Ext.define('designer.ormSelectorWindow',{
 					reader:{
 						type:'json',
 						idProperty:'name',
-						root:'data'
+						rootProperty:'data'
 					}
 				},
 				autoLoad:true,
@@ -70,7 +70,7 @@ Ext.define('designer.ormSelectorWindow',{
 					reader:{
 						type:'json',
 						idProperty:'name',
-						root:'data'
+						rootProperty:'data'
 					}
 				},
 				autoLoad:false,

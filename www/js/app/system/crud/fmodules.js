@@ -44,7 +44,7 @@ Ext.define('app.crud.fmodules.Main',{
 			    },
 			    reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 		    	simpleSortMode: true
@@ -66,7 +66,7 @@ Ext.define('app.crud.fmodules.Main',{
 				url: this.controllerUrl + 'list',
 			    reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'name'
 		        },
 		    	simpleSortMode: true

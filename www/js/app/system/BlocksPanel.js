@@ -13,6 +13,8 @@ Ext.define('app.blocksModel', {
  * Blocks mapping panel
  * @author Kirill Egorov 2011
  * @var {Ext.Panel}
+ *
+ * @event configLoaded
  */
 Ext.define('app.blocksPanel',{
 	extend:'Ext.Panel',
@@ -109,7 +111,7 @@ Ext.define('app.blocksPanel',{
 			        url:this.controllerUrl + 'blocklist',
 			        reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            idProperty: 'id'
 			        },
 				    simpleSortMode: true
@@ -119,8 +121,8 @@ Ext.define('app.blocksPanel',{
 	                  direction: 'DESC'
 	            }]
 		});
-		
-	
+
+
 		this.itemsList = Ext.create('Ext.grid.Panel',{
 			region:'east',
 	        store: this.itemsStore,
@@ -169,13 +171,6 @@ Ext.define('app.blocksPanel',{
 	    this.callParent(arguments);	
 	    this.loadAviableBlocks();
 	    this.on('beforedestroy',this.clearContainers,this);
-	    
-	    this.addEvents(
-	    	/**
-	    	 * @event configLoaded
-	    	 */
-	    	'configLoaded'	
-	    );
 	},
 	loadAviableBlocks:function(){
 		var handle = this;

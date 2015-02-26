@@ -86,7 +86,7 @@ Ext.define('designer.properties.FieldTypeWindow',{
 						    	url:this.controllerUrl + 'listadapters',
 						        reader: {
 						            type: 'json',
-						            root: 'data',
+									rootProperty: 'data',
 						            idProperty: 'id'
 						        },
 							    simpleSortMode: true
@@ -124,7 +124,7 @@ Ext.define('designer.properties.FieldTypeWindow',{
 						    	url:this.controllerUrl + 'listdictionaries',
 						        reader: {
 						            type: 'json',
-						            root: 'data',
+									rootProperty: 'data',
 						            idProperty: 'id'
 						        },
 							    simpleSortMode: true

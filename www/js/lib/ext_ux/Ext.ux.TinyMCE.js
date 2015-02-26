@@ -17,6 +17,7 @@
 Ext.namespace("Ext.ux");
 	/** ----------------------------------------------------------
 	 * Ext.ux.TinyMCE
+	 * @event editorcreated
 	 */
 	Ext.define('Ext.ux.TinyMCE', {
 
@@ -57,10 +58,6 @@ Ext.namespace("Ext.ux");
 
 			Ext.apply(config, cfg);
 
-			// Add events
-			this.addEvents({
-				"editorcreated": true
-			});
 
 			this.callParent(arguments);
 		},

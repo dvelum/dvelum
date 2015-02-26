@@ -42,7 +42,7 @@ Ext.define('designer.connections.Window',{
 		    	url:this.controllerUrl +  '/db/list',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 			    simpleSortMode: true

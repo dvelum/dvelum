@@ -33,7 +33,7 @@ Ext.define('designer.methodsPanel',{
 		    	url:this.controllerUrl +  'objectmethods',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'method'
 		        },
 		        extraParams:this.extraParams,

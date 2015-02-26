@@ -7,7 +7,7 @@ app.crud.menu.pagesStore  = Ext.create('Ext.data.Store',{
 	    	url:'',
 	        reader: {
 	            type: 'json',
-	            root: 'data',
+				rootProperty: 'data',
 	            idProperty: 'id'
 	        },
 		    simpleSortMode: true
@@ -330,7 +330,18 @@ Ext.define('app.crud.menu.EditorPanel',{
 	}
 });
 
-
+/**
+ *
+ *
+ * @event itemSelected
+ * @param title
+ * @param pageId
+ * @param published
+ *
+ * @event itemRemoved
+ * @param nodeId
+ *
+ */
 Ext.define('app.crud.menu.ItemWindow',{
 	extend:'Ext.Window',
 	resizable:false,
@@ -442,21 +453,7 @@ Ext.define('app.crud.menu.ItemWindow',{
 		this.items = [this.dataForm];
 		
 		this.callParent();
-		
-		this.addEvents(
-	            /**
-	             * @event itemSelected
-	             * @param title
-	             * @param pageId
-	             * @param published
-	             */
-	           'itemSelected'  ,
-	           /**
-	             * @event itemRemoved
-	             * @param nodeId
-	             */
-	           'itemRemoved'
-	    );  
+
 
 		this.dataForm.loadRecord(
 				Ext.create('app.crud.menu.LinkModel',{
@@ -583,7 +580,7 @@ Ext.define('app.crud.menu.Panel',{
 				url:this.controllerUrl + 'list',
 			    reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 			    }
 			},

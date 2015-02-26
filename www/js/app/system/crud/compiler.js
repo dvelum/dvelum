@@ -20,6 +20,11 @@ Ext.define('app.crud.compiller.RecordModel', {
     ]
 });
 
+/**
+ *
+ *  @event packageSaved
+ *
+ */
 Ext.define('app.crud.compiller.AddPackageWindow', {
 	extend:'Ext.window.Window',
 
@@ -66,13 +71,6 @@ Ext.define('app.crud.compiller.AddPackageWindow', {
 			handler:this.savePackage
 		}];
 
-		this.addEvents(
-	            /**
-	             * @event packageSaved
-	             */
-	           'packageSaved'
-	    );
-
 		this.items = [this.dataForm];
 		this.callParent(arguments);
 	},
@@ -95,7 +93,11 @@ Ext.define('app.crud.compiller.AddPackageWindow', {
    	    });
 	}
 });
-
+/**
+ *
+ * @event filesAdded
+ *
+ */
 Ext.define('app.crud.compiller.AddPackageItemWin', {
 	extend:'Ext.Window',
 	width:300,
@@ -147,13 +149,6 @@ Ext.define('app.crud.compiller.AddPackageItemWin', {
 		}];
 
 		this.callParent(arguments);
-
-		this.addEvents(
-		            /**
-		             * @event filesAdded
-		             */
-		           'filesAdded'
-		 );
 	},
 	addItem:function(){
 		var checked = this.fileTree.getChecked();
@@ -255,7 +250,7 @@ Ext.define('app.crud.compiller.Main',{
 				url:this.controllerUrl + 'listpackages',
 			    reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 		    	simpleSortMode: true,
@@ -385,7 +380,7 @@ Ext.define('app.crud.compiller.Main',{
 				url:this.controllerUrl + 'listrecords',
 			    reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 				listeners:{

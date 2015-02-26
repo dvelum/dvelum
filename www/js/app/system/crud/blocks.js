@@ -26,7 +26,7 @@ app.crud.blocks.ClassesStore  = Ext.create('Ext.data.Store',{
 	    	url:'',
 	        reader: {
 	            type: 'json',
-	            root: 'data',
+				rootProperty: 'data',
 	            idProperty: 'id'
 	        },
 		    simpleSortMode: true
@@ -46,7 +46,7 @@ app.crud.blocks.MenuStore  = Ext.create('Ext.data.Store',{
 	    	url:'',
 	        reader: {
 	            type: 'json',
-	            root: 'data',
+				rootProperty: 'data',
 	            idProperty: 'id'
 	        },
 		    simpleSortMode: true
@@ -248,7 +248,7 @@ Ext.define('app.crud.blocks.Main',{
 			    	url:app.root +  'list',
 			        reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            totalProperty: 'count',
 			            idProperty: 'id'
 			        },

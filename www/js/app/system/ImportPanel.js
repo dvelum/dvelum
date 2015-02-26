@@ -4,6 +4,17 @@ Ext.ns('app.import');
  * Import application object
  * @abstract
  * @events firstRowIdentified
+ *
+ * @event firstRowIdentified
+ * @param number
+ *
+ * @event importSuccess
+ * @param result
+ *
+ * @event importError
+ * @param string message
+ * @param {array} errors
+ *
  */
 Ext.define('app.import.Panel',{
     extend: 'Ext.panel.Panel',
@@ -232,24 +243,6 @@ Ext.define('app.import.Panel',{
 
 	this.items = [this.uploadForm , this.gridContainer, this.importFormContainer];
 
-	this.addEvents(
-		/**
-		 * @event firstRowIdentified
-		 * @param number
-		 */
-		'firstRowIdentified',
-		/**
-		 * @event importSuccess
-		 * @param result
-		 */
-		'importSuccess',
-		/**
-		 * @event importError
-		 * @param string message
-		 * @param {array} errors
-		 */
-		'importError'
-	);
 
 	this.callParent();
     },

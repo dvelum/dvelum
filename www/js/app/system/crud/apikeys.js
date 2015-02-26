@@ -235,7 +235,7 @@ Ext.define('app.crud.keys.Main',{
 				url:this.controllerUrl + 'list',
 			    reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        }
 			},

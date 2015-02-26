@@ -279,7 +279,7 @@ Ext.define('designer.properties.Panel', {
                             url: this.controllerUrl + 'listdictionaries',
                             reader: {
                                 type: 'json',
-                                root: 'data',
+                                rootProperty: 'data',
                                 idProperty: 'id'
                             },
                             simpleSortMode: true
@@ -322,7 +322,7 @@ Ext.define('designer.properties.Panel', {
                             reader: {
                                 type: 'json',
                                 idProperty: 'name',
-                                root: 'data'
+                                rootProperty: 'data'
                             }
                         },
                         fields: [

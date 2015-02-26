@@ -15,6 +15,10 @@ app.medialib.typesStore = Ext.create('Ext.data.Store',{
  * Media library panel component
  * @author Kirill Egorov 2011
  * @extend Ext.Panel
+ *
+ * @event rightsChecked
+ *
+ * @event createPanels
  */
 Ext.define('app.medialibPanel',{
 		extend:'Ext.Panel',
@@ -97,7 +101,6 @@ Ext.define('app.medialibPanel',{
 	   },
 	   initComponent:function(){
 		   this.callParent();
-		   this.addEvents('rightsChecked' ,'createPanels');
 
 		   if(this.checkRights){
 			   this.getRights();
@@ -118,7 +121,7 @@ Ext.define('app.medialibPanel',{
 			        url: app.admin + app.delimiter + 'medialib' +  app.delimiter + 'list',
 			        reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            totalProperty: 'count',
 			            idProperty: 'id'
 			        },
@@ -256,7 +259,7 @@ Ext.define('app.medialibPanel',{
 					click:{
 						fn:function(){
 			  					var win =  Ext.create('app.fileUploadWindow',{
-			  						uploadUrl: app.createUrl([app.admin ,'medialib' , 'upload', this.selectedCategory]),
+			  						uploadUrl: app.createUrl([app.admin ,'medialib' , 'upload', this.selectedCategory])
 			  					});
 			  					win.on('filesuploaded',function(){
 			  						this.dataStore.load();

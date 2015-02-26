@@ -39,7 +39,15 @@ Ext.define('app.FilesystemTree',{
 	
 });
 
-
+/**
+ *
+ * @event fileSelected
+ * @param string path
+ *
+ * @event fileCreated
+ * @param string path
+ *
+ */
 Ext.define('app.filesystemWindow',{
 	
 	extend:'Ext.Window',
@@ -95,20 +103,7 @@ Ext.define('app.filesystemWindow',{
 		});
 		
 		this.callParent(arguments);
-			
-		this.addEvents(
-		            /**
-		             * @event fileSelected
-		             * @param string path
-		             */
-		           'fileSelected',
-		            /**
-		             * @event fileCreated
-		             * @param string path
-		             */
-		           'fileCreated'
-		 );  
-		 this.on('show',function(){app.checkSize(this);});
+		this.on('show',function(){app.checkSize(this);});
 	},
 	makeDir:function(){
 		 var me = this;

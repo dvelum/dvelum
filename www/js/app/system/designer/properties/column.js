@@ -16,7 +16,7 @@ Ext.define('designer.properties.GridColumn',{
 				url:this.controllerUrl + 'renderers',
 				reader: {
 					type: 'json',
-					root: 'data',
+					rootProperty: 'data',
 					idProperty: 'id'
 				},
 				extraParams:{

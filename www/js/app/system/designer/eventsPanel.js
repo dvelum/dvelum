@@ -36,7 +36,7 @@ Ext.define('designer.eventsPanel',{
 		    	url:this.controllerUrl +  'objectevents',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 		        extraParams:this.extraParams,

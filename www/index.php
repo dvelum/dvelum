@@ -21,7 +21,8 @@
  */
 $scriptStart = microtime(true);
 define('DVELUM', true);
-define('DVELUM_ROOT' , str_replace('\\', '/' , __DIR__));
+define('DVELUM_ROOT' , str_replace('\\', '/' , dirname(__DIR__)));
+
 /*
  * Httponly cookies (brakes the uplodify multy file uploader)
  */
@@ -33,7 +34,7 @@ ob_start();
 /*
  * Connecting main configuration file
  */
-$config = include './system/config/main.php';
+$config = include DVELUM_ROOT . '/system/config/main.php';
 /*
  * Disable op caching for development mode
  */
@@ -43,7 +44,7 @@ if($config['development']){
 /*
  * Including Autoloader class
  */
-require './system/library/Autoloader.php';
+require DVELUM_ROOT . '/system/library/Autoloader.php';
 /*
  * Setting autoloader config
  */

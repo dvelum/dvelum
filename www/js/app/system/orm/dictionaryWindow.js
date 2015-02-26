@@ -2,6 +2,9 @@
  * DVelum project http://code.google.com/p/phpveil/ , dvelum.net
  * @author Andrew Zamotaev 2012
  * @author improved and bugfixed by Kirill A Egorov 2012
+ *
+ * @event dictionarySaved
+ *
  */
 Ext.define('app.crud.orm.DictionaryRecordModel',{
 	extend: 'Ext.data.Model',
@@ -61,13 +64,6 @@ Ext.define('app.crud.orm.AddDictionaryWindow', {
 			scope:this,
 			handler:this.saveNewDictionary
 		}];
-
-		this.addEvents(
-	            /**
-	             * @event dictionarySaved
-	             */
-	           'dictionarySaved'
-	    );
 
 		this.items = [this.dataForm];
 
@@ -136,7 +132,7 @@ Ext.define('app.crud.orm.DictionaryWindow', {
 		        url:this.controllerUrl + 'list',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        }
 		    },
@@ -214,7 +210,7 @@ Ext.define('app.crud.orm.DictionaryWindow', {
 		        url:this.controllerUrl + 'records',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        }
 		    },

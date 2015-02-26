@@ -26,7 +26,7 @@ Ext.define('designer.grid.exportFieldsWin',{
 		    	url:app.createUrl([designer.controllerUrl ,'store','']) +  'listfields',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 		        extraParams:{

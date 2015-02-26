@@ -29,7 +29,21 @@ Ext.define('app.crud.orm.ObjectsModel', {
              ]
 });
 
-
+/**
+ *
+ * @event editRecord
+ * @param name
+ *
+ * @event rebuildTable
+ * @param name
+ *
+ * @event removeItem
+ * @param name
+ *
+ * @event viewData
+ * @param Ext.data Model record
+ *
+ */
 Ext.define('app.crud.orm.dataGrid',{
 
     extend:'Ext.grid.Panel',
@@ -252,28 +266,5 @@ Ext.define('app.crud.orm.dataGrid',{
 	    );
 	}
 	this.callParent();
-
-	this.addEvents(
-		/**
-		 * @event editRecord
-		 * @param name
-		 */
-		'editRecord',
-		/**
-		 * @event rebuildTable
-		 * @param name
-		 */
-		'rebuildTable',
-		/**
-		 * @event removeItem
-		 * @param name
-		 */
-		'removeItem',
-		/**
-		 * @event viewData
-		 * @param Ext.data Model record
-		 */
-		'viewData'
-	);  
     }
 });

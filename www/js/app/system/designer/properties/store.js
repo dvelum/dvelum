@@ -74,7 +74,7 @@ Ext.define('designer.properties.Store',{
 								    	reader: {
 								            type: 'json',
 								            idProperty: 'name',
-								            root: 'data'     
+											rootProperty: 'data'
 								        },
 								        extraParams:{
 								        	object:this.objectName

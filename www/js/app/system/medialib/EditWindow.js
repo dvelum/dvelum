@@ -2,6 +2,9 @@
 /**
  * Media library item edit window
  * @extend {Ext.Window}
+ *
+ * @event dataSaved
+ *
  */
 Ext.define('app.medialib.EditWindow',{
 	extend:'Ext.Window',
@@ -217,12 +220,6 @@ Ext.define('app.medialib.EditWindow',{
 		 ];
 		
 	 	this.callParent(arguments);
-        this.addEvents(
-            /**
-             * @event dataSaved
-             */
-           'dataSaved'
-        );  
         this.loadData(); 
         this.on('show',function(){app.checkSize(this);});
 	}

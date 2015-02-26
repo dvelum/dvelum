@@ -89,7 +89,7 @@ Ext.define('app.crud.user.List',{
 				url: app.root + 'userlist',
 				reader: {
 					type: 'json',
-					root: 'data',
+					rootProperty: 'data',
 					totalProperty: 'count',
 					idProperty: 'id'
 				},
@@ -250,7 +250,7 @@ Ext.define('app.crud.user.List',{
 				},{
 					text:'',
 					dataIndex:'id',
-					id:'deleteColumn',
+					itemId:'deleteColumn',
 					width:40,
 					align:'center',
 					renderer:function(value, metaData, record, rowIndex, colIndex, store){
@@ -269,7 +269,7 @@ Ext.define('app.crud.user.List',{
 		});
 
 		this.dataGrid.on('cellclick', function(grid , item,  index, record, e, options){
-			var cellId = grid.getHeaderCt().getHeaderAtIndex(index).id;
+			var cellId = grid.getHeaderCt().getHeaderAtIndex(index).itemId;
 			if(cellId =='deleteColumn' && this.canDelete && record.get('login')!='root'){
 				Ext.Msg.confirm(appLang.CONFIRM, appLang.MSG_CONFIRM_REMOVE_USER +' "'+record.get('name')+'"?', function(btn){
 					if(btn != 'yes'){
@@ -329,6 +329,8 @@ Ext.define('app.crud.user.List',{
 /**
  * validationCache
  * @property {Object}
+ *
+ * @event dataSaved
  */
 app.crud.user.validationCacheUserName = {'id':'','val':''},
 
@@ -525,13 +527,6 @@ app.crud.user.validationCacheUserName = {'id':'','val':''},
 
 			this.callParent();
 
-			this.addEvents(
-				/**
-				 * @event dataSaved
-				 */
-				'dataSaved'
-			);
-
 			if(this.recordId){
 				this.dataForm.getForm().load({
 					scope:this,
@@ -700,7 +695,7 @@ Ext.define('app.crud.user.Permissions',{
 				type: 'ajax',
 				reader: {
 					type: 'json',
-					root: 'data',
+					rootProperty: 'data',
 					idProperty: 'id'
 				},
 				writer:{
@@ -708,7 +703,7 @@ Ext.define('app.crud.user.Permissions',{
 					writeAllFields:true,
 					encode: true,
 					listful:true,
-					root:'data'
+					rootProperty:'data'
 				},
 				extraParams:{
 					'user_id':0,
@@ -919,7 +914,7 @@ Ext.define('app.crud.user.Groups',{
 				url: app.root + 'grouplist',
 				reader: {
 					type: 'json',
-					root: 'data',
+					rootProperty: 'data',
 					totalProperty: 'count',
 					idProperty: 'id'
 				},

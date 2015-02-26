@@ -16,7 +16,7 @@ Ext.define('app.crud.orm.deploy.Servers',{
 				url:this.controllerUrl + 'list',
 				reader:{
 					idProperty:"id",
-					root:"data"	
+					rootProperty:"data"
 				}	
 			}	
 		});

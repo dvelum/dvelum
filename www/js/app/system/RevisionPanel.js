@@ -12,8 +12,11 @@ Ext.define('app.revisionModel', {
  * Revision panel component
  * @author Kirill Egorov
  * @extend Ext.Panel
+ *
+ * @event dataSaved
+ * @param record
+ *
  */
-
 Ext.define('app.revisionPanel',{
 	   extend:'Ext.panel.Panel',
 	   /**
@@ -54,7 +57,7 @@ Ext.define('app.revisionPanel',{
 			        reader: 'json',
 			        reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            totalProperty: 'count',
 			            idProperty: 'id'
 			        },
@@ -139,15 +142,6 @@ Ext.define('app.revisionPanel',{
 		    },this);
 
 			this.items=[this.dataGrid];
-
-
-			this.addEvents(
-	            /**
-	             * @event dataSaved
-	             * @param record
-	             */
-	           'dataSelected'
-			);
 
 			this.callParent(arguments);
 		},

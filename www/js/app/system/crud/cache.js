@@ -29,7 +29,7 @@ Ext.define('app.crud.cache.Main',{
 				url : this.controllerUrl + "info",
 				reader : {
 					idProperty : "id",
-					root : "data"
+					rootProperty : "data"
 				},
 				type : "ajax"
 			},

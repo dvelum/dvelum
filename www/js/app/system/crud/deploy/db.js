@@ -34,7 +34,7 @@ Ext.define('app.crud.orm.deploy.Db',{
 		    	url:'index',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+					rootProperty: 'data',
 		            idProperty: 'name'
 		        },
 		        simpleSortMode: true

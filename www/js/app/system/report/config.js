@@ -1,17 +1,16 @@
+/**
+ * @event dataChanged
+ */
 Ext.define('app.report.ConfigForm',{
 	extend:'Ext.form.Panel',
 	title:'',
 	initComponent:function(){
-		this.addEvents(
-	            /**
-	             * @event dataChanged
-	             */
-	           'dataChanged'
-	    );
 		this.callParent();
 	}
 });
-
+/**
+ * @event dataChanged
+ */
 Ext.define('app.report.ConfigWindow',{
 	extend:'Ext.Window',
 	modal:true,
@@ -138,12 +137,6 @@ Ext.define('app.report.ConfigWindow',{
 
 		this.callParent();
 
-		this.addEvents(
-	            /**
-	             * @event dataChanged
-	             */
-	           'dataChanged'
-	    );
 
 		this.on('show',this.resetInterface,this);
 
@@ -274,7 +267,11 @@ Ext.define('app.report.ConfigWindow',{
 	 }
 });
 
-
+/**
+ *
+ * @event objectAdded
+ *
+ */
 Ext.define('app.report.config.addMainWindow',{
 	extend:'Ext.Window',
 	width:300,
@@ -311,7 +308,7 @@ Ext.define('app.report.config.addMainWindow',{
 						        url: app.root + 'objects',
 						        reader: {
 						            type: 'json',
-						            root: 'data',
+									rootProperty: 'data',
 						            idProperty: 'id'
 						        },
 						        simpleSortMode: true
@@ -335,13 +332,6 @@ Ext.define('app.report.config.addMainWindow',{
 		];
 		this.callParent(arguments);
 
-
-		this.addEvents(
-				/**
-	             * @event objectAdded
-	             */
-				'objectAdded'
-		);
 	},
 	formSubmit:function(){
 		var me = this;
@@ -417,7 +407,7 @@ Ext.define('app.report.config.addSubWindow',{
 					        url: app.root + 'objectfields',
 					        reader: {
 					            type: 'json',
-					            root: 'data',
+								rootProperty: 'data',
 					            idProperty: 'id'
 					        },
 					        extraParams :{
@@ -448,7 +438,7 @@ Ext.define('app.report.config.addSubWindow',{
 						        url: app.root + 'objects',
 						        reader: {
 						            type: 'json',
-						            root: 'data',
+									rootProperty: 'data',
 						            idProperty: 'id'
 						        },
 						        simpleSortMode: true
@@ -487,7 +477,7 @@ Ext.define('app.report.config.addSubWindow',{
 							        url: app.root + 'objectfields',
 							        reader: {
 							            type: 'json',
-							            root: 'data',
+										rootProperty: 'data',
 							            idProperty: 'id'
 							        },
 							        extraParams :{

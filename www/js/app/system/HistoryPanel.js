@@ -63,7 +63,7 @@ Ext.define('app.historyPanel',{
 			        url: app.admin + app.delimiter + 'history' +  app.delimiter + 'list',
 			        reader: {
 			            type: 'json',
-			            root: 'data',
+						rootProperty: 'data',
 			            totalProperty: 'count',
 			            idProperty: 'id'
 			        },

@@ -100,7 +100,7 @@ Ext.define('designer.properties.SearchFieldsWindow',{
 			    	reader: {
 			            type: 'json',
 			            idProperty: 'name',
-			            root: 'data'     
+						rootProperty: 'data'
 			        },
 			        extraParams:{
 			        	object:this.fieldsStore
