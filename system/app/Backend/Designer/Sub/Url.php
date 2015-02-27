@@ -56,14 +56,7 @@ class Backend_Designer_Sub_Url extends Backend_Designer_Sub
 				$obj->leaf = true;
 			}
 			$list[] = $obj;	
-		}	
-		
-		if($this->_configMain->get('allow_externals') && $path=='')
-		{
-			$config = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'externals.php');
-			$eExpert = new Externals_Expert($this->_configMain, $config);
-			$list[] = $eExpert->getControllersTree();
-		}	
+		}
 		Response::jsonArray($list);	
 	}
 	

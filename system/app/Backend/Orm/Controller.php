@@ -725,14 +725,6 @@ class Backend_Orm_Controller extends Backend_Controller
     protected function _updateObject($recordId , $name , array $data)
     {
     	$objectConfigPath = $this->_configMain->get('object_configs').$recordId.'.php';
-    	if($this->_configMain->get('allow_externals'))
-    	{
-	    	$manager = new Db_Object_Manager();
-	    	$externalExpert = $manager->getExternalsExpert();
-
-	    	if($externalExpert->hasObject($recordId))
-	    		$objectConfigPath = $externalExpert->getObjectPath($recordId);
-    	}
 
     	if(!is_writable($objectConfigPath))
     		Response::jsonError($this->_lang->CANT_WRITE_FS);

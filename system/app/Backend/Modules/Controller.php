@@ -118,16 +118,6 @@ class Backend_Modules_Controller extends Backend_Controller{
         		}
         	}
         }
-
-        if($this->_configMain->get('allow_externals'))
-    	{
-    			$config = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'externals.php');
-    			$eExpert = new Externals_Expert($this->_configMain, $config);
-    			$extControllers = $eExpert->getBackendControllers();
-    			
-    			if(!empty($extControllers))
-    				$data = array_merge($data , array_values($extControllers));
-    	}	
         Response::jsonSuccess($data);  			
     }
     
@@ -144,21 +134,6 @@ class Backend_Modules_Controller extends Backend_Controller{
 		
 		if(!is_dir($dirPath))
 			Response::jsonArray(array());		
-		
-		if($path==='')
-		{
-			if($this->_configMain->get('allow_externals'))
-			{
-				$config = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'externals.php');
-				$eExpert = new Externals_Expert($this->_configMain, $config);
-				$extProjects = $eExpert->getProjects();
-		
-				if(!empty($extProjects))
-					foreach ($extProjects as $item)
-					$list[] = $item;
-			}
-			$path = $dirPath . $path;
-		}
 
 		$files = File::scanFiles($path, array('.dat') , false , File::Files_Dirs);
 		

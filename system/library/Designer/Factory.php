@@ -210,7 +210,7 @@ class Designer_Factory
 			if(!file_exists($layoutCacheFile))
 				file_put_contents($layoutCacheFile, Code_Js_Minify::minify($project->getCode($replace)));
 
-			$includes[] = str_replace('./' , '/' , $layoutCacheFile);
+			$includes[] = '/'.str_replace($applicationConfig->get('jsCacheSysPath'), $applicationConfig->get('jsCacheSysUrl') , $layoutCacheFile);
 		}
 		/*
 		 * Project actions

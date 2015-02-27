@@ -216,10 +216,6 @@ return array(
 		 */
 		'foreign_keys' => 0,
 		/*
-		 * Allow external modules
-		 */
-		'allow_externals' => 0,
-		/*
 		 * www root (experimental option)
 		 */
 		'wwwroot' =>'/',

@@ -66,18 +66,6 @@ class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc{
     		if($class != 'Block_Abstract')
     			$data[] = array('id'=>$class,'title'=>$class);
     	}
-    	
-    	if($this->_configMain->get('allow_externals'))
-    	{
-    		$config = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'externals.php');
-    		$eExpert = new Externals_Expert($this->_configMain, $config);
-    		$extBlocks = $eExpert->getBlocks();
-    			
-    		if(!empty($extBlocks))
-    			foreach ($extBlocks as $class=>$path)
-    				$data[] = array('id'=>$class,'title'=>$class);
-    	}
-    	
     	Response::jsonSuccess($data);
     }
     

@@ -266,15 +266,15 @@ class Backend_Medialib_Controller extends Backend_Controller
     public function compileAction()
     {        
       $sources = array(
-          '/js/app/system/medialib/Category.js',
-          '/js/app/system/medialib/Panel.js',
-          '/js/app/system/medialib/Models.js',
-          '/js/app/system/medialib/FileUploadWindow.js',
-          '/js/app/system/medialib/ImageSizeWindow.js',
-          '/js/app/system/medialib/SelectMediaItemWindow.js',
-          '/js/app/system/medialib/ItemField.js',
-          '/js/app/system/medialib/EditWindow.js',
-          '/js/app/system/medialib/CropWindow.js'
+          'js/app/system/medialib/Category.js',
+          'js/app/system/medialib/Panel.js',
+          'js/app/system/medialib/Models.js',
+          'js/app/system/medialib/FileUploadWindow.js',
+          'js/app/system/medialib/ImageSizeWindow.js',
+          'js/app/system/medialib/SelectMediaItemWindow.js',
+          'js/app/system/medialib/ItemField.js',
+          'js/app/system/medialib/EditWindow.js',
+          'js/app/system/medialib/CropWindow.js'
       );
       
       if(!$this->_configMain->get('development')){
@@ -283,19 +283,21 @@ class Backend_Medialib_Controller extends Backend_Controller
       
       $s = '';
       $totalSize = 0;
-      
+
+      $wwwPath = $this->_configMain->get('wwwpath');
+
       foreach ($sources as $filePath){
-          $s.=file_get_contents('.'.$filePath)."\n";
-          $totalSize+=filesize('.'.$filePath);
+          $s.=file_get_contents($wwwPath.$filePath)."\n";
+          $totalSize+=filesize($wwwPath.$filePath);
       }
       
       $time = microtime(true);
-      file_put_contents('./js/app/system/Medialib.js', Code_Js_Minify::minify($s));       
+      file_put_contents($wwwPath.'js/app/system/Medialib.js', Code_Js_Minify::minify($s));
       echo '
       			Compilation time: '.number_format(microtime(true)-$time,5).' sec<br>
       			Files compiled: '.sizeof($sources).' <br>
       			Total size: '.Utils::formatFileSize($totalSize).'<br>
-      			Compiled File size: '.Utils::formatFileSize(filesize('./js/app/system/Medialib.js')).' <br>
+      			Compiled File size: '.Utils::formatFileSize(filesize($wwwPath.'js/app/system/Medialib.js')).' <br>
       		';      
       exit;
     }

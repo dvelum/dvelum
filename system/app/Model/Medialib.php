@@ -326,8 +326,8 @@ class Model_Medialib extends Model
    */
   public function getConfig()
   {
-    $docRoot = Registry::get('main' , 'config')->get('docroot');
-    return Config::factory(Config::File_Array , $docRoot . '/system/config/media_library.php');
+    $cfg = Registry::get('main' , 'config');
+    return Config::factory(Config::File_Array , $cfg->get('configs') . '/media_library.php');
   }
 
   /**

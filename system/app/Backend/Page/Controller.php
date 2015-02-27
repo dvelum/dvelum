@@ -429,17 +429,6 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
                 	$result[] = array('id'=>$code,'title'=>$code);
             }    
         }
-        
-        if($this->_configMain->get('allow_externals'))
-        {
-        	$config = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'externals.php');
-        	$eExpert = new Externals_Expert($this->_configMain, $config);
-        	$themes = $eExpert->getThemes();
-        		
-        	if(!empty($themes))
-        		foreach ($themes as $k=>$path)
-        			$result[] = array('id'=>$k,'title'=>$k);
-        } 
         Response::jsonSuccess($result);
     }
     

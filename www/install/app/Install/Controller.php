@@ -623,10 +623,6 @@ return array(
 		 */
 		\'foreign_keys\' => false,
 		/*
-		 * Allow external modules
-		 */
-		\'allow_externals\' => false,
-		/*
 		 * www root
 		 */
 		\'wwwroot\' =>\'#wwwroot#\',

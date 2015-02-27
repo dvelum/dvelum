@@ -90,17 +90,6 @@ class Backend_Fmodules_Controller extends Backend_Controller
         }
       }
     }
-    
-    if($this->_configMain->get('allow_externals'))
-    {
-      $config = Config::factory(Config::File_Array , $this->_configMain->get('configs') . 'externals.php');
-      $eExpert = new Externals_Expert($this->_configMain , $config);
-      $classes = $eExpert->getClasses();
-      $extControllers = $eExpert->getFrontendControllers();
-      
-      if(! empty($extControllers))
-        $data = array_merge($data , array_values($extControllers));
-    }
     Response::jsonSuccess($data);
   }
 }

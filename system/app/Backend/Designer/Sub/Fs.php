@@ -76,20 +76,6 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 		       }
 		    }		    
 		}
-		
-		if($path=='')
-		{
-			if($this->_configMain->get('allow_externals'))
-			{
-				$config = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'externals.php');
-				$eExpert = new Externals_Expert($this->_configMain, $config);
-				$extProjects = $eExpert->getProjects();
-		
-				if(!empty($extProjects))
-					foreach ($extProjects as $item)
-						$list[] = $item;
-			}
-		}
 		Response::jsonArray($list);	
 	}
 	/**
