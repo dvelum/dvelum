@@ -305,7 +305,8 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         	Response::jsonError($this->_lang->CANT_VIEW);
 
         $objectCfg = Db_Object_Config::getInstance($object);
-        $titleField = $objectCfg->getLinkTitle();
+        $primaryKey = $objectCfg->getPrimaryKey();
+        //$titleField = $objectCfg->getLinkTitle();
 
         /**
          * @var Model
@@ -314,9 +315,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $rc = $objectCfg->isRevControl();
 
         if($objectCfg->isRevControl())
-            $fields = array('id'=>$objectCfg->getPrimaryKey(),'title'=>$titleField , 'published');
+            $fields = array('id'=>$primaryKey, 'published');
         else
-            $fields = array('id'=>$objectCfg->getPrimaryKey(),'title'=>$titleField);
+            $fields = array('id'=>$primaryKey);
 
         $count = $model->getCount(false , $query ,false);
         $data = array();
@@ -326,11 +327,27 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
             if(!empty($data))
             {
-                foreach ($data as &$item){
+                $objectIds = Utils::fetchCol($primaryKey , $data);
+                try{
+                    $objects = Db_Object::factory($object ,$objectIds);
+                }catch (Exception $e){
+                    Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
+                }
+
+                foreach ($data as &$item)
+                {
                     if(!$rc)
                         $item['published'] = true;
 
                     $item['deleted'] = false;
+
+                    if(isset($objects[$item[$primaryKey]])){
+                        $o = $objects[$item[$primaryKey]];
+                        $item['title'] = $o->getTitle();
+                    }else{
+                        $item['title'] = $primaryKey;
+                    }
+
                 }unset($item);
             }
         }
@@ -350,12 +367,12 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         if(!in_array(strtolower($object), $this->_canViewObjects , true))
             Response::jsonError($this->_lang->CANT_VIEW);
 
-        $titleField = Db_Object_Config::getInstance($object)->getLinkTitle();
-
-        $data = Model::factory($object)->getItem($id , array($titleField));
-        if(!empty($data))
-            Response::jsonSuccess(array('title'=>$data[$titleField]));
-        else
-            Response::jsonSuccess(array('title'=>''));
+        try {
+            $o = Db_Object::factory($object, $id);
+            Response::jsonSuccess(array('title'=>$o->getTitle()));
+        }catch (Exception $e){
+            Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
+            Response::jsonError($this->_lang->get('CANT_EXEC'));
+        }
     }
 }
