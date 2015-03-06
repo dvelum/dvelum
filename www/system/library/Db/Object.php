@@ -764,6 +764,25 @@ class Db_Object
     }
 
     /**
+     * Get object title
+     */
+    public function getTitle()
+    {
+        $title = $this->_config->getLinkTitle();
+        if(strpos($title , '{')!==false){
+         $fields = $this->_config->getFieldsConfig(true);
+            foreach($fields as $name => $cfg){
+                $title = str_replace('{'.$name.'}' , (string) $this->get($name) , $title );
+            }
+        }else{
+            if($this->fieldExists($title)){
+                $title = $this->get($title);
+            }
+        }
+        return $title;
+    }
+
+    /**
      * Factory method of object creation is preferable to use, cf. method  __construct() description
      *
      * @param string $name
