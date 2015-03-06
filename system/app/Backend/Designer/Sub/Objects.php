@@ -307,6 +307,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 	    		}
 	    	}
 	    	$project->getEventManager()->removeObjectEvents($id);
+			$project->getMethodManager()->removeObjectMethods($id);
     		$this->_storeProject();
     		Response::jsonSuccess();
     	}else{

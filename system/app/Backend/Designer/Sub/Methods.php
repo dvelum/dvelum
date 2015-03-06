@@ -11,8 +11,14 @@ class Backend_Designer_Sub_Methods extends Backend_Designer_Sub
      
     $result = array();
     foreach ($methods as $object=>$list)
+    {
       foreach($list as $item)
-         $result[] = $this->_methodToArray($item , $object);
+      {
+        if($this->_getProject()->objectExists($object)){
+          $result[] = $this->_methodToArray($item , $object);
+        }
+      }
+    }
     
     Response::jsonSuccess($result);
   }
