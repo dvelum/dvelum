@@ -9,16 +9,6 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Apikeys' => 
-  array (
-    'id' => 'Backend_Apikeys_Controller',
-    'class' => 'Backend_Apikeys_Controller',
-    'dev' => false,
-    'active' => true,
-    'title' => 'API Keys',
-    'designer' => '',
-    'in_menu' => true,
-  ),
   'Tasks' => 
   array (
     'id' => 'Backend_Tasks_Controller',
@@ -36,16 +26,6 @@
     'dev' => false,
     'active' => true,
     'title' => 'Blocks',
-    'designer' => '',
-    'in_menu' => true,
-  ),
-  'Cache' => 
-  array (
-    'id' => 'Backend_Cache_Controller',
-    'class' => 'Backend_Cache_Controller',
-    'dev' => false,
-    'active' => true,
-    'title' => 'Cache Info',
     'designer' => '',
     'in_menu' => true,
   ),

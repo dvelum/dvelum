@@ -317,7 +317,7 @@ abstract class Backend_Controller extends Controller
         if(strlen($moduleCfg['designer']))
             $this->_runDesignerProject($moduleCfg['designer']);
         else
-            if(file_exists( './js/app/system/crud/' . strtolower($this->_module) . '.js'))
+            if(file_exists($this->_configMain->get('jsPath').'app/system/crud/' . strtolower($this->_module) . '.js'))
                 $this->_resource->addJs('/js/app/system/crud/' . strtolower($this->_module) .'.js' , 4);
     }
 

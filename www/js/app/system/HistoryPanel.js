@@ -81,7 +81,7 @@ Ext.define('app.historyPanel',{
 		        remoteSort: true,
 			    autoLoad: this.dataId?true:false,
 			    sorters: [{
-	                  property : 'date',
+					  property : 'date',
 	                  direction: 'DESC'
 	            }]
 			});

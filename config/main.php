@@ -78,6 +78,7 @@ return array(
     'salt' => 'ThSc-9086',
     'timezone' => 'Europe/Moscow',
 
+    'jsPath' => $wwwPath . 'js/',
     'jsCacheUrl' => 'js/cache/',
     'jsCachePath' => $wwwPath . 'js/cache/',
 

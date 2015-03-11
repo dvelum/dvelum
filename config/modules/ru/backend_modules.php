@@ -8,16 +8,6 @@
         'designer' => '',
         'in_menu' => true,
     ),
-  'Apikeys' => 
-  array (
-    'id' => 'Backend_Apikeys_Controller',
-    'class' => 'Backend_Apikeys_Controller',
-    'dev' => false,
-    'active' => true,
-    'title' => 'API Ключи',
-    'designer' => '',
-    'in_menu' => true,
-  ),
   'Orm' => 
   array (
     'id' => 'Backend_Orm_Controller',
@@ -128,16 +118,6 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Deploy' => 
-  array (
-    'id' => 'Backend_Deploy_Controller',
-    'class' => 'Backend_Deploy_Controller',
-    'dev' => true,
-    'active' => true,
-    'title' => 'Развертывание',
-    'designer' => '',
-    'in_menu' => true,
-  ),
   'Compiler' => 
   array (
     'id' => 'Backend_Compiler_Controller',
@@ -145,16 +125,6 @@
     'dev' => true,
     'active' => true,
     'title' => 'Сборщик кода',
-    'designer' => '',
-    'in_menu' => true,
-  ),
-  'Cache' => 
-  array (
-    'id' => 'Backend_Cache_Controller',
-    'class' => 'Backend_Cache_Controller',
-    'dev' => false,
-    'active' => true,
-    'title' => 'Статистика Кэша',
     'designer' => '',
     'in_menu' => true,
   ),
