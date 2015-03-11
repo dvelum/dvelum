@@ -900,7 +900,7 @@ Ext.define('designer.store.proxyWindow',{
 
 				break;
 		}
-		this.proxyProperties.forceComponentLayout();
+		this.proxyProperties.updateLayout();
 		this.proxyProperties.doLayout();
 		this.proxyProperties.dataGrid.getStore().on('load',function(store){
 			store.remove('type');

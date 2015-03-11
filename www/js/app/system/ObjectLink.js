@@ -153,7 +153,7 @@ Ext.define('app.objectLink.Field',{
 					Ext.Msg.alert(appLang.MESSAGE , response.msg);
 				} else{
 					me.dataFieldLabel.setValue(response.data.title);
-					me.forceComponentLayout();
+					me.updateLayout();
 				}
 			},
 			failure:function(){

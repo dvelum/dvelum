@@ -177,7 +177,7 @@ Ext.define('designer.objects.Tree',{
 		response =  Ext.JSON.decode(response.responseText);
 		if(response.success){
 		    this.fireEvent('dataChanged');
-		    this.forceComponentLayout();
+		    this.updateLayout();
 		}else{
 		    Ext.Msg.alert(appLang.MESSAGE, response.msg);
 		}

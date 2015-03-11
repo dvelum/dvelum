@@ -606,9 +606,9 @@ Ext.define('app.crud.compiller.Main',{
 
 		this.recordsStore.proxy.setExtraParam('package',this.curPackage);
 		this.recordsStore.load();
-		this.recordsGrid.forceComponentLayout();
+		this.recordsGrid.updateLayout();
 		this.recordsGrid.doLayout();
-		this.forceComponentLayout();
+		this.updateLayout();
 		this.doLayout();
 	},
 	showAddRecordsWin:function(){
@@ -621,8 +621,8 @@ Ext.define('app.crud.compiller.Main',{
 		win.on('filesAdded',function(){
 			this.recordsStore.load();
 			this.packageStore.load();
-			this.recordsGrid.forceComponentLayout();
-			this.forceComponentLayout();
+			this.recordsGrid.updateLayout();
+			this.updateLayout();
 		},this);
 
 		win.show();

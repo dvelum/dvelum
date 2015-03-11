@@ -127,7 +127,7 @@ Ext.define('app.crud.orm.ObjectField',{
 	 			} else{
 	 				me.dataFieldLabel.getEl().unmask();
 	 				me.dataFieldLabel.setValue(response.data.title);
-	 				me.forceComponentLayout();
+	 				me.updateLayout();
 	 			}
 	 		},
 	 		failure:function(){
