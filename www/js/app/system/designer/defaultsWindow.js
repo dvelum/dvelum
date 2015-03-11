@@ -5,7 +5,9 @@ Ext.define('designer.defaultsModel', {
 		 {name:'value', type:'string'}
     ]
 });
-
+/**
+ * @event dataSaved
+ */
 Ext.define('designer.defaultsWindow',{
 	extend:'Ext.Window',
 	title:'defaults',
@@ -100,14 +102,6 @@ Ext.define('designer.defaultsWindow',{
 		    }
 		];
 		this.callParent();
-		
-		this.addEvents(
-	            /**
-	             * @event dataSaved
-	             */
-	           'dataChanged'
-	    );  
-		
 	},
 	saveData:function(){
 		var s ='';

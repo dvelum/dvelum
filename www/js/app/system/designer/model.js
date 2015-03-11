@@ -24,7 +24,15 @@ Ext.define('designer.model.validationsModel', {
     ]
 });
 
-
+/**
+ * Model configuration Window
+ *
+ * @event dataChanged - Fires after data successfuly saved
+ * @param string json_encoded object of fields grid data
+ * @param string json_encoded object of association grid data
+ * @param string json_encoded object of validation grid data
+ *
+ */
 Ext.define('designer.model.configWindow',{
 	extend:'Ext.Window',
 	width:600,
@@ -379,16 +387,6 @@ Ext.define('designer.model.configWindow',{
 			scope:this,
 			handler:this.close
        	}];
-		
-		this.addEvents(
-			/**
-			 * Fires after data successfuly saved
-			 * @param string json_encoded object of fields grid data
-			 * @param string json_encoded object of association grid data
-			 * @param string json_encoded object of validation grid data
-			 */
-			'dataChanged'
-		);
 		
 		this.items = [this.tabPanel];
 		this.callParent(arguments);

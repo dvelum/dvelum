@@ -1,3 +1,7 @@
+/**
+ *
+ * @event dataSaved
+ */
 Ext.define('designer.grid.filters.Window',{
 	extend:'Ext.Window',
 	layout:'fit',
@@ -240,13 +244,6 @@ Ext.define('designer.grid.filters.Window',{
 			]
 		});
 
-		this.addEvents(
-			/**
-			 * @event dataSaved
-			 */
-			'dataSaved'
-		);
-
 		this.on('show',function(){app.checkSize(this);});
 
 		this.itemsPanel.getSelectionModel().on('selectionchange',function(sm , data , opts){
@@ -326,5 +323,5 @@ Ext.define('designer.grid.filters.Window',{
 				}
 			});
 		},this);
-	},
+	}
 });

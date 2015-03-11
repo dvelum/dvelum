@@ -1,3 +1,6 @@
+/**
+ * @event select
+ */
 Ext.define('designer.iconField',{
 	extend:'Ext.form.FieldContainer',
 	alias:'widget.urlfield',
@@ -37,12 +40,6 @@ Ext.define('designer.iconField',{
 		 this.items = [this.dataField , this.triggerButton];
 
 		 this.callParent();
-		 this.addEvents(
-		            /**
-		             * @event complete
-		             */
-		           'select'
-		 ); 
 	},
 	setValue:function(value){
 		this.dataField.setValue(value);

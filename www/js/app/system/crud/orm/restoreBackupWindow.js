@@ -7,7 +7,10 @@ Ext.define('app.crud.orm.backupModel', {
         {name:'title',  type:'string'}
     ]
 });
- 
+/**
+ *
+ * @event backupRestored
+ */
 Ext.define('app.crud.orm.restoreBackupWindow', {
 	extend:'Ext.window.Window',
 	curBackupItem:null,
@@ -95,14 +98,6 @@ Ext.define('app.crud.orm.restoreBackupWindow', {
 		});
 		
 		this.buttons = [this.buttonRestore];
-		
-		this.addEvents(
-	            /**
-	             * @event backupRestored
-	             */
-	           'backupRestored'
-	    );
-		
 		this.callParent(arguments);
 	},
 	deleteBackup:function(grid, rowIndex, colIndex){

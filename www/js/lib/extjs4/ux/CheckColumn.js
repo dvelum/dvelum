@@ -39,24 +39,16 @@ var grid = Ext.create('Ext.grid.Panel', {
  * class adds or removes a css class <tt>'x-grid-checked'</tt> on the td
  * based on whether or not it is checked to alter the background image used
  * for a column.
+ *
+ * @event checkchange
+ * Fires when the checked state of a row changes
+ * @param {Ext.ux.CheckColumn} this
+ * @param {Number} rowIndex The row index
+ * @param {Boolean} checked True if the box is checked
  */
 Ext.define('Ext.ux.CheckColumn', {
     extend: 'Ext.grid.column.Column',
     alias: 'widget.checkcolumn',
-    
-    constructor: function() {
-        this.addEvents(
-            /**
-             * @event checkchange
-             * Fires when the checked state of a row changes
-             * @param {Ext.ux.CheckColumn} this
-             * @param {Number} rowIndex The row index
-             * @param {Boolean} checked True if the box is checked
-             */
-            'checkchange'
-        );
-        this.callParent(arguments);
-    },
 
     /**
      * @private

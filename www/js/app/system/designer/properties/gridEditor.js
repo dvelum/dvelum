@@ -1,5 +1,7 @@
 /**
  * Grid column editor properties
+ *
+ * @event editorRemoved
  */
 Ext.define('designer.properties.GridEditor',{
 	
@@ -17,10 +19,7 @@ Ext.define('designer.properties.GridEditor',{
 		});	
 		
 		this.setExtraParams({column:this.columnName});
-		this.callParent(arguments);	
-		this.addEvents(
-			'editorRemoved'
-		);
+		this.callParent(arguments);
 	},
 	/**
 	 * Remove column editor

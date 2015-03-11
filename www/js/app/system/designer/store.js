@@ -25,7 +25,14 @@ Ext.define('designer.store.fieldsModel', {
 	]
 });
 
-
+/**
+ * Store sorters property editor
+ *
+ * @event dataChanged - Fires after data successfully saved
+ * @param string propertyName
+ * @param string json_encoded object of grid source
+ * @param boolean True to create the property if it doesn't already exist. Defaults to false.
+ */
 Ext.define('designer.store.sortersWindow',{
 	extend:'Ext.Window',
 	width:500,
@@ -156,16 +163,6 @@ Ext.define('designer.store.sortersWindow',{
 		];
 
 		this.callParent(arguments);
-
-		this.addEvents(
-			/**
-			 * Fires after data successfully saved
-			 * @param string propertyName
-			 * @param string json_encoded object of grid source
-			 * @param boolean True to create the property if it doesn't already exist. Defaults to false.
-			 */
-			'dataChanged'
-		);
 	},
 	addRecord:function(){
 		var count = this.dataStore.getCount();
@@ -183,7 +180,14 @@ Ext.define('designer.store.sortersWindow',{
 	}
 });
 
-
+/**
+ * Store filters property editor
+ *
+ * @event dataChanged -  Fires after data successfuly saved
+ * @param string propertyName
+ * @param string json_encoded object of grid source
+ * @param boolean True to create the property if it doesn't already exist. Defaults to false.
+ */
 Ext.define('designer.store.filtersWindow',{
 	extend:'Ext.Window',
 	width:500,
@@ -258,7 +262,7 @@ Ext.define('designer.store.filtersWindow',{
 							sorters:[{
 								property: 'name',
 								direction: 'ASC'
-							}],
+							}]
 						})
 					}
 				},{
@@ -304,16 +308,6 @@ Ext.define('designer.store.filtersWindow',{
 			}
 		];
 		this.callParent(arguments);
-
-		this.addEvents(
-			/**
-			 * Fires after data successfuly saved
-			 * @param string propertyName
-			 * @param string json_encoded object of grid source
-			 * @param boolean True to create the property if it doesn't already exist. Defaults to false.
-			 */
-			'dataChanged'
-		);
 	},
 	addRecord:function(){
 		var count = this.dataStore.getCount();
@@ -331,6 +325,14 @@ Ext.define('designer.store.filtersWindow',{
 	}
 });
 
+/**
+ * Store fields editor window
+ *
+ * @event dataChanged - Fires after data successfully saved
+ * @param string propertyName
+ * @param string json_encoded object of grid source
+ * @param boolean True to create the property if it doesn't already exist. Defaults to false.
+ */
 Ext.define('designer.store.fieldsWindow',{
 	extend:'Ext.Window',
 	width:600,
@@ -509,16 +511,6 @@ Ext.define('designer.store.fieldsWindow',{
 
 			}
 		},this);
-
-		this.addEvents(
-			/**
-			 * Fires after data successfully saved
-			 * @param string propertyName
-			 * @param string json_encoded object of grid source
-			 * @param boolean True to create the property if it doesn't already exist. Defaults to false.
-			 */
-			'dataChanged'
-		);
 	},
 	importFromDb:function(){
 		var win = Ext.create('designer.importDBWindow',{
@@ -936,7 +928,10 @@ Ext.define('designer.store.proxyWindow',{
 		});
 	}
 });
-
+/**
+ * @event dataSaved - Fires after data successfuly saved
+ * @param object data
+ */
 Ext.define('designer.store.rootWindow',{
 	extend:'Ext.Window',
 	width:500,
@@ -970,16 +965,6 @@ Ext.define('designer.store.rootWindow',{
 				handler:this.close
 			}
 		];
-
-		this.addEvents(
-			/**
-			 * Fires after data successfuly saved
-			 * @param object data
-			 */
-			'dataSaved'
-		);
-
-
 		this.callParent();
 	},
 	onDataSaved:function()

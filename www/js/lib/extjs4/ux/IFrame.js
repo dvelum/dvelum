@@ -9,6 +9,9 @@
  * Barebones iframe implementation. For serious iframe work, see the
  * ManagedIFrame extension
  * (http://www.sencha.com/forum/showthread.php?71961).
+ *
+ * @event beforeload
+ * @event load
  */
 Ext.define('Ext.ux.IFrame', {
     extend: 'Ext.Component',
@@ -27,11 +30,6 @@ Ext.define('Ext.ux.IFrame', {
         this.callParent();
 
         this.frameName = this.frameName || this.id + '-frame';
-
-        this.addEvents(
-            'beforeload',
-            'load'
-        );
 
         Ext.apply(this.renderSelectors, {
             iframeEl: 'iframe'

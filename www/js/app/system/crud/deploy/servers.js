@@ -1,3 +1,10 @@
+/**
+ *
+ * @event dataSaved
+ * @param string serverId
+ * @param string serverName
+ *
+ */
 Ext.define('app.crud.orm.deploy.Servers',{
 	extend:'Ext.grid.Panel',
 	controllerUrl:'',
@@ -67,16 +74,7 @@ Ext.define('app.crud.orm.deploy.Servers',{
 		
 		
 		this.callParent();
-		
-		this.addEvents(
-	            /**
-	             * @event dataSaved
-	             * @param string serverId
-	             * @param string serverName
-	             */
-	           'serverSelected'
-	    );  
-		
+
 		this.getSelectionModel().on('selectionchange',function(){
 			var sm = this.getSelectionModel();
 			if(sm.hasSelection()){
@@ -141,7 +139,9 @@ Ext.define('app.crud.orm.deploy.Servers',{
 	}
 });
 
-
+/**
+ * @event dataSaved
+ */
 Ext.define('app.crud.orm.deploy.ServersEditWindow',{
 	extend:'Ext.Window',
 	modal:true,
@@ -236,13 +236,7 @@ Ext.define('app.crud.orm.deploy.ServersEditWindow',{
 		this.items = [this.dataForm];
 		
 		this.callParent();
-		
-		this.addEvents(
-	            /**
-	             * @event dataSaved
-	             */
-	           'dataSaved'
-	       );  
+
 		
 		if(this.dataItemId!==false){
 	    	 this.loadData(this.dataItemId);

@@ -1,3 +1,7 @@
+/**
+ *
+ * @event select
+ */
 Ext.define('app.crud.orm.DataViewWindow', {
 	extend:'Ext.window.Window',
 	objectName:'',
@@ -41,10 +45,6 @@ Ext.define('app.crud.orm.DataViewWindow', {
 			app.checkSize(this);
 			this.loadInterface();
 		},this);
-		
-		this.addEvents(
-			'select'
-		);
 	},
 	loadInterface:function(){
 		var me = this;

@@ -38,6 +38,22 @@ Ext.define('designer.objects.Store',{
 	}
 });
 
+/**
+ * Project structure panel
+ *
+ * @event dataSaved
+ * @param id
+ * @param objectClass
+ * @param title
+ *
+ * @event itemSelected
+ *
+ * @event dataChanged
+ *
+ * @event dataChanged
+ *
+ * @event objectRemoved
+ */
 Ext.define('designer.objects.Panel',{
 	extend:'Ext.tab.Panel',
 	activeTab:0,
@@ -101,24 +117,6 @@ Ext.define('designer.objects.Panel',{
 		this.items = [this.panelsTab , this.storesTab , this.modelsTab];
 
 		this.callParent();
-
-		this.addEvents(
-			/**
-			 * @event dataSaved
-			 * @param id
-			 * @param objectClass
-			 * @param title
-			 */
-			'itemSelected',
-			/**
-			 * @event dataChanged
-			 */
-			'dataChanged',
-			/**
-			 * @event objectRemoved
-			 */
-			'objectRemoved'
-		);
 	},
 	/**
 	 * Clear project data

@@ -1,5 +1,14 @@
-
-
+/**
+ *
+ * @event dataSaved
+ * @param id
+ * @param className
+ * @param title
+ *
+ * @event dataSaved
+ *
+ * @event objectRemoved
+ */
 Ext.define('designer.objects.Grid',{
     extend:'Ext.Panel',
     layout:'fit',
@@ -48,23 +57,7 @@ Ext.define('designer.objects.Grid',{
 	this.items = [this.dataGrid];
 
 	this.callParent(arguments);
-	this.addEvents(
-		/**
-		 * @event dataSaved
-		 * @param id
-		 * @param className
-		 * @param title
-		 */
-		'itemSelected',
-		/**
-		 * @event dataSaved
-		 */
-		'dataChanged',
-		/**
-		 * @event objectRemoved
-		 */
-		'objectRemoved'
-	);
+
     },
     getStore:function(){
 	return this.dataStore;

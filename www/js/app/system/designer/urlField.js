@@ -1,3 +1,9 @@
+/**
+ * Url property editor
+ *
+ * @event select - Fires when URL is selected
+ * @param string url
+ */
 Ext.define('designer.urlWindow',{
 	extend:'Ext.Window',
 	modal:true,
@@ -25,10 +31,10 @@ Ext.define('designer.urlWindow',{
 					controller:''
 				},
 				fields:[
-				        {name:'name' , type:'string'},
-				        {name:'comment' , type:'string'},
-				        {name:'code' , type:'string'},
-				        {name:'url' , type:'string'}
+					{name:'name' , type:'string'},
+					{name:'comment' , type:'string'},
+					{name:'code' , type:'string'},
+					{name:'url' , type:'string'}
 				],
 				proxy:{
 					url:this.controllerUrl,
@@ -42,45 +48,36 @@ Ext.define('designer.urlWindow',{
 				autoLoad:false
 			}),
 			columns:[
-			         {
-			        	 text:desLang.action,
-			        	 dataIndex:'name',
-			        	 width:100
-			         },{
-			        	 text:desLang.description,
-			        	 flex:1,
-			        	 dataIndex:'comment',
-			        	 renderer:app.linesRenderer
-			         }
+				{
+					text:desLang.action,
+					dataIndex:'name',
+					width:100
+				},{
+					text:desLang.description,
+					flex:1,
+					dataIndex:'comment',
+					renderer:app.linesRenderer
+				}
 			]
 		});
 
 
 		var me = this;
 		this.buttons = [
-		              {
-		            	  text:desLang.select,
-		            	  scope:me,
-		            	  handler:me.onSelect
-		              },{
-		            	  text:desLang.cancel,
-		            	  scope:me,
-		            	  handler:me.close
-		              }
+			{
+				text:desLang.select,
+				scope:me,
+				handler:me.onSelect
+			},{
+				text:desLang.cancel,
+				scope:me,
+				handler:me.close
+			}
 		];
 
 		this.items = [this.fileTree , this.actionsGrid];
 
 		this.callParent();
-		this.addEvents(
-		            /**
-		             * @event select
-		             * Fires when URL is selected
-		             * @param string url
-		             */
-		            'select'
-		 );
-
 		/*
 		 * Do not show Actions
 		 */
@@ -132,6 +129,11 @@ Ext.define('designer.urlWindow',{
 	}
 });
 
+/**
+ *
+ * @event select
+ * @param {Ext.Window}
+ */
 Ext.define('designer.urlField',{
 	extend:'Ext.form.FieldContainer',
 	mixins:{completeEdit:'Ext.Editor'},
@@ -143,43 +145,37 @@ Ext.define('designer.urlField',{
 	onlyController:false,
 	controllerUrl:'',
 	initComponent:function(){
-		 var  me = this;
+		var  me = this;
 
-		 this.dataField = Ext.create('Ext.form.field.Text',{
+		this.dataField = Ext.create('Ext.form.field.Text',{
 			flex:1
-		 });
+		});
 
 		this.triggerButton = Ext.create('Ext.button.Button',{
-			 iconCls:'urltriggerIcon',
-			 width:25,
-			 scope:me,
-			 handler:function(){
-				 var win = Ext.create('designer.urlWindow', {
-			            width:600,
-			            height:400,
-			            onlyController:this.onlyController,
-			            controllerUrl:this.controllerUrl,
-			            listeners:{
-			            	select:{
-			            		fn:function(url){
-			            			this.setValue(url);
-						        	this.fireEvent('select');
-			            		},
-			            		scope:this
-			            	}
-			            }
-			        }).show();
-			 }
+			iconCls:'urltriggerIcon',
+			width:25,
+			scope:me,
+			handler:function(){
+				var win = Ext.create('designer.urlWindow', {
+					width:600,
+					height:400,
+					onlyController:this.onlyController,
+					controllerUrl:this.controllerUrl,
+					listeners:{
+						select:{
+							fn:function(url){
+								this.setValue(url);
+								this.fireEvent('select');
+							},
+							scope:this
+						}
+					}
+				}).show();
+			}
 		});
 
 		this.items = [this.dataField , this.triggerButton];
 		this.callParent();
-		this.addEvents(
-				/**
-				 * @param {Ext.Window}
-				 */
-				'select'
-			);
 	},
 	setValue:function(value){
 		this.dataField.setValue(value);

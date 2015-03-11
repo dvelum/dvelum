@@ -1,3 +1,8 @@
+/**
+ *
+ * @event objectAdded
+ * @param string name
+ */
 Ext.define('designer.addInstanceWindow',{
 	extend:'Ext.Window',
 	modal:true,
@@ -26,7 +31,6 @@ Ext.define('designer.addInstanceWindow',{
 				type:"ajax"
 			}
 		});
-
 
 		this.dataForm = Ext.create('Ext.form.Panel',{
 			bodyPadding:5,
@@ -72,17 +76,7 @@ Ext.define('designer.addInstanceWindow',{
 		];
 
 		this.items = [this.dataForm];
-
 		this.callParent();
-
-
-		this.addEvents(
-			/**
-			 * @event objectAdded
-			 * @param string name
-			 */
-			'objectAdded'
-		);
 	},
 	/**
 	 * Add object instance to the project

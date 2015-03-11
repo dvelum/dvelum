@@ -1,6 +1,12 @@
 
 Ext.ns('designer.grid','designer.grid.column');
 
+/**
+ *
+ * @event allSet
+ * @param {Ext.Window}
+ *
+ */
 Ext.define('designer.grid.exportFieldsWin',{
 	extend:'Ext.Window',
 	
@@ -63,13 +69,6 @@ Ext.define('designer.grid.exportFieldsWin',{
 			scope:this,
 			handler:this.close
 		}];
-		
-		this.addEvents(
-			/**
-			 * @param {Ext.Window}
-			 */
-			'allSet'
-		);
 		this.callParent(arguments);
 	},
 	addFields:function(){

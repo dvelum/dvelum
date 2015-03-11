@@ -1,3 +1,7 @@
+/**
+ * @event dataSaved
+ *
+ */
 Ext.define('app.crud.orm.deploy.Files',{
 	extend:'Ext.Panel',
 	controllerUrl:null,
@@ -99,14 +103,6 @@ Ext.define('app.crud.orm.deploy.Files',{
 		this.updatedFiles.on('checkchange',app.checkChildNodes,this);	
 		
 		//this.deletedFiles.on('checkchange',app.checkChildNodes,this);
-		
-		this.addEvents(
-				/**
-	             * @event dataSaved
-	             */
-	           'backupCreated'
-		);
-		
 	},
 	reloadInfo:function(){
 		this.loadInfo(this.serverId);

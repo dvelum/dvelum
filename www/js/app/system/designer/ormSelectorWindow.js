@@ -1,3 +1,9 @@
+/**
+ *
+ * @event select - Fires when object is selected
+ * @param string object name
+ * @param {Array} field names
+ */
 Ext.define('designer.ormSelectorWindow',{
 	extend:'Ext.Window',
 	title:desLang.importOrm,
@@ -120,15 +126,6 @@ Ext.define('designer.ormSelectorWindow',{
 
 		this.items = [this.objectsGrid , this.fieldsGrid];
 		this.callParent(arguments);
-		this.addEvents(
-	            /**
-	             * @event select
-	             * Fires when object is selected
-	             * @param string object name
-	             * @param {Array} field names
-	             */
-	            'select'
-		);
 	},
 	onSelect:function(){
 		var oSm = this.objectsGrid.getSelectionModel();

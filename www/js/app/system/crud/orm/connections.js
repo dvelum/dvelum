@@ -240,7 +240,9 @@ Ext.define('app.orm.connections.Window',{
 		win.show();
 	}
 });
-
+/**
+ *  @event dataSaved
+ */
 Ext.define('app.orm.connections.EditWindow',{
 	extend:'Ext.Window',
 
@@ -407,13 +409,6 @@ Ext.define('app.orm.connections.EditWindow',{
 		];
 
 		this.items = [this.dataForm];
-
-		this.addEvents(
-	            /**
-	             * @event dataSaved
-	             */
-	           'dataSaved'
-	    );
 
 		this.callParent(arguments);
 
