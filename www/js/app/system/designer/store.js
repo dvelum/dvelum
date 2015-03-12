@@ -147,7 +147,7 @@ Ext.define('designer.store.sortersWindow',{
 	                    handler:this.saveData,
 	                    scope:this
 	                },{
-	                    text:desLang.cancel,
+	                    text:desLang.close,
 	                    handler:function(){
 	                	this.close();
 	                    },
