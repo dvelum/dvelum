@@ -4,10 +4,9 @@ class Backend_User_Controller extends Backend_Controller
 
   /**
    * (non-PHPdoc)
-   * 
-   * @see Backend_Controller::indexAction()
+   * Old UI
    */
-  public function indexAction()
+  /*public function indexAction()
   {
     $res = Resource::getInstance();
     $res->addJs('/js/lib/ext_ux/SearchField.js');
@@ -20,6 +19,7 @@ class Backend_User_Controller extends Backend_Controller
         	var canDelete = ' . ((integer) $this->_user->canDelete($this->_module)) . ';
         ');
   }
+  */
 
   /**
    * Load user info action
