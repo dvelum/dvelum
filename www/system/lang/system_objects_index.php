@@ -34,4 +34,5 @@
   32 => 'sysdocs_localization',
   33 => 'sysdocs_file',
   34 => 'sysdocs_class_method_param',
+  35 => 'error_log',
 ); 
