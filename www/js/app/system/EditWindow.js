@@ -46,8 +46,11 @@ Ext.define('app.editWindow',{
 	canDelete:false,
 
 	contentTabs:null,
+
 	fieldDefaults:null,
+
 	itemsConfig:null,
+
 	dataItemId:'',
 
 	eastPanel:null,
@@ -105,7 +108,8 @@ Ext.define('app.editWindow',{
 			items:[],
 			fbar:[],
 			buttonsAlign:'right',
-			maximizable:true
+			maximizable:true,
+			extraParams:{}
 		}, config || {});
 		this.callParent(arguments);
 
