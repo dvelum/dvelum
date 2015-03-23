@@ -354,6 +354,9 @@ Ext.define('app.report.config.addMainWindow',{
 	}
 });
 
+/**
+ * @event objectAdded
+ */
 Ext.define('app.report.config.addSubWindow',{
 	extend:'Ext.Window',
 	width:400,
@@ -520,13 +523,6 @@ Ext.define('app.report.config.addSubWindow',{
 		  }
 		];
 		this.callParent(arguments);
-
-		this.addEvents(
-				/**
-	             * @event objectAdded
-	             */
-				'objectAdded'
-		);
 	},
 	formSubmit:function(){
 		var me = this;

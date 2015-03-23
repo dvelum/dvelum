@@ -2,9 +2,9 @@
  * Properties panel for Search Component
  */
 Ext.define('designer.properties.Search',{
-	
+
 	extend:'designer.properties.Field',
-	
+
 	initComponent:function()
 	{
 		var me = this;
@@ -21,24 +21,24 @@ Ext.define('designer.properties.Search',{
 				renderer:function(v){return '...';}
 			}
 		} , this.sourceConfig);
-		
+
 		this.callParent();
 	},
 	namesEdior:function(){
 		var storeProperty = this.dataGrid.getSource().store;
 		var fieldsList = this.dataGrid.getSource().fieldNames;
-		
+
 		if(fieldsList.length){
 			fieldsList = Ext.JSON.decode(fieldsList);
 		}else{
 			fieldsList = [];
 		}
-		
+
 		if(!storeProperty.length){
-			Ext.Msg.alert(appLang.MESSAGE, desLang.selectDataStore);   
+			Ext.Msg.alert(appLang.MESSAGE, desLang.selectDataStore);
 			return;
 		}
-		
+
 		Ext.create('designer.properties.SearchFieldsWindow',{
 			fieldsStore: storeProperty,
 			initData : fieldsList,
@@ -55,17 +55,21 @@ Ext.define('designer.properties.Search',{
 	}
 });
 
+/**
+ *
+ * @event dataChanged
+ */
 Ext.define('designer.properties.SearchFieldsWindow',{
-	
+
 	extend:'Ext.Window',
-	
+
 	width:200,
 	height:300,
 	/*
-	 * window title as propyrty name
+	 * window title as property name
 	 */
 	title:'fieldNames',
-	
+
 	initData:null,
 	dataGrid:null,
 	dataStore:null,
@@ -73,11 +77,11 @@ Ext.define('designer.properties.SearchFieldsWindow',{
 	closeAction:'destroy',
 	resizable:false,
 	layout:'fit',
-	
+
 	storeName:'',
-	
+
 	initComponent:function(){
-		
+
 		if(Ext.isEmpty(this.initData)){
 			this.initData = [];
 		}else{
@@ -87,106 +91,97 @@ Ext.define('designer.properties.SearchFieldsWindow',{
 			},this);
 			this.initData = data;
 		}
-		
+
 		this.dataStore =  Ext.create('Ext.data.ArrayStore',{
-	        fields: ['id'],
-	        data: this.initData
+			fields: ['id'],
+			data: this.initData
 		}),
-		 
-		this.fieldStore = Ext.create('Ext.data.Store',{
-			proxy: {
-			        type: 'ajax',
-			    	url:app.createUrl([designer.controllerUrl ,'store','listfields']),
-			    	reader: {
-			            type: 'json',
-			            idProperty: 'name',
+
+			this.fieldStore = Ext.create('Ext.data.Store',{
+				proxy: {
+					type: 'ajax',
+					url:app.createUrl([designer.controllerUrl ,'store','listfields']),
+					reader: {
+						type: 'json',
+						idProperty: 'name',
 						rootProperty: 'data'
-			        },
-			        extraParams:{
-			        	object:this.fieldsStore
-			        },
-			        autoLoad:true
-			},
-			fields: [
-			         {name:'name' ,  type:'string'},
-			         {name:'type' ,  type:'string'}
-			],
-			autoLoad:true
-		});
-		 	 
+					},
+					extraParams:{
+						object:this.fieldsStore
+					},
+					autoLoad:true
+				},
+				fields: [
+					{name:'name' ,  type:'string'},
+					{name:'type' ,  type:'string'}
+				],
+				autoLoad:true
+			});
+
 		this.tbar=[
-					{
-						  tooltip:desLang.add,
-						  iconCls:'plusIcon',
-						  scope:this,
-						  handler:this.addRecord
-					 }        
-				];
+			{
+				tooltip:desLang.add,
+				iconCls:'plusIcon',
+				scope:this,
+				handler:this.addRecord
+			}
+		];
 		this.cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {clicksToEdit:1});
 		this.dataGrid = Ext.create('Ext.grid.Panel',{
 			store:this.dataStore,
-		    columnLines:true,
-		    hideHeaders:true,
+			columnLines:true,
+			hideHeaders:true,
 			columns:[
-			         {
-			        	 dataIndex:'id',
-			        	 editable:true,
-			        	 flex:1,
-			        	 editor:{
-			        		 xtype: 'combobox',
-			     			 typeAhead: true,
-			     			 triggerAction: 'all',
-			     			 selectOnTab: true,
-			     			 forceSelection:true,
-			     			 store:this.fieldStore,
-			     			 displayField:'name',
-			     			 valueField:'name',
-			     			 allowBlank:false,
-			     			 queryMode:'local'
-			        	 }
-			         },{
-			    			xtype:'actioncolumn',
-			    			width:25,
-			    			align:'center',
-			    			sortable: false,
-			    			menuDisabled:true,
-			    			items:[
-			    			       {
-			    			    	   iconCls:'deleteIcon',
-			    			    	   tooltip:desLang.remove,
-			    			    	   handler:function(grid , row , col){
-			    			    		   var store = grid.getStore();
-			    			    		   store.remove(store.getAt(row));
-			    			    	   }
-			    			       }
-			    			]
-			    	}
+				{
+					dataIndex:'id',
+					editable:true,
+					flex:1,
+					editor:{
+						xtype: 'combobox',
+						typeAhead: true,
+						triggerAction: 'all',
+						selectOnTab: true,
+						forceSelection:true,
+						store:this.fieldStore,
+						displayField:'name',
+						valueField:'name',
+						allowBlank:false,
+						queryMode:'local'
+					}
+				},{
+					xtype:'actioncolumn',
+					width:25,
+					align:'center',
+					sortable: false,
+					menuDisabled:true,
+					items:[
+						{
+							iconCls:'deleteIcon',
+							tooltip:desLang.remove,
+							handler:function(grid , row , col){
+								var store = grid.getStore();
+								store.remove(store.getAt(row));
+							}
+						}
+					]
+				}
 			],
 			plugins:[this.cellEditing]
 		});
-		
-		this.items = [this.dataGrid];		
-		this.buttons = [
-		     {
-		    	 text:desLang.save,
-		    	 handler: this.sendData,
-		    	 scope:this
-		     },{
-		    	 text:desLang.cancel,
-		    	 handle:this.close,
-		    	 scope:this
-		     }
-		];
-		
-		
-		this.callParent();
-		this.addEvents(
-	           /**
-	            * @event dataChanged
-	            */
-	           'dataChanged'
-	    );
 
+		this.items = [this.dataGrid];
+		this.buttons = [
+			{
+				text:desLang.save,
+				handler: this.sendData,
+				scope:this
+			},{
+				text:desLang.cancel,
+				handle:this.close,
+				scope:this
+			}
+		];
+		this.callParent();
 	},
 	sendData:function()
 	{
@@ -197,9 +192,9 @@ Ext.define('designer.properties.SearchFieldsWindow',{
 				data.push(record.get('id'));
 			}
 		},this);
-		
+
 		data = Ext.JSON.encode(data);
-		
+
 		this.fireEvent('dataChanged' , data);
 		this.close();
 	},

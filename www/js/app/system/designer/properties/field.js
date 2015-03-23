@@ -1,3 +1,6 @@
+/**
+ * @event objectsUpdated
+ */
 Ext.define('designer.properties.FieldTypeWindow',{
 	extend:'Ext.Window',
 	objectName:'',
@@ -152,13 +155,6 @@ Ext.define('designer.properties.FieldTypeWindow',{
             }
 		];
 		this.callParent();
-
-		this.addEvents(
-	           /**
-	            * @event objectsUpdated
-	            */
-	           'objectsUpdated'
-	    ); 
 	},
 	/**
 	 * Field type selected

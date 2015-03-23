@@ -1,5 +1,11 @@
 /**
  * Edit window for ORM object
+ *
+ * @event dataSaved
+ * @event showdictionarywin
+ * @event fieldRemoved
+ * @event indexRemoved
+ *
  */
 Ext.define('app.crud.orm.ObjectWindow', {
 	extend: 'Ext.window.Window',
@@ -638,7 +644,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 						}]
 					}),
 					listeners:{
-						render:{fn:this.initTooltip,scope:this},
+						render:{fn:this.initTooltip,scope:this}
 					}
 				},{
 					xtype:'fieldcontainer',
@@ -669,16 +675,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 		this.items = [this.tabPanel];
 
 		this.callParent(arguments);
-
-		this.addEvents(
-			/**
-			 * @event dataSaved
-			 */
-			'dataSaved',
-			'showdictionarywin',
-			'fieldRemoved',
-			'indexRemoved'
-		);
 
 		var form = this.configForm.getForm();
 		form.findField('primary_key').setReadOnly(true);
@@ -737,7 +733,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 
 		Ext.create('Ext.tip.ToolTip', {
 			target:field.getEl(),
-			html:ormTooltips[qTipName],
+			html:ormTooltips[qTipName]
 		});
 	},
 	checkFieldsValidation:function(storageEngine){

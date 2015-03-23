@@ -1,3 +1,8 @@
+/**
+ * Metods editor window
+ *
+ * @event methodsUpdated
+ */
 Ext.define('designer.methodsEditor',{
 	extend:'Ext.grid.Panel',
 	autoScroll:true,
@@ -123,13 +128,6 @@ Ext.define('designer.methodsEditor',{
 		this.on('itemdblclick',function(view , record , number , event , options){
 			this.editMethod(record);
 		},this);
-
-		this.addEvents(
-			/**
-			 * @event methodsUpdated
-			 */
-			'methodsUpdated'
-		);
 
 		this.callParent();
 	},
@@ -330,7 +328,7 @@ Ext.define('designer.methodEditorWindow',{
 						"Ctrl-Z": function(cm) {me.editor.undoAction();},
 						"Ctrl-Y": function(cm) {me.editor.redoAction();},
 						"Shift-Ctrl-Z": function(cm) {me.editor.redoAction();}
-					},
+					}
 				});
 
 				var form = this.dataForm.getForm();

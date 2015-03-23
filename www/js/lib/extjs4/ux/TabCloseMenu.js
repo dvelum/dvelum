@@ -2,6 +2,9 @@
  * Plugin for adding a close context menu to tabs. Note that the menu respects
  * the closable configuration on the tab. As such, commands like remove others
  * and remove all will not remove items that are not closable.
+ *
+ * @event aftermenu
+ * @event beforemenu
  */
 Ext.define('Ext.ux.TabCloseMenu', {
     alias: 'plugin.tabclosemenu',
@@ -54,10 +57,6 @@ Ext.define('Ext.ux.TabCloseMenu', {
 
     //public
     constructor: function (config) {
-        this.addEvents(
-            'aftermenu',
-            'beforemenu');
-
         this.mixins.observable.constructor.call(this, config);
     },
 

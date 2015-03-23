@@ -1,5 +1,21 @@
 Ext.ns('designer.properties');
 
+/**
+ * Properties editor base
+ *
+ * @event dataSaved
+ * @param string recordId
+ * @param mixed value
+ *
+ *
+ * @event eventsUpdated
+ *
+ * @event afterLoad
+ * @param response
+ *
+ * @event objectsUpdated
+ *
+ */
 Ext.define('designer.properties.Panel', {
     extend: 'Ext.Panel',
     layout: 'fit',
@@ -451,27 +467,6 @@ Ext.define('designer.properties.Panel', {
 
         this.callParent();
 
-        this.addEvents(
-            /**
-             * @event dataSaved
-             * @param string recordId
-             * @param mixed value
-             */
-            'dataSaved',
-            /**
-             * @event eventsUpdated
-             */
-            'eventsUpdated',
-            /**
-             * @event afterLoad
-             * @param response
-             */
-            'afterLoad',
-            /**
-             * @event objectsUpdated
-             */
-            'objectsUpdated'
-        );
 
         this.on('scrollershow', function (scroller) {
             if (scroller && scroller.scrollEl) {

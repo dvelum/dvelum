@@ -1,3 +1,9 @@
+/**
+ *
+ * @event select Fires when action is selected
+ * @param string url
+ *
+ */
 Ext.define('designer.iconSelectorWindow',{
 	extend:'Ext.Window',
 	layout:'border',
@@ -112,15 +118,6 @@ Ext.define('designer.iconSelectorWindow',{
 		]
 
 	    this.callParent();
-
-		this.addEvents(
-	            /**
-	             * @event select
-	             * Fires when action is selected
-	             * @param string url
-	             */
-	            'select'
-		);
 	},
 	onSelect:function()
 	{

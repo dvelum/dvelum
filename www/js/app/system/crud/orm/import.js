@@ -1,5 +1,7 @@
 Ext.ns('app.orm.import');
-
+/**
+ * @event importComplete
+ */
 Ext.define('app.orm.import.Window',{
 	extend:'Ext.Window',
 	dataGrid:null,
@@ -162,13 +164,6 @@ Ext.define('app.orm.import.Window',{
 		}];
 
 		this.callParent();
-
-		this.addEvents(
-	            /**
-	             * @event importComplete
-	             */
-	           'importComplete'
-	    );
 	},
 	importTable:function(){
 

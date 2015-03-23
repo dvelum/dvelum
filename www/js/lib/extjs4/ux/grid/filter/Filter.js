@@ -1,5 +1,20 @@
 /**
  * Abstract base class for filter implementations.
+ *
+ *
+ * @event activate - Fires when an inactive filter becomes active
+ * @param {Ext.ux.grid.filter.Filter} this
+ *
+ * @event deactivate - Fires when an active filter becomes inactive
+ * @param {Ext.ux.grid.filter.Filter} this
+ *
+ * @event serialize - Fires after the serialization process. Use this to attach additional parameters to serialization data before it is encoded and sent to the server.
+ * @param {Array/Object} data A map or collection of maps representing the current filter configuration.
+ * @param {Ext.ux.grid.filter.Filter} filter The filter being serialized.
+ *
+ * @event update - Fires when a filter configuration has changed
+ * @param {Ext.ux.grid.filter.Filter} this The filter object.
+ *
  */
 Ext.define('Ext.ux.grid.filter.Filter', {
     extend: 'Ext.util.Observable',
@@ -35,35 +50,6 @@ Ext.define('Ext.ux.grid.filter.Filter', {
 
     constructor : function (config) {
         Ext.apply(this, config);
-
-        this.addEvents(
-            /**
-             * @event activate
-             * Fires when an inactive filter becomes active
-             * @param {Ext.ux.grid.filter.Filter} this
-             */
-            'activate',
-            /**
-             * @event deactivate
-             * Fires when an active filter becomes inactive
-             * @param {Ext.ux.grid.filter.Filter} this
-             */
-            'deactivate',
-            /**
-             * @event serialize
-             * Fires after the serialization process. Use this to attach additional parameters to serialization
-             * data before it is encoded and sent to the server.
-             * @param {Array/Object} data A map or collection of maps representing the current filter configuration.
-             * @param {Ext.ux.grid.filter.Filter} filter The filter being serialized.
-             */
-            'serialize',
-            /**
-             * @event update
-             * Fires when a filter configuration has changed
-             * @param {Ext.ux.grid.filter.Filter} this The filter object.
-             */
-            'update'
-        );
         Ext.ux.grid.filter.Filter.superclass.constructor.call(this);
 
         this.menu = this.createMenu(config);

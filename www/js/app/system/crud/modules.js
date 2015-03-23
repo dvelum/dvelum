@@ -543,6 +543,12 @@ Ext.define('app.crud.modules.CreateWindow',{
 	}
 });
 
+/**
+ *
+ * @event dataSaved
+ * @params boolean deleteRelated
+ *
+ */
 Ext.define('app.crud.modules.DeleteWindow',{
 	extend:'Ext.Window',
 	modal:true,
@@ -590,14 +596,6 @@ Ext.define('app.crud.modules.DeleteWindow',{
 				}
 			}
 		];
-
-		this.addEvents(
-			/**
-			 * @event dataSaved
-			 * @params boolean deleteRelated
-			 */
-			'deleteItems'
-		);
 		this.callParent();
 	}
 });

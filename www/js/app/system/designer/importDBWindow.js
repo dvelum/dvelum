@@ -3,6 +3,14 @@
  */
 Ext.ns('designer.importDBWindow.js');
 
+/**
+ *
+ * @event select
+ * @param {Array} field names
+ * @param {String} connection name
+ * @param {String} table name
+ *
+ */
 Ext.define('designer.importDBWindow',{
 	extend:'Ext.window.Window',
 
@@ -194,15 +202,6 @@ Ext.define('designer.importDBWindow',{
 		}];
 
 		this.callParent(arguments);
-		this.addEvents(
-	            /**
-	             * @event select
-	             * @param {Array} field names
-	             * @param {String} connection name
-	             * @param {String} table name
-	             */
-	            'select'
-		);
 	},
 	onSelect:function(){
 		var fSm = this.fieldsGrid.getSelectionModel();

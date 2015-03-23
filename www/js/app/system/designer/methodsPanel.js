@@ -1,3 +1,7 @@
+/**
+ *
+ * @event methodsUpdated
+ */
 Ext.define('designer.methodsPanel',{
 	extend:'Ext.grid.Panel',
 	objectName:'',
@@ -112,13 +116,6 @@ Ext.define('designer.methodsPanel',{
 		this.on('celldblclick', function(table,  td,  cellIndex,  record,  tr, rowIndex, e, eOpts ){
 			this.editMethod(record);
 		},this);
-		
-		this.addEvents(
-	           /**
-	             * @event methodsUpdated
-	             */
-	           'methodsUpdated'
-	    );  
 		
 		this.callParent();
 	},
