@@ -79,6 +79,16 @@
     'designer' => '',
     'in_menu' => true,
   ),
+  'Error_Log' => 
+  array (
+    'id' => 'Backend_Error_Log_Controller',
+    'class' => 'Backend_Error_Log_Controller',
+    'dev' => false,
+    'active' => true,
+    'title' => 'Error Log',
+    'designer' => './system/config/layouts/system/error_log.designer.dat',
+    'in_menu' => true,
+  ),
   'Fmodules' => 
   array (
     'id' => 'Backend_Fmodules_Controller',
@@ -186,16 +196,7 @@
     'dev' => false,
     'active' => true,
     'title' => 'Users',
-    'designer' => '',
+    'designer' => './system/config/layouts/system/users.designer.dat',
     'in_menu' => true,
   ),
-  'Error_Log' =>
-    array (
-        'class' => 'Backend_Error_Log_Controller',
-        'dev' => false,
-        'active' => true,
-        'title' => 'Error Log',
-        'designer' => './system/config/layouts/system/error_log.designer.dat',
-        'in_menu' => true,
-    ),
 ); 

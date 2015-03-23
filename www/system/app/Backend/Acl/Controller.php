@@ -74,7 +74,7 @@ class Backend_Acl_Controller extends Backend_Controller
       {
          if(!Db_Object_Config::configExists($k))
          {
-              $v['rc'] = false;
+              unset($data[$k]);
               continue;
          }
          $cfg = Db_Object_Config::getInstance($k);

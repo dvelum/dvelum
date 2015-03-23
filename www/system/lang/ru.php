@@ -227,7 +227,7 @@
   'ITEMS' => 'Элементы',
   'IMPORT_FROM_SITE_TREE' => 'Импортировать из структуры сайта',
   'JOIN_TYPE' => 'Join type',
-  'HOME' => 'Главная',
+  'HOME' => 'Главня',
   'HIDE_SYSTEM_OBJ' => 'Скрыть системные объекты',
   'HISTORY' => 'История',
   'HISTORY_LOG' => 'История изменений',

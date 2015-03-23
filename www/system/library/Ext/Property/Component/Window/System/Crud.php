@@ -11,6 +11,7 @@ class Ext_Property_Component_Window_System_Crud extends Ext_Property_Window
 	public $useTabs = self::Boolean;
 	public $primaryKey = self::String;
 	public $showToolbar = self::Boolean;
+	public $extraParams = self::Object;
 	
 	static public $extend = 'app.editWindow';
 	static public $xtype = '';

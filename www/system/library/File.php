@@ -87,7 +87,7 @@ class File
 		}
 		catch(Exception $e)
 		{
-			throw new Exception('You tried to read nonexistent dir');
+			throw new Exception('You tried to read nonexistent dir: ' . $path );
 		}
 		
 		foreach($dirIterator as $name => $object)

@@ -188,6 +188,8 @@
   'Ext_Component_Renderer_System_Publish' => './system/library/Ext/Component/Renderer/System/Publish.php',
   'Ext_Component_Renderer_System_Updater' => './system/library/Ext/Component/Renderer/System/Updater.php',
   'Ext_Component_Renderer_System_Version' => './system/library/Ext/Component/Renderer/System/Version.php',
+  'Ext_Component_Renderer_User_Allchecked' => './system/library/Ext/Component/Renderer/User/Allchecked.php',
+  'Ext_Component_Renderer_User_Publish' => './system/library/Ext/Component/Renderer/User/Publish.php',
   'Ext_Config' => './system/library/Ext/Config.php',
   'Ext_Data_Store' => './system/library/Ext/Data/Store.php',
   'Ext_Data_Store_Tree' => './system/library/Ext/Data/Store/Tree.php',
