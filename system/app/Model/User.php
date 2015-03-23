@@ -22,17 +22,14 @@ class Model_User extends Model
      */
     public function login($login , $password)
     {
-    	$password = Utils::hash($password);
-
     	$sql = $this->_dbSlave->select()
                          ->from($this->table())
                          ->where('`login` =?' , $login)
-                         ->where('`pass` =?' , $password)
                          ->where('`enabled` = 1');
 
          $data = $this->_dbSlave->fetchRow($sql);
 
-         if(empty($data))
+         if(empty($data) || !password_verify($password , $data['pass']))
              return false;
 
          $user = User::getInstance();

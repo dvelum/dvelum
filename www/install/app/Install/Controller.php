@@ -727,7 +727,7 @@ return array(
 					'name' =>'Admin',
 					'email' => $adminEmail,
 					'login' => $adminName,
-					'pass' => Utils::hash($adminPass),
+					'pass' => password_hash($adminPass , PASSWORD_DEFAULT),
 					'enabled' => true,
 					'admin' => true,
 					'registration_date' => date('Y-m-d H:i:s'),

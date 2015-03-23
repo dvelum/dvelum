@@ -224,7 +224,7 @@ class Backend_User_Controller extends Backend_Controller
     $pass = Request::post('pass' , 'string' , false);
     
     if($pass)
-      Request::updatePost('pass' , Utils::hash($pass));
+      Request::updatePost('pass' , password_hash($pass , PASSWORD_DEFAULT));
     
     $object = $this->getPostedData($this->_module);
     
