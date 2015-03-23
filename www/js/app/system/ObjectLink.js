@@ -22,6 +22,19 @@ Ext.define('app.objectLink.Field',{
 	hideId:true,
 	name:'',
 	fieldLabel:'',
+	/**
+	 * Extra params for requests
+	 * @property {Object}
+	 */
+	extraParams:null,
+
+	constructor: function(config) {
+		config = Ext.apply({
+			extraParams:{}
+		}, config || {});
+		this.callParent(arguments);
+	},
+
 	initComponent:function(){
 
 		var  me = this;
@@ -68,7 +81,7 @@ Ext.define('app.objectLink.Field',{
 			text:appLang.SELECT,
 			tooltip:appLang.SELECT,
 			handler:me.showSelectionWindow,
-			scope:this,
+			scope:this
 		});
 
 		this.removeButton = Ext.create('Ext.button.Button',{
@@ -93,9 +106,7 @@ Ext.define('app.objectLink.Field',{
 
 		this.items = [this.dataFieldLabel , valueContainer];
 
-
 		this.callParent();
-
 	},
 	showSelectionWindow:function(){
 		var win = Ext.create('app.objectLink.SelectWindow', {
@@ -142,10 +153,10 @@ Ext.define('app.objectLink.Field',{
 		Ext.Ajax.request({
 			url:this.controllerUrl + 'otitle',
 			method: 'post',
-			params:{
+			params:Ext.apply({
 				object:this.objectName,
 				id:curValue
-			},
+			},this.extraParams),
 			scope:this,
 			success: function(response, request) {
 				response =  Ext.JSON.decode(response.responseText);
@@ -161,6 +172,15 @@ Ext.define('app.objectLink.Field',{
 				app.ajaxFailure(arguments);
 			}
 		});
+	},
+	/**
+	 * Set request param
+	 * @param string name
+	 * @param string value
+	 * @return void
+	 */
+	setExtraParam:function(name , value){
+		this.extraParams[name] = value;
 	}
 });
 
@@ -201,7 +221,7 @@ Ext.define('app.objectLink.SelectWindow',{
 			},
 			autoLoad:true,
 			pageSize: 25,
-			remoteSort: true,
+			remoteSort: true
 		});
 
 		this.searchField = Ext.create('SearchPanel',{
