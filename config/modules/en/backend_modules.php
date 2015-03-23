@@ -166,7 +166,7 @@
     'dev' => false,
     'active' => true,
     'title' => 'Users',
-    'designer' => '',
+    'designer' => './config/layouts/system/users.designer.dat',
     'in_menu' => true,
   ),
   'Error_Log' =>

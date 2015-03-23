@@ -115,7 +115,7 @@
     'dev' => false,
     'active' => true,
     'title' => 'Пользователи',
-    'designer' => './system/config/layouts/system/users.designer.dat',
+    'designer' => './config/layouts/system/users.designer.dat',
     'in_menu' => true,
   ),
   'Compiler' => 
