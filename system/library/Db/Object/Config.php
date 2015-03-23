@@ -844,6 +844,15 @@ class Db_Object_Config
     }
 
     /**
+     * Get configuration as array
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->_config->__toArray();
+    }
+
+    /**
      * Configure the field
      * @param string $field
      * @param array $config

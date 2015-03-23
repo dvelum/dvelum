@@ -32,7 +32,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 		this.callParent(arguments);
 	},
 
-	initComponent:function(){
+    initComponent:function(){
 
 		this.dataStore = Ext.create('Ext.data.Store', {
 			model: 'app.crud.orm.Field',

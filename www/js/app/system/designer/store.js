@@ -148,19 +148,19 @@ Ext.define('designer.store.sortersWindow',{
 
 		this.items = [this.dataGrid];
 
-		this.buttons = [
-			{
-				text:desLang.save,
-				handler:this.saveData,
-				scope:this
-			},{
-				text:desLang.cancel,
-				handler:function(){
-					this.close();
-				},
-				scope:this
-			}
-		];
+	this.buttons = [
+	                {
+	                    text:desLang.save,
+	                    handler:this.saveData,
+	                    scope:this
+	                },{
+	                    text:desLang.close,
+	                    handler:function(){
+	                	this.close();
+	                    },
+	                    scope:this
+	                }         
+	                ];
 
 		this.callParent(arguments);
 	},
@@ -792,7 +792,6 @@ Ext.define('designer.store.proxyWindow',{
 				break;
 
 
-			case 'reader':
 
 				this.proxyProperties = Ext.create('designer.properties.Panel',{
 					controllerUrl:this.controllerUrl,

@@ -215,6 +215,7 @@ class Ext_Object
 			"\t".'extend:"'.$this->_config->getExtends().'",'."\n".
 			"\t".'childObjects:null,'."\n".
 			"\t".'constructor: function(config) {'."\n".
+			"\t\t\t".'var me = this; '."\n".
 			"\t\t\t".'config = Ext.apply('."\n".
 			 Utils_String::addIndent($this->__toString(),3) .
 			', config || {});'."\n".
