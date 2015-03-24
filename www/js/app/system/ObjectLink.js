@@ -13,6 +13,7 @@ Ext.define('app.objectLink.Field',{
 	hideId:true,
 	name:'',
 	fieldLabel:'',
+	readOnly:false,
 	/**
 	 * Extra params for requests
 	 * @property {Object}
@@ -110,15 +111,31 @@ Ext.define('app.objectLink.Field',{
 			 */
 			'change'
 		);
+
+		this.on('disable' , function(){
+			this.updateViewState();
+		},this);
+
+		this.on('enable' , function(){
+			this.updateViewState();
+		},this);
+
+		this.updateViewState();
 	},
 	showSelectionWindow:function(){
+
+		if(this.readOnly || this.disabled){
+			return false;
+		}
+
 		var win = Ext.create('app.objectLink.SelectWindow', {
 			width:600,
 			height:500,
 			selectMode:true,
 			objectName:this.objectName,
 			controllerUrl:this.controllerUrl + 'linkedlist',
-			title:this.fieldLabel
+			title:this.fieldLabel,
+			extraParams:this.extraParams
 		});
 		win.on('itemSelected',function(record){
 			this.setValue(record.get('id'));
@@ -184,6 +201,36 @@ Ext.define('app.objectLink.Field',{
 	 */
 	setExtraParam:function(name , value){
 		this.extraParams[name] = value;
+	},
+	/**
+	 * Sets the read only state of this field.
+	 * @param Boolean readOnly
+	 * @return void
+	 */
+	setReadOnly:function(readOnly){
+		this.readOnly = readOnly;
+		this.updateViewState();
+	},
+	updateViewState:function(){
+		if(this.disabled){
+			this.triggerButton.hide();
+			this.removeButton.hide();
+			this.dataField.hide();
+			return;
+		}
+		else{
+			this.dataField.enable();
+			this.dataField.show();
+			if(this.readOnly){
+				this.triggerButton.hide();
+				this.removeButton.hide();
+				this.dataField.setReadOnly(true);
+			}else{
+				this.dataField.setReadOnly(false);
+				this.triggerButton.show();
+				this.removeButton.show();
+			}
+		}
 	}
 });
 
@@ -194,6 +241,19 @@ Ext.define('app.objectLink.SelectWindow',{
 	objectName:'',
 	fieldName:'',
 	singleSelect:true,
+	/**
+	 * Extra params for requests
+	 * @property {Object}
+	 */
+	extraParams:null,
+
+	constructor: function(config) {
+		config = Ext.apply({
+			extraParams:{}
+		}, config || {});
+		this.callParent(arguments);
+	},
+
 	initComponent:function(){
 
 		this.dataStore =  Ext.create('Ext.data.Store',{
@@ -217,9 +277,9 @@ Ext.define('app.objectLink.SelectWindow',{
 				limitParam:'pager[limit]',
 				sortParam:'pager[sort]',
 				directionParam:'pager[dir]',
-				extraParams:{
+				extraParams:Ext.apply({
 					'object':this.objectName
-				},
+				},this.extraParams),
 				simpleSortMode: true
 			},
 			autoLoad:true,
@@ -276,6 +336,15 @@ Ext.define('app.objectLink.SelectWindow',{
 		});
 
 		this.callParent(arguments);
+	},
+	/**
+	 * Set request param
+	 * @param string name
+	 * @param string value
+	 * @return void
+	 */
+	setExtraParam:function(name , value){
+		this.extraParams[name] = value;
 	}
 });
 
@@ -285,6 +354,7 @@ Ext.define('app.objectLink.Panel',{
 	name:'',
 	objectName:'',
 	controllerUrl:'',
+
 	initComponent:function(){
 		this.fieldName = this.name;
 		this.callParent(arguments);
@@ -297,7 +367,8 @@ Ext.define('app.objectLink.Panel',{
 			selectMode:true,
 			objectName:this.objectName,
 			controllerUrl:this.controllerUrl + 'linkedlist',
-			title:this.fieldLabel
+			title:this.fieldLabel,
+			extraParams:this.extraParams
 		});
 		win.on('itemSelected',function(record){
 			this.addRecord(record);
@@ -305,5 +376,14 @@ Ext.define('app.objectLink.Panel',{
 		},this);
 		win.show();
 		app.checkSize(win);
+	},
+	/**
+	 * Set request param
+	 * @param string name
+	 * @param string value
+	 * @return void
+	 */
+	setExtraParam:function(name , value){
+		this.extraParams[name] = value;
 	}
 });
