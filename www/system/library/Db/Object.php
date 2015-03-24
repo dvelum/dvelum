@@ -116,17 +116,30 @@ class Db_Object
     protected function _setRawData(array $data)
     {
         unset($data[$this->_primaryKey]);
+        $iv = false;
+        $ivField = false;
+        if($this->_config->hasEncrypted()){
+            $ivField = $this->_config->getIvField();
+            if(isset($data[$ivField]) && !empty($data[$ivField]))
+                $iv = base64_decode($data[$ivField]);
+        }
+
         foreach($data as $field => &$value)
         {
             if($this->_config->isMultiLink($field) && strlen($value))
                 $value = unserialize($value);
 
-            if($this->getConfig()->isBoolean($field))
-            {
+            if($this->getConfig()->isBoolean($field)){
                 if($value)
                     $value = true;
                 else
                     $value = false;
+            }
+
+            if($this->_config->isEncrypted($field)){
+                if(!empty($iv)){
+                    $value = $this->_config->decrypt($value, $iv);
+                }
             }
         }
         unset($value);
@@ -155,7 +168,7 @@ class Db_Object
         $data[$this->_primaryKey] = $this->_id;
 
         foreach ($this->_updates as $k=>$v)
-        	$this->_data[$k] = $v;
+            $data[$k] = $v;
 
         return $data;
     }
@@ -587,6 +600,14 @@ class Db_Object
     	    return false;
     	}
 
+        if($this->_config->hasEncrypted()){
+            $ivField = $this->_config->getIvField();
+            $ivData = $this->get($ivField);
+            if(empty($ivData)){
+                $this->set($ivField , base64_encode($this->_config->createIv()));
+            }
+        }
+
     	$emptyFields = $this->_hasRequired();
     	if($emptyFields!==true)
     	{
@@ -989,6 +1010,14 @@ class Db_Object
     	if(empty($data))
     		throw new Exception('Cannot load version for ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers);
 
+        $iv = false;
+        $ivField = false;
+        if($this->_config->hasEncrypted()){
+            $ivField = $this->_config->getIvField();
+            if(isset($data[$ivField]) && !empty($data[$ivField]))
+                $iv = base64_decode($data[$ivField]);
+        }
+
     	foreach($data as $k => $v)
     	{
     		if($this->fieldExists($k))
@@ -997,8 +1026,16 @@ class Db_Object
     				$v = array_keys($v);
 
     			try{
-    				if(!$this->_config->isSystemField($k))
+
+                    if($this->_config->isEncrypted($k)){
+                        if(!empty($iv)){
+                            $v = $this->_config->decrypt($v, $iv);
+                        }
+                    }
+
+    				if(!$this->_config->isSystemField($k) || $k == $ivField)
     					$this->set($k , $v);
+
     			}catch(Exception $e){
     			   throw new Exception('Cannot load version data ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers.'. This version contains incompatible data. ' . $e->getMessage());
     			}
@@ -1025,6 +1062,14 @@ class Db_Object
     		return $this->save($log ,$useTransaction);
     	}
 
+        if($this->_config->hasEncrypted()){
+            $ivField = $this->_config->getIvField();
+            $ivData = $this->get($ivField);
+            if(empty($ivData)){
+                $this->set($ivField , base64_encode($this->_config->createIv()));
+            }
+        }
+
     	if($this->_acl)
     	{
     		try{
@@ -1042,6 +1087,7 @@ class Db_Object
     	{
     		$this->published = false;
     		$this->author_id = User::getInstance()->getId();
+
     		if(!$this->save(true , $useTransaction))
     			return false;
     	}
