@@ -543,4 +543,8 @@
   'ENTER_DICTIONARY_NAME' => 'Введите имя словаря',
   'ERROR_LOG' => 'Лог ошибок',
   'SOURCE' => 'Имсточник',
+  'FILESTORAGE' => 'Файловое хранилище',
+  'FILE_ID' => 'ID  Файла',
+  'DOWNLOAD' => 'Скачать',
+  'FILE_NOT_FOUND' => 'Файл не найден',
 ); 

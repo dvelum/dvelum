@@ -542,4 +542,8 @@
   'ENTER_DICTIONARY_NAME' => 'Please enter dictionary name',
   'ERROR_LOG' => 'Error log',
   'SOURCE' => 'Source',
+  'FILESTORAGE' => 'Filestorage',
+  'FILE_ID' => 'File ID',
+  'DOWNLOAD' => 'Download',
+  'FILE_NOT_FOUND' => 'File not found',
 ); 

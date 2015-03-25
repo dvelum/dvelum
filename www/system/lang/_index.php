@@ -542,4 +542,8 @@
   540 => 'ENTER_DICTIONARY_NAME',
   541 => 'ERROR_LOG',
   542 => 'SOURCE',
+  543 => 'FILESTORAGE',
+  544 => 'FILE_ID',
+  545 => 'DOWNLOAD',
+  546 => 'FILE_NOT_FOUND',
 ); 

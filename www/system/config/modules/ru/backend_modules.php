@@ -197,4 +197,13 @@
         'designer' => './system/config/layouts/system/error_log.designer.dat',
         'in_menu' => true,
     ),
+    'Filestorage' =>
+        array (
+            'class' => 'Backend_Filestorage_Controller',
+            'dev' => false,
+            'active' => true,
+            'title' => 'Файловое хранилище',
+            'designer' => './system/config/layouts/system/filestorage.designer.dat',
+            'in_menu' => true,
+        ),
 ); 
