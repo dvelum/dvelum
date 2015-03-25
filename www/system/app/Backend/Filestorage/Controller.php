@@ -124,4 +124,36 @@ class Backend_Filestorage_Controller extends Backend_Controller_Crud
         }
         Response::jsonSuccess();
     }
+
+    /**
+     * Delete object
+     * Sends JSON reply in the result and
+     * closes the application
+     */
+    public function deleteAction()
+    {
+        $this->_checkCanDelete();
+        $id = Request::post('id' , 'integer' , false);
+
+        if(!$id)
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+
+        try{
+            $object = new Db_Object($this->_objectName , $id);
+        }catch(Exception $e){
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        $acl = $object->getAcl();
+        if($acl && !$acl->canDelete($object))
+            Response::jsonError($this->_lang->get('CANT_DELETE'));
+
+        $fileStorage = Model::factory('Filestorage')->getStorage();
+
+        if(!$fileStorage->remove($id)){
+            Response::jsonError($this->_lang->get('CANT_EXEC'));
+        }
+
+        Response::jsonSuccess();
+    }
 } 

@@ -547,4 +547,5 @@
   'FILE_ID' => 'File ID',
   'DOWNLOAD' => 'Download',
   'FILE_NOT_FOUND' => 'File not found',
+  'ACTIONS' => 'Actions',
 ); 
