@@ -1093,6 +1093,21 @@ class Backend_Orm_Controller extends Backend_Controller
 	        	}
         	}
 
+        }elseif($newConfig['type']=='encrypted') {
+
+            $setDefault = Request::post('set_default', 'boolean', false);
+
+            if(!$setDefault){
+                $newConfig['db_default'] = false;
+            }else{
+                $newConfig['db_default'] = Request::post('db_default', 'string', false);
+            }
+
+            $newConfig['db_type'] = 'longtext';
+            $newConfig['is_search'] = false;
+            $newConfig['allow_html'] = false;
+
+
         }else{
              $setDefault = Request::post('set_default', 'boolean', false);
 	        /*

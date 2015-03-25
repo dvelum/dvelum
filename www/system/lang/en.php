@@ -170,6 +170,7 @@
   'EDIT_USER' => 'Edit user',
   'EDIT_KEY' => 'Edit key',
   'EDIT_SERVER_CONFIG' => 'Edit server configuration',
+  'ENCRYPTED_FIELD' => 'Encoded field',
   'ENTER_DIR_NAME' => 'Please enter directory name',
   'ENTER_FILE_NAME' => 'Please enter a file name',
   'EXPORT_TO_CSV' => 'Export as CSV',

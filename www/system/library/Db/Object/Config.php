@@ -36,6 +36,16 @@ class Db_Object_Config
     */
     static protected $_vcFields;
 
+    /**
+     * List of system fields used for encryption
+     * @var array
+     */
+    static protected $_cryptFields;
+    /**
+     * @var Config_Abstract
+     */
+    static protected $_encConfig;
+
    /**
     * @var string $name
     * @return Db_Object_Config
@@ -270,6 +280,9 @@ class Db_Object_Config
         if(isset($dataLink['rev_control']) && $dataLink['rev_control'])
             $dataLink['fields'] = array_merge($dataLink['fields'] , $this->_getVcFields());
 
+        if($this->hasEncrypted())
+            $dataLink['fields'] = array_merge($dataLink['fields'] , $this->_getEncryptionFields());
+
         /*
          * Init ACL adapter
          */
@@ -283,6 +296,18 @@ class Db_Object_Config
     		self::$_vcFields = Config::factory(Config::File_Array, self::$_configPath.'vc/vc_fields.php')->__toArray();
 
     	return self::$_vcFields;
+    }
+
+    //encrypted
+    protected function _getEncryptionFields()
+    {
+        if(!isset(self::$_cryptFields))
+            self::$_cryptFields = Config::factory(Config::File_Array, self::$_configPath.'enc/fields.php')->__toArray();
+
+        if(!isset(self::$_encConfig))
+            self::$_encConfig = Config::factory(Config::File_Array, self::$_configPath.'enc/config.php')->__toArray();
+
+        return self::$_cryptFields;
     }
 
     /**
@@ -678,13 +703,25 @@ class Db_Object_Config
     }
 
     /**
-     * Check if field cdn be used for search
+     * Check if field can be used for search
      * @param string $field
      * @return boolean
      */
     public function isSearch($field)
     {
         if(isset($this->_config['fields'][$field]['is_search']) && $this->_config['fields'][$field]['is_search'])
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * Check if field is encrypted
+     * @param string $field
+     */
+    public function isEncrypted($field)
+    {
+        if(isset($this->_config['fields'][$field]['type']) && $this->_config['fields'][$field]['type']==='encrypted')
             return true;
         else
             return false;
@@ -1028,17 +1065,17 @@ class Db_Object_Config
      * array(
      * 	array(
      *      'curDb' => string,
-     * 		  'curObject' => string,
-     * 		  'curTable' => string,
-     *		  'curField'=> string,
-     *		  'isNull'=> boolean,
-     *		  'toDb'=> string,
-	   *		  'toObject'=> string,
-	   *		  'toTable'=> string,
-     *		  'toField'=> string,
+     * 		'curObject' => string,
+     * 		'curTable' => string,
+     *		'curField'=> string,
+     *		'isNull'=> boolean,
+     *		'toDb'=> string,
+     *		'toObject'=> string,
+     *		'toTable'=> string,
+     *		'toField'=> string,
      *      'onUpdate'=> string
      *      'onDelete'=> string
-     *  ),
+     *   ),
      *  ...
      *  )
      */
@@ -1254,5 +1291,57 @@ class Db_Object_Config
     public function getAcl()
     {
       return $this->_acl;
+    }
+
+    /**
+     * Check for encoded fields
+     * @return boolean
+     */
+    public function hasEncrypted()
+    {
+        $fields = $this->getFieldsConfig(false);
+        foreach ($fields as $config){
+            if(isset($config['type']) && $config['type']=='encrypted')
+                return true;
+        }
+        return false;
+    }
+    /**
+     * Get names of encrypted fields
+     * @return array
+     */
+    public function getEncryptedFields()
+    {
+        $fields = array();
+        $fieldsConfig = $this->get('fields');
+
+        foreach ($fieldsConfig as $k=>$v)
+            if(isset($v['type']) && $v['type']==='encrypted')
+                $fields[] = $k;
+
+        return $fields;
+    }
+
+    public function getIvField()
+    {
+        if(!isset(self::$_encConfig))
+            return false;
+
+        return self::$_encConfig['iv_field'];
+    }
+
+    public function decrypt($value , $iv)
+    {
+        return Utils_String::decrypt($value , self::$_encConfig['key'] , $iv);
+    }
+
+    public function encrypt($value, $iv)
+    {
+        return Utils_String::encrypt($value , self::$_encConfig['key'] , $iv);
+    }
+
+    public function createIv()
+    {
+        return Utils_String::createEncryptIv();
     }
 }

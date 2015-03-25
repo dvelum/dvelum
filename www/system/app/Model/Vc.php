@@ -11,8 +11,20 @@ class Model_Vc extends Model
        $object->commitChanges();
        $newVersion = ($this->getLastVersion($object->getName(),$object->getId())+ 1);
        $newData = $object->getData();
-       $newData['id'] = $object->getId();
 
+       if($object->getConfig()->hasEncrypted()){
+           $ivField = $object->getConfig()->getIvField();
+           $ivKey = $object->get($ivField);
+
+           if(empty($ivKey)) {
+               $ivKey = Utils_String::createEncryptIv();
+               $newData[$ivField] = $ivKey;
+           }
+
+           $newData = $this->getStore()->encryptData($object , $newData);
+       }
+
+       $newData['id'] = $object->getId();
        try{
                $vObject = new Db_Object('vc');
                $vObject->set('date' , date('Y-m-d'));
@@ -31,7 +43,7 @@ class Model_Vc extends Model
                return false;
 
        } catch (Exception $e){
-              $this->logError('Cannot create new version for '.$object->getName().'::'.$object->getId());
+              $this->logError('Cannot create new version for '.$object->getName().'::'.$object->getId() .' '.$e->getMessage());
               return false;
        }
     }
