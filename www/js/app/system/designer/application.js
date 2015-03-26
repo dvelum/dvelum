@@ -541,6 +541,16 @@ Ext.define('designer.application',{
 				tooltip: desLang.add + ' ' + desLang.button,
 				oClass:'Button'
 			},{
+				text:desLang.splitButton,
+				iconCls:'buttonSplitIcon',
+				tooltip: desLang.add + ' ' + desLang.splitButton,
+				oClass:'Button_Split'
+			},{
+				text:desLang.buttonGroup,
+				iconCls:'buttonGroupIcon',
+				tooltip: desLang.add + ' ' + desLang.buttonGroup,
+				oClass:'Buttongroup'
+			},{
 				text:desLang.tree,
 				iconCls:'treeIcon',
 				tooltip: desLang.add + ' ' + desLang.tree,

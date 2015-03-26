@@ -19,6 +19,7 @@ var desLang = {
 		actionRemoved:'Action removed successefully',
 		
 		button:'Button',
+		buttonGroup:'Button Group',
 		backToAdminInterface:'Back to the admin interface',
 		
 		cancel:'Cancel',
@@ -186,6 +187,7 @@ var desLang = {
 		success:'Success',
 		sorters:'Sorters',
 		sortSaved:'Sorting order saved successefully',
+		splitButton:'Split Button',
 		storeFilter:'Store Filter',
 		selectController:'Select Controller',
 		showCode:'Show Code',
