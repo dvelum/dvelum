@@ -4,7 +4,7 @@ return array(
 	'configs'=> './system/config/layouts/',
 	'lang'=>'eng',
 	'connections'=> '../DesignerConnections.php',
-	'development'=>1,
+	'development'=>false,
 	'components'=>'./system/library/Ext/Component',
 	'field_components'=>'./system/library/Ext/Component/Field',
 	'filter_conponents'=>'./system/library/Ext/Component/Filter',

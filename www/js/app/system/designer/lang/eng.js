@@ -19,6 +19,7 @@ var desLang = {
 		actionRemoved:'Action removed successefully',
 		
 		button:'Button',
+		buttons:'Buttons',
 		buttonGroup:'Button Group',
 		backToAdminInterface:'Back to the admin interface',
 		
