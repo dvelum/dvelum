@@ -48,6 +48,16 @@
     'designer' => '',
     'in_menu' => true,
   ),
+  'Docs' =>
+  array (
+    'id' => 'Backend_Docs_Controller',
+    'class' => 'Backend_Docs_Controller',
+    'dev' => true,
+    'active' => true,
+    'title' => 'Документация',
+    'designer' => './system/config/layouts/system/documentation.designer.dat',
+    'in_menu' => true,
+  ),
   'Logs' => 
   array (
     'id' => 'Backend_Logs_Controller',
