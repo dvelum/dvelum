@@ -225,7 +225,11 @@ class Sysdocs_Controller
 
         $resource->addJs('/js/lib/jquery.js',0 , true , 'head');
 
-        $resource->addJs('/js/lib/extjs4/ext-all.js' , 0 , true , 'head');
+        if($this->configMain->get('development')){
+            $resource->addJs('/js/lib/extjs4/ext-all-debug.js' , 0 , true , 'head');
+        }else{
+            $resource->addJs('/js/lib/extjs4/ext-all.js' , 0 , true , 'head');
+        }
         $resource->addJs('/js/lang/'.$this->configMain['language'].'.js', 1 , true , 'head');
         $resource->addJs('/js/lib/extjs4/locale/ext-lang-'.$this->configMain['language'].'.js', 2 , true , 'head');
         $resource->addJs('/js/app/system/common.js', 3 , false ,  'head');
