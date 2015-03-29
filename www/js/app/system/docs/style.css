@@ -47,6 +47,10 @@
 	border-bottom:1px solid #cccccc;
 }
 
+.docs-methodDescription.selected{
+	background-color: #FDFFE1!important;
+}
+
 .docs-methodDescription .name{
 	color:#000000;
 }

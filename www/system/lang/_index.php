@@ -548,4 +548,5 @@
   546 => 'DOWNLOAD',
   547 => 'FILE_NOT_FOUND',
   548 => 'ACTIONS',
+  549 => 'SEARCHING',
 ); 

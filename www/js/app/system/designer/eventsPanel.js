@@ -231,7 +231,7 @@ Ext.define('designer.eventsPanel',{
 			eventName:record.get('event'),
 			paramsString:record.get('params'),
 			extraParams:this.extraParams,
-			modal:false,
+			modal:true,
 			listeners:{
 				'codeSaved':{
 					fn:function(){

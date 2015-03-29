@@ -548,4 +548,5 @@
   'DOWNLOAD' => 'Download',
   'FILE_NOT_FOUND' => 'File not found',
   'ACTIONS' => 'Actions',
+  'SEARCHING' => 'Searching...',
 ); 

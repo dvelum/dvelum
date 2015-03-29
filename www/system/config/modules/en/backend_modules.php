@@ -79,6 +79,16 @@
     'designer' => '',
     'in_menu' => true,
   ),
+  'Docs' => 
+  array (
+    'id' => 'Backend_Docs_Controller',
+    'class' => 'Backend_Docs_Controller',
+    'dev' => true,
+    'active' => true,
+    'title' => 'Documentation',
+    'designer' => './system/config/layouts/system/documentation.designer.dat',
+    'in_menu' => true,
+  ),
   'Error_Log' => 
   array (
     'id' => 'Backend_Error_Log_Controller',
@@ -87,6 +97,16 @@
     'active' => true,
     'title' => 'Error Log',
     'designer' => './system/config/layouts/system/error_log.designer.dat',
+    'in_menu' => true,
+  ),
+  'Filestorage' => 
+  array (
+    'id' => 'Backend_Filestorage_Controller',
+    'class' => 'Backend_Filestorage_Controller',
+    'dev' => false,
+    'active' => true,
+    'title' => 'Filestorage',
+    'designer' => './system/config/layouts/system/filestorage.designer.dat',
     'in_menu' => true,
   ),
   'Fmodules' => 
@@ -199,13 +219,4 @@
     'designer' => './system/config/layouts/system/users.designer.dat',
     'in_menu' => true,
   ),
-   'Filestorage' =>
-     array (
-        'class' => 'Backend_Filestorage_Controller',
-        'dev' => false,
-        'active' => true,
-        'title' => 'Filestorage',
-        'designer' => './system/config/layouts/system/filestorage.designer.dat',
-        'in_menu' => true,
-    ),
 ); 

@@ -67,9 +67,10 @@ class Sysdocs_Info
         		        'itemType'=> $info['itemType'],
         		        'abstract' => $info['abstract'],
         		        'deprecated' => $info['deprecated'],
+                        'implements' => $info['implements'],
                         'hierarchy' => array(),
         		        'description' => $desc,
-                        'properties' => $this->getClassProperties($id),
+                        'properties' => $this->getClassProperties($id, $language),
                         'methods' => $this->getClassMethods($id , $language)
         );
 
@@ -126,7 +127,7 @@ class Sysdocs_Info
      * @param integer $classId
      * @return array
      */
-    public function getClassProperties($classId)
+    public function getClassProperties($classId , $language)
     {
       $propModel = Model::factory('sysdocs_class_property');
       $list = $propModel->getList(
@@ -142,7 +143,8 @@ class Sysdocs_Info
               'name',
               'static',
               'type',
-              'visibility'
+              'visibility',
+              'hid'
           )
       );
 
@@ -150,7 +152,16 @@ class Sysdocs_Info
         $list = array();
 
       foreach ($list as $k=>$v){
-      	$list[$k]['description'] = nl2br($v['description']);
+          /**
+           * @todo Optimize slow operation
+           * recursive queries!
+           */
+          $desc = $this->findLocale('sysdocs_class_property' , 'description' , $language, $list[$k]['hid']);
+          if(empty($desc)){
+              $desc = nl2br($list[$k]['description']);
+          }
+          $list[$k]['description'] = $desc;
+          $list[$k]['object_id'] = $list[$k]['id'];
       }
 
       return $list;
