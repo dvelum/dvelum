@@ -247,14 +247,13 @@ class Db_Object
      */
     public function commitChanges()
     {
-        if($this->_acl)
-            $this->_checkCanEdit();
-
         if(empty($this->_updates))
             return;
 
          foreach ($this->_updates as $k=>$v)
              $this->_data[$k] = $v;
+
+        $this->_updates = array();
     }
 
     /**
@@ -645,6 +644,7 @@ class Db_Object
 
                 $id = $store->insert($this , $log , $useTransaction);
                 $this->setId($id);
+                $this->commitChanges();
                 return (integer) $id;
             } else {
 
@@ -652,7 +652,9 @@ class Db_Object
                     $this->date_updated = date('Y-m-d H:i:s');
                     $this->editor_id = User::getInstance()->id;
                 }
-                return (integer) $store->update($this , $log , $useTransaction);
+                $id = (integer) $store->update($this , $log , $useTransaction);
+                $this->commitChanges();
+                return $id;
             }
        }catch (Exception $e){
             $this->_errors[] = $e->getMessage();
@@ -1101,6 +1103,7 @@ class Db_Object
 
 		if($vers){
 			$this->_version = $vers;
+            $this->commitChanges();
 			return true;
 		}else{
 			return false;
