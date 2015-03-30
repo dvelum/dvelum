@@ -151,7 +151,12 @@ class Install_Controller {
 				'name'=>'zip',
 				'accessType'=>'allowed',
 				'msg'=>$this->_dictionary['WARNING']
-			)
+			),
+			array(
+				'name' => 'mcrypt',
+				'accessType'=>'allowed',
+				'msg'=>$this->_dictionary['WARNING']
+			),
 		);
 
 		$writablePaths = array(
@@ -403,6 +408,7 @@ class Install_Controller {
 		$salt = Utils::getRandomString(4) . '_' . Utils::getRandomString(4);
 
 		$mainCfgPath = $this->_docRoot . 'system/config/main.php';
+		$encConfigPath = $this->_docRoot . 'system/config/objects/enc/config.php';
 		$config = include $mainCfgPath;
 		$inlineConfig = Config::factory(Config::Simple, 'main');
 		$inlineConfig->setData($config);
@@ -692,6 +698,16 @@ return array(
 
 
 		if(!@file_put_contents($mainCfgPath, $mainCfg))
+			Response::jsonError($this->_dictionary['CANT_WRITE_FS']);
+
+		$encConfig = '
+		<?php
+			return array(
+				\'key\'=>\''.md5(uniqid(md5(time())),true).'\',
+				\'iv_field\'=>\'enc_key\'
+			);
+		';
+		if(!@file_get_contents($encConfigPath ,$encConfig ))
 			Response::jsonError($this->_dictionary['CANT_WRITE_FS']);
 
 		Utils::setSalt($salt);
