@@ -1,5 +1,5 @@
-DVelum 0.9.4 PROFESSIONAL WEB-DEVELOPMENT PLATFORM
-Copyright (C) 2011-2014,  Kirill A Egorov, Andrew Zamotaev
+DVelum 0.9.4.1 PROFESSIONAL WEB-DEVELOPMENT PLATFORM
+Copyright (C) 2011-2015,  Kirill A Egorov, Andrew Zamotaev
 http://dvelum.net/license.html
 
 This version of DVelum is licensed under the terms of the Open Source GPL 3.0 license. 
