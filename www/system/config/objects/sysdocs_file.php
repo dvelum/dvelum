@@ -108,10 +108,12 @@
       'columns' => 
       array (
         0 => 'hid',
+        1 => 'vers',
       ),
       'unique' => true,
       'fulltext' => false,
       'PRIMARY' => false,
     ),
   ),
+  'slave_connection' => 'default',
 ); 

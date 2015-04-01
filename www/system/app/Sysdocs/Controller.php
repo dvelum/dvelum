@@ -83,6 +83,7 @@ class Sysdocs_Controller
             $this->version = $this->docConfig->get('default_version');
         }
         $vList = $this->docConfig->get('versions');
+
         $this->versionIndex = $vList[$this->version];
     }
     /**
@@ -155,7 +156,8 @@ class Sysdocs_Controller
         $fileHid = Request::post('fileHid', Filter::FILTER_STRING, false);
 
         $info = new Sysdocs_Info();
-        $classInfo = $info->getClassInfoByFileHid($fileHid, $this->language ,$this->versionIndex);
+
+        $classInfo = $info->getClassInfoByFileHid($fileHid, $this->language , $this->versionIndex);
 
         Response::jsonSuccess($classInfo);
     }

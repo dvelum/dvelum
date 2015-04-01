@@ -183,9 +183,20 @@ class Frontend_Console_Controller extends Frontend_Controller
         if(!$this->_configMain->get('development')){
         	echo 'Use development mode';
         }
+
+		ini_set('memory_limit' , '256M');
+
+		$part = intval(Request::getInstance()->getPart(2));
+
         $sysdocsCfg = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'sysdocs.php');
         $sysdocs = new Sysdocs_Generator($sysdocsCfg);
-        $sysdocs->run();
+
+		if($part == 'locale'){
+			$sysdocs->migrateLocale();
+		}else{
+			$sysdocs->run();
+		}
+
         exit();
     }
 }

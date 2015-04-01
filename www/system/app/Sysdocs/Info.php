@@ -13,25 +13,32 @@ class Sysdocs_Info
         if(empty($classId))
             return array();
 
-        return $this->getClassInfo($classId[0]['id'] , $language);
+        return $this->getClassInfo($classId[0]['id'] , $language , $version);
     }
     /**
      * Find previous localization
      * @param string $objectClass
      * @param string $field
      * @param string $language
+     * @param string $vers, optional (last if not set)
      * @return string | false
      */
-    public function findLocale($objectClass , $field , $language , $hid)
+    public function findLocale($objectClass , $field , $language , $hid , $vers = false)
     {
+        $filters = array(
+            'lang'=>$language,
+            'object_class'=>$objectClass,
+            'hid'=>$hid,
+            'field'=>$field
+        );
+
+        if($vers){
+            $filters['vers'] = $vers;
+        }
+
         $data = Model::factory('sysdocs_localization')->getList(
             array('start'=>0,'limit'=>1,'sort'=>'vers','dir'=>'DESC'),
-            array(
-                'lang'=>$language,
-                'object_class'=>$objectClass,
-                'hid'=>$hid,
-                'field'=>$field
-            ),
+            $filters,
             array('value')
         );
     
@@ -44,9 +51,10 @@ class Sysdocs_Info
      * Get class info by id
      * @param integer $id
      * @param string $lanuage
+     * @param integer version, optional (last localization if not set)
      * @return array
      */
-    protected function getClassInfo($id , $language)
+    protected function getClassInfo($id , $language , $vers = false)
     {
         $classModel = Model::factory('sysdocs_class');
         $info =  $classModel->getItem($id);
@@ -54,7 +62,7 @@ class Sysdocs_Info
         if(empty($info))
             return array();
       
-        $desc = $this->findLocale('sysdocs_class' , 'description' , $language, $info['hid']);
+        $desc = $this->findLocale('sysdocs_class' , 'description' , $language, $info['hid'] , $vers);
         if(empty($desc)){
           $desc = nl2br($info['description']);
         }

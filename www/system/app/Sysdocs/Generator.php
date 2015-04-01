@@ -28,6 +28,8 @@ class Sysdocs_Generator
 
 		$hidGeneratorCfg = $config->get('hid_generator');
 		$this->historyId = new $hidGeneratorCfg['adapter'];
+
+		Model::factory('sysdocs_file')->getDbConnection()->getProfiler()->setEnabled(false);
 	}
 
 	/**
@@ -440,48 +442,72 @@ class Sysdocs_Generator
      */
 	public function migrateRecords($objectClass , $version, $lang , $fields)
 	{
-		$list = Model::factory($objectClass)->getList(false,array('vers'=>$version));
+		$model = Model::factory($objectClass);
+		$list = $model->getList(false,array('vers'=>$version), array('id'));
 
 		$locModel = Model::factory('sysdocs_localization');
 		$locModel->getDbConnection()
-		         ->delete($locModel->table() , ' lang="'.$lang.'" AND vers="'.$version.'"');
+		         ->delete($locModel->table() , ' lang="'.$lang.'" AND vers="'.$version.'" AND object_class="'.$objectClass.'"');
 
-	    $newItems = array();
-	    foreach ($list as $item)
-	    {
-	    	foreach ($fields as $fieldName)
-	    	{
-    			$loc = $this->findLocale($objectClass , $fieldName , $lang , $item['hid']);
+		$list = Utils::fetchCol('id',$list);
+		$chunks = array_chunk($list , 300);
 
-    			if($loc === false)
-    			    continue;
+		foreach($chunks as $items)
+		{
+			$newItems = array();
+			$list = $model->getList(false,array('vers'=>$version,'id'=> $items));
 
-    			$loc = trim($loc);
+			foreach ($list as $item)
+			{
+				foreach ($fields as $fieldName) {
+					$loc = $this->findLocale($objectClass, $fieldName, $lang, $item['hid']);
 
-    			if(!strlen($loc))
-                    continue;
+					if ($loc === false)
+						continue;
 
-    			$newItems[] = array(
-    				'field'=>$fieldName,
-    			    'hid'=>$item['hid'],
-    			    'lang'=>$lang,
-    			    'object_class'=>$objectClass,
-    			    'object_id'=>$item['id'],
-    			    'value'=>$loc,
-    			    'vers'=>$this->vers
-    			);
-	    	}
+					$loc = trim($loc);
 
-	    	if(count($newItems) >  500){
-	    	    if(!Model::factory('sysdocs_localization')->multiInsert($newItems)){
-	    	    	throw new Exception('Cannot save sysdocs_localization '.$lang);
-	    	    }
-	    	    $newItems = array();
-	    	}
-	    }
-	    if(count($newItems) && !Model::factory('sysdocs_localization')->multiInsert($newItems)){
-	    	throw new Exception('Cannot save sysdocs_localization '.$lang);
-	    }
+					if (!strlen($loc))
+						continue;
+
+
+					$item =  array(
+						'field' => $fieldName,
+						'hid' => $item['hid'],
+						'lang' => $lang,
+						'object_class' => $objectClass,
+						'object_id' => $item['id'],
+						'value' => $loc,
+						'vers' => $this->vers
+					);
+
+					/*
+					 * Multi Insert can cause PHP segfault if mysql max_allowed_packet is to small
+					 */
+					// uncomment this to use multi insert
+					 //$newItems[] = $item;
+
+					// comment this to use multi insert
+					if (!Model::factory('sysdocs_localization')->getDbConnection()->insert(Model::factory('sysdocs_localization')->table() , $item)) {
+						throw new Exception('Cannot save sysdocs_localization ' . $lang);
+					}
+
+
+
+				}
+
+				if (count($newItems) > 100) {
+					if (!Model::factory('sysdocs_localization')->multiInsert($newItems , 50)) {
+						throw new Exception('Cannot save sysdocs_localization ' . $lang);
+					}
+					$newItems = array();
+				}
+			}
+
+			if (count($newItems) && !Model::factory('sysdocs_localization')->multiInsert($newItems , 50)) {
+				throw new Exception('Cannot save sysdocs_localization ' . $lang);
+			}
+		}
 	}
 	/**
 	 * Find previous localization
