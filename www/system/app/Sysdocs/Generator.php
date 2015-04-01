@@ -63,7 +63,7 @@ class Sysdocs_Generator
 		}
 		// get extended classes
 		$extFilter = new Db_Select_Filter('extends' , '' , Db_Select_Filter::NOT);
-		$extended = Model::factory('sysdocs_class')->getList(false , array($extFilter), array('id','extends'));
+		$extended = Model::factory('sysdocs_class')->getList(false , array('extends'=>$extFilter,'vers'=>$this->vers), array('id','extends'));
 
 		$this->output('Updating hierarchy...');
 		if(!empty($extended)){
