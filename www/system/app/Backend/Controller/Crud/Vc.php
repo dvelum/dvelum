@@ -302,6 +302,11 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     public function updateObject(Db_Object $object)
     {
+        $author = $object->get('author_id');
+        if(empty($author)){
+            $object->set('author_id' , $this->_user->getId());
+        }
+
         if(!$object->saveVersion())
         	Response::jsonError($this->_lang->CANT_CREATE);
 
