@@ -2,6 +2,11 @@
 class Sysdocs_Info
 {
     /**
+     * @var Cache_Interface
+     */
+    protected $cache = false;
+    protected $cachePrefix = 'Sysdocs_Info_';
+    /**
      * Get class info by HID
      * @param string $fileHid
      * @param integer $version
@@ -47,6 +52,18 @@ class Sysdocs_Info
     
         return $data[0]['value'];
     }
+
+    /**
+     * Create cache key for class info
+     * @param $id
+     * @param $language
+     * @param $vers
+     * @return string
+     */
+    public function getCacheKey($id , $language, $vers)
+    {
+        return $this->cachePrefix.$id.$language.$vers;
+    }
     /**
      * Get class info by id
      * @param integer $id
@@ -56,6 +73,15 @@ class Sysdocs_Info
      */
     protected function getClassInfo($id , $language , $vers = false)
     {
+        if($this->cache){
+            $cacheKey = $this->getCacheKey($id , $language , $vers);
+            $data = $this->cache->load($cacheKey);
+            if(!empty($data)){
+                return $data;
+            }
+        }
+
+
         $classModel = Model::factory('sysdocs_class');
         $info =  $classModel->getItem($id);
 
@@ -126,6 +152,10 @@ class Sysdocs_Info
             }
           }
           $result['hierarchy'] = $base;
+        }
+
+        if($this->cache){
+            $this->cache->save($cacheKey , $result);
         }
         return $result;
     }
@@ -314,5 +344,14 @@ class Sysdocs_Info
         Model::factory('sysdocs_localization')->logError($e->getMessage());
         return false;
       }
+    }
+
+    /**
+     * Set cache adapter
+     * @param Cache_Interface $adapter
+     */
+    public function setCacheAdapter(Cache_Interface $adapter)
+    {
+        $this->cache = $adapter;
     }
 }
