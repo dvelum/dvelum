@@ -159,6 +159,7 @@ function createTables(){
 			$('#backBtn').removeAttr('disabled').removeClass('disabled');
 			$('#nextBtn').unbind('click').bind('click', showUserPassStep).removeAttr('disabled').removeClass('disabled');
 		} else {
+			$('#backBtn').removeAttr('disabled').removeClass('disabled');
 			div.removeClass('success');
 			div.addClass('fail');
 			div.html(data.msg);

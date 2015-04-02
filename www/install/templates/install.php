@@ -122,6 +122,11 @@
 									<div class="installerInput"><input type="text" id="prefix" class="validate[required]" name="prefix" value="dv_" /></div>
 									<div class="clear"></div>
 								</div>
+								<div class="formRow">
+									<label for="username"><?php echo $this->dictionary['INSTALL_DOCS']; ?>:</label>
+									<div class="installerInput"><input type="checkbox" id="install_docs"  name="install_docs"/></div>
+									<div class="clear"></div>
+								</div>
 							</fieldset>
 						</form>
 						<div id="dbCheckMsg"></div>
