@@ -399,11 +399,22 @@ class Db_Object
         }
         elseif ($this->_config->isLink($name))
         {
+        	if(is_object($value)){
+                if($value instanceof Db_Object)
+                {
+                    if($this->_config->isObjectLink($name))
+                    {
+                        if(!$value->isInstanceOf($this->getLinkedObject($name))){
+                            throw new Exception('Invalid value type for field '. $name.' expects ' . $this->getLinkedObject($name) . ', '.$value->getName().' passed');
+                        }
+                    }
+                    $value = $value->getId();
+                }else{
+                    $value = $value->__toString();
+                }
+            }
 
-        	if(is_object($value))
-        		$value = $value->__toString();
-
-          if(is_array($value))
+            if(is_array($value))
               throw new Exception('Invalid value for field '. $name);
 
         	if($this->_config->isRequired($name) && !strlen($value))
@@ -1133,5 +1144,15 @@ class Db_Object
     public function getInssertId()
     {
     	return $this->_insertId;
+    }
+
+    /**
+     * Check DB object class
+     * @param $name
+     */
+    public function isInstanceOf($name)
+    {
+        $name = strtolower($name);
+        return $name === $this->getName();
     }
 }

@@ -169,6 +169,25 @@ class Db_ObjectTest extends PHPUnit_Framework_TestCase
 	   $this->assertFalse(Db_Object::objectExists('undefined' , 723489273));
 	}
 
+	public function testSet()
+	{
+		$object_a = $this->createPage();
+		$object_b = $this->createPage();
+		$this->assertTrue($object_a->set('parent_id',$object_b));
+		$this->assertEquals($object_a->get('parent_id') , $object_b->getId());
+		try{
+			$object_a->set('parent_id', new Db_Object('User', User::getInstance()->id));
+			$this->fail('No exception thrown');
+		}catch (Exception $e){}
+	}
+
+	public function testIsInstanceOf()
+	{
+		$o = new Db_Object('Page');
+		$this->assertTrue($o->isInstanceOf('Page'));
+		$this->assertFalse($o->isInstanceOf('User'));
+	}
+
     public function testSetInsertId()
 	{
 		$somePage = $this->createPage();
