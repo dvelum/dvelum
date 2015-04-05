@@ -213,6 +213,8 @@ class Frontend_Router extends Router
     if(!empty($list))
       foreach($list as $item)
         $this->_moduleRoutes[$item['func_code']] = $item['code'];
+
+    return $this->_moduleRoutes;
   }
 
   /**

@@ -413,15 +413,13 @@ class Db_Object_Config
     	if($includeSystem)
     		return $this->_config['fields'];
 
-    	if(!$includeSystem){
-    		$fields = $this->_config['fields'];
+    	$fields = $this->_config['fields'];
     		unset($fields[$this->getPrimaryKey()]);
 
-    		if($this->isRevControl())
-    			return  array_diff_key($fields, $this->_getVcFields());
-    		else
-    			return  $fields;
-    	}
+    	if($this->isRevControl())
+    		return  array_diff_key($fields, $this->_getVcFields());
+    	else
+    		return  $fields;
     }
 
     /**
@@ -749,12 +747,13 @@ class Db_Object_Config
 	/**
      * Get the name of the class, which is the field validator
      * @param string  $field
+     * @throws Exception
      * @return mixed  string class name / boolean false
      */
     public function getValidator($field)
     {
         if(!$this->fieldExists($field))
-                throw new Exception('Invalid property name');
+            throw new Exception('Invalid property name');
 
         if(isset($this->_config['fields'][$field]['validator']) && !empty($this->_config['fields'][$field]['validator']))
             return $this->_config['fields'][$field]['validator'];

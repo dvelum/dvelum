@@ -383,6 +383,7 @@ class Model
      * @param string $fieldName
      * @param string $value
      * @param array $fields - optional
+     * @throws Exception
      * @return array
      */
     public function getItemByUniqueField($fieldName , $value , $fields = '*')

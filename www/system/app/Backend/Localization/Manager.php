@@ -467,6 +467,7 @@ class Backend_Localization_Manager
   }
   /**
    * Create sub dicionary
+   * @throws Exception
    * @param string $name
    */
   public function createDictionary($name)

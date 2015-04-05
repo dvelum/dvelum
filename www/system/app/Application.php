@@ -475,6 +475,7 @@ class Application
                 return Config::factory(Config::File_Array , Registry::get('main' , 'config')->get('configs') . 'backend.php');
               break;
         }
+        return false;
     }
 
     /**

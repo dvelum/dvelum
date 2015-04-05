@@ -206,5 +206,7 @@ class Designer_Project_Events
 	  $cfg['event'] = $newName;
 	  unset($this->_events[$object][$event]);
 	  $this->_events[$object][$newName] = $cfg;
+
+		return true;
 	}
 }
