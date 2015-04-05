@@ -112,7 +112,7 @@ class Model_Page extends Model
 
     /**
      * Check if page code exists
-     * @param unknown_type $code
+     * @param string $code
      */
      public function codeExists($code)
      {

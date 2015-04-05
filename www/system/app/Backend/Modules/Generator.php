@@ -17,7 +17,7 @@ class Backend_Modules_Generator
 	          throw new Exception('Invalid controller dir');
 	  }else{
 	      if(!@mkdir($dir , 0777 , true))
-	          throw new Exception($lang->CANT_WRITE_FS . ' ' . $dir);
+	          throw new Exception(Lang::lang()->CANT_WRITE_FS . ' ' . $dir);
 	  }
 	  
 	  if(!@file_put_contents($dir . DIRECTORY_SEPARATOR . 'Controller.php' ,  $content))

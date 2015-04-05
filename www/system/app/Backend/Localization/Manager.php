@@ -15,7 +15,7 @@ class Backend_Localization_Manager
 
   /**
    * Localizations file path
-   * @var unknown
+   * @var string
    */
   protected $_langsPath;
 
@@ -30,7 +30,7 @@ class Backend_Localization_Manager
   }
   /**
    * Get list of system languages
-   * @param boolean onlyMain - optional. Get only global locales without subpackages
+   * @param boolean $onlyMain - optional. Get only global locales without subpackages
    * @return array
    */
   public function getLangs($onlyMain = true)
@@ -66,7 +66,7 @@ class Backend_Localization_Manager
 
   /**
    * Get language subpackages
-   * @param string language - optional
+   * @param string $language - optional
    * @return array
    */
   public function getSubPackages($lang = false)

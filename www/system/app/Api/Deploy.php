@@ -65,7 +65,7 @@ class Api_Deploy
 	/**
 	 * Create FS map using UNIX shell, faster then php code
 	 * @param boolean $toFile - save to file
-	 * @return bulean|array
+	 * @return boolean|array
 	 */
 	protected  function _fsmap($toFile = false)
 	{

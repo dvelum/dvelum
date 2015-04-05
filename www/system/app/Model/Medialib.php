@@ -243,7 +243,7 @@ class Model_Medialib extends Model
           {
             $saveName = str_replace($v['ext'], '-'.$k.$v['ext'], $path);
 
-            if($conf['image']['thumb_types'][$typename] == 'crop'){
+            if($conf['image']['thumb_types'][$k] == 'crop'){
                Image_Resize::resize($path, $item[0], $item[1], $saveName, true,true);
             }else{
                Image_Resize::resize($path, $item[0], $item[1], $saveName, true,false);
@@ -332,7 +332,7 @@ class Model_Medialib extends Model
 
   /**
    * Update media items, set category to null
-   * @param integer id
+   * @param integer $id
    */
   public function categoryRemoved($id)
   {

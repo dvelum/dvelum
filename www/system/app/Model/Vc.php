@@ -121,7 +121,7 @@ class Model_Vc extends Model
     /**
      * Remove item from version control
      * @param string $object
-     * @param id $recordId
+     * @param integer $recordId
      */
     public function removeItemVc($object , $recordId)
     {

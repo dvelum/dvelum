@@ -31,7 +31,6 @@ class Model_Group extends Model
 	/**
 	 * Add users group
 	 * @param string  $title - group name
-	 * @return intger - Id of created group
 	 */
 	public function addGroup($title)
 	{

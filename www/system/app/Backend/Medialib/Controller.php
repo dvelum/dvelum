@@ -123,7 +123,7 @@ class Backend_Medialib_Controller extends Backend_Controller
         $item = $mediaModel->getItem($id);
         
         if(!$item){
-            Response::jsonError(LONG_WRONG_REQUEST);
+            Response::jsonError($this->_lang->WRONG_REQUEST);
         }
         
         if($mediaModel->cropAndResize($item, $x, $y, $w, $h , $type))

@@ -68,7 +68,7 @@ class Sysdocs_Info
      * Get class info by id
      * @param integer $id
      * @param string $lanuage
-     * @param integer version, optional (last localization if not set)
+     * @param integer $version, optional (last localization if not set)
      * @return array
      */
     protected function getClassInfo($id , $language , $vers = false)
