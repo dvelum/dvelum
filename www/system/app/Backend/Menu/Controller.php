@@ -14,7 +14,6 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
         ');
         
         $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
-        $moduleCfg = $modulesConfig->get($this->_module);
        
         Model::factory('Medialib')->includeScripts();
         

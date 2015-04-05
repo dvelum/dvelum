@@ -15,13 +15,11 @@ class Backend_Medialib_Controller extends Backend_Controller
                 
       $media = Model::factory('Medialib');
       $data = $media->getListVc($pager , $filter, $query,'*','user_name');
-      
-      $conf = $media->getConfig();
+
       $wwwRoot = $this->_configMain->get('wwwroot');
       
       if(!empty($data))
       {
-      	$config = Model::factory('Medialib')->getConfig();  	
         foreach ($data as $k=>&$v)
         {
           if($v['type'] == 'image')
@@ -58,8 +56,7 @@ class Backend_Medialib_Controller extends Backend_Controller
            
       if(!$uploadCategory)
         $uploadCategory = null;
-        
-      $wwwRoot = $this->_configMain->get('wwwroot');
+
       $this->_checkCanEdit();
 
       $docRoot = $this->_configMain->get('docroot');   

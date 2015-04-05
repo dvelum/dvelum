@@ -70,7 +70,6 @@ class Backend_Fmodules_Controller extends Backend_Controller
   public function controllersAction()
   {
     $appPath = $this->_configMain['application_path'];
-    $basePath = $this->_configMain->get('frontend_controllers');
     $folders = File::scanFiles($this->_configMain->get('frontend_controllers') , false , true , File::Dirs_Only);
     $data = array();
     

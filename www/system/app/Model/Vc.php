@@ -35,8 +35,6 @@ class Model_Vc extends Model
                $vObject->set('object_name' , $object->getName());
                $vObject->set('date' , date('Y-m-d H:i:s'));
 
-               $store = $this->_getObjectsStore();
-
                if($vObject->save())
                    return $newVersion;
 

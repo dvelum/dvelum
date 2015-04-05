@@ -17,7 +17,6 @@ class Frontend_Docs_Controller extends Frontend_Controller implements Router_Int
    public function route()
    {
      $request = Request::getInstance();
-     $action = $request->getPart(1);
 
      if(!Request::isAjax()){
        $this->indexAction();

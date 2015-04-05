@@ -242,8 +242,6 @@ class Frontend_Router extends Router
     $pathCode = Filter::filterValue('pagecode' , $controller);
     $routes = Config::factory(Config::File_Array , $this->_appConfig->get('frontend_modules'))->__toArray();
 
-    $controllerClass = false;
-
     if(isset($routes[$pathCode]) && class_exists($routes[$pathCode]['class']))
       $controllerClass = $routes[$pathCode]['class'];
     else

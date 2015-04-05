@@ -116,7 +116,7 @@ class Sysdocs_Generator
            $files = array_merge($files , $items);
 	   }
 
-	   $count = 0;
+
 	   if(!empty($files))
 	   {
 	      foreach ($exceptions as $item)
@@ -173,8 +173,6 @@ class Sysdocs_Generator
 	protected function storeClass($data)
 	{
 	    $time = microtime(true);
-
-	    $classModel = Model::factory('sysdocs_class');
 
 	    $path = $data['path'];
 

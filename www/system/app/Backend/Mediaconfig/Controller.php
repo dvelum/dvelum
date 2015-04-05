@@ -4,7 +4,6 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
 
 	public function indexAction()
 	{
-        $resource = Resource::getInstance();
         $this->_resource->addJs('/js/app/system/crud/'.strtolower($this->_module).'.js'  , 4);
 
          $this->_resource->addInlineJs('

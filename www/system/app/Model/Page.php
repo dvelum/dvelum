@@ -31,9 +31,6 @@ class Model_Page extends Model
                 $v['last_version'] = 0;
          }unset($v);
 
-         $result = array();
-         $deleted = array();
-
           if(empty($data))
                return array();
 
@@ -119,7 +116,6 @@ class Model_Page extends Model
      */
      public function codeExists($code)
      {
-          $db = Store_Local::getInstance()->get('db');
           return  $this->_dbSlave->fetchOne($this->_dbSlave->select()
                                 ->from($this->table() , array('count'=>'COUNT(*)'))
                                 ->where('code = ?' , $code)

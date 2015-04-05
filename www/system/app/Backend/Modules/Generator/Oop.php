@@ -51,7 +51,6 @@ class Backend_Modules_Generator_Oop
 
       $objectConfig = Db_Object_Config::getInstance($object);
       $primaryKey = $objectConfig->getPrimaryKey();
-      $appConfig = Registry::get('main' , 'config');
 
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
       $objectFields = array();
@@ -419,7 +418,6 @@ class Backend_Modules_Generator_Oop
 
       $objectConfig = Db_Object_Config::getInstance($object);
       $primaryKey = $objectConfig->getPrimaryKey();
-      $appConfig = Registry::get('main' , 'config');
 
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
 

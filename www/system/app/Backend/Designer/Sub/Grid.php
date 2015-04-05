@@ -74,7 +74,6 @@ class Backend_Designer_Sub_Grid extends Backend_Designer_Sub
 	public function columnsortAction()
 	{
         $id = Request::post('id','string',false);
-        $name = Request::post('object', 'string', '');
         $newParent = Request::post('newparent','string',false);
         if(!strlen($newParent))
         	$newParent = 0;

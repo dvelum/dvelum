@@ -110,7 +110,7 @@ class Backend_Filestorage_Controller extends Backend_Controller_Crud
         $this->_checkCanEdit();
 
         $files = Request::files();
-        $fileCfg = $files['file'];
+
 
         if (!isset($files['file']) || empty($files['file']))
             Response::jsonError($this->_lang->get('FILL_FORM'));

@@ -43,8 +43,6 @@ class Model_Sysdocs_File extends Model
         if(empty($childs))
             return array();
          
-        $appConfig = Registry::get('main' , 'config');
-         
         foreach($childs as $k=>$v)
         {
             $row = $v['data'];

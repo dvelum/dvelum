@@ -100,7 +100,7 @@ class Backend_Orm_Connections_Controller extends Backend_Controller
         $base = Request::post('dbname', 'string', false);
         $charset = Request::post('charset', 'string', false);
         $pass = Request::post('password', 'string', false);
-        $pass2 = Request::post('pass2', 'string', false);
+
         $setpass = Request::post('setpass', 'boolean', false);
         $adapter = Request::post('adapter', 'string', false);
         $adapterNamespace = Request::post('adapterNamespace', 'string', false);

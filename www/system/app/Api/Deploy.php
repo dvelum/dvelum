@@ -109,7 +109,7 @@ class Api_Deploy
 		ini_set('max_execution_time', 3600);
 		
 		$deployCfg = Config::factory(Config::File_Array, $this->_appConfig['configs'].'deploy.php');
-		$file = $this->_appConfig['tmp'].time(); 
+
 		
 		$list = File::scanFiles('.' , array(), $recursive = true);
 		$ignore = $deployCfg->get('ignore');

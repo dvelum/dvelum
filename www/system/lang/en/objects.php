@@ -212,6 +212,7 @@
       'registration_ip' => 'Registration IP',
       'last_ip' => 'Last IP',
       'confirmation_date' => 'Confirmation Date',
+      'confirmation_expiried' => 'confirmation_expiried',
     ),
   ),
   'vc' => 

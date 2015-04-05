@@ -22,7 +22,7 @@ class Task_Deploy_Archive extends Bgtask_Abstract
 		$lang = Lang::lang();
 		
 		$appConfig = Registry::get('main' , 'config');
-		$docRoot = $appConfig->get('docroot') . DIRECTORY_SEPARATOR;
+
 		$deployCfg = Config::factory(Config::File_Array, $appConfig->get('configs').'deploy.php');
 	
 		$this->setTotalCount(3);
@@ -33,7 +33,7 @@ class Task_Deploy_Archive extends Bgtask_Abstract
 			$this->error($lang->CANT_WRITE_FS . '('.$dirName.')');
 		
 		$dirName.= DIRECTORY_SEPARATOR;	
-		$wwwBackupDir = $dirName .'www/';
+
 			
 		$this->_nextStep();
 		

@@ -56,7 +56,6 @@ class Backend_Acl_Controller extends Backend_Controller
       {
           if(!isset($data[$name]))
           {
-              $cfg = Db_Object_Config::getInstance($name);
               $data[$name] = array(
                   'object' => $name ,
                   'create' => false,

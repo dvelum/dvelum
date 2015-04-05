@@ -161,8 +161,6 @@ abstract class Backend_Controller_Crud extends Backend_Controller
          */
         $deleted = array_diff($ids , array_keys($odata));
 
-        $deletedData = array();
-
         $result = array();
         foreach($ids as $id){
 

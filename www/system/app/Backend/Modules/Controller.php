@@ -93,7 +93,6 @@ class Backend_Modules_Controller extends Backend_Controller{
     public function controllersAction()
     {
         $appPath = $this->_configMain['application_path'];
-        $basePath = $this->_configMain['backend_controllers'];
         $folders = File::scanFiles($this->_configMain['backend_controllers'],false,true,File::Dirs_Only);
         $data = array();
         

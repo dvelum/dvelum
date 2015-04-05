@@ -167,7 +167,6 @@ class Backend_Designer_Code
 	static protected function _moduleByClass($class)
 	{
 		$modules = Config::factory(Config::File_Array, Registry::get('main' , 'config')->get('frontend_modules'));
-		$moduleName = false;
 		if(!empty($modules)){
 			foreach($modules as $k=>$config){
 				if($config['class']===$class){
