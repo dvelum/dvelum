@@ -543,6 +543,9 @@ class Db_Object
          if($this->_acl)
             $this->_checkCanRead();
 
+         if($name === $this->_primaryKey)
+            return $this->getId();
+
          if(!$this->fieldExists($name))
             throw new Exception('Invalid property requested ['.$name.']');
 
