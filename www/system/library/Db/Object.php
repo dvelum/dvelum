@@ -1054,7 +1054,7 @@ class Db_Object
                         }
                     }
 
-                    if($k!== $this->_config->getPrimaryKey() && $k!= 'author_id')
+                    if($k!== $this->_config->getPrimaryKey() && $k!== 'author_id')
                         $this->set($k , $v);
 
     			}catch(Exception $e){
