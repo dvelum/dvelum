@@ -688,9 +688,14 @@ class Db_Object_Store
     				if(!is_null($v))
     					$oldObject->set($k , $v);
 
-                if(!$oldObject->save(false , $useTransaction))
-                    throw new Exception('Cannot save object');
             }
+
+            $oldObject->set('date_updated' , $object->get('date_updated'));
+            $oldObject->set('editor_id' , $object->get('editor_id'));
+
+            if(!$oldObject->save(false , $useTransaction))
+                throw new Exception('Cannot save object');
+
         }catch(Exception $e){
             if($this->_log)
                 $this->_log->log('Cannot update unpublished object data '. $e->getMessage());

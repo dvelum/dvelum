@@ -664,7 +664,7 @@ class Db_Object
 
                 if($this->_config->isRevControl()){
                     $this->date_updated = date('Y-m-d H:i:s');
-                    $this->editor_id = User::getInstance()->id;
+                    $this->editor_id = User::getInstance()->getId();
                 }
                 $id = (integer) $store->update($this , $log , $useTransaction);
                 $this->commitChanges();
@@ -943,6 +943,9 @@ class Db_Object
 
     	$this->published_version = 0;
     	$this->published = false;
+        $this->date_updated = date('Y-m-d H:i:s');
+        $this->editor_id = User::getInstance()->getId();
+
     	return $store->unpublish($this , $log , $useTransaction);
     }
 
@@ -986,12 +989,14 @@ class Db_Object
     			return false;
     		}
     	}
+
     	$this->published = true;
+        $this->date_updated = date('Y-m-d H:i:s');
+        $this->editor_id = User::getInstance()->getId();
 
     	if(empty($this->date_published))
     		$this->set('date_published' , date('Y-m-d H:i:s'));
 
-    	$this->editor_id = User::getInstance()->id;
     	$this->published_version = $this->getVersion();
     	return $store->publish($this , $log , $useTransaction);
     }
@@ -1049,8 +1054,8 @@ class Db_Object
                         }
                     }
 
-    				if(!$this->_config->isSystemField($k) || $k == $ivField)
-    					$this->set($k , $v);
+                    if($k!== $this->_config->getPrimaryKey() && $k!= 'author_id')
+                        $this->set($k , $v);
 
     			}catch(Exception $e){
     			   throw new Exception('Cannot load version data ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers.'. This version contains incompatible data. ' . $e->getMessage());
@@ -1107,6 +1112,9 @@ class Db_Object
     		if(!$this->save(true , $useTransaction))
     			return false;
     	}
+
+        $this->date_updated = date('Y-m-d H:i:s');
+        $this->editor_id = User::getInstance()->getId();
 
     	$store  = $this->_model->getStore();
 
