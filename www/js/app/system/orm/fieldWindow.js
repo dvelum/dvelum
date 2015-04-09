@@ -17,7 +17,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 				modal: true,
 		        layout:'fit',
 		        width: app.checkWidth(500),
-		        height:app.checkHeight(450),
+		        height:app.checkHeight(500),
 		        closeAction: 'destroy',
 		        maximizable:true
 		    }, config || {});
@@ -395,6 +395,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 				          this.fieldUnique,
 				          {
 				              xtype: 'radiogroup',
+							  columns:2,
 				              fieldLabel: appLang.FIELD_TYPE,
 				              items: [
 				                  {
