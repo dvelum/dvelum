@@ -734,8 +734,8 @@ return array(
 				\'iv_field\'=>\'enc_key\'
 			);
 		';
-		if(!@file_get_contents($encConfigPath ,$encConfig ))
-			Response::jsonError($this->_dictionary['CANT_WRITE_FS']);
+		if(!@file_put_contents($encConfigPath ,$encConfig ))
+			Response::jsonError($this->_dictionary['CANT_WRITE_FS'] . ' '.$encConfigPath);
 
 		Utils::setSalt($salt);
 		$mainCfgPath = $this->_docRoot . 'system/config/main.php';
