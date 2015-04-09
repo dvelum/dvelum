@@ -2,7 +2,6 @@
 return array(
     'gen_version'=>4,
 	'versions'=>array(
-	   '0.9.4'=>2,
        '0.9.4.1'=>3
     ),
     'default_languge'=> 'en',
