@@ -1,4 +1,4 @@
-DVelum 0.9.4.1 PROFESSIONAL WEB-DEVELOPMENT PLATFORM
+DVelum 0.9.5 PROFESSIONAL WEB-DEVELOPMENT PLATFORM
 Copyright (C) 2011-2015,  Kirill A Egorov, Andrew Zamotaev
 http://dvelum.net/license.html
 
