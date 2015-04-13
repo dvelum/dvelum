@@ -835,8 +835,13 @@ class Backend_Modules_Generator_Oop
   		    });
 
             win.on("dataSaved",function(){
-              this.getStore().load();
-            },this);
+                this.getStore().load();
+              ';
+      if(!$vc){
+          $editCode.='win.close();';
+      }
+
+      $editCode.='},this);
 
             win.show();
     ';
