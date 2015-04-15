@@ -1,6 +1,8 @@
 Ext.ns('app.crud.modules');
 
-
+/**
+ * @event completeEdit value
+ */
 Ext.define('app.crud.modules.interfaceField',{
 	extend:'Ext.form.FieldContainer',
 	mixins:{completeEdit:'Ext.Editor'},
@@ -48,13 +50,7 @@ Ext.define('app.crud.modules.interfaceField',{
 		               ];		 
 		 
 		 this.callParent(arguments);
-		 
-		 this.addEvents(
-		            /**
-		             * @event completeEdit value
-		             */
-		           'completeEdit'
-		 );  
+
 		 this.setValue(this.value);
 	},
 	showSelectorWindow:function()
@@ -447,7 +443,10 @@ Ext.define('app.crud.modules.Main',{
    }
 });
 
-
+/**
+ * @event dataSaved
+ * @params data
+ */
 Ext.define('app.crud.modules.CreateWindow',{
 	extend:'Ext.Window',
 	modal:true,
@@ -517,14 +516,6 @@ Ext.define('app.crud.modules.CreateWindow',{
 		];
 		this.items = [this.dataForm];
 		this.callParent();
-		
-		this.addEvents(
-	            /**
-	             * @event dataSaved
-	             * @params data
-	             */
-	           'dataSaved'
-	    );  
 	},	
 	createModule:function()
 	{
@@ -547,7 +538,10 @@ Ext.define('app.crud.modules.CreateWindow',{
    	    });
 	}
 });
-
+/**
+ * @event dataSaved
+ * @params boolean deleteRelated
+ */
 Ext.define('app.crud.modules.DeleteWindow',{
 	extend:'Ext.Window',
 	modal:true,
@@ -595,14 +589,6 @@ Ext.define('app.crud.modules.DeleteWindow',{
 		    	}
 		    }
 		];
-		
-		this.addEvents(
-	            /**
-	             * @event dataSaved
-	             * @params boolean deleteRelated
-	             */
-	           'deleteItems'
-	    );
 		this.callParent();
 	}
 });

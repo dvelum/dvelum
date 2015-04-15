@@ -1,5 +1,13 @@
 Ext.ns('app.objectLink');
-
+/**
+ *
+ * @event completeEdit
+ *
+ *
+ * @event change
+ * @param fld
+ *
+ */
 Ext.define('app.objectLink.Field',{
 	extend:'Ext.form.FieldContainer',
 	alias:'widget.objectlinkfield',
@@ -100,17 +108,6 @@ Ext.define('app.objectLink.Field',{
 
 
 		this.callParent();
-		this.addEvents(
-			/**
-			 * @event completeEdit
-			 */
-			'completeEdit',
-			/**
-			 * @event completeEdit
-			 * @param fld
-			 */
-			'change'
-		);
 
 		this.on('disable' , function(){
 			this.updateViewState();
@@ -184,7 +181,7 @@ Ext.define('app.objectLink.Field',{
 					Ext.Msg.alert(appLang.MESSAGE , response.msg);
 				} else{
 					me.dataFieldLabel.setValue(response.data.title);
-					me.forceComponentLayout();
+					me.updateLayout();
 				}
 			},
 			failure:function(){

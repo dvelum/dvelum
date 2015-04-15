@@ -8,6 +8,7 @@ if(!defined('DVELUM'))exit;
 	$res->addJs('/js/app/system/Application.js' , -1);
 
 	$res->addJs('/js/lib/jquery.js', 1 , true , 'head');
+	$res->addJs('/js/lang/'.$this->get('lang').'.js', 1 , true , 'head');
 
 	if($this->get('development'))
 	    $res->addJs('/js/lib/ext5/build/ext-all-debug.js', 2 , true , 'head');
@@ -16,7 +17,6 @@ if(!defined('DVELUM'))exit;
 
 	$res->addJs('/js/lib/ext5/build/packages/ext-theme-gray/build/ext-theme-gray.js', 3 , true , 'head');
 
-	$res->addJs('/js/lang/'.$this->get('lang').'.js', 3 , true , 'head');
 	$res->addJs('/js/lib/ext5/build/packages/ext-locale/build/ext-locale-'.$this->get('lang').'.js', 4 , true , 'head');
 
 	$res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');

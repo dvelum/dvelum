@@ -16,7 +16,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 
 		$res->addJs('/js/app/system/SearchPanel.js');
 		$res->addJs('/js/app/system/HistoryPanel.js', 0);
-		$res->addJs('/js/lib/ext_ux/RowExpander.js', 0);
+		//$res->addJs('/js/lib/ext_ux/RowExpander.js', 0);
 		$res->addJs('/js/app/system/RevisionPanel.js', 1);
         $res->addJs('/js/app/system/EditWindow.js' , 2);
         $res->addJs('/js/app/system/ContentWindow.js' , 3);

@@ -1,3 +1,6 @@
+/**
+ * @event methodsUpdated
+ */
 Ext.define('designer.methodsEditor',{
 	extend:'Ext.grid.Panel',
 	autoScroll:true,
@@ -26,7 +29,7 @@ Ext.define('designer.methodsEditor',{
 				url:this.controllerUrl +  'list',
 				reader: {
 					type: 'json',
-					root: 'data',
+					rootProperty: 'data',
 					idProperty: 'id'
 				},
 				simpleSortMode: true
@@ -124,12 +127,6 @@ Ext.define('designer.methodsEditor',{
 			this.editMethod(record);
 		},this);
 
-		this.addEvents(
-			/**
-			 * @event methodsUpdated
-			 */
-			'methodsUpdated'
-		);
 
 		this.callParent();
 	},
@@ -188,7 +185,10 @@ Ext.define('designer.methodsEditor',{
 });
 
 
-
+/**
+ *
+ * @event codeSaved
+ */
 Ext.define('designer.methodEditorWindow',{
 	extend:'Ext.Window',
 	modal:false,
@@ -237,10 +237,6 @@ Ext.define('designer.methodEditorWindow',{
 		});
 
 		this.buttons = [this.saveButton , this.cancelButton];
-
-		this.addEvents(
-			'codeSaved'
-		);
 
 		this.centerPanel = Ext.create('Ext.Container',{
 			region:'center',

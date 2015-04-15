@@ -13,7 +13,6 @@ Ext.define('Ext.form.medialinkField', {
 	bodyCls:'formBody',
 	padding:{left:155,top:5,bottom:5},
 	resourceType:'image',
-
 	img:null,
 	link:null,
 	ttl:null,

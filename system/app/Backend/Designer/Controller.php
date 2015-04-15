@@ -23,7 +23,7 @@ class Backend_Designer_Controller extends Backend_Controller
 		'/js/lib/CodeMirror/lib/util/search.js',
 		'/js/lib/CodeMirror/mode/javascript/javascript.js',
 		'/js/lib/ext_ux/TreeCellEditing.js',
-		'/js/lib/ext_ux/RowExpander.js',
+		//'/js/lib/ext_ux/RowExpander.js',
 	);
 	/**
 	 * Source scripts
@@ -127,7 +127,6 @@ class Backend_Designer_Controller extends Backend_Controller
 		
 		$count = 4;
 
-		
 		foreach (self::$_externalScripts as $path){
 				$this->_resource->addJs($path , $count);
 				$count++;

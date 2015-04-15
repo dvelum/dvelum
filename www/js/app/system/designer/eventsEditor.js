@@ -1,3 +1,8 @@
+/**
+ *
+ * @event eventsUpdated
+ *
+ */
 Ext.define('designer.eventsEditor',{
 	extend:'Ext.grid.Panel',
 	autoScroll:true,
@@ -26,7 +31,7 @@ Ext.define('designer.eventsEditor',{
 		    	url:this.controllerUrl +  'list',
 		        reader: {
 		            type: 'json',
-		            root: 'data',
+		            rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 			    simpleSortMode: true
@@ -115,14 +120,6 @@ Ext.define('designer.eventsEditor',{
 			this.editEvent(record);
 		},this);
 		
-
-		this.addEvents(
-	           /**
-	             * @event eventsUpdated
-	             */
-	           'eventsUpdated'
-	    );  
-		
 		this.callParent();
 	},
 	removeEvent:function(record){
@@ -171,7 +168,12 @@ Ext.define('designer.eventsEditor',{
 		}).show();
 	}
 });
-
+/**
+ *
+ * @event codeSaved
+ *
+ * @event eventUpdated
+ */
 Ext.define('designer.eventsEditorWindow',{
 	extend:'Ext.Window',
 	modal:true,
@@ -219,11 +221,7 @@ Ext.define('designer.eventsEditorWindow',{
 		});
 		
 		this.buttons = [this.saveButton , this.cancelButton];
-		
-		this.addEvents(
-			'codeSaved'	,
-			'eventUpdated'
-		);
+
 
 		this.dataForm  = Ext.create('Ext.form.Panel',{
 			bodyPadding:5,

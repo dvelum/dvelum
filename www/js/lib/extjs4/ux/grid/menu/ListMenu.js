@@ -2,6 +2,11 @@
  * This is a supporting class for {@link Ext.ux.grid.filter.ListFilter}.
  * Although not listed as configuration options for this class, this class
  * also accepts all configuration options from {@link Ext.ux.grid.filter.ListFilter}.
+ *
+ * @event checkchange
+ * Fires when there is a change in checked items from this list
+ * @param {Object} item Ext.menu.CheckItem
+ * @param {Object} checked The checked value that was set
  */
 Ext.define('Ext.ux.grid.menu.ListMenu', {
     extend: 'Ext.menu.Menu',
@@ -44,15 +49,7 @@ Ext.define('Ext.ux.grid.menu.ListMenu', {
             value;
             
         me.selected = [];
-        me.addEvents(
-            /**
-             * @event checkchange
-             * Fires when there is a change in checked items from this list
-             * @param {Object} item Ext.menu.CheckItem
-             * @param {Object} checked The checked value that was set
-             */
-            'checkchange'
-        );
+
 
         me.callParent(arguments);
 

@@ -13,7 +13,11 @@ Ext.define('app.relatedGridModel', {
 		{name:'title' , type:'string'}
 	]
 });
-
+/**
+ *
+ * @event addItemCall
+ *
+ */
 Ext.define('app.relatedGridPanel',{
 	/*
 	 * 'Ext.grid.Panel' has bad renderer in tabs
@@ -79,12 +83,6 @@ Ext.define('app.relatedGridPanel',{
 		this.tbar = [this.addButton];
 
 		this.callParent();
-		this.addEvents(
-			/**
-			 * @event addItemCall
-			 */
-			'addItemCall'
-		);
 		this.updateViewState();
 	},
 	/**

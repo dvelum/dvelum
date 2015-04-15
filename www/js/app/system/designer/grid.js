@@ -9,40 +9,40 @@ Ext.ns('designer.grid','designer.grid.column');
  */
 Ext.define('designer.grid.exportFieldsWin',{
 	extend:'Ext.Window',
-	
+
 	layout:'fit',
 	title:desLang.importStore,
 	width:300,
 	height:250,
 	modal:true,
 
-	
+
 	storeName:null,
 	controllerUrl:null,
 	objectName:null,
-	
+
 	dataGrid:null,
 	dataStore:null,
-	
+
 	initComponent:function(){
 		this.dataStore = Ext.create('Ext.data.Store',{
 			model:'designer.model.fieldsModel',
-		    proxy: {
-		        type: 'ajax',
-		    	url:app.createUrl([designer.controllerUrl ,'store','']) +  'listfields',
-		        reader: {
-		            type: 'json',
+			proxy: {
+				type: 'ajax',
+				url:app.createUrl([designer.controllerUrl ,'store','']) +  'listfields',
+				reader: {
+					type: 'json',
 					rootProperty: 'data',
-		            idProperty: 'id'
-		        },
-		        extraParams:{
-		        	object:this.storeName
-		        },
-			    simpleSortMode: true
-		    },
-		    autoLoad:true
+					idProperty: 'id'
+				},
+				extraParams:{
+					object:this.storeName
+				},
+				simpleSortMode: true
+			},
+			autoLoad:true
 		});
-		
+
 		this.dataGrid = Ext.create('Ext.grid.Panel',{
 			border:false,
 			store:this.dataStore,
@@ -57,9 +57,9 @@ Ext.define('designer.grid.exportFieldsWin',{
 				width:85
 			}]
 		});
-		
+
 		this.items = [this.dataGrid];
-		
+
 		this.buttons = [{
 			text:desLang.select,
 			scope:this,
@@ -102,123 +102,121 @@ Ext.define('designer.grid.exportFieldsWin',{
 
 
 Ext.define('designer.grid.filterOptionsModel', {
-    extend: 'Ext.data.Model',
-    fields: [
-       {name:'value',type:'string'},
-    ]
+	extend: 'Ext.data.Model',
+	fields: [
+		{name:'value',type:'string'},
+	]
 });
-
+/**
+ *
+ * @event dataChanged
+ * Fires after data successfuly saved
+ * @param string propertyName
+ * @param string json_encoded object of grid source
+ * @param boolean True to create the property if it doesn't already exist. Defaults to false.
+ *
+ */
 Ext.define('designer.grid.filterOptionsWindow',{
-    extend:'Ext.Window',
-    width:500,
-    height:300,
-    layout:'fit',
-    modal:true,
-    title:desLang.items,
-    dataGrid:null,
-    dataStore:null,
-    initialData:[],
-    cellEditing:null,
-    objectName:null,
-    controllerUrl:null,
+	extend:'Ext.Window',
+	width:500,
+	height:300,
+	layout:'fit',
+	modal:true,
+	title:desLang.items,
+	dataGrid:null,
+	dataStore:null,
+	initialData:[],
+	cellEditing:null,
+	objectName:null,
+	controllerUrl:null,
 
-    initComponent:function(){
+	initComponent:function(){
 
-	this.tbar=[
-	           {
-	               tooltip:desLang.add,
-	               iconCls:'plusIcon',
-	               scope:this,
-	               handler:this.addRecord
-	           }        
-	           ];
+		this.tbar=[
+			{
+				tooltip:desLang.add,
+				iconCls:'plusIcon',
+				scope:this,
+				handler:this.addRecord
+			}
+		];
 
-	this.dataStore = Ext.create('Ext.data.Store', {
-	    autoDestroy: true,
-	    model:'designer.grid.filterOptionsModel',
-	    data:this.initialData,
-	    autoLoad:false   
-	});
+		this.dataStore = Ext.create('Ext.data.Store', {
+			autoDestroy: true,
+			model:'designer.grid.filterOptionsModel',
+			data:this.initialData,
+			autoLoad:false
+		});
 
-	this.cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
-	    clicksToEdit: 1
-	});
+		this.cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
+			clicksToEdit: 1
+		});
 
-	this.dataGrid = Ext.create('Ext.grid.Panel',{
-	    columnLines: true,
-	    autoHeight:true,
-	    store:this.dataStore,
-	    columns:[
-	            {
-	        	 text:desLang.value,
-	        	 dataIndex:'value',
-	        	 flex:1,
-	        	 editor: {
-	        	     xtype: 'textfield'
-	        	 }
-	             },{
-	        	 xtype:'actioncolumn',
-	        	 width:25,
-	        	 sortable: false,
-	        	 menuDisabled:true,
-	        	 align:'center',
-	        	 items:[
-	        	        {
-	        	            iconCls:'deleteIcon',
-	        	            tooltip:desLang.remove,
-	        	            handler:function(grid , row , col){
-	        	        	var store = grid.getStore();
-	        	        	store.remove(store.getAt(row));
-	        	            }
-	        	        }
-	        	        ]
-	             }
-	             ],
-	             plugins :[this.cellEditing]
-	});
+		this.dataGrid = Ext.create('Ext.grid.Panel',{
+			columnLines: true,
+			autoHeight:true,
+			store:this.dataStore,
+			columns:[
+				{
+					text:desLang.value,
+					dataIndex:'value',
+					flex:1,
+					editor: {
+						xtype: 'textfield'
+					}
+				},{
+					xtype:'actioncolumn',
+					width:25,
+					sortable: false,
+					menuDisabled:true,
+					align:'center',
+					items:[
+						{
+							iconCls:'deleteIcon',
+							tooltip:desLang.remove,
+							handler:function(grid , row , col){
+								var store = grid.getStore();
+								store.remove(store.getAt(row));
+							}
+						}
+					]
+				}
+			],
+			plugins :[this.cellEditing]
+		});
 
-	this.items = [this.dataGrid];
-	this.buttons = [
-	                {
-	                    text:desLang.save,
-	                    handler:this.saveData,
-	                    scope:this
-	                },{
-	                    text:desLang.close,
-	                    handler:function(){
-	                	this.close();
-	                    },
-	                    scope:this
-	                }         
-	                ];
-	this.callParent(arguments);
-
-	this.addEvents(
-		/**
-		 * Fires after data successfuly saved
-		 * @param string propertyName
-		 * @param string json_encoded object of grid source
-		 * @param boolean True to create the property if it doesn't already exist. Defaults to false.
-		 */
-		'dataChanged'
-	);
-    },
-    addRecord:function(){
-	var count = this.dataStore.getCount();
-	var r = Ext.create('designer.grid.filterOptionsModel', {
-	    name:''
-	});
-	this.dataStore.insert(count, r);
-	r.setDirty();
-	this.cellEditing.startEditByPosition({row: count, column: 0});
-    },
-    saveData:function(){
-	this.dataStore.commitChanges();
-	var options = [];
-	this.dataStore.each(function(record){
-	    options.push(record.get('value'));
-	});
-	this.fireEvent('dataChanged', 'options', Ext.encode(options), true);
-	this.close();
-    }
- });
+		this.items = [this.dataGrid];
+		this.buttons = [
+			{
+				text:desLang.save,
+				handler:this.saveData,
+				scope:this
+			},{
+				text:desLang.close,
+				handler:function(){
+					this.close();
+				},
+				scope:this
+			}
+		];
+		this.callParent(arguments);
+	},
+	addRecord:function(){
+		var count = this.dataStore.getCount();
+		var r = Ext.create('designer.grid.filterOptionsModel', {
+			name:''
+		});
+		this.dataStore.insert(count, r);
+		r.setDirty();
+		this.cellEditing.startEditByPosition({row: count, column: 0});
+	},
+	saveData:function(){
+		this.dataStore.commitChanges();
+		var options = [];
+		this.dataStore.each(function(record){
+			options.push(record.get('value'));
+		});
+		this.fireEvent('dataChanged', 'options', Ext.encode(options), true);
+		this.close();
+	}
+});

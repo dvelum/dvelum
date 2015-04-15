@@ -1,5 +1,10 @@
 /**
  * A Picker field that contains a tree panel on its popup, enabling selection of tree nodes.
+ *
+ * @event select
+ * Fires when a tree node is selected
+ * @param {Ext.ux.TreePicker} picker        This tree picker
+ * @param {Ext.data.Model} record           The selected record
  */
 Ext.define('Ext.ux.TreePicker', {
     extend: 'Ext.form.field.Picker',
@@ -56,15 +61,6 @@ Ext.define('Ext.ux.TreePicker', {
         var me = this;
         me.callParent(arguments);
 
-        me.addEvents(
-            /**
-             * @event select
-             * Fires when a tree node is selected
-             * @param {Ext.ux.TreePicker} picker        This tree picker
-             * @param {Ext.data.Model} record           The selected record
-             */
-            'select'
-        );
 
         me.mon(me.store, {
             scope: me,

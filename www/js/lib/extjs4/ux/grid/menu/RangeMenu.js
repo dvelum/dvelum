@@ -2,6 +2,10 @@
  * Custom implementation of {@link Ext.menu.Menu} that has preconfigured items for entering numeric
  * range comparison values: less-than, greater-than, and equal-to. This is used internally
  * by {@link Ext.ux.grid.filter.NumericFilter} to create its menu.
+ *
+ * @event update
+ * Fires when a filter configuration has changed
+ * @param {Ext.ux.grid.filter.Filter} this The filter object.
  */
 Ext.define('Ext.ux.grid.menu.RangeMenu', {
     extend: 'Ext.menu.Menu',
@@ -114,15 +118,6 @@ menuItemCfgs : {
 
         fields = me.fields = me.fields || {};
         fieldCfg = me.fieldCfg = me.fieldCfg || {};
-        
-        me.addEvents(
-            /**
-             * @event update
-             * Fires when a filter configuration has changed
-             * @param {Ext.ux.grid.filter.Filter} this The filter object.
-             */
-            'update'
-        );
       
         me.updateTask = Ext.create('Ext.util.DelayedTask', me.fireUpdate, me);
     

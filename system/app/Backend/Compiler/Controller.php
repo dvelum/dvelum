@@ -14,7 +14,7 @@ class Backend_Compiler_Controller extends Backend_Controller
     
     public function indexAction(){
     	 $res = Resource::getInstance();   
-    	 $res->addJs('/js/lib/extjs4/ux/RowExpander.js'  , 1); 
+    	 //$res->addJs('/js/lib/extjs4/ux/RowExpander.js'  , 1);
 	     $res->addJs('/js/app/system/crud/compiler.js'  , 2);
 	     $res->addJs('/js/app/system/SearchPanel.js'     , 3);
 	     $this->_resource->addInlineJs('

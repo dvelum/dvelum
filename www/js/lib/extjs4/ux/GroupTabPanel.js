@@ -1,6 +1,33 @@
 /**
  * @author Nicolas Ferrero
  * A TabPanel with grouping support.
+ *
+ *
+ * @event beforetabchange
+ * Fires before a tab change (activated by {@link #setActiveTab}). Return false in any listener to cancel
+ * the tabchange
+ * @param {Ext.ux.GroupTabPanel} grouptabPanel The GroupTabPanel
+ * @param {Ext.Component} newCard The card that is about to be activated
+ * @param {Ext.Component} oldCard The card that is currently active
+ *
+ * @event tabchange
+ * Fires when a new tab has been activated (activated by {@link #setActiveTab}).
+ * @param {Ext.ux.GroupTabPanel} grouptabPanel The GroupTabPanel
+ * @param {Ext.Component} newCard The newly activated item
+ * @param {Ext.Component} oldCard The previously active item
+ *
+ * @event beforegroupchange
+ * Fires before a group change (activated by {@link #setActiveGroup}). Return false in any listener to cancel
+ * the groupchange
+ * @param {Ext.ux.GroupTabPanel} grouptabPanel The GroupTabPanel
+ * @param {Ext.Component} newGroup The root group card that is about to be activated
+ * @param {Ext.Component} oldGroup The root group card that is currently active
+ *
+ * @event groupchange
+ * Fires when a new group has been activated (activated by {@link #setActiveGroup}).
+ * @param {Ext.ux.GroupTabPanel} grouptabPanel The GroupTabPanel
+ * @param {Ext.Component} newGroup The newly activated root group item
+ * @param {Ext.Component} oldGroup The previously active root group item
  */
 Ext.define('Ext.ux.GroupTabPanel', {
     extend: 'Ext.Container',
@@ -86,45 +113,6 @@ Ext.define('Ext.ux.GroupTabPanel', {
             items: me.cards
         }];
 
-        me.addEvents(
-            /**
-             * @event beforetabchange
-             * Fires before a tab change (activated by {@link #setActiveTab}). Return false in any listener to cancel
-             * the tabchange
-             * @param {Ext.ux.GroupTabPanel} grouptabPanel The GroupTabPanel
-             * @param {Ext.Component} newCard The card that is about to be activated
-             * @param {Ext.Component} oldCard The card that is currently active
-             */
-            'beforetabchange',
-
-            /**
-             * @event tabchange
-             * Fires when a new tab has been activated (activated by {@link #setActiveTab}).
-             * @param {Ext.ux.GroupTabPanel} grouptabPanel The GroupTabPanel
-             * @param {Ext.Component} newCard The newly activated item
-             * @param {Ext.Component} oldCard The previously active item
-             */
-            'tabchange',
-
-            /**
-             * @event beforegroupchange
-             * Fires before a group change (activated by {@link #setActiveGroup}). Return false in any listener to cancel
-             * the groupchange
-             * @param {Ext.ux.GroupTabPanel} grouptabPanel The GroupTabPanel
-             * @param {Ext.Component} newGroup The root group card that is about to be activated
-             * @param {Ext.Component} oldGroup The root group card that is currently active
-             */
-            'beforegroupchange',
-
-            /**
-             * @event groupchange
-             * Fires when a new group has been activated (activated by {@link #setActiveGroup}).
-             * @param {Ext.ux.GroupTabPanel} grouptabPanel The GroupTabPanel
-             * @param {Ext.Component} newGroup The newly activated root group item
-             * @param {Ext.Component} oldGroup The previously active root group item
-             */
-            'groupchange'
-        );
 
         me.callParent(arguments);
         me.setActiveTab(me.activeTab);

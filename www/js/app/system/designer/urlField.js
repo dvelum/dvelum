@@ -137,7 +137,8 @@ Ext.define('designer.urlWindow',{
 Ext.define('designer.urlField',{
 	extend:'Ext.form.FieldContainer',
 	mixins:{completeEdit:'Ext.Editor'},
-	alias:'widget.urlfield',
+	//alias:'widget.urlfield',
+	alias:'widget.designerUrlField',
 	triggerCls : 'urlTrigger',
 	dataField:null,
 	triggerButton:null,

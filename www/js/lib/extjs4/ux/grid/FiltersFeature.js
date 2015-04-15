@@ -90,6 +90,8 @@
  *
  *     // a filters property is added to the GridPanel
  *     grid.filters
+ *
+ *    @event  filterupdate
  */
 Ext.define('Ext.ux.grid.FiltersFeature', {
     extend: 'Ext.grid.feature.Feature',
@@ -201,7 +203,6 @@ Ext.define('Ext.ux.grid.FiltersFeature', {
 
         // Add event and filters shortcut on grid panel
         grid.filters = me;
-        grid.addEvents('filterupdate');
     },
 
     createFiltersCollection: function () {
