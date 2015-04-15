@@ -120,7 +120,7 @@ class Application
         * Init lang dictionary (Lazy Load)
         */
         $lang = $this->_config->get('language');
-        Lang::addDictionaryLoader($lang ,  $this->_config->get('docroot') . '/system/lang/' . $lang . '.php' , Config::File_Array);
+        Lang::addDictionaryLoader($lang ,  $this->_config->get('lang_path') . $lang . '.php' , Config::File_Array);
         Lang::setDefaultDictionary($this->_config->get('language'));
 
         $eventManager = new Eventmanager();
@@ -192,12 +192,6 @@ class Application
          * Prepare Controllers
          */
         Controller::setDefaultDb($this->_db);
-
-        /*
-         * Prepare Externals
-         */
-        if($this->_config->get('allow_externals'))
-            $this->_initExternals();
 
         $this->_init = true;
     }
@@ -290,12 +284,6 @@ class Application
          * Prepare objects
          */
         Db_Object_Builder::useForeignKeys($this->_config->get('foreign_keys'));
-
-        /*
-         * Inject Externals exper ino Objects Manager
-         */
-        if($this->_config->get('allow_externals'))
-            Db_Object_Manager::setExternalsExpert($this->_getExternalsExpert());
 
         $cfgBackend = Config::factory(Config::File_Array , $this->_config->get('configs') . 'backend.php');
 

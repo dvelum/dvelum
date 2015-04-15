@@ -73,7 +73,10 @@ return array(
      */
     'language' => $language,
     'system' => $docRoot . '/system/',
-    'lang_path' => $docRoot . '/lang/',
+    /**
+     * Localization files path
+     */
+    'lang_path' => $docRoot . '/locale/',
     'js_lang_path' => $wwwPath . 'js/lang/',
     'salt' => 'ThSc-9086',
     'timezone' => 'Europe/Moscow',
@@ -108,10 +111,6 @@ return array(
      * Modules directory
      */
     'modules' => $docRoot . '/config/modules/',
-    /**
-     * Localization files path
-     */
-    'locale' =>  $docRoot . '/locale/',
     /*
      * Backend modules config file
      */
