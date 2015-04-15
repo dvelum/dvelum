@@ -1,11 +1,11 @@
 <?php
 return array(
-    'gen_version'=>2,
+    'gen_version'=>4,
 	'versions'=>array(
-	   '0.9.4'=>2
+       '0.9.5'=>3
     ),
     'default_languge'=> 'en',
-    'default_version' => '0.9.4',
+    'default_version' => '0.9.5',
     'locations'=>array(
         './system/rewrite',
 		'./system/app',

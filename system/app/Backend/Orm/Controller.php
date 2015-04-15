@@ -215,7 +215,7 @@ class Backend_Orm_Controller extends Backend_Controller
         ini_set('max_execution_time',3600);
         $dumpdir = $this->_configMain->get('backups');
         $destPath = $dumpdir . date('d-m-Y_H_i_s');
-        $configPath = $this->_configMain->get('configs');
+
         $docRoot = $this->_configMain->get('docroot');
         $sqlPath = $this->_configMain->get('tmp') . 'dump.sql';
 
@@ -302,7 +302,7 @@ class Backend_Orm_Controller extends Backend_Controller
 
         $name = Request::post('name', 'str', '');
         $restoreDb = Request::post('sql', 'bool', false);
-        $configPath = $this->_configMain->get('configs');
+
 
         if(!$name)
         	Response::jsonError();
@@ -648,6 +648,7 @@ class Backend_Orm_Controller extends Backend_Controller
     	$data['primary_key'] = $pimaryKey;
     	$data['use_db_prefix'] = $usePrefix;
     	$data['slave_connection'] = $slaveConnection;
+        $data['connection'] = $connection;
 
     	$name = strtolower($name);
 
@@ -791,7 +792,7 @@ class Backend_Orm_Controller extends Backend_Controller
     {
 
     	$newFileName = $this->_configMain->get('object_configs').$newName.'.php';
-    	$oldFileName = $this->_configMain->get('object_configs').$oldName.'.php';
+    	//$oldFileName = $this->_configMain->get('object_configs').$oldName.'.php';
 
     	if(file_exists($newFileName))
     		Response::jsonError($this->_lang->FILL_FORM ,array(array('id'=>'name','msg'=>$this->_lang->SB_UNIQUE)));
@@ -825,9 +826,6 @@ class Backend_Orm_Controller extends Backend_Controller
     public function validateAction()
     {
        $engineUpdate = false;
-       $colUpd =  false;
-       $indUpd =  false;
-       $keyUpd =  false;
 
        $name = Request::post('name', 'string', false);
 
@@ -1084,6 +1082,21 @@ class Backend_Orm_Controller extends Backend_Controller
 	        			break;
 	        	}
         	}
+
+        }elseif($newConfig['type']=='encrypted') {
+
+            $setDefault = Request::post('set_default', 'boolean', false);
+
+            if(!$setDefault){
+                $newConfig['db_default'] = false;
+            }else{
+                $newConfig['db_default'] = Request::post('db_default', 'string', false);
+            }
+
+            $newConfig['db_type'] = 'longtext';
+            $newConfig['is_search'] = false;
+            $newConfig['allow_html'] = false;
+
 
         }else{
              $setDefault = Request::post('set_default', 'boolean', false);

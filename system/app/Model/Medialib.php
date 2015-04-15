@@ -332,7 +332,7 @@ class Model_Medialib extends Model
 
   /**
    * Update media items, set category to null
-   * @param integer id
+   * @param integer $id
    */
   public function categoryRemoved($id)
   {

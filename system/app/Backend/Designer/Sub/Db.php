@@ -64,7 +64,6 @@ class Backend_Designer_Sub_Db extends Backend_Designer_Sub
 	 */
 	public function testAction()
 	{
-			$name = Request::post('name', 'string', false);
 			$pass = Request::post('pass', 'string', false);
 			$host = Request::post('host', 'string', false);
 			$user = Request::post('user', 'string', false);

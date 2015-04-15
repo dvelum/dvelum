@@ -96,7 +96,7 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 	 * Get Action
 	 * @param string $id
 	 * @return Ext_Grid_Column_Action_Button
-	 * @throws Exceptio
+	 * @throws Exception
 	 */
 	public function getAction($id)
 	{

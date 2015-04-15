@@ -32,7 +32,7 @@ class Utils_Fs
 	 * @param string $mapFile - output php file path
 	 * @param string $mapPackagesFile - output php file path (with packages)
 	 * @param Config_File_Array - $packagesConfig
-	 * @return void
+	 * @return boolean
 	 */
 	static public function createClassMap(array $startPaths ,  $mapFile , $mapPackagesFile , Config_File_Array $packagesConfig)
 	{

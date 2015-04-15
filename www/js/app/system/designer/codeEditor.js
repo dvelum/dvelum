@@ -1,6 +1,3 @@
-/**
- * @event codeMirrorInit
- */
 Ext.define('designer.codeEditor',{
 	extend:'Ext.Panel',
 	layout:'fit',
@@ -65,6 +62,10 @@ Ext.define('designer.codeEditor',{
 		this.editorId = 'CodeEditorCmp_' + this.id;
 		this.html=this.headerText+'<textarea id="' + this.editorId + '" name="codeEditorCmp" style="width:100%;height:100%"></textarea>'+this.footerText;
 
+		this.addEvents(
+			'codeMirrorInit'
+		);
+
 		this.callParent();
 		this.on('afterrender',this.initEditor,this);
 
@@ -117,7 +118,7 @@ Ext.define('designer.codeEditor',{
 		this.codeMirrorInit = true;
 		this.on('resize', this.syncEditor, this);
 		this.on('show' , this.syncEditor, this);
-		this.updateLayout();
+		this.forceComponentLayout();
 	},
 	syncEditor:function(){
 		var me = this;

@@ -141,6 +141,8 @@ class Designer_Project_Methods
     $mObject  = $this->_methods[$object][$method];
     $mObject->setCode($code);
     $mObject->setParams($params);
+
+    return true;
   }
   
   /**

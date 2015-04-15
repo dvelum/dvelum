@@ -1,5 +1,6 @@
 <?php
 return array(
-	'releaseType'=>'alpha',
-	'configsPath' => 'system/config/objects'
+	'releaseType'=>'stable',
+	'configsPath' => 'system/config/objects',
+	'docs_sql' => 'install/sql/docs.sql'
 );

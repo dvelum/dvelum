@@ -30,5 +30,9 @@ return array(
                     '.eml'
     		)
         )
-    )
+    ),
+	'download'=>array(
+		'type'=> 'native', // native / apache / nginx
+		'redirect_path' => ''
+	)
 );

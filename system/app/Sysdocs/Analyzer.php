@@ -251,6 +251,8 @@ class Sysdocs_Analyzer
 
        if($reflection->isProtected())
            return 'protected';
+
+        return '';
     }
     /**
      * Gets methods

@@ -41,14 +41,20 @@ class Log_Db implements Log
 	public function log($message)
 	{
 		try{
-			return $this->_db->insert(
-			    $this->_table,
-			    array(
-			        $this->_logFields['name'] => $this->_name,
-			        $this->_logFields['message'] => $message,
-			        $this->_logFields['date']=> date('Y-m-d H:i:s')
-			    )
+			$result = $this->_db->insert(
+				$this->_table,
+				array(
+					$this->_logFields['name'] => $this->_name,
+					$this->_logFields['message'] => $message,
+					$this->_logFields['date']=> date('Y-m-d H:i:s')
+				)
 			);
+
+			if(!$result)
+				throw new Exception('cannot save log to db ');
+
+			return true;
+
 		}catch (Exception $e){
 		    $this->_lastError = $e->getMessage();
 			return false;

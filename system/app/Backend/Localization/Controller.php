@@ -43,7 +43,6 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
    */
   public function localisationAction()
   {
-    $data = array();
     $dictionary = Request::post('dictionary', Filter::FILTER_CLEANED_STR, false);
 
     if($dictionary === false)

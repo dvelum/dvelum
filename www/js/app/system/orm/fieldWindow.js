@@ -1,8 +1,5 @@
 /**
  * Edit window for ORM object field
- *
- *  @event dataSaved
- *
  */
 Ext.define('app.crud.orm.FieldWindow', {
 	extend: 'Ext.window.Window',
@@ -15,15 +12,15 @@ Ext.define('app.crud.orm.FieldWindow', {
 
 	dictionaryUrl:null,
 
-	constructor: function(config) {
-		config = Ext.apply({
-			modal: true,
-			layout:'fit',
-			width: app.checkWidth(450),
-			height:app.checkHeight(450),
-			closeAction: 'destroy',
-			maximizable:true
-		}, config || {});
+	 constructor: function(config) {
+			config = Ext.apply({
+				modal: true,
+		        layout:'fit',
+		        width: app.checkWidth(500),
+		        height:app.checkHeight(500),
+		        closeAction: 'destroy',
+		        maximizable:true
+		    }, config || {});
 		this.callParent(arguments);
 	},
 
@@ -33,13 +30,13 @@ Ext.define('app.crud.orm.FieldWindow', {
 	initComponent:function(){
 
 		this.fieldDictionaries = Ext.create('Ext.form.field.ComboBox',{
-			name:'dictionary',
-			disabled:true,
-			hidden:true,
-			fieldLabel:appLang.DICTIONARY,
-			queryMode:'local',
-			displayField:'title',
-			forceSelection:true,
+        		name:'dictionary',
+        		disabled:true,
+               	  	hidden:true,
+        		fieldLabel:appLang.DICTIONARY,
+        		queryMode:'local',
+        		displayField:'title',
+        	    	forceSelection:true,
 			valueField:'id',
 			store:Ext.create('Ext.data.Store',{
 				model:'app.comboStringModel',
@@ -48,11 +45,11 @@ Ext.define('app.crud.orm.FieldWindow', {
 					type: 'ajax',
 					url:this.dictionaryUrl + 'list',
 					reader: {
-						type: 'json',
-						rootProperty: 'data',
-						idProperty: 'id'
-					}
-				},
+			            type: 'json',
+			            root: 'data',
+			            idProperty: 'id'
+			        }
+	  		    },
 				remoteSort:false,
 				sorters: [{
 					property : 'title',
@@ -65,13 +62,13 @@ Ext.define('app.crud.orm.FieldWindow', {
 		});
 
 		this.fieldSetDefault = Ext.create('Ext.form.field.Checkbox',{
-			name:'set_default',
-			hidden:true,
-			fieldLabel:appLang.SET_DEFAULT,
-			listeners:{
-				render:{fn:this.initTooltip,scope:this},
-				change:{fn:this.setCheckDefault,scope:this}
-			}
+		    name:'set_default',
+		    hidden:true,
+		    fieldLabel:appLang.SET_DEFAULT,
+		    listeners:{
+			render:{fn:this.initTooltip,scope:this},
+			change:{fn:this.setCheckDefault,scope:this}
+		    }
 		});
 
 		this.fieldDefaultNum = Ext.create('Ext.form.field.Number',{
@@ -87,7 +84,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 		this.fieldDefaultString = Ext.create('Ext.form.field.Text',{
 			name:'db_default',
 			disabled:true,
-			hidden:true,
+   	  	 	hidden:true,
 			fieldLabel:appLang.DEFAULT,
 			listeners:{
 				render:{fn:this.initTooltip,scope:this}
@@ -95,67 +92,67 @@ Ext.define('app.crud.orm.FieldWindow', {
 		});
 
 		this.fieldLen = Ext.create('Ext.form.field.Number',{
-			name:'db_len',
-			fieldLabel:appLang.DB_LENGTH,
-			allowDecimals:false,
-			disabled:true,
-			hidden:true,
-			value:1,
-			minValue:1,
-			listeners:{
-				render:{fn:this.initTooltip,scope:this}
-			}
+    		 	 name:'db_len',
+           	  	 fieldLabel:appLang.DB_LENGTH,
+           	  	 allowDecimals:false,
+           	  	 disabled:true,
+           	  	 hidden:true,
+           	  	 value:1,
+           	  	 minValue:1,
+			 listeners:{
+				 render:{fn:this.initTooltip,scope:this}
+			 }
 		});
 
 		this.fieldScale = Ext.create('Ext.form.field.Number',{
-			name:'db_scale',
-			fieldLabel:appLang.DB_SCALE,
-			allowDecimals:false,
-			disabled:true,
-			hidden:true,
-			minValue:0,
-			value:3,
-			listeners:{
-				render:{fn:this.initTooltip,scope:this}
-			}
+			 name:'db_scale',
+		   	 fieldLabel:appLang.DB_SCALE,
+          	  	 allowDecimals:false,
+          	  	 disabled:true,
+           	  	 hidden:true,
+          	  	 minValue:0,
+          	  	 value:3,
+			 listeners:{
+				 render:{fn:this.initTooltip,scope:this}
+			 }
 		});
 
 		this.fieldPrecision = Ext.create('Ext.form.field.Number',{
-			name:'db_precision',
-			fieldLabel:appLang.DB_PRECISION,
-			allowDecimals:false,
-			disabled:true,
-			hidden:true,
-			minValue:0,
-			value:1,
-			listeners:{
+			 name:'db_precision',
+		  	 fieldLabel:appLang.DB_PRECISION,
+         	  	 allowDecimals:false,
+         	  	 disabled:true,
+           	  	 hidden:true,
+         	  	 minValue:0,
+         	  	 value:1,
+			 listeners:{
 				render:{fn:this.initTooltip,scope:this}
-			}
+			 }
 		});
 
 		this.fieldType = Ext.create('Ext.form.field.ComboBox',{
-			xtype:'combo',
-			name:'db_type',
-			fieldLabel:appLang.DB_TYPE ,
-			queryMode:'local',
-			forceSelection:true,
-			displayField:'title',
-			valueField:'id',
-			store:Ext.create('Ext.data.Store',{
-				model:'app.comboStringModel',
-				remoteSort:false,
-				sorters: [{
-					property : 'title',
-					direction: 'ASC'
-				}]
-			}),
-			listeners:{
-				select:function(field , value , options){
-					this.dbTypeSelected(field.getValue());
-				},
-				render:{fn:this.initTooltip,scope:this},
-				scope:this
-			}
+                  	  xtype:'combo',
+                	  name:'db_type',
+                	  fieldLabel:appLang.DB_TYPE ,
+                	  queryMode:'local',
+                	  forceSelection:true,
+                	  displayField:'title',
+                	  valueField:'id',
+                	  store:Ext.create('Ext.data.Store',{
+                		model:'app.comboStringModel',
+                		remoteSort:false,
+              		      	sorters: [{
+            		          property : 'title',
+            		          direction: 'ASC'
+            		        }]
+                	  }),
+                	  listeners:{
+                		select:function(field , value , options){
+                		  this.dbTypeSelected(field.getValue());
+                		},
+                		render:{fn:this.initTooltip,scope:this},
+                		scope:this
+                	  }
 		});
 
 		this.validatorField = Ext.create('Ext.form.field.ComboBox',{
@@ -172,336 +169,377 @@ Ext.define('app.crud.orm.FieldWindow', {
 					type: 'ajax',
 					url:app.crud.orm.Actions.listValidators,
 					reader: {
-						type: 'json',
-						rootProperty: 'data',
-						idProperty: 'id'
-					}
-				},
-				remoteSort:false,
-				sorters: [{
-					property : 'title',
-					direction: 'ASC'
-				}]
+			            type: 'json',
+			            root: 'data',
+			            idProperty: 'id'
+			        }
+	  		    },
+	  		    remoteSort:false,
+	  		    sorters: [{
+				property : 'title',
+				direction: 'ASC'
+	  		    }]
 			}),
 			listeners:{
-				render:{fn:this.initTooltip,scope:this}
+			    render:{fn:this.initTooltip,scope:this}
 			}
 		});
 
 		this.fieldLinkType = Ext.create('Ext.form.RadioGroup', {
-			fieldLabel: appLang.LINK_TYPE,
-			columns: 2,
-			hidden:true,
-			items: [
-				{boxLabel: appLang.SINGLE_LINK, name: 'link_type',  inputValue: 'object', checked: true,
-					listeners:{
-						'change':{
-							fn:function( field, newValue, oldValue, options ){
-								if(newValue){
-									this.processFields(
-										[
-											this.fieldDictionaries
-										],[
-											this.fieldObject,
-											this.fieldRequired
-										]
-									);
-								}
-							},
-							scope:this
-						},
-						render:{fn:this.initTooltip,scope:this}
+  			fieldLabel: appLang.LINK_TYPE,
+  			columns: 2,
+  			hidden:true,
+  			items: [
+  			        {boxLabel: appLang.SINGLE_LINK, name: 'link_type',  inputValue: 'object', checked: true,
+                        	  listeners:{
+        		            	  'change':{
+        		            		  fn:function( field, newValue, oldValue, options ){
+        		            			  if(newValue){
+        		            				  this.processFields(
+        		            						  [
+        			            				          this.fieldDictionaries
+        		            				           ],[
+        		            				              this.fieldObject,
+        		            				              this.fieldRequired
+        		            				           ]
+        		            				  );
+        		            			  }
+        		            		  },
+        		            		  scope:this
+        		            	  },
+        		            	  render:{fn:this.initTooltip,scope:this}
 
-					}},
-				{boxLabel: appLang.MULTI_LINK, name: 'link_type', inputValue: 'multy',
-					listeners:{
-						'change':{
-							fn:function( field, newValue, oldValue, options ){
-								if(newValue){
-									this.processFields(
-										[
-											this.fieldDictionaries,
-											this.fieldRequired
-										],[
-											this.fieldObject,
-										]
-									);
-								}
-							},
-							scope:this
-						},
-						render:{fn:this.initTooltip,scope:this}
-					}},
-				{
-					boxLabel: appLang.DICTIONARY,
-					name: 'link_type',
-					inputValue: 'dictionary',
-					listeners:{
-						'change':{
-							fn:function( field, newValue, oldValue, options ){
-								if(newValue){
-									this.processFields(
-										[
-											this.fieldObject
-										],[
-											this.fieldDictionaries,
-											this.fieldRequired
-										]
-									);
-								}
-							},
-							scope:this
-						},
-						render:{fn:this.initTooltip,scope:this}
-					}
-				}
-			]
-		});
+        		              }},
+        		          {boxLabel: appLang.MULTI_LINK, name: 'link_type', inputValue: 'multy',
+                        	  listeners:{
+        		            	  'change':{
+        		            		  fn:function( field, newValue, oldValue, options ){
+        		            			  if(newValue){
+        		            				  this.processFields(
+        		            						  [
+        			            				          this.fieldDictionaries,
+        			            				          this.fieldRequired
+        		            				           ],[
+        		            				              this.fieldObject,
+        		            				           ]
+        		            				  );
+        		            			  }
+        		            		  },
+        		            		  scope:this
+        		            	  },
+        		            	  render:{fn:this.initTooltip,scope:this}
+        		              }},
+                              {
+                            	  boxLabel: appLang.DICTIONARY,
+                            	  name: 'link_type',
+                            	  inputValue: 'dictionary',
+                            	  listeners:{
+            		            	  'change':{
+            		            		  fn:function( field, newValue, oldValue, options ){
+            		            			  if(newValue){
+            		            				  this.processFields(
+            		            						  [
+            			            				          this.fieldObject
+            		            				           ],[
+            		            				              this.fieldDictionaries,
+            		            				              this.fieldRequired
+            		            				           ]
+            		            				  );
+            		            			  }
+            		            		  },
+            		            		  scope:this
+            		            	  },
+            		            	  render:{fn:this.initTooltip,scope:this}
+            		              }
+                              }
+        	]
+  	      });
 
 		this.fieldObject = Ext.create('Ext.form.field.ComboBox',{
-			xtype:'combo',
-			name:'object',
-			disabled:true,
-			hidden:true,
-			fieldLabel:appLang.OBJECT,
-			queryMode:'local',
-			valueField:'id',
-			forceSelection:true,
-			displayField:'title',
-			store:Ext.create('Ext.data.Store',{
-				model:'app.comboStringModel',
-				data:this.objectList,
-				remoteSort:false,
-				proxy: {
-					type: 'ajax'
-				},
-				sorters: [{
-					property : 'title',
-					direction: 'ASC'
-				}]
-			}),
-			listeners:{
-				render:{fn:this.initTooltip,scope:this}
-			}
+		  xtype:'combo',
+		  name:'object',
+		  disabled:true,
+		  hidden:true,
+        	  fieldLabel:appLang.OBJECT,
+        	  queryMode:'local',
+        	  valueField:'id',
+        	  forceSelection:true,
+        	  displayField:'title',
+        	  store:Ext.create('Ext.data.Store',{
+        	      model:'app.comboStringModel',
+        	      data:this.objectList,
+        	      remoteSort:false,
+      		      proxy: {
+      		    	type: 'ajax'
+      		      },
+      		      sorters: [{
+    			property : 'title',
+    			direction: 'ASC'
+      		      }]
+        	  }),
+		  listeners:{
+			render:{fn:this.initTooltip,scope:this}
+		  }
 		});
 
 		this.fieldIsNull = Ext.create('Ext.form.field.Checkbox',{
-			xtype:'checkbox',
-			name:'db_isNull',
-			disabled:true,
-			hidden:true,
-			fieldLabel:appLang.IS_NULL ,
-			listeners:{
-				'change':{
-					fn:function(field, newValue, oldValue, options ){
+          	  	xtype:'checkbox',
+        	  	name:'db_isNull',
+        	  	disabled:true,
+        	  	hidden:true,
+        	  	fieldLabel:appLang.IS_NULL ,
+        	  	listeners:{
+        	  		'change':{
+        	  			fn:function(field, newValue, oldValue, options ){
 
-						if(newValue){
-							this.fieldRequired.setValue(0);
-							this.fieldRequired.hide();
-						}else{
-							this.fieldRequired.show();
-						}
-					},
-					scope:this
-				},
-				render:{fn:this.initTooltip,scope:this}
+        	  				if(newValue){
+        	  					this.fieldRequired.setValue(0);
+        	  					this.fieldRequired.hide();
+        	  				}else{
+        	  					this.fieldRequired.show();
+        	  				}
+        	  			},
+        	  			scope:this
+        	  		},
+        	  		render:{fn:this.initTooltip,scope:this}
 
-			}
+        	  	}
 		});
 
 		this.fieldRequired = Ext.create('Ext.form.field.Checkbox',{
-			xtype:'checkbox',
-			name:'required',
-			disabled:true,
-			hidden:true,
-			fieldLabel:appLang.REQUIRED,
+  	  		xtype:'checkbox',
+  	  		name:'required',
+    	 		disabled:true,
+   	  	 	hidden:true,
+   	  	 	fieldLabel:appLang.REQUIRED,
 			listeners:{
-				render:{fn:this.initTooltip,scope:this}
+			    render:{fn:this.initTooltip,scope:this}
 			}
 		});
 
 		this.fieldUnsigned = Ext.create('Ext.form.field.Checkbox',{
-			xtype:'checkbox',
-			name:'db_unsigned',
-			disabled:true,
-			hidden:true,
-			fieldLabel:appLang.DB_UNSIGNED,
+	      		xtype:'checkbox',
+	      		name:'db_unsigned',
+	    		disabled:true,
+   	  	 	hidden:true,
+   	  	 	fieldLabel:appLang.DB_UNSIGNED,
 			listeners:{
-				render:{fn:this.initTooltip,scope:this}
+			    render:{fn:this.initTooltip,scope:this}
 			}
 		});
 
 		this.fieldAllowHtml = Ext.create('Ext.form.field.Checkbox',{
-			xtype:'checkbox',
-			name:'allow_html',
-			disabled:true,
-			hidden:true,
-			fieldLabel:appLang.ALLOW_HTML,
+	      		xtype:'checkbox',
+	      		name:'allow_html',
+	      		disabled:true,
+   	  	 	hidden:true,
+   	  	 	fieldLabel:appLang.ALLOW_HTML,
 			listeners:{
-				render:{fn:this.initTooltip,scope:this}
+			    render:{fn:this.initTooltip,scope:this}
 			}
 		});
 
 		this.fieldIsSearch = Ext.create('Ext.form.field.Checkbox',{
-			xtype:'checkbox',
-			name:'is_search',
-			disabled:true,
-			hidden:true,
-			fieldLabel:appLang.IS_SEARCH,
+	      		xtype:'checkbox',
+	      		name:'is_search',
+	      		disabled:true,
+   	  	 	hidden:true,
+   	  	 	fieldLabel:appLang.IS_SEARCH,
 			listeners:{
-				render:{fn:this.initTooltip,scope:this}
+			    render:{fn:this.initTooltip,scope:this}
 			}
 		});
 
 		this.fieldUnique = Ext.create('Ext.form.field.Text',{
 			name:'unique',
 			disabled:false,
-			hidden:false,
+   	  	 	hidden:false,
 			fieldLabel:appLang.UNIQUE_GROUP,
 			listeners:{
-				render:{fn:this.initTooltip,scope:this}
+			    render:{fn:this.initTooltip,scope:this}
 			}
 		});
 
 		this.dataForm = Ext.create('Ext.form.Panel',{
-			bodyPadding:3,
-			frame:false,
-			bodyCls:'formBody',
-			bodyBorder:false,
-			border:false,
-			autoScroll:true,
-			fieldDefaults: {
-				labelWidth: 140,
-				labelAlign:'right',
-				anchor:'100%'
-			},
-			items:[
-				{
-					xtype:'textfield',
-					name:'name',
-					fieldLabel:appLang.FIELD_NAME,
-					allowBlank:false,
-					vtype:'alphanum',
-					listeners:{
-						render:{fn:this.initTooltip,scope:this}
-					}
-				},
-				{
-					xtype:'textfield',
-					name:'title',
-					allowBlank:false,
-					fieldLabel:appLang.FIELD_TITLE,
-					listeners:{
-						render:{fn:this.initTooltip,scope:this}
-					}
-				},
-				this.fieldUnique,
-				{
-					xtype: 'radiogroup',
-					fieldLabel: appLang.FIELD_TYPE,
-					items: [
-						{
-							boxLabel: appLang.FILED_STD,
-							name: 'type',
-							inputValue: '',
-							checked: true,
-							listeners:{
-								'change':{
-									fn:function( field, newValue, oldValue, options ){
-										if(newValue){
-											this.processFields(
-												[
-													this.fieldLinkType,
-													this.fieldObject
-												],[
-													this.fieldType
-												]
-											);
+				   bodyPadding:3,
+				   frame:false,
+				   bodyCls:'formBody',
+				   bodyBorder:false,
+				   border:false,
+				   autoScroll:true,
+				   fieldDefaults: {
+			           labelWidth: 140,
+			           labelAlign:'right',
+			           anchor:'100%'
+			       },
+			       items:[
+				          {
+				        	  xtype:'textfield',
+				        	  name:'name',
+				        	  fieldLabel:appLang.FIELD_NAME,
+				        	  allowBlank:false,
+				        	  vtype:'alphanum',
+				  			  listeners:{
+				  				render:{fn:this.initTooltip,scope:this}
+							  }
+				          },
+				          {
+				        	 xtype:'textfield',
+				        	 name:'title',
+				        	 allowBlank:false,
+				        	 fieldLabel:appLang.FIELD_TITLE,
+				 			 listeners:{
+				 				render:{fn:this.initTooltip,scope:this}
+							 }
+				          },
+				          this.fieldUnique,
+				          {
+				              xtype: 'radiogroup',
+							  columns:2,
+				              fieldLabel: appLang.FIELD_TYPE,
+				              items: [
+				                  {
+				                	  boxLabel: appLang.FILED_STD,
+				                	  name: 'type',
+				                	  inputValue: '',
+				                	  checked: true,
+				                	  listeners:{
+						            	  'change':{
+						            		  fn:function( field, newValue, oldValue, options ){
+						            			  if(newValue){
+						            				  this.processFields(
+						            						  [
+						            						   	this.fieldLinkType,
+						            						   	this.fieldObject
+						            						  ],[
+						            				           	this.fieldType
+						            				          ]
+						            				  );
 
-											this.dbTypeSelected(this.fieldType.getValue());
+						            				  this.dbTypeSelected(this.fieldType.getValue());
 
-										}
-									},
-									scope:this
-								},
-								render:{fn:this.initTooltip,scope:this}
+						            			  }
+						            		  },
+						            		  scope:this
+						            	  },
+						            	  render:{fn:this.initTooltip,scope:this}
 
-							}
-						},
-						{
-							boxLabel: appLang.LINK,
-							name: 'type',
-							inputValue: 'link',
-							listeners:{
-								'change':{
-									fn:function( field, newValue, oldValue, options ){
-										if(newValue){
-											this.processFields(
-												[
-													this.fieldSetDefault,
-													this.fieldDefaultString,
-													this.fieldDefaultNum,
-													this.fieldType,
-													this.fieldLen,
-													this.fieldScale,
-													this.fieldPrecision,
-													this.fieldUnsigned,
-													this.fieldAllowHtml,
-													this.fieldIsSearch,
-													this.fieldDictionaries,
-													this.validatorField,
-													this.fieldIsNull
-												],[
-													this.fieldLinkType,
-													this.fieldObject,
-													this.fieldRequired
-												]
-											);
-										}
-									},
-									scope:this
-								},
-								render:{fn:this.initTooltip,scope:this}
-							}
-						}
-					]
-				},
-				this.fieldLinkType,
-				this.fieldObject,
-				this.fieldType,
-				this.validatorField,
-				this.fieldLen ,
-				this.fieldScale,
-				this.fieldPrecision,
-				this.fieldSetDefault,
-				this.fieldDefaultNum,
-				this.fieldDefaultString,
-				this.fieldIsNull,
-				this.fieldUnsigned,
-				this.fieldAllowHtml,
-				this.fieldIsSearch,
-				this.fieldDictionaries,
-				this.fieldRequired
-			]
+						              }
+				                  },
+				                  {
+				                	  boxLabel: appLang.LINK,
+				                	  name: 'type',
+				                	  inputValue: 'link',
+				                	  listeners:{
+						            	  'change':{
+						            		  fn:function( field, newValue, oldValue, options ){
+						            			  if(newValue){
+						            				  this.processFields(
+						            						  [
+						            						  this.fieldSetDefault,
+							            				          this.fieldDefaultString,
+							            				          this.fieldDefaultNum,
+							            				          this.fieldType,
+							            				          this.fieldLen,
+							            				          this.fieldScale,
+							            				          this.fieldPrecision,
+							            				          this.fieldUnsigned,
+							            				          this.fieldAllowHtml,
+							            				          this.fieldIsSearch,
+							            				          this.fieldDictionaries,
+			            				          				  this.validatorField,
+			            				          				  this.fieldIsNull
+						            				           ],[
+						            				              this.fieldLinkType,
+						            				              this.fieldObject,
+						            				              this.fieldRequired
+						            				           ]
+						            				  );
+						            			  }
+						            		  },
+						            		  scope:this
+						            	  },
+						            	  render:{fn:this.initTooltip,scope:this}
+						              }
+				                  },{
+									  boxLabel:appLang.ENCRYPTED_FIELD,
+									  name: 'type',
+									  inputValue: 'encrypted',
+									  listeners:{
+										  'change':{
+											  fn:function( field, newValue, oldValue, options ){
+												  if(newValue){
+													  this.processFields(
+														  [
+															  this.fieldDefaultNum,
+															  this.fieldType,
+															  this.fieldLen,
+															  this.fieldScale,
+															  this.fieldPrecision,
+															  this.fieldUnsigned,
+															  this.fieldIsSearch,
+															  this.fieldDictionaries,
+															  this.fieldLinkType,
+															  this.fieldObject,
+															  this.fieldIsNull,
+															  this.fieldAllowHtml
+														  ],[
+															  this.fieldSetDefault,
+															  this.fieldDefaultString,
+															  this.validatorField,
+															  this.fieldRequired
+														  ]
+													  );
+												  }
+											  },
+											  scope:this
+										  }
+									  }
+								  }
+				              ]
+				          },
+				          this.fieldLinkType,
+				          this.fieldObject,
+				          this.fieldType,
+				          this.validatorField,
+				          this.fieldLen ,
+				          this.fieldScale,
+				          this.fieldPrecision,
+				          this.fieldSetDefault,
+				          this.fieldDefaultNum,
+				          this.fieldDefaultString,
+				          this.fieldIsNull,
+				          this.fieldUnsigned,
+				          this.fieldAllowHtml,
+				          this.fieldIsSearch,
+				          this.fieldDictionaries,
+				          this.fieldRequired
+				   ]
 		});
 
 		if(app.crud.orm.canEdit){
 			this.buttons =[
-				{
-					text:appLang.SAVE,
-					scope:this,
-					handler:this.saveAction
-				},
-				{
-					text:appLang.CANCEL,
-					scope:this,
-					handler:this.close
-				}
+			     {
+			    	text:appLang.SAVE,
+			    	scope:this,
+			    	handler:this.saveAction
+			     },
+			     {
+			    	text:appLang.CANCEL,
+			    	scope:this,
+				    handler:this.close
+			     }
 			];
 		}
 
 		this.items = [this.dataForm];
 
+		this.addEvents(
+	            /**
+	             * @event dataSaved
+	             */
+	           'dataSaved'
+	    );
 
 //		this.dbTypeSelected('boolean');
 
@@ -515,39 +553,39 @@ Ext.define('app.crud.orm.FieldWindow', {
 					scope:this,
 					waitMsg:appLang.LOADING,
 					success: function(form, action){
-						if(!action.result.success){
-							Ext.Msg.alert(appLang.MESSAGE, action.result.msg);
-						}else{
-							if(action.result.data.type == 'link'){
-								if(action.result.data.link_config.link_type == "dictionary"){
-									this.fieldDictionaries.setValue(action.result.data.link_config.object);
-									this.processFields([],[this.fieldRequired ]);
-								}
-								if(action.result.data.link_config.link_type == 'object'){
-									this.processFields([],[this.fieldRequired ]);
-								}
+		   		 		if(!action.result.success){
+		   		 			Ext.Msg.alert(appLang.MESSAGE, action.result.msg);
+		   		 		}else{
+		   		 			if(action.result.data.type == 'link'){
+		   		 				if(action.result.data.link_config.link_type == "dictionary"){
+			   		 				this.fieldDictionaries.setValue(action.result.data.link_config.object);
+			   		 				this.processFields([],[this.fieldRequired ]);
+		   		 				}
+		   		 				if(action.result.data.link_config.link_type == 'object'){
+		   		 				    	this.processFields([],[this.fieldRequired ]);
+		   		 				}
 
-							}else{
-								handle.dbTypeSelected(handle.fieldType.getValue());
+		   		 			}else{
+		   		 				handle.dbTypeSelected(handle.fieldType.getValue());
 
-								if(!Ext.isEmpty(action.result.data.db_default)){
-									this.fieldDefaultString.setValue(action.result.data.db_default);
-								}
-								if(action.result.data.db_default == false){
-									if(Ext.isDefined(this.fieldDefaultString)){
-										this.fieldDefaultString.reset();
-									}
-									if(Ext.isDefined(this.fieldDefaultNumber)){
-										this.fieldDefaultNumber.reset();
-									}
-								}
-							}
-						}
-					},
-					failure: app.formFailure
+		   		 				if(!Ext.isEmpty(action.result.data.db_default)){
+		   		 				    this.fieldDefaultString.setValue(action.result.data.db_default);
+		   		 				}
+		   		 				if(action.result.data.db_default == false){
+		   		 				    if(Ext.isDefined(this.fieldDefaultString)){
+		   		 					this.fieldDefaultString.reset();
+		   		 				    }
+		   		 				    if(Ext.isDefined(this.fieldDefaultNumber)){
+		   		 					this.fieldDefaultNumber.reset();
+		   		 				    }
+		   		 				}
+		   		 			}
+		   		 		}
+		   	        },
+		   	        failure: app.formFailure
 				});
 			},this);
-		}
+		 }
 
 		this.callParent(arguments);
 	},
@@ -555,22 +593,22 @@ Ext.define('app.crud.orm.FieldWindow', {
 		switch (engine) {
 			case 'Memory':
 				this.fillDbTypesStore([
-					app.crud.orm.intTypes,
-					app.crud.orm.floatTypes,
-					app.crud.orm.charTypes,
-					app.crud.orm.dateTypes
-				]);
+				                       app.crud.orm.intTypes,
+				                       app.crud.orm.floatTypes,
+				                       app.crud.orm.charTypes,
+				                       app.crud.orm.dateTypes
+				                      ]);
 				break;
 
 			default:
 				this.fillDbTypesStore([
-					app.crud.orm.intTypes,
-					app.crud.orm.floatTypes,
-					app.crud.orm.charTypes,
-					app.crud.orm.dateTypes,
-					app.crud.orm.textTypes
+				                       app.crud.orm.intTypes,
+				                       app.crud.orm.floatTypes,
+				                       app.crud.orm.charTypes,
+				                       app.crud.orm.dateTypes,
+				                       app.crud.orm.textTypes
 //				                       app.crud.orm.blobTypes
-				]);
+				                      ]);
 				break;
 		}
 	},
@@ -593,15 +631,15 @@ Ext.define('app.crud.orm.FieldWindow', {
 			url:app.crud.orm.Actions.saveObjField,
 			params:{'objectName':this.objectName,'objectField':this.fieldName},
 			success: function(form, action) {
-				if(!action.result.success){
-					Ext.Msg.alert(appLang.MESSAGE, action.result.msg);
-				} else{
-					handle.fireEvent('dataSaved');
-					handle.close();
-				}
-			},
-			failure: app.formFailure
-		});
+   		 		if(!action.result.success){
+   		 			Ext.Msg.alert(appLang.MESSAGE, action.result.msg);
+   		 		} else{
+   		 			handle.fireEvent('dataSaved');
+   		 			handle.close();
+   		 		}
+   	        },
+   	        failure: app.formFailure
+   	    });
 	},
 	/**
 	 * @param [Array] hide - fields to hide
@@ -621,27 +659,27 @@ Ext.define('app.crud.orm.FieldWindow', {
 		});
 
 		if(!this.fieldSetDefault.getValue()){
-			this.fieldDefaultString.disable();
-			this.fieldDefaultNum.disable();
+		    this.fieldDefaultString.disable();
+		    this.fieldDefaultNum.disable();
 		}
 	},
 	dbTypeSelected:function(value)
 	{
 		this.processFields([
-			this.fieldDictionaries,
-			this.fieldSetDefault,
-			this.fieldDefaultString,
-			this.fieldLen,
-			this.fieldScale,
-			this.fieldPrecision,
-			this.fieldAllowHtml,
-			this.fieldIsSearch
-		] , [
-			this.fieldUnique,
-			this.validatorField,
-			this.fieldIsNull,
-			this.fieldRequired,
-			this.fieldUnsigned
+				this.fieldDictionaries,
+				this.fieldSetDefault,
+				this.fieldDefaultString,
+				this.fieldLen,
+				this.fieldScale,
+				this.fieldPrecision,
+				this.fieldAllowHtml,
+				this.fieldIsSearch
+			] , [
+				this.fieldUnique,
+				this.validatorField,
+				this.fieldIsNull,
+				this.fieldRequired,
+				this.fieldUnsigned
 
 		]);
 
@@ -649,10 +687,10 @@ Ext.define('app.crud.orm.FieldWindow', {
 			this.fieldDefaultNum.setMinValue(0);
 			this.fieldDefaultNum.setMaxValue(1);
 			this.processFields(
-				[	this.validatorField,this.fieldUnsigned,
-					this.fieldRequired
-				],
-				[this.fieldSetDefault,this.fieldDefaultNum]
+					[	this.validatorField,this.fieldUnsigned,
+						this.fieldRequired
+					],
+					[this.fieldSetDefault,this.fieldDefaultNum]
 			);
 			return;
 		}
@@ -662,32 +700,32 @@ Ext.define('app.crud.orm.FieldWindow', {
 
 		if(Ext.Array.indexOf(app.crud.orm.intTypes , value)!=-1){
 			this.processFields(
-				[],
-				[this.fieldSetDefault,this.fieldDefaultNum]
+					[],
+					[this.fieldSetDefault,this.fieldDefaultNum]
 			);
 			return;
 		}
 
 		if(Ext.Array.indexOf(app.crud.orm.floatTypes, value)!=-1){
 			this.processFields(
-				[],
-				[this.fieldSetDefault,this.fieldDefaultNum,this.fieldScale,this.fieldPrecision]
+					[],
+					[this.fieldSetDefault,this.fieldDefaultNum,this.fieldScale,this.fieldPrecision]
 			);
 			return;
 		}
 
 		if(Ext.Array.indexOf(app.crud.orm.charTypes, value)!=-1){
 			this.processFields(
-				[this.fieldDefaultNum,this.fieldUnsigned],
-				[this.fieldSetDefault,this.fieldIsSearch,this.fieldAllowHtml,this.fieldDefaultString,this.fieldLen]
+					[this.fieldDefaultNum,this.fieldUnsigned],
+					[this.fieldSetDefault,this.fieldIsSearch,this.fieldAllowHtml,this.fieldDefaultString,this.fieldLen]
 			);
 			return;
 		}
 
 		if(Ext.Array.indexOf(app.crud.orm.textTypes, value)!=-1){
 			this.processFields(
-				[this.fieldSetDefault,this.fieldDefaultNum,this.fieldUnsigned,this.fieldDefaultString,this.fieldIsNull],
-				[this.fieldIsSearch,this.fieldAllowHtml]
+					[this.fieldSetDefault,this.fieldDefaultNum,this.fieldUnsigned,this.fieldDefaultString,this.fieldIsNull],
+					[this.fieldIsSearch,this.fieldAllowHtml]
 			);
 			return;
 		}
@@ -705,8 +743,8 @@ Ext.define('app.crud.orm.FieldWindow', {
 
 		if(Ext.Array.indexOf(app.crud.orm.dateTypes, value)!=-1){
 			this.processFields(
-				[this.fieldDefaultNum,this.fieldUnsigned,this.fieldIsNull],
-				[]
+					[this.fieldDefaultNum,this.fieldUnsigned,this.fieldIsNull],
+					[]
 			);
 			return;
 		}
@@ -715,18 +753,18 @@ Ext.define('app.crud.orm.FieldWindow', {
 	 * Show default value field
 	 */
 	setCheckDefault:function(field , newValue, oldValue, eOpts){
-		fieldType = this.fieldType.getValue();
-		var defField;
-		if(Ext.Array.indexOf(app.crud.orm.intTypes , fieldType)!=-1 || fieldType == 'boolean' || Ext.Array.indexOf(app.crud.orm.floatTypes, fieldType)!=-1){
-			defField = this.fieldDefaultNum;
-		}else{
-			defField = this.fieldDefaultString;
-		}
-		if(newValue){
-			defField.enable();
-		}else{
-			defField.disable();
-		}
+	    fieldType = this.fieldType.getValue();
+	    var defField;
+	    if(Ext.Array.indexOf(app.crud.orm.intTypes , fieldType)!=-1 || fieldType == 'boolean' || Ext.Array.indexOf(app.crud.orm.floatTypes, fieldType)!=-1){
+		defField = this.fieldDefaultNum;
+	    }else{
+		defField = this.fieldDefaultString;
+	    }
+	    if(newValue){
+	        defField.enable();
+	    }else{
+		defField.disable();
+	    }
 	},
 	initTooltip:function(field){
 		var name = field.name;

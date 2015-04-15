@@ -39,8 +39,10 @@ class Designer_Project
 	        'Menu',
 	        'Container',
 
+		 	'Buttongroup',
 	       // menu containers
     	    'Button',
+			'Button_Split',
     	    'Menu_Checkitem',
     	    'Menu_Item',
     	    'Menu_Separator'
@@ -57,6 +59,7 @@ class Designer_Project
 
 	public static $hasMenu = array(
 		    'Button',
+		    'Button_Split',
 	        'Menu_Checkitem',
 	        'Menu_Item',
 	        'Menu_Separator'

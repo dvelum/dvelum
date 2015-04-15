@@ -873,7 +873,7 @@ class Db_Object_Builder
 
   /**
    * Get SQL for table creation
-   *
+   * @throws Exception
    * @return string
    */
   protected function _sqlCreate()

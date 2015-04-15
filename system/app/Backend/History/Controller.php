@@ -7,7 +7,6 @@ class Backend_History_Controller extends Backend_Controller
      */
     public function listAction()
     {
-        $recordId = Request::post('record_id','integer',false);
         $object = Request::post('object', 'string' , false);
              
         if(!$object)
@@ -15,7 +14,6 @@ class Backend_History_Controller extends Backend_Controller
                                
         $pager = Request::post('pager', 'array', array());
         $filter = Request::post('filter', 'array', array());
-        $query = Request::post('query', 'string', false);
         
         if(!isset($filter['record_id']) || empty($filter['record_id']))
         	  Response::jsonSuccess(array());

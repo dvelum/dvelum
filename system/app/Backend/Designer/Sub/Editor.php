@@ -190,9 +190,7 @@ class Backend_Designer_Sub_Editor extends Backend_Designer_Sub_Properties
 	
 	public function removeeventAction()
 	{
-		$project = $this->_getProject();
 		$event = $this->_getEvent();
-	
 		$name = $this->_getObject()->getName();
 		$project = $this->_getProject();
 		

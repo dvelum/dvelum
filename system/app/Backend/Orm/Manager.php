@@ -12,7 +12,7 @@ class Backend_Orm_Manager
 	/**
 	 * Remove object from ORM
 	 * @param string $name
-	 * @param boolean deleteTable - optional, default true
+	 * @param boolean $deleteTable - optional, default true
 	 * @return integer
 	 */
 	public function removeObject($name , $deleteTable = true)
@@ -135,7 +135,7 @@ class Backend_Orm_Manager
 	 * Remove object field
 	 * @param string $objectName
 	 * @param string $fieldName
-	 * @return bollean  - 0 - success or error code
+	 * @return bool  - 0 - success or error code
 	 */
 	public function removeField($objectName , $fieldName)
 	{		

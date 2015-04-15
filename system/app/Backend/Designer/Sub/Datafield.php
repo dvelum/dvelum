@@ -68,9 +68,7 @@ class Backend_Designer_Sub_Datafield extends Backend_Designer_Sub
 	    
 	    if(!$id || !$this->_object->fieldExists($id))
 	        Response::jsonError($this->_lang->WRONG_REQUEST);
-	
-	    $data = array();
-	
+
 	    $field = $this->_object->getField($id);
 	    $config = $field->getConfig();
 	    $properties = $config->__toArray();

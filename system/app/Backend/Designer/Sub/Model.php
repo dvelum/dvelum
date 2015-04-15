@@ -92,7 +92,6 @@ class Backend_Designer_Sub_Model extends Backend_Designer_Sub
         
         $this->_project = $project;
         $this->_object = $project->getObject($name);
-        $fields = array();
 
         $fields = $this->_object->fields;
         

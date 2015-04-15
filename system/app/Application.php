@@ -120,7 +120,7 @@ class Application
         * Init lang dictionary (Lazy Load)
         */
         $lang = $this->_config->get('language');
-        Lang::addDictionaryLoader($lang ,  $this->_config->get('locale')  . $lang . '.php' , Config::File_Array);
+        Lang::addDictionaryLoader($lang ,  $this->_config->get('docroot') . '/system/lang/' . $lang . '.php' , Config::File_Array);
         Lang::setDefaultDictionary($this->_config->get('language'));
 
         $eventManager = new Eventmanager();
@@ -142,6 +142,7 @@ class Application
         $objectStore->setHistoryObject($this->_config->get('orm_history_object'));
         $objectStore->setVersionObject($this->_config->get('orm_version_object'));
 
+
         /*
          * Prepare models
          */
@@ -158,10 +159,29 @@ class Application
         Db_Object_Config::setConfigPath($this->_config->get('object_configs'));
         Db_Object_Config::setTranslator($translator);
 
-        if($this->_config->get('db_object_error_log')){
+        if($this->_config->get('db_object_error_log'))
+        {
             $log = new Log_File($this->_config->get('db_object_error_log_path'));
-            Db_Object::setLog($log);
-            Model::setDefaultLog($log);
+            /*
+             * Switch to Db_Object error log
+             */
+            if($this->_config->get('erorr_log_object'))
+            {
+                $errorModel = Model::factory($this->_config->get('erorr_log_object'));
+                $errorTable = $errorModel->table(true);
+                $errorDb = $errorModel->getDbConnection();
+
+                $logOrmDb = new Log_Db('db_object_error_log' , $errorDb , $errorTable);
+                $logModelDb = new Log_Db('model' , $errorDb , $errorTable);
+
+                Db_Object::setLog(new Log_Mixed($log, $logOrmDb));
+                Model::setDefaultLog(new Log_Mixed($log, $logModelDb));
+                $objectStore->setLog($logOrmDb);
+            }else{
+                Db_Object::setLog($log);
+                Model::setDefaultLog($log);
+                $objectStore->setLog($log);
+            }
         }
         /*
          * Prepare dictionaries
@@ -173,24 +193,12 @@ class Application
          */
         Controller::setDefaultDb($this->_db);
 
-       /*
-        * Switch to Db_Object error log
-        */
-        if($this->_config->get('db_object_error_log'))
-        {
-            $errorModel = Model::factory($this->_config->get('erorr_log_object'));
-            $errorTable = $errorModel->table(true);
-            $errorDb = $errorModel->getDbConnection();
-        
-            $logOrmDb = new Log_Db('db_object_error_log' , $errorDb , $errorTable);
-        
-            Db_Object::setLog(new Log_Mixed($log, $logOrmDb));
-        
-            $logModelDb = new Log_Db('model' , $errorDb , $errorTable);
-        
-            Model::setDefaultLog(new Log_Mixed($log, $logModelDb));
-        }
-        
+        /*
+         * Prepare Externals
+         */
+        if($this->_config->get('allow_externals'))
+            $this->_initExternals();
+
         $this->_init = true;
     }
 
@@ -282,6 +290,12 @@ class Application
          * Prepare objects
          */
         Db_Object_Builder::useForeignKeys($this->_config->get('foreign_keys'));
+
+        /*
+         * Inject Externals exper ino Objects Manager
+         */
+        if($this->_config->get('allow_externals'))
+            Db_Object_Manager::setExternalsExpert($this->_getExternalsExpert());
 
         $cfgBackend = Config::factory(Config::File_Array , $this->_config->get('configs') . 'backend.php');
 
@@ -386,6 +400,48 @@ class Application
         return $this->_externalsExpert;
     }
 
+    protected function _initExternals()
+    {
+        $eExpert = $this->_getExternalsExpert();
+        if(!$eExpert->hasExternals())
+            return;
+       /*
+        * Register external classes
+        */
+        $classes = $eExpert->getClasses();
+        if(!empty($classes))
+            $this->_autoloader->addMap($classes);
+        /*
+         * Register external objects
+         */
+        $objects = $eExpert->getObjects();
+        if(!empty($objects))
+            Db_Object_Config::registerConfigs($objects);
+
+        $curLang = $this->_config->get('language');
+        /*
+         * Register external translations
+         */
+        $translations = $eExpert->getTranslations($curLang);
+
+        if(!empty($translations))
+            Db_Object_Config::getTranslator()->addTranslations($translations);
+
+        $dictionaries = $eExpert->getDictionaries();
+        if(!empty($dictionaries))
+            Dictionary::addExternal($dictionaries);
+
+        $langs = $eExpert->getLangs($curLang);
+
+        if(!empty($langs))
+            foreach($langs as $name => $path)
+                Lang::addDictionaryLoader($name , $path , Config::File_Array);
+        /*
+         * Inject Externals Expert
+         */
+        $page = Page::getInstance()->setExternalsExpert($eExpert);
+    }
+
     /**
      * Close application, stop processing
      */
@@ -419,6 +475,7 @@ class Application
                 return Config::factory(Config::File_Array , Registry::get('main' , 'config')->get('configs') . 'backend.php');
               break;
         }
+        return false;
     }
 
     /**

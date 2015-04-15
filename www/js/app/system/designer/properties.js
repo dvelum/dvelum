@@ -48,9 +48,11 @@ Ext.define('designer.properties.Panel', {
 
     alignData: [['left'], ['center'], ['right']],
     labelAlignData: [['left'], ['top'], ['right']],
+    iconAlignData:[['top'],['right'],['bottom'],['left']],
     regionData: [['center'], ['west'], ['north'], ['east'], ['south']],
     layoutData: [['Auto'], ['border'], ['card'], ['fit'], ['hbox'], ['vbox'], ['anchor']], //['table']
     dockData: [['top'], ['right'], ['left'], ['bottom']],
+
 
     mainConfigTitle: desLang.properties,
 
@@ -171,6 +173,22 @@ Ext.define('designer.properties.Panel', {
                     store: Ext.create('Ext.data.ArrayStore', {
                         fields: ['id'],
                         data: this.labelAlignData
+                    }),
+                    valueField: 'id',
+                    displayField: 'id',
+                    allowBlank: true
+                })
+            },
+            'iconAlign': {
+                editor: Ext.create('Ext.form.ComboBox', {
+                    selectOnFocus: true,
+                    editable: true,
+                    triggerAction: 'all',
+                    anchor: '100%',
+                    queryMode: 'local',
+                    store: Ext.create('Ext.data.ArrayStore', {
+                        fields: ['id'],
+                        data: this.iconAlignData
                     }),
                     valueField: 'id',
                     displayField: 'id',

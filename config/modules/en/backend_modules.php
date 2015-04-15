@@ -9,6 +9,16 @@
     'designer' => '',
     'in_menu' => true,
   ),
+  'Apikeys' => 
+  array (
+    'id' => 'Backend_Apikeys_Controller',
+    'class' => 'Backend_Apikeys_Controller',
+    'dev' => false,
+    'active' => true,
+    'title' => 'API Keys',
+    'designer' => '',
+    'in_menu' => true,
+  ),
   'Tasks' => 
   array (
     'id' => 'Backend_Tasks_Controller',
@@ -26,6 +36,16 @@
     'dev' => false,
     'active' => true,
     'title' => 'Blocks',
+    'designer' => '',
+    'in_menu' => true,
+  ),
+  'Cache' => 
+  array (
+    'id' => 'Backend_Cache_Controller',
+    'class' => 'Backend_Cache_Controller',
+    'dev' => false,
+    'active' => true,
+    'title' => 'Cache Info',
     'designer' => '',
     'in_menu' => true,
   ),
@@ -57,6 +77,36 @@
     'active' => true,
     'title' => 'Deploy',
     'designer' => '',
+    'in_menu' => true,
+  ),
+  'Docs' => 
+  array (
+    'id' => 'Backend_Docs_Controller',
+    'class' => 'Backend_Docs_Controller',
+    'dev' => true,
+    'active' => true,
+    'title' => 'Documentation',
+    'designer' => './system/config/layouts/system/documentation.designer.dat',
+    'in_menu' => true,
+  ),
+  'Error_Log' => 
+  array (
+    'id' => 'Backend_Error_Log_Controller',
+    'class' => 'Backend_Error_Log_Controller',
+    'dev' => false,
+    'active' => true,
+    'title' => 'Error Log',
+    'designer' => './system/config/layouts/system/error_log.designer.dat',
+    'in_menu' => true,
+  ),
+  'Filestorage' => 
+  array (
+    'id' => 'Backend_Filestorage_Controller',
+    'class' => 'Backend_Filestorage_Controller',
+    'dev' => false,
+    'active' => true,
+    'title' => 'Filestorage',
+    'designer' => './system/config/layouts/system/filestorage.designer.dat',
     'in_menu' => true,
   ),
   'Fmodules' => 
@@ -96,7 +146,7 @@
     'dev' => true,
     'active' => true,
     'title' => 'Localization',
-    'designer' => './config/layouts/system/localization.designer.dat',
+    'designer' => './system/config/layouts/system/localization.designer.dat',
     'in_menu' => true,
   ),
   'Medialib' => 
@@ -166,16 +216,7 @@
     'dev' => false,
     'active' => true,
     'title' => 'Users',
-    'designer' => './config/layouts/system/users.designer.dat',
+    'designer' => './system/config/layouts/system/users.designer.dat',
     'in_menu' => true,
   ),
-  'Error_Log' =>
-    array (
-        'class' => 'Backend_Error_Log_Controller',
-        'dev' => false,
-        'active' => true,
-        'title' => 'Error Log',
-        'designer' => './config/layouts/system/error_log.designer.dat',
-        'in_menu' => true,
-    ),
 ); 

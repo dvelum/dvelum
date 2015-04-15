@@ -2,6 +2,11 @@
 class Sysdocs_Info
 {
     /**
+     * @var Cache_Interface
+     */
+    protected $cache = false;
+    protected $cachePrefix = 'Sysdocs_Info_';
+    /**
      * Get class info by HID
      * @param string $fileHid
      * @param integer $version
@@ -13,25 +18,32 @@ class Sysdocs_Info
         if(empty($classId))
             return array();
 
-        return $this->getClassInfo($classId[0]['id'] , $language);
+        return $this->getClassInfo($classId[0]['id'] , $language , $version);
     }
     /**
      * Find previous localization
      * @param string $objectClass
      * @param string $field
      * @param string $language
+     * @param string $vers, optional (last if not set)
      * @return string | false
      */
-    public function findLocale($objectClass , $field , $language , $hid)
+    public function findLocale($objectClass , $field , $language , $hid , $vers = false)
     {
+        $filters = array(
+            'lang'=>$language,
+            'object_class'=>$objectClass,
+            'hid'=>$hid,
+            'field'=>$field
+        );
+
+        if($vers){
+            $filters['vers'] = $vers;
+        }
+
         $data = Model::factory('sysdocs_localization')->getList(
             array('start'=>0,'limit'=>1,'sort'=>'vers','dir'=>'DESC'),
-            array(
-                'lang'=>$language,
-                'object_class'=>$objectClass,
-                'hid'=>$hid,
-                'field'=>$field
-            ),
+            $filters,
             array('value')
         );
     
@@ -40,21 +52,43 @@ class Sysdocs_Info
     
         return $data[0]['value'];
     }
+
+    /**
+     * Create cache key for class info
+     * @param $id
+     * @param $language
+     * @param $vers
+     * @return string
+     */
+    public function getCacheKey($id , $language, $vers)
+    {
+        return $this->cachePrefix.$id.$language.$vers;
+    }
     /**
      * Get class info by id
      * @param integer $id
      * @param string $lanuage
+     * @param integer $version, optional (last localization if not set)
      * @return array
      */
-    protected function getClassInfo($id , $language)
+    protected function getClassInfo($id , $language , $vers = false)
     {
+        if($this->cache){
+            $cacheKey = $this->getCacheKey($id , $language , $vers);
+            $data = $this->cache->load($cacheKey);
+            if(!empty($data)){
+                return $data;
+            }
+        }
+
+
         $classModel = Model::factory('sysdocs_class');
         $info =  $classModel->getItem($id);
 
         if(empty($info))
             return array();
       
-        $desc = $this->findLocale('sysdocs_class' , 'description' , $language, $info['hid']);
+        $desc = $this->findLocale('sysdocs_class' , 'description' , $language, $info['hid'] , $vers);
         if(empty($desc)){
           $desc = nl2br($info['description']);
         }
@@ -67,9 +101,10 @@ class Sysdocs_Info
         		        'itemType'=> $info['itemType'],
         		        'abstract' => $info['abstract'],
         		        'deprecated' => $info['deprecated'],
+                        'implements' => $info['implements'],
                         'hierarchy' => array(),
         		        'description' => $desc,
-                        'properties' => $this->getClassProperties($id),
+                        'properties' => $this->getClassProperties($id, $language),
                         'methods' => $this->getClassMethods($id , $language)
         );
 
@@ -118,6 +153,10 @@ class Sysdocs_Info
           }
           $result['hierarchy'] = $base;
         }
+
+        if($this->cache){
+            $this->cache->save($cacheKey , $result);
+        }
         return $result;
     }
 
@@ -126,7 +165,7 @@ class Sysdocs_Info
      * @param integer $classId
      * @return array
      */
-    public function getClassProperties($classId)
+    public function getClassProperties($classId , $language)
     {
       $propModel = Model::factory('sysdocs_class_property');
       $list = $propModel->getList(
@@ -142,7 +181,8 @@ class Sysdocs_Info
               'name',
               'static',
               'type',
-              'visibility'
+              'visibility',
+              'hid'
           )
       );
 
@@ -150,7 +190,16 @@ class Sysdocs_Info
         $list = array();
 
       foreach ($list as $k=>$v){
-      	$list[$k]['description'] = nl2br($v['description']);
+          /**
+           * @todo Optimize slow operation
+           * recursive queries!
+           */
+          $desc = $this->findLocale('sysdocs_class_property' , 'description' , $language, $list[$k]['hid']);
+          if(empty($desc)){
+              $desc = nl2br($list[$k]['description']);
+          }
+          $list[$k]['description'] = $desc;
+          $list[$k]['object_id'] = $list[$k]['id'];
       }
 
       return $list;
@@ -295,5 +344,14 @@ class Sysdocs_Info
         Model::factory('sysdocs_localization')->logError($e->getMessage());
         return false;
       }
+    }
+
+    /**
+     * Set cache adapter
+     * @param Cache_Interface $adapter
+     */
+    public function setCacheAdapter(Cache_Interface $adapter)
+    {
+        $this->cache = $adapter;
     }
 }

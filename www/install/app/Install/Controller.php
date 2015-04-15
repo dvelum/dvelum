@@ -151,7 +151,12 @@ class Install_Controller {
 				'name'=>'zip',
 				'accessType'=>'allowed',
 				'msg'=>$this->_dictionary['WARNING']
-			)
+			),
+			array(
+				'name' => 'mcrypt',
+				'accessType'=>'allowed',
+				'msg'=>$this->_dictionary['WARNING']
+			),
 		);
 
 		$writablePaths = array(
@@ -230,6 +235,14 @@ class Install_Controller {
 			array(
 				'path'=>'system/config/db/prod/default.php',
 				'accessType'=>'required'
+			),
+			array(
+				'path'=>'system/config/db/dev/error.php',
+				'accessType'=>'required'
+			),
+			array(
+				'path'=>'system/config/db/prod/error.php',
+				'accessType'=>'required'
 			)
 		);
 
@@ -264,6 +277,9 @@ class Install_Controller {
 		$port = Request::post('port', 'int', 0);
 		$prefix = Request::post('prefix', 'str', '');
 
+		$installDocs = Request::post('install_docs' , 'boolean' , true);
+		$this->_session->set('install_docs' , $installDocs);
+
 		$params = array(
 		    'host'           => $host,
 		    'username'       => Request::post('username', 'str', false),
@@ -297,28 +313,27 @@ class Install_Controller {
 
 		if ($flag)
 			try {
-				$configName = $this->_docRoot . 'system/config/db/prod/default.php';
-				$configDevName = $this->_docRoot . 'system/config/db/dev/default.php';
 
-				if (Config_File_Array::create($configName) === false)
-					throw new Exception();
+				$configs = array(
+					$this->_docRoot . 'system/config/db/prod/default.php',
+					$this->_docRoot . 'system/config/db/dev/default.php',
+					$this->_docRoot . 'system/config/db/prod/error.php',
+					$this->_docRoot . 'system/config/db/dev/error.php',
+				);
 
-				$config = Config::factory(Config::File_Array, $configName);
-				$config->setData($params);
-				$config->set('charset', 'UTF8');
-				$config->set('prefix', $prefix);
-				if (!$config->save())
-					throw new Exception();
+				foreach($configs as $path)
+				{
+					if (Config_File_Array::create($path) === false)
+						throw new Exception();
 
-				if (Config_File_Array::create($configDevName) === false)
-					throw new Exception();
+					$config = Config::factory(Config::File_Array, $path);
+					$config->setData($params);
+					$config->set('charset', 'UTF8');
+					$config->set('prefix', $prefix);
+					if (!$config->save())
+						throw new Exception();
+				}
 
-				$config = Config::factory(Config::File_Array, $configDevName);
-				$config->setData($params);
-				$config->set('charset', 'UTF8');
-				$config->set('prefix', $prefix);
-				if (!$config->save())
-					throw new Exception();
 			} catch (Exception $e) {
 				$data['success'] = false;
 				$data['msg'] = $this->_dictionary['CONNECTION_SAVE_FAIL'];
@@ -341,7 +356,24 @@ class Install_Controller {
 
 		$zendDb = Model::getGlobalDbConnection();
 
+		$installDocs = $this->_session->get('install_docs');
+
+
 		$config = Config::factory(Config::File_Array, $this->_docRoot . 'install/cfg/cfg.php')->__toArray();
+
+		if($installDocs){
+			try{
+				$dbConfig = $zendDb->getConfig();
+				$cmd = 'mysql -h'.escapeshellarg($dbConfig['host']).' -P '.escapeshellarg($dbConfig['port']).' -u' . escapeshellarg($dbConfig['username']) . ' -p' . escapeshellarg($dbConfig['password']) . ' -D' . escapeshellarg($dbConfig['dbname']).' < '. escapeshellarg($this->_docRoot.$config['docs_sql']);
+
+				if(system($cmd) === false)
+					throw new Exception('Cannot exec shell command: '.$cmd);
+
+			}catch (Exception $e){
+				Response::jsonError($this->_dictionary['INSTALL_DOCS_ERROR'] .' '. $e->getMessage());
+			}
+		}
+
 		$paths = File::scanFiles($this->_docRoot . $config['configsPath'], array('.php'),false, File::Files_Only);
 
 		foreach ($paths as &$v)
@@ -403,6 +435,7 @@ class Install_Controller {
 		$salt = Utils::getRandomString(4) . '_' . Utils::getRandomString(4);
 
 		$mainCfgPath = $this->_docRoot . 'system/config/main.php';
+		$encConfigPath = $this->_docRoot . 'system/config/objects/enc/config.php';
 		$config = include $mainCfgPath;
 		$inlineConfig = Config::factory(Config::Simple, 'main');
 		$inlineConfig->setData($config);
@@ -689,6 +722,16 @@ return array(
 
 		if(!@file_put_contents($mainCfgPath, $mainCfg))
 			Response::jsonError($this->_dictionary['CANT_WRITE_FS']);
+
+		$encConfig = '
+		<?php
+			return array(
+				\'key\'=>\''.md5(uniqid(md5(time())),true).'\',
+				\'iv_field\'=>\'enc_key\'
+			);
+		';
+		if(!@file_put_contents($encConfigPath ,$encConfig ))
+			Response::jsonError($this->_dictionary['CANT_WRITE_FS'] . ' '.$encConfigPath);
 
 		Utils::setSalt($salt);
 		$mainCfgPath = $this->_docRoot . 'system/config/main.php';

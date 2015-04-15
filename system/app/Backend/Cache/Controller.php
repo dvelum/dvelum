@@ -13,13 +13,6 @@ class Backend_Cache_Controller extends Backend_Controller_Crud
 	
 	public function infoAction()
 	{
-		$data = array(
-				'sysCachedKeys'=>0,
-				'sysFillPercent'=>0,
-				'dataCachedKeys'=>0,
-				'dataFillPercent'=>0,
-		);
-			
 		$cacheManager = new Cache_Manager();
 		
 		$sysCache = $cacheManager->get('system');

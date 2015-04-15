@@ -267,8 +267,6 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
          * Find out deleted records
          */ 
         $deleted = array_diff($ids, array_keys($odata));  
-        
-        $deletedData = array();
 
         $result = array();
         foreach ($ids as $id)

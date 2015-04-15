@@ -78,4 +78,12 @@ abstract class Filestorage_Abstract
     	if($this->_log)
     	    $this->_log->log('Filestorage ' . $message);
     }
+
+    /**
+     * @return Config_Abstract
+     */
+    public function getConfig()
+    {
+        return $this->_config;
+    }
 }

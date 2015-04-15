@@ -35,6 +35,7 @@ class Db_Select_Filter
      * Apply filter
      * @param Zend_Db_Adapter_Abstract $db
      * @param Db_Select | Zend_Db_Select $sql
+     * @throws Exception
      */
     public function applyTo( Zend_Db_Adapter_Abstract $db , $sql)
     {

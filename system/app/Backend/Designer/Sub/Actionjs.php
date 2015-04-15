@@ -5,11 +5,7 @@ class Backend_Designer_Sub_Actionjs extends Backend_Designer_Sub
 	 * Get ActionJs Code
 	 */
 	public function loadAction()
-	{	
-		$configsPath = $this->_config->get('configs');
-		$actionsPath = $this->_config->get('actionjs_path');
-		$projectFile = $this->_session->get('file');
-
+	{
 		$project = $this->_getProject();
 		$actionjs = $project->actionjs;
 		$actionjs = str_replace('../', '', $actionjs);

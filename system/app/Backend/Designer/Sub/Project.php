@@ -363,7 +363,8 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 					$object->height = 300;
 				break;
 			case 'Button':
-					$object->text = $object->getName();
+			case 'Button_Split':
+				$object->text = $object->getName();
 				break;
 			case 'Grid':
 					$object->columnLines = true;

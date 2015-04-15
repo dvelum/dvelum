@@ -38,6 +38,16 @@
     'designer' => '',
     'in_menu' => true,
   ),
+  'Docs' =>
+  array (
+    'id' => 'Backend_Docs_Controller',
+    'class' => 'Backend_Docs_Controller',
+    'dev' => true,
+    'active' => true,
+    'title' => 'Документация',
+    'designer' => './system/config/layouts/system/documentation.designer.dat',
+    'in_menu' => true,
+  ),
   'Logs' => 
   array (
     'id' => 'Backend_Logs_Controller',
@@ -167,4 +177,13 @@
         'designer' => './config/layouts/system/error_log.designer.dat',
         'in_menu' => true,
     ),
+    'Filestorage' =>
+        array (
+            'class' => 'Backend_Filestorage_Controller',
+            'dev' => false,
+            'active' => true,
+            'title' => 'Файловое хранилище',
+            'designer' => './system/config/layouts/system/filestorage.designer.dat',
+            'in_menu' => true,
+        ),
 ); 

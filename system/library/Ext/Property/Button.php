@@ -26,6 +26,7 @@ class Ext_Property_Button extends Ext_Property_Component
 	public $textAlign = self::String;
 	public $overflowText = self::String;
 	public $iconCls = self::String;
+	public $iconAlign  = self::String;
 	public $type = self::String;
 	public $clickEvent = self::String;
 	public $preventDefault = self::Boolean;
@@ -33,6 +34,7 @@ class Ext_Property_Button extends Ext_Property_Component
 	public $tooltipType = self::String;
 	public $baseCls = self::String;
 	public $pressedCls = self::String;
+	public $rowspan = self::Number;
 	public $overCls = self::String;
 	public $focusCls = self::String;
 	public $menuActiveCls = self::String;

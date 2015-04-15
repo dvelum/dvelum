@@ -1,8 +1,3 @@
-/**
- * Metods editor window
- *
- * @event methodsUpdated
- */
 Ext.define('designer.methodsEditor',{
 	extend:'Ext.grid.Panel',
 	autoScroll:true,
@@ -31,7 +26,7 @@ Ext.define('designer.methodsEditor',{
 				url:this.controllerUrl +  'list',
 				reader: {
 					type: 'json',
-					rootProperty: 'data',
+					root: 'data',
 					idProperty: 'id'
 				},
 				simpleSortMode: true
@@ -129,6 +124,13 @@ Ext.define('designer.methodsEditor',{
 			this.editMethod(record);
 		},this);
 
+		this.addEvents(
+			/**
+			 * @event methodsUpdated
+			 */
+			'methodsUpdated'
+		);
+
 		this.callParent();
 	},
 	/**
@@ -192,7 +194,11 @@ Ext.define('designer.methodEditorWindow',{
 	modal:false,
 	width:500,
 	height:600,
-	layout:'border',
+	layout:{
+		type: 'vbox',
+		align : 'stretch',
+		pack  : 'start'
+	},
 	//autoRender:true,
 	maximizable:true,
 	extraParams:null,
@@ -242,7 +248,6 @@ Ext.define('designer.methodEditorWindow',{
 		});
 
 		this.dataForm  = Ext.create('Ext.form.Panel',{
-			region:'north',
 			bodyPadding:5,
 			bodyCls:'formBody',
 			border:false,
@@ -256,7 +261,11 @@ Ext.define('designer.methodEditorWindow',{
 					fieldLabel:desLang.description
 				},{
 					xtype:'fieldcontainer',
-					layout: 'hbox',
+					layout: {
+						type: 'hbox',
+						pack: 'start',
+						align: 'stretch'
+					},
 					items:[
 						{
 							xtype:'textfield',
@@ -293,7 +302,7 @@ Ext.define('designer.methodEditorWindow',{
 			]
 		});
 
-		this.items = [this.dataForm , this.centerPanel];
+		this.items = [this.dataForm ];
 
 		this.callParent();
 		this.on('show',this.loadMethodData,this);
@@ -317,6 +326,7 @@ Ext.define('designer.methodEditorWindow',{
 				me.editor = Ext.create('designer.codeEditor',{
 					readOnly:false,
 					showSaveBtn:false,
+					flex:1,
 					sourceCode:response.data['code'],
 					headerText:'{',
 					footerText:'}',
@@ -335,7 +345,7 @@ Ext.define('designer.methodEditorWindow',{
 				form.findField('description').setValue(response.data['description']);
 				form.findField('method_name').setValue(response.data['name']);
 				form.findField('params').setValue(response.data['paramsLine']);
-				this.centerPanel.add(this.editor);
+				this.add(this.editor);
 				this.saveButton.enable();
 			},
 			failure:function() {

@@ -264,9 +264,7 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
   {
     $project = $this->_getProject();
     $event = $this->_getEvent();
-
     $object = Request::post('object' , 'string' , '');
-    $project = $this->_getProject();
 
     if(!strlen($object))
       Response::jsonError($this->_lang->WRONG_REQUEST);
@@ -291,7 +289,6 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
     $event = $this->_getEvent();
 
     $object = Request::post('object' , 'string' , '');
-    $project = $this->_getProject();
 
     if(!strlen($object))
         Response::jsonError($this->_lang->WRONG_REQUEST);

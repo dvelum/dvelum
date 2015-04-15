@@ -44,7 +44,7 @@ class Db_Query
 		if(!is_object($obj) || !$obj instanceof Db_Query)
 			return false;
 		
-		$this->_filename = $file;
+		//$this->_filename = $file;
 		return $obj;
 	}
 

@@ -40,8 +40,6 @@ class Backend_Designer_Sub_Gridfilter extends Backend_Designer_Sub
 	    if(!$id || !$this->_object->getFiltersFeature()->filterExists($id))
 	        Response::jsonError($this->_lang->WRONG_REQUEST);
 	
-	    $data = array();
-	
 	    $filter = $this->_object->getFiltersFeature()->getFilter($id);
 	    $config = $filter->getConfig();
 	    $properties = $config->__toArray();

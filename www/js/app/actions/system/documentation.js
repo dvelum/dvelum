@@ -7,5 +7,7 @@
  */
 Ext.ns('app');
 Ext.onReady(function(){
-  
+    app.application.on("projectLoaded",function(){
+      appDocRun.main.setCanEdit(canEdit);
+  });
 });

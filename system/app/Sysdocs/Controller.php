@@ -1,275 +1,298 @@
 <?php
 class Sysdocs_Controller
 {
-   /**
-    * Documentation configuration object
-    * @var Config_Abstract
-    */
-   protected $docConfig;
-   /**
-    * Documentation version
-    * @var string
-    */
-   protected $version;
-   /**
-    * Documentation version index
-    * @var integer
-    */
-   protected $versionIndex;
-   /**
-    * @var Model_Sysdocs_File
-    */
-   protected $fileModel;
-   
-   /**
-    * System configuration object
-    * @var Config_Abstract
-    */
-   protected $configMain;
-   
-   /**
-    * Index of first url param
-    * @var integer
-    */
-   protected $paramsIndex;
-   /**
-    * Documentation language
-    * @var string
-    */
-   protected $language;
-   /**
-    * Documentation version
-    * @var string
-    */
-   /**
-    * @var Lang
-    */
-   protected $lang;
-   /**
-    * Edit permissions
-    * @var boolean
-    */
-   protected $canEdit = false;
-   /**
-    * Cache adapter
-    * @var Cache_Abstract
-    */
-   protected $cache = false;
+    /**
+     * Documentation configuration object
+     * @var Config_Abstract
+     */
+    protected $docConfig;
+    /**
+     * Documentation version
+     * @var string
+     */
+    protected $version;
+    /**
+     * Documentation version index
+     * @var integer
+     */
+    protected $versionIndex;
+    /**
+     * @var Model_Sysdocs_File
+     */
+    protected $fileModel;
 
-   public function __construct($mainConfig , $paramsIndex = 0, $container = false)
-   {
-      $this->container = $container;
-      $this->configMain = Registry::get('main' , 'config');
-      $this->fileModel = Model::factory('Sysdocs_File');
-      $this->lang = Lang::lang();
-      $this->paramsIndex = $paramsIndex;
-      $this->docConfig = Config::factory(Config::File_Array, $this->configMain->get('configs').'sysdocs.php');
-      $langDictionary = Dictionary::getInstance('sysdocs_language');
-      
-      $request = Request::getInstance();
-      
-      $lang = $request->getPart($this->paramsIndex);
-      $version = $request->getPart(($this->paramsIndex+1));
-      
-      if($lang && $langDictionary->isValidKey($lang)){
-        $this->language = $lang;
-      }else{
-        $this->language = $this->docConfig->get('default_languge');
-      }
-      
-      if($version!==false && array_key_exists($version, $this->docConfig->get('versions'))){
-          $this->version = $version;
-      }else{
-          $this->version = $this->docConfig->get('default_version');
-      }
-      $vList = $this->docConfig->get('versions');
-      $this->versionIndex = $vList[$this->version];
-   }
-   /**
-    * Set edit permissions
-    * @param boolean $flag
-    */
-   public function setCanEdit($flag)
-   {
-     $this->canEdit = (boolean) $flag;
-   }
-   /**
-    * Set Cache adapter
-    * @param Cache_Abstract $cache
-    */
-   public function setCacheAdapter(Cache_Abstract $cache)
-   {
-     $this->cache = $cache;
-   }
-   
-   /**
-    * Run controller
-    */
-   public function run()
-   {    
-      $action = Request::getInstance()->getPart(($this->paramsIndex+2));
+    /**
+     * System configuration object
+     * @var Config_Abstract
+     */
+    protected $configMain;
 
-      if($action && method_exists($this, $action.'Action')){
-        $this->{$action.'Action'}();
-      }else{        
-        if(strlen($action) && Request::isAjax()){
-            Response::jsonError(Lang::lang()->get('WRONG_REQUEST').' ' . Request::getInstance()->getUri());
+    /**
+     * Index of first url param
+     * @var integer
+     */
+    protected $paramsIndex;
+    /**
+     * Documentation language
+     * @var string
+     */
+    protected $language;
+    /**
+     * Documentation version
+     * @var string
+     */
+    /**
+     * @var Lang
+     */
+    protected $lang;
+    /**
+     * Edit permissions
+     * @var boolean
+     */
+    protected $canEdit = false;
+    /**
+     * Cache adapter
+     * @var Cache_Abstract
+     */
+    protected $cache = false;
+
+    public function __construct($mainConfig , $paramsIndex = 0, $container = false)
+    {
+        $this->container = $container;
+        $this->configMain = Registry::get('main' , 'config');
+        $this->fileModel = Model::factory('Sysdocs_File');
+        $this->lang = Lang::lang();
+        $this->paramsIndex = $paramsIndex;
+        $this->docConfig = Config::factory(Config::File_Array, $this->configMain->get('configs').'sysdocs.php');
+        $langDictionary = Dictionary::getInstance('sysdocs_language');
+
+        $request = Request::getInstance();
+
+        $lang = $request->getPart($this->paramsIndex);
+        $version = $request->getPart(($this->paramsIndex+1));
+
+        if($lang && $langDictionary->isValidKey($lang)){
+            $this->language = $lang;
         }else{
-            $this->indexAction();
+            $this->language = $this->docConfig->get('default_languge');
         }
-      }
-   }
 
-   /**
-    * Default action. Load UI
-    */
-   public function indexAction()
-   {
-     $this->includeScripts();
-     Resource::getInstance()->addInlineJs('
+        if($version!==false && array_key_exists($version, $this->docConfig->get('versions'))){
+            $this->version = $version;
+        }else{
+            $this->version = $this->docConfig->get('default_version');
+        }
+        $vList = $this->docConfig->get('versions');
+
+        $this->versionIndex = $vList[$this->version];
+    }
+    /**
+     * Set edit permissions
+     * @param boolean $flag
+     */
+    public function setCanEdit($flag)
+    {
+        $this->canEdit = (boolean) $flag;
+    }
+    /**
+     * Set Cache adapter
+     * @param Cache_Abstract $cache
+     */
+    public function setCacheAdapter(Cache_Abstract $cache)
+    {
+        $this->cache = $cache;
+    }
+
+    /**
+     * Run controller
+     */
+    public function run()
+    {
+        $action = Request::getInstance()->getPart(($this->paramsIndex+2));
+
+        if($action && method_exists($this, $action.'Action')){
+            $this->{$action.'Action'}();
+        }else{
+            if(strlen($action) && Request::isAjax()){
+                Response::jsonError(Lang::lang()->get('WRONG_REQUEST').' ' . Request::getInstance()->getUri());
+            }else{
+                $this->indexAction();
+            }
+        }
+    }
+
+    /**
+     * Default action. Load UI
+     */
+    public function indexAction()
+    {
+        $this->includeScripts();
+        Resource::getInstance()->addInlineJs('
            app.docLang = "'.$this->language.'";
            app.docVersion = "'.$this->version.'";
            var canEdit = '.intval($this->canEdit).';    
       ');
-     $this->_runDesignerProject($this->configMain->get('configs').'layouts/system/documentation.designer.dat', $this->container);
-     
-   }
+        $this->_runDesignerProject($this->configMain->get('configs').'layouts/system/documentation.designer.dat', $this->container);
 
-   public function setDefaultVersion($versNum)
-   {
-     $this->version = $versNum;
-   }
+    }
 
-   /**
-    * Get API tree.Panel data
-    */
-   public function apitreeAction()
-   {
-     Response::jsonArray($this->fileModel->getTreeList($this->versionIndex));
-   }
-   /**
-    * Get class info
-    */
-   public function infoAction()
-   {
-     $fileHid = Request::post('fileHid', Filter::FILTER_STRING, false);
+    public function setDefaultVersion($versNum)
+    {
+        $this->version = $versNum;
+    }
 
-     $info = new Sysdocs_Info();
-     $classInfo = $info->getClassInfoByFileHid($fileHid, $this->language ,$this->versionIndex);
+    /**
+     * Get API tree.Panel data
+     */
+    public function apitreeAction()
+    {
+        Response::jsonArray($this->fileModel->getTreeList($this->versionIndex));
+    }
+    /**
+     * Get class info
+     */
+    public function infoAction()
+    {
+        $fileHid = Request::post('fileHid', Filter::FILTER_STRING, false);
 
-     Response::jsonSuccess($classInfo);
-   }
-   /**
-    * Set class desctiption
-    */
-   public function setdescriptionAction()
-   {
-     if(!$this->canEdit){
-       Response::jsonError($this->lang->get('CANT_MODIFY'));
-     }
-     $fileHid = Request::post('hid', Filter::FILTER_STRING, false);
-     $text = Request::post('text', 'raw', '');
-     $objectId = Request::post('object_id', Filter::FILTER_INTEGER, false);
-     $objectClass = Request::post('object_class', Filter::FILTER_STRING, false);
-     
-     if(!$objectId){
-       Response::jsonError($this->lang->get('WRONG_REQUEST'));
-     }
-     
-     $info = new Sysdocs_Info();
-     if($info->setDescription($objectId , $fileHid, $this->versionIndex , $this->language , $text , $objectClass)){
-       Response::jsonSuccess();
-     }
-     Response::jsonError($this->lang->get('CANT_EXEC'));
-   }
-   /**
-    * Get interface config
-    */
+        $info = new Sysdocs_Info();
+
+        $classInfo = $info->getClassInfoByFileHid($fileHid, $this->language , $this->versionIndex);
+
+        Response::jsonSuccess($classInfo);
+    }
+    /**
+     * Set class desctiption
+     */
+    public function setdescriptionAction()
+    {
+        if(!$this->canEdit){
+            Response::jsonError($this->lang->get('CANT_MODIFY'));
+        }
+        $fileHid = Request::post('hid', Filter::FILTER_STRING, false);
+        $text = Request::post('text', 'raw', '');
+        $objectId = Request::post('object_id', Filter::FILTER_INTEGER, false);
+        $objectClass = Request::post('object_class', Filter::FILTER_STRING, false);
+
+        if(!$objectId){
+            Response::jsonError($this->lang->get('WRONG_REQUEST'));
+        }
+
+        $info = new Sysdocs_Info();
+        if($info->setDescription($objectId , $fileHid, $this->versionIndex , $this->language , $text , $objectClass)){
+            Response::jsonSuccess();
+        }
+        Response::jsonError($this->lang->get('CANT_EXEC'));
+    }
+    /**
+     * Get interface config
+     */
     public function configAction()
     {
         $versionsList = array_keys($this->docConfig->get('versions'));
         $preparedVersions = array();
-         
+
         foreach ($versionsList as $k=>$v){
             $preparedVersions[] = array('id'=>$v,'title'=>$v);
         }
-         
+
         $langs = Dictionary::getInstance('sysdocs_language')->getData();
         $langData = array();
-        
+
         foreach ($langs as $k=>$v){
-          $langData[] = array('id'=>$k,'title'=>$v);  
+            $langData[] = array('id'=>$k,'title'=>$v);
         }
-        
+
         $result = array(
             'version' => $this->version,
             'language' => $this->language,
             'languages' => $langData,
             'versions' => $preparedVersions,
         );
-         
+
         Response::jsonSuccess($result);
     }
-   
-   /**
-    * Include required JavaScript files defined in the configuration file
-    */
-   public function includeScripts()
-   {
-       $resource = Resource::getInstance();
-      
-       $media = Model::factory('Medialib');
-       $media->includeScripts();
-       $includesPath = $this->configMain->get('configs') . 'js_inc_backend.php';
-       $cfg = Config::factory(Config::File_Array , $includesPath);
-   
-       $resource->addJs('/js/lib/jquery.js',0 , true , 'head');
-   
-       $resource->addJs('/js/lib/extjs4/ext-all.js' , 0 , true , 'head');
-       $resource->addJs('/js/lang/'.$this->configMain['language'].'.js', 1 , true , 'head');
-       $resource->addJs('/js/lib/extjs4/locale/ext-lang-'.$this->configMain['language'].'.js', 2 , true , 'head');
-       $resource->addJs('/js/app/system/common.js', 3 , false ,  'head');
-   
-       $resource->addJs('/js/lib/extjs4/ext-theme-gray.js' , 2);
-       $resource->addCss('/js/lib/extjs4/resources/css/ext-all-gray.css');
-       $resource->addCss('/templates/system/default/css/style.css');
-     
-       if($cfg->getCount())
-       {
-           $js = $cfg->get('js');
-           if(!empty($js))
-           foreach($js as $file => $config)
-               $resource->addJs($file , $config['order'] , $config['minified']);
-            
-           $css = $cfg->get('css');
-           if(!empty($css))
-           foreach($css as $file => $config)
-               $resource->addCss($file , $config['order']);
-       }
-       
-   }
-   
-   /**
-    * Run Layout project
-    *
-    * @param string $project - path to project file
-    */
-   protected function _runDesignerProject($project, $renderTo = false)
-   {
-       $manager = new Designer_Manager($this->configMain);
-       $manager->renderProject($project , $renderTo);
-   }
-   
-   /**
-    * Send JSON error message
-    *
-    * @return string
-    */
-   protected function _errorResponse($msg)
-   {
-       if(Request::isAjax())
-           Response::jsonError($msg);
-       else
-           Response::redirect(Request::url(array('index')));
-   }
+
+    /**
+     * Include required JavaScript files defined in the configuration file
+     */
+    public function includeScripts()
+    {
+        $resource = Resource::getInstance();
+
+        $media = Model::factory('Medialib');
+        $media->includeScripts();
+        $includesPath = $this->configMain->get('configs') . 'js_inc_backend.php';
+        $cfg = Config::factory(Config::File_Array , $includesPath);
+
+        $resource->addJs('/js/lib/jquery.js',0 , true , 'head');
+
+        if($this->configMain->get('development')){
+            $resource->addJs('/js/lib/extjs4/ext-all-debug.js' , 0 , true , 'head');
+        }else{
+            $resource->addJs('/js/lib/extjs4/ext-all.js' , 0 , true , 'head');
+        }
+        $resource->addJs('/js/lang/'.$this->configMain['language'].'.js', 1 , true , 'head');
+        $resource->addJs('/js/lib/extjs4/locale/ext-lang-'.$this->configMain['language'].'.js', 2 , true , 'head');
+        $resource->addJs('/js/app/system/common.js', 3 , false ,  'head');
+
+        $resource->addJs('/js/lib/extjs4/ext-theme-gray.js' , 2);
+        $resource->addCss('/js/lib/extjs4/resources/css/ext-all-gray.css');
+        $resource->addCss('/templates/system/default/css/style.css');
+
+        if($cfg->getCount())
+        {
+            $js = $cfg->get('js');
+            if(!empty($js))
+                foreach($js as $file => $config)
+                    $resource->addJs($file , $config['order'] , $config['minified']);
+
+            $css = $cfg->get('css');
+            if(!empty($css))
+                foreach($css as $file => $config)
+                    $resource->addCss($file , $config['order']);
+        }
+
+    }
+
+    /**
+     * Run Layout project
+     *
+     * @param string $project - path to project file
+     */
+    protected function _runDesignerProject($project, $renderTo = false)
+    {
+        $manager = new Designer_Manager($this->configMain);
+        $manager->renderProject($project , $renderTo);
+    }
+
+    /**
+     * Send JSON error message
+     *
+     * @return string
+     */
+    protected function _errorResponse($msg)
+    {
+        if(Request::isAjax())
+            Response::jsonError($msg);
+        else
+            Response::redirect(Request::url(array('index')));
+    }
+
+    /**
+     * Search request from UI
+     */
+    public function searchAction()
+    {
+        $query = Request::post('search' , Filter::FILTER_STRING , '');
+
+        if(empty($query)){
+            Response::jsonSuccess(array());
+        }
+
+        $search = new Sysdocs_Search();
+        $result = $search->find($query , $this->versionIndex);
+
+        Response::jsonSuccess($result);
+    }
 }

@@ -199,7 +199,7 @@ Ext.define('designer.methodsPanel',{
 			methodName:record.get('method'),
 			paramsString:record.get('params'),
 			extraParams:this.extraParams,
-			modal:false,
+			modal:true,
 			listeners:{
 				'codeSaved':{
 					fn:function(){

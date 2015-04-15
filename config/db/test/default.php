@@ -2,7 +2,7 @@
 return array(
 	'username' => 'dvelum',
 	'password' => '',
-	'dbname'   => 'dvelum_5_test',
+	'dbname'   => 'dvelum_5',
 	'host'     => 'localhost',
 	'charset'  => 'UTF8',
 	'prefix'   => 'sb_',

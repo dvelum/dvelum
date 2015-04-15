@@ -36,7 +36,6 @@ class Backend_Designer_Sub_Gridfilters extends Backend_Designer_Sub
 	 */
 	public function listAction()
 	{
-		$data = array();
 		$filters = $this->_object->getFiltersFeature();
 		$config = $filters->getConfig();
 		$properties = $config->__toArray();
