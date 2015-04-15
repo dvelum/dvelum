@@ -33,7 +33,7 @@
       'db_type' => 'float',
       'db_default' => 0,
       'db_unsigned' => true,
-      'db_scale' => 3,
+      'db_scale' => 10,
       'db_precision' => 5,
     ),
     'link' => 
