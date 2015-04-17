@@ -301,7 +301,7 @@ Ext.define('designer.model.configWindow',{
 		});
 		
 		this.validationsGrid = Ext.create('Ext.grid.Panel', {
-			title:desLang.validations,
+			title:desLang.validators,
 			store:Ext.create('Ext.data.Store', {
 				autoDestroy: true,
 				model:'designer.model.validationsModel',

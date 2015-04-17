@@ -100,7 +100,7 @@ Ext.define('app.crud.modules.Model', {
  	     {name:'related_files', type:'string'}
  	     
     ],
-    validations:[
+	validators:[
          {type: 'presence', name: 'class'},    
          {type: 'presence', name: 'title'} 
     ]
@@ -136,7 +136,7 @@ Ext.define('app.crud.modules.Main',{
 			    },
 			    reader: {
 		            type: 'json',
-		            root: 'data',
+		            rootProperty: 'data',
 		            idProperty: 'id'
 		        },
 		    	simpleSortMode: true
@@ -157,7 +157,7 @@ Ext.define('app.crud.modules.Main',{
 				url: this.controllerUrl+ 'list',
 			    reader: {
 		            type: 'json',
-		            root: 'data',
+		            rootProperty: 'data',
 		            idProperty: 'class'
 		        },
 		    	simpleSortMode: true
@@ -196,18 +196,18 @@ Ext.define('app.crud.modules.Main',{
 						    	allowBlank:false
 						    },
 						    editable:this.canEdit
-						},{
-							xtype: 'componentcolumn', 
+						},/*{
+							xtype: 'componentcolumn',
 							text:appLang.INTERFACE,
 							dataIndex:'designer',
 							width:200,
 							flex:1,
-							renderer: function(value , meta , record) { 
-				                return { 
+							renderer: function(value , meta , record) {
+				                return {
 				                	xtype:'interfaceField',
 									controllerUrl:me.controllerUrl,
-				                    value: value,    
-				                    listeners:{				                    	
+				                    value: value,
+				                    listeners:{
 										completeEdit:{
 											fn:function(value){
 												record.set('designer' , value);
@@ -215,9 +215,9 @@ Ext.define('app.crud.modules.Main',{
 											scope:me
 										}
 									}
-				                }; 
+				                };
 				            }
-						},{
+						},*/{
 							text:appLang.DEV,
 						    dataIndex: 'dev',
 						    align:'center',
@@ -241,7 +241,7 @@ Ext.define('app.crud.modules.Main',{
 						    align:'center',
 						    id:'in_menu',
 						    renderer:app.checkboxRenderer,
-						    xtype:'checkcolumn',						  
+						    xtype:'checkcolumn',
 						    editable:this.canEdit
 						}   
 	   ];
@@ -486,7 +486,7 @@ Ext.define('app.crud.modules.CreateWindow',{
 				  		    	url:this.controllerUrl + 'objects',
 				  		        reader: {
 				  		            type: 'json',
-				  		            root: 'data',
+				  		            rootProperty: 'data',
 				  		            idProperty: 'id'
 				  		        },
 				  		        simpleSortMode: true

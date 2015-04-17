@@ -10,11 +10,25 @@ class Backend_Modules_Manager
 
 	public function __construct()
 	{
-		$this->_config = Config::factory(Config::File_Array , Registry::get('main' , 'config')->get($this->_mainconfigKey));
+		$applicationConfig = Registry::get('main' , 'config');
+		$configPath =   $applicationConfig->get($this->_mainconfigKey);
+		$this->_config = Config::factory(Config::File_Array , $configPath);
 		$link =  & $this->_config->dataLink();
-		foreach ($link as $module=>&$cfg){
+
+		$locale = Lang::lang()->getName();
+		$modulesLocale = Config::factory(Config::File_Array , $applicationConfig->get('lang_path').$locale.'/modules/'.basename($configPath));
+
+		foreach ($link as $module=>&$cfg)
+		{
 		    if(!isset($cfg['in_menu']))
 		        $cfg['in_menu'] = true;
+
+			if($modulesLocale->offsetExists($module)){
+				$cfg['title'] = $modulesLocale->get($module);
+			}else{
+				$cfg['title'] = $module;
+			}
+
 		}unset($cfg);
 	}
 

@@ -1,7 +1,7 @@
 <?php
 return array(
 	'storage'=>'file',
-	'configs'=> './system/config/layouts/',
+	'configs'=> '../config/layouts/',
 	'lang'=>'eng',
 	'connections'=> '../DesignerConnections.php',
 	'development'=>true,

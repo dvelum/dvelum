@@ -114,7 +114,7 @@ return array(
     /*
      * Backend modules config file
      */
-    'backend_modules' => $docRoot . '/config/modules/' . $language . '/backend_modules.php',
+    'backend_modules' => $docRoot . '/config/modules_backend.php',
     /*
      * Backend controllers path
      */
@@ -126,7 +126,7 @@ return array(
     /*
      * Frontend modules config file
      */
-    'frontend_modules' => $docRoot . '/config/modules/' . $language . '/frontend_modules.php',
+    'frontend_modules' => $docRoot . '/config/modules_frontend.php',
     /*
      * Application path
      */

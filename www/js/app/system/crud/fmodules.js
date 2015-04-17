@@ -7,7 +7,7 @@ Ext.define('app.crud.fmodules.Model', {
          {name:'class', type:'string'}, 	 
  	     {name:'title', type:'string'},     
     ],
-    validations:[
+	validators:[
          {type: 'presence', name: 'name'},    
          {type: 'presence', name: 'class'}, 
          {type: 'presence', name: 'title'} 

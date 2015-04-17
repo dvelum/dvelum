@@ -10,7 +10,7 @@ class Ext_Property_Model extends Ext_Property
 	public $listeners = self::Object;
 	public $persistenceProperty = self::String;
 	public $proxy = self::Object;
-	public $validations = self::Object;
+	public $validators = self::Object;
 	
 	static public $extend = 'Ext.data.Model';
 	static public $xtype = 'model';

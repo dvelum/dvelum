@@ -34,7 +34,16 @@ class Lang
 		$this->_dictionaryName = $name;
 		if(isset(self::$_dictionaries[$name]))
 			$this->_dictionary = self::$_dictionaries[$name];
-	}	
+	}
+
+	/**
+	 * Get current dictionary name
+	 * @return string
+	 */
+	public function getName()
+	{
+		return $this->_dictionaryName;
+	}
 	
 	/**
 	 * Set default localization

@@ -36,7 +36,7 @@ class Ext_Model extends Ext_Object
 		return $this->_associations;
 	}
 	/**
-	 * Get Model validations
+	 * Get Model validations (validators)
 	 * @return array
 	 */
 	public function getValidations()

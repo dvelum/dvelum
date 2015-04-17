@@ -7,10 +7,9 @@ class Backend_Modules_Controller extends Backend_Controller{
      public function indexAction()
      {    
          $res = Resource::getInstance();  
-         $res->addJs('/js/app/system/FilesystemWindow.js'  , 1);  
-         $this->_resource->addJs('/js/lib/extjs4/ux/CheckColumn.js' ,1);
-         $this->_resource->addJs('/js/lib/ext_ux/CTemplate.js' ,1);
-         $this->_resource->addJs('/js/lib/ext_ux/ComponentColumn.js' ,2);
+         $res->addJs('/js/app/system/FilesystemWindow.js'  , 1);
+         //$this->_resource->addJs('/js/lib/ext_ux/CTemplate.js' ,1);
+         //$this->_resource->addJs('/js/lib/ext_ux/ComponentColumn.js' ,2);
 	     $res->addJs('/js/app/system/crud/modules.js'  , 2);
 	       $this->_resource->addInlineJs('
         	var canEdit = '.((integer)$this->_user->canEdit($this->_module)).';

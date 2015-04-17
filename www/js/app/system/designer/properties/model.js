@@ -34,7 +34,7 @@ Ext.define('designer.properties.Model',{
 				}),
 				renderer:returnDots
 			},
-			'validations':{
+			'validators':{
 				editor:Ext.create('Ext.form.field.Text',{
 					listeners:{
 						focus:{
@@ -55,15 +55,15 @@ Ext.define('designer.properties.Model',{
 		var source = this.dataGrid.getSource();
 		var associations = [];
 		var fields = [];
-		var validations = [];
+		var validators = [];
 		if(source.associations.length){
 			associations = Ext.JSON.decode(source.associations);
 		}
 		if(source.fields.length){
 			fields = Ext.JSON.decode(source.fields);
 		}
-		if(source.validations.length){
-			validations = Ext.JSON.decode(source.validations);
+		if(source.validators.length){
+			validators = Ext.JSON.decode(source.validators);
 		}
 		var win = Ext.create('designer.model.configWindow',{
         	objectName : this.objectName,
@@ -71,12 +71,12 @@ Ext.define('designer.properties.Model',{
         	activeTab:activeTab,
         	initFields:fields,
         	initAssociations:associations,
-        	initValidators:validations
+        	initValidators:validators
         });
-        win.on('dataChanged',function(fields, associations, validations){
+        win.on('dataChanged',function(fields, associations, validators){
         	//this.dataGrid.setProperty('fields', fields, true);
         	this.dataGrid.setProperty('associations', associations, true);
-        	this.dataGrid.setProperty('validations', validations, true);
+        	this.dataGrid.setProperty('validators', validators, true);
         },this);
         win.show();
 	}

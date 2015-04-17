@@ -213,7 +213,7 @@ var desLang = {
 				
 		value:'Value',
 		validation:'Validation',
-		validations:'Validations',
+		validators:'Validators',
 		viewMode:'View mode',
 
 		window:'Window',
