@@ -126,17 +126,20 @@ class Backend_Modules_Controller extends Backend_Controller{
 	{
 		$path = Request::post('node', 'string', '');
 		
-		$config = $config = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'designer.php');	
+		$config = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'designer.php');
+
 		$dirPath = $config->get('configs');
+		$filesPath  = substr($dirPath,0,-1).$path;
+
 		$list = array();
 		
-		if(!is_dir($dirPath))
+		if(!is_dir($filesPath))
 			Response::jsonArray(array());		
 
-		$files = File::scanFiles($path, array('.dat') , false , File::Files_Dirs);
+		$files = File::scanFiles($filesPath, array('.dat') , false , File::Files_Dirs);
 		
 		/**
-		 * This is hard fix for windows
+		 * This is inline fix for windows
 		 */
 		if(DIRECTORY_SEPARATOR == '\\')
 		{
@@ -150,17 +153,13 @@ class Backend_Modules_Controller extends Backend_Controller{
 		
 		if(empty($files))
 			Response::jsonArray(array());
-			
-		
 
 		foreach($files as $k=>$fpath)
 		{
 			$text  = basename($fpath);
-			if($text ==='.svn')
-				continue;
 		
 			$obj = new stdClass();
-			$obj->id = str_replace($this->_configMain->get('docroot'), './', $fpath);
+			$obj->id = str_replace($dirPath, '/', $fpath);
 			$obj->text = $text;
 			
 			if(is_dir($fpath))
@@ -171,6 +170,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 			else
 			{
 				$obj->leaf = true;
+				$obj->id = str_replace($dirPath, './', $fpath);
 			}
 			$list[] = $obj;	
 		}	

@@ -2,6 +2,7 @@ Ext.define('app.FilesystemTree',{
 	extend:'Ext.tree.Panel',
 	controllerUrl:'',
 	listAction: 'fslist',
+	folderSort:true,
 	
 	constructor:function(config){
 		config = Ext.apply({
@@ -27,10 +28,11 @@ Ext.define('app.FilesystemTree',{
 			            idProperty: 'id'
 			        }
 			},
+			autoLoad:false,
 			root: {
 			        text: '/',
 			        expanded: true,
-			        id:''
+			        id:'/'
 			}
 		});
 		this.callParent();

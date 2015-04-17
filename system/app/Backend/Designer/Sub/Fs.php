@@ -21,60 +21,53 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 						
 		if($path === '')
 			$path = $dirPath . $path;
+
+		$filesPath  = substr($dirPath,0,-1).$path;
 			
 		
-		if(!is_dir($dirPath))
+		if(!is_dir($filesPath))
 			Response::jsonArray(array());
-			
-		$files = File::scanFiles($path, array('.dat') , false , File::Files_Dirs);
-		
-		$list = array();
-		if(!empty($files))
+
+		$files = File::scanFiles($filesPath, array('.dat') , false , File::Files_Dirs);
+
+		/**
+		 * This is inline fix for windows
+		 */
+		if(DIRECTORY_SEPARATOR == '\\')
 		{
-		    $dirs = array();
-		    $pfiles = array();
-		    
-		    foreach($files as $k=>$fpath)
-		    {
-		      $text  = basename($fpath);
-		      if($text ==='.svn')
-		          continue;
-		      
-		      if(is_dir($fpath))
-		        $dirs[] = $fpath;
-		      else
-		        $pfiles[] = $fpath;	      
-		    }
-		    
-		    if(!empty($dirs))
-		    {
-		      sort($dirs);
-		      foreach ($dirs as $k=>$fpath)
-		      {
-		        $text  = basename($fpath); 	
-		        $obj = new stdClass();
-		        $obj->id =str_replace($this->_configMain->get('docroot'), './', $fpath);
-		        $obj->text = $text;
-		        $obj->expanded = false;
-		        $obj->leaf = false;
-		        $list[] = $obj;
-		      }
-		    }
-		    
-		    if(!empty($pfiles))
-		    {
-		       sort($pfiles);
-		       
-		       foreach ($pfiles as $k=>$fpath)
-		       {
-		         $text  = basename($fpath);
-		         $obj = new stdClass();
-		         $obj->id =str_replace($this->_configMain->get('docroot'), './', $fpath);
-		         $obj->text = $text;
-		         $obj->leaf = true;
-		         $list[] = $obj;
-		       }
-		    }		    
+			foreach ($files as &$v)
+			{
+				$v = str_replace('\\', '/', $v);
+				$v = str_replace('//', '/', $v);
+			}
+			unset($v);
+		}
+
+		if(empty($files))
+			Response::jsonArray(array());
+
+		$list = array();
+
+		foreach($files as $k=>$fpath)
+		{
+			$text  = basename($fpath);
+
+			$obj = new stdClass();
+			$obj->id = str_replace($dirPath, '/', $fpath);
+			$obj->text = $text;
+
+			if(is_dir($fpath))
+			{
+				$obj->expanded = false;
+				$obj->leaf = false;
+				$list[] = $obj;
+			}
+			else
+			{
+				$obj->leaf = true;
+				$obj->id = $fpath;//str_replace($dirPath, './', $fpath);
+			}
+			$list[] = $obj;
 		}
 		Response::jsonArray($list);	
 	}
