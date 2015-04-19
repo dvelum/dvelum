@@ -478,17 +478,16 @@ class Db_Object
         if($lt)
             $title = $lt;
 
-        $data = $model->getItems($ids , array('id'=>$pKey , 'title'=>$title));
-
-        if(!empty($data))
-            $data = Utils::rekey('id', $data);
+        $objects = Db_Object::factory($linkedObject->getName(), $ids);
 
         $result = array();
-        foreach ($ids as $v){
-            if(!isset($data[$v]))
+        foreach ($ids as $v)
+        {
+            if(!isset($objects[$v]))
                 throw new Exception('Invalid link');
 
-            $result[$v] = array('id'=>$v , 'title'=>$data[$v]['title']);
+            $o = $objects[$v];
+            $result[$v] = array('id'=>$v , 'title'=>$o->getTitle());
         }
         return $result;
     }
