@@ -343,10 +343,15 @@ class Designer_Project_Code
 
 			               }else{
 
-			                 return "\n".Ext_Code::appendRunNamespace($object->getName()) . ' = Ext.create("' .
-			                     $object->getConfig()->getExtends() . '",' .
-			                     Utils_String::addIndent($object->__toString())."\n".
-			                     ');' . "\n";
+							   if($object->isExtendedComponent()){
+								   return "\n".Ext_Code::appendRunNamespace($object->getName()) . ' = Ext.create("' .
+								   Ext_Code::appendNamespace($object->getName()) . '",{});' . "\n";
+							   }else{
+								   return "\n".Ext_Code::appendRunNamespace($object->getName()) . ' = Ext.create("' .
+								   $object->getConfig()->getExtends() . '",' .
+								   Utils_String::addIndent($object->__toString())."\n".
+								   ');' . "\n";
+							   }
 			               }
 
 					break;

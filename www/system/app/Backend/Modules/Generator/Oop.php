@@ -851,12 +851,13 @@ class Backend_Modules_Generator_Oop
     $editCode ='
         var win = Ext.create("'.$project->namespace.'.editWindow", {
   		          dataItemId:id,
-  		          canDelete:this.canDelete,
-  		          canEdit:this.canEdit,';
-
+  		          canDelete:this.canDelete,';
       if($vc)
           $editCode.='
                   canPublish:this.canPublish,';
+
+      $editCode .= 'canEdit:this.canEdit';
+
       $editCode.='
   		    });
 
