@@ -4,7 +4,7 @@
   'Tasks' => 'Background Tasks',
   'Blocks' => 'Blocks',
   'Cache' =>  'Cache Info',
-  'Compiler' => 'Code Compiler',
+  'Packages' => 'Code Packages',
   'Orm' =>  'Data objects (ORM)',
   'Deploy' => 'Deploy',
   'Docs' => 'Documentation',
