@@ -5,9 +5,6 @@
  * To access project elements, please use the namespace you defined in the config 
  * For example: appRun.Panel
  */
-Ext.ns('app');
-Ext.onReady(function(){
-    app.application.on("projectLoaded",function(){
-      appDocRun.main.setCanEdit(canEdit);
-  });
+Ext.onReady(function(){ 
+
 });
