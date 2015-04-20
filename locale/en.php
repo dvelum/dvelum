@@ -85,7 +85,7 @@
 	'CONDITIONS' => 'Conditions',
 	'COMPILE_PACKAGES' => 'Compile packages',
 	'COMPILE_LANG' => 'Compile lang',
-	'COMPILLER' => 'Compiler',
+	'COMPILLER' => 'Code Packages',
 	'CONTROLLER' => 'Controller',
 	'CONTENT' => 'Content',
 	'CHANGE_PASSWORD' => 'Change password',
