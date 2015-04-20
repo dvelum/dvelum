@@ -170,7 +170,7 @@
   'EDIT_USER' => 'Edit user',
   'EDIT_KEY' => 'Edit key',
   'EDIT_SERVER_CONFIG' => 'Edit server configuration',
-  'ENCRYPTED_FIELD' => 'Encoded field',
+  'ENCRYPTED_FIELD' => 'Encrypted field',
   'ENTER_DIR_NAME' => 'Please enter directory name',
   'ENTER_FILE_NAME' => 'Please enter a file name',
   'EXPORT_TO_CSV' => 'Export as CSV',
@@ -549,4 +549,8 @@
   'FILE_NOT_FOUND' => 'File not found',
   'ACTIONS' => 'Actions',
   'SEARCHING' => 'Searching...',
+  'ENCRYPT_DATA' => 'Encrypt data',
+  'DECRYPT_DATA' => 'Decrypt data',
+  'MSG_CONFIRM_ENCRYPT' => 'Do you really want to encrypt data of',
+  'MSG_CONFIRM_DECRYPT' => 'Do you really want to decrypt',
 ); 

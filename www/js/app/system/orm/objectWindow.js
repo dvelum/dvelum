@@ -84,7 +84,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			}]
 		});
 
-		this.searchField = new SearchPanel({
+		this.searchField = Ext.create('SearchPanel',{
 			store:this.dataStore,
 			fieldNames:['name' , 'title'],
 			local:true
@@ -116,6 +116,8 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			}
 			return value;
 		};
+
+		var me = this;
 
 		this.dataGrid = Ext.create('Ext.grid.Panel',{
 			store: this.dataStore,
@@ -151,6 +153,47 @@ Ext.define('app.crud.orm.ObjectWindow', {
 					}
 					return '';
 				}
+			},{
+				xtype:'actioncolumn',
+				width:40,
+				align:'center',
+				items:[
+					{
+						icon:app.wwwRoot+'i/system/lock.png',
+						tooltip:appLang.ENCRYPT_DATA,
+						isDisabled:function(view , rowIndex, colIndex, item, record){
+							if(record.get('type') == 'encrypted'){
+								return false;
+							}
+							return true;
+						},
+						getClass:function(v,metadata,record,row,col,store){
+							if(record.get('type') != 'encrypted'){
+								metadata.style = 'display:none;';
+							}
+						},
+						handler: function(grid, rowIndex, colIndex) {
+							me.encryptData(grid.getStore().getAt(rowIndex));
+						}
+					},{
+						icon:app.wwwRoot+'i/system/unlock.png',
+						tooltip:appLang.DECRYPT_DATA,
+						isDisabled:function(view , rowIndex, colIndex, item, record){
+							if(record.get('type') == 'encrypted'){
+								return false;
+							}
+							return true;
+						},
+						getClass:function(v,metadata,record,row,col,store){
+							if(record.get('type') != 'encrypted'){
+								metadata.style = 'display:none;';
+							}
+						},
+						handler: function(grid, rowIndex, colIndex) {
+							me.decryptData(grid.getStore().getAt(rowIndex));
+						}
+					}
+				]
 			},{
 				text:appLang.TITLE,
 				dataIndex:'title',
@@ -989,5 +1032,55 @@ Ext.define('app.crud.orm.ObjectWindow', {
 		},this);
 
 		win.show();
+	},
+	encryptData:function(record){
+		var handle = this;
+		Ext.Msg.confirm(appLang.CONFIRM, appLang.MSG_CONFIRM_ENCRYPT +' "'+record.get('title')+'" ?', function(btn){
+			if(btn != 'yes'){
+				return;
+			}
+			Ext.Ajax.request({
+				url: app.crud.orm.Actions.encryptData,
+				method: 'post',
+				params:{
+					'object':this.objectName,
+					'name':record.get('id')
+				},
+				success: function(response, request) {
+					response =  Ext.JSON.decode(response.responseText);
+					if(response.success){
+						handle.dataGrid.getStore().load();
+					}else{
+						Ext.Msg.alert(appLang.MESSAGE , response.msg);
+					}
+				},
+				failure:app.formFailure
+			});
+		},this);
+	},
+	decryptData:function(record){
+		var handle = this;
+		Ext.Msg.confirm(appLang.CONFIRM, appLang.MSG_CONFIRM_DECRYPT +' "'+record.get('title')+'" ?', function(btn){
+			if(btn != 'yes'){
+				return;
+			}
+			Ext.Ajax.request({
+				url: app.crud.orm.Actions.decryptData,
+				method: 'post',
+				params:{
+					'object':this.objectName,
+					'name':record.get('id')
+				},
+				success: function(response, request) {
+					response =  Ext.JSON.decode(response.responseText);
+					if(response.success){
+						handle.dataGrid.getStore().load();
+					}else{
+						Ext.Msg.alert(appLang.MESSAGE , response.msg);
+					}
+				},
+				failure:app.formFailure
+			});
+		},this);
 	}
 });

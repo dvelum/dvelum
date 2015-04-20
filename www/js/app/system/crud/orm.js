@@ -575,6 +575,8 @@ Ext.onReady(function(){
 			connectionsUrl:		app.createUrl([app.root+'connections','']),
 			listConnections:	app.createUrl([app.root+'connectionslist','']),
 			importUrl:			app.createUrl([app.root+'import','']),
+			encryptData:		app.root + 'encryptdata',
+			decryptData:		app.root + 'decryptdata'
 	};
 	app.crud.orm.dbConfigs = dbConfigsList;
 	app.crud.orm.canEdit = canEdit;

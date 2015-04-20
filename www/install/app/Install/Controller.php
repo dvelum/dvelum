@@ -788,6 +788,7 @@ return array(
 				)
 			);
 			$userId = $user->save();
+
 			if(!$userId)
 				return false;
 
