@@ -69,6 +69,10 @@ class Backend_Modules_Generator_Oop
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
 
+          if(isset($item['hidden']) && $item['hidden'])
+              continue;
+
+
           $objectFields[] = $key;
           if(isset($item['is_search']) && $item['is_search'])
               $searchFields[] = $key;
@@ -79,6 +83,10 @@ class Backend_Modules_Generator_Oop
       {
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
+
+          if(isset($item['hidden']) && $item['hidden'])
+              continue;
+
 
           $dataFields[] = $key;
       }
@@ -371,7 +379,12 @@ class Backend_Modules_Generator_Oop
           if($field == $primaryKey)
               continue;
 
-          $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $objectConfig->getFieldConfig($field));
+          $fieldConfig = $objectConfig->getFieldConfig($field);
+
+          if(isset($fieldConfig['hidden']) && $fieldConfig['hidden'])
+              continue;
+
+          $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $fieldConfig);
 
           if($newField === false)
               continue;
@@ -437,14 +450,21 @@ class Backend_Modules_Generator_Oop
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
 
+          if(isset($item['hidden']) && $item['hidden'])
+              continue;
+
           $objectFields[] = $key;
           if(isset($item['is_search']) && $item['is_search'])
               $searchFields[] = $key;
       }
 
       $dataFields = array();
-      foreach($objectConfig->getFieldsConfig(true) as $key => $item){
+      foreach($objectConfig->getFieldsConfig(true) as $key => $item)
+      {
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
+              continue;
+
+          if(isset($item['hidden']) && $item['hidden'])
               continue;
 
           $dataFields[] = $key;
@@ -685,7 +705,13 @@ class Backend_Modules_Generator_Oop
           if($field == $primaryKey)
               continue;
 
-          $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $objectConfig->getFieldConfig($field));
+
+          $fieldConfig = $objectConfig->getFieldConfig($field);
+
+          if(isset($fieldConfig['hidden']) && $fieldConfig['hidden'])
+              continue;
+
+          $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $fieldConfig);
 
           if($newField === false)
               continue;
@@ -825,12 +851,13 @@ class Backend_Modules_Generator_Oop
     $editCode ='
         var win = Ext.create("'.$project->namespace.'.editWindow", {
   		          dataItemId:id,
-  		          canDelete:this.canDelete,
-  		          canEdit:this.canEdit,';
-
+  		          canDelete:this.canDelete,';
       if($vc)
           $editCode.='
                   canPublish:this.canPublish,';
+
+      $editCode .= 'canEdit:this.canEdit';
+
       $editCode.='
   		    });
 

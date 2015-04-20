@@ -143,45 +143,44 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $obj = new Db_Object($objectName);
         $model = Model::factory(ucfirst($objectName));
 
-        $fields = array(
-                'id',
-                'title' => $obj->getConfig()->getLinkTitle()
-        );
+        try{
+            $objectsList = Db_Object::factory(ucfirst($objectName) , $ids);
+        }catch (Exception $e){
+            $objectsList =  array();
+        }
 
-        $usedRc = $obj->getConfig()->isRevControl();
-        if($usedRc)
-            $fields[] = 'published';
+       /*
+        * Find out deleted records
+        */
+        if(empty($objectsList)){
+            $deleted = $ids;
+        }else{
+            $deleted = array_diff($ids , array_keys($objectsList));
+        }
 
-        $odata = $model->getItems($ids , $fields);
-
-        if(!empty($data))
-            $odata = Utils::rekey('id' , $odata);
-        /*
-         * Find out deleted records
-         */
-        $deleted = array_diff($ids , array_keys($odata));
-
+        $useVc = $obj->getConfig()->isRevControl();
         $result = array();
-        foreach($ids as $id){
-
+        foreach($ids as $id)
+        {
             if(in_array($id , $deleted)){
                 $item = array(
-                        'id' => $id,
-                        'deleted' => 1,
-                        'title' => $data[$id]['title'],
-                        'published' => 1
+                    'id' => $id,
+                    'deleted' => 1,
+                    'title' => $data[$id]['title'],
+                    'published' => 1
                 );
-                if($usedRc)
+                if($useVc)
                     $item['published'] = 0;
             }else{
+                $object =  $objectsList[$id];
                 $item = array(
-                        'id' => $id,
-                        'deleted' => 0,
-                        'title' => $odata[$id]['title'],
-                        'published' => 1
+                    'id' => $id,
+                    'deleted' => 0,
+                    'title' => $object->getTitle(),
+                    'published' => 1
                 );
-                if($usedRc){
-                    $item['published'] = $odata[$id]['published'];
+                if($useVc){
+                    $item['published'] = $object->get('published');
                 }
             }
             $result[] = $item;

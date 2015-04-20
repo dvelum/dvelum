@@ -10,6 +10,7 @@ return array(
         'is_search' => false,
         'allow_html' => true,
         'system'=>true,
+        'hidden' => true,
         'required'=>false,
         'lazyLang'=>false
     )
