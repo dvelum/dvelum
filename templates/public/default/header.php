@@ -3,8 +3,8 @@ if(!defined('DVELUM'))exit;
 
 $page = $this->get('page');
 $resource = Resource::getInstance();
-$resource->addCss('/templates/public/main/css/reset.css' ,0);
-$resource->addCss('/templates/public/main/css/style.css' ,100);
+$resource->addCss('/css/public/main/reset.css' ,0);
+$resource->addCss('/css/public/main/style.css' ,100);
 $wwwRoot = Request::wwwRoot();
 
 ?>
