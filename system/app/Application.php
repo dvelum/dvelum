@@ -53,11 +53,6 @@ class Application
     protected $_autoloader = false;
 
     /**
-     * @var Externals_Expert
-     */
-    protected $_externalsExpert = false;
-
-    /**
      * The constructor accepts the main configuration object as an argument
      * @param Config_Abstract $config
      */
@@ -372,64 +367,6 @@ class Application
         $router = new Frontend_Router();
         $router->route();
     }
-
-    protected function _getExternalsExpert()
-    {
-        if($this->_externalsExpert)
-            return $this->_externalsExpert;
-
-        $config = Config::factory(Config::File_Array , $this->_config->get('configs') . 'externals.php');
-
-        if($this->_cache)
-            Externals_Expert::setDefaultCache($this->_cache);
-
-        $this->_externalsExpert = new Externals_Expert($this->_config , $config);
-
-        return $this->_externalsExpert;
-    }
-
-    protected function _initExternals()
-    {
-        $eExpert = $this->_getExternalsExpert();
-        if(!$eExpert->hasExternals())
-            return;
-       /*
-        * Register external classes
-        */
-        $classes = $eExpert->getClasses();
-        if(!empty($classes))
-            $this->_autoloader->addMap($classes);
-        /*
-         * Register external objects
-         */
-        $objects = $eExpert->getObjects();
-        if(!empty($objects))
-            Db_Object_Config::registerConfigs($objects);
-
-        $curLang = $this->_config->get('language');
-        /*
-         * Register external translations
-         */
-        $translations = $eExpert->getTranslations($curLang);
-
-        if(!empty($translations))
-            Db_Object_Config::getTranslator()->addTranslations($translations);
-
-        $dictionaries = $eExpert->getDictionaries();
-        if(!empty($dictionaries))
-            Dictionary::addExternal($dictionaries);
-
-        $langs = $eExpert->getLangs($curLang);
-
-        if(!empty($langs))
-            foreach($langs as $name => $path)
-                Lang::addDictionaryLoader($name , $path , Config::File_Array);
-        /*
-         * Inject Externals Expert
-         */
-        $page = Page::getInstance()->setExternalsExpert($eExpert);
-    }
-
     /**
      * Close application, stop processing
      */
