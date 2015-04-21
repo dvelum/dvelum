@@ -758,13 +758,23 @@ return array(
 	{
 		try
 		{
+            $toCleanModels = array(
+                Model::factory('User'),
+                Model::factory('Group'),
+                Model::factory('Permissions'),
+                Model::factory('Page')
+            );
+
+            foreach ($toCleanModels as $model)
+                $model->getDbConnection()->delete($model->table());
+
 			// Add group
 			$group = new Db_Object('Group');
 			$group->setValues(array(
 					'title'=>$this->_dictionary['ADMINISTRATORS'] ,
 					'system'=>true
 			));
-			$group->save();
+			$group->save(true, false);
 			$groupId = $group->getId();
 
 			// Add user
@@ -787,12 +797,9 @@ return array(
 					'confirmation_date' =>date('Y-m-d H:i:s')
 				)
 			);
-			$userId = $user->save();
-
+			$userId = $user->save(false, false);
 			if(!$userId)
 				return false;
-
-
 
 			// Add permissions
 			$permissionsModel = Model::factory('Permissions');
@@ -834,7 +841,7 @@ return array(
 					'in_site_map'=>true,
 					'default_blocks'=>true
 			));
-			if(!$page->save())
+			if(!$page->save(true, false))
 				return false;
 
 			//404 Page
@@ -864,7 +871,7 @@ return array(
 			    'in_site_map'=>false,
 			    'default_blocks'=>true
 			));
-			if(!$page->save())
+			if(!$page->save(true, false))
 			  return false;
 
 			//API Page
@@ -895,7 +902,7 @@ return array(
 			        'default_blocks'=>false
 			));
 
-			if(!$page->save())
+			if(!$page->save(true, false))
 			    return false;
 
 			return true;
