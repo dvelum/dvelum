@@ -3,6 +3,9 @@ class Backend_Orm_Controller extends Backend_Controller
 {
     const UML_MAP_CFG = 'umlMap.php';
 
+    protected $encryptContainerPrefix = 'encrypt_';
+    protected $decryptContainerPrefix = 'decrypt_';
+
     public function __construct()
     {
         parent::__construct();
@@ -1445,6 +1448,7 @@ class Backend_Orm_Controller extends Backend_Controller
 	          '/js/app/system/orm/connections.js',
 	          '/js/app/system/orm/logWindow.js',
 	          '/js/app/system/orm/import.js',
+              '/js/app/system/orm/taskStatusWindow.js'
 	    );
 
 	    if(!$this->_configMain->get('development')){
@@ -1498,4 +1502,129 @@ class Backend_Orm_Controller extends Backend_Controller
 	  }
 	  Response::jsonSuccess();
 	}
+
+    /**
+     * Encrypt object data (background)
+     */
+    public function encryptDataAction()
+    {
+        $this->_checkCanEdit();
+        $object = Request::post('object' , 'string' , false);
+
+        if(!$object || !Db_Object_Config::configExists($object)){
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        $container = $this->encryptContainerPrefix . $object;
+
+        $objectModel = Model::factory($object);
+        $taskModel = Model::factory('bgtask');
+        $signalModel = Model::factory('Bgtask_Signal');
+
+        //disable profiling in dev mode
+        if($this->_configMain->get('development')) {
+            $taskModel->getDbConnection()->getProfiler()->setEnabled(false);
+            $signalModel->getDbConnection()->getProfiler()->setEnabled(false);
+            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
+        }
+
+        $logger =  new Bgtask_Log_File($this->_configMain['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
+
+        $bgStorage = new Bgtask_Storage_Orm($taskModel , $signalModel);
+        $tm = Bgtask_Manager::getInstance();
+        $tm->setStorage($bgStorage);
+        $tm->setLogger($logger);
+
+        // Start encryption task
+        $tm->launch(
+            Bgtask_Manager::LAUNCHER_SIMPLE,
+            'Task_Orm_Encrypt' ,
+            array(
+                'object'=>$object,
+                'session_container'=>$container
+            )
+        );
+    }
+
+    public function decryptDataAction()
+    {
+        $this->_checkCanEdit();
+        $object = Request::post('object' , 'string' , false);
+
+        if(!$object || !Db_Object_Config::configExists($object)){
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        $container = $this->decryptContainerPrefix . $object;
+
+        $objectModel = Model::factory($object);
+        $taskModel = Model::factory('bgtask');
+        $signalModel = Model::factory('Bgtask_Signal');
+
+        //disable profiling in dev mode
+        if($this->_configMain->get('development')) {
+            $taskModel->getDbConnection()->getProfiler()->setEnabled(false);
+            $signalModel->getDbConnection()->getProfiler()->setEnabled(false);
+            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
+        }
+
+        $logger =  new Bgtask_Log_File($this->_configMain['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
+
+        $bgStorage = new Bgtask_Storage_Orm($taskModel , $signalModel);
+        $tm = Bgtask_Manager::getInstance();
+        $tm->setStorage($bgStorage);
+        $tm->setLogger($logger);
+
+        // Start encryption task
+        $tm->launch(
+            Bgtask_Manager::LAUNCHER_SIMPLE,
+            'Task_Orm_Decrypt' ,
+            array(
+                'object'=>$object,
+                'session_container'=>$container
+            )
+        );
+    }
+    /**
+     * Check background process status
+     */
+    public function taskstatAction()
+    {
+        $object = Request::post('object' , 'string' , false);
+        $type = Request::post('type' , 'string' , false);
+        $field = Request::post('field', 'string' , false);
+
+        if(!$object || ! $type)
+            Response::jsonError();
+
+        switch($type){
+            case 'encrypt':
+                $container = $this->encryptContainerPrefix . $object;
+                break;
+            case 'decrypt':
+                $field =
+                $container = $this->decryptContainerPrefix . $object;
+                break;
+            default: Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        $session = Store_Session::getInstance();
+
+        if(!$session->keyExists($container)){
+            Response::jsonError();
+        }
+
+        $pid = $session->get($container);
+        $taskModel = Model::factory('bgtask');
+        $statusData = $taskModel->getItem($pid);
+
+        if(empty($statusData))
+            Response::jsonError($this->_lang->get('CANT_EXEC'));
+
+        Response::jsonSuccess(array(
+           'status' =>  $statusData['status'],
+           'op_total' =>  $statusData['op_total'],
+           'op_finished' =>  $statusData['op_finished']
+        ));//UPDATE `sb_test` SET `title` = CONCAT("My long item description " , id ) , enc_key = null;
+    }
 }

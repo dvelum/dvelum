@@ -104,6 +104,32 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			);
 		}
 
+		var me = this;
+		var encryptButton = Ext.create('Ext.Button',{
+			hidden:true,
+			icon: app.wwwRoot + 'i/system/plock.png',
+			text:appLang.ENCRYPT_DATA,
+			tooltip:appLang.ENCRYPT_DATA,
+			handler:function(){
+				this.encryptData(this.objectName);
+			},
+			scope:this
+		});
+
+		var decryptButton = Ext.create('Ext.Button',{
+			hidden:true,
+			icon: app.wwwRoot + 'i/system/unlock.png',
+			text:appLang.DECRYPT_DATA,
+			tooltip:appLang.DECRYPT_DATA,
+			handler:function(){
+				this.decryptData(this.objectName);
+			},
+			scope:this
+		});
+
+		fieldsTbar.push('-');
+		fieldsTbar.push(encryptButton);
+		fieldsTbar.push(decryptButton);
 		fieldsTbar.push('->');
 		fieldsTbar.push(this.searchField);
 
@@ -117,8 +143,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			return value;
 		};
 
-		var me = this;
-
 		this.dataGrid = Ext.create('Ext.grid.Panel',{
 			store: this.dataStore,
 			frame: false,
@@ -129,6 +153,8 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			border:false,
 			title:appLang.FIELDS,
 			tbar:fieldsTbar,
+			encryptButton:encryptButton,
+			decryptButton:decryptButton,
 			defaults:{
 				sortable:true
 			},
@@ -153,47 +179,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 					}
 					return '';
 				}
-			},{
-				xtype:'actioncolumn',
-				width:40,
-				align:'center',
-				items:[
-					{
-						icon:app.wwwRoot+'i/system/lock.png',
-						tooltip:appLang.ENCRYPT_DATA,
-						isDisabled:function(view , rowIndex, colIndex, item, record){
-							if(record.get('type') == 'encrypted'){
-								return false;
-							}
-							return true;
-						},
-						getClass:function(v,metadata,record,row,col,store){
-							if(record.get('type') != 'encrypted'){
-								metadata.style = 'display:none;';
-							}
-						},
-						handler: function(grid, rowIndex, colIndex) {
-							me.encryptData(grid.getStore().getAt(rowIndex));
-						}
-					},{
-						icon:app.wwwRoot+'i/system/unlock.png',
-						tooltip:appLang.DECRYPT_DATA,
-						isDisabled:function(view , rowIndex, colIndex, item, record){
-							if(record.get('type') == 'encrypted'){
-								return false;
-							}
-							return true;
-						},
-						getClass:function(v,metadata,record,row,col,store){
-							if(record.get('type') != 'encrypted'){
-								metadata.style = 'display:none;';
-							}
-						},
-						handler: function(grid, rowIndex, colIndex) {
-							me.decryptData(grid.getStore().getAt(rowIndex));
-						}
-					}
-				]
 			},{
 				text:appLang.TITLE,
 				dataIndex:'title',
@@ -258,6 +243,23 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			}
 			]
 		});
+
+		this.dataStore.on('load',function(store,records){
+			var hasEncrypted = false;
+			store.each(function(record){
+				if(record.get('type') == 'encrypted'){
+					hasEncrypted = true;
+				}
+			});
+			if(hasEncrypted){
+				this.dataGrid.decryptButton.show();
+				this.dataGrid.encryptButton.show();
+			}else{
+				this.dataGrid.encryptButton.hide();
+				this.dataGrid.decryptButton.hide();
+			}
+		},this);
+
 
 		this.indexGrid = Ext.create('Ext.grid.Panel',{
 			store: this.indexStore,
@@ -1033,54 +1035,93 @@ Ext.define('app.crud.orm.ObjectWindow', {
 
 		win.show();
 	},
-	encryptData:function(record){
-		var handle = this;
-		Ext.Msg.confirm(appLang.CONFIRM, appLang.MSG_CONFIRM_ENCRYPT +' "'+record.get('title')+'" ?', function(btn){
+	encryptData:function(objectName){
+		var me = this;
+		var objectTitle = this.configForm.getForm().findField('title').getValue();
+		Ext.Msg.confirm(appLang.CONFIRM, appLang.MSG_CONFIRM_ENCRYPT +' "' + objectTitle + '" ?', function(btn){
 			if(btn != 'yes'){
 				return;
 			}
 			Ext.Ajax.request({
 				url: app.crud.orm.Actions.encryptData,
 				method: 'post',
+				scope:this,
+				timeout:1000*60*60*24,
 				params:{
-					'object':this.objectName,
-					'name':record.get('id')
+					'object':objectName
 				},
 				success: function(response, request) {
 					response =  Ext.JSON.decode(response.responseText);
-					if(response.success){
-						handle.dataGrid.getStore().load();
-					}else{
+					if(!response.success){
 						Ext.Msg.alert(appLang.MESSAGE , response.msg);
 					}
-				},
-				failure:app.formFailure
+				}
 			});
+
+			var win = Ext.create('app.crud.orm.taskStatusWindow',{
+				title: '"'+objectTitle+ '" '+appLang.ENCRYPT_DATA,
+				controllerUrl:app.crud.orm.Actions.taskStat,
+				extraParams:{
+					'object':objectName,
+					'type':'encrypt'
+				}
+			});
+
+			win.on('failure' , function(msg){
+				Ext.Msg.alert(appLang.MESSAGE , msg);
+				win.close();
+			} , me);
+
+			win.on('finished' , function(){
+				this.dataGrid.getStore().load();
+			}, me);
+
+			win.show();
+
 		},this);
 	},
-	decryptData:function(record){
-		var handle = this;
-		Ext.Msg.confirm(appLang.CONFIRM, appLang.MSG_CONFIRM_DECRYPT +' "'+record.get('title')+'" ?', function(btn){
+	decryptData:function(objectName){
+		var me = this;
+		var objectTitle = this.configForm.getForm().findField('title').getValue();
+		Ext.Msg.confirm(appLang.CONFIRM, appLang.MSG_CONFIRM_DECRYPT +' "'+objectTitle+'" ?', function(btn){
 			if(btn != 'yes'){
 				return;
 			}
 			Ext.Ajax.request({
 				url: app.crud.orm.Actions.decryptData,
 				method: 'post',
+				scope:this,
+				timeout:1000*60*60*24,
 				params:{
-					'object':this.objectName,
-					'name':record.get('id')
+					'object':this.objectName
 				},
 				success: function(response, request) {
 					response =  Ext.JSON.decode(response.responseText);
-					if(response.success){
-						handle.dataGrid.getStore().load();
-					}else{
+					if(!response.success){
 						Ext.Msg.alert(appLang.MESSAGE , response.msg);
 					}
-				},
-				failure:app.formFailure
+				}
 			});
+
+			var win = Ext.create('app.crud.orm.taskStatusWindow',{
+				title: '"'+objectTitle+ '" '+appLang.DECRYPT_DATA,
+				controllerUrl:app.crud.orm.Actions.taskStat,
+				extraParams:{
+					'object':this.objectName,
+					'type':'decrypt'
+				}
+			});
+
+			win.on('failure' , function(msg){
+				Ext.Msg.alert(appLang.MESSAGE , msg);
+				win.close();
+			} , me);
+
+			win.on('finished' , function(){
+				this.dataGrid.getStore().load();
+			}, me);
+
+			win.show();
 		},this);
 	}
 });

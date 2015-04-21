@@ -550,8 +550,10 @@
   'FILE_NOT_FOUND' => 'Файл не найден',
   'ACTIONS' => 'Действия',
   'SEARCHING' => 'Ищем...',
-  'ENCRYPT_DATA' => 'Зашифровать данные',
-  'DECRYPT_DATA' => 'Расшифровать данные',
-  'MSG_CONFIRM_ENCRYPT' => 'Зашифровать данные поля',
-  'MSG_CONFIRM_DECRYPT' => 'Расшифровать данные поля',
+  'ENCRYPT_DATA' => 'Зашифровать данные объекта',
+  'DECRYPT_DATA' => 'Расшифровать данные объекта',
+  'MSG_CONFIRM_ENCRYPT' => 'Зашифровать данные объекта',
+  'MSG_CONFIRM_DECRYPT' => 'Расшифровать данные объекта',
+  'COMPLETED' => 'Завершено',
+  'ERROR'=>'Ошибка'
 ); 

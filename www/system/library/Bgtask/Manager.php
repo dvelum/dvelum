@@ -28,6 +28,7 @@ class Bgtask_Manager
 	const LAUNCHER_HTTP = 'Bgtask_Launcher_Local_Http';
 	const LAUNCHER_JSON = 'Bgtask_Launcher_Local_Json';
 	const LAUNCHER_SILENT = 'Bgtask_Launcher_Local_Silent';
+    const LAUNCHER_SIMPLE = 'Bgtask_Launcher_Simple';
 
 	const STORAGE_ORM = 'Bgtask_Storage_Orm';
 

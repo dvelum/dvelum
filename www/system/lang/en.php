@@ -549,8 +549,10 @@
   'FILE_NOT_FOUND' => 'File not found',
   'ACTIONS' => 'Actions',
   'SEARCHING' => 'Searching...',
-  'ENCRYPT_DATA' => 'Encrypt data',
-  'DECRYPT_DATA' => 'Decrypt data',
+  'ENCRYPT_DATA' => 'Encrypt object data',
+  'DECRYPT_DATA' => 'Decrypt object data',
   'MSG_CONFIRM_ENCRYPT' => 'Do you really want to encrypt data of',
   'MSG_CONFIRM_DECRYPT' => 'Do you really want to decrypt',
+  'COMPLETED' => 'Completed',
+  'ERROR'=>'Error'
 ); 
