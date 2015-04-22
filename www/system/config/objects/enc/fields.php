@@ -12,6 +12,6 @@ return array(
         'system'=>true,
         'hidden' => true,
         'required'=>false,
-        'lazyLang'=>false
+        'lazyLang'=>true
     )
 );
