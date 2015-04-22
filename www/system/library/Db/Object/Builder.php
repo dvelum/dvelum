@@ -41,7 +41,7 @@ class Db_Object_Builder
   public function __construct($objectName)
   {
     $this->_objectName = $objectName;
-    $this->_objectConfig = Db_Object_Config::getInstance($objectName);
+    $this->_objectConfig = Db_Object_Config::getInstance($objectName , true);
     $this->_model = Model::factory($objectName);
     $this->_db = $this->_model->getDbConnection();
 
@@ -504,7 +504,7 @@ class Db_Object_Builder
       }
       catch(Exception $e)
       {
-        $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+        $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $engineUpdate;
       }
     }
 

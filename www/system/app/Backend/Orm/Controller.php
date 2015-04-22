@@ -1194,11 +1194,11 @@ class Backend_Orm_Controller extends Backend_Controller
         } else{
         	$objectCfg->setFieldconfig($name, $newConfig);
         	$objectCfg->fixConfig();
-        	$builder = new Db_Object_Builder($object);
-        	$builder->build();
         }
 
          if($objectCfg->save()){
+             $builder = new Db_Object_Builder($object);
+             $builder->build();
 	        Response::jsonSuccess();
          }else{
 	        Response::jsonError($this->_lang->CANT_WRITE_FS);

@@ -554,5 +554,6 @@
   'MSG_CONFIRM_ENCRYPT' => 'Do you really want to encrypt data of',
   'MSG_CONFIRM_DECRYPT' => 'Do you really want to decrypt',
   'COMPLETED' => 'Completed',
-  'ERROR'=>'Error'
+  'ERROR' => 'Error',
+  'ENC_KEY' => 'Encryption key',
 ); 
