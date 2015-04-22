@@ -1625,6 +1625,6 @@ class Backend_Orm_Controller extends Backend_Controller
            'status' =>  $statusData['status'],
            'op_total' =>  $statusData['op_total'],
            'op_finished' =>  $statusData['op_finished']
-        ));//UPDATE `sb_test` SET `title` = CONCAT("My long item description " , id ) , enc_key = null;
+        ));
     }
 }
