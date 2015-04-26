@@ -2,7 +2,7 @@
 return array(
     'enc_key'=>array(
         'type' => '',
-        'title' => 'ENC KEY',
+        'title' => 'ENC_KEY',
         'db_type' => 'varchar',
         'db_default' => false,
         'db_len' => 255,
@@ -12,6 +12,6 @@ return array(
         'system'=>true,
         'hidden' => true,
         'required'=>false,
-        'lazyLang'=>false
+        'lazyLang'=>true
     )
 );

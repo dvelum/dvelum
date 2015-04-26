@@ -1194,11 +1194,11 @@ class Backend_Orm_Controller extends Backend_Controller
         } else{
         	$objectCfg->setFieldconfig($name, $newConfig);
         	$objectCfg->fixConfig();
-        	$builder = new Db_Object_Builder($object);
-        	$builder->build();
         }
 
          if($objectCfg->save()){
+             $builder = new Db_Object_Builder($object);
+             $builder->build();
 	        Response::jsonSuccess();
          }else{
 	        Response::jsonError($this->_lang->CANT_WRITE_FS);
@@ -1625,6 +1625,6 @@ class Backend_Orm_Controller extends Backend_Controller
            'status' =>  $statusData['status'],
            'op_total' =>  $statusData['op_total'],
            'op_finished' =>  $statusData['op_finished']
-        ));//UPDATE `sb_test` SET `title` = CONCAT("My long item description " , id ) , enc_key = null;
+        ));
     }
 }

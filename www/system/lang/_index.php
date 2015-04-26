@@ -555,4 +555,5 @@
   553 => 'MSG_CONFIRM_DECRYPT',
   554 => 'COMPLETED',
   555 => 'ERROR',
+  556 => 'ENC_KEY',
 ); 
