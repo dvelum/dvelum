@@ -277,7 +277,7 @@ class Install_Controller {
 		$port = Request::post('port', 'int', 0);
 		$prefix = Request::post('prefix', 'str', '');
 
-		$installDocs = Request::post('install_docs' , 'boolean' , true);
+		$installDocs = Request::post('install_docs' , 'boolean' , false);
 		$this->_session->set('install_docs' , $installDocs);
 
 		$params = array(
@@ -727,10 +727,11 @@ return array(
 		if(!@file_put_contents($mainCfgPath, $mainCfg))
 			Response::jsonError($this->_dictionary['CANT_WRITE_FS']);
 
+		$key = md5(uniqid(md5(time())));
 		$encConfig = '
 		<?php
 			return array(
-				\'key\'=>\''.md5(uniqid(md5(time())),true).'\',
+				\'key\'=>\''.$key.'\',
 				\'iv_field\'=>\'enc_key\'
 			);
 		';
