@@ -2,10 +2,10 @@
 -- version 4.2.13.1
 -- http://www.phpmyadmin.net
 --
--- Хост: localhost
--- Время создания: Апр 23 2015 г., 06:56
--- Версия сервера: 10.0.17-MariaDB
--- Версия PHP: 5.6.1
+-- Host: localhost
+-- Generation Time: Apr 27, 2015 at 06:07 PM
+-- Server version: 10.0.13-MariaDB
+-- PHP Version: 5.6.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,13 +17,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- База данных: `install`
+-- Database: `dvelum`
 --
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `sysdocs_class`
+-- Table structure for table `sysdocs_class`
 --
 
 DROP TABLE IF EXISTS `sysdocs_class`;
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `sysdocs_class` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1434 DEFAULT CHARSET=utf8;
 
 --
--- Дамп данных таблицы `sysdocs_class`
+-- Dumping data for table `sysdocs_class`
 --
 
 INSERT INTO `sysdocs_class` (`description`, `itemType`, `fileId`, `parentId`, `vers`, `name`, `namespace`, `deprecated`, `hid`, `abstract`, `fileHid`, `implements`, `extends`, `id`) VALUES
@@ -532,7 +532,7 @@ INSERT INTO `sysdocs_class` (`description`, `itemType`, `fileId`, `parentId`, `v
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `sysdocs_class_method`
+-- Table structure for table `sysdocs_class_method`
 --
 
 DROP TABLE IF EXISTS `sysdocs_class_method`;
@@ -556,7 +556,7 @@ CREATE TABLE IF NOT EXISTS `sysdocs_class_method` (
 ) ENGINE=InnoDB AUTO_INCREMENT=18095 DEFAULT CHARSET=utf8;
 
 --
--- Дамп данных таблицы `sysdocs_class_method`
+-- Dumping data for table `sysdocs_class_method`
 --
 
 INSERT INTO `sysdocs_class_method` (`classId`, `name`, `deprecated`, `description`, `throws`, `hid`, `abstract`, `static`, `visibility`, `vers`, `returnType`, `classHid`, `final`, `inherited`, `returnsReference`, `id`) VALUES
@@ -6596,7 +6596,7 @@ INSERT INTO `sysdocs_class_method` (`classId`, `name`, `deprecated`, `descriptio
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `sysdocs_class_method_param`
+-- Table structure for table `sysdocs_class_method_param`
 --
 
 DROP TABLE IF EXISTS `sysdocs_class_method_param`;
@@ -6615,7 +6615,7 @@ CREATE TABLE IF NOT EXISTS `sysdocs_class_method_param` (
 ) ENGINE=InnoDB AUTO_INCREMENT=13855 DEFAULT CHARSET=utf8;
 
 --
--- Дамп данных таблицы `sysdocs_class_method_param`
+-- Dumping data for table `sysdocs_class_method_param`
 --
 
 INSERT INTO `sysdocs_class_method_param` (`methodId`, `hid`, `name`, `vers`, `index`, `default`, `isRef`, `description`, `methodHid`, `optional`, `id`) VALUES
@@ -11246,7 +11246,7 @@ INSERT INTO `sysdocs_class_method_param` (`methodId`, `hid`, `name`, `vers`, `in
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `sysdocs_class_property`
+-- Table structure for table `sysdocs_class_property`
 --
 
 DROP TABLE IF EXISTS `sysdocs_class_property`;
@@ -11268,7 +11268,7 @@ CREATE TABLE IF NOT EXISTS `sysdocs_class_property` (
 ) ENGINE=InnoDB AUTO_INCREMENT=36944 DEFAULT CHARSET=utf8;
 
 --
--- Дамп данных таблицы `sysdocs_class_property`
+-- Dumping data for table `sysdocs_class_property`
 --
 
 INSERT INTO `sysdocs_class_property` (`deprecated`, `hid`, `vers`, `name`, `description`, `const`, `static`, `visibility`, `type`, `classId`, `constValue`, `classHid`, `inherited`, `id`) VALUES
@@ -23712,7 +23712,7 @@ INSERT INTO `sysdocs_class_property` (`deprecated`, `hid`, `vers`, `name`, `desc
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `sysdocs_file`
+-- Table structure for table `sysdocs_file`
 --
 
 DROP TABLE IF EXISTS `sysdocs_file`;
@@ -23727,7 +23727,7 @@ CREATE TABLE IF NOT EXISTS `sysdocs_file` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1955 DEFAULT CHARSET=utf8;
 
 --
--- Дамп данных таблицы `sysdocs_file`
+-- Dumping data for table `sysdocs_file`
 --
 
 INSERT INTO `sysdocs_file` (`path`, `isDir`, `name`, `vers`, `hid`, `parentId`, `id`) VALUES
@@ -23788,7 +23788,6 @@ INSERT INTO `sysdocs_file` (`path`, `isDir`, `name`, `vers`, `hid`, `parentId`, 
 ('./system/app/Frontend', 1, 'Console', 3, '5e0fac906c8119e71081dfb8f2be1703', 1356, 1357),
 ('./system/app/Frontend/Console', 0, 'Controller.php', 3, '5460895f7e2ff934fc6ca2bf08e00802', 1357, 1358),
 ('./system/app/Frontend', 1, 'Docs', 3, 'cc7de60811046013f6b214403351d9be', 1356, 1359),
-('./system/app/Frontend/Docs', 0, 'Controller.php', 3, 'a3bdd376c58e8ea9f39d6e1b07adf072', 1359, 1360),
 ('./system/app/Frontend', 0, 'Router.php', 3, '76a59559c90ee819b1f40aa443aac17a', 1356, 1361),
 ('./system/app/Frontend', 1, 'Api', 3, '297cd9b384049e72fb3e5f85793115e7', 1356, 1362),
 ('./system/app/Frontend/Api', 0, 'Controller.php', 3, '5496d64c9ac0c4a00326ef84f0e89f5b', 1362, 1363),
@@ -24229,9 +24228,9 @@ INSERT INTO `sysdocs_file` (`path`, `isDir`, `name`, `vers`, `hid`, `parentId`, 
 ('./system/library/Ext/Events/Grid', 0, 'Column.php', 3, '7773ab01abe7e881cf2cda9b1d41aa60', 1798, 1799),
 ('./system/library/Ext/Events/Grid', 1, 'Column', 3, '636b9f9041df31f02555312222f52739', 1798, 1800),
 ('./system/library/Ext/Events/Grid/Column', 0, 'Check.php', 3, '9270129a1237f73c8b1540bf9a52b4de', 1800, 1801),
-('./system/library/Ext/Events/Grid/Column', 0, 'Date.php', 3, 'f08d3542cd349a95c15545d0a93693fb', 1800, 1802);
+('./system/library/Ext/Events/Grid/Column', 0, 'Date.php', 3, 'f08d3542cd349a95c15545d0a93693fb', 1800, 1802),
+('./system/library/Ext/Events/Grid/Column', 0, 'Number.php', 3, '70ae6ecd94f4847def694b6dc31b0656', 1800, 1803);
 INSERT INTO `sysdocs_file` (`path`, `isDir`, `name`, `vers`, `hid`, `parentId`, `id`) VALUES
-('./system/library/Ext/Events/Grid/Column', 0, 'Number.php', 3, '70ae6ecd94f4847def694b6dc31b0656', 1800, 1803),
 ('./system/library/Ext/Events/Grid/Column', 0, 'Template.php', 3, 'ba5762cc03e70a164d00272df895f750', 1800, 1804),
 ('./system/library/Ext/Events/Grid/Column', 0, 'Action.php', 3, 'c4856812cc04f02d99d45fdeafc9ece6', 1800, 1805),
 ('./system/library/Ext/Events/Grid/Column', 0, 'Boolean.php', 3, '00f9f63cdfce1188cb25eb22dbbb453f', 1800, 1806),
@@ -24387,7 +24386,7 @@ INSERT INTO `sysdocs_file` (`path`, `isDir`, `name`, `vers`, `hid`, `parentId`, 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `sysdocs_localization`
+-- Table structure for table `sysdocs_localization`
 --
 
 DROP TABLE IF EXISTS `sysdocs_localization`;
@@ -24400,10 +24399,10 @@ CREATE TABLE IF NOT EXISTS `sysdocs_localization` (
   `object_class` varchar(255) NOT NULL COMMENT 'Object Class',
   `hid` char(32) NOT NULL COMMENT 'Hash Code',
 `id` bigint(20) unsigned NOT NULL COMMENT 'Primary key'
-) ENGINE=InnoDB AUTO_INCREMENT=2413 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2684 DEFAULT CHARSET=utf8;
 
 --
--- Дамп данных таблицы `sysdocs_localization`
+-- Dumping data for table `sysdocs_localization`
 --
 
 INSERT INTO `sysdocs_localization` (`lang`, `field`, `object_id`, `value`, `vers`, `object_class`, `hid`, `id`) VALUES
@@ -24473,7 +24472,7 @@ INSERT INTO `sysdocs_localization` (`lang`, `field`, `object_id`, `value`, `vers
 ('ru', 'description', 1408, 'Модели в системе могут быть описаны только для существующих объектов ORM и имеют такое же имя.<br>\nМодели могут быть двух видов:\n<ul>\n    <li>виртуальная модель — для каждого объекта ORM есть виртуальная модель, содержащая стандартный набор методов (модель не существует в виде файла);</li>\n    <li>расширенная — модель, объявленная в виде класса, расширяющего функционал стандартной модели; в отличие от виртуальной может быть инстанцирована при помощи метода getInstance (класс должен быть отнаследован от класса Model).</li>\n</ul>\nБудьте предельно внимательны и осторожны при описании собственных моделей, система моделей использует позднее статическое связывание.\n\nСоздается модель конструкцией:\n\nModel::factory($objectName);\n\nДля расширенных моделей (реальных) так же возможна конструкция вида:\n\nModel_Page::getInstance();', 3, 'sysdocs_class', '0dbb9b4106f1cbdece7d733cd5e97ea8', 1486),
 ('ru', 'description', 1414, '<p>Объекты ORM &ndash; основополагающий класс для работы с данными ORM. После того, как описана структура объекта в ORM, данными объектов можно манипулировать при помощи класса Db_Object</p>\n\n<p>Пример: <code> </code></p>\n\n<pre>\n<code>\n  <span style="color:#8B4513;">$news</span> = <strong><span style="color:#0000FF;">new </span></strong>Db_Object(<span style="color:#008000;">&#39;news&#39;</span>);\n  <span style="color:#8B4513;">$news</span>-&gt;title = <span style="color:#008000;">&#39;Новость 1&#39;</span>;\n  <span style="color:#8B4513;">$news</span>-&gt;text = <span style="color:#008000;">&#39;Содержание новости&#39;</span>;\n  <span style="color:#8B4513;">$news</span>-&gt;news_date = date(<span style="color:#008000;">&#39;Y-m-d&#39;</span>);\n  <span style="color:#8B4513;">$news</span>-&gt;save();\n</code></pre>\n\n<p>Как видно из примера, свойства (поля) объекта назначаются стандартным сеттером. В случае если мы пытаемся указать несуществующее свойство или задать значение, неудовлетворяющее указанному в конфигурации типу, будет брошен Exception. Сохранение данных производится путем вызова метода save.</p>', 3, 'sysdocs_class', 'c21295403ac5daf60f791b585dd134fe', 1487),
 ('ru', 'description', 1415, '<p>Строитель запросов на основе структуры&nbsp; ORM, системный класс используется в модуле&nbsp; Reports</p>', 3, 'sysdocs_class', '3bfd91ac3129d3bc1e3e8cbc6e7ed0ba', 1488),
-('ru', 'description', 1416, '<p>Базовый класс менеджера подключений к базам данных</p>', 3, 'sysdocs_class', '366606ba0611143017e8487fd17080a9', 1489),
+('ru', 'description', 1416, '<p>Интерфейс менеджера подключений к базам данных</p>\n', 3, 'sysdocs_class', '366606ba0611143017e8487fd17080a9', 1489),
 ('ru', 'description', 1417, '<p>Фильтр для построения запросов, используется в контроллерах для более гибкой настройки выборок из моделей при помощи метода&nbsp; getList</p>\n\n<p>Пример:</p>\n\n<pre>\n<code>\n<span style="color:#800000">$filters</span> = <span style="color:#0000FF"><strong>array</strong></span>(\n <span style="color:#0000FF"><strong>new</strong></span> Db_Select_Filter(<span style="color:#008000">&#39;id&#39;</span> , <span style="color:#0000FF"><strong>array</strong></span>(<span style="color:#FF0000;">1</span>,<span style="color:#FF0000;">2</span>,<span style="color:#FF0000;">3</span>,<span style="color:#FF0000;">4</span>),Db_Select_Filter::NOT_IN),\n <span style="color:#0000FF"><strong>new</strong></span> Db_Select_Filter(<span style="color:#008000">&#39;id&#39;</span> , <span style="color:#B22222;">10</span> , Db_Select_Filter::LT),\n);\n<span style="color:#800000">$data</span> = Model::factory(<span style="color:#008000">&#39;User&#39;</span>)-&gt;getList(<span style="color:#0000FF"><strong>false</strong></span> , <span style="color:#800000">$filters</span>);\n</code></pre>', 3, 'sysdocs_class', '63e6b5a9236e43225a87953f1fe17b08', 1490),
 ('ru', 'description', 1418, '<p>Класс построения SQL запросов для выборки данных (select).<br />\nПредставляет из себя реализацию интерфейса Zend_Db_Select, отличается упрощенной логикой и большей производительностью.<br />\nПоведение практически идентичное&nbsp;Zend_Db_Select.</p>', 3, 'sysdocs_class', '38cc204a2ed70651062601d333df6011', 1491),
 ('ru', 'description', 1419, '<p>Адаптер подключения к бд&nbsp; MySQL&nbsp; с использованием&nbsp; Mysqli, расширяет класс&nbsp; Zend Framework 1.x.</p>\n\n<p>Добавлен хэндлер ошибок, улучшена производительность. Облегчен функционал</p>', 3, 'sysdocs_class', 'ecc04a75d4bfb387ff22cb3f2a6a3aa4', 1492),
@@ -24942,11 +24941,11 @@ INSERT INTO `sysdocs_localization` (`lang`, `field`, `object_id`, `value`, `vers
 ('ru', 'description', 17952, 'Проверить включено ли использование внешних ключей', 3, 'sysdocs_class_method', '6eca8fed3082f8f2e00b8329cb20e76f', 1953),
 ('ru', 'description', 17954, 'Валидировать структуру таблицы БД. Проверить синхронизирована ли структура таблицы.', 3, 'sysdocs_class_method', 'df010332d236a1e554459cc75f441412', 1954),
 ('ru', 'description', 17955, 'Подготовить SQL изменения типа хранилища', 3, 'sysdocs_class_method', '2418fd441e3895a5af60617d4a3b0563', 1955),
-('ru', 'description', 17956, 'Подготовить список колонок для обновления<br />\n <br />\n&#39;name&#39;=>&#39;somename&#39;,<br />\n&#39;action&#39;=>[drop/add/change],<br />\n)', 3, 'sysdocs_class_method', 'b1f12fca6db583fc9a3929901ce3e5c6', 1956),
+('ru', 'description', 17956, 'Подготовить список колонок для обновления<br />\narray( <br />\n   &#39;name&#39;=>&#39;somename&#39;,<br />\n   &#39;action&#39;=>[drop/add/change],<br />\n)', 3, 'sysdocs_class_method', 'b1f12fca6db583fc9a3929901ce3e5c6', 1956),
 ('ru', 'description', 17957, 'Переименовать колонку', 3, 'sysdocs_class_method', 'd682aef7114df4b04f015e50c8931cae', 1957),
 ('ru', 'description', 17958, 'Синхронизировать таблицу БД', 3, 'sysdocs_class_method', 'ce41288515523a046f79431991088a8b', 1958),
 ('ru', 'description', 17959, 'Синхронизировать внешние ключи', 3, 'sysdocs_class_method', 'e366d111fcfe1bf51b5b031c7e379002', 1959),
-('ru', 'description', 17961, 'Подготовить список индексов для обновления<br />\n <br />\n&#39;name&#39;=>&#39;indexname&#39;,<br />\n&#39;action&#39;=>[drop/add],<br />\n)', 3, 'sysdocs_class_method', 'c1d1246c85c720e8027907cd33890b8a', 1960),
+('ru', 'description', 17961, 'Подготовить список индексов для обновления<br />\narray ( <br />\n&#39;name&#39;=>&#39;indexname&#39;,<br />\n&#39;action&#39;=>[drop/add],<br />\n)', 3, 'sysdocs_class_method', 'c1d1246c85c720e8027907cd33890b8a', 1960),
 ('ru', 'description', 17962, 'Получить список внешних ключей для объекта  ORM', 3, 'sysdocs_class_method', '2458333fe783b378a709ebd6eeb0c185', 1961),
 ('ru', 'description', 17964, 'Получить список внешних ключей для таблицы БД', 3, 'sysdocs_class_method', 'b7dc092b1d4ae612ff0e6a366fd9145f', 1962),
 ('ru', 'description', 17971, 'Переименовать таблицу<br />\n <br />\n - new table name (without prefix)', 3, 'sysdocs_class_method', 'dc14a1ece539a987d57041eec2bc3a94', 1963),
@@ -25400,82 +25399,354 @@ INSERT INTO `sysdocs_localization` (`lang`, `field`, `object_id`, `value`, `vers
 ('ru', 'description', 25029, 'Объект настроек подключения  JS  файлов', 3, 'sysdocs_class_property', 'c189e2ddbe38fb919b2fe8c3b3699e05', 2409),
 ('ru', 'description', 25028, 'Объект настроек бэкофиса', 3, 'sysdocs_class_property', 'e3b3c4e7d223d2f917ed85e164596f9e', 2410),
 ('ru', 'description', 25032, 'Объект настроек админ панели', 3, 'sysdocs_class_property', '2896fd4eb0a9fe3ae185f479926066c9', 2411),
-('ru', 'description', 25757, 'Объект настроек админ панели', 3, 'sysdocs_class_property', '26bb02fb2f42851df68d71934a386269', 2412);
+('ru', 'description', 25757, 'Объект настроек админ панели', 3, 'sysdocs_class_property', '26bb02fb2f42851df68d71934a386269', 2412),
+('ru', 'description', 36905, ' ', 3, 'sysdocs_class_property', 'fd689e9d7de101200549ce148a733278', 2413),
+('ru', 'description', 18029, 'Проверить, является ли поле зашифрованным', 3, 'sysdocs_class_method', '4a8b382475c462e442c38b5767c006b8', 2414),
+('ru', 'description', 17970, 'Проверить, существует ли таблица БД<br />\n <br />\n$name  - optional, table name,<br />\n$addPrefix - optional append prefix, default false', 3, 'sysdocs_class_method', '699fe01343f3cfe1e6ca7b6fbf050ab8', 2415),
+('ru', 'description', 17951, 'Использовать внешние ключи', 3, 'sysdocs_class_method', 'c01ab54270429107bf6eff275655e878', 2416),
+('ru', 'description', 17948, 'Писать лог  SQL  запросов', 3, 'sysdocs_class_method', '4ec85cdd00de0e7b8928b32d4a619edc', 2417),
+('ru', 'description', 17960, 'Собрать SQL код создания индексов для  CREATE  запроса', 3, 'sysdocs_class_method', 'a0ec568877e439a340bf0482297705c0', 2418),
+('ru', 'description', 17969, 'Получить список существующих колонок', 3, 'sysdocs_class_method', '004820bb0775f6346f01ea27ad067e7c', 2419),
+('ru', 'description', 17965, 'Сравнить существующие индексы с их конфигурацией в объекте', 3, 'sysdocs_class_method', '015465f54f71d09585bf1e6741f1c01d', 2420),
+('ru', 'description', 17953, 'Записать SQL  запрос  в  лог', 3, 'sysdocs_class_method', '9d0e5c52bce4fd14e78c4c69891980cf', 2421),
+('ru', 'description', 17966, 'Собрать SQL код создания индексов для  Add INDEX  запроса\n <br />\n - optional use create table mode', 3, 'sysdocs_class_method', '03f238fd8f2eeb29ba945b7f7b8f3170', 2422),
+('ru', 'description', 17967, 'Получить SQL  код  для создания свойства  ORM  объекта', 3, 'sysdocs_class_method', '2dd77d5014828b16b21a7b43790b5581', 2423),
+('ru', 'description', 17968, 'Получить SQL  запрос создания таблицы', 3, 'sysdocs_class_method', '28f3174ab35e66cb5185b26bde94144f', 2424),
+('ru', 'description', 36870, 'Текущий пользователь\n ', 3, 'sysdocs_class_property', '00717ab1464dfacd97c72711473f0b1f', 2425),
+('ru', 'description', 1125, '<p>Интерфейс конвертирования данных</p>\n', 3, 'sysdocs_class', 'f0ed068f717331a397728de644548966', 2426),
+('ru', 'description', 15176, 'Конветировать значение', 3, 'sysdocs_class_method', '53687d17dbf68cbb69d0c422776da9f9', 2427),
+('ru', 'description', 1123, '<p>Простейший клас для хранения конфигураций</p>\n', 3, 'sysdocs_class', 'a5e55807b574ab8fea112801809063c4', 2428),
+('ru', 'description', 26110, 'Данные конфигурации', 3, 'sysdocs_class_property', 'a815aef3014f5ef0968eb4a2b269dc1d', 2429),
+('ru', 'description', 26111, 'Идентификатор', 3, 'sysdocs_class_property', '24e92557a305d58567d55f4a72fdc84e', 2430),
+('ru', 'description', 15148, 'Iterator implementation', 3, 'sysdocs_class_method', '6d7d5acad496c35bd8f40394c5a58d18', 2431),
+('ru', 'description', 15152, 'Получить ссылку на данные конфигурации. Хак метод, не стоит использовать без глубокого понимания. Получает низкоуровневую ссылку на на данные конфигурации', 3, 'sysdocs_class_method', 'd0a35171f893d041ec92b2f5e8c9b52a', 2432),
+('ru', 'description', 15139, 'Получить настройку по имени', 3, 'sysdocs_class_method', '25abfcd80d69a329c33205a185213587', 2433),
+('ru', 'description', 15138, 'Подсчитать количество элементов конфигурации', 3, 'sysdocs_class_method', 'ba38f3abf301bbf97c97ec3989403406', 2434),
+('ru', 'description', 15154, 'Узанать имя конфигурации', 3, 'sysdocs_class_method', '1603ca18702a16bef2e3b8aff3476944', 2435),
+('ru', 'description', 15149, 'Iterator implementation', 3, 'sysdocs_class_method', '497115a9e6543fddf044d3afbb83a6a6', 2436),
+('ru', 'description', 15150, 'Iterator implementation', 3, 'sysdocs_class_method', '5e3801cfec6d9e20ea33ffae5d91e194', 2437),
+('ru', 'description', 15144, 'ArrayAccess implementation', 3, 'sysdocs_class_method', 'e162510738f580744218ee0de7cc3b70', 2438),
+('ru', 'description', 15146, 'ArrayAccess implementation', 3, 'sysdocs_class_method', 'b71bef78f2b48a060650cc7fae07cea6', 2439),
+('ru', 'description', 15143, 'ArrayAccess implementation', 3, 'sysdocs_class_method', '387529815a5ba9bada11ee164c45c32b', 2440),
+('ru', 'description', 15145, 'ArrayAccess implementation', 3, 'sysdocs_class_method', 'c0f740ba9810b824d8ab211378a96264', 2441),
+('ru', 'description', 15142, 'Удалить настройку по ключу', 3, 'sysdocs_class_method', 'fd7c64618ec566d44ba2902724aa60cd', 2442),
+('ru', 'description', 15147, 'Iterator implementation', 3, 'sysdocs_class_method', '9770d7d6b0342257d09fc00c9bc6053c', 2443),
+('ru', 'description', 15140, 'Установить значение настройки', 3, 'sysdocs_class_method', 'f37f7c74e179b8a24653f9d029a5c64d', 2444),
+('ru', 'description', 15151, 'Iterator implementation', 3, 'sysdocs_class_method', 'f7630bdc9228666dd6780d8fd16a6e3f', 2445),
+('ru', 'description', 15136, 'Конструктор, принимает имя конфигурации', 3, 'sysdocs_class_method', '6c86c70eb0e3014d63cdf3562ac05485', 2446),
+('ru', 'description', 15137, 'Получить данные настроек в виде массива', 3, 'sysdocs_class_method', '4ec7d5ace358ef0f32a1a26ac6b4d6db', 2447),
+('ru', 'description', 1090, '<p>Класс простейшего&nbsp; HTML&nbsp; блока</p>\n', 3, 'sysdocs_class', '32ff2fa360f5c143c3a45d404be87e0a', 2448),
+('ru', 'description', 25883, 'Путь к шаблону (относительно темы оформления)', 3, 'sysdocs_class_property', '005895cc65c77e312c4e2bcdf35ef111', 2449),
+('ru', 'description', 25882, 'Настройки', 3, 'sysdocs_class_property', 'bb330946413538e2da97d14d8103f92e', 2450),
+('ru', 'description', 25884, 'Параметры запуска', 3, 'sysdocs_class_property', '31076de61aa593e58a5b86dcb6338ae1', 2451),
+('ru', 'description', 25880, 'Ключ кэширования', 3, 'sysdocs_class_property', 'ac9a8f7441dd0dbe220fc126eb925c21', 2452),
+('ru', 'description', 25879, 'Разрешено кэширование', 3, 'sysdocs_class_property', 'e0db9ae8c3053dcc104e1b765b762f73', 2453),
+('ru', 'description', 14790, 'Конструктор блока, принимает настройки', 3, 'sysdocs_class_method', 'c9d498d6644d6708388c37a6d00998c8', 2454),
+('ru', 'description', 14791, 'Строковое представление объекта, возвращает подготовленный html код блока', 3, 'sysdocs_class_method', 'f41ce0b66e204d3a75e4c067b6b7fee5', 2455),
+('ru', 'description', 24925, 'Разрешено кэширование', 3, 'sysdocs_class_property', 'ff73f2a5edf9d16bcc4a304f8b0c38a0', 2456),
+('ru', 'description', 24926, 'Зависит от страницы на которой расположен', 3, 'sysdocs_class_property', '0692d9ab27d3e5fcd41fada34b6d37d2', 2457),
+('ru', 'description', 24927, 'Настройки блока', 3, 'sysdocs_class_property', '8c7a3f67f055bc97b37570d85a9047aa', 2458),
+('ru', 'description', 24929, 'Параметры запуска', 3, 'sysdocs_class_property', '97948104e039a41951fd4687a7004682', 2459),
+('ru', 'description', 24928, 'Путь к шаблону (относительно темы оформления)', 3, 'sysdocs_class_property', '0ce2d7186c10eaf5dd7b367ababa61fe', 2460),
+('ru', 'description', 1089, '<p>Класс блока отображения меню</p>\n', 3, 'sysdocs_class', '3e3757ab8342f985e3a564c11ecf1895', 2461),
+('ru', 'description', 25872, 'Разрешено кэширование', 3, 'sysdocs_class_property', '5f413cf9e341e55ff7dd8e1a9f786dcf', 2462),
+('ru', 'description', 25874, 'Ключ кэширования', 3, 'sysdocs_class_property', '7f504a01e9e631a1d0a98758a9290f2a', 2463),
+('ru', 'description', 25873, 'Зависит от страницы на которой расположен', 3, 'sysdocs_class_property', '9efc70a2d05a670f0884791dcb0e06b1', 2464),
+('ru', 'description', 25877, 'Настройки блока', 3, 'sysdocs_class_property', '8d2b698709d55f5ac94892a8882a71d9', 2465),
+('ru', 'description', 25876, 'Данные блока', 3, 'sysdocs_class_property', '937b4e3e95d823d0a9f87f1f014d3c71', 2466),
+('ru', 'description', 25878, 'Параметры запуска', 3, 'sysdocs_class_property', 'ebd40a83dec0e9dba51399c307912a01', 2467),
+('ru', 'description', 25875, 'Путь к шаблону (относительно темы оформления)', 3, 'sysdocs_class_property', 'a5c77546977fcc086bd1715633c093ad', 2468),
+('ru', 'description', 14784, 'Получить ключ кэширование по  id', 3, 'sysdocs_class_method', '6be5d19c9ef4f65d978fd9b975425d8f', 2469),
+('ru', 'description', 14787, 'Конструктор, принимает настройки блока', 3, 'sysdocs_class_method', '056071e5375be2dead983559f9a76d88', 2470),
+('ru', 'description', 14788, 'Строковое представление объекта, возвращает подготовленный html код блока', 3, 'sysdocs_class_method', 'c2608663fc49b77c2a4a28548379baaf', 2471),
+('ru', 'description', 1092, '<p>Класс блока для отображения верхнего меню</p>\n', 3, 'sysdocs_class', '50f2cb69629135c5584b7dc559577b66', 2472),
+('ru', 'description', 1091, '<p>Класс блока для отображения&nbsp; меню в подвале (footer)</p>\n', 3, 'sysdocs_class', 'd5822b019e9260283b8f41c6ebb6b6d1', 2473),
+('ru', 'description', 14796, 'Строковое представление объекта, возвращает подготовленный html код блока', 3, 'sysdocs_class_method', '313e7b43162e5c75623aec50cf1d0666', 2474),
+('ru', 'description', 14801, 'Строковое представление объекта, возвращает подготовленный html код блока', 3, 'sysdocs_class_method', '4f5da82d4a127a9021f062b7b5771735', 2475),
+('ru', 'description', 25893, 'Разрешено кэширование', 3, 'sysdocs_class_property', '5ec4488950f3fcf0207b73fb5c1bec56', 2476),
+('ru', 'description', 25886, 'Разрешено кэширование', 3, 'sysdocs_class_property', '322b4df458dccb103daa215efbbf3ae4', 2477),
+('ru', 'description', 25894, 'Зависит от страницы на которой расположен', 3, 'sysdocs_class_property', '7706b80c9424b3631ab4598618014dce', 2478),
+('ru', 'description', 25887, 'Зависит от страницы на которой расположен', 3, 'sysdocs_class_property', '3e203d10d0d311cb50f34fa8b7db7764', 2479),
+('ru', 'description', 25892, 'Ключ кэширования', 3, 'sysdocs_class_property', 'c67b9bb8cbd62480ba0c193cfb76cca4', 2480),
+('ru', 'description', 25885, 'Ключ кэширования', 3, 'sysdocs_class_property', 'e2bc51a02b645b074481a08a599f25a0', 2481),
+('ru', 'description', 25897, 'Настройки блока', 3, 'sysdocs_class_property', '9dd96eb66d7455e4068f71b08da8868e', 2482),
+('ru', 'description', 25890, 'Настройки блока', 3, 'sysdocs_class_property', '79022425ae34e3565bcfe87b18573b8e', 2483),
+('ru', 'description', 25896, 'Данные блока', 3, 'sysdocs_class_property', '360b12a6648f8d1c39b900e55f455a6f', 2484),
+('ru', 'description', 25889, 'Данные блока', 3, 'sysdocs_class_property', 'a63e4ca4bec54d7f0e6f700225e984d7', 2485),
+('ru', 'description', 25898, 'Параметры запуска', 3, 'sysdocs_class_property', 'a80bac355594f67775d377937f9f9ffc', 2486),
+('ru', 'description', 25891, 'Параметры запуска', 3, 'sysdocs_class_property', '1294529a5d2be6fe2809b24321dbfccf', 2487),
+('ru', 'description', 25895, 'Путь к шаблону (относительно темы оформления)', 3, 'sysdocs_class_property', 'c72a1578f4b81400d7120a03c4d43cf6', 2488),
+('ru', 'description', 25888, 'Путь к шаблону (относительно темы оформления)', 3, 'sysdocs_class_property', '3b1ab7fb4ef4c3f2d2735e74f8100529', 2489),
+('ru', 'description', 14797, 'Получить ключ кэширование по id', 3, 'sysdocs_class_method', '33b857213be32a719e9280114e682387', 2490),
+('ru', 'description', 14792, 'Получить ключ кэширование по id', 3, 'sysdocs_class_method', '3740c14cc9394937b33b6afdf0a30edb', 2491),
+('ru', 'description', 14800, 'Конструктор, принимает настройки блока', 3, 'sysdocs_class_method', 'cebbf33c440b4bb8ee4b140d3dbf618f', 2492),
+('ru', 'description', 14795, 'Конструктор, принимает настройки блока', 3, 'sysdocs_class_method', '83c3727533b42d61fd7c279c3ac795fe', 2493),
+('ru', 'description', 1095, '<p>Менеджер кэша</p>\n', 3, 'sysdocs_class', '30edca2ce1fb528fc5e13a7379dfaf93', 2494),
+('ru', 'description', 25906, 'Список подключений', 3, 'sysdocs_class_property', '9dcf8929e8bf0d3488037df037677d77', 2495),
+('ru', 'description', 14823, 'Инициализировать адаптер кэширования', 3, 'sysdocs_class_method', '2278445377ed7a1d3cff4df8a70d90d1', 2496),
+('ru', 'description', 14820, 'Получить адаптер кэширования по имени', 3, 'sysdocs_class_method', 'd0c689860a77a4ebc68d3ece2c978aa7', 2497),
+('ru', 'description', 14822, 'Получить список зарегистрированных адаптеров', 3, 'sysdocs_class_method', 'c307ccca2c6b62d33d61842e2475afc0', 2498),
+('ru', 'description', 14819, 'Зарегистрировать адаптер', 3, 'sysdocs_class_method', 'a2bae15873571aee9820f0419e01547e', 2499),
+('ru', 'description', 14821, 'Убрать адаптер из списка зарегистрированных', 3, 'sysdocs_class_method', '7b142b3b123cbf1fb142d5d4565ddfae', 2500),
+('ru', 'description', 960, '<p>Базовый класс для&nbsp; CRON&nbsp; заданий</p>\n', 3, 'sysdocs_class', '92c9f71efc29c80058e671cc41ba0798', 2501),
+('ru', 'description', 24549, 'Настройки задания', 3, 'sysdocs_class_property', '89ad2bdc186a1ec0ae73bdce6a0fb11c', 2502),
+('ru', 'description', 24551, 'Адаптер блокирования одновременного запуска  одинаковых заданий', 3, 'sysdocs_class_property', '8d98fa1c305721e68d8059e7db0b64fd', 2503),
+('ru', 'description', 24550, 'Статистика выполнения задания', 3, 'sysdocs_class_property', '8fb11c6ed4355a92246f43a09a18b979', 2504),
+('ru', 'description', 12126, 'Проверить не достигнут ли лимит  на выполнение задания, обновить блокировку.', 3, 'sysdocs_class_method', '771ec402af5056242df08bd2a8975786', 2505),
+('ru', 'description', 12122, 'Получить статистику выполнения задания', 3, 'sysdocs_class_method', '7f8f4949179bdc2837799e10c7a81023', 2506),
+('ru', 'description', 12123, 'Получить статистику выполнения задания в виде строки<br />\n(используется для логов)', 3, 'sysdocs_class_method', 'a6095c2eed3d780954666192724970e8', 2507),
+('ru', 'description', 12124, 'Запустить выполнение задания', 3, 'sysdocs_class_method', '9d8048becab578de1c6494aef92ca005', 2508),
+('ru', 'description', 12125, 'Проверить возможность установки блокировки', 3, 'sysdocs_class_method', 'ece0a4e2386ee654103f18524cddacb4', 2509),
+('ru', 'description', 12121, 'Конструктор, принимает настройки задания', 3, 'sysdocs_class_method', '3d49e933a7f7f489fbc6210de942f46f', 2510),
+('ru', 'description', 959, '<p>CRON&nbsp; задача по очистке&nbsp; MEMORY&nbsp; таблиц</p>\n', 3, 'sysdocs_class', 'b65011adf3c2fe71015826022034ec38', 2511),
+('ru', 'description', 961, '<p>Тестовое задание&nbsp; CRON (пример)</p>\n', 3, 'sysdocs_class', 'a4292dca289e0e329ace92435ebf67d9', 2512),
+('ru', 'description', 24965, 'Настройки приложения\n ', 3, 'sysdocs_class_property', 'ff723d5878fe65e16ad28a04d2812244', 2513),
+('ru', 'description', 24966, 'Настройки дизайнера интерфейсов', 3, 'sysdocs_class_property', 'abaffbfd199549934b7e4e74ac0427c0', 2514),
+('ru', 'description', 13214, 'Получить настройки автозамен. (шаблоны )', 3, 'sysdocs_class_method', 'fbc91e650ffa96d049e5ab8c5df32db3', 2515),
+('ru', 'description', 13213, 'Отрендерить проект дизайнера интерфейсов', 3, 'sysdocs_class_method', '480b97cb6838a8434e05ec79b61af811', 2516),
+('ru', 'description', 13212, 'Конструктор, принимает настройки приложения', 3, 'sysdocs_class_method', 'a211edb9da3c1ed5805bfa0d8ef84504', 2517),
+('ru', 'description', 990, '<p>Менеджер проектов дизайнера интерфейсов (обертка над&nbsp; factory)</p>\n', 3, 'sysdocs_class', '8e8f3122a9121aabf4c5f64a4558e219', 2518),
+('ru', 'description', 1093, '<p>Менеджер словарей&nbsp; ORM</p>\n', 3, 'sysdocs_class', '1b102e3328d90674fe89c46b651706a7', 2519),
+('ru', 'description', 14804, 'Создать словарь', 3, 'sysdocs_class_method', 'f4c28ee6500b15de4c4e43bda89f1a06', 2520),
+('ru', 'description', 14809, 'Получть хэш строку данных всех словарей', 3, 'sysdocs_class_method', 'ebfb7dfe458b754320db32e649c65b47', 2521),
+('ru', 'description', 14803, 'Получить список словарей', 3, 'sysdocs_class_method', '800eafb5513c48dd8bf5226413014814', 2522),
+('ru', 'description', 14806, 'Проверить, существует ли словарь', 3, 'sysdocs_class_method', 'f5f822e3aa5db64a770a574db0f8d315', 2523),
+('ru', 'description', 14807, 'Удалить словарь', 3, 'sysdocs_class_method', 'd308486379137436ab1f0b935d384b80', 2524);
+INSERT INTO `sysdocs_localization` (`lang`, `field`, `object_id`, `value`, `vers`, `object_class`, `hid`, `id`) VALUES
+('ru', 'description', 14805, 'Переименовать словарь', 3, 'sysdocs_class_method', 'd2ac912eeb8415236ea65d80d62dd90e', 2525),
+('ru', 'description', 14808, 'Сбросить кэш', 3, 'sysdocs_class_method', '1936ea32f3306bc07b58daeacde516ea', 2526),
+('ru', 'description', 25901, 'Путь к папке со словарями', 3, 'sysdocs_class_property', '0b015dd4290d0d9bd37ed553eb420766', 2527),
+('ru', 'description', 25902, 'Адаптер кэширования\n ', 3, 'sysdocs_class_property', '0c85e8b6a19ecf971ec0d69b3e4f18a8', 2528),
+('ru', 'description', 25903, 'Список словарей', 3, 'sysdocs_class_property', 'd247e2dc0e35a1d9a8f8817af7a76ead', 2529),
+('ru', 'description', 25904, 'Локальный кэш словарей', 3, 'sysdocs_class_property', 'e6c3abdbca5d72ffe1ba724b2cd28534', 2530),
+('ru', 'description', 963, '<p>EXPERIMENTAL !&nbsp; Менеджер сторонних модулей</p>\n', 3, 'sysdocs_class', '7cda0088b72fb40f605cd9f4c3ab2df9', 2531),
+('ru', 'description', 996, '<p>API&nbsp; контроллер для взаимодействия с модулем&nbsp; Deploy</p>\n', 3, 'sysdocs_class', '68c396c09858be788a29e5fc8364a78a', 2532),
+('ru', 'description', 993, '<p>Контроллер&nbsp; консольного запуска.&nbsp;</p>\n\n<p>Используется для запуска фоновых и CRON&nbsp; заданий. Так же может использоваться для запуска и выполнения действий минуя веб интерфейс.</p>\n\n<p>Может быть запущен исключительно при помощи&nbsp; console.php</p>\n\n<p>&nbsp;</p>\n', 3, 'sysdocs_class', '9adc699c298fb0c5b95fffa1ee59469a', 2533),
+('ru', 'description', 24997, 'Настройки приложения', 3, 'sysdocs_class_property', '81adb74333c1ddaedf36797ce082735a', 2534),
+('ru', 'description', 24989, 'Настройки CRON  заданий', 3, 'sysdocs_class_property', '584e0050fea92110350afdb70db52c0b', 2535),
+('ru', 'description', 24990, 'Настройки запуска  CRON  заданий', 3, 'sysdocs_class_property', 'ae49d668f1b9f42b41ba7d84c1567cc6', 2536),
+('ru', 'description', 24993, 'Потключение к базе данных', 3, 'sysdocs_class_property', 'd5535df46a95623f6922316290988a9e', 2537),
+('ru', 'description', 24991, 'Потключение к базе данных по умолчанию', 3, 'sysdocs_class_property', '63cc12e1471069f0f3271cc5459e6417', 2538),
+('ru', 'description', 24995, 'Словарь локализации', 3, 'sysdocs_class_property', 'f421ab597e9e4d48e53dde0f14173dee', 2539),
+('ru', 'description', 24987, 'Адаптер логирования', 3, 'sysdocs_class_property', '8ab2a88fcb803a73d0509ad208c7500b', 2540),
+('ru', 'description', 24992, 'не используется\n ', 3, 'sysdocs_class_property', '55b6faf5adddbc7d32e294e6433dc655', 2541),
+('ru', 'description', 24994, 'не используется ', 3, 'sysdocs_class_property', 'b1f45e62e634354a0fd1abd82b978d07', 2542),
+('ru', 'description', 24996, 'Ссылка на роутер', 3, 'sysdocs_class_property', 'e889d718ae7923d2899676ad1cbf83b9', 2543),
+('ru', 'description', 24988, 'Пользователь, от имени которого запущен контроллер', 3, 'sysdocs_class_property', 'acaee203e5b67996593b84ea379e35a8', 2544),
+('ru', 'description', 13242, 'Очистить MEMORY  таблицы от устаревших данных  фоновых заданий', 3, 'sysdocs_class_method', '2f20040ca92a7516e031650d2cb9beef', 2545),
+('ru', 'description', 13245, 'Сгенерировать документацию по проекту', 3, 'sysdocs_class_method', '1ed8ff6540d9ce08689201d8a1d813c9', 2546),
+('ru', 'description', 13241, 'Действие по умолчанию', 3, 'sysdocs_class_method', '12c7bcb468edd27e99faa5eb9c46303c', 2547),
+('ru', 'description', 13247, 'Установить адаптер подключения к  БД', 3, 'sysdocs_class_method', 'b0839178b89ce51f248bd2980bb32272', 2548),
+('ru', 'description', 13246, 'Установить адаптер подключения к БД по умолчанию', 3, 'sysdocs_class_method', 'ed431f85343f9342de080bcf5cd346c2', 2549),
+('ru', 'description', 13248, 'Установить адаптер роутинга', 3, 'sysdocs_class_method', '4e85282df11f3dcf892b83ae17bea207', 2550),
+('ru', 'description', 13244, 'Запустить ДЕМО  CRON  задания', 3, 'sysdocs_class_method', 'b6a4db90b5d75548c3c89b69671da52f', 2551),
+('ru', 'description', 13243, 'Запустить ДЕМО  фоновой задачи', 3, 'sysdocs_class_method', '3fabcc248000247a86cda74b53c41835', 2552),
+('ru', 'description', 13237, 'Авторизоваться под системным пользователем (из настроек)', 3, 'sysdocs_class_method', '74a744809b3c6a49b19c9c2fd429c081', 2553),
+('ru', 'description', 13240, 'Запустить  CRON  задачу используя блокировку одновременного запуска <br>\nконсольная команда <br>\n./console.php /console/[task]/[time limit]/[thread] <br>\nгде:<br>\n[task] имя задачи  (экшен контроллера)<br>\n[time limit] лимит времени на выполнение, c.<br>\n[thread] номер потока (одновременный неблокируемый запуск) <br>', 3, 'sysdocs_class_method', 'c7b168c383f48dc923bc3f4a614ed3df', 2554),
+('ru', 'description', 13239, 'Запустить фоновую задачу.\nФоновыми задачами в отличие от  CRON  заданий  можно управлять при помощи веб интерфейса.', 3, 'sysdocs_class_method', '0ef004b097b23151c14672e276e88d44', 2555),
+('ru', 'description', 13238, 'Записать сообщение в лог', 3, 'sysdocs_class_method', '535f4812e893d9e87a728f52a1ee1f71', 2556),
+('ru', 'description', 24938, 'Настройки приложения', 3, 'sysdocs_class_property', '86be23ec85a30550aca26d8524f6b3e2', 2557),
+('ru', 'description', 24942, 'Автоагрузчик классов', 3, 'sysdocs_class_property', 'e163f02648faae1278c1c188b5410bb3', 2558),
+('ru', 'description', 24939, 'Адаптер кэширования', 3, 'sysdocs_class_property', 'c1cd3ee8ca40e01dae0adc71b35cb841', 2559),
+('ru', 'description', 24940, 'Адаптер подключение к базе данных по умолчанию', 3, 'sysdocs_class_property', 'b6cda1782e4c026689102820f3d89963', 2560),
+('ru', 'description', 24943, 'Менеджер управления сторонними модулями', 3, 'sysdocs_class_property', 'c3c0af414e98c064c3c1d5691e7fe8b8', 2561),
+('ru', 'description', 24941, 'Флаг состояния инициализации', 3, 'sysdocs_class_property', 'c9f735be6761c8cbe8de92d27de726e8', 2562),
+('ru', 'description', 24937, 'Путь к шаблонам', 3, 'sysdocs_class_property', '30460d69edf3ca189d8eca0ba7c3f567', 2563),
+('ru', 'description', 26061, 'Адаптер кэширования', 3, 'sysdocs_class_property', '251aa16839148666e2024b84d6be096a', 2564),
+('ru', 'description', 26052, 'Ключ кэша', 3, 'sysdocs_class_property', '2bfab21da3e281a1575441fbc7029142', 2565),
+('ru', 'description', 26051, 'Класс блока по умолчанию', 3, 'sysdocs_class_property', '4d42a09513df8009cd209e65278f3f23', 2566),
+('ru', 'description', 26054, 'Адаптер кэширования по умолчанию', 3, 'sysdocs_class_property', '75051c8055bd0dd0f64ad91b7c6969ec', 2567),
+('ru', 'description', 26057, 'Карта блоков по умолчанию', 3, 'sysdocs_class_property', '19f1c96c42a81e39720ef79dcba59753', 2568),
+('ru', 'description', 26060, 'Флаг наличия блоков запрещающих кэширование', 3, 'sysdocs_class_property', 'be47360dc7ab734fbb07e0f3429afb2e', 2569),
+('ru', 'description', 26056, 'Карта блоков', 3, 'sysdocs_class_property', '6650fcce00f9b8ed04e90979bab22168', 2570),
+('ru', 'description', 26058, 'Идентификатор страницы', 3, 'sysdocs_class_property', 'ae96b60c37069172b876cf34766f6300', 2571),
+('ru', 'description', 26053, 'Флаг, разрешающий жесткое кжширование без возможности инвалидации', 3, 'sysdocs_class_property', '99552fb7f9f6c3ed620b82b55eea2cd2', 2572),
+('ru', 'description', 26059, 'версия', 3, 'sysdocs_class_property', '87799d56285cbc759916d4f45942d896', 2573),
+('ru', 'description', 25913, 'Настройки приложения', 3, 'sysdocs_class_property', 'f35e1dcdf8ae7232cc2710058762315c', 2574),
+('ru', 'description', 25909, 'Адаптер подключения к БД', 3, 'sysdocs_class_property', '16339211e8a6105c700f065294abf482', 2575),
+('ru', 'description', 25907, 'Адаптер подключения к бд по умолчанию', 3, 'sysdocs_class_property', 'e6c5c0e67fec780261f704b5110cfac4', 2576),
+('ru', 'description', 25911, 'Словарь локализации', 3, 'sysdocs_class_property', 'f1a914196d2389cf0628139fd3f012a5', 2577),
+('ru', 'description', 25908, 'Объект  Page', 3, 'sysdocs_class_property', '47da79e454a5936b01d67c849779d0d4', 2578),
+('ru', 'description', 25910, 'Адаптер управления подключаемыми ресурсами  (js,css)', 3, 'sysdocs_class_property', 'c08239a249997129dd2f3703c5efdc9a', 2579),
+('ru', 'description', 25912, 'Роутер приложения', 3, 'sysdocs_class_property', 'a87eecee73de6503cfe0b6589a61b05d', 2580),
+('ru', 'description', 24935, 'Путь к файлам словарей', 3, 'sysdocs_class_property', '4973f08ddbc8660f928d3996e4175102', 2581),
+('ru', 'description', 24936, 'Данные словаря', 3, 'sysdocs_class_property', '644c7fef1aed217a348d9638982fd434', 2582),
+('ru', 'description', 962, '<p>Внимание, класс помечен как<span style="color:#808080;background-color:#f7faff;font-weight:bold;font-style:italic;"> @deprecated</span>&nbsp; используйте&nbsp; User</p>\n', 3, 'sysdocs_class', '04d076da076458cda8afd3fa60113f4a', 2583),
+('ru', 'description', 956, '<p>Триггер сохранения блоков. Используется для инвалидации кэша блоков во время сохранения изменений</p>\n', 3, 'sysdocs_class', 'c545e301f42f12266dbd7d32e7cd54bb', 2584),
+('ru', 'description', 957, 'Триггер сохранения меню. Используется для инвалидации кэша меню во время сохранения изменений', 3, 'sysdocs_class', '645a6b754465e3f1bcc51ad064b4037e', 2585),
+('ru', 'description', 958, 'Триггер сохранения страниц. Используется для инвалидации кэша страниц во время сохранения изменений', 3, 'sysdocs_class', '5b2cf5f91f8cd789fba4a169c9b70595', 2586),
+('ru', 'description', 1102, '<p>Фоновая задача перенарезки изображений медиатеки.<br />\n<br />\nТребует передачи следующих настроек<br />\n<strong>types</strong> - типоразмеры картинок для перенарезки array(&#39;icon&#39;,&#39;thumb&#39;,...) см. конфигурацию медиатеки.<br />\n<strong>notCroped</strong> - флаг, перенарезать&nbsp; только те изображения, которые небыли нарезаны вручную при помощи интерфейса.</p>\n', 3, 'sysdocs_class', '9b5a416884c18549981fe8cba0dc7048', 2587),
+('ru', 'description', 1103, '<p>Тестовая фоновая задача. (Пример оформления)</p>\n', 3, 'sysdocs_class', 'b659b0ce737e3a19c30a6d5a8a238797', 2588),
+('ru', 'description', 1097, '<p>Базовый класс для описания заданий&nbsp; выполняемых по расписанию&nbsp; (cronjob)</p>\n', 3, 'sysdocs_class', 'c3b3bd434ba8d3770677602cdfb49060', 2589),
+('ru', 'description', 1098, '<p>Тестовая&nbsp; задача для выполнения по расписанию. (Пример оформления)</p>\n', 3, 'sysdocs_class', 'b6787477977afaf6d39535ea80b9d675', 2590),
+('ru', 'description', 1101, '<p>Фоновая задача модуля&nbsp; Deploy. Отвечает за получение информации о состоянии внешней БД</p>\n', 3, 'sysdocs_class', '332ac8cae40b7c4c74160e8818c243df', 2591),
+('ru', 'description', 1099, '<p>Фоновая задача модуля Deploy. Отвечает за формирование архива с файлами обновления.</p>\n', 3, 'sysdocs_class', 'a5d347b9ab8ba8197a5f49d9643014fc', 2592),
+('ru', 'description', 1100, '<p>Фоновая задача модуля Deploy. Отвечает за обновление и сравнение карт файловых систем (эталонной и внешней)</p>\n', 3, 'sysdocs_class', 'e6234e243a2652abca461206e0657d53', 2593),
+('ru', 'description', 14748, 'Запустить процесс обновления документации', 3, 'sysdocs_class_method', 'd30614a4e36053ebbf42c2bf1b7132ca', 2594),
+('ru', 'description', 14760, 'Скопировать описание из предыдущей версии документации', 3, 'sysdocs_class_method', '3d1f453d8acf976c01d057655185332e', 2595),
+('ru', 'description', 1085, '<p>Хелпер идентификации файла класса в разрезе нескольких версий документации</p>\n', 3, 'sysdocs_class', 'c3d5d8f7577203df1b662ac82eac33d5', 2596),
+('ru', 'description', 14742, 'Получить сквозной идентификатор класса', 3, 'sysdocs_class_method', '053266df22c6e2105f3f63cc0ff6cf69', 2597),
+('ru', 'description', 14746, 'Получить сквозной идентификатор файла', 3, 'sysdocs_class_method', '03f937cb5fd1f7fa7e09cf6997b6c870', 2598),
+('ru', 'description', 14743, 'Получить сквозной идентификатор метода', 3, 'sysdocs_class_method', 'd18245e72c504c49743340cb77733570', 2599),
+('ru', 'description', 14744, 'Получить сквозной идентификатор параметра', 3, 'sysdocs_class_method', '59ae45ce151ff45f95fd6f25b9305c34', 2600),
+('ru', 'description', 14745, 'Получить сквозной идентификатор свойства', 3, 'sysdocs_class_method', '84fb7b6cb800820985da0e74738e6ced', 2601),
+('ru', 'description', 1088, '<p>Класс отвечающий предоставление исчерпывающей информации о структуре задокументированного класса</p>\n', 3, 'sysdocs_class', '6becbcf48bd547404698c7c14115ba7b', 2602),
+('ru', 'description', 14777, 'Найти описание исследуемого объекта в архиве документации.', 3, 'sysdocs_class_method', 'd1fc0c33510efc35ed217d9d131d49dc', 2603),
+('ru', 'description', 14778, 'Создать ключ кэша для собранной информации', 3, 'sysdocs_class_method', '87d3d5ccb3454b54229afff29a9fc121', 2604),
+('ru', 'description', 14776, 'Получить информацию о классе  ипользуя в качестве идентификатора сквозной  ID  файла', 3, 'sysdocs_class_method', '0e140811b308c6bc5a47dde10be4738f', 2605),
+('ru', 'description', 14781, 'Получить список методов класса', 3, 'sysdocs_class_method', '3e92ab3a7bea14de58c1ca1846dd96b4', 2606),
+('ru', 'description', 14780, 'Получить список свойств класса', 3, 'sysdocs_class_method', 'cd9057103ec297102b192f2af00c70a0', 2607),
+('ru', 'description', 14783, 'Установить адаптер кэширования', 3, 'sysdocs_class_method', '5edfc1afc6347a416deed26184a1cdd6', 2608),
+('ru', 'description', 14782, 'Установить описание класса', 3, 'sysdocs_class_method', 'e25681ceb21b28a2f92bdcc9bad45687', 2609),
+('ru', 'description', 25870, 'Адаптер кэширования', 3, 'sysdocs_class_property', '99de9c813122b59431dce7a08c7bbbbc', 2610),
+('ru', 'description', 25871, 'Префикс ключа кэша', 3, 'sysdocs_class_property', '91fc76972123e3f8811cf1ff36fe6a2e', 2611),
+('ru', 'description', 25857, 'Настройки генератора документации', 3, 'sysdocs_class_property', '702633f4b2058fefa51e2e5220f205f1', 2612),
+('ru', 'description', 25859, 'Генератор сквозных идентификаторов\n ', 3, 'sysdocs_class_property', 'd629120cafb69994ff0c1c2e6460717f', 2613),
+('ru', 'description', 25858, 'Версия создаваемой документации', 3, 'sysdocs_class_property', 'd8a9d6f66a26491731347e2e50a38ade', 2614),
+('ru', 'description', 14757, 'Извлечь текст из строки описания в стиле  PhpDoc', 3, 'sysdocs_class_method', '102f13fc98ab93b670b28f2a9dbdc4a3', 2615),
+('ru', 'description', 14756, 'Найти родительский класс', 3, 'sysdocs_class_method', '91b2074581f29e528ab9474e41fd354a', 2616),
+('ru', 'description', 14758, 'Вывод сообщения в консоль', 3, 'sysdocs_class_method', '4de1d97f7507f5564521df85b7632e90', 2617),
+('ru', 'description', 14749, 'Подготовить базу данных документации', 3, 'sysdocs_class_method', 'eb358a6077bd661f879c9399bd52639f', 2618),
+('ru', 'description', 14754, 'Запустить анализ методов', 3, 'sysdocs_class_method', 'faddf23d799b150768a4aefa542c21d8', 2619),
+('ru', 'description', 14753, 'Запустить анализ свойств', 3, 'sysdocs_class_method', '89e6f3e3470cfe58d56fdf55f836d48d', 2620),
+('ru', 'description', 14752, 'Сохранить информацию о классе', 3, 'sysdocs_class_method', 'e4e3b7f0924ece9a18d5310182eca7e1', 2621),
+('ru', 'description', 14750, 'Сканировать файловую систему', 3, 'sysdocs_class_method', '5a9d28e2cfbed735b76fe8cf26730a2e', 2622),
+('ru', 'description', 14751, 'Сохранить информацию о файле', 3, 'sysdocs_class_method', '4e213849f4efd936b2cf95e8b683b02c', 2623),
+('ru', 'description', 14755, 'Сохранить информацию о методе', 3, 'sysdocs_class_method', 'ef527dda6654449dccf613ec2490ff42', 2624),
+('ru', 'description', 974, '<p>Модель управления зависимостями объектов&nbsp; ORM.&nbsp; Управляет ссылками на списки объектов.</p>\n', 3, 'sysdocs_class', 'bf92c04aeb587ca83e4f011af80fae3b', 2625),
+('ru', 'description', 980, '<p>Модель управления категориями медиатеки</p>\n', 3, 'sysdocs_class', '326c5d2335bd88d89e7e527a0a74f9a8', 2626),
+('ru', 'description', 965, '<p>Модель управления медиатекой</p>\n', 3, 'sysdocs_class', 'd44899119817e04f87e06e3353a86e9b', 2627),
+('ru', 'description', 968, '<p>Модель управления меню</p>\n', 3, 'sysdocs_class', 'c2294b3a8f17318a75a1b8e568bd5558', 2628),
+('ru', 'description', 975, '<p>Модель управления страницами (древовидная структура сайта)</p>\n', 3, 'sysdocs_class', '240ff5e885d422db16c9c1232da86d35', 2629),
+('ru', 'description', 969, '<p>Модель управления правами доступа к модулям</p>\n', 3, 'sysdocs_class', '1b4f2001c64207d36d98c4c9c91a9f70', 2630),
+('ru', 'description', 972, '<p>Модель управления пользователями системы</p>\n', 3, 'sysdocs_class', '031f9f8bf03e774e48b7ba5af4e67083', 2631),
+('ru', 'description', 979, '<p>Модель управления версиями объектов (версионный контроль данных)</p>\n', 3, 'sysdocs_class', '3d29af71756fbbef1eb46e2707a4d72e', 2632),
+('ru', 'description', 964, '<p>Модель управления картами блоков</p>\n', 3, 'sysdocs_class', '369b55be5c8a72d98ba20fc5add5eaab', 2633),
+('ru', 'description', 966, '<p>Модель управления блоками</p>\n', 3, 'sysdocs_class', 'd856a548c414f431c7a5b5fac6f83776', 2634),
+('ru', 'description', 967, '<p>Модель управления файловым хранилищем</p>\n', 3, 'sysdocs_class', '2ada57b9bb11ba66b1492d07c3e2741f', 2635),
+('ru', 'description', 982, '<p>Модель управления группами пользователей</p>\n', 3, 'sysdocs_class', '1bb9f846f5a57dbecd8d0889bacb9956', 2636),
+('ru', 'description', 973, '<p>Модель управлени историей изменений объектов</p>\n', 3, 'sysdocs_class', '7c01799d11b1cd99a7541fd5dc97bbba', 2637),
+('ru', 'description', 13093, 'Добавить группу пользователей', 3, 'sysdocs_class_method', '90106492ba1237becefbe045d76a37f9', 2638),
+('ru', 'description', 13092, 'Получить список групп', 3, 'sysdocs_class_method', 'c68274d9e94ea1a3441d7f9faeddea54', 2639),
+('ru', 'description', 13094, 'Удалить группу', 3, 'sysdocs_class_method', '87b0cc4e4397224e075ce470c51b6d88', 2640),
+('ru', 'description', 12991, 'Получить дерево категорий медиатеки', 3, 'sysdocs_class_method', '78f73aa957e5b4888345761c34cd32d3', 2641),
+('ru', 'description', 12993, 'Обновить порядок', 3, 'sysdocs_class_method', '8e2604e135af50707cbf23ac92367ad2', 2642),
+('ru', 'description', 12227, 'Добавить элемент', 3, 'sysdocs_class_method', '8c2d57dbd0054647310fcce4ebf69271', 2643),
+('ru', 'description', 12239, 'Переместить элементы удаленной категории', 3, 'sysdocs_class_method', '5ff74bc9b0044af7278ddd2263a9d2b1', 2644),
+('ru', 'description', 12235, 'Нарезать изображение и создать превью', 3, 'sysdocs_class_method', 'dc3c1e8393364e92d5cc584e15199aec', 2645),
+('ru', 'description', 12238, 'Получить конфигурацию медиатеки', 3, 'sysdocs_class_method', '26d6db0d5699761f2c9e657324a595a8', 2646),
+('ru', 'description', 12233, 'Подключить необходимые JavaScript файлы', 3, 'sysdocs_class_method', 'd0b22776d9aa7c65dc0054ab03b43377', 2647),
+('ru', 'description', 12237, 'Пометить элемент как нарезанный вручную', 3, 'sysdocs_class_method', '41c8f29b00dd35361f45927a76a76880', 2648),
+('ru', 'description', 12228, 'Удалить элемент из медиатеки', 3, 'sysdocs_class_method', '55139734da88ae6cf3b5cdcae33a356d', 2649),
+('ru', 'description', 12234, 'Перенарезать превью', 3, 'sysdocs_class_method', 'faf74bbb30182c2b94320ab2f7bfb09f', 2650),
+('ru', 'description', 12232, 'Обновить данные элемента медиатеки', 3, 'sysdocs_class_method', '819f06467d78cb64484c81d76e46b819', 2651),
+('ru', 'description', 12240, 'Переместить элементы в категорию', 3, 'sysdocs_class_method', '6a18c0287ca4285a3ab55a4b04d7a10c', 2652),
+('ru', 'description', 12236, 'Обновить дату модификации', 3, 'sysdocs_class_method', '2f893d70cb8d42bcc8ef76383f113a52', 2653),
+('ru', 'description', 12229, 'Вычислить путь к  изображению/превью', 3, 'sysdocs_class_method', 'd66cf51f87fc1205d1834f785d0f358b', 2654),
+('ru', 'description', 12226, 'Получить данные элемента по его пути в файловой системе', 3, 'sysdocs_class_method', 'e5daef3f1b6e27e5053c76a77d8d8060', 2655),
+('ru', 'description', 24588, 'Флаг, скрипты уже подключены (js,css)', 3, 'sysdocs_class_property', '7b04d9c41edbb112b4aff0f51fadb2a3', 2656),
+('ru', 'description', 12686, 'Удалить ссылки объекта', 3, 'sysdocs_class_method', 'a2c388da47e20a9ef5fe401ca2bfd824', 2657),
+('ru', 'description', 12687, 'Удалить ссылки для списка объектов', 3, 'sysdocs_class_method', 'ff7197666b53b6d314971b891825483d', 2658),
+('ru', 'description', 12637, 'Добавить запись в лог (таблица истории изменений)', 3, 'sysdocs_class_method', 'b59a9c256bc22e0cab6d45f13837cfb5', 2659),
+('ru', 'description', 12638, 'Получить историю изменений', 3, 'sysdocs_class_method', '3aca119108eaaddddd55ac6d83b81869', 2660),
+('ru', 'description', 12385, 'Очистить кэш меню', 3, 'sysdocs_class_method', '04feeb47c80e68a4de00c4ce87798d5c', 2661),
+('ru', 'description', 12386, 'Получить данные из кэша', 3, 'sysdocs_class_method', '4f7839e7a2ccb5479f2ed7081eb04458', 2662),
+('ru', 'description', 12387, 'Добавить набор ссылок в меню', 3, 'sysdocs_class_method', 'e034e9f2cfed0b16cfdbffdd93e77ac4', 2663),
+('ru', 'description', 12178, 'Добавить карту блоков страницы', 3, 'sysdocs_class_method', '24df3227d01ced81792673284dbee0aa', 2664),
+('ru', 'description', 12177, 'Очистить карту блоков страницы', 3, 'sysdocs_class_method', 'dc69900ff2f73464b1efefa8115723a3', 2665),
+('ru', 'description', 981, '<p>Модель управления элементами меню</p>\n', 3, 'sysdocs_class', '8b86d1a6544739dcb714d8a2afcc8063', 2666),
+('ru', 'description', 13044, 'Импортировать меню из структуры сайта', 3, 'sysdocs_class_method', 'f0add2ad91e6c447eee6dbc65196d310', 2667),
+('ru', 'description', 13041, 'Получить данные  меню в формате  Tree', 3, 'sysdocs_class_method', '4108ba3d8a193da79cabff5f9e361788', 2668),
+('ru', 'description', 13043, 'Обновить элементы меню', 3, 'sysdocs_class_method', '8686766635f54ee27d2cd37fffaee53e', 2669),
+('ru', 'description', 970, '<p>Модель управления сигналами фоновых заданий</p>\n', 3, 'sysdocs_class', '40ca9a180089c6815342a6c29f8a4283', 2670),
+('ru', 'description', 12488, 'Удалить сигналы задачи', 3, 'sysdocs_class_method', '597416ca0a60c1f7746c1a692788cef7', 2671),
+('ru', 'description', 976, '<p>Модель управления настройками&nbsp; ACL</p>\n', 3, 'sysdocs_class', 'eab1786f4a95ed000dd7b57e1771324e', 2672),
+('ru', 'description', 12794, 'Получить настройки прав доступа  для группы\nВозвращает настройки проиндексирование по объекту  ORM\n', 3, 'sysdocs_class_method', 'bbd88d54110b2a0050057e287f4f628a', 2673),
+('ru', 'description', 12793, 'Получить права  доступа к объекту  ORM', 3, 'sysdocs_class_method', '25b58e9ccfe3869d8f1b45cc1eca6ddd', 2674),
+('ru', 'description', 12795, 'Обновить права группы<br />\n array(<br />\n &#39;object&#39;=>&#39;object&#39;,<br />\n &#39;view&#39;=>true,<br />\n &#39;create&#39;=>false,<br />\n &#39;edit&#39;=>false,<br />\n &#39;delete&#39;=>false,<br />\n &#39;publish&#39;=>false<br />\n ),<br />\n ...<br />\n )', 3, 'sysdocs_class_method', 'f53bb3cf86bc0630559fd9677d67119b', 2675),
+('ru', 'description', 1104, '<p>Менеджер подключений к БД</p>\n', 3, 'sysdocs_class', '8e396bc37302d00d405f25f3325cdfca', 2676),
+('ru', 'description', 26050, 'Настройки приложения', 3, 'sysdocs_class_property', '1a7ba63748443ff71bc56fa3128db2e7', 2677),
+('ru', 'description', 26049, 'Настройки подключений', 3, 'sysdocs_class_property', '42ae802fcec3e80c4326d1cd6ee32c58', 2678),
+('ru', 'description', 26048, 'Подключения', 3, 'sysdocs_class_property', '866b9a91e3974568804d268a262c1435', 2679),
+('ru', 'description', 14968, 'Получить настройки подключения', 3, 'sysdocs_class_method', 'cbb7e57f3db8122414ed1a97296ec98c', 2680),
+('ru', 'description', 14967, 'Получить адаптер подключения к БД', 3, 'sysdocs_class_method', '423f483ee85ee7e964747b373d9afe07', 2681),
+('ru', 'description', 14732, 'Извлечь  текст из комментария в стиле  PhpDoc', 3, 'sysdocs_class_method', '61455672a371bbc8b6f032b05f38a3ba', 2682),
+('ru', 'description', 14733, 'Найти описание параметра в  PhpDoc', 3, 'sysdocs_class_method', '9bdbca5f5a3c5c81a4ba09d7111afe33', 2683);
 
 --
--- Индексы сохранённых таблиц
+-- Indexes for dumped tables
 --
 
 --
--- Индексы таблицы `sysdocs_class`
+-- Indexes for table `sysdocs_class`
 --
 ALTER TABLE `sysdocs_class`
  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `hid_vers` (`hid`,`vers`), ADD KEY `vers` (`vers`), ADD KEY `parentId` (`parentId`);
 
 --
--- Индексы таблицы `sysdocs_class_method`
+-- Indexes for table `sysdocs_class_method`
 --
 ALTER TABLE `sysdocs_class_method`
  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `hid_vers` (`hid`,`vers`), ADD KEY `vers` (`vers`);
 
 --
--- Индексы таблицы `sysdocs_class_method_param`
+-- Indexes for table `sysdocs_class_method_param`
 --
 ALTER TABLE `sysdocs_class_method_param`
  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `hid_vers` (`hid`,`vers`), ADD KEY `vers` (`vers`);
 
 --
--- Индексы таблицы `sysdocs_class_property`
+-- Indexes for table `sysdocs_class_property`
 --
 ALTER TABLE `sysdocs_class_property`
  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `hid_vers` (`hid`,`vers`);
 
 --
--- Индексы таблицы `sysdocs_file`
+-- Indexes for table `sysdocs_file`
 --
 ALTER TABLE `sysdocs_file`
  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `hid_vers` (`hid`,`vers`), ADD KEY `vers` (`vers`);
 
 --
--- Индексы таблицы `sysdocs_localization`
+-- Indexes for table `sysdocs_localization`
 --
 ALTER TABLE `sysdocs_localization`
  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `object_vers_field_hid` (`object_class`,`vers`,`field`,`lang`,`hid`), ADD KEY `lang` (`lang`), ADD KEY `vers` (`vers`), ADD KEY `object_class` (`object_class`), ADD KEY `object_id` (`object_id`);
 
 --
--- AUTO_INCREMENT для сохранённых таблиц
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT для таблицы `sysdocs_class`
+-- AUTO_INCREMENT for table `sysdocs_class`
 --
 ALTER TABLE `sysdocs_class`
 MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',AUTO_INCREMENT=1434;
 --
--- AUTO_INCREMENT для таблицы `sysdocs_class_method`
+-- AUTO_INCREMENT for table `sysdocs_class_method`
 --
 ALTER TABLE `sysdocs_class_method`
 MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',AUTO_INCREMENT=18095;
 --
--- AUTO_INCREMENT для таблицы `sysdocs_class_method_param`
+-- AUTO_INCREMENT for table `sysdocs_class_method_param`
 --
 ALTER TABLE `sysdocs_class_method_param`
 MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',AUTO_INCREMENT=13855;
 --
--- AUTO_INCREMENT для таблицы `sysdocs_class_property`
+-- AUTO_INCREMENT for table `sysdocs_class_property`
 --
 ALTER TABLE `sysdocs_class_property`
 MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',AUTO_INCREMENT=36944;
 --
--- AUTO_INCREMENT для таблицы `sysdocs_file`
+-- AUTO_INCREMENT for table `sysdocs_file`
 --
 ALTER TABLE `sysdocs_file`
 MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',AUTO_INCREMENT=1955;
 --
--- AUTO_INCREMENT для таблицы `sysdocs_localization`
+-- AUTO_INCREMENT for table `sysdocs_localization`
 --
 ALTER TABLE `sysdocs_localization`
-MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',AUTO_INCREMENT=2413;
+MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',AUTO_INCREMENT=2684;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
