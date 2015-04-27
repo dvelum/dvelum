@@ -23,7 +23,6 @@ $_pkg_Db_Select ='./system/packages/Db_Select.php';
   'Page' => $_pkg_Core,
   'Externals_Expert' => $_pkg_Core,
   'Frontend_Console_Controller' => './system/app/Frontend/Console/Controller.php',
-  'Frontend_Docs_Controller' => './system/app/Frontend/Docs/Controller.php',
   'Frontend_Controller_Authorised' => './system/app/Frontend/Controller/Authorised.php',
   'Frontend_Controller_Backoffice' => './system/app/Frontend/Controller/Backoffice.php',
   'Frontend_Router' => $_pkg_Frontend,
