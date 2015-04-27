@@ -255,6 +255,15 @@ class Backend_Modules_Controller extends Backend_Controller{
 						
 		
 		$objectConfig = Db_Object_Config::getInstance($object);
+
+		// Check ACL permissions
+		$acl = $objectConfig->getAcl();
+		if($acl){
+			if(!$acl->can(Db_Object_Acl::ACCESS_CREATE , $object)  || 	!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
+				Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
+			}
+		}
+
 		$manager = new Db_Object_Manager();
 		
 		if(!$manager->objectExists($object))

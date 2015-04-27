@@ -556,4 +556,5 @@
   'COMPLETED' => 'Completed',
   'ERROR' => 'Error',
   'ENC_KEY' => 'Encryption key',
+  'ACL_ACCESS_DENIED' => 'Access denied by access control list (ACL)',
 ); 

@@ -1333,6 +1333,10 @@ class Db_Object_Config
         return $fields;
     }
 
+    /**
+     * Get public key field
+     * @return bool|null
+     */
     public function getIvField()
     {
         if(!isset(self::$_encConfig))
@@ -1341,16 +1345,32 @@ class Db_Object_Config
         return self::$_encConfig['iv_field'];
     }
 
+    /**
+     * Decrypt value
+     * @param $value
+     * @param $iv - public key
+     * @return string
+     */
     public function decrypt($value , $iv)
     {
         return Utils_String::decrypt($value , self::$_encConfig['key'] , $iv);
     }
 
+    /**
+     * Encrypt value
+     * @param $value
+     * @param $iv  - public key
+     * @return string
+     */
     public function encrypt($value, $iv)
     {
         return Utils_String::encrypt($value , self::$_encConfig['key'] , $iv);
     }
 
+    /**
+     * Create public key
+     * @return string
+     */
     public function createIv()
     {
         return Utils_String::createEncryptIv();

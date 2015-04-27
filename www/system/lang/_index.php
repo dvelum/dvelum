@@ -556,4 +556,5 @@
   554 => 'COMPLETED',
   555 => 'ERROR',
   556 => 'ENC_KEY',
+  557 => 'ACL_ACCESS_DENIED',
 ); 

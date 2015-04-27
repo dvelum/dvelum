@@ -1,12 +1,6 @@
 <?php
 class Acl_Table_Simple extends Db_Object_Acl
 {
-  const ACCESS_VIEW = 'view';
-  const ACCESS_EDIT = 'edit';
-  const ACCESS_CREATE = 'create';
-  const ACCESS_DELETE = 'delete';
-  const ACCESS_PUBLISH = 'publish';
-  
   static $_rights = array();
   
   public function __construct()
@@ -109,17 +103,26 @@ class Acl_Table_Simple extends Db_Object_Acl
   /**
    * Check permissions for object
    * @param Db_Object $object - object name
-   * @param string $perm - permission type
+   * @param string $permissionType - permission type
    * @return boolean
    */
   protected function _checkPermission(Db_Object $object , $permissionType)
   {
-    $objectName = strtolower($object->getName());
+    return $this->can($permissionType , $object->getName());
+  }
+
+  /**
+   * (non-PHPdoc)
+   * @see Db_Object_Acl::can()
+   */
+  public function can($operation , $objectName)
+  {
+    $objectName = strtolower($objectName);
 
     if(is_null($this->_permissions))
       $this->_loadPermissions();
 
-    if(isset($this->_permissions[$objectName]) && $this->_permissions[$objectName][$permissionType])
+    if(isset($this->_permissions[$objectName]) && $this->_permissions[$objectName][$operation])
       return true;
     else
       return false;
