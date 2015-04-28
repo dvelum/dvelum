@@ -772,6 +772,7 @@ class Backend_Modules_Generator_Oop
   		 Ext.onReady(function(){
   		        // Init permissions
   		     	app.application.on("projectLoaded",function(){
+  		     	    if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
          			  '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
          			  '.$runNamespace.'.dataGrid.setCanDelete(canDelete);';
 
@@ -779,7 +780,7 @@ class Backend_Modules_Generator_Oop
             $actionJs.= '
                     '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
 
-         $actionJs.= '
+         $actionJs.= '}
   		        });
           });';
 
