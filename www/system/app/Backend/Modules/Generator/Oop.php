@@ -772,14 +772,15 @@ class Backend_Modules_Generator_Oop
   		 Ext.onReady(function(){
   		        // Init permissions
   		     	app.application.on("projectLoaded",function(){
-         			  '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
-         			  '.$runNamespace.'.dataGrid.setCanDelete(canDelete);';
+                      if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
+         			        '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
+         			  '     .$runNamespace.'.dataGrid.setCanDelete(canDelete);';
 
           if($vc)
             $actionJs.= '
-                    '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
+                            '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
 
-         $actionJs.= '
+         $actionJs.= '}
   		        });
           });';
 
