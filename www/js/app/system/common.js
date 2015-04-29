@@ -463,7 +463,7 @@ Ext.define('app.PermissionsStorage', {
 		this.callParent();
 		this.addEvents([
 		/**
-		 * @event dataLoaded
+		 * @event load
 		 * @params {app.PermissionsStorage} me
 		 * @params {Object} permissions
 		 */
