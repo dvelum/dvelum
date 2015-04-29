@@ -772,13 +772,13 @@ class Backend_Modules_Generator_Oop
   		 Ext.onReady(function(){
   		        // Init permissions
   		     	app.application.on("projectLoaded",function(){
-                      if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
-         			        '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
-         			  '     .$runNamespace.'.dataGrid.setCanDelete(canDelete);';
+  		     	    if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
+         			  '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
+         			  '.$runNamespace.'.dataGrid.setCanDelete(canDelete);';
 
           if($vc)
             $actionJs.= '
-                            '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
+                    '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
 
          $actionJs.= '}
   		        });
@@ -796,10 +796,26 @@ class Backend_Modules_Generator_Oop
 
       $m = $methodsManager->addMethod($grid->getName() , 'initComponent' , array() ,
         '
-            this.canEdit = false;
-            this.canDelete = false;
             this.addDesignerItems();
             this.callParent();
+
+            if(!Ext.isEmpty(this.canEdit) && !Ext.isEmpty(this.setCanEdit)){
+                this.setCanEdit(this.canEdit);
+            }else{
+                this.canEdit = false;
+            }
+
+            if(!Ext.isEmpty(this.canDelete) && !Ext.isEmpty(this.setCanDelete)){
+                this.setCanDelete(this.canDelete);
+            }else{
+                this.canDelete = false;
+            }
+
+            if(!Ext.isEmpty(this.canPublish) && !Ext.isEmpty(this.setCanPublish)){
+                this.setCanPublish(this.canPublish);
+            }else{
+                this.canPublish = false;
+            }
         '
       );
 
