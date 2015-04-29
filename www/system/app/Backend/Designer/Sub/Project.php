@@ -278,7 +278,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	   * Skip parent for window , store and model
 	   */
 	  $rootClasses = array('Window','Store','Data_Store','Data_Store_Tree','Model');
-	  $isWindowComponent = strpos($instanceObject->getClass(),'Component_Window_')!==false;
+	  $isWindowComponent = (strpos($instanceObject->getClass(),'Component_Window_')!==false);
 	  
 	  if(in_array($instanceObject->getClass(), $rootClasses , true) || $isWindowComponent)
 	      $parent = 0;

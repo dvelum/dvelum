@@ -780,7 +780,8 @@ class Backend_Modules_Generator_Oop
             $actionJs.= '
                     '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
 
-         $actionJs.= '}
+         $actionJs.= '
+                    }
   		        });
           });';
 
