@@ -524,7 +524,8 @@ Ext.define('app.crud.orm.Main',{
 						});
 					}
 				}else{
-					Ext.Msg.alert(appLang.MESSAGE , appLang.CANT_GET_VALIDATE_INFO);
+					Ext.Msg.alert(appLang.MESSAGE , response.msg);
+					handle.win.close();
 				}
 				handle.win.setLoading(false);
 			},

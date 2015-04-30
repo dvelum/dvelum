@@ -843,10 +843,20 @@ class Backend_Orm_Controller extends Backend_Controller
        if(!$name)
            Response::jsonError($this->_lang->WRONG_REQUEST);
 
+       $objectConfig = Db_Object_Config::getInstance($name);
+
+       // Check ACL permissions
+       $acl = $objectConfig->getAcl();
+       if($acl){
+            if(!$acl->can(Db_Object_Acl::ACCESS_CREATE , $name) || !$acl->can(Db_Object_Acl::ACCESS_VIEW , $name)){
+                Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
+            }
+       }
+
        try {
            $obj = new Db_Object($name);
        } catch (Exception $e){
-           Response::jsonError($this->_lang->WRONG_REQUEST);
+           Response::jsonError($this->_lang->get('CANT_GET_VALIDATE_INFO'));
        }
 
         $builder = new Db_Object_Builder($name);
