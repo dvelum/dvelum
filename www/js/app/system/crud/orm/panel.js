@@ -644,7 +644,7 @@ Ext.onReady(function(){
 	    dataViewController: 	app.createUrl([app.root+'dataview','']),
 	    connectionsUrl:		app.createUrl([app.root+'connections','']),
 	    listConnections:		app.createUrl([app.root+'connectionslist','']),
-	    importUrl:			app.createUrl([app.root+'import','']),
+	    importUrl:			app.createUrl([app.root+'import',''])
     };
     app.crud.orm.dbConfigs = dbConfigsList;
     app.crud.orm.canEdit = canEdit;
