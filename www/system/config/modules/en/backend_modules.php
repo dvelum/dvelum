@@ -55,7 +55,7 @@
     'class' => 'Backend_Compiler_Controller',
     'dev' => true,
     'active' => true,
-    'title' => 'Code Compiler',
+    'title' => 'Code packages',
     'designer' => '',
     'in_menu' => true,
   ),
