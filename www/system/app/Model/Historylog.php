@@ -33,6 +33,7 @@ class Model_Historylog extends Model
      * @param integer $record_id
      * @param integer $type
      * @param string $table_name
+     * @throws Exception
      * @return boolean
      */
     public function log($user_id, $record_id , $type , $table_name  )

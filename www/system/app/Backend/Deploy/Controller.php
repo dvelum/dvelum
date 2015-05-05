@@ -229,7 +229,6 @@ class Backend_Deploy_Controller extends Backend_Controller
 	public function viewSyncAction()
 	{
 		$serverId = Request::post('server_id', 'pagecode', '');
-		$data = array();
 		
 		if(!strlen($serverId))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
@@ -258,8 +257,7 @@ class Backend_Deploy_Controller extends Backend_Controller
 	public function viewDbsyncAction()
 	{
 		$serverId = Request::post('server_id', 'pagecode', '');
-		$data = array();
-		
+
 		if(!strlen($serverId))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 			
@@ -315,7 +313,6 @@ class Backend_Deploy_Controller extends Backend_Controller
 	public function viewFilesAction()
 	{
 		$serverId = Request::post('server_id', 'pagecode', '');
-		$data = array();
 		
 		if(!strlen($serverId))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
@@ -362,8 +359,6 @@ class Backend_Deploy_Controller extends Backend_Controller
 	public function viewDbAction()
 	{
 		$serverId = Request::post('server_id', 'pagecode', '');
-		$data = array();
-		
 		if(!strlen($serverId))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 			
@@ -417,7 +412,6 @@ class Backend_Deploy_Controller extends Backend_Controller
 		
 		foreach($childs as $k => $v)
 		{
-			$row = $v['data'];
 			$obj = new stdClass();
 			
 			$obj->id = $v['id'];

@@ -89,41 +89,41 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $id = $object->getId();
         $vc = Model::factory('Vc');
 
-        try{
-            $obj = new Db_Object($this->_objectName , $id);
-        }catch(Exception $e){
-            Response::jsonError($this->_lang->CANT_EXEC);
-        }
-
         if(!$version)
             $version = $vc->getLastVersion($this->_objectName , $id);
 
         if(!$version){
-            $data = $obj->getData();
-            $data['id'] = $obj->getId();
+            $data = $object->getData();
+            $data['id'] = $object->getId();
             Response::jsonSuccess($data);
         }
 
-        $data = $vc->getData($this->_objectName , $id , $version);
+        try{
+            $object->loadVersion($version);
+        }catch (Exception $e){
+            Model::factory($object->getName())->logError('Cannot load version '.$version.' for '.$object->getName().':'.$object->getId());
+            Response::jsonError($this->_lang->get('CANT_LOAD'));
+        }
+
+        $data = $object->getData();
 
         if(empty($data))
-            Response::jsonError($this->_lang->CANT_LOAD);
+            Response::jsonError($this->_lang->get('CANT_LOAD'));
 
         $data['id'] = $id;
         $data['version'] = $version;
-        $data['published'] = $obj->get('published');
-        $data['staging_url'] = static::getStagingUrl($obj);
+        $data['published'] = $object->get('published');
+        $data['staging_url'] = static::getStagingUrl($object);
         /*
          * Prepare multilink properties
          */
-        $linkedObjects = $obj->getConfig()->getLinks(array('multy'));
+        $linkedObjects = $object->getConfig()->getLinks(array('multy'));
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
                 if(empty($data[$field]))
                     continue;
 
-                $data[$field] = array_values(
-                        $this->_collectLinksData($data[$field] , $linkObject));
+                $data[$field] = array_values($this->_collectLinksData($data[$field] , $linkObject));
             }
         }
         return $data;
@@ -302,6 +302,11 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     public function updateObject(Db_Object $object)
     {
+        $author = $object->get('author_id');
+        if(empty($author)){
+            $object->set('author_id' , $this->_user->getId());
+        }
+
         if(!$object->saveVersion())
         	Response::jsonError($this->_lang->CANT_CREATE);
 

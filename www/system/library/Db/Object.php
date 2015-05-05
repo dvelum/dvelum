@@ -53,6 +53,11 @@ class Db_Object
      * @var Db_Object_Acl
      */
     protected $_acl = false;
+    /**
+     * System flag. Disable ACL create permissions check
+     * @var bool
+     */
+    static protected $_disableAclCheck = false;
 
     /**
      * @var Model
@@ -90,8 +95,9 @@ class Db_Object
            $this->_checkCanRead();
            $this->_loadData();
         }else{
-           if($this->_acl)
-            $this->_checkCanCreate();
+           if($this->_acl && !static::$_disableAclCheck) {
+               $this->_checkCanCreate();
+           }
         }
     }
 
@@ -116,17 +122,30 @@ class Db_Object
     protected function _setRawData(array $data)
     {
         unset($data[$this->_primaryKey]);
+        $iv = false;
+        $ivField = false;
+        if($this->_config->hasEncrypted()){
+            $ivField = $this->_config->getIvField();
+            if(isset($data[$ivField]) && !empty($data[$ivField]))
+                $iv = base64_decode($data[$ivField]);
+        }
+
         foreach($data as $field => &$value)
         {
             if($this->_config->isMultiLink($field) && strlen($value))
                 $value = unserialize($value);
 
-            if($this->getConfig()->isBoolean($field))
-            {
+            if($this->getConfig()->isBoolean($field)){
                 if($value)
                     $value = true;
                 else
                     $value = false;
+            }
+
+            if($this->_config->isEncrypted($field)){
+                if(!empty($iv)){
+                    $value = $this->_config->decrypt($value, $iv);
+                }
             }
         }
         unset($value);
@@ -155,7 +174,7 @@ class Db_Object
         $data[$this->_primaryKey] = $this->_id;
 
         foreach ($this->_updates as $k=>$v)
-        	$this->_data[$k] = $v;
+            $data[$k] = $v;
 
         return $data;
     }
@@ -222,7 +241,7 @@ class Db_Object
      */
     public function setId($id)
     {
-        if($this->_acl)
+        if($this->_acl && !static::$_disableAclCheck)
             $this->_checkCanEdit();
 
         $this->_id = (integer) $id;
@@ -234,14 +253,13 @@ class Db_Object
      */
     public function commitChanges()
     {
-        if($this->_acl)
-            $this->_checkCanEdit();
-
         if(empty($this->_updates))
             return;
 
          foreach ($this->_updates as $k=>$v)
              $this->_data[$k] = $v;
+
+        $this->_updates = array();
     }
 
     /**
@@ -318,7 +336,6 @@ class Db_Object
         if(empty($data))
             return false;
 
-
         $data = Utils::fetchCol($cfg->getPrimaryKey(), $data);
 
         foreach ($ids as $v)
@@ -387,11 +404,22 @@ class Db_Object
         }
         elseif ($this->_config->isLink($name))
         {
+        	if(is_object($value)){
+                if($value instanceof Db_Object)
+                {
+                    if($this->_config->isObjectLink($name))
+                    {
+                        if(!$value->isInstanceOf($this->getLinkedObject($name))){
+                            throw new Exception('Invalid value type for field '. $name.' expects ' . $this->getLinkedObject($name) . ', '.$value->getName().' passed');
+                        }
+                    }
+                    $value = $value->getId();
+                }else{
+                    $value = $value->__toString();
+                }
+            }
 
-        	if(is_object($value))
-        		$value = $value->__toString();
-
-          if(is_array($value))
+            if(is_array($value))
               throw new Exception('Invalid value for field '. $name);
 
         	if($this->_config->isRequired($name) && !strlen($value))
@@ -441,31 +469,31 @@ class Db_Object
     protected function _collectLinksData($field , $ids)
     {
         $ids = array_map('intval', $ids);
-        $linkedObject = new Db_Object($this->getLinkedObject($field));
-        $pKey = $linkedObject->getConfig()->getPrimaryKey();
+        $linkedObjectConfig = Db_Object_Config::getInstance($this->getLinkedObject($field));
+        $linkedObjectName =  $linkedObjectConfig->getName();
+        $pKey = $linkedObjectConfig->getPrimaryKey();
         /*
          * Init object model
          */
-        $model = Model::factory($linkedObject->getName());
+        $model = Model::factory($linkedObjectName);
         /*
          * Find title field for link
          */
         $title = $pKey;
-        $lt = $linkedObject->getConfig()->getLinkTitle();
+        $lt = $linkedObjectConfig->getLinkTitle();
         if($lt)
             $title = $lt;
 
-        $data = $model->getItems($ids , array('id'=>$pKey , 'title'=>$title));
-
-        if(!empty($data))
-            $data = Utils::rekey('id', $data);
+        $objects = Db_Object::factory($linkedObjectName, $ids);
 
         $result = array();
-        foreach ($ids as $v){
-            if(!isset($data[$v]))
+        foreach ($ids as $v)
+        {
+            if(!isset($objects[$v]))
                 throw new Exception('Invalid link');
 
-            $result[$v] = array('id'=>$v , 'title'=>$data[$v]['title']);
+            $o = $objects[$v];
+            $result[$v] = array('id'=>$v , 'title'=>$o->getTitle());
         }
         return $result;
     }
@@ -519,6 +547,9 @@ class Db_Object
     {
          if($this->_acl)
             $this->_checkCanRead();
+
+         if($name === $this->_primaryKey)
+            return $this->getId();
 
          if(!$this->fieldExists($name))
             throw new Exception('Invalid property requested ['.$name.']');
@@ -587,6 +618,14 @@ class Db_Object
     	    return false;
     	}
 
+        if($this->_config->hasEncrypted()){
+            $ivField = $this->_config->getIvField();
+            $ivData = $this->get($ivField);
+            if(empty($ivData)){
+                $this->set($ivField , base64_encode($this->_config->createIv()));
+            }
+        }
+
     	$emptyFields = $this->_hasRequired();
     	if($emptyFields!==true)
     	{
@@ -624,14 +663,17 @@ class Db_Object
 
                 $id = $store->insert($this , $log , $useTransaction);
                 $this->setId($id);
+                $this->commitChanges();
                 return (integer) $id;
             } else {
 
                 if($this->_config->isRevControl()){
                     $this->date_updated = date('Y-m-d H:i:s');
-                    $this->editor_id = User::getInstance()->id;
+                    $this->editor_id = User::getInstance()->getId();
                 }
-                return (integer) $store->update($this , $log , $useTransaction);
+                $id = (integer) $store->update($this , $log , $useTransaction);
+                $this->commitChanges();
+                return $id;
             }
        }catch (Exception $e){
             $this->_errors[] = $e->getMessage();
@@ -764,6 +806,25 @@ class Db_Object
     }
 
     /**
+     * Get object title
+     */
+    public function getTitle()
+    {
+        $title = $this->_config->getLinkTitle();
+        if(strpos($title , '{')!==false){
+         $fields = $this->_config->getFieldsConfig(true);
+            foreach($fields as $name => $cfg){
+                $title = str_replace('{'.$name.'}' , (string) $this->get($name) , $title );
+            }
+        }else{
+            if($this->fieldExists($title)){
+                $title = $this->get($title);
+            }
+        }
+        return $title;
+    }
+
+    /**
      * Factory method of object creation is preferable to use, cf. method  __construct() description
      *
      * @param string $name
@@ -780,6 +841,7 @@ class Db_Object
        $model = Model::factory($name);
        $data = $model->getItems($id);
 
+       static::$_disableAclCheck = true;
        foreach ($data as $item)
        {
           $o = new Db_Object($name);
@@ -787,6 +849,7 @@ class Db_Object
           $o->_setRawData($item);
           $list[$item[$o->_primaryKey]] = $o;
        }
+       static::$_disableAclCheck = false;
        return $list;
     }
 
@@ -887,6 +950,9 @@ class Db_Object
 
     	$this->published_version = 0;
     	$this->published = false;
+        $this->date_updated = date('Y-m-d H:i:s');
+        $this->editor_id = User::getInstance()->getId();
+
     	return $store->unpublish($this , $log , $useTransaction);
     }
 
@@ -930,12 +996,14 @@ class Db_Object
     			return false;
     		}
     	}
+
     	$this->published = true;
+        $this->date_updated = date('Y-m-d H:i:s');
+        $this->editor_id = User::getInstance()->getId();
 
     	if(empty($this->date_published))
     		$this->set('date_published' , date('Y-m-d H:i:s'));
 
-    	$this->editor_id = User::getInstance()->id;
     	$this->published_version = $this->getVersion();
     	return $store->publish($this , $log , $useTransaction);
     }
@@ -970,6 +1038,14 @@ class Db_Object
     	if(empty($data))
     		throw new Exception('Cannot load version for ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers);
 
+        $iv = false;
+        $ivField = false;
+        if($this->_config->hasEncrypted()){
+            $ivField = $this->_config->getIvField();
+            if(isset($data[$ivField]) && !empty($data[$ivField]))
+                $iv = base64_decode($data[$ivField]);
+        }
+
     	foreach($data as $k => $v)
     	{
     		if($this->fieldExists($k))
@@ -978,8 +1054,16 @@ class Db_Object
     				$v = array_keys($v);
 
     			try{
-    				if(!$this->_config->isSystemField($k))
-    					$this->set($k , $v);
+
+                    if($this->_config->isEncrypted($k)){
+                        if(!empty($iv)){
+                            $v = $this->_config->decrypt($v, $iv);
+                        }
+                    }
+
+                    if($k!== $this->_config->getPrimaryKey() && $k!== 'author_id')
+                        $this->set($k , $v);
+
     			}catch(Exception $e){
     			   throw new Exception('Cannot load version data ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers.'. This version contains incompatible data. ' . $e->getMessage());
     			}
@@ -1006,6 +1090,14 @@ class Db_Object
     		return $this->save($log ,$useTransaction);
     	}
 
+        if($this->_config->hasEncrypted()){
+            $ivField = $this->_config->getIvField();
+            $ivData = $this->get($ivField);
+            if(empty($ivData)){
+                $this->set($ivField , base64_encode($this->_config->createIv()));
+            }
+        }
+
     	if($this->_acl)
     	{
     		try{
@@ -1023,9 +1115,13 @@ class Db_Object
     	{
     		$this->published = false;
     		$this->author_id = User::getInstance()->getId();
+
     		if(!$this->save(true , $useTransaction))
     			return false;
     	}
+
+        $this->date_updated = date('Y-m-d H:i:s');
+        $this->editor_id = User::getInstance()->getId();
 
     	$store  = $this->_model->getStore();
 
@@ -1036,6 +1132,7 @@ class Db_Object
 
 		if($vers){
 			$this->_version = $vers;
+            $this->commitChanges();
 			return true;
 		}else{
 			return false;
@@ -1065,5 +1162,15 @@ class Db_Object
     public function getInssertId()
     {
     	return $this->_insertId;
+    }
+
+    /**
+     * Check DB object class
+     * @param $name
+     */
+    public function isInstanceOf($name)
+    {
+        $name = strtolower($name);
+        return $name === $this->getName();
     }
 }

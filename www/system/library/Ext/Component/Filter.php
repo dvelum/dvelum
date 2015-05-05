@@ -58,8 +58,14 @@ class Ext_Component_Filter extends Ext_Object
 				if($local)
 				{
 					$listener.= $store.'.filter("'.$field.'" , fld.getValue());';
-				}else{
-					$listener.= $store.'.proxy.setExtraParam("filter['.$field.']" , fld.getValue());';
+				}
+				else
+				{
+					if($this->_viewObject->isValidProperty('multiSelect') && $this->_viewObject->multiSelect){
+						$listener.= $store.'.proxy.setExtraParam("filter['.$field.'][]" , fld.getValue());';
+					}else{
+						$listener.= $store.'.proxy.setExtraParam("filter['.$field.']" , fld.getValue());';
+					}
 					$listener.= $store.'.loadPage(1);';
 				}
 			}

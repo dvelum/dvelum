@@ -178,9 +178,14 @@ class Backend_Orm_Dataview extends Backend_Controller
 
 					array_unique($idsList);
 					$oCfg = Db_Object_Config::getInstance($oName);
-					$idsList = Model::factory($oName)->getList(false,array('id'=>$idsList),array('id','title'=>$oCfg->getLinkTitle()));
-					if(!empty($idsList))
-						$idsList = Utils::rekey('id', $idsList);
+					$linkedObjects = Db_Object::factory($oName , $idsList);
+
+					$titleList = array();
+					if(!empty($linkedObjects))
+						foreach($linkedObjects as $id=>$item)
+							$titleList[$id] = array('id'=>$id , 'title' =>$item->getTitle());
+
+					$idsList = $titleList;
 				}
 			}
 
@@ -380,12 +385,12 @@ class Backend_Orm_Dataview extends Backend_Controller
 		if(!$object || !Db_Object_Config::configExists($object))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
-		$titleField = Db_Object_Config::getInstance($object)->getLinkTitle();
-
-		$data = Model::factory($object)->getItem($id , array($titleField));
-		if(!empty($data))
-			Response::jsonSuccess(array('title'=>$data[$titleField]));
-		else
-			Response::jsonSuccess(array('title'=>''));
+		try {
+			$o = Db_Object::factory($object, $id);
+			Response::jsonSuccess(array('title'=>$o->getTitle()));
+		}catch (Exception $e){
+			Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
+			Response::jsonError($this->_lang->get('CANT_EXEC'));
+		}
 	}
 }

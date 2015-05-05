@@ -1,8 +1,22 @@
 <?php
 class Backend_Modules_Generator_Oop
 {
+    /**
+     * @var Config_Abstract
+     */
+  protected $designerConfig;
+    /**
+     * @var Config_Abstract
+     */
+  protected $appConfig;
+
   public $tabTypes = array('Component_Field_System_Medialibhtml' , 'Component_Field_System_Related', 'Component_Field_System_Objectslist');
 
+    public function __construct(){
+        $this->appConfig = Registry::get('main' , 'config');
+        $this->designerConfig = Config::factory(Config::File_Array , $this->appConfig->get('configs') . 'designer.php');
+        Request::setDelimiter($this->appConfig->get('urlDelimiter'));
+    }
   /**
    * Create controller file
    * @param string $dir - controller dirrectory
@@ -16,7 +30,7 @@ class Backend_Modules_Generator_Oop
               throw new Exception('Invalid controller dir');
       }else{
           if(!@mkdir($dir , 0777 , true))
-              throw new Exception($lang->CANT_WRITE_FS . ' ' . $dir);
+              throw new Exception(Lang::lang()->get('CANT_WRITE_FS') . ' ' . $dir);
       }
 
       if(!@file_put_contents($dir . DIRECTORY_SEPARATOR . 'Controller.php' ,  $content))
@@ -37,8 +51,6 @@ class Backend_Modules_Generator_Oop
 
       $objectConfig = Db_Object_Config::getInstance($object);
       $primaryKey = $objectConfig->getPrimaryKey();
-      $appConfig = Registry::get('main' , 'config');
-      $designerConfig = Config::factory(Config::File_Array , $appConfig->get('configs') . 'designer.php');
 
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
       $objectFields = array();
@@ -57,6 +69,10 @@ class Backend_Modules_Generator_Oop
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
 
+          if(isset($item['hidden']) && $item['hidden'])
+              continue;
+
+
           $objectFields[] = $key;
           if(isset($item['is_search']) && $item['is_search'])
               $searchFields[] = $key;
@@ -67,6 +83,10 @@ class Backend_Modules_Generator_Oop
       {
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
+
+          if(isset($item['hidden']) && $item['hidden'])
+              continue;
+
 
           $dataFields[] = $key;
       }
@@ -82,7 +102,7 @@ class Backend_Modules_Generator_Oop
       /*
        * Create controller
       */
-      $controllerDir = $appConfig->get('backend_controllers') . str_replace('_' , '/' , $name);
+      $controllerDir = $this->appConfig->get('backend_controllers') . str_replace('_' , '/' , $name);
       $this->_createControllerFile($controllerDir , $controllerContent);
       @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
 
@@ -115,13 +135,11 @@ class Backend_Modules_Generator_Oop
 
       $storeFields = array_merge($storeFields , Backend_Designer_Import::checkImportORMFields($object ,  $dataFields));
 
-      $urlTemplates = $designerConfig->get('templates');
-      Request::setDelimiter($urlTemplates['urldelimiter']);
+      $urlTemplates =  $this->designerConfig->get('templates');
+
 
       $controllerUrl = Request::url(array( $urlTemplates['adminpath'] , $object , '') , false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , 'list'));
-
-      Request::setDelimiter($appConfig->get('urlDelimiter'));
 
       $dataStore = Ext_Factory::object('Data_Store');
       $dataStore->setName('dataStore');
@@ -166,7 +184,7 @@ class Backend_Modules_Generator_Oop
 
       $dataGrid->extendedComponent(true);
 
-      $this->addGridMethods($project , $dataGrid , true);
+      $this->addGridMethods($project , $dataGrid , $object , true);
 
       $eventManager->setEvent('dataGrid', 'itemdblclick', 'this.showEditWindow(record.get("id"));');
 
@@ -254,6 +272,24 @@ class Backend_Modules_Generator_Oop
           }
           $dataGrid->addColumn($column->getName() , $column , $parent = 0);
       }
+      $column = Ext_Factory::object('Grid_Column_Action');
+      $column->text = '[js:] appLang.ACTIONS';
+      $column->setName($dataGrid->getName().'_actions');
+      $column->align = 'center';
+      $column->width = 50;
+
+      $deleteButton = Ext_Factory::object('Grid_Column_Action_Button');
+      $deleteButton->setName($dataGrid->getName().'_actions_delete');
+      $deleteButton->text = 'dg_action_delete';
+      $deleteButton->icon = '[%wroot%]i/system/delete.gif';
+      $deleteButton->tooltip = '[js:] appLang.DELETE';
+      $deleteButton->isDisabled = 'function(){return !this.canDelete;}';
+
+      $eventManager->setEvent($deleteButton->getName(), 'handler', 'this.deleteRecord(grid.getStore().getAt(rowIndex));');
+
+      $column->addAction($deleteButton->getName() ,$deleteButton);
+      $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+
       $project->addObject(0 , $dataGrid);
 
       /*
@@ -343,7 +379,12 @@ class Backend_Modules_Generator_Oop
           if($field == $primaryKey)
               continue;
 
-          $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $objectConfig->getFieldConfig($field));
+          $fieldConfig = $objectConfig->getFieldConfig($field);
+
+          if(isset($fieldConfig['hidden']) && $fieldConfig['hidden'])
+              continue;
+
+          $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $fieldConfig);
 
           if($newField === false)
               continue;
@@ -364,7 +405,7 @@ class Backend_Modules_Generator_Oop
       /*
        * Save designer project
       */
-      $designerStorage = Designer_Factory::getStorage($designerConfig);
+      $designerStorage = Designer_Factory::getStorage($this->designerConfig);
 
       if(!$designerStorage->save($projectFile , $project))
           throw new Exception('Can`t create Designer project');
@@ -390,8 +431,6 @@ class Backend_Modules_Generator_Oop
 
       $objectConfig = Db_Object_Config::getInstance($object);
       $primaryKey = $objectConfig->getPrimaryKey();
-      $appConfig = Registry::get('main' , 'config');
-      $designerConfig = Config::factory(Config::File_Array , $appConfig->get('configs') . 'designer.php');
 
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
 
@@ -411,14 +450,21 @@ class Backend_Modules_Generator_Oop
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
 
+          if(isset($item['hidden']) && $item['hidden'])
+              continue;
+
           $objectFields[] = $key;
           if(isset($item['is_search']) && $item['is_search'])
               $searchFields[] = $key;
       }
 
       $dataFields = array();
-      foreach($objectConfig->getFieldsConfig(true) as $key => $item){
+      foreach($objectConfig->getFieldsConfig(true) as $key => $item)
+      {
           if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
+              continue;
+
+          if(isset($item['hidden']) && $item['hidden'])
               continue;
 
           $dataFields[] = $key;
@@ -435,7 +481,7 @@ class Backend_Modules_Generator_Oop
       /*
        * Create controller
       */
-      $controllerDir = $appConfig->get('backend_controllers') . str_replace('_' , '/' , $name);
+      $controllerDir =  $this->appConfig->get('backend_controllers') . str_replace('_' , '/' , $name);
       $this->_createControllerFile($controllerDir , $controllerContent);
       @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
 
@@ -455,14 +501,13 @@ class Backend_Modules_Generator_Oop
 
       $storeFields = Backend_Designer_Import::checkImportORMFields($object , $dataFields);
 
-      $urlTemplates = $designerConfig->get('templates');
+      $urlTemplates =  $this->designerConfig->get('templates');
 
-      Request::setDelimiter($urlTemplates['urldelimiter']);
 
       $controllerUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , ''),false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] , $object , 'list'));
 
-      Request::setDelimiter($appConfig->get('urlDelimiter'));
+
 
       $dataStore = Ext_Factory::object('Data_Store');
       $dataStore->setName('dataStore');
@@ -505,7 +550,7 @@ class Backend_Modules_Generator_Oop
       $dataGrid->minHeight = 400;
       $dataGrid->extendedComponent(true);
 
-      $this->addGridMethods($project , $dataGrid);
+      $this->addGridMethods($project , $dataGrid , $object , false);
 
       $eventManager->setEvent('dataGrid', 'itemdblclick', 'this.showEditWindow(record.get("id"));');
 
@@ -554,6 +599,24 @@ class Backend_Modules_Generator_Oop
 
               $dataGrid->addColumn($column->getName() , $column , $parent = 0);
           }
+
+          $column = Ext_Factory::object('Grid_Column_Action');
+          $column->text = '[js:] appLang.ACTIONS';
+          $column->setName($dataGrid->getName().'_actions');
+          $column->align = 'center';
+          $column->width = 50;
+
+          $deleteButton = Ext_Factory::object('Grid_Column_Action_Button');
+          $deleteButton->setName($dataGrid->getName().'_actions_delete');
+          $deleteButton->text = 'dg_action_delete';
+          $deleteButton->icon = '[%wroot%]i/system/delete.gif';
+          $deleteButton->tooltip = '[js:] appLang.DELETE';
+          $deleteButton->isDisabled = 'function(){return !this.canDelete;}';
+
+          $eventManager->setEvent($deleteButton->getName(), 'handler', 'this.deleteRecord(grid.getStore().getAt(rowIndex));');
+
+          $column->addAction($deleteButton->getName() ,$deleteButton);
+          $dataGrid->addColumn($column->getName() , $column , $parent = 0);
       }
       $project->addObject(0 , $dataGrid);
 
@@ -609,6 +672,7 @@ class Backend_Modules_Generator_Oop
       $editWindow->modal = true;
       $editWindow->resizable = true;
       $editWindow->extendedComponent(true);
+      $editWindow->showToolbar = false;
 
 
       if(!$objectConfig->hasHistory())
@@ -641,7 +705,13 @@ class Backend_Modules_Generator_Oop
           if($field == $primaryKey)
               continue;
 
-          $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $objectConfig->getFieldConfig($field));
+
+          $fieldConfig = $objectConfig->getFieldConfig($field);
+
+          if(isset($fieldConfig['hidden']) && $fieldConfig['hidden'])
+              continue;
+
+          $newField = Backend_Designer_Import::convertOrmFieldToExtField($field , $fieldConfig);
 
           if($newField === false)
               continue;
@@ -663,7 +733,7 @@ class Backend_Modules_Generator_Oop
       /*
        * Save designer project
       */
-      $designerStorage = Designer_Factory::getStorage($designerConfig);
+      $designerStorage = Designer_Factory::getStorage( $this->designerConfig);
 
       $project->actionjs = $actionFile;
 
@@ -702,6 +772,7 @@ class Backend_Modules_Generator_Oop
   		 Ext.onReady(function(){
   		        // Init permissions
   		     	app.application.on("projectLoaded",function(){
+  		     	    if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
          			  '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
          			  '.$runNamespace.'.dataGrid.setCanDelete(canDelete);';
 
@@ -710,6 +781,7 @@ class Backend_Modules_Generator_Oop
                     '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
 
          $actionJs.= '
+                    }
   		        });
           });';
 
@@ -719,9 +791,63 @@ class Backend_Modules_Generator_Oop
       @chmod($fileName, 0775);
   }
 
-  public function addGridMethods(Designer_Project $project ,  Ext_Object $grid , $vc = false)
+  public function addGridMethods(Designer_Project $project ,  Ext_Object $grid , $object, $vc = false)
   {
-    $methodsManager =  $project->getMethodManager();
+      $methodsManager =  $project->getMethodManager();
+
+      $m = $methodsManager->addMethod($grid->getName() , 'initComponent' , array() ,
+        '
+            this.addDesignerItems();
+            this.callParent();
+
+            if(!Ext.isEmpty(this.canEdit) && !Ext.isEmpty(this.setCanEdit)){
+                this.setCanEdit(this.canEdit);
+            }else{
+                this.canEdit = false;
+            }
+
+            if(!Ext.isEmpty(this.canDelete) && !Ext.isEmpty(this.setCanDelete)){
+                this.setCanDelete(this.canDelete);
+            }else{
+                this.canDelete = false;
+            }
+
+            if(!Ext.isEmpty(this.canPublish) && !Ext.isEmpty(this.setCanPublish)){
+                this.setCanPublish(this.canPublish);
+            }else{
+                this.canPublish = false;
+            }
+        '
+      );
+
+      $urlTemplates =  $this->designerConfig->get('templates');
+      $deleteUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , 'delete'));
+
+      $m = $methodsManager->addMethod($grid->getName() , 'deleteRecord' , array(array('name'=>'record','type'=>'Ext.data.record')) ,
+          '
+            Ext.Ajax.request({
+                url:"'.$deleteUrl.'",
+                method: "post",
+                scope:this,
+                params:{
+                    id: record.get("id")
+                },
+                success: function(response, request) {
+                    response =  Ext.JSON.decode(response.responseText);
+                    if(response.success){
+                        this.getStore().remove(record);
+                    }else{
+                        Ext.Msg.alert(appLang.MESSAGE , response.msg);
+                    }
+                },
+                failure:function(){
+                    Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
+                }
+		    });
+          '
+     );
+    $m->setDescription('Delete record');
+
     $m = $methodsManager->addMethod($grid->getName(), 'setCanEdit' , array(array('name'=>'canEdit','type'=>'boolean')) , '
         this.canEdit = canEdit;
         if(canEdit){
@@ -729,6 +855,7 @@ class Backend_Modules_Generator_Oop
         }else{
           this.childObjects.addButton.hide();
         }
+        this.getView().refresh();
     ');
      $m->setDescription('Set edit permission');
 
@@ -742,18 +869,24 @@ class Backend_Modules_Generator_Oop
     $editCode ='
         var win = Ext.create("'.$project->namespace.'.editWindow", {
   		          dataItemId:id,
-  		          canDelete:this.canDelete,
-  		          canEdit:this.canEdit,';
-
+  		          canDelete:this.canDelete,';
       if($vc)
           $editCode.='
                   canPublish:this.canPublish,';
+
+      $editCode .= 'canEdit:this.canEdit';
+
       $editCode.='
   		    });
 
             win.on("dataSaved",function(){
-              this.getStore().load();
-            },this);
+                this.getStore().load();
+              ';
+      if(!$vc){
+          $editCode.='win.close();';
+      }
+
+      $editCode.='},this);
 
             win.show();
     ';

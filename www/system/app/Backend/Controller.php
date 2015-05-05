@@ -169,7 +169,7 @@ abstract class Backend_Controller extends Controller
 
         $moduleManager = new Backend_Modules_Manager();
 
-        $modules = Config::factory(Config::File_Array , $this->_configMain['backend_modules']);
+       // $modules = Config::factory(Config::File_Array , $this->_configMain['backend_modules']);
 
         /*
          * Redirect for undefined module

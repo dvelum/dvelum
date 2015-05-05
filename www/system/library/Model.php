@@ -105,7 +105,7 @@ class Model
 
     /**
      * Connection manager
-     * @var Db_Manager_Interfacee
+     * @var Db_Manager_Interface
      */
     protected $_dbManager;
 
@@ -383,6 +383,7 @@ class Model
      * @param string $fieldName
      * @param string $value
      * @param array $fields - optional
+     * @throws Exception
      * @return array
      */
     public function getItemByUniqueField($fieldName , $value , $fields = '*')
@@ -1013,5 +1014,16 @@ class Model
         	}
         }
         return true;
+    }
+
+    /**
+     * Clear runtime cache
+     * @param $name, Object name
+     */
+    static public function removeInstance($name)
+    {
+       $name = strtolower($name);
+       if(isset(static::$_instances[$name]))
+           unset(static::$_instances[$name]);
     }
 }

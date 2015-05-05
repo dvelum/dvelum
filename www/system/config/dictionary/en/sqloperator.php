@@ -1,10 +1,4 @@
 <?php return array (
-  '=' => '=',
-  '<' => '<',
-  '<=' => '<=',
-  '>' => '>',
-  '>=' => '>=',
-  '!=' => '!=',
   'IS_NULL' => 'IS NULL',
   'IS_NOT_NULL' => 'IS NOT NULL',
   'IN' => 'IN',
@@ -13,4 +7,10 @@
   'NOT_LIKE' => 'NOT LIKE',
   'BETWEEN' => 'BETWEEN',
   'NOT_BETWEEN' => ' NOT BETWEEN',
+  'LT_EQ' => '<=',
+  'LT' => '<',
+  'GT' => '>',
+  'GT_EQ' => '>=',
+  'NOT' => '!=',
+  'EQ' => '=',
 ); 

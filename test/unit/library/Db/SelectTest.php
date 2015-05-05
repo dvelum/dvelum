@@ -274,4 +274,13 @@ class Db_SelectTest extends PHPUnit_Framework_TestCase
 		$str = 'SELECT `a`.*, `b`.`title`, `b`.`time` FROM `table` AS `a` INNER JOIN `table2` AS `b` ON a.code = b.id;';
 		$this->assertEquals($sql->assemble() , $str);
 	}
+
+	public function testForUpdate()
+	{
+		$sql = new Db_Select();
+		$sql->from('table');
+		$sql->forUpdate();
+		$str = 'SELECT `table`.* FROM `table` FOR UPDATE;';
+		$this->assertEquals($sql->assemble() , $str);
+	}
 }

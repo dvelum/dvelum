@@ -1,8 +1,14 @@
 <?php
 abstract class Db_Object_Acl
 {
+  const ACCESS_VIEW = 'view';
+  const ACCESS_EDIT = 'edit';
+  const ACCESS_CREATE = 'create';
+  const ACCESS_DELETE = 'delete';
+  const ACCESS_PUBLISH = 'publish';
+
   public function __construct(){
-    
+
   }
   /**
    * Current user
@@ -47,6 +53,13 @@ abstract class Db_Object_Acl
   {
     $this->_user = $user;
   }
+  /**
+   * Check permissions for action
+   * @param string $operation - const  Db_Object_Acl::ACCESS_VIEW,ACCESS_EDIT,ACCESS_CREATE,ACCESS_DELETE,ACCESS_PUBLISH
+   * @param string $objectName
+   * @return boolean
+   */
+  abstract public function can($operation , $objectName);
   /**
    * Create ACL adapter object
    * @param string $class

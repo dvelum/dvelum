@@ -215,6 +215,7 @@ input[readonly], input[disabled] { background: #FCFCFC; border: 1px solid #DADAD
     width: 100%;
 }
 .formRow label {float: left; width: 24%; padding: 5px 6px; font-size: 14px; color: #666; }
+.formRow.long label {float: left; width: 50%; padding: 5px 6px; font-size: 14px; color: #666; }
 #userpass label {width: 40%}
 .form #port {width: 50px !important;}
 

@@ -56,6 +56,7 @@ class File
 	 * @param boolean $recursive - optional	use recursion (default true)
 	 * @param string $type - optional File::Dirs_Only | File::Files_Dirs | File::Files_Only (default File::Files_Dirs)
 	 * @param string $mode - optional RecursiveIteratorIterator::SELF_FIRST | RecursiveIteratorIterator::CHILD_FIRST (default RecursiveIteratorIterator::SELF_FIRST)
+	 * @throws Exception
 	 */
 	static public function scanFiles($path , $filter = array() , $recursive = true , $type = File::Files_Dirs , $mode = RecursiveIteratorIterator::SELF_FIRST)
 	{
@@ -87,7 +88,7 @@ class File
 		}
 		catch(Exception $e)
 		{
-			throw new Exception('You tried to read nonexistent dir');
+			throw new Exception('You tried to read nonexistent dir: ' . $path );
 		}
 		
 		foreach($dirIterator as $name => $object)

@@ -88,7 +88,7 @@
       'db_type' => 'varchar',
       'db_default' => '',
       'db_len' => 255,
-      'is_search' => false,
+      'is_search' => true,
       'allow_html' => false,
     ),
   ),

@@ -6,5 +6,8 @@
  * For example: appRun.Panel
  */
 Ext.onReady(function(){ 
-
+      // Init permissions
+  	  app.application.on("projectLoaded",function(){
+         appUsersRun.mainPanel.showTabs(canEdit , canDelete);
+  	  });
 });

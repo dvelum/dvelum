@@ -1,7 +1,7 @@
 <?php return array (
   'table' => 'error_log',
   'engine' => 'InnoDB',
-  'connection' => 'default',
+  'connection' => 'error',
   'rev_control' => false,
   'save_history' => false,
   'link_title' => '',

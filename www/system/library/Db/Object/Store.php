@@ -159,9 +159,9 @@ class Db_Object_Store
 	     if($transact && $transaction)
 	    	 $db->beginTransaction();
 
-	     $success = $this->_updateOperation($object);
+        $success = $this->_updateOperation($object);
 
-	     if(!$success)
+        if(!$success)
 	     {
 	     	if($transact && $transaction)
 	        	$db->rollBack();
@@ -198,22 +198,29 @@ class Db_Object_Store
 
     protected function _updateOperation(Db_Object $object)
     {
-    	try{
-    		$db = $this->_getDbConnection($object);
-	        $db->update($object->getTable() , $object->serializeLinks($object->getUpdates()) , $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
-	        $this->_updateLinks($object);
-	        /*
-	         * Fire "AFTER_UPDATE_BEFORE_COMMIT" Event if event manager exists
-	         */
-	        if($this->_eventManager)
-	        	$this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_UPDATE_BEFORE_COMMIT, $object);
-	        $object->commitChanges();
-	        return true;
-    	}catch (Exception $e){
-    		if($this->_log)
-    			$this->_log->log($object->getName().'::_updateOperation '.$e->getMessage());
-    		return false;
-    	}
+        try{
+            $db = $this->_getDbConnection($object);
+            $updates = $object->getUpdates();
+
+            if($object->getConfig()->hasEncrypted())
+                $updates = $this->encryptData($object , $updates);
+
+            $db->update($object->getTable() , $object->serializeLinks($updates) , $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
+            $this->_updateLinks($object);
+            /*
+             * Fire "AFTER_UPDATE_BEFORE_COMMIT" Event if event manager exists
+             */
+            if($this->_eventManager)
+                $this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_UPDATE_BEFORE_COMMIT, $object);
+            $object->commitChanges();
+            return true;
+        }catch (Exception $e){
+
+            if($this->_log)
+                $this->_log->log($object->getName().'::_updateOperation '.$e->getMessage());
+
+            return false;
+        }
     }
 
     /**
@@ -535,6 +542,37 @@ class Db_Object_Store
         return $object->getId();
     }
 
+    public function encryptData(Db_Object $object , $data)
+    {
+        $objectConfig = $object->getConfig();
+        $ivField = $objectConfig->getIvField();
+        $encFields = $objectConfig->getEncryptedFields();
+
+        $iv = base64_decode($object->get($ivField));
+
+        /*
+         * Re encode all fields if IV changed
+         */
+        if(isset($data[$ivField]))
+        {
+            foreach ($encFields as $field){
+                $data[$field] = $objectConfig->encrypt($object->get($field), $iv);
+            }
+        }
+        /*
+         * Encode values
+         */
+        else
+        {
+            foreach ($data as $field => &$value){
+                if(in_array($field , $encFields , true)){
+                    $value = $objectConfig->encrypt($value, $iv);
+                }
+            }unset($value);
+        }
+        return $data;
+    }
+
     protected function _insertOperation(Db_Object $object)
     {
     	$insertId = $object->getInssertId();
@@ -545,6 +583,9 @@ class Db_Object_Store
     	}else{
     		$updates =  $object->getUpdates();
     	}
+
+        if($object->getConfig()->hasEncrypted())
+            $updates = $this->encryptData($object , $updates);
 
         if(empty($updates))
             return false;
@@ -647,10 +688,17 @@ class Db_Object_Store
     				if(!is_null($v))
     					$oldObject->set($k , $v);
 
-                if(!$oldObject->save(false , $useTransaction))
-                    return false;
             }
+
+            $oldObject->set('date_updated' , $object->get('date_updated'));
+            $oldObject->set('editor_id' , $object->get('editor_id'));
+
+            if(!$oldObject->save(false , $useTransaction))
+                throw new Exception('Cannot save object');
+
         }catch(Exception $e){
+            if($this->_log)
+                $this->_log->log('Cannot update unpublished object data '. $e->getMessage());
     		return false;
     	}
 

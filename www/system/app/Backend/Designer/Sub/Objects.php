@@ -187,6 +187,8 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
   	    'Form_Field_Combobox'=>'comboboxFieldIcon',
 
   	    'Button'=>'buttonIcon',
+		'Button_Split'=>'buttonSplitIcon',
+		'Buttongroup'=>'buttonGroupIcon',
   	    'Tree'=>'treeIcon',
   	    'Window'=>'windowIcon',
   	    'Store'=>'storeIcon',
@@ -307,6 +309,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 	    		}
 	    	}
 	    	$project->getEventManager()->removeObjectEvents($id);
+			$project->getMethodManager()->removeObjectMethods($id);
     		$this->_storeProject();
     		Response::jsonSuccess();
     	}else{

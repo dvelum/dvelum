@@ -36,6 +36,16 @@ class Db_Object_Config
     */
     static protected $_vcFields;
 
+    /**
+     * List of system fields used for encryption
+     * @var array
+     */
+    static protected $_cryptFields;
+    /**
+     * @var Config_Abstract
+     */
+    static protected $_encConfig;
+
    /**
     * @var string $name
     * @return Db_Object_Config
@@ -84,16 +94,19 @@ class Db_Object_Config
    /**
     * Instantiate data structure for the objects named $name
     * @param string $name - object name
+    * @param boolean $force - reload config
     * @return Db_Object_Config
     * @throws Exception
     */
-    static public function getInstance($name)
+    static public function getInstance($name , $force = false)
     {
-    	$name = strtolower($name);
-      if(!isset(self::$_instances[$name]))
-          self::$_instances[$name] = new static($name);
+        $name = strtolower($name);
 
-       return self::$_instances[$name];
+        if($force || !isset(self::$_instances[$name])) {
+            self::$_instances[$name] = new static($name , $force);
+        }
+
+        return self::$_instances[$name];
     }
 
     /**
@@ -107,14 +120,14 @@ class Db_Object_Config
 
     final private function __clone(){}
 
-    final private function __construct($name)
+    final private function __construct($name , $force = false)
     {
         $this->_name = strtolower($name);
 
         if(!self::configExists($name))
         	throw new Exception('Undefined object config '. $name);
 
-        $this->_config = Config::factory(Config::File_Array, self::$_configs[$name]);
+        $this->_config = Config::factory(Config::File_Array, self::$_configs[$name] , !$force);
         $this->_loadProperties();
     }
 
@@ -270,6 +283,9 @@ class Db_Object_Config
         if(isset($dataLink['rev_control']) && $dataLink['rev_control'])
             $dataLink['fields'] = array_merge($dataLink['fields'] , $this->_getVcFields());
 
+        if($this->hasEncrypted())
+            $dataLink['fields'] = array_merge($dataLink['fields'] , $this->_getEncryptionFields());
+
         /*
          * Init ACL adapter
          */
@@ -283,6 +299,18 @@ class Db_Object_Config
     		self::$_vcFields = Config::factory(Config::File_Array, self::$_configPath.'vc/vc_fields.php')->__toArray();
 
     	return self::$_vcFields;
+    }
+
+    //encrypted
+    protected function _getEncryptionFields()
+    {
+        if(!isset(self::$_cryptFields))
+            self::$_cryptFields = Config::factory(Config::File_Array, self::$_configPath.'enc/fields.php')->__toArray();
+
+        if(!isset(self::$_encConfig))
+            self::$_encConfig = Config::factory(Config::File_Array, self::$_configPath.'enc/config.php')->__toArray();
+
+        return self::$_cryptFields;
     }
 
     /**
@@ -388,15 +416,14 @@ class Db_Object_Config
     	if($includeSystem)
     		return $this->_config['fields'];
 
-    	if(!$includeSystem){
-    		$fields = $this->_config['fields'];
+    	$fields = $this->_config['fields'];
     		unset($fields[$this->getPrimaryKey()]);
 
-    		if($this->isRevControl())
-    			return  array_diff_key($fields, $this->_getVcFields());
-    		else
-    			return  $fields;
-    	}
+
+        $fields = array_diff_key($fields, $this->_getVcFields());
+        $fields = array_diff_key($fields, $this->_getEncryptionFields());
+
+    	return  $fields;
     }
 
     /**
@@ -408,8 +435,12 @@ class Db_Object_Config
     	$this->_prepareTranslation();
     	$pimaryKey = $this->getPrimaryKey();
     	$fields = array();
+
     	if($this->isRevControl())
     		$fields = $this->_getVcFields();
+
+        if($this->hasEncrypted())
+            $fields = array_merge($fields , $this->_getEncryptionFields());
 
     	$fields[$pimaryKey] = $this->_config['fields'][$pimaryKey];
 
@@ -678,13 +709,25 @@ class Db_Object_Config
     }
 
     /**
-     * Check if field cdn be used for search
+     * Check if field can be used for search
      * @param string $field
      * @return boolean
      */
     public function isSearch($field)
     {
         if(isset($this->_config['fields'][$field]['is_search']) && $this->_config['fields'][$field]['is_search'])
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * Check if field is encrypted
+     * @param string $field
+     */
+    public function isEncrypted($field)
+    {
+        if(isset($this->_config['fields'][$field]['type']) && $this->_config['fields'][$field]['type']==='encrypted')
             return true;
         else
             return false;
@@ -712,12 +755,13 @@ class Db_Object_Config
 	/**
      * Get the name of the class, which is the field validator
      * @param string  $field
+     * @throws Exception
      * @return mixed  string class name / boolean false
      */
     public function getValidator($field)
     {
         if(!$this->fieldExists($field))
-                throw new Exception('Invalid property name');
+            throw new Exception('Invalid property name');
 
         if(isset($this->_config['fields'][$field]['validator']) && !empty($this->_config['fields'][$field]['validator']))
             return $this->_config['fields'][$field]['validator'];
@@ -844,6 +888,15 @@ class Db_Object_Config
     }
 
     /**
+     * Get configuration as array
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->_config->__toArray();
+    }
+
+    /**
      * Configure the field
      * @param string $field
      * @param array $config
@@ -895,12 +948,10 @@ class Db_Object_Config
     public function renameField($oldName , $newName)
     {
     	$fields = $this->getFieldsConfig();
-    	$cfg = $fields[$oldName];
+        $fields[$newName] = $fields[$oldName];
     	unset($fields[$oldName]);
-    	$fields[$newName] = $cfg;
+
     	$this->_config->set('fields', $fields);
-
-
     	$indexes = $this->getIndexesConfig();
     	/**
     	 * Check for indexes for field
@@ -920,7 +971,7 @@ class Db_Object_Config
     		}
     	}
     	$this->_config->set('indexes', $indexes);
-    	$builder = new Db_Object_Builder($this->getName());
+    	$builder = new Db_Object_Builder($this->getName() , false);
     	return $builder->renameField($oldName , $newName);
     }
 
@@ -1007,8 +1058,13 @@ class Db_Object_Config
     		return true;
 
     	$sFields = $this->_getVcFields();
+
     	if(isset($sFields[$field]))
     		return true;
+
+        $encFields = $this->_getEncryptionFields();
+        if(isset($encFields[$field]))
+            return true;
 
     	return false;
     }
@@ -1019,17 +1075,17 @@ class Db_Object_Config
      * array(
      * 	array(
      *      'curDb' => string,
-     * 		  'curObject' => string,
-     * 		  'curTable' => string,
-     *		  'curField'=> string,
-     *		  'isNull'=> boolean,
-     *		  'toDb'=> string,
-	   *		  'toObject'=> string,
-	   *		  'toTable'=> string,
-     *		  'toField'=> string,
+     * 		'curObject' => string,
+     * 		'curTable' => string,
+     *		'curField'=> string,
+     *		'isNull'=> boolean,
+     *		'toDb'=> string,
+     *		'toObject'=> string,
+     *		'toTable'=> string,
+     *		'toField'=> string,
      *      'onUpdate'=> string
      *      'onDelete'=> string
-     *  ),
+     *   ),
      *  ...
      *  )
      */
@@ -1245,5 +1301,76 @@ class Db_Object_Config
     public function getAcl()
     {
       return $this->_acl;
+    }
+
+    /**
+     * Check for encoded fields
+     * @return boolean
+     */
+    public function hasEncrypted()
+    {
+        foreach ($this->_config['fields'] as $config){
+            if(isset($config['type']) && $config['type']=='encrypted')
+                return true;
+        }
+        return false;
+    }
+    /**
+     * Get names of encrypted fields
+     * @return array
+     */
+    public function getEncryptedFields()
+    {
+        $fields = array();
+        $fieldsConfig = $this->get('fields');
+
+        foreach ($fieldsConfig as $k=>$v)
+            if(isset($v['type']) && $v['type']==='encrypted')
+                $fields[] = $k;
+
+        return $fields;
+    }
+
+    /**
+     * Get public key field
+     * @return bool|null
+     */
+    public function getIvField()
+    {
+        if(!isset(self::$_encConfig))
+            return false;
+
+        return self::$_encConfig['iv_field'];
+    }
+
+    /**
+     * Decrypt value
+     * @param $value
+     * @param $iv - public key
+     * @return string
+     */
+    public function decrypt($value , $iv)
+    {
+        return Utils_String::decrypt($value , self::$_encConfig['key'] , $iv);
+    }
+
+    /**
+     * Encrypt value
+     * @param $value
+     * @param $iv  - public key
+     * @return string
+     */
+    public function encrypt($value, $iv)
+    {
+        return Utils_String::encrypt($value , self::$_encConfig['key'] , $iv);
+    }
+
+    /**
+     * Create public key
+     * @return string
+     */
+    public function createIv()
+    {
+        return Utils_String::createEncryptIv();
     }
 }

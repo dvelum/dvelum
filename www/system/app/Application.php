@@ -142,6 +142,7 @@ class Application
         $objectStore->setHistoryObject($this->_config->get('orm_history_object'));
         $objectStore->setVersionObject($this->_config->get('orm_version_object'));
 
+
         /*
          * Prepare models
          */
@@ -158,10 +159,29 @@ class Application
         Db_Object_Config::setConfigPath($this->_config->get('object_configs'));
         Db_Object_Config::setTranslator($translator);
 
-        if($this->_config->get('db_object_error_log')){
+        if($this->_config->get('db_object_error_log'))
+        {
             $log = new Log_File($this->_config->get('db_object_error_log_path'));
-            Db_Object::setLog($log);
-            Model::setDefaultLog($log);
+            /*
+             * Switch to Db_Object error log
+             */
+            if($this->_config->get('erorr_log_object'))
+            {
+                $errorModel = Model::factory($this->_config->get('erorr_log_object'));
+                $errorTable = $errorModel->table(true);
+                $errorDb = $errorModel->getDbConnection();
+
+                $logOrmDb = new Log_Db('db_object_error_log' , $errorDb , $errorTable);
+                $logModelDb = new Log_Db('model' , $errorDb , $errorTable);
+
+                Db_Object::setLog(new Log_Mixed($log, $logOrmDb));
+                Model::setDefaultLog(new Log_Mixed($log, $logModelDb));
+                $objectStore->setLog($logOrmDb);
+            }else{
+                Db_Object::setLog($log);
+                Model::setDefaultLog($log);
+                $objectStore->setLog($log);
+            }
         }
         /*
          * Prepare dictionaries
@@ -179,25 +199,6 @@ class Application
         if($this->_config->get('allow_externals'))
             $this->_initExternals();
 
-        
-       /*
-        * Switch to Db_Object error log
-        */
-        if($this->_config->get('db_object_error_log'))
-        {
-            $errorModel = Model::factory($this->_config->get('erorr_log_object'));
-            $errorTable = $errorModel->table(true);
-            $errorDb = $errorModel->getDbConnection();
-        
-            $logOrmDb = new Log_Db('db_object_error_log' , $errorDb , $errorTable);
-        
-            Db_Object::setLog(new Log_Mixed($log, $logOrmDb));
-        
-            $logModelDb = new Log_Db('model' , $errorDb , $errorTable);
-        
-            Model::setDefaultLog(new Log_Mixed($log, $logModelDb));
-        }
-        
         $this->_init = true;
     }
 
@@ -474,6 +475,7 @@ class Application
                 return Config::factory(Config::File_Array , Registry::get('main' , 'config')->get('configs') . 'backend.php');
               break;
         }
+        return false;
     }
 
     /**

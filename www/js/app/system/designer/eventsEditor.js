@@ -177,7 +177,11 @@ Ext.define('designer.eventsEditorWindow',{
 	modal:true,
 	width:500,
 	height:600,
-	layout:'border',
+	layout:{
+		type: 'vbox',
+		align : 'stretch',
+		pack  : 'start'
+	},
 	autoRender:true,
 	maximizable:true,
 	extraParams:null,
@@ -220,23 +224,22 @@ Ext.define('designer.eventsEditorWindow',{
 			'codeSaved'	,
 			'eventUpdated'
 		);
-		
-		this.centerPanel = Ext.create('Ext.Container',{
-			region:'center',
-			layout:'fit'
-		});
-		
+
 		this.dataForm  = Ext.create('Ext.form.Panel',{
-			region:'north',
 			bodyPadding:5,
 			bodyCls:'formBody',
 			border:false,
 			bosyPadding:5,
 			autoHeight:true,
-			items:[  
+			split:false,
+			items:[
 					{
 						xtype:'fieldcontainer',
-						layout: 'hbox',
+						layout: {
+							type: 'hbox',
+							pack: 'start',
+							align: 'stretch'
+						},
 						items:[
 						   {						   
 							   xtype:'textfield',
@@ -271,8 +274,8 @@ Ext.define('designer.eventsEditorWindow',{
 				]
 		});
 		
-		this.items = [this.centerPanel];
-		this.callParent();	
+		//this.items = [this.centerPanel];
+		this.callParent();
 		this.on('show',this.loadCode,this);
 	},
 	
@@ -296,6 +299,7 @@ Ext.define('designer.eventsEditorWindow',{
 					this.editor = Ext.create('designer.codeEditor',{
 				       	readOnly:false,
 				       	showSaveBtn:false,
+						flex:1,
 				       	sourceCode:response.data.code,
 				       	headerText:'{',
 				       	footerText:'}',
@@ -307,18 +311,19 @@ Ext.define('designer.eventsEditorWindow',{
 				        	"Ctrl-Z": function(cm) {cm.undoAction();},
 				        	"Ctrl-Y": function(cm) {cm.redoAction();},
 				        	"Shift-Ctrl-Z": function(cm) {cm.redoAction();}
-				        },
+				        }
 				     });
 					
 					var form = this.dataForm.getForm();
 					form.findField('new_name').setValue(response.data['event']);
 					form.findField('params').setValue(response.data['params']);
-					
+
 					this.add(this.dataForm);
 		 		}else{
 					this.editor = Ext.create('designer.codeEditor',{
 				       	readOnly:false,
 				       	showSaveBtn:false,
+						flex:1,
 				       	sourceCode:response.data.code,
 				       	headerText:'<span style="color:blue;font-weight:bold">function</span> ( '+this.paramsString+' ) { ',
 				       	footerText:'}',
@@ -330,10 +335,10 @@ Ext.define('designer.eventsEditorWindow',{
 				        	"Ctrl-Z": function(cm) {cm.undoAction();},
 				        	"Ctrl-Y": function(cm) {cm.redoAction();},
 				        	"Shift-Ctrl-Z": function(cm) {cm.redoAction();}
-				        },
+				        }
 				     });
 		 		}
-		 		this.centerPanel.add(this.editor);
+		 		this.add(this.editor);
 		 		this.saveButton.enable();
 		    },
 		    failure:function() {

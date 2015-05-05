@@ -13,8 +13,7 @@ class Backend_Orm_Log extends Backend_Controller
   public function getlogAction()
   {
       $file = Request::post('file', Filter::FILTER_STRING, false);
-      
-      $version = $this->_configMain['development_version'];
+
       $logPath = $this->_configMain['orm_log_path'];
   
       //$fileName = $logPath . 'default_'.$version . '_build_log.sql';
@@ -31,7 +30,7 @@ class Backend_Orm_Log extends Backend_Controller
   
   public function getlogfilesAction()
   {
-    $version = $this->_configMain['development_version'];
+    //$version = $this->_configMain['development_version'];
     $logPath = $this->_configMain['orm_log_path'];  
     //$fileName = $logPath . 'default_'.$version . '_build_log.sql';   
     $files = File::scanFiles($logPath , array('.sql'), false);

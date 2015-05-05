@@ -59,6 +59,7 @@ class Utils
    * @param string $keyField
    * @param string $valueField
    * @param array $data
+   * @throws Exception
    * @return array
    */
   static public function collectData($keyField , $valueField , $data)

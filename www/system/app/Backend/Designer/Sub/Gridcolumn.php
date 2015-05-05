@@ -44,8 +44,6 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		if(!$id || !$this->_object->columnExists($id))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
-		$data = array();
-
 		$column = $this->_object->getColumn($id);
 		$config = $column->getConfig();
 		$properties = $config->__toArray();

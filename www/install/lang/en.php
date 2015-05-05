@@ -25,6 +25,9 @@ array(
 
 	'ADM_EMAIL' => 'Admin email',
 
+	'INSTALL_DOCS' => 'Install documentation DB (experimental, Linux only)',
+	'INSTALL_DOCS_ERROR' => 'Unable to install documentation DB',
+
 	'FAILURE_DB_CHECK' => 'Error connecting to the database. Please check your settings and try again',
 
 	'IMPORT_ERR'=>'Error occurred while importing sql file',

@@ -8,7 +8,6 @@ class Backend_Designer_Sub_Properties extends Backend_Designer_Sub
 	{
 		$this->_checkLoaded();
 		$object = $this->_getObject();
-		$project = $this->_getProject();
 
 		$class = $object->getClass();
 		$properties = $object->getConfig()->__toArray();

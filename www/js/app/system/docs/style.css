@@ -47,6 +47,10 @@
 	border-bottom:1px solid #cccccc;
 }
 
+.docs-methodDescription.selected{
+	background-color: #FDFFE1!important;
+}
+
 .docs-methodDescription .name{
 	color:#000000;
 }
@@ -76,4 +80,8 @@
 	color: green;
     font-size: 10px;
 	cursor:help;
+}
+
+.docs-over{
+	background-color: #FFFEF4!important;
 }

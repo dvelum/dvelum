@@ -536,10 +536,38 @@ Ext.define('designer.application',{
 					]
 				})
 			},{
-				text:desLang.button,
+				text:desLang.buttons,
 				iconCls:'buttonIcon',
-				tooltip: desLang.add + ' ' + desLang.button,
-				oClass:'Button'
+				tooltip: desLang.add + ' ' + desLang.buttons,
+				oClass:'',
+				menu:Ext.create('Ext.menu.Menu', {
+					style: {
+						overflow: 'visible'
+					},
+					defaults:{
+						scope:this,
+						handler:this.addObject
+					},
+					items: [{
+						text:desLang.button,
+						iconCls:'buttonIcon',
+						tooltip: desLang.add + ' ' + desLang.button,
+						oClass:'Button',
+						showType:'loaded'
+					},{
+						text:desLang.splitButton,
+						iconCls:'buttonSplitIcon',
+						tooltip: desLang.add + ' ' + desLang.splitButton,
+						oClass:'Button_Split',
+						showType:'loaded'
+					},{
+						text:desLang.buttonGroup,
+						iconCls:'buttonGroupIcon',
+						tooltip: desLang.add + ' ' + desLang.buttonGroup,
+						oClass:'Buttongroup',
+						showType:'loaded'
+					}]
+				})
 			},{
 				text:desLang.tree,
 				iconCls:'treeIcon',

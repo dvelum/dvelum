@@ -416,7 +416,7 @@ Ext.define('app.crud.modules.Main',{
 		  moduleId:record.get('id'),
 		  controllerUrl:this.controllerUrl,
 		  title:appLang.REMOVE_MODULE + ' "' + record.get('title')+'"',
-		  relatedFiles:record.get('related_files'),
+		  relatedFiles:record.get('related_files')
 	   });
 	   
 	   win.on('deleteItems' , function(deleteRelated){

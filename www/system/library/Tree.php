@@ -117,6 +117,7 @@ class Tree
 	/**
 	 * Get node structure by ID
 	 * @param mixed $id
+	 * @throws Exception
 	 * @return array - an array with keys ('id','parent','order','data')
 	 */
 	public function getItem($id)

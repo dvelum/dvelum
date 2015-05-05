@@ -3,6 +3,9 @@ class Backend_Orm_Controller extends Backend_Controller
 {
     const UML_MAP_CFG = 'umlMap.php';
 
+    protected $encryptContainerPrefix = 'encrypt_';
+    protected $decryptContainerPrefix = 'decrypt_';
+
     public function __construct()
     {
         parent::__construct();
@@ -215,7 +218,7 @@ class Backend_Orm_Controller extends Backend_Controller
         ini_set('max_execution_time',3600);
         $dumpdir = $this->_configMain->get('backups');
         $destPath = $dumpdir . date('d-m-Y_H_i_s');
-        $configPath = $this->_configMain->get('configs');
+
         $docRoot = $this->_configMain->get('docroot');
         $sqlPath = $this->_configMain->get('tmp') . 'dump.sql';
 
@@ -302,7 +305,7 @@ class Backend_Orm_Controller extends Backend_Controller
 
         $name = Request::post('name', 'str', '');
         $restoreDb = Request::post('sql', 'bool', false);
-        $configPath = $this->_configMain->get('configs');
+
 
         if(!$name)
         	Response::jsonError();
@@ -648,6 +651,7 @@ class Backend_Orm_Controller extends Backend_Controller
     	$data['primary_key'] = $pimaryKey;
     	$data['use_db_prefix'] = $usePrefix;
     	$data['slave_connection'] = $slaveConnection;
+        $data['connection'] = $connection;
 
     	$name = strtolower($name);
 
@@ -799,7 +803,7 @@ class Backend_Orm_Controller extends Backend_Controller
     {
 
     	$newFileName = $this->_configMain->get('object_configs').$newName.'.php';
-    	$oldFileName = $this->_configMain->get('object_configs').$oldName.'.php';
+    	//$oldFileName = $this->_configMain->get('object_configs').$oldName.'.php';
 
     	if(file_exists($newFileName))
     		Response::jsonError($this->_lang->FILL_FORM ,array(array('id'=>'name','msg'=>$this->_lang->SB_UNIQUE)));
@@ -833,19 +837,26 @@ class Backend_Orm_Controller extends Backend_Controller
     public function validateAction()
     {
        $engineUpdate = false;
-       $colUpd =  false;
-       $indUpd =  false;
-       $keyUpd =  false;
 
        $name = Request::post('name', 'string', false);
 
        if(!$name)
            Response::jsonError($this->_lang->WRONG_REQUEST);
 
+       $objectConfig = Db_Object_Config::getInstance($name);
+
+       // Check ACL permissions
+       $acl = $objectConfig->getAcl();
+       if($acl){
+            if(!$acl->can(Db_Object_Acl::ACCESS_CREATE , $name) || !$acl->can(Db_Object_Acl::ACCESS_VIEW , $name)){
+                Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
+            }
+       }
+
        try {
            $obj = new Db_Object($name);
        } catch (Exception $e){
-           Response::jsonError($this->_lang->WRONG_REQUEST);
+           Response::jsonError($this->_lang->get('CANT_GET_VALIDATE_INFO'));
        }
 
         $builder = new Db_Object_Builder($name);
@@ -1093,6 +1104,21 @@ class Backend_Orm_Controller extends Backend_Controller
 	        	}
         	}
 
+        }elseif($newConfig['type']=='encrypted') {
+
+            $setDefault = Request::post('set_default', 'boolean', false);
+
+            if(!$setDefault){
+                $newConfig['db_default'] = false;
+            }else{
+                $newConfig['db_default'] = Request::post('db_default', 'string', false);
+            }
+
+            $newConfig['db_type'] = 'longtext';
+            $newConfig['is_search'] = false;
+            $newConfig['allow_html'] = false;
+
+
         }else{
              $setDefault = Request::post('set_default', 'boolean', false);
 	        /*
@@ -1178,11 +1204,10 @@ class Backend_Orm_Controller extends Backend_Controller
         } else{
         	$objectCfg->setFieldconfig($name, $newConfig);
         	$objectCfg->fixConfig();
-        	$builder = new Db_Object_Builder($object);
-        	$builder->build();
         }
-
          if($objectCfg->save()){
+             $builder = new Db_Object_Builder($object);
+             $builder->build();
 	        Response::jsonSuccess();
          }else{
 	        Response::jsonError($this->_lang->CANT_WRITE_FS);
@@ -1432,6 +1457,7 @@ class Backend_Orm_Controller extends Backend_Controller
 	          '/js/app/system/orm/connections.js',
 	          '/js/app/system/orm/logWindow.js',
 	          '/js/app/system/orm/import.js',
+              '/js/app/system/orm/taskStatusWindow.js'
 	    );
 
 	    if(!$this->_configMain->get('development')){
@@ -1485,4 +1511,129 @@ class Backend_Orm_Controller extends Backend_Controller
 	  }
 	  Response::jsonSuccess();
 	}
+
+    /**
+     * Encrypt object data (background)
+     */
+    public function encryptDataAction()
+    {
+        $this->_checkCanEdit();
+        $object = Request::post('object' , 'string' , false);
+
+        if(!$object || !Db_Object_Config::configExists($object)){
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        $container = $this->encryptContainerPrefix . $object;
+
+        $objectModel = Model::factory($object);
+        $taskModel = Model::factory('bgtask');
+        $signalModel = Model::factory('Bgtask_Signal');
+
+        //disable profiling in dev mode
+        if($this->_configMain->get('development')) {
+            $taskModel->getDbConnection()->getProfiler()->setEnabled(false);
+            $signalModel->getDbConnection()->getProfiler()->setEnabled(false);
+            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
+        }
+
+        $logger =  new Bgtask_Log_File($this->_configMain['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
+
+        $bgStorage = new Bgtask_Storage_Orm($taskModel , $signalModel);
+        $tm = Bgtask_Manager::getInstance();
+        $tm->setStorage($bgStorage);
+        $tm->setLogger($logger);
+
+        // Start encryption task
+        $tm->launch(
+            Bgtask_Manager::LAUNCHER_SIMPLE,
+            'Task_Orm_Encrypt' ,
+            array(
+                'object'=>$object,
+                'session_container'=>$container
+            )
+        );
+    }
+
+    public function decryptDataAction()
+    {
+        $this->_checkCanEdit();
+        $object = Request::post('object' , 'string' , false);
+
+        if(!$object || !Db_Object_Config::configExists($object)){
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        $container = $this->decryptContainerPrefix . $object;
+
+        $objectModel = Model::factory($object);
+        $taskModel = Model::factory('bgtask');
+        $signalModel = Model::factory('Bgtask_Signal');
+
+        //disable profiling in dev mode
+        if($this->_configMain->get('development')) {
+            $taskModel->getDbConnection()->getProfiler()->setEnabled(false);
+            $signalModel->getDbConnection()->getProfiler()->setEnabled(false);
+            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
+        }
+
+        $logger =  new Bgtask_Log_File($this->_configMain['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
+
+        $bgStorage = new Bgtask_Storage_Orm($taskModel , $signalModel);
+        $tm = Bgtask_Manager::getInstance();
+        $tm->setStorage($bgStorage);
+        $tm->setLogger($logger);
+
+        // Start encryption task
+        $tm->launch(
+            Bgtask_Manager::LAUNCHER_SIMPLE,
+            'Task_Orm_Decrypt' ,
+            array(
+                'object'=>$object,
+                'session_container'=>$container
+            )
+        );
+    }
+    /**
+     * Check background process status
+     */
+    public function taskstatAction()
+    {
+        $object = Request::post('object' , 'string' , false);
+        $type = Request::post('type' , 'string' , false);
+        $field = Request::post('field', 'string' , false);
+
+        if(!$object || ! $type)
+            Response::jsonError();
+
+        switch($type){
+            case 'encrypt':
+                $container = $this->encryptContainerPrefix . $object;
+                break;
+            case 'decrypt':
+                $field =
+                $container = $this->decryptContainerPrefix . $object;
+                break;
+            default: Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        $session = Store_Session::getInstance();
+
+        if(!$session->keyExists($container)){
+            Response::jsonError();
+        }
+
+        $pid = $session->get($container);
+        $taskModel = Model::factory('bgtask');
+        $statusData = $taskModel->getItem($pid);
+
+        if(empty($statusData))
+            Response::jsonError($this->_lang->get('CANT_EXEC'));
+
+        Response::jsonSuccess(array(
+           'status' =>  $statusData['status'],
+           'op_total' =>  $statusData['op_total'],
+           'op_finished' =>  $statusData['op_finished']
+        ));
+    }
 }

@@ -37,11 +37,12 @@ class Db_Object_Builder
   /**
    *
    * @param string $objectName
+   * @param booleab $forceConfig, optional
    */
-  public function __construct($objectName)
+  public function __construct($objectName , $forceConfig = true)
   {
     $this->_objectName = $objectName;
-    $this->_objectConfig = Db_Object_Config::getInstance($objectName);
+    $this->_objectConfig = Db_Object_Config::getInstance($objectName , $forceConfig);
     $this->_model = Model::factory($objectName);
     $this->_db = $this->_model->getDbConnection();
 
@@ -388,6 +389,7 @@ class Db_Object_Builder
     }
 
     $fieldConfig = $this->_objectConfig->getFieldConfig($newName);
+
     $sql = ' ALTER TABLE ' . $this->_model->table() . ' CHANGE `' . $oldName . '` ' . $this->_proppertySql($newName , $fieldConfig);
 
     try
@@ -504,7 +506,7 @@ class Db_Object_Builder
       }
       catch(Exception $e)
       {
-        $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+        $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $engineUpdate;
       }
     }
 
@@ -873,7 +875,7 @@ class Db_Object_Builder
 
   /**
    * Get SQL for table creation
-   *
+   * @throws Exception
    * @return string
    */
   protected function _sqlCreate()

@@ -99,6 +99,12 @@
 .buttonIcon{
     background-image: url(../../../../i/system/designer/button.png) !important;
 }
+.buttonSplitIcon{
+    background-image: url(../../../../i/system/designer/button_split.png) !important;
+}
+.buttonGroupIcon{
+    background-image: url(../../../../i/system/designer/bgroup.png) !important;
+}
 .toolbarSeparatorIcon{
     background-image: url(../../../../i/system/designer/tb_separator.png) !important;
 }

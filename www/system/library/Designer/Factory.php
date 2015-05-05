@@ -258,5 +258,6 @@ class Designer_Factory
 	      }
 	      return str_replace($k , $v , $code);
 	  }
+		return $code;
 	}
 }

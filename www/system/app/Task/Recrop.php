@@ -43,7 +43,6 @@ class Task_Recrop extends Bgtask_Abstract
         $conf = $mediaModel->getConfig()->__toArray();
         
         $thumbSizes = $conf['image']['sizes'];
-        $count = 0;
 
         if(!$types || !is_array($types))
         	return;

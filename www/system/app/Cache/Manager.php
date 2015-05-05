@@ -6,7 +6,7 @@ class Cache_Manager
 	/**
 	 * Register cache adapter
 	 * @param string $name
-	 * @param Cache_Integface $cache
+	 * @param Cache_Interface $cache
 	 */
 	public function register($name , Cache_Interface $cache)
 	{
@@ -15,7 +15,7 @@ class Cache_Manager
 	/**
 	 * Get cache adapter
 	 * @param string $name
-	 * @return Cahe_Interface|boolean:
+	 * @return Cache_Interface|boolean
 	 */
 	public function get($name)
 	{

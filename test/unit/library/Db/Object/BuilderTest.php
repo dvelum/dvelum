@@ -24,19 +24,24 @@ class Db_Object_BuilderTest extends PHPUnit_Framework_TestCase
 	
 	public function testRenameTable()
 	{
-		$cfg = Db_Object_Config::getInstance('Page');
-		
-		$o = new Db_Object_Builder('Page');
-		
-		$renamed = $o->renameTable('page');
+		$cfg = Db_Object_Config::getInstance('Page' , true);
+
+		$uniqName = uniqid();
+		$o = new Db_Object_Builder('Page',false);
+
+		$renamed = $o->renameTable($uniqName);
+
 		if(!$renamed)
 		    echo implode("\n", $o->getErrors());
 	
 		$this->assertTrue($renamed);
-		$cfg->getConfig()->set('table','page');	
-	
-		
+		$cfg->getConfig()->set('table',$uniqName);
+
+		Model::removeInstance('Page');
+		$o = new Db_Object_Builder('Page',false);
+
 		$renamed = $o->renameTable('content');
+
 		if(!$renamed)
 		  echo implode("\n", $o->getErrors());
 		

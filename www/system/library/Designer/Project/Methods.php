@@ -110,11 +110,11 @@ class Designer_Project_Methods
   
   /**
    * Remove all object methods
-   * @param ыекштп $object
+   * @param string $object
    */
   public function removeObjectMethods($object)
   {
-     $this->_methods[$object] = array();
+    unset($this->_methods[$object]);
   }
   
   /**
@@ -141,6 +141,8 @@ class Designer_Project_Methods
     $mObject  = $this->_methods[$object][$method];
     $mObject->setCode($code);
     $mObject->setParams($params);
+
+    return true;
   }
   
   /**

@@ -93,4 +93,61 @@ class Utils_String
         $string.='...';
         return $string;
     }
+
+    static public function createEncryptIv()
+    {
+        $td = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_OFB, '');
+        $iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($td), MCRYPT_DEV_RANDOM);
+        mcrypt_module_close($td);
+        return $iv;
+    }
+
+    /**
+     * Encrypt string
+     * @param string $string
+     * @return $string
+     */
+    static public function encrypt($string ,$key , $iv)
+    {
+        if(empty($string))
+            return '';
+
+        $td = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_OFB, '');;
+        $ks = mcrypt_enc_get_key_size($td);
+
+        $key = substr(md5($key), 0, $ks);
+
+        mcrypt_generic_init($td, $key, $iv);
+
+        $encrypted = mcrypt_generic($td , $string);
+
+        mcrypt_generic_deinit($td);
+        mcrypt_module_close($td);
+
+        return base64_encode($encrypted);
+    }
+    /**
+     * Decrypt string
+     * @param string $string
+     * @return string
+     */
+    static public function decrypt($string , $key , $iv)
+    {
+        if(empty($string))
+            return '';
+
+        $td = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_OFB, '');
+        $ks = mcrypt_enc_get_key_size($td);
+
+        $key = substr(md5($key), 0, $ks);
+
+        mcrypt_generic_init($td, $key, $iv);
+
+        $decrypted = mdecrypt_generic($td, base64_decode($string));
+
+        mcrypt_generic_deinit($td);
+        mcrypt_module_close($td);
+
+        return $decrypted;
+    }
 }

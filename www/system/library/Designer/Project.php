@@ -39,8 +39,10 @@ class Designer_Project
 	        'Menu',
 	        'Container',
 
+		 	'Buttongroup',
 	       // menu containers
     	    'Button',
+			'Button_Split',
     	    'Menu_Checkitem',
     	    'Menu_Item',
     	    'Menu_Separator'
@@ -57,6 +59,7 @@ class Designer_Project
 
 	public static $hasMenu = array(
 		    'Button',
+		    'Button_Split',
 	        'Menu_Checkitem',
 	        'Menu_Item',
 	        'Menu_Separator'
@@ -212,6 +215,21 @@ class Designer_Project
 	 */
 	public function removeObject($name)
 	{
+		$eventManager = $this->getEventManager();
+		$methodsManager = $this->getMethodManager();
+
+		$eventManager->removeObjectEvents($name);
+		$methodsManager->removeObjectMethods($name);
+
+		$childs = $this->_tree->getChildsR($name);
+
+		if(!empty($childs)){
+			foreach($childs as $k=>$id){
+				$eventManager->removeObjectEvents($id);
+				$methodsManager->removeObjectMethods($id);
+				$this->_tree->removeItem($id);
+			}
+		}
 		return $this->_tree->removeItem($name);
 	}
 

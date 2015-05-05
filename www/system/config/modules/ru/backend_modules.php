@@ -1,14 +1,14 @@
 <?php return array (
-  'Acl' =>
-  array (
-    'class' => 'Backend_Acl_Controller',
-    'dev' => false,
-    'active' => true,
-    'title' => 'ACL',
-    'designer' => '',
-    'in_menu' => true,
-  ),
-  'Apikeys' =>
+    'Acl' =>
+    array (
+        'class' => 'Backend_Acl_Controller',
+        'dev' => false,
+        'active' => true,
+        'title' => 'ACL',
+        'designer' => '',
+        'in_menu' => true,
+    ),
+  'Apikeys' => 
   array (
     'id' => 'Backend_Apikeys_Controller',
     'class' => 'Backend_Apikeys_Controller',
@@ -18,7 +18,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Orm' =>
+  'Orm' => 
   array (
     'id' => 'Backend_Orm_Controller',
     'class' => 'Backend_Orm_Controller',
@@ -28,7 +28,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Blocks' =>
+  'Blocks' => 
   array (
     'id' => 'Backend_Blocks_Controller',
     'class' => 'Backend_Blocks_Controller',
@@ -38,7 +38,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Designer' =>
+  'Designer' => 
   array (
     'id' => 'Backend_Designer_Controller',
     'class' => 'Backend_Designer_Controller',
@@ -48,7 +48,17 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Logs' =>
+  'Docs' =>
+  array (
+    'id' => 'Backend_Docs_Controller',
+    'class' => 'Backend_Docs_Controller',
+    'dev' => true,
+    'active' => true,
+    'title' => 'Документация',
+    'designer' => './system/config/layouts/system/documentation.designer.dat',
+    'in_menu' => true,
+  ),
+  'Logs' => 
   array (
     'id' => 'Backend_Logs_Controller',
     'class' => 'Backend_Logs_Controller',
@@ -58,7 +68,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Mediaconfig' =>
+  'Mediaconfig' => 
   array (
     'id' => 'Backend_Mediaconfig_Controller',
     'class' => 'Backend_Mediaconfig_Controller',
@@ -68,7 +78,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Medialib' =>
+  'Medialib' => 
   array (
     'id' => 'Backend_Medialib_Controller',
     'class' => 'Backend_Medialib_Controller',
@@ -78,7 +88,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Menu' =>
+  'Menu' => 
   array (
     'id' => 'Backend_Menu_Controller',
     'class' => 'Backend_Menu_Controller',
@@ -88,7 +98,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Modules' =>
+  'Modules' => 
   array (
     'id' => 'Backend_Modules_Controller',
     'class' => 'Backend_Modules_Controller',
@@ -98,7 +108,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Fmodules' =>
+  'Fmodules' => 
   array (
     'id' => 'Backend_Fmodules_Controller',
     'class' => 'Backend_Fmodules_Controller',
@@ -108,7 +118,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Reports' =>
+  'Reports' => 
   array (
     'id' => 'Backend_Reports_Controller',
     'class' => 'Backend_Reports_Controller',
@@ -118,17 +128,17 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'User' =>
+  'User' => 
   array (
     'id' => 'Backend_User_Controller',
     'class' => 'Backend_User_Controller',
     'dev' => false,
     'active' => true,
     'title' => 'Пользователи',
-    'designer' => '',
+    'designer' => './system/config/layouts/system/users.designer.dat',
     'in_menu' => true,
   ),
-  'Deploy' =>
+  'Deploy' => 
   array (
     'id' => 'Backend_Deploy_Controller',
     'class' => 'Backend_Deploy_Controller',
@@ -138,7 +148,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Compiler' =>
+  'Compiler' => 
   array (
     'id' => 'Backend_Compiler_Controller',
     'class' => 'Backend_Compiler_Controller',
@@ -148,7 +158,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Cache' =>
+  'Cache' => 
   array (
     'id' => 'Backend_Cache_Controller',
     'class' => 'Backend_Cache_Controller',
@@ -158,7 +168,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Page' =>
+  'Page' => 
   array (
     'id' => 'Backend_Page_Controller',
     'class' => 'Backend_Page_Controller',
@@ -168,7 +178,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-  'Tasks' =>
+  'Tasks' => 
   array (
     'id' => 'Backend_Tasks_Controller',
     'class' => 'Backend_Tasks_Controller',
@@ -178,7 +188,7 @@
     'designer' => '',
     'in_menu' => true,
   ),
-   'Localization' =>
+   'Localization' => 
   array (
     'id' => 'Backend_Localization_Controller',
     'class' => 'Backend_Localization_Controller',
@@ -197,4 +207,13 @@
         'designer' => './system/config/layouts/system/error_log.designer.dat',
         'in_menu' => true,
     ),
-);
+    'Filestorage' =>
+        array (
+            'class' => 'Backend_Filestorage_Controller',
+            'dev' => false,
+            'active' => true,
+            'title' => 'Файловое хранилище',
+            'designer' => './system/config/layouts/system/filestorage.designer.dat',
+            'in_menu' => true,
+        ),
+); 

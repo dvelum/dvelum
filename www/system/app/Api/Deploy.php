@@ -65,7 +65,7 @@ class Api_Deploy
 	/**
 	 * Create FS map using UNIX shell, faster then php code
 	 * @param boolean $toFile - save to file
-	 * @return bulean|array
+	 * @return boolean|array
 	 */
 	protected  function _fsmap($toFile = false)
 	{
@@ -109,7 +109,7 @@ class Api_Deploy
 		ini_set('max_execution_time', 3600);
 		
 		$deployCfg = Config::factory(Config::File_Array, $this->_appConfig['configs'].'deploy.php');
-		$file = $this->_appConfig['tmp'].time(); 
+
 		
 		$list = File::scanFiles('.' , array(), $recursive = true);
 		$ignore = $deployCfg->get('ignore');

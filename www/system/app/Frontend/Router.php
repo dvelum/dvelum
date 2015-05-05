@@ -213,6 +213,8 @@ class Frontend_Router extends Router
     if(!empty($list))
       foreach($list as $item)
         $this->_moduleRoutes[$item['func_code']] = $item['code'];
+
+    return $this->_moduleRoutes;
   }
 
   /**
@@ -241,8 +243,6 @@ class Frontend_Router extends Router
     $controller = $this->_request->getPart(0);
     $pathCode = Filter::filterValue('pagecode' , $controller);
     $routes = Config::factory(Config::File_Array , $this->_appConfig->get('frontend_modules'))->__toArray();
-
-    $controllerClass = false;
 
     if(isset($routes[$pathCode]) && class_exists($routes[$pathCode]['class']))
       $controllerClass = $routes[$pathCode]['class'];

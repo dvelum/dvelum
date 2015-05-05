@@ -16,8 +16,8 @@ Ext.define('app.crud.orm.FieldWindow', {
 			config = Ext.apply({
 				modal: true,
 		        layout:'fit',
-		        width: app.checkWidth(450),
-		        height:app.checkHeight(450),
+		        width: app.checkWidth(500),
+		        height:app.checkHeight(500),
 		        closeAction: 'destroy',
 		        maximizable:true
 		    }, config || {});
@@ -395,6 +395,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 				          this.fieldUnique,
 				          {
 				              xtype: 'radiogroup',
+							  columns:2,
 				              fieldLabel: appLang.FIELD_TYPE,
 				              items: [
 				                  {
@@ -460,7 +461,41 @@ Ext.define('app.crud.orm.FieldWindow', {
 						            	  },
 						            	  render:{fn:this.initTooltip,scope:this}
 						              }
-				                  }
+				                  },{
+									  boxLabel:appLang.ENCRYPTED_FIELD,
+									  name: 'type',
+									  inputValue: 'encrypted',
+									  listeners:{
+										  'change':{
+											  fn:function( field, newValue, oldValue, options ){
+												  if(newValue){
+													  this.processFields(
+														  [
+															  this.fieldDefaultNum,
+															  this.fieldType,
+															  this.fieldLen,
+															  this.fieldScale,
+															  this.fieldPrecision,
+															  this.fieldUnsigned,
+															  this.fieldIsSearch,
+															  this.fieldDictionaries,
+															  this.fieldLinkType,
+															  this.fieldObject,
+															  this.fieldIsNull,
+															  this.fieldAllowHtml
+														  ],[
+															  this.fieldSetDefault,
+															  this.fieldDefaultString,
+															  this.validatorField,
+															  this.fieldRequired
+														  ]
+													  );
+												  }
+											  },
+											  scope:this
+										  }
+									  }
+								  }
 				              ]
 				          },
 				          this.fieldLinkType,

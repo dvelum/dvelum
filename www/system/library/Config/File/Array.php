@@ -68,6 +68,7 @@ class Config_File_Array extends Config_File
 	/**
      * Create config
      * @param string $file - path to config
+	 * @throws Exception
 	 * @return boolean - success flag  
      */
     static public function create($file)

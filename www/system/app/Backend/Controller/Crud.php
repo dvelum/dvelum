@@ -140,50 +140,47 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $ids = Utils::fetchCol('id' , $data);
         $data = Utils::rekey('id' , $data);
 
-        $obj = new Db_Object($objectName);
+        $objectConfig = Db_Object_Config::getInstance($objectName);
         $model = Model::factory(ucfirst($objectName));
 
-        $fields = array(
-                'id',
-                'title' => $obj->getConfig()->getLinkTitle()
-        );
+        try{
+            $objectsList = Db_Object::factory(ucfirst($objectName) , $ids);
+        }catch (Exception $e){
+            $objectsList =  array();
+        }
 
-        $usedRc = $obj->getConfig()->isRevControl();
-        if($usedRc)
-            $fields[] = 'published';
+       /*
+        * Find out deleted records
+        */
+        if(empty($objectsList)){
+            $deleted = $ids;
+        }else{
+            $deleted = array_diff($ids , array_keys($objectsList));
+        }
 
-        $odata = $model->getItems($ids , $fields);
-
-        if(!empty($data))
-            $odata = Utils::rekey('id' , $odata);
-        /*
-         * Find out deleted records
-         */
-        $deleted = array_diff($ids , array_keys($odata));
-
-        $deletedData = array();
-
+        $useVc = $objectConfig->isRevControl();
         $result = array();
-        foreach($ids as $id){
-
+        foreach($ids as $id)
+        {
             if(in_array($id , $deleted)){
                 $item = array(
-                        'id' => $id,
-                        'deleted' => 1,
-                        'title' => $data[$id]['title'],
-                        'published' => 1
+                    'id' => $id,
+                    'deleted' => 1,
+                    'title' => $data[$id]['title'],
+                    'published' => 1
                 );
-                if($usedRc)
+                if($useVc)
                     $item['published'] = 0;
             }else{
+                $object =  $objectsList[$id];
                 $item = array(
-                        'id' => $id,
-                        'deleted' => 0,
-                        'title' => $odata[$id]['title'],
-                        'published' => 1
+                    'id' => $id,
+                    'deleted' => 0,
+                    'title' => $object->getTitle(),
+                    'published' => 1
                 );
-                if($usedRc){
-                    $item['published'] = $odata[$id]['published'];
+                if($useVc){
+                    $item['published'] = $object->get('published');
                 }
             }
             $result[] = $item;
@@ -305,8 +302,16 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         	Response::jsonError($this->_lang->CANT_VIEW);
 
         $objectCfg = Db_Object_Config::getInstance($object);
-        $titleField = $objectCfg->getLinkTitle();
+        $primaryKey = $objectCfg->getPrimaryKey();
 
+        $objectConfig = Db_Object_Config::getInstance($object);
+        // Check ACL permissions
+        $acl = $objectConfig->getAcl();
+        if($acl){
+            if(!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
+                Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
+            }
+        }
         /**
          * @var Model
          */
@@ -314,9 +319,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $rc = $objectCfg->isRevControl();
 
         if($objectCfg->isRevControl())
-            $fields = array('id'=>$objectCfg->getPrimaryKey(),'title'=>$titleField , 'published');
+            $fields = array('id'=>$primaryKey, 'published');
         else
-            $fields = array('id'=>$objectCfg->getPrimaryKey(),'title'=>$titleField);
+            $fields = array('id'=>$primaryKey);
 
         $count = $model->getCount(false , $query ,false);
         $data = array();
@@ -326,11 +331,28 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
             if(!empty($data))
             {
-                foreach ($data as &$item){
+                $objectIds = Utils::fetchCol($primaryKey , $data);
+                try{
+                    $objects = Db_Object::factory($object ,$objectIds);
+                }catch (Exception $e){
+                    Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
+                    Response::jsonError($this->_lang->get('CANT_EXEC'));
+                }
+
+                foreach ($data as &$item)
+                {
                     if(!$rc)
                         $item['published'] = true;
 
                     $item['deleted'] = false;
+
+                    if(isset($objects[$item[$primaryKey]])){
+                        $o = $objects[$item[$primaryKey]];
+                        $item['title'] = $o->getTitle();
+                    }else{
+                        $item['title'] = $item['id'];
+                    }
+
                 }unset($item);
             }
         }
@@ -350,12 +372,21 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         if(!in_array(strtolower($object), $this->_canViewObjects , true))
             Response::jsonError($this->_lang->CANT_VIEW);
 
-        $titleField = Db_Object_Config::getInstance($object)->getLinkTitle();
+        $objectConfig = Db_Object_Config::getInstance($object);
+        // Check ACL permissions
+        $acl = $objectConfig->getAcl();
+        if($acl){
+            if(!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
+                Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
+            }
+        }
 
-        $data = Model::factory($object)->getItem($id , array($titleField));
-        if(!empty($data))
-            Response::jsonSuccess(array('title'=>$data[$titleField]));
-        else
-            Response::jsonSuccess(array('title'=>''));
+        try {
+            $o = Db_Object::factory($object, $id);
+            Response::jsonSuccess(array('title'=>$o->getTitle()));
+        }catch (Exception $e){
+            Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
+            Response::jsonError($this->_lang->get('CANT_EXEC'));
+        }
     }
 }

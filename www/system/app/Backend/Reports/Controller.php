@@ -300,7 +300,7 @@ class Backend_Reports_Controller extends Backend_Controller
 		$partId = Request::post('partid', 'string', false);
 		$objectField = Request::post('objectfield', 'string', false);
 		$subObject = Request::post('subobject', 'string', false);
-		$childField = Request::post('childfield', 'string', '');
+		//$childField = Request::post('childfield', 'string', '');
 	
 		if(!$partId || !$objectField)
 			Response::jsonError($this->_lang->WRONG_REQUEST);
