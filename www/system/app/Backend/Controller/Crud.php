@@ -342,7 +342,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                         $o = $objects[$item[$primaryKey]];
                         $item['title'] = $o->getTitle();
                     }else{
-                        $item['title'] = $primaryKey;
+                        $item['title'] = $item['id'];
                     }
 
                 }unset($item);
