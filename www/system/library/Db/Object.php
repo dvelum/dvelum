@@ -53,6 +53,11 @@ class Db_Object
      * @var Db_Object_Acl
      */
     protected $_acl = false;
+    /**
+     * System flag. Disable ACL create permissions check
+     * @var bool
+     */
+    static protected $_disableAclCheck = false;
 
     /**
      * @var Model
@@ -90,8 +95,9 @@ class Db_Object
            $this->_checkCanRead();
            $this->_loadData();
         }else{
-           if($this->_acl)
-            $this->_checkCanCreate();
+           if($this->_acl && !static::$_disableAclCheck) {
+               $this->_checkCanCreate();
+           }
         }
     }
 
@@ -235,7 +241,7 @@ class Db_Object
      */
     public function setId($id)
     {
-        if($this->_acl)
+        if($this->_acl && !static::$_disableAclCheck)
             $this->_checkCanEdit();
 
         $this->_id = (integer) $id;
@@ -329,7 +335,6 @@ class Db_Object
 
         if(empty($data))
             return false;
-
 
         $data = Utils::fetchCol($cfg->getPrimaryKey(), $data);
 
@@ -464,21 +469,22 @@ class Db_Object
     protected function _collectLinksData($field , $ids)
     {
         $ids = array_map('intval', $ids);
-        $linkedObject = new Db_Object($this->getLinkedObject($field));
-        $pKey = $linkedObject->getConfig()->getPrimaryKey();
+        $linkedObjectConfig = Db_Object_Config::getInstance($this->getLinkedObject($field));
+        $linkedObjectName =  $linkedObjectConfig->getName();
+        $pKey = $linkedObjectConfig->getPrimaryKey();
         /*
          * Init object model
          */
-        $model = Model::factory($linkedObject->getName());
+        $model = Model::factory($linkedObjectName);
         /*
          * Find title field for link
          */
         $title = $pKey;
-        $lt = $linkedObject->getConfig()->getLinkTitle();
+        $lt = $linkedObjectConfig->getLinkTitle();
         if($lt)
             $title = $lt;
 
-        $objects = Db_Object::factory($linkedObject->getName(), $ids);
+        $objects = Db_Object::factory($linkedObjectName, $ids);
 
         $result = array();
         foreach ($ids as $v)
@@ -835,6 +841,7 @@ class Db_Object
        $model = Model::factory($name);
        $data = $model->getItems($id);
 
+       static::$_disableAclCheck = true;
        foreach ($data as $item)
        {
           $o = new Db_Object($name);
@@ -842,6 +849,7 @@ class Db_Object
           $o->_setRawData($item);
           $list[$item[$o->_primaryKey]] = $o;
        }
+       static::$_disableAclCheck = false;
        return $list;
     }
 

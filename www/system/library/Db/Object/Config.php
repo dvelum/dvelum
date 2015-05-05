@@ -948,12 +948,10 @@ class Db_Object_Config
     public function renameField($oldName , $newName)
     {
     	$fields = $this->getFieldsConfig();
-    	$cfg = $fields[$oldName];
+        $fields[$newName] = $fields[$oldName];
     	unset($fields[$oldName]);
-    	$fields[$newName] = $cfg;
+
     	$this->_config->set('fields', $fields);
-
-
     	$indexes = $this->getIndexesConfig();
     	/**
     	 * Check for indexes for field
@@ -973,7 +971,7 @@ class Db_Object_Config
     		}
     	}
     	$this->_config->set('indexes', $indexes);
-    	$builder = new Db_Object_Builder($this->getName());
+    	$builder = new Db_Object_Builder($this->getName() , false);
     	return $builder->renameField($oldName , $newName);
     }
 

@@ -1205,7 +1205,6 @@ class Backend_Orm_Controller extends Backend_Controller
         	$objectCfg->setFieldconfig($name, $newConfig);
         	$objectCfg->fixConfig();
         }
-
          if($objectCfg->save()){
              $builder = new Db_Object_Builder($object);
              $builder->build();

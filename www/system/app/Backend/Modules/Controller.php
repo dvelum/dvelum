@@ -252,8 +252,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 		
 		if(file_exists($actionFile))
 			Response::jsonError($this->_lang->FILE_EXISTS . '(' . $actionFile . ')');
-						
-		
+
 		$objectConfig = Db_Object_Config::getInstance($object);
 
 		// Check ACL permissions

@@ -140,7 +140,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $ids = Utils::fetchCol('id' , $data);
         $data = Utils::rekey('id' , $data);
 
-        $obj = new Db_Object($objectName);
+        $objectConfig = Db_Object_Config::getInstance($objectName);
         $model = Model::factory(ucfirst($objectName));
 
         try{
@@ -158,7 +158,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             $deleted = array_diff($ids , array_keys($objectsList));
         }
 
-        $useVc = $obj->getConfig()->isRevControl();
+        $useVc = $objectConfig->isRevControl();
         $result = array();
         foreach($ids as $id)
         {
@@ -303,8 +303,15 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         $objectCfg = Db_Object_Config::getInstance($object);
         $primaryKey = $objectCfg->getPrimaryKey();
-        //$titleField = $objectCfg->getLinkTitle();
 
+        $objectConfig = Db_Object_Config::getInstance($object);
+        // Check ACL permissions
+        $acl = $objectConfig->getAcl();
+        if($acl){
+            if(!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
+                Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
+            }
+        }
         /**
          * @var Model
          */
@@ -329,7 +336,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                     $objects = Db_Object::factory($object ,$objectIds);
                 }catch (Exception $e){
                     Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
-                    Response::jsonError($this->_lang->get('ACCESS_DENIED'));
+                    Response::jsonError($this->_lang->get('CANT_EXEC'));
                 }
 
                 foreach ($data as &$item)
@@ -364,6 +371,15 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         if(!in_array(strtolower($object), $this->_canViewObjects , true))
             Response::jsonError($this->_lang->CANT_VIEW);
+
+        $objectConfig = Db_Object_Config::getInstance($object);
+        // Check ACL permissions
+        $acl = $objectConfig->getAcl();
+        if($acl){
+            if(!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
+                Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
+            }
+        }
 
         try {
             $o = Db_Object::factory($object, $id);
