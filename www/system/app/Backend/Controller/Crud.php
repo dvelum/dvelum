@@ -329,6 +329,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                     $objects = Db_Object::factory($object ,$objectIds);
                 }catch (Exception $e){
                     Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
+                    Response::jsonError($this->_lang->get('ACCESS_DENIED'));
                 }
 
                 foreach ($data as &$item)
