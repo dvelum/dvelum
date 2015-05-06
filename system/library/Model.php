@@ -105,7 +105,7 @@ class Model
 
     /**
      * Connection manager
-     * @var Db_Manager_Interfacee
+     * @var Db_Manager_Interface
      */
     protected $_dbManager;
 
@@ -1014,5 +1014,16 @@ class Model
         	}
         }
         return true;
+    }
+
+    /**
+     * Clear runtime cache
+     * @param $name, Object name
+     */
+    static public function removeInstance($name)
+    {
+       $name = strtolower($name);
+       if(isset(static::$_instances[$name]))
+           unset(static::$_instances[$name]);
     }
 }

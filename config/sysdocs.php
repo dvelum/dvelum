@@ -4,7 +4,7 @@ return array(
 	'versions'=>array(
        '0.9.5'=>3
     ),
-    'default_languge'=> 'en',
+    'default_languge'=> 'ru',
     'default_version' => '0.9.5',
     'locations'=>array(
         './system/rewrite',

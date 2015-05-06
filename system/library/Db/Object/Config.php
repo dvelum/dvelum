@@ -94,16 +94,19 @@ class Db_Object_Config
    /**
     * Instantiate data structure for the objects named $name
     * @param string $name - object name
+    * @param boolean $force - reload config
     * @return Db_Object_Config
     * @throws Exception
     */
-    static public function getInstance($name)
+    static public function getInstance($name , $force = false)
     {
-    	$name = strtolower($name);
-      if(!isset(self::$_instances[$name]))
-          self::$_instances[$name] = new static($name);
+        $name = strtolower($name);
 
-       return self::$_instances[$name];
+        if($force || !isset(self::$_instances[$name])) {
+            self::$_instances[$name] = new static($name , $force);
+        }
+
+        return self::$_instances[$name];
     }
 
     /**
@@ -117,14 +120,14 @@ class Db_Object_Config
 
     final private function __clone(){}
 
-    final private function __construct($name)
+    final private function __construct($name , $force = false)
     {
         $this->_name = strtolower($name);
 
         if(!self::configExists($name))
         	throw new Exception('Undefined object config '. $name);
 
-        $this->_config = Config::factory(Config::File_Array, self::$_configs[$name]);
+        $this->_config = Config::factory(Config::File_Array, self::$_configs[$name] , !$force);
         $this->_loadProperties();
     }
 
@@ -416,10 +419,11 @@ class Db_Object_Config
     	$fields = $this->_config['fields'];
     		unset($fields[$this->getPrimaryKey()]);
 
-    	if($this->isRevControl())
-    		return  array_diff_key($fields, $this->_getVcFields());
-    	else
-    		return  $fields;
+
+        $fields = array_diff_key($fields, $this->_getVcFields());
+        $fields = array_diff_key($fields, $this->_getEncryptionFields());
+
+    	return  $fields;
     }
 
     /**
@@ -431,8 +435,12 @@ class Db_Object_Config
     	$this->_prepareTranslation();
     	$pimaryKey = $this->getPrimaryKey();
     	$fields = array();
+
     	if($this->isRevControl())
     		$fields = $this->_getVcFields();
+
+        if($this->hasEncrypted())
+            $fields = array_merge($fields , $this->_getEncryptionFields());
 
     	$fields[$pimaryKey] = $this->_config['fields'][$pimaryKey];
 
@@ -940,12 +948,10 @@ class Db_Object_Config
     public function renameField($oldName , $newName)
     {
     	$fields = $this->getFieldsConfig();
-    	$cfg = $fields[$oldName];
+        $fields[$newName] = $fields[$oldName];
     	unset($fields[$oldName]);
-    	$fields[$newName] = $cfg;
+
     	$this->_config->set('fields', $fields);
-
-
     	$indexes = $this->getIndexesConfig();
     	/**
     	 * Check for indexes for field
@@ -965,7 +971,7 @@ class Db_Object_Config
     		}
     	}
     	$this->_config->set('indexes', $indexes);
-    	$builder = new Db_Object_Builder($this->getName());
+    	$builder = new Db_Object_Builder($this->getName() , false);
     	return $builder->renameField($oldName , $newName);
     }
 
@@ -1052,8 +1058,13 @@ class Db_Object_Config
     		return true;
 
     	$sFields = $this->_getVcFields();
+
     	if(isset($sFields[$field]))
     		return true;
+
+        $encFields = $this->_getEncryptionFields();
+        if(isset($encFields[$field]))
+            return true;
 
     	return false;
     }
@@ -1298,8 +1309,7 @@ class Db_Object_Config
      */
     public function hasEncrypted()
     {
-        $fields = $this->getFieldsConfig(false);
-        foreach ($fields as $config){
+        foreach ($this->_config['fields'] as $config){
             if(isset($config['type']) && $config['type']=='encrypted')
                 return true;
         }
@@ -1321,6 +1331,10 @@ class Db_Object_Config
         return $fields;
     }
 
+    /**
+     * Get public key field
+     * @return bool|null
+     */
     public function getIvField()
     {
         if(!isset(self::$_encConfig))
@@ -1329,16 +1343,32 @@ class Db_Object_Config
         return self::$_encConfig['iv_field'];
     }
 
+    /**
+     * Decrypt value
+     * @param $value
+     * @param $iv - public key
+     * @return string
+     */
     public function decrypt($value , $iv)
     {
         return Utils_String::decrypt($value , self::$_encConfig['key'] , $iv);
     }
 
+    /**
+     * Encrypt value
+     * @param $value
+     * @param $iv  - public key
+     * @return string
+     */
     public function encrypt($value, $iv)
     {
         return Utils_String::encrypt($value , self::$_encConfig['key'] , $iv);
     }
 
+    /**
+     * Create public key
+     * @return string
+     */
     public function createIv()
     {
         return Utils_String::createEncryptIv();

@@ -38,7 +38,8 @@ class Db_Object_Property
             'locked',
             'readonly',
             'connection',
-            'use_db_prefix'
+            'use_db_prefix',
+            'hidden'
     );
     public static $numberLength = array(
             'tinyint' => 3 , 

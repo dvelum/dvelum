@@ -349,9 +349,9 @@ class Request
    static public function baseUrl()
    {
     	$protocol = 'http://';
-    	if(strpos(strtolower($_SERVER['SERVER_PROTOCOL']), 'https')!==false)
-    	    $protocol = 'https://';
-
+        if(!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS'])!=='off'){
+            $protocol = 'https://';
+        }
     	return $protocol.$_SERVER['HTTP_HOST'].self::$_wwwRoot;
    }
 

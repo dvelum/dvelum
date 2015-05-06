@@ -34,7 +34,15 @@ Ext.define('app.comboValueModel', {
 	]
 });
 
-
+Ext.data.proxy.Ajax.override({
+	type: 'ajax',
+	actionMethods : {
+		create : 'POST',
+		read   : 'POST',
+		update : 'POST',
+		destroy: 'POST'
+	}
+});
 /*
  * Column renderer based on ComboBox data
  */
@@ -400,6 +408,41 @@ app.collectStoreData = function(store, onlyChanged){
 	return data;
 };
 
+/**
+ * commitChanges and rejectChanges for {Ext.data.Store}
+ */
+Ext.override(Ext.data.AbstractStore, {
+
+	commitChanges: function()
+	{
+		Ext.each(this.getUpdatedRecords(), function(rec) {
+			rec.commit();
+		});
+
+		Ext.each(this.getNewRecords(), function(rec) {
+			rec.commit();
+			rec.phantom = false;
+		});
+
+		this.removed = [];
+	},
+
+	rejectChanges: function()
+	{
+		var rLength = this.removed.length;
+		for (var i = 0; i < rLength; i++) {
+			this.insert(this.removed[i].lastIndex || 0, this.removed[i]);
+		}
+
+		this.remove(this.getNewRecords());
+
+		this.each( function(rec) {
+			rec.reject();
+		});
+
+		this.removed = [];
+	}
+});
 /*
  * Recursive set up of the checked property for a tree node
  */
@@ -412,19 +455,20 @@ app.checkChildNodes = function(node, isChecked){
 	});
 };
 
-/**
- *
- * @event dataLoaded
- * @params {app.PermissionsStorage} me
- * @params {Object} permissions
- *
- */
 Ext.define('app.PermissionsStorage', {
 	extend:'Ext.Component',
 	permissionsLoaded:false,
 	permissions:null,
 	initComponent: function() {
 		this.callParent();
+		this.addEvents([
+		/**
+		 * @event load
+		 * @params {app.PermissionsStorage} me
+		 * @params {Object} permissions
+		 */
+			'load'
+		]);
 		this.loadData();
 	},
 	canView:function(module){
@@ -466,7 +510,7 @@ Ext.define('app.PermissionsStorage', {
 				if(response.success){
 					me.permissionsLoaded = true;
 					me.permissions = response.data;
-					me.fireEvent('dataLoaded' ,me , me.permissions);
+					me.fireEvent('load' ,me , me.permissions);
 				}
 			}
 		});
@@ -491,54 +535,6 @@ Ext.define('app.PermissionsStorage', {
 });
 
 //======= Ovverides =============
-Ext.override(Ext.data.proxy.Ajax,{
-	config: {
-		binary: false,
-		headers: undefined,
-		paramsAsJson: false,
-		withCredentials: false,
-		useDefaultXhrHeader: true,
-		username: null,
-		password: null,
-		actionMethods: {
-			create : 'POST',
-			read   : 'POST',
-			update : 'POST',
-			destroy: 'POST'
-		}
-	}
-});
-
-/**
- * commitChanges and rejectChanges for {Ext.data.Store}
- */
-Ext.override(Ext.data.AbstractStore, {
-
-	commitChanges: function()
-	{
-		Ext.each(this.getUpdatedRecords(), function(rec) {
-			rec.commit();
-		});
-		Ext.each(this.getNewRecords(), function(rec) {
-			rec.commit();
-			rec.phantom = false;
-		});
-		this.removed = [];
-	},
-
-	rejectChanges: function()
-	{
-		var rLength = this.removed.length;
-		for (var i = 0; i < rLength; i++) {
-			this.insert(this.removed[i].lastIndex || 0, this.removed[i]);
-		}
-		this.remove(this.getNewRecords());
-		this.each( function(rec) {
-			rec.reject();
-		});
-		this.removed = [];
-	}
-});
 
 Ext.override(Ext.tree.TreePanel,{
 	getChecked: function( prop ){

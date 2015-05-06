@@ -204,10 +204,11 @@ class Install_Controller {
 				'path'=>'media',
 				'accessType'=>'required'
 			),
-			array(
+			/*array(
 				'path'=>'.backups',
 				'accessType'=>'required'
 			),
+			*/
             array(
                 'path'=>'.tmp',
                 'accessType'=>'required'
@@ -277,7 +278,7 @@ class Install_Controller {
 		$port = Request::post('port', 'int', 0);
 		$prefix = Request::post('prefix', 'str', '');
 
-		$installDocs = Request::post('install_docs' , 'boolean' , true);
+		$installDocs = Request::post('install_docs' , 'boolean' , false);
 		$this->_session->set('install_docs' , $installDocs);
 
 		$params = array(
@@ -700,7 +701,7 @@ return array(
     	 */
     	\'orm_version_object\' => \'Vc\',
 		/*
-         * Db_Object for error log 
+         * Db_Object for error log
          */
         \'erorr_log_object\'=>\'error_log\'
 );';
@@ -723,10 +724,11 @@ return array(
 		if(!@file_put_contents($mainCfgPath, $mainCfg))
 			Response::jsonError($this->_dictionary['CANT_WRITE_FS']);
 
+		$key = md5(uniqid(md5(time())));
 		$encConfig = '
 		<?php
 			return array(
-				\'key\'=>\''.md5(uniqid(md5(time())),true).'\',
+				\'key\'=>\''.$key.'\',
 				\'iv_field\'=>\'enc_key\'
 			);
 		';
@@ -754,13 +756,23 @@ return array(
 	{
 		try
 		{
+            $toCleanModels = array(
+                Model::factory('User'),
+                Model::factory('Group'),
+                Model::factory('Permissions'),
+                Model::factory('Page')
+            );
+
+            foreach ($toCleanModels as $model)
+                $model->getDbConnection()->delete($model->table());
+
 			// Add group
 			$group = new Db_Object('Group');
 			$group->setValues(array(
 					'title'=>$this->_dictionary['ADMINISTRATORS'] ,
 					'system'=>true
 			));
-			$group->save();
+			$group->save(true, false);
 			$groupId = $group->getId();
 
 			// Add user
@@ -783,11 +795,9 @@ return array(
 					'confirmation_date' =>date('Y-m-d H:i:s')
 				)
 			);
-			$userId = $user->save();
+			$userId = $user->save(false, false);
 			if(!$userId)
 				return false;
-
-
 
 			// Add permissions
 			$permissionsModel = Model::factory('Permissions');
@@ -829,7 +839,7 @@ return array(
 					'in_site_map'=>true,
 					'default_blocks'=>true
 			));
-			if(!$page->save())
+			if(!$page->save(true, false))
 				return false;
 
 			//404 Page
@@ -859,7 +869,7 @@ return array(
 			    'in_site_map'=>false,
 			    'default_blocks'=>true
 			));
-			if(!$page->save())
+			if(!$page->save(true, false))
 			  return false;
 
 			//API Page
@@ -890,7 +900,7 @@ return array(
 			        'default_blocks'=>false
 			));
 
-			if(!$page->save())
+			if(!$page->save(true, false))
 			    return false;
 
 			return true;

@@ -1,17 +1,17 @@
 <?php return array (
-  'bgtask_signal' => 
+  'bgtask_signal' =>
   array (
     'title' => 'Сигнал для фоновой задачи',
-    'fields' => 
+    'fields' =>
     array (
       'pid' => 'PID Задачи',
       'signal' => 'Сигрнал',
     ),
   ),
-  'bgtask' => 
+  'bgtask' =>
   array (
     'title' => 'Фоновая задача',
-    'fields' => 
+    'fields' =>
     array (
       'status' => 'Статус',
       'title' => 'Заголовок',
@@ -24,10 +24,10 @@
       'memory_peak' => 'Пик потребления памяти',
     ),
   ),
-  'blockmapping' => 
+  'blockmapping' =>
   array (
     'title' => 'Карта блоков',
-    'fields' => 
+    'fields' =>
     array (
       'page_id' => 'Страница',
       'place' => 'Код контейнера',
@@ -35,10 +35,10 @@
       'order_no' => 'Сортировка',
     ),
   ),
-  'blocks' => 
+  'blocks' =>
   array (
     'title' => 'Блоки',
-    'fields' => 
+    'fields' =>
     array (
       'title' => 'Заголовок',
       'text' => 'Текст',
@@ -50,19 +50,19 @@
       'menu_id' => 'Меню',
     ),
   ),
-  'group' => 
+  'group' =>
   array (
     'title' => 'Группы пользователей',
-    'fields' => 
+    'fields' =>
     array (
       'title' => 'Заголовок',
       'system' => 'Системный?',
     ),
   ),
-  'historylog' => 
+  'historylog' =>
   array (
     'title' => 'История изменений',
-    'fields' => 
+    'fields' =>
     array (
       'user_id' => 'Пользователь',
       'date' => 'Дата',
@@ -71,10 +71,10 @@
       'table_name' => 'Таблица БД',
     ),
   ),
-  'links' => 
+  'links' =>
   array (
     'title' => 'Ассоциации',
-    'fields' => 
+    'fields' =>
     array (
       'src' => 'Объект источник',
       'src_id' => 'ID источника',
@@ -84,10 +84,10 @@
       'order' => 'Сортировка',
     ),
   ),
-  'medialib' => 
+  'medialib' =>
   array (
     'title' => 'Медиатека',
-    'fields' => 
+    'fields' =>
     array (
       'title' => 'Заголовок',
       'date' => 'Дата загрузки',
@@ -104,10 +104,10 @@
       'category' => 'Каталог',
     ),
   ),
-  'menu_item' => 
+  'menu_item' =>
   array (
     'title' => 'Элемент меню',
-    'fields' => 
+    'fields' =>
     array (
       'page_id' => 'Страница',
       'title' => 'Заголовок',
@@ -121,29 +121,29 @@
       'resource_id' => 'Ссылка на ресурс',
     ),
   ),
-  'menu' => 
+  'menu' =>
   array (
     'title' => 'Меню',
-    'fields' => 
+    'fields' =>
     array (
       'code' => 'Код',
       'title' => 'Заголовок',
     ),
   ),
-  'online' => 
+  'online' =>
   array (
     'title' => 'Пользователи онлайн',
-    'fields' => 
+    'fields' =>
     array (
       'ssid' => 'SSID',
       'update_time' => 'Время обновления',
       'user_id' => 'ID пользователя',
     ),
   ),
-  'page' => 
+  'page' =>
   array (
     'title' => 'Страницы',
-    'fields' => 
+    'fields' =>
     array (
       'is_fixed' => 'Зафиксирована?',
       'parent_id' => 'Родительская страница',
@@ -163,10 +163,10 @@
       'default_blocks' => 'Использовать карту блоков по умолчанию',
     ),
   ),
-  'permissions' => 
+  'permissions' =>
   array (
     'title' => 'Права доступа',
-    'fields' => 
+    'fields' =>
     array (
       'user_id' => 'Пользователь',
       'group_id' => 'Группа',
@@ -177,10 +177,10 @@
       'module' => 'Модуль',
     ),
   ),
-  'user' => 
+  'user' =>
   array (
     'title' => 'Пользователи',
-    'fields' => 
+    'fields' =>
     array (
       'name' => 'Имя',
       'email' => 'Email',
@@ -198,10 +198,10 @@
       'confirmation_date' => 'Дата подтверждения',
     ),
   ),
-  'vc' => 
+  'vc' =>
   array (
     'title' => 'Хранилище версий',
-    'fields' => 
+    'fields' =>
     array (
       'date' => 'Дата',
       'record_id' => 'ID Записи',
@@ -211,10 +211,10 @@
       'version' => 'Версия',
     ),
   ),
-  'vote' => 
+  'vote' =>
   array (
     'title' => 'Голосование',
-    'fields' => 
+    'fields' =>
     array (
       'object_name' => 'Имя объекта',
       'object_id' => 'ID объекта',
@@ -222,30 +222,30 @@
       'value' => 'Значение',
     ),
   ),
-  'apikeys' => 
+  'apikeys' =>
   array (
     'title' => 'Ключи API',
-    'fields' => 
+    'fields' =>
     array (
       'name' => 'Имя',
       'hash' => 'Хеш',
       'active' => 'Активен',
     ),
   ),
-  'mediacategory' => 
+  'mediacategory' =>
   array (
     'title' => 'Каталог медиатеки',
-    'fields' => 
+    'fields' =>
     array (
       'title' => 'Имя',
       'parent_id' => 'Родительский каталог',
       'order_no' => 'Порядок сортировки',
     ),
   ),
-  'filestorage' => 
+  'filestorage' =>
   array (
     'title' => 'Файловое хранилище',
-    'fields' => 
+    'fields' =>
     array (
       'path' => 'Путь к файлу',
       'date' => 'Дата загрузки',
@@ -255,10 +255,10 @@
       'name' => 'Имя файла',
     ),
   ),
-  'acl_simple' => 
+  'acl_simple' =>
   array (
     'title' => 'Права доступа к ORM',
-    'fields' => 
+    'fields' =>
     array (
       'user_id' => 'Пользователь',
       'group_id' => 'Группа',
@@ -269,119 +269,14 @@
       'module' => 'Модуль',
     ),
   ),
-  'sysdocs_class' => 
-  array (
-    'title' => 'DVelum документация. Класс',
-    'fields' => 
-    array (
-      'description' => 'Описание (в коде)',
-      'itemType' => 'Тип элемента',
-      'fileId' => 'ID файла',
-      'parentId' => 'Родительский ID',
-      'vers' => 'Версия',
-      'name' => 'Имя',
-      'namespace' => 'Пространство имен',
-      'deprecated' => 'Устаревший',
-      'hid' => 'HID',
-      'abstract' => 'Абстрактный',
-      'fileHid' => 'HID файла',
-      'implements' => 'Реализует',
-      'extends' => 'Наследует',
-    ),
-  ),
-  'sysdocs_class_method' => 
-  array (
-    'title' => 'DVelum документация. Method',
-    'fields' => 
-    array (
-      'classId' => 'Id класса',
-      'name' => 'Имя',
-      'deprecated' => 'Устаревший',
-      'description' => 'Описание (в коде)',
-      'throws' => 'Throws',
-      'hid' => 'HID',
-      'abstract' => 'Абстрактный',
-      'static' => 'Статический',
-      'visibility' => 'Видимость',
-      'vers' => 'Версия',
-      'returnType' => 'Возвращаемый тип',
-      'classHid' => 'Hid класса',
-      'final' => 'Финальный',
-      'inherited' => 'Отнаследован',
-      'returnsReference' => 'Возвращает по ссылке',
-    ),
-  ),
-  'sysdocs_class_property' => 
-  array (
-    'title' => 'DVelum документация. Свойство',
-    'fields' => 
-    array (
-      'deprecated' => 'Устаревшее',
-      'hid' => 'HID',
-      'vers' => 'Версия',
-      'name' => 'Имя',
-      'description' => 'Описание (в коде)',
-      'const' => 'Константа',
-      'static' => 'Статическое',
-      'visibility' => 'Видимость',
-      'type' => 'Тип',
-      'classId' => 'ID класса',
-      'constValue' => 'Значение константы',
-      'classHid' => 'Hid класса',
-      'inherited' => 'Отнаследовано',
-    ),
-  ),
-  'sysdocs_localization' => 
-  array (
-    'title' => 'DVelum документация. Локализация',
-    'fields' => 
-    array (
-      'lang' => 'Язык',
-      'type' => 'Тип',
-      'field' => 'Поле',
-      'object_id' => 'ID объекта',
-      'value' => 'Значение',
-      'vers' => 'Версия',
-    ),
-  ),
-  'sysdocs_file' => 
-  array (
-    'title' => 'DVelum документация. Файл',
-    'fields' => 
-    array (
-      'path' => 'Путь',
-      'isDir' => 'Папка',
-      'name' => 'Имя',
-      'vers' => 'Версия',
-      'hid' => 'HID',
-      'parentId' => 'Родительский ID',
-    ),
-  ),
-  'sysdocs_class_method_param' => 
-  array (
-    'title' => 'DVelum документация. параметр метода',
-    'fields' => 
-    array (
-      'methodId' => 'ID метода',
-      'hid' => 'HID',
-      'name' => 'Имя',
-      'vers' => 'Версия',
-      'index' => 'Порядковый номер',
-      'default' => 'Значение по умолчанию',
-      'isRef' => 'Передан  по ссылке',
-      'description' => 'Описание (в коде)',
-      'methodHid' => 'Hid метода',
-      'optional' => 'Опциональный',
-    ),
-  ),
-  'error_log' => 
+  'error_log' =>
   array (
     'title' => 'Лог ошибок',
-    'fields' => 
+    'fields' =>
     array (
       'name' => 'Источник',
       'message' => 'Сообщение',
       'date' => 'Дата',
     ),
   ),
-); 
+);

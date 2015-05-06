@@ -68,7 +68,7 @@ Ext.define('app.crud.orm.Main',{
 				url:app.crud.orm.Actions.listObj,
 				reader: {
 					type: 'json',
-					rootProperty: 'data',
+					root: 'data',
 					idProperty: 'name'
 				},
 				actionMethods : {
@@ -524,7 +524,8 @@ Ext.define('app.crud.orm.Main',{
 						});
 					}
 				}else{
-					Ext.Msg.alert(appLang.MESSAGE , appLang.CANT_GET_VALIDATE_INFO);
+					Ext.Msg.alert(appLang.MESSAGE , response.msg);
+					handle.win.close();
 				}
 				handle.win.setLoading(false);
 			},
@@ -615,12 +616,12 @@ Ext.onReady(function(){
 
 	app.crud.orm.Actions = {
 		addDictionary:		app.root + 'adddictionary',
-		listDictionaries:		app.root + 'listdictionaries',
-		updateDictionary:		app.root + 'updatedictionary',
-		removeDictionary:		app.root + 'removedictionary',
+		listDictionaries:	app.root + 'listdictionaries',
+		updateDictionary:	app.root + 'updatedictionary',
+		removeDictionary:	app.root + 'removedictionary',
 		listObj: 			app.root + 'list',
 		listObjFields: 		app.root + 'fields',
-		listObjIndexes: 		app.root + 'indexes',
+		listObjIndexes: 	app.root + 'indexes',
 		listBackups: 		app.root + 'listbackups',
 		listAcl:			app.root + 'listacl',
 		loadObjCfg: 		app.root + 'load',
@@ -635,17 +636,21 @@ Ext.onReady(function(){
 		saveObjIndex:	 	app.root + 'saveindex',
 		deleteIndex: 		app.root + 'deleteindex',
 		deleteField:	 	app.root + 'deletefield',
-		validateObject: 		app.root + 'validate',
+		validateObject: 	app.root + 'validate',
 		buildObject:		app.root + 'build',
-		buildAllObjects:		app.root + 'buildall',
+		buildAllObjects:	app.root + 'buildall',
 		builderLog:			app.createUrl([app.root + 'log','']),
 		dictionary:			app.createUrl([app.root+'dictionary','']),
 		listValidators:		app.createUrl([app.root+'listvalidators','']),
-		dataViewController: 	app.createUrl([app.root+'dataview','']),
+		dataViewController: app.createUrl([app.root+'dataview','']),
 		connectionsUrl:		app.createUrl([app.root+'connections','']),
-		listConnections:		app.createUrl([app.root+'connectionslist','']),
-		importUrl:			app.createUrl([app.root+'import',''])
+		listConnections:	app.createUrl([app.root+'connectionslist','']),
+		importUrl:			app.createUrl([app.root+'import','']),
+		encryptData:		app.root + 'encryptdata',
+		decryptData:		app.root + 'decryptdata',
+		taskStat:			app.root + 'taskstat'
 	};
+
 	app.crud.orm.dbConfigs = dbConfigsList;
 	app.crud.orm.canEdit = canEdit;
 	app.crud.orm.canDelete = canDelete;

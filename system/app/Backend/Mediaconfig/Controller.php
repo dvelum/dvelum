@@ -134,7 +134,7 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
         if(empty($sizeToCrop))
         	Response::jsonError($this->_lang->MSG_SELECT_SIZE);
 
-        Model::factory('bgtask')->getProfiler()->setEnabled(false);
+        Model::factory('bgtask')->getDbConnection()->getProfiler()->setEnabled(false);
 
         $bgStorage = new Bgtask_Storage_Orm(Model::factory('bgtask') , Model::factory('Bgtask_Signal'));
         $logger = new Bgtask_Log_File($this->_configMain['task_log_path'] . 'recrop_' . date('d_m_Y__H_i_s'));
