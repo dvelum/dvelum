@@ -1,9 +1,9 @@
 <?php
 return array(
 	'storage'=>'file',
-	'configs'=> 'config/layouts/',
+	'configs'=> 'layouts/',
 	'lang'=>'eng',
-	'connections'=> 'config/DesignerConnections.php',
+	'connections'=> 'DesignerConnections.php',
 	'development'=>true,
 	'components'=>'./system/library/Ext/Component',
 	'field_components'=>'./system/library/Ext/Component/Field',

@@ -38,10 +38,20 @@ class Debug
 
 	/**
 	 * Get debug information
+	 * @param array $options
 	 * @return string  - html formated results
 	 */
-	static public function getStats($showCacheQueries = true , $showQueries = false , $showAutoloaded = false , $showInclided = false)
+	static public function getStats(array $options)
 	{
+		$options = array_merge(
+			array(
+				'cache' => true,
+				'sql' => false,
+				'autoloader' => false,
+				'includes' => false
+			),
+			$options
+		);
 		
 		$str = '';
 		
@@ -54,7 +64,7 @@ class Debug
 		if(self::$_dbProfiler)
 		{
 			$str .= '<b>Queries:</b> ' . self::$_dbProfiler->getTotalNumQueries() . '<br>' . '<b>Queries time:</b> ' . number_format(self::$_dbProfiler->getTotalElapsedSecs() , 5) . 'sec.<br>';
-			if($showQueries)
+			if($options['sql'])
 			{
 				$profiles = self::$_dbProfiler->getQueryProfiles();
 				if(!empty($profiles))
@@ -63,13 +73,14 @@ class Debug
 			}
 			$str .= "<br>\n";
 		}
-		if($showAutoloaded)
+		if($options['autoloader'])
 			$str .= "<b>Autoloaded:</b>\n<br> " . implode("\n\t <br>" , self::$_loadedClasses) . '<br>';
-		if($showInclided)
+
+		if($options['includes'])
 			$str .= "<b>Includes:</b>\n<br> " . implode("\n\t <br>" , get_included_files());
 		
 
-		if(!empty(self::$_cacheCores) && self::$_cacheCores)
+		if(!empty(self::$_cacheCores) && self::$_cacheCores && $options['cache'])
 		{
 		    $body= '';	    
 		    $globalCount = array('load'=>0,'save'=>0 ,'remove'=>0,'total'=>0);	    

@@ -3,7 +3,17 @@ class Dictionary_Manager
 {
 	const CACHE_KEY_LIST = 'Dictionary_Manager_list';
 	const CACHE_KEY_DATA_HASH = 'Dictionary_Manager_dataHash';
-	
+
+	/**
+	 * Base path
+	 * @var string
+	 */
+	protected $_baseDir ='';
+
+	/**
+	 * Path to localized dictionary
+	 * @var string
+	 */
 	protected $_path ='';
 	/**
 	 * @var Cache_Interface
@@ -22,6 +32,7 @@ class Dictionary_Manager
 	{
 		$cfg = Registry::get('main' , 'config');
 		$this->_path = $cfg['dictionary'];
+		$this->_baseDir = $cfg['dictionary_folder'];
 		$cacheManager = new Cache_Manager();
 		$this->_cache = $cacheManager->get('data');
 				
@@ -37,21 +48,24 @@ class Dictionary_Manager
 	{
 		if(!is_null(self::$_list))
 			return array_keys(self::$_list);
-					
-		$files = File::scanFiles($this->_path, array('.php'), false, File::Files_Only);
+
+		$paths = Config::storage()->getPaths();
 		$list = array();
-		
-		if(!empty($files)){
-			foreach($files as $path){
-				$name = substr(basename($path),0,-4);
-				$list[$name] = $path;
+
+		foreach($paths as $path)
+		{
+			if(!file_exists($path.$this->_baseDir.'index/'))
+				continue;
+
+			$files = File::scanFiles($path.$this->_baseDir.'index/', array('.php'), false, File::Files_Only);
+
+			if(!empty($files)){
+				foreach($files as $path){
+					$name = substr(basename($path),0,-4);
+					$list[$name] = $path;
+				}
 			}
 		}
-		
-		$external = Dictionary::getExternal();
-		if(!empty($external))
-			$list = array_merge($list,$external);
-
 		self::$_list = $list;
 		
 		if($this->_cache)

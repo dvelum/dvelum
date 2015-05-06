@@ -24,6 +24,11 @@
  */
 class Config_File_Array extends Config_File
 {
+	/**
+	 * Main config path to apply
+	 * @var mixed
+	 */
+	protected $_applyTo;
     /**
      * (non-PHPdoc)
      * @see library/Config/File#_readFile($data)
@@ -81,4 +86,12 @@ class Config_File_Array extends Config_File
 
     	return false;    
     }
+
+	/**
+	 * Set main config file.
+	 * @param mixed $path
+	 */
+	public function setApplyTo($path){
+		$this->_applyTo = $path;
+	}
 }

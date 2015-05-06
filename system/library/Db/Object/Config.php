@@ -127,7 +127,7 @@ class Db_Object_Config
         if(!self::configExists($name))
         	throw new Exception('Undefined object config '. $name);
 
-        $this->_config = Config::factory(Config::File_Array, self::$_configs[$name] , !$force);
+        $this->_config = Config::storage()->get(self::$_configs[$name], !$force , false);
         $this->_loadProperties();
     }
 
@@ -149,14 +149,15 @@ class Db_Object_Config
     static public function configExists($name)
     {
     	$name = strtolower($name);
+
     	if(isset(self::$_configs[$name]))
     		return true;
 
-    	if(file_exists(self::$_configPath . $name .'.php'))
-    	{
-    		self::$_configs[$name] = self::$_configPath . $name .'.php';
-    		return true;
-    	}
+        if(Config::storage()->exists(self::$_configPath . $name .'.php'))
+        {
+            self::$_configs[$name] = self::$_configPath . $name .'.php';
+            return true;
+        }
 
     	return false;
     }

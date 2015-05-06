@@ -98,23 +98,23 @@ return array(
     /*
      * Main directory for config files
      */
-    'configs' => $docRoot . '/config/', // configs path
+    'configs' => '', // configs path $docRoot . '/config/',
     /*
     * ORM configs directory
     */
-    'object_configs' => $docRoot . '/config/objects/',
+    'object_configs' => 'objects/',
     /*
      * Report configs directory
      */
-    'report_configs' => $docRoot . '/config/reports/',
+    'report_configs' => 'reports/',
     /*
      * Modules directory
      */
-    'modules' => $docRoot . '/config/modules/',
+    'modules' => 'modules/',
     /*
      * Backend modules config file
      */
-    'backend_modules' => $docRoot . '/config/modules_backend.php',
+    'backend_modules' => 'modules_backend.php',
     /*
      * Backend controllers path
      */
@@ -126,7 +126,7 @@ return array(
     /*
      * Frontend modules config file
      */
-    'frontend_modules' => $docRoot . '/config/modules_frontend.php',
+    'frontend_modules' => 'modules_frontend.php',
     /*
      * Application path
      */
@@ -138,15 +138,12 @@ return array(
     /*
      * Dictionary configs directory depending on localization
      */
-    'dictionary' => $docRoot . '/config/dictionary/' . $language . '/',
+    'dictionary' => 'dictionary/' . $language . '/',
     /*
      * Dictionary directory
      */
-    'dictionary_folder' => $docRoot . '/config/dictionary/',
-    /*
-     * Backups directory
-     */
-    'backups' => $docRoot . '/backups/',
+    'dictionary_folder' => 'dictionary/',
+
     'tmp' => $docRoot . '/tmp/',
     'mysqlExecPath' => 'mysql',
     'mysqlDumpExecPath' => 'mysqldump',
@@ -185,20 +182,32 @@ return array(
         'usePackages' => false,
         // Use class map (Reduce IO load during autoload)
         // Class map file path (string / false)
-        'map' => $docRoot . '/config/class_map.php',
+        'map' => 'class_map.php',
         // Class map file path (with packages)
-        'mapPackaged' => $docRoot . '/config/class_map_packaged.php',
+        'mapPackaged' => 'class_map_packaged.php',
         // Packages config path
-        'packagesConfig' => $docRoot . '/config/packages.php'
+        'packagesConfig' => 'packages.php'
     ),
     /*
      * Stop the site with message "Essential maintenance in progress. Please check back later."
      */
     'maintenance' => false,
     /*
-     * Show debug panel (development mode)
+     * Debug panel configuration (Development mode)
      */
-    'debug_panel' => false,
+    'debug_panel' => array(
+        'enabled' => true,
+        'options' =>array(
+            // cache requests
+            'cache' => true,
+            // sql queries list
+            'sql' => false,
+            // list of autoloaded classes
+            'autoloader' => false,
+            // list of included files
+            'includes' => false
+        )
+    ),
     /*
      * HTML WYSIWYG Editor
      * default  - ckeditor
@@ -242,15 +251,15 @@ return array(
         /* key as development mode code */
         0 => array(
             'title' => 'PRODUCTION',
-            'dir' => $docRoot . '/config/db/prod/'
+            'dir' => 'db/prod/'
         ),
         1 => array(
             'title' => 'DEVELOPMENT',
-            'dir' => $docRoot . '/config/db/dev/'
+            'dir' => 'db/dev/'
         ),
         2 => array(
             'title' => 'TEST',
-            'dir' => $docRoot . '/config/db/test/'
+            'dir' =>  'db/test/'
         )
     ),
     /*

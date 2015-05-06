@@ -13,7 +13,7 @@
  */
 /**
  * Configuration Object Factory
- * 
+ *
  * @author Kirill Egorov 2010
  * @package Config
  * @static
@@ -23,7 +23,7 @@ class Config
 {
   const Simple = 0;
   const File_Array = 1;
-  
+
   /**
    *
    * @var Store_Interface
@@ -36,9 +36,15 @@ class Config
   protected static $_cache = false;
 
   /**
+   * Configuration options for Config_Storage
+   * @var array
+   */
+  protected static $_storageConfig = array();
+
+  /**
    * Set cache adapter
-   * 
-   * @param Cache_Interface $core          
+   *
+   * @param Cache_Interface $core
    */
   public static function setCacheCore($core)
   {
@@ -47,7 +53,7 @@ class Config
 
   /**
    * Get cache adapter
-   * 
+   *
    * @return Cache_Interface | false
    */
   public static function getCacheCore()
@@ -57,7 +63,7 @@ class Config
 
   /**
    * Factory method
-   * 
+   *
    * @param integer $type -type of the object being created, Config class constant
    * @param string $name - identifier
    * @param boolean $useCache - optional , default true. Use cache if available
@@ -68,17 +74,17 @@ class Config
     $store = self::$_store;
     $cache = self::$_cache;
     if(!$store)
-       $store = self::_connectStore();
-    
+      $store = self::_connectStore();
+
     $config = false;
     $configKey = $type . '_' . $name;
-    
+
     /*
      * Check if config is already loaded
      */
     if($useCache && $store->keyExists($configKey))
       return $store->get($configKey);
-      
+
     /*
      * If individual keys
      */
@@ -87,25 +93,25 @@ class Config
       $store->set($configKey , $config);
       return $config;
     }
-    
+
     switch($type)
     {
       case self::File_Array :
-        $config = new Config_File_Array($name);
+        $config =  static::storage()->get($name,$useCache);
         break;
       case self::Simple :
         $config = new Config_Simple($name);
         break;
     }
-    
+
     if($useCache)
       $store->set($configKey , $config);
-    
+
     if($useCache && $cache)
       $cache->save($config , $configKey);
     else
       self::cache();
-    
+
     return $config;
   }
 
@@ -116,12 +122,12 @@ class Config
   {
     if(is_null(self::$_store))
       self::_connectStore();
-    
+
     foreach(self::$_store as $k => $v)
     {
       if(self::$_cache)
         self::$_cache->remove($k);
-      
+
       self::$_store->remove($k);
     }
   }
@@ -145,7 +151,7 @@ class Config
   {
     if(! self::$_cache)
       return;
-    
+
     if($key === false)
     {
       foreach(self::$_store as $k => $v)
@@ -160,5 +166,28 @@ class Config
         self::$_cache->save(self::$_store->get($key) , $key);
       }
     }
+  }
+
+  /**
+   * Get configuration storage
+   * @param boolean $force, optional - reload storage
+   */
+  static public function storage($force = false)
+  {
+    static $store = false;
+
+    if(!$store || $force){
+      $store = new Config_Storage(static::$_storageConfig);
+   }
+
+    return $store;
+  }
+
+  /**
+   * Inject storage options
+   * @param array $options
+   */
+  static public function setStorageOptions(array $options){
+    self::$_storageConfig = $options;
   }
 }

@@ -25,15 +25,14 @@
  */
  abstract class Config_File extends Config_Abstract
  {
-     public function __construct($name)
+     public function __construct($name , $autoRead = true)
      {
          parent::__construct($name);      
          /*
           * Read config from file
           */
-         $data = $this->_readFile($name);
-         if(is_array($data))
-		 	 $this->_data = $data;
+         if($autoRead)
+             $this->_data = $this->_readFile($name);
          else
          	 $this->_data = array();
      }

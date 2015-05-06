@@ -58,6 +58,22 @@ class Autoloader
   }
 
   /**
+   * Reload configuration options
+   * @param array $config
+   */
+  public function setConfig(array $config)
+  {
+    if(isset($config['paths']))
+      $this->_paths = array_values($config['paths']);
+
+    if(isset($config['map']))
+      $this->_classMap = $config['map'];
+
+    if(isset($config['debug']))
+      $this->_debug = $config['debug'];
+  }
+
+  /**
    * Register library path
    * 
    * @param string $path          

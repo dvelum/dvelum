@@ -280,7 +280,7 @@ class Application
          */
         Db_Object_Builder::useForeignKeys($this->_config->get('foreign_keys'));
 
-        $cfgBackend = Config::factory(Config::File_Array , $this->_config->get('configs') . 'backend.php');
+        $cfgBackend = Config::storage()->get('backend.php');
 
         Registry::set('backend' , $cfgBackend , 'config');
 

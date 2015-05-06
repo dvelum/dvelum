@@ -58,8 +58,8 @@ class Db_Manager implements Db_Manager_Interface
             
             if(!isset($dbConfigPaths[$workMode]))
                 throw new Exception('Invalid application work mode ' . $workMode);
-            
-            $this->_dbConfigs[$workMode][$name] = Config::factory(Config::File_Array, $dbConfigPaths[$workMode]['dir'].$name.'.php');           
+
+            $this->_dbConfigs[$workMode][$name] = Config::storage()->get($dbConfigPaths[$workMode]['dir'].$name.'.php');
         }
         
         return $this->_dbConfigs[$workMode][$name];

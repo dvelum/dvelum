@@ -33,25 +33,42 @@ ini_set("session.cookie_httponly", 1);
  * Turning on output buffering
  */
 ob_start();
+
+//===== loading kernel =========
 /*
- * Connecting main configuration file
+ * Including initial config
  */
-$config = include DVELUM_ROOT . '/config/main.php';
-/*
- * Disable op caching for development mode
- */
-if($config['development']){
-    ini_set('opcache.enable', 0);
-}
+$bootCfg = include DVELUM_ROOT . '/config/dist/init.php';
 /*
  * Including Autoloader class
  */
 require DVELUM_ROOT . '/system/library/Autoloader.php';
+$autoloader = new Autoloader($bootCfg['autoloader']);
+Config::setStorageOptions($bootCfg['config_storage']);
+
+//==== Loading system ===========
+/*
+ * Reload storage options from local system
+ */
+Config::setStorageOptions(
+    Config::storage()->get('config_storage.php')->__toArray()
+);
+/*
+ * Connecting main configuration file
+ */
+$config = Config::storage()->get('main.php');
+
+/*
+ * Disable op caching for development mode
+ */
+if($config->get('development')){
+    ini_set('opcache.enable', 0);
+}
 /*
  * Setting autoloader config
  */
-$autoloaderCfg = $config['autoloader'];
-$autoloaderCfg['debug'] = $config['development'];
+$autoloaderCfg = $config->get('autoloader');
+$autoloaderCfg['debug'] = $config->get('development');
 
 if(!isset($autoloaderCfg['useMap']))
     $autoloaderCfg['useMap'] = true;
@@ -63,20 +80,12 @@ elseif($autoloaderCfg['useMap'] && !$autoloaderCfg['usePackages'] && $autoloader
 else
     $autoloaderCfg['map'] = false;
 
-$autoloader = new Autoloader($autoloaderCfg);
-/**
- * Convert the data of main_config file
- * in to the general form of configuration
- * and save a reference for it (for convenience)
- * @var Config_Simple $appConfig
- */
-$appConfig = Config::factory(Config::Simple, 'main');
-$appConfig->setData($config);
-Registry::set('main', $appConfig , 'config');
+$autoloader->setConfig($autoloaderCfg);
+Registry::set('main', $config , 'config');
 /*
  * Starting the application
  */
-$app = new Application($appConfig);
+$app = new Application($config);
 $app->setAutoloader($autoloader);
 $app->run();
 /*
@@ -86,10 +95,13 @@ echo ob_get_clean();
 /*
  * Print debug information (development mode)
  */
-if($config['development'] && $config['debug_panel'])
+if($config['development'])
 {
-    Debug::setScriptStartTime($scriptStart);
-    Debug::setLoadedClasses($autoloader->getLoadedClasses());
-    echo Debug::getStats(true,false,false,false);
+    $debugCfg = $config->get('debug_panel');
+    if($debugCfg['enabled']){
+        Debug::setScriptStartTime($scriptStart);
+        Debug::setLoadedClasses($autoloader->getLoadedClasses());
+        echo Debug::getStats($debugCfg['options']);
+    }
 }
 exit;
