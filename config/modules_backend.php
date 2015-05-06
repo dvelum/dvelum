@@ -86,7 +86,7 @@
     'dev' => true,
     'active' => true,
     'title' => 'Documentation',
-    'designer' => './system/config/layouts/system/documentation.designer.dat',
+    'designer' => '../config/layouts/system/documentation.designer.dat',
     'in_menu' => true,
   ),
   'Error_Log' => 
@@ -96,7 +96,7 @@
     'dev' => false,
     'active' => true,
     'title' => 'Error Log',
-    'designer' => './system/config/layouts/system/error_log.designer.dat',
+    'designer' => '../config/layouts/system/error_log.designer.dat',
     'in_menu' => true,
   ),
   'Filestorage' => 
@@ -106,7 +106,7 @@
     'dev' => false,
     'active' => true,
     'title' => 'Filestorage',
-    'designer' => './system/config/layouts/system/filestorage.designer.dat',
+    'designer' => '../config/layouts/system/filestorage.designer.dat',
     'in_menu' => true,
   ),
   'Fmodules' => 
@@ -146,7 +146,7 @@
     'dev' => true,
     'active' => true,
     'title' => 'Localization',
-    'designer' => './system/config/layouts/system/localization.designer.dat',
+    'designer' => '../config/layouts/system/localization.designer.dat',
     'in_menu' => true,
   ),
   'Medialib' => 
@@ -216,7 +216,7 @@
     'dev' => false,
     'active' => true,
     'title' => 'Users',
-    'designer' => './system/config/layouts/system/users.designer.dat',
+    'designer' => '../config/layouts/system/users.designer.dat',
     'in_menu' => true,
   ),
 ); 

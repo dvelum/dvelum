@@ -1,7 +1,7 @@
 <?php
 /*
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
- * Copyright (C) 2011-2013  Kirill A Egorov
+ * Copyright (C) 2011-2015  Kirill A Egorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
