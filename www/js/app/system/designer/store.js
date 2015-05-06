@@ -791,8 +791,7 @@ Ext.define('designer.store.proxyWindow',{
 				this.proxyPropertiesContainer.add(this.proxyProperties);
 				break;
 
-
-
+			case 'reader':
 				this.proxyProperties = Ext.create('designer.properties.Panel',{
 					controllerUrl:this.controllerUrl,
 					objectName:this.objectName,
@@ -840,7 +839,6 @@ Ext.define('designer.store.proxyWindow',{
 				});
 				this.proxyPropertiesContainer.add(this.proxyProperties);
 				break;
-
 
 			case 'writer':
 				this.proxyProperties = Ext.create('designer.properties.Panel',{
@@ -895,7 +893,7 @@ Ext.define('designer.store.proxyWindow',{
 		this.proxyProperties.doLayout();
 		this.proxyProperties.dataGrid.getStore().on('load',function(store){
 			store.remove('type');
-		},this);
+			},this);
 	},
 	/**
 	 * Change type

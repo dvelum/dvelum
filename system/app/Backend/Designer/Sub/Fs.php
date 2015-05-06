@@ -23,7 +23,7 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 			$path = $dirPath . $path;
 
 		$filesPath  = substr($dirPath,0,-1).$path;
-			
+
 		
 		if(!is_dir($filesPath))
 			Response::jsonArray(array());
