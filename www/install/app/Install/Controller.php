@@ -204,11 +204,10 @@ class Install_Controller {
 				'path'=>'media',
 				'accessType'=>'required'
 			),
-			/*array(
+			array(
 				'path'=>'.backups',
 				'accessType'=>'required'
 			),
-			*/
             array(
                 'path'=>'.tmp',
                 'accessType'=>'required'
@@ -705,7 +704,7 @@ return array(
     	 */
     	\'orm_version_object\' => \'Vc\',
 		/*
-         * Db_Object for error log
+         * Db_Object for error log 
          */
         \'erorr_log_object\'=>\'error_log\'
 );';
