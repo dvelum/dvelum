@@ -102,7 +102,7 @@ class Lang
 		
 		if(isset(self::$_loaders[$name]))
 		{
-			self::$_dictionaries[$name] = Config::factory(self::$_loaders[$name]['type'], self::$_loaders[$name]['src']);
+			self::$_dictionaries[$name] = new Config_File_Array(self::$_loaders[$name]['src']);
 			$this->_dictionary = self::$_dictionaries[$name];
 		}
 	}

@@ -31,20 +31,20 @@ class Config_Storage
         if(isset(static::$runtimeCache[$key]) && $useCache)
             return static::$runtimeCache[$key];
 
-        $data = array();
+        $data = false;
 
-        if($merge)
-            $list = $this->config['file_array']['paths'];
-        else
-            $list = array_reverse($this->config['file_array']['paths']);
+        $list = $this->config['file_array']['paths'];
 
-        foreach($this->config['file_array']['paths'] as $path)
+        if(!$merge)
+            $list = array_reverse($list);
+
+        foreach($list as $path)
         {
             if(!file_exists($path . $localPath))
                 continue;
 
             if(!$merge){
-                $data = include $path . $localPath;
+                $data = include $path . $localPath;;
                 break;
             }
 

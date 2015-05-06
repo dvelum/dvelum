@@ -16,7 +16,7 @@ class Backend_Modules_Manager
 		$link =  & $this->_config->dataLink();
 
 		$locale = Lang::lang()->getName();
-		$modulesLocale = Config::factory(Config::File_Array , $applicationConfig->get('lang_path').$locale.'/modules/'.basename($configPath));
+		$modulesLocale = new Config_File_Array( $applicationConfig->get('lang_path').$locale.'/modules/'.basename($configPath));
 
 		foreach ($link as $module=>&$cfg)
 		{
