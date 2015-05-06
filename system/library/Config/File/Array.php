@@ -43,6 +43,13 @@ class Config_File_Array extends Config_File
      */
     public function save()
     {
+		if(!empty($this->_applyTo)){
+			$src = include $this->_applyTo;
+			$data = array_diff($this->_data , $src);
+		}else{
+			$data = $this->_data;
+		}
+
     	if(file_exists($this->_name))
     	{
     		if(!is_writable($this->_name))
@@ -64,7 +71,7 @@ class Config_File_Array extends Config_File
     		}
     	} 
             
-        if(Utils::exportArray($this->_name, $this->_data)!==false){
+        if(Utils::exportArray($this->_name, $data)!==false){
            Config::cache();              
            return true;     
         }   
