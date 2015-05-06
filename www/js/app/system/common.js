@@ -36,11 +36,20 @@ Ext.define('app.comboValueModel', {
 
 Ext.data.proxy.Ajax.override({
 	type: 'ajax',
-	actionMethods : {
-		create : 'POST',
-		read   : 'POST',
-		update : 'POST',
-		destroy: 'POST'
+	config: {
+		binary: false,
+		headers: undefined,
+		paramsAsJson: false,
+		withCredentials: false,
+		useDefaultXhrHeader: true,
+		username: null,
+		password: null,
+		actionMethods: {
+			create: 'POST',
+			read: 	'POST',
+			update: 'POST',
+			destroy:'POST'
+		}
 	}
 });
 /*
@@ -336,7 +345,7 @@ app.storeException = function(proxy, response, operation, eOpts){
 		Ext.Msg.alert(appLang.MESSAGE, appLang.INVALID_RESPONSE);
 	}
 
-	resp =  Ext.JSON.decode(response.responseText);
+	var resp =  Ext.JSON.decode(response.responseText);
 	if(resp.msg != null){
 		Ext.Msg.alert(appLang.MESSAGE, resp.msg);
 	}else{
@@ -627,7 +636,7 @@ Ext.Ajax.on('beforerequest', function(connection, options) {
 
 /*
  * Tooltips cut fix fo FF/Mac 4.2.x
- */
+ *
 Ext.define('Ext.SubPixelRoundingFix', {
 	override: 'Ext.dom.Element',
 	getWidth: function(contentWidth, preciseWidth) {
@@ -681,3 +690,4 @@ Ext.define('Ext.SubPixelRoundingFix', {
 		return (width < 0) ? 0 : width;
 	}
 });
+*/

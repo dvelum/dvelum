@@ -18,7 +18,7 @@ Ext.define('app.FilesystemTree',{
 			fields:[
 			  {name:'id' , type:'string'},
 			  {name:'text' , type:'string'},
-			  {name:'url' , type:'string'},
+			  {name:'url' , type:'string'}
 			],
 			proxy: {
 			        type: 'ajax',
@@ -30,9 +30,9 @@ Ext.define('app.FilesystemTree',{
 			},
 			autoLoad:false,
 			root: {
-			        text: '/',
-			        expanded: true,
-			        id:'/'
+				text: '/',
+				expanded: true,
+				id:'/'
 			}
 		});
 		this.callParent();
@@ -65,7 +65,7 @@ Ext.define('app.filesystemWindow',{
 	controllerUrl:'',
 	/**
 	 * View mode
-	 * @propty string   - select / create
+	 * @property string   - select / create
 	 */
 	viewMode:'select',
 	
