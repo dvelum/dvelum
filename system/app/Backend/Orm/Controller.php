@@ -1444,20 +1444,20 @@ class Backend_Orm_Controller extends Backend_Controller
 	public function compileAction()
 	{
 	    $sources = array(
-	          '/js/app/system/orm/panel.js',
-	          '/js/app/system/orm/dataGrid.js',
-	          '/js/app/system/orm/objectWindow.js',
-	          '/js/app/system/orm/fieldWindow.js',
-	          '/js/app/system/orm/indexWindow.js',
-	          '/js/app/system/orm/restoreBackupWindow.js',
-	          '/js/app/system/orm/dictionaryWindow.js',
-	          '/js/app/system/orm/objectsMapWindow.js',
-	          '/js/app/system/orm/dataViewWindow.js',
-	          '/js/app/system/orm/objectField.js',
-	          '/js/app/system/orm/connections.js',
-	          '/js/app/system/orm/logWindow.js',
-	          '/js/app/system/orm/import.js',
-              '/js/app/system/orm/taskStatusWindow.js'
+	          'js/app/system/orm/panel.js',
+	          'js/app/system/orm/dataGrid.js',
+	          'js/app/system/orm/objectWindow.js',
+	          'js/app/system/orm/fieldWindow.js',
+	          'js/app/system/orm/indexWindow.js',
+	          'js/app/system/orm/restoreBackupWindow.js',
+	          'js/app/system/orm/dictionaryWindow.js',
+	          'js/app/system/orm/objectsMapWindow.js',
+	          'js/app/system/orm/dataViewWindow.js',
+	          'js/app/system/orm/objectField.js',
+	          'js/app/system/orm/connections.js',
+	          'js/app/system/orm/logWindow.js',
+	          'js/app/system/orm/import.js',
+              'js/app/system/orm/taskStatusWindow.js'
 	    );
 
 	    if(!$this->_configMain->get('development')){
@@ -1467,18 +1467,19 @@ class Backend_Orm_Controller extends Backend_Controller
 	    $s = '';
 	    $totalSize = 0;
 
+        $wwwPath = $this->_configMain->get('wwwpath');
 	    foreach ($sources as $filePath){
-	        $s.=file_get_contents('.'.$filePath)."\n";
-	        $totalSize+=filesize('.'.$filePath);
+	        $s.=file_get_contents($wwwPath.$filePath)."\n";
+	        $totalSize+=filesize($wwwPath.$filePath);
 	    }
 
 	    $time = microtime(true);
-	    file_put_contents('./js/app/system/ORM.js', Code_Js_Minify::minify($s));
+	    file_put_contents($wwwPath.'js/app/system/ORM.js', Code_Js_Minify::minify($s));
 	    echo '
 			Compilation time: '.number_format(microtime(true)-$time,5).' sec<br>
 			Files compiled: '.sizeof($sources).' <br>
 			Total size: '.Utils::formatFileSize($totalSize).'<br>
-			Compiled File size: '.Utils::formatFileSize(filesize('./js/app/system/ORM.js')).' <br>
+			Compiled File size: '.Utils::formatFileSize(filesize($wwwPath.'js/app/system/ORM.js')).' <br>
 		';
 	    exit;
 	}

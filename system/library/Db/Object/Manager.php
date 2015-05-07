@@ -25,21 +25,29 @@ class Db_Object_Manager
     {
     	if(is_null(self::$_objects))
     	{
-    		 $paths = File::scanFiles(Db_Object_Config::getConfigPath() , array('.php'), false, File::Files_Only);
-    		 self::$_objects = array();
-    		 if(!empty($paths))
-    		 	foreach ($paths as $path)
-    		 		self::$_objects[] = substr(basename($path), 0, -4);		
-    		 
-    		 /*
-    		  * Scan for External objects 
-    		  */
-    		 if(self::$_externalsExpert)
-    		 {
-    		 	$objects =  self::$_externalsExpert->getObjects();
-    		 	if(!empty($objects))
-    		 		self::$_objects = array_merge(self::$_objects , array_keys($objects));
-    		 }	 
+			$paths = Config::storage()->getPaths();
+			$list = array();
+
+			$cfgPath = Db_Object_Config::getConfigPath();
+
+			foreach($paths as $path)
+			{
+				if(!file_exists($path.$cfgPath))
+					continue;
+
+				$items = File::scanFiles($path.$cfgPath , array('.php'), false, File::Files_Only);
+				self::$_objects = array();
+				if(!empty($items))
+				{
+					foreach ($items as $o){
+						$baseName = substr(basename($o), 0, -4);
+						if(!isset($list[$baseName])){
+							self::$_objects[] = $baseName;
+							$list[$baseName] = true;
+						}
+					}
+				}
+			}
     	}  
     	return self::$_objects;
     }

@@ -35,13 +35,13 @@ class Db_Object_Config_Translator
 				return false;
 		}
 
-		$this->_translation = Config::factory(Config::File_Array, $this->_mainConfig);
+		$this->_translation = new Config_File_Array($this->_mainConfig);
 
 		if(!empty($this->_extTranslations))
 		{
 			foreach ($this->_extTranslations as $path)
 			{
-				$extCfg = Config::factory(Config::File_Array, $path);
+				$extCfg = new Config_File_Array($path);
 				foreach ($extCfg as $k=>$v)
 					if(!$this->_translation->offsetExists($k))
 						$this->_translation->set($k, $v);

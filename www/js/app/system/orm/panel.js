@@ -68,7 +68,7 @@ Ext.define('app.crud.orm.Main',{
 				url:app.crud.orm.Actions.listObj,
 				reader: {
 					type: 'json',
-					root: 'data',
+					rootProperty: 'data',
 					idProperty: 'name'
 				},
 				actionMethods : {
