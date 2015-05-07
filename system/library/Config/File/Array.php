@@ -45,7 +45,12 @@ class Config_File_Array extends Config_File
     {
 		if(!empty($this->_applyTo)){
 			$src = include $this->_applyTo;
-			$data = array_diff($this->_data , $src);
+			$data = $src;
+			foreach($this->_data as $k=>$v){
+				if(!isset($data[$k]) || $data[$k]!==$v){
+					$data[$k] = $v;
+				}
+			}
 		}else{
 			$data = $this->_data;
 		}
