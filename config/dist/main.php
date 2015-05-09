@@ -50,7 +50,7 @@ return array(
     /*
      * File uploads path
      */
-    'uploads' => $docRoot . '/media/',
+    'uploads' => $wwwPath . '/media/',
     /*
      * Admin panel URL
      * For safety reasons adminPath may be changed, however,

@@ -59,7 +59,7 @@ class Backend_Medialib_Controller extends Backend_Controller
 
       $this->_checkCanEdit();
 
-      $docRoot = $this->_configMain->get('docroot');   
+      $docRoot = $this->_configMain->get('wwwpath');
       $mediaModel = Model::factory('Medialib');
       $mediaCfg = $mediaModel->getConfig();                 
       
@@ -81,7 +81,7 @@ class Backend_Medialib_Controller extends Backend_Controller
         Response::jsonError($this->_lang->NOT_UPLOADED);
              
       $data = array();
-      
+
       foreach ($uploaded as $k=>&$v)
       {
         $path = str_replace($docRoot , '' , $v['path']);

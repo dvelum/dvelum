@@ -184,6 +184,7 @@ class Model_Medialib extends Model
 
    // $resource->addJs('/js/lib/ext_ux/AjaxFileUpload.js',1,false);
     $resource->addJs('/js/app/system/SearchPanel.js',1);
+    $resource->addJs('/js/lib/ext_ux/AjaxFileUpload.js',1);
     $resource->addJs('/js/app/system/ImageField.js',1);
     $resource->addJs('/js/app/system/MedialinkField.js'  , 1);
     $resource->addJs('/js/app/system/Medialib.js?v='.$version, 2);
@@ -265,10 +266,10 @@ class Model_Medialib extends Model
    */
    public function cropAndResize($srcData , $x,$y,$w,$h , $type)
    {
-    	$appConfig = Registry::get('main' , 'config');
+       $appConfig = Registry::get('main' , 'config');
       ini_set('max_execution_time' , 18000);
       ini_set('memory_limit', '384M');
-      $docRoot = $appConfig['docroot'];
+      $docRoot = $appConfig['wwwpath'];
       $conf = $this->getConfig()->__toArray();
       $thumbSizes = $conf['image']['sizes'];
 
