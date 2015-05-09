@@ -98,7 +98,6 @@ Ext.define('app.objectLink.Field',{
 		}
 
 		var valueContainer = {
-			anchor:"100%",
 			xtype:'fieldcontainer',
 			layout: 'hbox',
 			items:[this.dataField , this.triggerButton , this.removeButton]
