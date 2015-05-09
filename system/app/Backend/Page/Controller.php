@@ -176,13 +176,13 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     	
     	if(file_exists($this->_configMain->get('themes') . $object->get('theme') . '/layout_cfg.php'))
     		$theme = $object->get('theme');
-    	
+
     	try{
-    		$config = Config::factory(Config::File_Array , $this->_configMain->get('themes') . $theme . '/layout_cfg.php');
+    		$config = new Config_File_Array($this->_configMain->get('themes') . $theme . '/layout_cfg.php');
     	}catch (Exception $e){
     		Response::jsonError($this->_lang->WRONG_REQUEST);
     	}
-    	
+
     	$conf = $config->__toArray();
     	$items = array();
     	 
