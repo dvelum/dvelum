@@ -45,6 +45,10 @@ class Backend_Localization_Manager
 
     foreach ($files as $file)
     {
+      // IIS fix
+      if(DIRECTORY_SEPARATOR !=='/')
+         $file = str_replace(DIRECTORY_SEPARATOR,'/' , $file);
+
       $lang = str_replace($langDir, '', substr($file,0,-4));
       if(strpos($file , 'index')===false && basename($file)!=='objects.php')
         $data[] = $lang;
@@ -80,7 +84,13 @@ class Backend_Localization_Manager
 
     $files = File::scanFiles($langDir , array('.php'), false , File::Files_Only);
     $data = array();
-    foreach ($files as $file){
+
+    foreach ($files as $file)
+    {
+      // IIS fix
+      if(DIRECTORY_SEPARATOR !=='/')
+        $file = str_replace(DIRECTORY_SEPARATOR,'/' , $file);
+
       $lang = str_replace($langDir, '', substr($file,0,-4));
       if(basename($file)!=='objects.php')
           $data[] = $lang;
