@@ -14,63 +14,61 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 	 */
 	public function fslistAction()
 	{
-		$path = Request::post('node', 'string', '');
-		//$path = str_replace('.','', $path);
-			
-		$dirPath = $this->_config->get('configs');
-						
-		if($path === '')
-			$path = $dirPath . $path;
-
-		$filesPath  = substr($dirPath,0,-1).$path;
-
-		
-		if(!is_dir($filesPath))
-			Response::jsonArray(array());
-
-		$files = File::scanFiles($filesPath, array('.dat') , false , File::Files_Dirs);
-
-		/**
-		 * This is inline fix for windows
-		 */
-		if(DIRECTORY_SEPARATOR == '\\')
-		{
-			foreach ($files as &$v)
-			{
-				$v = str_replace('\\', '/', $v);
-				$v = str_replace('//', '/', $v);
-			}
-			unset($v);
-		}
-
-		if(empty($files))
-			Response::jsonArray(array());
+		$node = Request::post('node', 'string', '');
+		$paths = Config::storage()->getPaths();
+		$cfgPath = $this->_config->get('configs');
 
 		$list = array();
+		$ret = array();
 
-		foreach($files as $k=>$fpath)
-		{
-			$text  = basename($fpath);
+		// In accordance with configs merge priority
+		rsort($paths);
 
-			$obj = new stdClass();
-			$obj->id = str_replace($dirPath, '/', $fpath);
-			$obj->text = $text;
+		foreach($paths as $path) {
+			$nodePath = str_replace('//', '/', $path.$cfgPath.$node);
 
-			if(is_dir($fpath))
+			if(!file_exists($nodePath))
+				continue;
+
+			$items = File::scanFiles($nodePath , array('.dat'), false, File::Files_Dirs);
+
+			if(!empty($items))
 			{
-				$obj->expanded = false;
-				$obj->leaf = false;
-				$list[] = $obj;
+				foreach ($items as $p){
+					if(DIRECTORY_SEPARATOR == '\\') {
+						$p = str_replace('\\', '/', $p);
+						$p = str_replace('//', '/', $p);
+					}
+
+					$baseName = basename($p);
+
+					if(!isset($list[$baseName])){
+						$obj = new stdClass();
+						$obj->id = str_replace($path.$cfgPath, '/', $p);
+						$obj->text = $baseName;
+
+						if(is_dir($p))
+						{
+							$obj->expanded = false;
+							$obj->leaf = false;
+						}
+						else
+						{
+							$obj->leaf = true;
+						}
+						$list[$baseName] = $obj;
+					}
+				}
 			}
-			else
-			{
-				$obj->leaf = true;
-				$obj->id = $fpath;//str_replace($dirPath, './', $fpath);
-			}
-			$list[] = $obj;
 		}
-		Response::jsonArray($list);	
+
+		ksort($list);
+		foreach($list as $p)
+			$ret[] = $p;
+
+		Response::jsonArray($ret);
 	}
+
 	/**
 	 * Create config subfolder
 	 */
@@ -84,8 +82,8 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 		
 		if(!strlen($name))
 			Response::jsonError($this->_lang->WRONG_REQUEST . ' [code 1]');
-		
-		$newPath = $this->_config->get('configs');
+
+		$newPath = Config::storage()->getWrite() . $this->_config->get('configs');
 		
 		if(strlen($path))
 		{
@@ -113,15 +111,16 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 
 		if(!strlen($name))
 			Response::jsonError($this->_lang->WRONG_REQUEST . ' [code 1]');
-		
+
+		$writePath = Config::storage()->getWrite();
 		$configsPath = $this->_config->get('configs');
 		$actionsPath = $this->_config->get('actionjs_path');
 		
 		if(strlen($path)){
-			$savePath =  $path . DIRECTORY_SEPARATOR . $name.'.designer.dat';	
+			$savePath =  $writePath . $configsPath . $path . DIRECTORY_SEPARATOR . $name.'.designer.dat';
 			$actionFilePath = $actionsPath . str_replace($configsPath, '', $path) . DIRECTORY_SEPARATOR . $name.'.js';		
 		}else {
-			$savePath = $configsPath . $name . '.designer.dat';
+			$savePath = $writePath . $configsPath . $name . '.designer.dat';
 			$actionFilePath = $actionsPath . $name . '.js';
 		}
 		
