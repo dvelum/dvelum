@@ -97,7 +97,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
 
         $this->_resource->addJs('/js/lib/extjs4/ext-theme-gray.js' , 2);
         $this->_resource->addCss('/js/lib/extjs4/resources/css/ext-all-gray.css');
-        $this->_resource->addCss('/templates/system/default/css/style.css');
+        $this->_resource->addCss('/css/system/default/style.css');
 
         $this->_resource->addInlineJs('
            var developmentMode = '.intval($this->_configMain->get('development')).';

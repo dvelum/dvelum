@@ -24,7 +24,7 @@ class Config_Storage
 
     /**
      * Get config by local path
-     * @param string $name
+     * @param string $localPath
      * @param boolean $useCache, optional
      * @param boolean $merge, optional merge with main config
      * @return Config_Abstract | false
@@ -105,7 +105,6 @@ class Config_Storage
      */
     public function exists($localPath)
     {
-        $result = false;
         foreach($this->config['file_array']['paths'] as $path)
         {
             if(file_exists($path . $localPath))
