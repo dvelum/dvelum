@@ -22,7 +22,27 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	 */
 	public function loadAction()
 	{
-		$file = Request::post('file', 'string', false);
+		$relFile = Request::post('file', 'string', false);
+
+		$paths = Config::storage()->getPaths();
+		$cfgPath = $this->_config->get('configs');
+		$writePath = Config::storage()->getWrite();
+		$writeFile = str_replace('//', '/', $writePath . $cfgPath . $relFile);
+
+		// In accordance with configs merge priority
+		rsort($paths);
+
+		$file = false;
+
+		foreach($paths as $path) {
+			$file = str_replace('//', '/', $path . $cfgPath . $relFile);
+
+			if (file_exists($file))
+				break;
+		}
+
+		if(!$file)
+			Response::jsonError($this->_lang->WRONG_REQUEST);
 
 		try{
 			$project = Designer_Factory::loadProject($this->_config, $file);
@@ -32,7 +52,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 
 		$this->_session->set('loaded' , true);
 		$this->_session->set('project' , serialize($project));
-		$this->_session->set('file' , $file);
+		$this->_session->set('file' , $writeFile);
 
 		Response::jsonSuccess();
 	}

@@ -85,12 +85,21 @@ class Config_Storage
         return false;
     }
 
-    /**
-     * Get storage paths
-     * @return array
-     */
-    public function getPaths()
-    {
-        return $this->config['file_array']['paths'];
-    }
+	/**
+	 * Get storage paths
+	 * @return array
+	 */
+	public function getPaths()
+	{
+		return $this->config['file_array']['paths'];
+	}
+
+	/**
+	 * Get write path
+	 * @return string
+	 */
+	public function getWrite()
+	{
+		return $this->config['file_array']['write'];
+	}
 }
