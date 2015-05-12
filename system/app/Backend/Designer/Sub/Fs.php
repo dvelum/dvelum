@@ -24,7 +24,8 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 		// In accordance with configs merge priority
 		rsort($paths);
 
-		foreach($paths as $path) {
+		foreach($paths as $path)
+		{
 			$nodePath = str_replace('//', '/', $path.$cfgPath.$node);
 
 			if(!file_exists($nodePath))
@@ -34,12 +35,12 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 
 			if(!empty($items))
 			{
-				foreach ($items as $p){
-					if(DIRECTORY_SEPARATOR == '\\') {
-						$p = str_replace('\\', '/', $p);
-						$p = str_replace('//', '/', $p);
+				foreach ($items as $p)
+				{
+					if(DIRECTORY_SEPARATOR !== '/'){
+						$p = str_replace(DIRECTORY_SEPARATOR, '/', $p);
+						$p = str_replace('//','/', $p);
 					}
-
 					$baseName = basename($p);
 
 					if(!isset($list[$baseName])){
@@ -135,5 +136,4 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 		else
 			Response::jsonError($this->_lang->CANT_WRITE_FS.' '.$savePath);	
 	}
-	
 }
