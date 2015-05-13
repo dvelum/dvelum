@@ -4,7 +4,7 @@
  * @package Db
  * @subpackage Db_Object
  * @author Kirill A Egorov kirill.a.egorov@gmail.com
- * @copyright Copyright (C) 2011-2012  Kirill A Egorov,
+ * @copyright Copyright (C) 2011-2015 Kirill A Egorov,
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * @license General Public License version 3
  * @uses Model_Links
@@ -19,17 +19,21 @@ class Db_Object_Store
      * @var Log
      */
     protected $_log = false;
-    protected $_linksObject = 'Links';
-    protected $_historyObject = 'Historylog';
-    protected $_versionObject = 'Vc';
-
     /**
-     * Set object name for storing relations
-     * @param string $name
+     * @var array
      */
-    public function setLinksObjectName($name)
+    protected $config = [
+        'linksObject'=>  'Links',
+        'historyObject' => 'Historylog',
+        'versionObject' => 'Vc'
+    ];
+
+    public function __construct(array $config = array())
     {
-    	$this->_linksObject = $name;
+       if(empty($options))
+           return;
+
+       $this->config =  array_merge($this->config , $config);
     }
     /**
      * Get links object name
@@ -37,7 +41,7 @@ class Db_Object_Store
      */
     public function getLinksObjectName()
     {
-    	return $this->_linksObject;
+    	return $this->config['linksObject'];
     }
     /**
      * Get history object name
@@ -45,7 +49,7 @@ class Db_Object_Store
      */
     public function getHistoryObjectName()
     {
-    	return $this->_historyObject;
+    	return $this->config['historyObject'];
     }
     /**
      * Get version object name
@@ -53,7 +57,7 @@ class Db_Object_Store
      */
     public function getVersionObjectName()
     {
-    	return $this->_versionObject;
+    	return $this->config['versionObject'];
     }
     /**
      * Set log Adapter
@@ -64,23 +68,7 @@ class Db_Object_Store
     	$this->_log = $log;
     }
     /**
-     * Set object name for storing history
-     * @param string $name
-     */
-    public function setHistoryObject($name)
-    {
-    	$this->_historyObject = $name;
-    }
-    /**
-     * Set object name for storing versions
-     * @param string $name
-     */
-    public function setVersionObject($name)
-    {
-    	$this->_versionObject = $name;
-    }
-    /**
-     * Set event nanager
+     * Set event manager
      * @param Db_Object_Event_Manager $obj
      */
     public function setEventManager(Db_Object_Event_Manager $obj)
@@ -179,7 +167,7 @@ class Db_Object_Store
           */
 	     if($log && $object->getConfig()->get('save_history'))
 	     {
-                Model::factory($this->_historyObject)->log(
+                Model::factory($this->config['historyObject'])->log(
                 	User::getInstance()->id ,
                 	$object->getId() ,
                 	Model_Historylog::Update ,
@@ -425,7 +413,7 @@ class Db_Object_Store
      */
     protected function _clearLinks(Db_Object $object ,$objectField , $targetObjectName)
     {
-    	$linksObj  = new Db_Object($this->_linksObject);
+    	$linksObj  = new Db_Object($this->config['linksObject']);
 
     	$db = $this->_getDbConnection($linksObj);
 
@@ -459,7 +447,7 @@ class Db_Object_Store
     {
         $order = 0;
         $links = array_keys($links);
-        $linksObj  = new Db_Object($this->_linksObject);
+        $linksObj  = new Db_Object($this->config['_linksObject']);
         $db = $this->_getDbConnection($linksObj);
 
         foreach ($links as $k=>$v)
@@ -671,7 +659,7 @@ class Db_Object_Store
        /*
     	* Create new revision
     	*/
-    	$versNum = Model::factory($this->_versionObject)->newVersion($object);
+    	$versNum = Model::factory($this->config['versionObject'])->newVersion($object);
 
     	if(!$versNum)
     		return false;
@@ -756,7 +744,7 @@ class Db_Object_Store
     	if($transact && $transaction)
     		$db->beginTransaction();
 
-        Model::factory($this->_linksObject)->clearObjectLinks($object);
+        Model::factory($this->config['linksObject'])->clearObjectLinks($object);
 
         if($db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId()))
         {
@@ -834,7 +822,7 @@ class Db_Object_Store
 	    /*
 	     * Clear object liks (links from object)
 	     */
-	    Model::factory($this->_linksObject)->clearLinksFor($objectName , $ids);
+	    Model::factory($this->vonfig['linksObject'])->clearLinksFor($objectName , $ids);
 
         $history = Model::factory($this->_historyObject);
         $userId = User::getInstance()->id;

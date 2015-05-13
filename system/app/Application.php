@@ -131,11 +131,12 @@ class Application
        /*
         * Prepare Db object storage
         */
-        $objectStore = new Db_Object_Store();
+        $objectStore = new Db_Object_Store(array(
+            'linksObject' => $this->_config->get('orm_links_object'),
+            'historyObject' => $this->_config->get('orm_history_object'),
+            'versionObject' => $this->_config->get('orm_version_object'),
+        ));
         $objectStore->setEventManager($eventManager);
-        $objectStore->setLinksObjectName($this->_config->get('orm_links_object'));
-        $objectStore->setHistoryObject($this->_config->get('orm_history_object'));
-        $objectStore->setVersionObject($this->_config->get('orm_version_object'));
 
 
         /*
