@@ -11,11 +11,6 @@
 class Db_Object_Manager
 {
 	static protected $_objects = null;
-	/**
-	 * External objects expert
-	 * @var Externals_Expert
-	 */
-	static protected $_externalsExpert = false;
 	
     /**
      * Get list of registered objects (names only)
@@ -61,23 +56,5 @@ class Db_Object_Manager
     {
     	$list = $this->getRegisteredObjects();
     	return in_array(strtolower($name), $list , true);
-    }
-    
-    /**
-     * Set default externals experts
-     * @param Externals_Expert $expert
-     */
-    static public function setExternalsExpert(Externals_Expert $expert)
-    {
-    	self::$_externalsExpert	 = $expert;
-    }
-    
-    /**
-     * Get external Objects expert
-     * @return Externals_Expert | false
-     */
-    public function getExternalsExpert()
-    {
-    	return self::$_externalsExpert;
     }
 }

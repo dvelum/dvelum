@@ -81,6 +81,24 @@ class Config_Storage
     }
 
     /**
+     * Find path for config file (no merge)
+     * @param $localPath
+     */
+    public function getPath($localPath)
+    {
+        $configPath = false;
+        $list = array_reverse($this->config['file_array']['paths']);
+
+        foreach($list as $path)
+        {
+            if(!file_exists($path . $localPath))
+                continue;
+
+            return $path . $localPath;
+        }
+    }
+
+    /**
      * Check if config file exists
      * @param $localPath
      * @return bool

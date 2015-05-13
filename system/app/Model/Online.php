@@ -22,17 +22,18 @@ class Model_Online extends Model
     	$curTime = time();
 
     	$this->_db->getConnection()->query('REPLACE INTO '.$this->table().' ( `ssid`,`user_id`,`update_time`) VALUES ("' .$ssid.'", '.$userId.',"'.date('Y-m-d H:i:s',$curTime).'")');
+
     	/*
     	 * Delete old records from "online" table
     	 */
-    	if(self::$_dataCache ){
+    	if($this->_cache){
     		/*
     		 *  Every 5 minutes if cache is enabled
     		 */
-    		$lastClean = self::$_dataCache->load('online_clean');
+    		$lastClean = $this->_cache->load('online_clean');
     		if($lastClean < $curTime - 300);{
     			$this->clean();
-    			self::$_dataCache->save($curTime,'online_clean');
+				$this->_cache->save($curTime,'online_clean');
     		}	
     	}else{
     		/*

@@ -15,7 +15,7 @@ class Model_Permissions extends Model
          if(empty($userId))
             throw new Exception('Need user id');
 
-         $cache = self::$_dataCache;
+		 $cache = self::$_defaults['dataCache'];
 
         /*
          * Check if cache exists
@@ -89,12 +89,10 @@ class Model_Permissions extends Model
     public function getGroupPermissions($groupId)
     {
     	$data = array();
-    	$cache = $cache = self::$_dataCache;
-
-        /*
+		/*
          * Check if cache exists
          */
-    	if($cache && $data = $cache->load('group_permissions' . $groupId))
+    	if($this->_cache && $data = $this->_cache->load('group_permissions' . $groupId))
     		return $data;
 
     	$sql = $this->_dbSlave	->select()
@@ -110,8 +108,8 @@ class Model_Permissions extends Model
          /*
           * Cache info
           */
-         if($cache)
-         	$cache->save($data , 'group_permissions' . $groupId);
+         if($this->_cache)
+			 $this->_cache->save($data , 'group_permissions' . $groupId);
 
 		return $data;
     }
@@ -264,10 +262,8 @@ class Model_Permissions extends Model
     	/**
 		 * Invalidate Cache
     	 */
-    	$cache = self::$_dataCache;
-
-    	if($cache)
-         	$cache->remove('group_permissions' . $groupId);
+    	if($this->_cache)
+			$this->_cache->remove('group_permissions' . $groupId);
 
     	return  true;
     }

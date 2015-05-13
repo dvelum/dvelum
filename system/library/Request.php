@@ -1,7 +1,7 @@
 <?php
 /*
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
- * Copyright (C) 2011-2012  Kirill A Egorov
+ * Copyright (C) 2011-2015  Kirill A Egorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,25 +23,36 @@
 class Request
 {
     protected static $instance;
-    protected static $_delimiter = '/';
-    protected static $_wwwRoot = '/';
-    protected static $_extension = '';
     protected static $_updatedPost = array();
     protected static $_updatedGet = array();
     protected $_path = array();
     protected $_uri;
 
-    protected function __clone()
+    protected static $config = array(
+        'delimiter' => '/',
+        'extension' => '',
+        'wwwRoot' => '/',
+    );
+
+    /**
+     * Set configuration options
+     * @param array $config
+     */
+    static public function setConfig(array $config)
     {
+        static::$config = $config;
     }
+
+    protected function __clone(){}
 
   /**
 	 * Instantiate the object
+     * @param boolean $forceReload
 	 * @return Request
 	 */
-   static public function getInstance()
+   static public function getInstance($forceReload = false)
    {
-       if(!isset(self::$instance))
+       if(!isset(self::$instance) || $forceReload)
            self::$instance = new self();
 
        return self::$instance;
@@ -58,28 +69,8 @@ class Request
 	 */
    static public function setDelimiter($delimiter)
    {
-        self::$_delimiter = $delimiter;
+        static::$config['delimiter'] = $delimiter;
    }
-
-   /**
-	  * Set postfix address extension
-	  * (e.g. ".html" , ".xhtml" and the like)
-	  * @param string $extension
-	  * @return void
-	  */
-    static public function setExtension($extension)
-    {
-        self::$_extension = $extension;
-    }
-
-   /**
-	  * Set www root
-	  * @param string $root
-	  */
-    static public function setRoot($root)
-    {
-        self::$_wwwRoot = $root;
-    }
 
     protected function __construct()
     {
@@ -133,12 +124,12 @@ class Request
      $this->_path = array();
      $uri = $this->_uri;
 
-     $rootLen = strlen(self::$_wwwRoot);
+     $rootLen = strlen(static::$config['wwwRoot']);
 
-	   if(substr($uri, 0 , $rootLen) === self::$_wwwRoot)
+	   if(substr($uri, 0 , $rootLen) === static::$config['wwwRoot'])
 	     $uri = substr($uri, $rootLen);
 
-     $array = explode(self::$_delimiter , $uri);
+     $array = explode(static::$config['delimiter'] , $uri);
      for($i = 0, $sz = sizeof($array); $i < $sz; $i++)
          $this->_path[] = $array[$i];
     }
@@ -167,10 +158,10 @@ class Request
      */
     static public function url(array $paths , $useExstension = true)
     {
-        $str = self::$_wwwRoot . implode(self::$_delimiter , $paths);
+        $str = static::$config['wwwRoot'] . implode(static::$config['delimiter'] , $paths);
 
         if($useExstension)
-            $str .= self::$_extension;
+            $str .= static::$config['extension'];
 
         return strtolower($str);
     }
@@ -352,7 +343,7 @@ class Request
         if(!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS'])!=='off'){
             $protocol = 'https://';
         }
-    	return $protocol.$_SERVER['HTTP_HOST'].self::$_wwwRoot;
+    	return $protocol.$_SERVER['HTTP_HOST'] . static::$config['wwwRoot'];
    }
 
    /**
@@ -361,7 +352,7 @@ class Request
     */
    static public function wwwRoot()
    {
-      return self::$_wwwRoot;
+      return static::$config['wwwRoot'];
    }
 
    /**

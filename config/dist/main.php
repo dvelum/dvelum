@@ -174,7 +174,7 @@ return array(
         /*
         * Use class map
         */
-        'useMap' => false,
+        'useMap' => true,
         /*
           *	Use precompiled code packages
           *	requires useMap property to be set to true

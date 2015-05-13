@@ -63,11 +63,6 @@ class Model
     protected $_cache;
 
     /**
-     * @var Default Cache_Interface
-     */
-    static protected $_dataCache = false;
-
-    /**
      * DB table prefix
      * @var string
      */
@@ -79,29 +74,18 @@ class Model
      */
     static protected $_dbConnection = false;
 
-    /**
-     *  Global (For all Models) Hard caching time
-     * @var unknown_type
-     */
-    static protected $_hardCacheTime = 60;
-
-    /**
-     * Db object storage interface
-     * @var Db_Object_Store
-     */
-    static protected $_dbObjectStore;
-
-    /**
-     * Default Connection manager
-     * @var Db_Manager_Interface
-     */
-    static protected $_defaultDbManager;
-
-    /**
-     * Default error log adapter
-     * @var Log | false
-     */
-    static protected $_errorLog = false;
+    static protected $_defaults = array(
+       // Global (For all Models) Hard caching time
+      'hardCacheTime'  => 60,
+       // Default Cache_Interface
+      'dataCache' => false  ,
+       // Db object storage interface  @var Db_Object_Store
+      'dbObjectStore'  => false,
+       // Default Connection manager  @var Db_Manager_Interface
+      'defaultDbManager' => false,
+       // Default error log adapter  @var Log | false
+      'errorLog' =>false
+    );
 
     /**
      * Connection manager
@@ -133,15 +117,24 @@ class Model
     protected static $_instances = array();
 
     /**
+     * Set default configuration options
+     * @param array $defaults
+     */
+    static public function setDefaults(array $defaults)
+    {
+        self::$_defaults = $defaults;
+    }
+
+    /**
      * @param string $objectName
      */
     protected function __construct($objectName)
     {
-    	$this->_store = static::$_dbObjectStore;
+    	$this->_store = static::$_defaults['dbObjectStore'];
     	$this->_name = strtolower($objectName);
-    	$this->_cacheTime = static::$_hardCacheTime;
-    	$this->_cache = static::$_dataCache;
-        $this->_dbManager = self::$_defaultDbManager;
+    	$this->_cacheTime = static::$_defaults['hardCacheTime'];
+    	$this->_cache = static::$_defaults['dataCache'];
+        $this->_dbManager = static::$_defaults['defaultDbManager'];
 
     	try{
     	    $this->_objectConfig = Db_Object_Config::getInstance($this->_name);
@@ -160,35 +153,8 @@ class Model
 
     	$this->_table = $this->_objectConfig->get('table');
 
-    	if(self::$_errorLog)
-    	  $this->setLog(self::$_errorLog);
-    }
-
-    /**
-     * Set cache interface
-     * @param Cache_Interface $cache or false
-     */
-    static public function setDataCache($cache)
-    {
-    	self::$_dataCache = $cache;
-    }
-
-    /**
-     * Set hardcaching time for all models
-     * @property integer $time
-     */
-    static public function setGlobalHardcacheTime($time)
-    {
-    	self::$_hardCacheTime = $time;
-    }
-
-    /**
-     * Set DB_Object storage adapter used by default
-     * @param Db_Object_Store $store
-     */
-    static public function setGlobalObjectStore(Db_Object_Store $store)
-    {
-    	self::$_dbObjectStore = $store;
+    	if(static::$_defaults['errorLog'])
+            $this->_log = static::$_defaults['errorLog'];
     }
 
     /**
@@ -584,7 +550,7 @@ class Model
     		$data = $this->_dbSlave->fetchOne($sql);
 
     		if($useCache && $this->_cache)
-    			$this->_cache->save($data , $cacheKey ,  self::$_hardCacheTime);
+    			$this->_cache->save($data , $cacheKey ,  self::$_defaults['hardCacheTime']);
 
     	}
     	return $data;
@@ -883,15 +849,6 @@ class Model
     }
 
     /**
-     * Set defaul DB connections manager (since 0.9.1)
-     * @param Db_Manager_Interface $manager
-     */
-    static public function setDefaultDbManager(Db_Manager_Interface $manager)
-    {
-        self::$_defaultDbManager = $manager;
-    }
-
-    /**
      * Set DB connections manager (since 0.9.1)
      * @param Db_Manager_Interface $manager
      */
@@ -922,10 +879,10 @@ class Model
      * @return Zend_Db_Adapter_Abstract
      * @deprecated since 0.9.1
      */
-    static public function getGlobalDbConnection()
-    {
-        return Registry::get('db');
-    }
+//    static public function getGlobalDbConnection()
+//    {
+//        return Registry::get('db');
+//    }
 
     /**
      * Set default error log adapter
@@ -933,7 +890,7 @@ class Model
      */
     static public function setDefaultLog(Log $log)
     {
-      self::$_errorLog = $log;
+      self::$_defaults['setDefaultLog'] = $log;
     }
 
     /**

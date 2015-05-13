@@ -122,7 +122,8 @@ class Autoloader
     /*
      * Search for class file
      */
-    $file = implode(DIRECTORY_SEPARATOR , array_map('ucfirst' , explode('_' , $class))) . '.php';
+    $file = str_replace('_' , DIRECTORY_SEPARATOR , $class). '.php';
+
     foreach($this->_paths as $path)
     {
       if(file_exists($path . DIRECTORY_SEPARATOR . $file))

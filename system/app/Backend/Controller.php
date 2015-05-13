@@ -73,7 +73,6 @@ abstract class Backend_Controller extends Controller
                 Response::redirect(Request::url(array($this->_configMain->get('adminPath'))));
         }
         $this->checkAuth();
-        $this->includeScripts();
     }
 
     /**
@@ -304,6 +303,8 @@ abstract class Backend_Controller extends Controller
      */
     public function indexAction()
     {
+        $this->includeScripts();
+
         $this->_resource->addInlineJs('
 	        	var canEdit = ' . intval($this->_user->canEdit($this->_module)) . ';
 	        	var canDelete = ' . intval($this->_user->canDelete($this->_module)) . ';

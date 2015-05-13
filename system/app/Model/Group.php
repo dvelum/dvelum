@@ -7,12 +7,10 @@ class Model_Group extends Model
 	 */
 	public function getGroups()
 	{
-		$cache = self::$_dataCache;
-
 		/*
 		 * Check cache
 		 */
-		if($cache && $data = $cache->load('groups_list'))
+		if($this->_cache && $data = $this->_cache->load('groups_list'))
 			return $data;
 
 		$data = array();
@@ -23,8 +21,8 @@ class Model_Group extends Model
 		/*
 		 * Store cache
 		 */
-		if($cache)
-			$cache->save($data, 'groups_list');
+		if($this->_cache)
+			$this->_cache->save($data, 'groups_list');
 
 		return $data;
 	}
@@ -40,12 +38,11 @@ class Model_Group extends Model
 		if(!$obj->save())
 			return false;
 
-		$cache = self::$_dataCache;
 		/**
 		 * Invalidate cache
 		 */
-		if($cache)
-			$cache->remove('groups_list');
+		if($this->_cache)
+			$this->_cache->remove('groups_list');
 
 		return $obj->getId();
 	}
@@ -61,12 +58,11 @@ class Model_Group extends Model
 		if(!$obj->delete())
 			return false;
 
-		$cache = self::$_dataCache;
 		/**
 		 * Invalidate cache
 		 */
-		if($cache)
-			$cache->remove('groups_list');
+		if($this->_cache)
+			$this->_cache->remove('groups_list');
 
 		return true;
 	}

@@ -74,9 +74,9 @@ if(!isset($autoloaderCfg['useMap']))
     $autoloaderCfg['useMap'] = true;
 
 if($autoloaderCfg['useMap'] && $autoloaderCfg['usePackages'] && $autoloaderCfg['mapPackaged'])
-    $autoloaderCfg['map'] = require $autoloaderCfg['mapPackaged'];
+    $autoloaderCfg['map'] = require Config::storage()->getPath($autoloaderCfg['mapPackaged']);
 elseif($autoloaderCfg['useMap'] && !$autoloaderCfg['usePackages'] && $autoloaderCfg['map'])
-    $autoloaderCfg['map'] = require $autoloaderCfg['map'];
+    $autoloaderCfg['map'] = require Config::storage()->getPath($autoloaderCfg['map']);
 else
     $autoloaderCfg['map'] = false;
 

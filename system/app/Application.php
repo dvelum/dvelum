@@ -1,7 +1,7 @@
 <?php
 /*
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
- * Copyright (C) 2011-2013  Kirill A Egorov
+ * Copyright (C) 2011-2015  Kirill A Egorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,9 +103,13 @@ class Application
          * Apply configs
          */
         Filter::setDelimiter($this->_config->get('urlDelimiter'));
-        Request::setDelimiter($this->_config->get('urlDelimiter'));
-        Request::setExtension($this->_config->get('urlExtension'));
-        Request::setRoot($this->_config->get('wwwroot'));
+
+        Request::setConfig(array(
+            'delimiter' => $this->_config->get('urlDelimiter'),
+            'extension' => $this->_config->get('urlExtension'),
+            'wwwRoot' => $this->_config->get('wwwroot')
+        ));
+
         Resource::setCachePaths($this->_config->get('jsCacheSysUrl') , $this->_config->get('jsCacheSysPath'));
         Resource::setDocRoot($this->_config->get('docroot'));
         Resource::setResourceRoot($this->_config->get('wwwroot'));
@@ -142,10 +146,13 @@ class Application
         /*
          * Prepare models
          */
-        Model::setDataCache($this->_cache);
-        Model::setGlobalHardcacheTime($this->_config->get('frontend_hardcache'));
-        Model::setGlobalObjectStore($objectStore);
-        Model::setDefaultDbManager($conManager);
+        Model::setDefaults(array(
+            'hardCacheTime'  => $this->_config->get('frontend_hardcache'),
+            'dataCache' => $this->_cache  ,
+            'dbObjectStore'  => $objectStore,
+            'defaultDbManager' => $conManager,
+            'errorLog' => false
+        ));
 
         /*
          * Prepare Db_Object
