@@ -15,7 +15,7 @@ class Backend_Orm_Dictionary extends Backend_Controller
     	$id = Request::post('id','string',false);
     	$name = strtolower(Request::post('name','string',false));
     	
-    	$manager = new Dictionary_Manager();
+    	$manager = Dictionary_Manager::factory();
     	if(!$name)
     		Response::jsonError($this->_lang->WRONG_REQUEST);
     	
@@ -35,7 +35,7 @@ class Backend_Orm_Dictionary extends Backend_Controller
      */    
     public function removeAction()
     {
-    	$manager = new Dictionary_Manager();
+    	$manager = Dictionary_Manager::factory();
     	$this->_checkCanDelete();
     	$name = strtolower(Request::post('name','string',false));
     	if(empty($name))
@@ -51,7 +51,7 @@ class Backend_Orm_Dictionary extends Backend_Controller
      */
     public function listAction()
     {
-    	$manager = new Dictionary_Manager();
+    	$manager = Dictionary_Manager::factory();
     	$data = array();
     	$list = $manager->getList();
     	

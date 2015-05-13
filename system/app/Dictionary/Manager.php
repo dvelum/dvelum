@@ -19,6 +19,10 @@ class Dictionary_Manager
 	 * @var Cache_Interface
 	 */
 	protected $_cache = false;
+	/**
+	 * @var string
+	 */
+	protected $_language = '';
 	
 	static protected $_list = null;
 	
@@ -28,14 +32,18 @@ class Dictionary_Manager
 	 */
 	static protected $_validDictionary = array();
 
-	public function __construct()
+	/**
+	 * @param Config_Abstract $appConfig
+	 * @param mixed  Cache_Interface | false $cache
+	 * @throws Exception
+	 */
+	protected function __construct(Config_Abstract $appConfig , $cache = false)
 	{
-		$cfg = Registry::get('main' , 'config');
-		$this->_path = $cfg['dictionary'];
-		$this->_baseDir = $cfg['dictionary_folder'];
-		$cacheManager = new Cache_Manager();
-		$this->_cache = $cacheManager->get('data');
-				
+		$this->_language = $appConfig->get('language');
+		$this->_path = $appConfig->get('dictionary');
+		$this->_baseDir = $appConfig->get('dictionary_folder');
+		$this->_cache = $cache;
+
 		if($this->_cache && $list = $this->_cache->load(self::CACHE_KEY_LIST))
 			self::$_list = $list;
 	}
@@ -183,5 +191,23 @@ class Dictionary_Manager
 			$this->_cache->save($s, self::CACHE_KEY_DATA_HASH);
 
 		return $s;
+	}
+
+	/**
+	 * Get Dictionary manager
+	 * @return Dictionary_Manager
+	 */
+	static public function factory()
+	{
+		static $manager = false;
+
+		if(!$manager){
+			$cfg = Registry::get('main' , 'config');
+			$cacheManager = new Cache_Manager();
+			$cache = $cacheManager->get('data');
+			$manager = new static($cfg , $cache);
+		}
+
+		return $manager;
 	}
 }

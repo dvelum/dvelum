@@ -236,7 +236,7 @@ class Designer_Factory
 		/**
 		 * @todo remove slow operation
 		 */
-		$dManager = new Dictionary_Manager();
+		$dManager = Dictionary_Manager::factory();
 		return md5(@filemtime($projectFile) . $projectFile . $dManager->getDataHash());
 	}
 	/**

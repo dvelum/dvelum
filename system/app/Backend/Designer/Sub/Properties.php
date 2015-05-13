@@ -71,7 +71,7 @@ class Backend_Designer_Sub_Properties extends Backend_Designer_Sub
 	 */
 	public function listdictionariesAction()
 	{
-		$manager = new Dictionary_Manager();
+		$manager = Dictionary_Manager::factory();
 		$list = $manager->getList();
 		$data = array();
 		if(!empty($list))

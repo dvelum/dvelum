@@ -135,7 +135,7 @@ class Dictionary
 		if(!$this->_data->save())
 			return false;
 
-		$dm = new Dictionary_Manager();
+		$dm = Dictionary_Manager::factory();
 		$dm->resetCache();
 		return true;
 	}

@@ -57,7 +57,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 			}
 		}
 
-		$dManager = new Dictionary_Manager();
+		$dManager = Dictionary_Manager::factory();
 		$key = 'vf_'.md5($dManager->getDataHash().serialize($project));
 
 		$templates = $designerConfig->get('templates');
