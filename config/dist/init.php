@@ -11,7 +11,8 @@ return array(
             ),
             'write' =>  './config/local/',
             'apply_to' => './config/dist/',
-        )
+        ),
+        'debug' => false
     ),
     // Autoloader config
     'autoloader' => array(

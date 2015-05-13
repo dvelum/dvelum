@@ -11,6 +11,11 @@ class Config_Storage
      * @var array
      */
     protected $config;
+    /**
+     * Debugger log
+     * @var array
+     */
+    protected $debugInfo = array();
 
     public function __construct(array $config)
     {
@@ -43,16 +48,22 @@ class Config_Storage
             if(!file_exists($path . $localPath))
                 continue;
 
+            $cfg = $path . $localPath;
+
+
+            if($this->config['debug'])
+                $this->debugInfo[] = $cfg;
+
             if(!$merge){
-                $data = include $path . $localPath;;
+                $data = include $cfg;
                 break;
             }
 
             if($data === false){
-                $data = include $path . $localPath;
+                $data = include $cfg;
             }else{
-                $cfg = include $path . $localPath;
-                $data = array_merge($data , $cfg);
+                $cfgData = include $cfg;
+                $data = array_merge($data , $cfgData);
             }
         }
 
@@ -102,4 +113,13 @@ class Config_Storage
 	{
 		return $this->config['file_array']['write'];
 	}
+
+    /**
+     * Get debug information. (loaded configs)
+     * @return array
+     */
+    public function getDebugInfo()
+    {
+        return $this->debugInfo;
+    }
 }

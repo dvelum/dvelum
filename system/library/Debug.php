@@ -13,7 +13,7 @@ class Debug
 	static protected  $_dbProfiler = false;	
 	static protected  $_timers = array();
 	static protected  $_loadedClasses = array();
-	
+	static protected  $_loadedConfigs = array();
 	static protected  $_cacheCores = array();
 	
 	static public function setCacheCores(array $data)
@@ -36,6 +36,11 @@ class Debug
 		self::$_loadedClasses = $data;
 	}
 
+	static public function setLoadedConfigs(array $data)
+	{
+		self::$_loadedConfigs = $data;
+	}
+
 	/**
 	 * Get debug information
 	 * @param array $options
@@ -48,6 +53,7 @@ class Debug
 				'cache' => true,
 				'sql' => false,
 				'autoloader' => false,
+				'configs' => false,
 				'includes' => false
 			),
 			$options
@@ -73,12 +79,16 @@ class Debug
 			}
 			$str .= "<br>\n";
 		}
+
+		if($options['configs'])
+			$str .= "<b>Configs (".count(self::$_loadedConfigs)."):</b>\n<br> " . implode("\n\t <br>" , self::$_loadedConfigs). '<br>';
+
 		if($options['autoloader'])
-			$str .= "<b>Autoloaded:</b>\n<br> " . implode("\n\t <br>" , self::$_loadedClasses) . '<br>';
+			$str .= "<b>Autoloaded (".count(self::$_loadedClasses)."):</b>\n<br> " . implode("\n\t <br>" , self::$_loadedClasses) . '<br>';
 
 		if($options['includes'])
-			$str .= "<b>Includes:</b>\n<br> " . implode("\n\t <br>" , get_included_files());
-		
+			$str .= "<b>Includes (".count(get_included_files())."):</b>\n<br> " . implode("\n\t <br>" , get_included_files());
+
 
 		if(!empty(self::$_cacheCores) && self::$_cacheCores && $options['cache'])
 		{

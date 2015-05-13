@@ -101,6 +101,7 @@ if($config['development'])
     if($debugCfg['enabled']){
         Debug::setScriptStartTime($scriptStart);
         Debug::setLoadedClasses($autoloader->getLoadedClasses());
+        Debug::setLoadedConfigs(Config::storage()->getDebugInfo());
         echo Debug::getStats($debugCfg['options']);
     }
 }

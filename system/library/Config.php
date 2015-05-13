@@ -189,5 +189,6 @@ class Config
    */
   static public function setStorageOptions(array $options){
     self::$_storageConfig = $options;
+    static::storage(true);
   }
 }
