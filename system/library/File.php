@@ -28,6 +28,20 @@ class File
 	const Dirs_Only = 2;
 
 	/**
+	 * Default Separator in file paths
+	 * Can be disabled by  setDirectorySeparator (false)
+	 * @var mixed string | false
+	 */
+	static protected $directorySeparator = '/';
+
+	/**
+	 * Set directory separator for output data
+	 * @param mixed $sep string or false
+	 */
+	static public function setDirectorySeparator($sep){
+		self::$directorySeparator = $sep;
+	}
+	/**
 	 * Get file extension
 	 * @param string $name
 	 */
@@ -91,7 +105,13 @@ class File
 		{
 			throw new Exception('You tried to read nonexistent dir: ' . $path );
 		}
-		
+
+		$changeSep = false;
+
+		if(self::$directorySeparator && self::$directorySeparator!==DIRECTORY_SEPARATOR){
+			$changeSep = self::$directorySeparator;
+		}
+
 		foreach($dirIterator as $name => $object)
 		{
 			$add = false;
@@ -104,8 +124,13 @@ class File
 				if(! $isDir && ! in_array(self::getExt($name) , $filter , true))
 					$add = false;
 			
-			if($add)
+			if($add){
+				if($changeSep){
+					$name = str_replace(DIRECTORY_SEPARATOR , $changeSep ,$name);
+					$name = str_replace($changeSep.$changeSep , '', $name);
+				}
 				$files[] = $name;
+			}
 		}
 		unset($dirIterator);
 		return $files;
