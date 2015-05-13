@@ -23,6 +23,12 @@ class Dictionary
 	static protected $_configPath = null;
 
 	/**
+	 * Dictionary name
+	 * @var string
+	 */
+	protected $name;
+
+	/**
 	 * @var Config_Abstract
 	 */
 	protected $_data;
@@ -38,24 +44,6 @@ class Dictionary
 	}
 
 	/**
-	 * Add external dictionaries list
-	 * @param array $list
-	 */
-	static public function addExternal(array $list)
-	{
-		self::$_external = array_merge(self::$_external , $list);
-	}
-
-	/**
-	 * Get external dictionaries list
-	 * @return multitype:
-	 */
-	static public function getExternal()
-	{
-		return self::$_external;
-	}
-
-	/**
 	 * Instantiate a dictionary by name
 	 * @param string $name
 	 * @return Dictionary
@@ -66,14 +54,21 @@ class Dictionary
 		if(!isset(self::$_instances[$name]))
 		{
 			$obj = new self();
-			if(isset(self::$_external[$name]))
-				$obj->_data = Config::factory(Config::File_Array , self::$_external[$name]);
-			else
-				$obj->_data = Config::factory(Config::File_Array , self::$_configPath . $name . '.php');
+			$obj->name = $name;
+			$obj->_data = Config::factory(Config::File_Array , self::$_configPath . $name . '.php');
 
 			self::$_instances[$name] = $obj;
 		}
 		return self::$_instances[$name];
+	}
+
+	/**
+	 * Get dictionary name
+	 * @return array
+	 */
+	public function getName()
+	{
+		return $this->name;
 	}
 
 	/**
