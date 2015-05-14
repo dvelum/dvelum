@@ -196,7 +196,7 @@ class Backend_Localization_Manager
    * @param string $dictionary
    * @return array
    */
-  public function getLocalistaion($dictionary)
+  public function getLocalization($dictionary)
   {
     $dFile = $this->_appConfig->get('lang_path') . $dictionary . '.php';
     $dictionaryData = array();

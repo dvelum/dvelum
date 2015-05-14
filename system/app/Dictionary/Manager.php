@@ -39,6 +39,7 @@ class Dictionary_Manager
 	 */
 	protected function __construct(Config_Abstract $appConfig , $cache = false)
 	{
+		$this->_appConfig =  $appConfig;
 		$this->_language = $appConfig->get('language');
 		$this->_path = $appConfig->get('dictionary');
 		$this->_baseDir = $appConfig->get('dictionary_folder');
@@ -209,5 +210,75 @@ class Dictionary_Manager
 		}
 
 		return $manager;
+	}
+
+
+	/**
+	 * Save changes
+	 * @param string $name
+	 * @return boolean
+	 */
+	public function saveChanges($name)
+	{
+		$dict = Dictionary::getInstance($name);
+		if(!$dict->save())
+			return false;
+
+		$this->resetCache();
+		$this->rebuildIndex($name);
+		$this->mergeLocales($name,$this->_language);
+		return true;
+	}
+
+	/**
+	 * Rebuild dictionary index
+	 * @param string $name
+	 * @return boolean
+	 */
+	public function rebuildIndex($name)
+	{
+		$dict = Dictionary::getInstance($name);
+		$index = Config::storage()->get($this->_baseDir . 'index/' . $name . '.php', false, false);
+
+		$index->removeAll();
+		$index->setData(array_keys($dict->getData()));
+		$index->save();
+
+		return true;
+	}
+
+	/**
+	 * Sync localized versions of dictionaries using base dictionary as a reference list of records
+	 * @param string $name
+	 * @param string $baseLocale
+	 * @return boolean
+	 */
+	public function mergeLocales($name, $baseLocale)
+	{
+		$baseDict = Config::storage()->get($this->_baseDir . $baseLocale . '/' . $name . '.php', false, false);
+		$locManager = new Backend_Localization_Manager($this->_appConfig);
+
+		foreach($locManager->getLangs(true) as $locale)
+		{
+			if($locale == $baseLocale)
+				continue;
+
+			$dict = Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false);
+
+			// Add new records from base dictionary and remove redundant records from current
+			$mergedData = array_merge(
+				// get elements from current dictionary with keys common for arrays
+				array_intersect_key($dict->__toArray(), $baseDict->__toArray()),
+				// get new records for current dictionary
+				array_diff_key($baseDict->__toArray(),$dict->__toArray())
+			);
+
+			$dict->removeAll();
+			$dict->setData($mergedData);
+
+			$dict->save();
+		}
+
+		return true;
 	}
 }

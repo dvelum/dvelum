@@ -202,7 +202,7 @@ $wwwRoot = Request::wwwRoot();
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<link rel="stylesheet" type="text/css" href="<?php echo $wwwRoot;?>templates/system/default/css/style.css" />
+<link rel="stylesheet" type="text/css" href="<?php echo $wwwRoot;?>css/system/default/style.css" />
 <script type="text/javascript" src="<?php echo $wwwRoot;?>js/lib/jquery-2.0.0.min.js"></script>
 <title>Project Debug</title>
 </head>
