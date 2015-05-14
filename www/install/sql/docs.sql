@@ -2948,7 +2948,7 @@ INSERT INTO `sysdocs_class_method` (`classId`, `name`, `deprecated`, `descriptio
 (1074, 'getIndexName', 0, 'Get dictionary index name', '', '954fd49e6ee9b4227976cdf92a98e01b', 0, 0, 'public', 3, 'string', 'b6d004f837a2fcc2b59f813abdb7c11f', 0, 0, 0, 14460),
 (1074, 'getIndex', 0, 'Get dictionary_index', '', 'd2ed744d668f0aec670d00436000de05', 0, 0, 'public', 3, 'boolean|array', 'b6d004f837a2fcc2b59f813abdb7c11f', 0, 0, 0, 14461),
 (1074, 'updateIndex', 0, 'Update index content', 'ErrorException', '9b0517176d59af1a094959c11467a58f', 0, 0, 'public', 3, '', 'b6d004f837a2fcc2b59f813abdb7c11f', 0, 0, 0, 14462),
-(1074, 'getLocalistaion', 0, 'Get localization config', '', 'cad59c9f93b8365d6ac3f45262a74ad4', 0, 0, 'public', 3, 'array', 'b6d004f837a2fcc2b59f813abdb7c11f', 0, 0, 0, 14463),
+(1074, 'getLocalization', 0, 'Get localization config', '', 'cad59c9f93b8365d6ac3f45262a74ad4', 0, 0, 'public', 3, 'array', 'b6d004f837a2fcc2b59f813abdb7c11f', 0, 0, 0, 14463),
 (1074, 'addToIndex', 0, 'Add key to localization index', '', '8ab7723fe188956123cef8e27309f33b', 0, 0, 'public', 3, '', 'b6d004f837a2fcc2b59f813abdb7c11f', 0, 0, 0, 14464),
 (1074, 'removeFromIndex', 0, 'Remove key from localization index', '', '4202a3ba3fc55c734428aa5973bcb3c6', 0, 0, 'public', 3, '', 'b6d004f837a2fcc2b59f813abdb7c11f', 0, 0, 0, 14465),
 (1074, 'addRecord', 0, 'Add dictionary record', 'Exception', '4df199cde5e452620471c5455e49ebbc', 0, 0, 'public', 3, '', 'b6d004f837a2fcc2b59f813abdb7c11f', 0, 0, 0, 14466),
