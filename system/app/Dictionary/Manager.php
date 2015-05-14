@@ -39,6 +39,7 @@ class Dictionary_Manager
 	 */
 	protected function __construct(Config_Abstract $appConfig , $cache = false)
 	{
+		$this->_appConfig =  $appConfig;
 		$this->_language = $appConfig->get('language');
 		$this->_path = $appConfig->get('dictionary');
 		$this->_baseDir = $appConfig->get('dictionary_folder');
@@ -223,9 +224,9 @@ class Dictionary_Manager
 		if(!$dict->save())
 			return false;
 
+		$this->resetCache();
 		$this->rebuildIndex($name);
 		$this->mergeLocales($name,$this->_language);
-		$this->resetCache();
 		return true;
 	}
 
@@ -255,20 +256,25 @@ class Dictionary_Manager
 	public function mergeLocales($name, $baseLocale)
 	{
 		$baseDict = Config::storage()->get($this->_baseDir . $baseLocale . '/' . $name . '.php', false, false);
+		$locManager = new Backend_Localization_Manager($this->_appConfig);
 
-		foreach(Backend_Localization_Manager::getLangs(true) as $locale)
+		foreach($locManager->getLangs(true) as $locale)
 		{
+			if($locale == $baseLocale)
+				continue;
+
 			$dict = Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false);
 
 			// Add new records from base dictionary and remove redundant records from current
-			$dict->setData(
-				array_merge(
+			$mergedData = array_merge(
 				// get elements from current dictionary with keys common for arrays
-					array_intersect_key($baseDict->__toArray(), $dict->__toArray()),
-					// get new records for current dictionary
-					array_diff_key($dict->__toArray(),$baseDict->__toArray())
-				)
+				array_intersect_key($dict->__toArray(), $baseDict->__toArray()),
+				// get new records for current dictionary
+				array_diff_key($baseDict->__toArray(),$dict->__toArray())
 			);
+
+			$dict->removeAll();
+			$dict->setData($mergedData);
 
 			$dict->save();
 		}
