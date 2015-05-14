@@ -362,8 +362,8 @@ Ext.define('app.crud.orm.DictionaryWindow', {
     		win.show();
 	},
 	addDictionaryRec:function(){
-		var r = Ext.create('app.crud.orm.DictionaryRecordModel',{key:'new', value:'empty'});
-		r.setDirty();
+		var r = Ext.create('app.crud.orm.DictionaryRecordModel');
+        r.set({key:'new',value:'empty'},{dirty: true});
     	this.recordsStore.insert(0, r);
     	this.cellEditingRecords.startEditByPosition({row: 0, column: 0});
 	},
