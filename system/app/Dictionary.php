@@ -122,16 +122,13 @@ class Dictionary
 	}
 
 	/**
-	 * Save changes
+	 * Save dictionary
 	 * @return boolean
 	 */
-	public function saveChanges()
+	public function save()
 	{
 		if(!$this->_data->save())
 			return false;
-
-		$dm = Dictionary_Manager::factory();
-		$dm->resetCache();
 		return true;
 	}
 
