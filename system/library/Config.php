@@ -123,6 +123,9 @@ class Config
     if(is_null(self::$_store))
       self::_connectStore();
 
+    if(empty(self::$_store))
+      return;
+
     foreach(self::$_store as $k => $v)
     {
       if(self::$_cache)

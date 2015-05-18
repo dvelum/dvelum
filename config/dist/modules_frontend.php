@@ -1,12 +1,12 @@
 <?php return array (
   'api' => 
   array (
-    'id' => 'api',
+    'code' => 'api',
     'class' => 'Frontend_Api_Controller',
   ),
   'console' => 
   array (
-    'id' => 'console',
+    'code' => 'console',
     'class' => 'Frontend_Console_Controller',
   ),
 ); 

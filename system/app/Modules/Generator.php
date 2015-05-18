@@ -1,22 +1,24 @@
 <?php
-class Backend_Modules_Generator_Oop
+
+class Modules_Generator
 {
-    /**
-     * @var Config_Abstract
-     */
-  protected $designerConfig;
-    /**
-     * @var Config_Abstract
-     */
-  protected $appConfig;
+   /**
+    * @var Config_Abstract
+    */
+   protected $designerConfig;
+   /**
+    * @var Config_Abstract
+    */
+   protected $appConfig;
 
-  public $tabTypes = array('Component_Field_System_Medialibhtml' , 'Component_Field_System_Related', 'Component_Field_System_Objectslist');
+   public $tabTypes = array('Component_Field_System_Medialibhtml' , 'Component_Field_System_Related', 'Component_Field_System_Objectslist');
 
-    public function __construct(){
+   public function __construct(){
         $this->appConfig = Registry::get('main' , 'config');
         $this->designerConfig = Config::factory(Config::File_Array , $this->appConfig->get('configs') . 'designer.php');
         Request::setDelimiter($this->appConfig->get('urlDelimiter'));
-    }
+   }
+
   /**
    * Create controller file
    * @param string $dir - controller dirrectory
@@ -210,24 +212,24 @@ class Backend_Modules_Generator_Oop
       {
 
           switch($fieldConfig->type){
-          	case 'boolean':
-          	    $column = Ext_Factory::object('Grid_Column_Boolean');
-          	    break;
-          	case 'integer':
-          	    $column = Ext_Factory::object('Grid_Column');
-          	    break;
-          	case 'float':
-          	    $column = Ext_Factory::object('Grid_Column_Number');
-          	    if(isset($objectFieldsConfig[$fieldConfig->name]['db_precision']))
-          	        $column->format = '0,000.'.str_repeat('0' , $objectFieldsConfig[$fieldConfig->name]['db_precision']);
-          	    break;
-          	case 'date':
-          	    $column = Ext_Factory::object('Grid_Column_Date');
-          	    if($objectFieldsConfig[$fieldConfig->name]['db_type'] == 'time')
-          	        $column->format = 'H:i:s';
-          	    break;
-          	default:
-          	    $column = Ext_Factory::object('Grid_Column');
+            case 'boolean':
+                $column = Ext_Factory::object('Grid_Column_Boolean');
+                break;
+            case 'integer':
+                $column = Ext_Factory::object('Grid_Column');
+                break;
+            case 'float':
+                $column = Ext_Factory::object('Grid_Column_Number');
+                if(isset($objectFieldsConfig[$fieldConfig->name]['db_precision']))
+                    $column->format = '0,000.'.str_repeat('0' , $objectFieldsConfig[$fieldConfig->name]['db_precision']);
+                break;
+            case 'date':
+                $column = Ext_Factory::object('Grid_Column_Date');
+                if($objectFieldsConfig[$fieldConfig->name]['db_type'] == 'time')
+                    $column->format = 'H:i:s';
+                break;
+            default:
+                $column = Ext_Factory::object('Grid_Column');
           }
 
           if($objectConfig->fieldExists($fieldConfig->name)){
@@ -242,33 +244,33 @@ class Backend_Modules_Generator_Oop
           $column->itemId = $column->getName();
 
           switch($fieldConfig->name){
-          	case $primaryKey:
-          	    $column->renderer = 'Ext_Component_Renderer_System_Version';
-          	    $column->text = $lang->VERSIONS_HEADER;
-          	    $column->align = 'center';
-          	    $column->width = 147;
-          	    break;
+            case $primaryKey:
+                $column->renderer = 'Ext_Component_Renderer_System_Version';
+                $column->text = $lang->VERSIONS_HEADER;
+                $column->align = 'center';
+                $column->width = 147;
+                break;
 
-          	case 'published':
-          	    $column->renderer = 'Ext_Component_Renderer_System_Publish';
-          	    $column->text = $lang->STATUS;
-          	    $column->align = 'center';
-          	    $column->width = 50;
-          	    break;
+            case 'published':
+                $column->renderer = 'Ext_Component_Renderer_System_Publish';
+                $column->text = $lang->STATUS;
+                $column->align = 'center';
+                $column->width = 50;
+                break;
 
-          	case 'date_created':
-          	    $column->renderer = 'Ext_Component_Renderer_System_Creator';
-          	    $column->text = $lang->CREATED_BY;
-          	    $column->align = 'center';
-          	    $column->width = 142;
-          	    break;
+            case 'date_created':
+                $column->renderer = 'Ext_Component_Renderer_System_Creator';
+                $column->text = $lang->CREATED_BY;
+                $column->align = 'center';
+                $column->width = 142;
+                break;
 
-          	case 'date_updated':
-          	    $column->renderer = 'Ext_Component_Renderer_System_Updater';
-          	    $column->text = $lang->UPDATED_BY;
-          	    $column->align = 'center';
-          	    $column->width = 146;
-          	    break;
+            case 'date_updated':
+                $column->renderer = 'Ext_Component_Renderer_System_Updater';
+                $column->text = $lang->UPDATED_BY;
+                $column->align = 'center';
+                $column->width = 146;
+                break;
           }
           $dataGrid->addColumn($column->getName() , $column , $parent = 0);
       }
@@ -365,10 +367,10 @@ class Backend_Modules_Generator_Oop
       $tab->title = $lang->GENERAL;
       $tab->autoScroll = true;
       $tab->fieldDefaults = "{
-		            labelAlign: 'right',
-		            labelWidth: 160,
-		            anchor: '100%'
-		     }";
+                    labelAlign: 'right',
+                    labelWidth: 160,
+                    anchor: '100%'
+             }";
 
       $project->addObject($editWindow->getName() , $tab);
 
@@ -562,28 +564,28 @@ class Backend_Modules_Generator_Oop
           {
 
               switch($fieldConfig->type){
-              	case 'boolean':
-              	    $column = Ext_Factory::object('Grid_Column_Boolean');
-              	    $column->renderer = 'Ext_Component_Renderer_System_Checkbox';
-              	    $column->width = 50;
-              	    $column->align = 'center';
-              	    break;
-              	case 'integer':
-              	    $column = Ext_Factory::object('Grid_Column');
-              	    break;
+                case 'boolean':
+                    $column = Ext_Factory::object('Grid_Column_Boolean');
+                    $column->renderer = 'Ext_Component_Renderer_System_Checkbox';
+                    $column->width = 50;
+                    $column->align = 'center';
+                    break;
+                case 'integer':
+                    $column = Ext_Factory::object('Grid_Column');
+                    break;
 
-              	case 'float':
-              	    $column = Ext_Factory::object('Grid_Column_Number');
-              	    if(isset($objectFieldsConfig[$fieldConfig->name]['db_precision']))
-              	        $column->format = '0,000.'.str_repeat('0' , $objectFieldsConfig[$fieldConfig->name]['db_precision']);
-              	    break;
-              	case 'date':
-              	    $column = Ext_Factory::object('Grid_Column_Date');
-              	    if($objectFieldsConfig[$fieldConfig->name]['db_type'] == 'time')
-              	        $column->format = 'H:i:s';
-              	    break;
-              	default:
-              	    $column = Ext_Factory::object('Grid_Column');
+                case 'float':
+                    $column = Ext_Factory::object('Grid_Column_Number');
+                    if(isset($objectFieldsConfig[$fieldConfig->name]['db_precision']))
+                        $column->format = '0,000.'.str_repeat('0' , $objectFieldsConfig[$fieldConfig->name]['db_precision']);
+                    break;
+                case 'date':
+                    $column = Ext_Factory::object('Grid_Column_Date');
+                    if($objectFieldsConfig[$fieldConfig->name]['db_type'] == 'time')
+                        $column->format = 'H:i:s';
+                    break;
+                default:
+                    $column = Ext_Factory::object('Grid_Column');
               }
 
               if($objectConfig->fieldExists($fieldConfig->name)){
@@ -691,10 +693,10 @@ class Backend_Modules_Generator_Oop
       $tab->title = $lang->GENERAL;
       $tab->autoScroll = true;
       $tab->fieldDefaults = "{
-		            labelAlign: 'right',
-		            labelWidth: 160,
-		            anchor: '100%'
-		     }";
+                    labelAlign: 'right',
+                    labelWidth: 160,
+                    anchor: '100%'
+             }";
 
       $project->addObject($editWindow->getName() , $tab);
 
@@ -762,19 +764,19 @@ class Backend_Modules_Generator_Oop
     //   Ext.Function.defer(function(){
     //                }, 100);
       $actionJs = '
-  		/*
-  		 * Here you can define application logic
-  		 * To obtain info about current user access rights
-  		 * you can use global scope JS vars canEdit , canDelete , canPublish
-  		 * To access project elements, please use the namespace you defined in the config
-  		 * For example: '.$runNamespace.'.Panel or Ext.create("'.$classNamespace.'.editWindow", {});
-  		 */
-  		 Ext.onReady(function(){
-  		        // Init permissions
-  		     	app.application.on("projectLoaded",function(){
-  		     	    if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
-         			  '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
-         			  '.$runNamespace.'.dataGrid.setCanDelete(canDelete);';
+        /*
+         * Here you can define application logic
+         * To obtain info about current user access rights
+         * you can use global scope JS vars canEdit , canDelete , canPublish
+         * To access project elements, please use the namespace you defined in the config
+         * For example: '.$runNamespace.'.Panel or Ext.create("'.$classNamespace.'.editWindow", {});
+         */
+         Ext.onReady(function(){
+                // Init permissions
+                app.application.on("projectLoaded",function(){
+                    if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
+                      '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
+                      '.$runNamespace.'.dataGrid.setCanDelete(canDelete);';
 
           if($vc)
             $actionJs.= '
@@ -782,7 +784,7 @@ class Backend_Modules_Generator_Oop
 
          $actionJs.= '
                     }
-  		        });
+                });
           });';
 
       if(!@file_put_contents($fileName , $actionJs))
@@ -843,7 +845,7 @@ class Backend_Modules_Generator_Oop
                 failure:function(){
                     Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
                 }
-		    });
+            });
           '
      );
     $m->setDescription('Delete record');
@@ -868,8 +870,8 @@ class Backend_Modules_Generator_Oop
     }
     $editCode ='
         var win = Ext.create("'.$project->namespace.'.editWindow", {
-  		          dataItemId:id,
-  		          canDelete:this.canDelete,';
+                  dataItemId:id,
+                  canDelete:this.canDelete,';
       if($vc)
           $editCode.='
                   canPublish:this.canPublish,';
@@ -877,7 +879,7 @@ class Backend_Modules_Generator_Oop
       $editCode .= 'canEdit:this.canEdit';
 
       $editCode.='
-  		    });
+            });
 
             win.on("dataSaved",function(){
                 this.getStore().load();

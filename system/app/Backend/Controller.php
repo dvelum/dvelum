@@ -120,7 +120,7 @@ abstract class Backend_Controller extends Controller
      */
     public function getModule()
     {
-        $manager = new Backend_Modules_Manager();
+        $manager = new Modules_Manager();
         return $manager->getControllerModule(get_called_class());
     }
 
@@ -166,7 +166,7 @@ abstract class Backend_Controller extends Controller
         if(! $this->_user->canView($this->_module))
             $this->_errorResponse($this->_lang->CANT_VIEW);
 
-        $moduleManager = new Backend_Modules_Manager();
+        $moduleManager = new Modules_Manager();
 
        // $modules = Config::factory(Config::File_Array , $this->_configMain['backend_modules']);
 

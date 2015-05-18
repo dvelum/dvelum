@@ -502,7 +502,6 @@ Ext.define('app.crud.modules.ControllersStore',{
 	}
 });
 
-
 Ext.define('app.crud.modules.EditBackendWindow',{
 	extend:'app.editWindow',
 	extraParams:null,
@@ -559,6 +558,50 @@ Ext.define('app.crud.modules.EditBackendWindow',{
 	}
 });
 
+Ext.define('app.crud.modules.EditFrontendWindow',{
+	extend:'app.editWindow',
+	extraParams:null,
+	controllerUrl: null,
+	useTabs:false,
+	hideEastPanel:true,
+	editAction:'update',
+	showToolbar:false,
+	maximizable:false,
+	primaryKey:'code',
+	initComponent:function(){
+
+		this.items = [
+			{
+				xtype:'textfield',
+				name:'title',
+				fieldLabel:appLang.TITLE
+			},
+			{
+				displayField:"title",
+				queryMode:"local",
+				triggerAction:"all",
+				forceSelection:false,
+				valueField:"id",
+				allowBlank: false,
+				xtype:"combo",
+				fieldLabel:'[controller]',
+				store:Ext.create('app.crud.modules.ControllersStore',{
+					controllerUrl: this.controllerUrl,
+					extraParams: this.extraParams
+				}),
+				name:'class'
+			},{
+				xtype:'textfield',
+				controllerUrl:this.controllerUrl,
+				fieldLabel:'[code]',
+				name:'code',
+				anchor:'100%',
+				width:this.width
+			}
+		];
+		this.callParent();
+	}
+});
 
 Ext.define('app.crud.modules.backendView',{
 	extend:'Ext.container.Container',
@@ -879,8 +922,7 @@ Ext.define('app.crud.modules.Frontend',{
 	loadMask:true,
 	columnLines: true,
 	autoScroll:true,
-	moduleType:'frontend',
-
+	extraParams:null,
 	initComponent:function(){
 
 		this.store =  Ext.create('Ext.data.Store' , {
@@ -894,7 +936,7 @@ Ext.define('app.crud.modules.Frontend',{
 			proxy:{
 				type: 'ajax',
 				url: this.controllerUrl+ 'list',
-				extraParams:{type:this.moduleType},
+				extraParams:this.extraParams,
 				reader: {
 					type: 'json',
 					rootProperty: 'data',
@@ -983,7 +1025,41 @@ Ext.define('app.crud.modules.Frontend',{
 		}
 	},
 	editModule:function(record){
-		alert(record.get('title'));
+		var w = Ext.create('app.crud.modules.EditFrontendWindow',{
+			modal:true,
+			dataItemId:record.get('code'),
+			controllerUrl:this.controllerUrl,
+			extraParams:this.extraParams,
+			title:record.get('code'),
+			width:500,
+			height:340,
+			canDelete:this.canDelete,
+			canEdit:this.canEdit,
+			resizable:false
+		});
+		w.show();
+	},
+	/**
+	 * Remove module
+	 */
+	removeModule:function(record){
+		Ext.Ajax.request({
+			url: this.controllerUrl + "delete",
+			method: 'post',
+			params:Ext.apply(this.extraParams,{code:record.get('code')}),
+			scope:this,
+			success: function(response, request) {
+				response =  Ext.JSON.decode(response.responseText);
+				if(response.success){
+					this.getStore().remove(record);
+				}else{
+					Ext.Msg.alert(appLang.MESSAGE, response.msg);
+				}
+			},
+			failure:function() {
+				Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
+			}
+		});
 	}
 });
 

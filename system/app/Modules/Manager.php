@@ -2,23 +2,28 @@
 /**
  * Frontend modules manager
  */
-class Backend_Modules_Manager
+class Modules_Manager
 {
 	protected $_config;
 	protected $_mainconfigKey = 'backend_modules';
 	/**
+	 * @var Config_Abstract
+	 */
+	protected $_appConfig;
+	/**
 	 * @var Config_File_Array
 	 */
 	protected $_modulesLocale;
+
 	static protected $_classRoutes = false;
 
 	public function __construct()
 	{
-		$applicationConfig = Registry::get('main' , 'config');
-		$configPath =   $applicationConfig->get($this->_mainconfigKey);
-		$this->_config = Config::factory(Config::File_Array , $configPath);
+		$this->_appConfig = Registry::get('main' , 'config');
+		$configPath =  $this->_appConfig->get($this->_mainconfigKey);
+		$this->_config = Config::storage()->get($configPath , true , false);
 		$locale = Lang::lang()->getName();
-		$this->modulesLocale = new Config_File_Array($applicationConfig->get('lang_path').$locale.'/modules/'.basename($configPath));
+		$this->_modulesLocale = new Config_File_Array($this->_appConfig->get('lang_path').$locale.'/modules/'.basename($configPath));
 	}
 
 	/**
@@ -48,7 +53,13 @@ class Backend_Modules_Manager
 	 */
 	public function getModuleConfig($name)
 	{
-		return $this->_config->get($name);
+		$data = $this->_config->get($name);
+		$data['title'] = '';
+
+		if(isset($this->_modulesLocale[$name]))
+			$data['title'] = $this->_modulesLocale[$name];
+
+		return $data;
 	}
 
 	/**
@@ -106,23 +117,14 @@ class Backend_Modules_Manager
 			if(!isset($cfg['in_menu']))
 				$cfg['in_menu'] = true;
 
-			if($this->modulesLocale->offsetExists($module)){
-				$cfg['title'] = $this->modulesLocale->get($module);
+			if($this->_modulesLocale->offsetExists($module)){
+				$cfg['title'] = $this->_modulesLocale->get($module);
 			}else{
 				$cfg['title'] = $module;
 			}
 
 		}unset($cfg);
 		return $data;
-	}
-
-	/**
-	 * Remove modules
-	 */
-	public function removeAll()
-	{
-		$this->_config->removeAll();
-		$this->resetCache();
 	}
 
 	/**
@@ -133,7 +135,14 @@ class Backend_Modules_Manager
 	{
 		if($this->_config->offsetExists($name))
 			$this->_config->remove($name);
-		$this->resetCache();
+
+		if($this->_modulesLocale->offsetExists($name))
+			$this->_modulesLocale->remove($name);
+
+		if(!$this->_modulesLocale->save())
+			return false;
+
+		return $this->save();
 	}
 
 	/**
@@ -156,15 +165,14 @@ class Backend_Modules_Manager
 	public function updateModule($name , array $data)
 	{
 		if(isset($data['title'])){
-			$this->modulesLocale->set($name , $data['title']);
-			if(!$this->modulesLocale->save()){
+			$this->_modulesLocale->set($name , $data['title']);
+			if(!$this->_modulesLocale->save()){
 				return false;
 			}
 			unset($data['title']);
 		}
 		$cfg = array_merge($this->getModuleConfig($name),$data);
 		$this->_config->set($name , $cfg);
-		$this->resetCache();
 		return $this->save();
 	}
 
@@ -192,5 +200,41 @@ class Backend_Modules_Manager
 	public function getConfig()
 	{
 	  return $this->_config;
+	}
+
+	/**
+	 * Get list of Controllers
+	 * @return array
+	 */
+	public function getControllers()
+	{
+		$backendConfig = Config::storage()->get('backend.php');
+
+		$appPath = $this->_appConfig->get('application_path');
+		$folders = File::scanFiles($this->_appConfig->get('backend_controllers'),false,true,File::Dirs_Only);
+		$data = array();
+
+		$systemControllers = $backendConfig->get('system_controllers');
+
+		if(!empty($folders))
+		{
+			foreach ($folders as $item)
+			{
+				$name = basename($item);
+				/*
+                 * Skip system controller
+                 */
+				if(in_array($name, $systemControllers , true))
+					continue;
+
+				if(file_exists($item.'/Controller.php'))
+				{
+					$name = str_replace($appPath, '', $item.'/Controller.php');
+					$name = Utils::classFromPath($name);
+					$data[] = array('id'=>$name,'title'=>$name);
+				}
+			}
+		}
+		return $data;
 	}
 }

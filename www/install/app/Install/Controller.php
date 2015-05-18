@@ -800,7 +800,7 @@ return array(
 
 			// Add permissions
 			$permissionsModel = Model::factory('Permissions');
-			$modulesManager = new Backend_Modules_Manager();
+			$modulesManager = new Modules_Manager();
 			$modules = $modulesManager->getList();
 
 			foreach ($modules as $name=>$config)

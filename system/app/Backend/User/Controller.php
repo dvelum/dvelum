@@ -114,7 +114,7 @@ class Backend_User_Controller extends Backend_Controller
     if(!empty($data))
       $data = Utils::rekey('module' , $data);
     
-    $manager = new Backend_Modules_Manager();
+    $manager = new Modules_Manager();
     $modules = $manager->getRegisteredModules();
 
     foreach($modules as $name)

@@ -22,7 +22,7 @@ class Backend_Designer_Code
 
 		$url = array();
 		
-		$manager = new Backend_Modules_Manager();
+		$manager = new Modules_Manager();
 		
 		if($reflector->isSubclassOf('Backend_Controller'))
 		{
@@ -82,7 +82,7 @@ class Backend_Designer_Code
 	 */
 	static public function getPossibleActions($controllerName)
 	{				
-		$manager = new Backend_Modules_Manager();
+		$manager = new Modules_Manager();
 		$appCfg = Registry::get('main' , 'config');
 		$designerConfig = Config::factory(Config::File_Array, $appCfg->get('configs').'designer.php');		
 		

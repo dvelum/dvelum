@@ -323,7 +323,7 @@ class Application
         ');
 
 
-        $modulesManager = new Backend_Modules_Manager();
+        $modulesManager = new Modules_Manager();
         /*
          * Load template
          */

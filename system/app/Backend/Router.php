@@ -18,7 +18,7 @@ class Backend_Router extends Router
 	 	}
 	 	else
 	 	{
-	 		$manager = new Backend_Modules_Manager();
+	 		$manager = new Modules_Manager();
 	 		$controller = $manager->getModuleController($controller);
 	 		
 	 		if($controller === false)

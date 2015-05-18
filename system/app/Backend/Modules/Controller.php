@@ -45,7 +45,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 	 */
 	public function listBackend()
 	{
-		$manager = new Backend_Modules_Manager();
+		$manager = new Modules_Manager();
 		$data = $manager->getList();
 
 		foreach ($data as $k=>&$item)
@@ -80,12 +80,8 @@ class Backend_Modules_Controller extends Backend_Controller{
 	 */
 	public function listFrontend()
 	{
-		$manager = new Backend_Fmodules_Manager();
+		$manager = new Modules_Manager_Frontend();
 		$data = $manager->getList();
-
-		foreach($data as $k => $v)
-			$data[$k]['name'] = $k;
-
 		Response::jsonSuccess(array_values($data));
 	}
 
@@ -137,7 +133,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 			$data[$name] = Request::post($name , $type , null);
 		}
 
-		$manager = new Backend_Modules_Manager();
+		$manager = new Modules_Manager();
 
 		if(!$manager->isValidModule($id))
 			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
@@ -154,32 +150,23 @@ class Backend_Modules_Controller extends Backend_Controller{
      */
     public function controllersAction()
     {
-        $appPath = $this->_configMain['application_path'];
-        $folders = File::scanFiles($this->_configMain['backend_controllers'],false,true,File::Dirs_Only);
-        $data = array();
-        
-        $systemControllers = $this->_configBackend->get('system_controllers');
-        
-        if(!empty($folders))
-        {
-        	foreach ($folders as $item)
-        	{
-        		$name = basename($item);
-        		/*
-        		 * Skip system controller
-        		 */
-        		if(in_array($name, $systemControllers , true))
-        			continue;
-        		
-        		if(file_exists($item.'/Controller.php'))
-        		{
-        			$name = str_replace($appPath, '', $item.'/Controller.php');
-        			$name = Utils::classFromPath($name);
-        			$data[] = array('id'=>$name,'title'=>$name);
-        		}
-        	}
-        }
-        Response::jsonSuccess($data);  			
+        $type = Request::post('type' , Filter::FILTER_STRING , false);
+
+		if(!$type)
+			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+
+		switch($type){
+			case 'backend':
+				$manager = new Modules_Manager();
+				Response::jsonSuccess($manager->getControllers());
+				break;
+			case 'frontend':
+				$manager = new Modules_Manager_Frontend();
+				Response::jsonSuccess($manager->getControllers());;
+				break;
+			default:
+				Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+		}
     }
     
 	/**
@@ -300,28 +287,67 @@ class Backend_Modules_Controller extends Backend_Controller{
 
 		switch($type){
 			case 'backend':
-				 $manager = new Backend_Modules_Manager();
+				 $manager = new Modules_Manager();
 				 Response::jsonSuccess($manager->getModuleConfig($id));
 				break;
 			case 'frontend':
-				$manager = new Backend_Fmodules_Manager();
+				$manager = new Modules_Manager_Frontend();
 				Response::jsonSuccess($manager->getModuleConfig($id));
 				break;
 			default:
 				Response::jsonError($this->_lang->get('WRONG_REQUEST'));
 		}
 	}
-	
+
+	public function deleteAction()
+	{
+		$this->_checkCanDelete();
+
+		$type = Request::post('type' , Filter::FILTER_STRING , false);
+
+		if(!$type)
+			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+
+		switch($type){
+			case 'backend':
+
+				break;
+			case 'frontend':
+				$this->deleteFrontendModule();
+				break;
+			default:
+				Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+		}
+	}
+
+	/**
+	 * Delete frontend module
+	 */
+	protected function deleteFrontendModule()
+	{
+		$manager = new Modules_Manager_Frontend();
+		$code = Request::post('code' , Filter::FILTER_STRING , false);
+
+		if(!$code || !$manager->isValidModule($code)){
+			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+		}
+
+		if($manager->removeModule($code)){
+			Response::jsonSuccess();
+		}else{
+			Response::jsonError($this->_lang->get('CANT_WRITE_FS'));
+		}
+	}
 	/**
 	 * Delete module
 	 */
-	public function deletemoduleAction()
+	protected function deleteBackendModule()
 	{
 	  $this->_checkCanEdit();
 	  $module = Request::post('id', 'string', false);
 	  $removeRelated = Request::post('delete_related', 'boolean', false);
 	  
-	  $manager = new Backend_Modules_Manager();
+	  $manager = new Modules_Manager();
 	  $moduleName = $manager->getModuleName($module);
 	  
 	  if(!$module || !strlen($module) || !$manager->isValidModule($moduleName))
