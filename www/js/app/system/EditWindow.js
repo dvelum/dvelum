@@ -56,8 +56,6 @@ Ext.define('app.editWindow',{
 
 	itemsConfig:null,
 
-	dataItemId:'',
-
 	eastPanel:null,
 	/**
 	 * @property boolean hideEastPanel
@@ -96,12 +94,17 @@ Ext.define('app.editWindow',{
 	 */
 	extraParams:null,
 
+	editAction:'edit',
+	loadAction:'loaddata',
+	deleteAction:'delete',
+	maximizable:true,
+
 	constructor: function(config){
 		config = Ext.apply({
 			modal: true,
 			layout:'border',
-			width: app.checkWidth(config.width),
-			height:app.checkHeight(config.height),
+			width: app.checkWidth(config.width || 300),
+			height:app.checkHeight(config.height || 300),
 			closeAction: 'destroy',
 			linkedComponents:[],
 			resizable:true,
@@ -113,7 +116,6 @@ Ext.define('app.editWindow',{
 			items:[],
 			fbar:[],
 			buttonsAlign:'right',
-			maximizable:true,
 			extraParams:{}
 		}, config || {});
 		this.callParent(arguments);
@@ -138,7 +140,7 @@ Ext.define('app.editWindow',{
 		form.submit({
 			clientValidation: true,
 			method:'post',
-			url:this.controllerUrl + 'edit',
+			url:this.controllerUrl + this.editAction,
 			params:params,
 			waitMsg:appLang.SAVING,
 			success: function(form, action)
@@ -182,7 +184,7 @@ Ext.define('app.editWindow',{
 		form.waitMsgTarget = me.getEl();
 		form.load({
 			waitMsg:appLang.LOADING,
-			url:this.controllerUrl + 'loaddata',
+			url:this.controllerUrl + this.loadAction,
 			method:'post',
 			params: Ext.apply({
 				'id':itemId,
@@ -219,7 +221,7 @@ Ext.define('app.editWindow',{
 	deleteItem : function(){
 		var handle = this;
 		Ext.Ajax.request({
-			url: this.controllerUrl + 'delete',
+			url: this.controllerUrl + this.deleteAction,
 			waitMsg:appLang.PROCESSING,
 			method: 'post',
 			params: Ext.apply({

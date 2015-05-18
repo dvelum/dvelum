@@ -7,7 +7,7 @@
 						</nav>
 					</div>
 					<div class="first"><?php echo $this->get('bottomBlocks');?></div>
-					<div class="copyright">Copyright &copy; 2012 Your company name</div>
+					<div class="copyright">Copyright &copy; <?php echo date('Y');?> Your company name</div>
 				</footer><!--end:footer-->
 			</div>
 		</div><!--end:page-->

@@ -48,6 +48,62 @@ class Designer_Manager
      $replaces = $this->getReplaceConfig();
      Designer_Factory::runProject($projectFile , $this->_designerConfig , $replaces , $renderTo);
   }
+ /**
+  * Get Designer projects tree list
+  */
+  public function  getProjectsList($node = '')
+  {
+      $paths = Config::storage()->getPaths();
+      $cfgPath = $this->_designerConfig->get('configs');
+
+      $list = array();
+      $ret = array();
+
+      // In accordance with configs merge priority
+      rsort($paths);
+
+      foreach($paths as $path)
+      {
+          $nodePath = str_replace('//', '/', $path.$cfgPath.$node);
+
+          if(!file_exists($nodePath))
+              continue;
+
+          $items = File::scanFiles($nodePath , array('.dat'), false, File::Files_Dirs);
+
+          if(!empty($items))
+          {
+              foreach ($items as $p)
+              {
+                  $baseName = basename($p);
+
+                  if(!isset($list[$baseName])){
+                      $obj = new stdClass();
+                      $obj->id = str_replace($path.$cfgPath, '/', $p);
+                      $obj->path = str_replace($nodePath.$cfgPath, '/', $p);
+                      $obj->text = $baseName;
+
+                      if(is_dir($p))
+                      {
+                          $obj->expanded = false;
+                          $obj->leaf = false;
+                      }
+                      else
+                      {
+                          $obj->leaf = true;
+                      }
+                      $list[$baseName] = $obj;
+                  }
+              }
+          }
+      }
+
+      ksort($list);
+      foreach($list as $p)
+          $ret[] = $p;
+
+      return $ret;
+  }
   
   /**
    * Get configuration of code templates (for replacing)

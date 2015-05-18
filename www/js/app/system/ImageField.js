@@ -3,13 +3,14 @@ Ext.define('app.ImageField',{
 	alias:'widget.imagefield',
 	submitValue:false,	
 	imgSrc:null,
-    setValue: function(value){	
-        if (value == undefined || value == null)  {
-        	this.imgSrc='';
-        	value = '<img src="'+app.wwwRoot+'i/system/empty.gif" alt="' + appLang.IMAGE + '" style="border:1px solid #000000">';
+    wwwRoot:'/',
+    setValue: function(value){
+        if (value)  {
+            this.imgSrc = value;
+            value = '<img src="'+this.wwwRoot+value+'" alt="' + appLang.IMAGE + '" style="border:1px solid #000000">';
         } else {
-        	imgSrc = value;
-        	value = '<img src="'+value+'" alt="' + appLang.IMAGE + '" style="border:1px solid #000000">';       
+            this.imgSrc='';
+            value = '<img src="'+app.wwwRoot+'i/system/empty.gif" alt="' + appLang.IMAGE + '" style="border:1px solid #000000">';
         }
         this.callParent(arguments);
     },

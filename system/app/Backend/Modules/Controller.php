@@ -8,9 +8,11 @@ class Backend_Modules_Controller extends Backend_Controller{
      {    
          $res = Resource::getInstance();  
          $res->addJs('/js/app/system/FilesystemWindow.js'  , 1);
-         //$this->_resource->addJs('/js/lib/ext_ux/CTemplate.js' ,1);
-         //$this->_resource->addJs('/js/lib/ext_ux/ComponentColumn.js' ,2);
 	     $res->addJs('/js/app/system/crud/modules.js'  , 2);
+		 $res->addJs('/js/app/system/ImageField.js'  , 1);
+		 $res->addJs('/js/app/system/IconField.js'  , 1);
+		 $res->addJs('/js/app/system/HistoryPanel.js'  , 1);
+		 $res->addJs('/js/app/system/EditWindow.js'  , 1);
 	       $this->_resource->addInlineJs('
         	var canEdit = '.((integer)$this->_user->canEdit($this->_module)).';
         	var canDelete = '.((integer)$this->_user->canDelete($this->_module)).';
@@ -18,74 +20,135 @@ class Backend_Modules_Controller extends Backend_Controller{
     }
     
     /**
-     * Get moduiles list
+     * Get modules list
      */
     public function listAction()
     {
-        $manager = new Backend_Modules_Manager();
+		$type = Request::post('type' , Filter::FILTER_STRING, false);
+
+		if(!$type)
+			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+
+		switch($type){
+			case 'backend':
+				$this->listBackend();
+				break;
+			case 'frontend':
+				$this->listFrontend();
+				break;
+			default:
+				Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+		}
+    }
+	/**
+	 * Get list of backend modules
+	 */
+	public function listBackend()
+	{
+		$manager = new Backend_Modules_Manager();
 		$data = $manager->getList();
-		
+
 		foreach ($data as $k=>&$item)
 		{
-		  $item['related_files']= '';
-		  $classFile = './system/app/'.str_replace('_', '/', $item['class']).'.php';
-		  
-		  if(file_exists($classFile))
-		    $item['related_files'].= $classFile.'</br>';	
-		  
-		  if(!empty($item['designer']))
-		  {
-		    $item['related_files'].=$item['designer'].'</br>';
-		    $crudJs = './js/app/system/crud/' . strtolower($manager->getModuleName($item['class'])) . '.js';
-		    if(file_exists($crudJs)){
-		      $item['related_files'].=$crudJs.'</br>';
-		    }
-		    
-		    $actionJs = './js/app/actions/' . strtolower($manager->getModuleName($item['class'])) . '.js';
-		    if(file_exists($actionJs)){
-		      $item['related_files'].=$actionJs.'</br>';
-		    }
-		  }
+			$item['related_files']= '';
+			$classFile = './system/app/'.str_replace('_', '/', $item['class']).'.php';
+
+			if(file_exists($classFile))
+				$item['related_files'].= $classFile.'</br>';
+
+			$item['iconUrl'] = $this->_configMain->get('wwwroot').$item['icon'];
+
+			if(!empty($item['designer']))
+			{
+				$item['related_files'].=$item['designer'].'</br>';
+				$crudJs = './js/app/system/crud/' . strtolower($manager->getModuleName($item['class'])) . '.js';
+				if(file_exists($crudJs)){
+					$item['related_files'].=$crudJs.'</br>';
+				}
+
+				$actionJs = './js/app/actions/' . strtolower($manager->getModuleName($item['class'])) . '.js';
+				if(file_exists($actionJs)){
+					$item['related_files'].=$actionJs.'</br>';
+				}
+			}
 		}
-		
-		Response::jsonSuccess(array_values($data));  
-    }
-    
+		Response::jsonSuccess(array_values($data));
+	}
+
+	/**
+	 * Get list of frontend modules
+	 */
+	public function listFrontend()
+	{
+		$manager = new Backend_Fmodules_Manager();
+		$data = $manager->getList();
+
+		foreach($data as $k => $v)
+			$data[$k]['name'] = $k;
+
+		Response::jsonSuccess(array_values($data));
+	}
+
     /**
      * Update modules list
      */
     public function updateAction()
     {
-      $this->_checkCanEdit();
-		
-      $data = Request::post('data' , 'raw' , false);
-      
-      if($data === false)
-      	Response::jsonError($this->_lang->INVALID_VALUE);
-      
-      $data = json_decode($data , true);
-      
-      if(!isset($data[0]))
-      	$data = array($data);
-      
-      $manager = new Backend_Modules_Manager();
-      $manager->removeAll();
-      
-      foreach($data as $v)
-      {
-        if(isset($v['related_files']))
-          unset($v['related_files']);
-        
-      	$name = $manager->getModuleName($v['class']);
-      	$manager->addModule($name , $v);
-      }
-      
-      if($manager->save())
-      	Response::jsonSuccess();
-      else
-      	Response::jsonError($this->_lang->CANT_WRITE_FS);
+		$this->_checkCanEdit();
+		$type = Request::post('type' , Filter::FILTER_STRING, false);
+
+		if(!$type)
+			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+
+		switch($type){
+			case 'backend':
+				$this->updateBackendRecord();
+				break;
+			case 'frontend':
+				$this->updateFrontendRecord();
+				break;
+			default:
+				Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+		}
     }
-    
+
+	/**
+	 * Update module record
+	 */
+	public function updateBackendRecord()
+	{
+		$id = Request::post('id' , Filter::FILTER_STRING , false);
+
+		if(!$id)
+			Response::jsonError($this->_lang->get('INVALID_VALUE'));
+
+		$acceptedFields =  array(
+			'dev' => Filter::FILTER_BOOLEAN ,
+			'active' => Filter::FILTER_BOOLEAN ,
+			'title'=> Filter::FILTER_STRING ,
+			'designer'=> Filter::FILTER_STRING,
+			'controller'=> Filter::FILTER_STRING,
+			'in_menu'=> Filter::FILTER_BOOLEAN ,
+			'icon'=> Filter::FILTER_STRING
+		);
+
+		$data = array();
+		foreach($acceptedFields as $name => $type){
+			$data[$name] = Request::post($name , $type , null);
+		}
+
+		$manager = new Backend_Modules_Manager();
+
+		if(!$manager->isValidModule($id))
+			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+
+		if($manager->updateModule($id , $data)){
+			Response::jsonSuccess(array('id'=>$id));
+		}else{
+			Response::jsonError($this->_lang->get('CANT_WRITE_FS'));
+		}
+	}
+
     /**
      * Get list of available controllers
      */
@@ -120,62 +183,13 @@ class Backend_Modules_Controller extends Backend_Controller{
     }
     
 	/**
-	 * Inerface projects list
+	 * Get Designer projects tree list
 	 */
 	public function fslistAction()
 	{
-		$path = Request::post('node', 'string', '');
-		
-		$config = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'designer.php');
-
-		$dirPath = $config->get('configs');
-		$filesPath  = substr($dirPath,0,-1).$path;
-
-		$list = array();
-		
-		if(!is_dir($filesPath))
-			Response::jsonArray(array());		
-
-		$files = File::scanFiles($filesPath, array('.dat') , false , File::Files_Dirs);
-		
-		/**
-		 * This is inline fix for windows
-		 */
-		if(DIRECTORY_SEPARATOR == '\\')
-		{
-			foreach ($files as &$v)
-			{
-				$v = str_replace('\\', '/', $v);
-				$v = str_replace('//', '/', $v);
-			}
-			unset($v);
-		}
-		
-		if(empty($files))
-			Response::jsonArray(array());
-
-		foreach($files as $k=>$fpath)
-		{
-			$text  = basename($fpath);
-		
-			$obj = new stdClass();
-			$obj->id = str_replace($dirPath, '/', $fpath);
-			$obj->text = $text;
-			
-			if(is_dir($fpath))
-			{
-				$obj->expanded = false;
-				$obj->leaf = false;
-			} 
-			else
-			{
-				$obj->leaf = true;
-				$obj->id = str_replace($dirPath, './', $fpath);
-			}
-			$list[] = $obj;	
-		}	
-		
-		Response::jsonArray($list);	
+		$node = Request::post('node', 'string', '');
+		$manager = new Designer_Manager($this->_configMain);
+		Response::jsonArray($manager->getProjectsList($node));
 	}
 	
 	/**
@@ -272,6 +286,31 @@ class Backend_Modules_Controller extends Backend_Controller{
 				)
 		);
 	}
+
+	/**
+	 * Get module data
+	 */
+	public function loadDataAction()
+	{
+		$id = Request::post('id' , Filter::FILTER_STRING , false);
+		$type = Request::post('type' , Filter::FILTER_STRING , false);
+
+		if(!$id || !$type)
+			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+
+		switch($type){
+			case 'backend':
+				 $manager = new Backend_Modules_Manager();
+				 Response::jsonSuccess($manager->getModuleConfig($id));
+				break;
+			case 'frontend':
+				$manager = new Backend_Fmodules_Manager();
+				Response::jsonSuccess($manager->getModuleConfig($id));
+				break;
+			default:
+				Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+		}
+	}
 	
 	/**
 	 * Delete module
@@ -346,5 +385,80 @@ class Backend_Modules_Controller extends Backend_Controller{
 	      Response::jsonError($this->_lang->CANT_WRITE_FS . "\n<br>".implode(",\n<br>", $err));
 	  }
 	  Response::jsonSuccess();
+	}
+
+	/**
+	 * Get list of image folders
+	 */
+	public function iconDirsAction()
+	{
+		$path = Request::post('node', 'string', '');
+		$path = str_replace('.','', $path);
+
+		$dirPath = $this->_configMain->get('wwwpath');
+
+		if(!is_dir($dirPath.$path))
+			Response::jsonArray(array());
+
+		$files = File::scanFiles($dirPath . $path, false, false , File::Dirs_Only);
+
+		if(empty($files))
+			Response::jsonArray(array());
+
+		sort($files);
+		$list = array();
+
+		foreach($files as $k=>$fpath)
+		{
+			$text = basename($fpath);
+
+			$obj = new stdClass();
+			$obj->id = str_replace($dirPath, '', $fpath);
+			$obj->text = $text;
+			$obj->url = '/' . $obj->id;
+
+			if(is_dir($fpath))
+			{
+				$obj->expanded = false;
+				$obj->leaf = false;
+			}
+			else
+			{
+				$obj->leaf = true;
+			}
+			$list[] = $obj;
+		}
+		Response::jsonArray($list);
+	}
+
+	/**
+	 * Get image list
+	 */
+	public function iconListAction()
+	{
+		$dirPath = $this->_configMain->get('wwwpath');
+		$dir = Request::post('dir', 'string', '');
+
+		if(!is_dir($dirPath . $dir))
+			Response::jsonArray(array());
+
+		$files = File::scanFiles($dirPath . $dir, array('.jpg','.png','.gif','.jpeg') , false , File::Files_Only);
+
+		if(empty($files))
+			Response::jsonArray(array());
+
+		sort($files);
+		$list = array();
+
+		foreach($files as $k=>$fpath)
+		{
+			$text  = basename($fpath);
+			$list[] = array(
+				'name'=>$text,
+				'url'=>str_replace($dirPath .'/', $this->_configMain->get('wwwroot'), $fpath),
+				'path'=>str_replace($dirPath .'/', '', $fpath),
+			);
+		}
+		Response::jsonSuccess($list);
 	}
 }

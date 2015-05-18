@@ -162,7 +162,7 @@ Ext.define('app.filesystemWindow',{
 			Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_SELECT_FILE);   
 			return;
 		}
-		this.fireEvent('fileSelected' , item.get('id'));
+		this.fireEvent('fileSelected' , item.get('id') , item);
 		this.close();
 	},
 	onCreateClick:function(){

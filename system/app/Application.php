@@ -322,6 +322,8 @@ class Application
         	app.root = "' . $this->_config->get('wwwroot') .  $this->_config->get('adminPath') . $this->_config->get('urlDelimiter') . $controller . $this->_config->get('urlDelimiter') . '";
         ');
 
+
+        $modulesManager = new Backend_Modules_Manager();
         /*
          * Load template
          */
@@ -337,7 +339,7 @@ class Application
                         'development' => $this->_config->get('development'),
                         'version' => Config::factory(Config::File_Array , $this->_config->get('configs') . 'versions.php')->get('core'),
                         'lang' => $this->_config->get('language'),
-                        'modules' => Config::factory(Config::File_Array , $this->_config->get('backend_modules')),
+                        'modules' => $modulesManager->getList(),
                         'userModules' => $user->getAvailableModules(),
                         'useCSRFToken' => $cfgBackend->get('use_csrf_token')
         ));

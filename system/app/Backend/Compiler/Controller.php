@@ -358,7 +358,7 @@ class Backend_Compiler_Controller extends Backend_Controller
     	{   	
     	    $langFile =  $langPath .  $lang .'.php';
     		$name = $lang;   		
-    		$dictionary = Config::factory(Config::File_Array, $langFile, false);
+    		$dictionary = new Config_File_Array($langFile);
     		Lang::addDictionary($name, $dictionary);
     		
     		$filePath = $jsPath . $lang .'.js';	

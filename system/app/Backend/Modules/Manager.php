@@ -6,6 +6,10 @@ class Backend_Modules_Manager
 {
 	protected $_config;
 	protected $_mainconfigKey = 'backend_modules';
+	/**
+	 * @var Config_File_Array
+	 */
+	protected $_modulesLocale;
 	static protected $_classRoutes = false;
 
 	public function __construct()
@@ -13,23 +17,8 @@ class Backend_Modules_Manager
 		$applicationConfig = Registry::get('main' , 'config');
 		$configPath =   $applicationConfig->get($this->_mainconfigKey);
 		$this->_config = Config::factory(Config::File_Array , $configPath);
-		$link =  & $this->_config->dataLink();
-
 		$locale = Lang::lang()->getName();
-		$modulesLocale = new Config_File_Array( $applicationConfig->get('lang_path').$locale.'/modules/'.basename($configPath));
-
-		foreach ($link as $module=>&$cfg)
-		{
-		    if(!isset($cfg['in_menu']))
-		        $cfg['in_menu'] = true;
-
-			if($modulesLocale->offsetExists($module)){
-				$cfg['title'] = $modulesLocale->get($module);
-			}else{
-				$cfg['title'] = $module;
-			}
-
-		}unset($cfg);
+		$this->modulesLocale = new Config_File_Array($applicationConfig->get('lang_path').$locale.'/modules/'.basename($configPath));
 	}
 
 	/**
@@ -111,7 +100,20 @@ class Backend_Modules_Manager
 	 */
 	public function getList()
 	{
-		return $this->_config->__toArray();
+		$data = $this->_config->__toArray();
+		foreach ($data as $module=>&$cfg)
+		{
+			if(!isset($cfg['in_menu']))
+				$cfg['in_menu'] = true;
+
+			if($this->modulesLocale->offsetExists($module)){
+				$cfg['title'] = $this->modulesLocale->get($module);
+			}else{
+				$cfg['title'] = $module;
+			}
+
+		}unset($cfg);
+		return $data;
 	}
 
 	/**
@@ -143,6 +145,27 @@ class Backend_Modules_Manager
 	{
 		$this->_config->set($name , $config);
 		$this->resetCache();
+	}
+
+	/**
+	 * Update module data
+	 * @param $name
+	 * @param array $data
+	 * @return boolean
+	 */
+	public function updateModule($name , array $data)
+	{
+		if(isset($data['title'])){
+			$this->modulesLocale->set($name , $data['title']);
+			if(!$this->modulesLocale->save()){
+				return false;
+			}
+			unset($data['title']);
+		}
+		$cfg = array_merge($this->getModuleConfig($name),$data);
+		$this->_config->set($name , $cfg);
+		$this->resetCache();
+		return $this->save();
 	}
 
 	/**

@@ -1,222 +1,213 @@
 <?php return array (
   'Acl' => 
   array (
-    'id' => 'Backend_Acl_Controller',
+    'id' => 'Acl',
     'class' => 'Backend_Acl_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'ACL',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Apikeys' => 
   array (
-    'id' => 'Backend_Apikeys_Controller',
+    'id' => 'Apikeys',
     'class' => 'Backend_Apikeys_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'API Keys',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Tasks' => 
   array (
-    'id' => 'Backend_Tasks_Controller',
+    'id' => 'Tasks',
     'class' => 'Backend_Tasks_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'Background Tasks',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Blocks' => 
   array (
-    'id' => 'Backend_Blocks_Controller',
+    'id' => 'Blocks',
     'class' => 'Backend_Blocks_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'Blocks',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Cache' => 
   array (
-    'id' => 'Backend_Cache_Controller',
+    'id' => 'Cache',
     'class' => 'Backend_Cache_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'Cache Info',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Compiler' => 
   array (
-    'id' => 'Backend_Compiler_Controller',
+    'id' => 'Compiler',
     'class' => 'Backend_Compiler_Controller',
     'dev' => true,
     'active' => true,
-    'title' => 'Code packages',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Orm' => 
   array (
-    'id' => 'Backend_Orm_Controller',
+    'id' => 'Orm',
     'class' => 'Backend_Orm_Controller',
     'dev' => true,
     'active' => true,
-    'title' => 'Data objects (ORM)',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Deploy' => 
   array (
-    'id' => 'Backend_Deploy_Controller',
+    'id' => 'Deploy',
     'class' => 'Backend_Deploy_Controller',
     'dev' => true,
     'active' => true,
-    'title' => 'Deploy',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Docs' => 
   array (
-    'id' => 'Backend_Docs_Controller',
+    'id' => 'Docs',
     'class' => 'Backend_Docs_Controller',
     'dev' => true,
     'active' => true,
-    'title' => 'Documentation',
     'designer' => './config/dist/layouts/system/documentation.designer.dat',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Error_Log' => 
   array (
-    'id' => 'Backend_Error_Log_Controller',
+    'id' => 'Error_Log',
     'class' => 'Backend_Error_Log_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'Error Log',
     'designer' => './config/dist/layouts/system/error_log.designer.dat',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Filestorage' => 
   array (
-    'id' => 'Backend_Filestorage_Controller',
+    'id' => 'Filestorage',
     'class' => 'Backend_Filestorage_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'Filestorage',
     'designer' => './config/dist/layouts/system/filestorage.designer.dat',
     'in_menu' => true,
-  ),
-  'Fmodules' => 
-  array (
-    'id' => 'Backend_Fmodules_Controller',
-    'class' => 'Backend_Fmodules_Controller',
-    'dev' => true,
-    'active' => true,
-    'title' => 'Frontend Modules',
-    'designer' => '',
-    'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Logs' => 
   array (
-    'id' => 'Backend_Logs_Controller',
+    'id' => 'Logs',
     'class' => 'Backend_Logs_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'History Log',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Designer' => 
   array (
-    'id' => 'Backend_Designer_Controller',
+    'id' => 'Designer',
     'class' => 'Backend_Designer_Controller',
     'dev' => true,
     'active' => true,
-    'title' => 'Layout designer',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Localization' => 
   array (
-    'id' => 'Backend_Localization_Controller',
+    'id' => 'Localization',
     'class' => 'Backend_Localization_Controller',
     'dev' => true,
     'active' => true,
-    'title' => 'Localization',
     'designer' => './config/dist/layouts/system/localization.designer.dat',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Medialib' => 
   array (
-    'id' => 'Backend_Medialib_Controller',
+    'id' => 'Medialib',
     'class' => 'Backend_Medialib_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'Media Library',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Mediaconfig' => 
   array (
-    'id' => 'Backend_Mediaconfig_Controller',
+    'id' => 'Mediaconfig',
     'class' => 'Backend_Mediaconfig_Controller',
     'dev' => true,
     'active' => true,
-    'title' => 'Medialibrary Config',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Menu' => 
   array (
-    'id' => 'Backend_Menu_Controller',
+    'id' => 'Menu',
     'class' => 'Backend_Menu_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'Menu',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Modules' => 
   array (
-    'id' => 'Backend_Modules_Controller',
+    'id' => 'Modules',
     'class' => 'Backend_Modules_Controller',
     'dev' => true,
     'active' => true,
-    'title' => 'Modules configuration',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Page' => 
   array (
-    'id' => 'Backend_Page_Controller',
+    'id' => 'Page',
     'class' => 'Backend_Page_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'Pages',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'Reports' => 
   array (
-    'id' => 'Backend_Reports_Controller',
+    'id' => 'Reports',
     'class' => 'Backend_Reports_Controller',
     'dev' => false,
     'active' => true,
-    'title' => 'Reports',
     'designer' => '',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
   'User' => 
   array (
-    'id' => 'Backend_User_Controller',
-    'class' => 'Backend_User_Controller',
+    'id' => 'User',
+    'class' =>'Backend_Users_Controller',
     'dev' => false,
     'active' => true,
     'title' => 'Users',
     'designer' => './config/dist/layouts/system/users.designer.dat',
     'in_menu' => true,
+    'icon' =>'i/system/icons/default.png'
   ),
 ); 
