@@ -64,7 +64,6 @@ class Backend_Orm_Controller extends Backend_Controller
          * Getting list of objects
          */
         $manager = new Db_Object_Manager();
-        $externalExpert = $manager->getExternalsExpert();
 
         $names = $manager->getRegisteredObjects();
         if(empty($names))
@@ -150,11 +149,6 @@ class Backend_Orm_Controller extends Backend_Controller
              if(isset($config['save_history']) && !$config['save_history'])
                   $saveHistory = false;
 
-             $external = false;
-
-             if($externalExpert && $externalExpert->hasObject($objectName))
-             	$external = true;
-
              $hasBroken = false;
 
              if($builder->hasBrokenLinks())
@@ -176,7 +170,6 @@ class Backend_Orm_Controller extends Backend_Controller
                 'index_size'=>$indexLength,
                 'size'=>$size,
                 'system'=>$configObject->isSystem(),
-                'external'=>$external,
                 'validdb'=>$builder->validate(),
                 'broken'=>$hasBroken,
                 'db_host'=> $oDbConfig['host'] ,
@@ -729,14 +722,6 @@ class Backend_Orm_Controller extends Backend_Controller
     protected function _updateObject($recordId , $name , array $data)
     {
     	$objectConfigPath = $this->_configMain->get('object_configs').$recordId.'.php';
-    	if($this->_configMain->get('allow_externals'))
-    	{
-	    	$manager = new Db_Object_Manager();
-	    	$externalExpert = $manager->getExternalsExpert();
-
-	    	if($externalExpert->hasObject($recordId))
-	    		$objectConfigPath = $externalExpert->getObjectPath($recordId);
-    	}
 
     	if(!is_writable($objectConfigPath))
     		Response::jsonError($this->_lang->CANT_WRITE_FS);

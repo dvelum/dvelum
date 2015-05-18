@@ -22,7 +22,7 @@ if(!defined('DVELUM'))exit;
 
 
 $res->addCss('/js/lib/ext5/build/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css' , 1);
-$res->addCss('/templates/system/default/css/style.css' , 2);
+$res->addCss('/css/system/default/style.css' , 2);
 ?>
 <html>
 <head>

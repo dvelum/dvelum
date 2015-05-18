@@ -48,7 +48,7 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
     if($dictionary === false)
       Response::jsonError($this->_lang->get('WRONG_REQUEST'));
 
-    $data = $this->_manager->getLocalistaion($dictionary);
+    $data = $this->_manager->getLocalization($dictionary);
 
     Response::jsonSuccess($data);
   }

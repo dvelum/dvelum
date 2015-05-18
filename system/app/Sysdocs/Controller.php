@@ -238,7 +238,7 @@ class Sysdocs_Controller
 
         $resource->addJs('/js/lib/extjs4/ext-theme-gray.js' , 2);
         $resource->addCss('/js/lib/extjs4/resources/css/ext-all-gray.css');
-        $resource->addCss('/templates/system/default/css/style.css');
+        $resource->addCss('/css/system/default/style.css');
 
         if($cfg->getCount())
         {

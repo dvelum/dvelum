@@ -101,7 +101,7 @@ class Backend_Orm_Dictionary extends Backend_Controller
     			$dictionary->removeRecord($v['id']);
     		$dictionary->addRecord($v['key'], $v['value']);
     	}
-    	if(!$dictionary->saveChanges())
+		if(!Dictionary_Manager::factory()->saveChanges($dictionaryName))
     		Response::jsonError($this->_lang->CANT_WRITE_FS);
     	Response::jsonSuccess();
     }
@@ -118,7 +118,7 @@ class Backend_Orm_Dictionary extends Backend_Controller
     	
     	$dictionary = Dictionary::getInstance($dictionaryName);
     	$dictionary->removeRecord($name);
-    	if(!$dictionary->saveChanges())
+		if(!Dictionary_Manager::factory()->saveChanges($dictionaryName))
     		Response::jsonError($this->_lang->CANT_WRITE_FS);
     	Response::jsonSuccess();
     }
