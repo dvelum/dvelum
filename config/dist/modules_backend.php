@@ -202,7 +202,7 @@
   'User' => 
   array (
     'id' => 'User',
-    'class' =>'Backend_Users_Controller',
+    'class' =>'Backend_User_Controller',
     'dev' => false,
     'active' => true,
     'title' => 'Users',
