@@ -8,14 +8,16 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         
         $resource = Resource::getInstance();     
         $resource->addJs('/js/app/system/BlocksPanel.js' , 3); 
-        
+
+        $moduleManager = new Modules_Manager_Frontend();
         $fModules = Config::factory(Config::File_Array, $this->_configMain->get('frontend_modules'));        
         $funcList = array(
         	array('id'=>'','title'=>'---')
         );    
            
-        foreach ($fModules as $code=>$config)
-        	$funcList[] = array('id'=>$code  , 'title'=>$config['title']);
+        foreach ($moduleManager->getList() as $config){
+            $funcList[] = array('id'=>$config['code']  , 'title'=>$config['title']);
+        }
         
         $resource->addInlineJs('
         	var aFuncCodes = '.json_encode($funcList).';
