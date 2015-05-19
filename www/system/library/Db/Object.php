@@ -449,7 +449,7 @@ class Db_Object
         }
 
         if(isset($propConf['db_len']) && $propConf['db_len']){
-            if(strlen($value) > $propConf['db_len'])
+            if(mb_strlen($value,'UTF-8') > $propConf['db_len'])
                 throw new Exception('The field value exceeds the allowable length ['.$name.']');
             if($propConf['db_type'] == 'bit' && (strlen($value) > $propConf['db_len'] || strlen($value) < $propConf['db_len']))
 				throw new Exception('Invalid length for bit value ['.$name.']');
