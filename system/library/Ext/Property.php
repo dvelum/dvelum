@@ -34,8 +34,8 @@ abstract class Ext_Property
 	const Boolean = 4;
 
 	static protected $_instances = array();
-	static public $extends = 'Ext.Component';
-	static public $xtype = 'component';
+	static public $extends = '';
+	static public $xtype = '';
 	static public $ftype = '';
 
     public $isExtended = self::Boolean;
