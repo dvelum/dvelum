@@ -1,27 +1,35 @@
 <?php
 class Ext_Property_Grid_Column extends Ext_Property_Container
 {
-	public $defaultWidth = self::Numeric;
-	public $sortable = self::Boolean;
-	public $weight = self::Numeric;
-	public $align  = self::String;
+	public $align = self::String;
+	public $cellWrap = self::Boolean;
 	public $columns = self::Object;
-	public $dataIndex  = self::String;
-	public $draggable  = self::Boolean;
-	public $editor  = self::Object;
-	public $editable = self::Boolean;
+	public $dataIndex = self::String;
+	public $editRenderer = self::Object;
+	public $editor = self::Object;
+	public $emptyCellText = self::String;
+	public $enableFocusableContainer = self::Boolean;
+	public $formatter = self::String;
 	public $groupable = self::Boolean;
+	public $headerWrap = self::Boolean;
 	public $hideable = self::Boolean;
+	public $lockable = self::Boolean;
+	public $locked = self::Boolean;
 	public $menuDisabled = self::Boolean;
 	public $menuText = self::String;
+	public $producesHTML = self::Boolean;
 	public $renderer = self::Object;
-	public $resizable = self::Boolean;
-	public $tdCls  = self::String;
-	public $text  = self::String;
+	public $scope = self::Object;
+	public $sortable = self::Boolean;
 	public $summaryRenderer = self::Object;
-	public $summaryType = self::String;
-	public $flex = self::Numeric;
-	public $locked = self::Boolean;
-	
+	public $tdCls = self::String;
+	public $text = self::String;
+	public $tooltip = self::String;
+	public $tooltipType = self::String;
+	public $triggerVisible = self::Boolean;
+	public $updater = self::Object;
+	public $variableRowHeight = self::Boolean;
+
+	static public $extend = 'Ext.grid.column.Column';
 	static public $xtype = 'gridcolumn';
 }

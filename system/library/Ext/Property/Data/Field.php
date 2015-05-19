@@ -1,16 +1,21 @@
 <?php
-class Ext_Property_Data_Field extends Ext_Property{
-    
-    public $convert = self::Object;
-    public $dateFormat = self::String;
-    public $defaultValue = self::Object;
-    public $mapping = self::Object;
-    public $persist = self::Boolean;
-    public $name = self::String;
-    public $sortDir = self::String;
-    public $sortType = self::Object;
-    public $type = self::String;
-    public $useNull = self::Boolean;
+class Ext_Property_Data_Field extends Ext_Property
+{
+	public $allowBlank = self::Boolean;
+	public $allowNull = self::Boolean;
+	public $calculate = self::Object;
+	public $convert = self::Object;
+	public $critical = self::Boolean;
+	public $defaultValue = self::Object;
+	public $depends = self::String;
+	public $mapping = self::Object;
+	public $name = self::String;
+	public $persist = self::Boolean;
+	public $reference = self::String;
+	public $serialize = self::Object;
+	public $sortType = self::Object;
+	public $unique = self::Boolean;
+	public $validators = self::Object;
 
-    static public $xtype = '';
+	static public $extend = 'Ext.data.field.Field';
 }

@@ -1,25 +1,23 @@
 <?php
 abstract class Ext_Property_Form_Field_Base extends Ext_Property_Component
 {
-	public $fieldSubTpl = self::Object;
-	public $name = self::String;
-	public $inputType = self::String;
-	public $tabIndex = self::Numeric;
-	public $invalidText = self::String;
+	public $checkChangeBuffer = self::Number;
+	public $checkChangeEvents = self::Object;
+	public $dirtyCls = self::String;
+	public $fieldBodyCls = self::String;
 	public $fieldCls = self::String;
 	public $fieldStyle = self::String;
-	public $fieldLabel = self::String;
-	public $focusCls = self::String;
-	public $dirtyCls = self::String;
-	public $checkChangeEvents = self::Object;
-	public $checkChangeBuffer = self::Numeric;
-	public $labelAlign = self::String;
-	public $labelPad  = self::Numeric;
-	public $labelSeparator  = self::String;
-	public $labelStyle  = self::String;
-	public $labelWidth = self::Numeric;
+	public $fieldSubTpl = self::Object;
+	public $inputAttrTpl = self::Object;
+	public $inputId = self::String;
+	public $inputType = self::String;
+	public $invalidText = self::String;
+	public $isTextInput = self::Boolean;
+	public $name = self::String;
 	public $readOnly = self::Boolean;
 	public $readOnlyCls = self::String;
-	public $inputId = self::String;
 	public $validateOnBlur = self::Boolean;
+
+	static public $extend = 'Ext.form.field.Base';
+	static public $xtype = 'field';
 }
