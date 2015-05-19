@@ -75,6 +75,12 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	{
 		$this->_checkLoaded();
 
+		$dir = dirname($this->_session->get('file'));
+		if(!is_dir($dir)){
+			if(!@mkdir($dir,0775,true))
+				Response::jsonError($this->_lang->CANT_WRITE_FS. ' ' .$dir);
+		}
+
 		if($this->_storage->save($this->_session->get('file'), $this->_getProject()))
 			Response::jsonSuccess();
 		else

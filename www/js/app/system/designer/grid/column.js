@@ -306,7 +306,7 @@ Ext.define('designer.grid.column.Window',{
 			root: {
 				text: '/',
 				expanded: true,
-				id:0,
+				//id:0,
 				leaf:false,
 				children:[]
 			},

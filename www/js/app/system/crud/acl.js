@@ -122,7 +122,7 @@ Ext.define('app.crud.acl.Permissions',{
 				},{
 					text:appLang.ALL,
 					dataIndex:'id',
-					id:'all',
+					itemId:'all',
 					width:30,
 					scope:this,
 					renderer:function(value, metaData, record, rowIndex, colIndex, store){
@@ -173,7 +173,7 @@ Ext.define('app.crud.acl.Permissions',{
 
 		});
 		this.dataGrid.on('cellclick',function(grid, cell, columnIndex, record , node , rowIndex , evt){
-			var column = grid.getHeaderCt().getHeaderAtIndex(columnIndex).id;
+			var column = grid.getHeaderCt().getHeaderAtIndex(columnIndex).itemId;
 
 			switch(column)
 			{

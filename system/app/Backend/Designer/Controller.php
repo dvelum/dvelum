@@ -98,8 +98,8 @@ class Backend_Designer_Controller extends Backend_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->_config = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'designer.php');
-		$this->_version = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'versions.php')->get('designer');
+		$this->_config = Config::storage()->get($this->_configMain['configs'] . 'designer.php');
+		$this->_version = Config::storage()->get($this->_configMain['configs'] . 'versions.php')->get('designer');
 	}
 	
 	public function indexAction()

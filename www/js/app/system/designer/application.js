@@ -433,11 +433,6 @@ Ext.define('designer.application',{
 					]
 				})
 			},{
-				text:desLang.form,
-				iconCls:'formIcon',
-				tooltip: desLang.add + ' ' + desLang.form,
-				oClass:'form'
-			},{
 				text:desLang.formField,
 				iconCls:'textFieldIcon',
 				tooltip: desLang.add + ' ' + desLang.formField,
@@ -451,6 +446,12 @@ Ext.define('designer.application',{
 						handler:this.addObject
 					},
 					items: [
+						{
+							text:desLang.formPanel,
+							iconCls:'formIcon',
+							tooltip: desLang.add + ' ' + desLang.form,
+							oClass:'form'
+						},
 						{
 							text:'Text',
 							iconCls:'textFieldIcon',
