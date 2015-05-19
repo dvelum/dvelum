@@ -1,6 +1,5 @@
 <?php return array (
   'Acl' => 'ACL',
-  'Apikeys' => 'API Keys',
   'Tasks' => 'Background Tasks',
   'Blocks' => 'Blocks',
   'Cache' =>  'Cache Info',

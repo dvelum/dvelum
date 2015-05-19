@@ -9,16 +9,6 @@
     'in_menu' => true,
     'icon' =>'i/system/icons/default.png'
   ),
-  'Apikeys' => 
-  array (
-    'id' => 'Apikeys',
-    'class' => 'Backend_Apikeys_Controller',
-    'dev' => false,
-    'active' => true,
-    'designer' => '',
-    'in_menu' => true,
-    'icon' =>'i/system/icons/default.png'
-  ),
   'Tasks' => 
   array (
     'id' => 'Tasks',
