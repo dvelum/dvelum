@@ -280,7 +280,7 @@ class Db_Object_Store
     	 */
     	if($log && $object->getConfig()->get('save_history'))
     	{
-    		Model::factory($this->_historyObject)->log(
+    		Model::factory($this->config['historyObject'])->log(
 	    		User::getInstance()->getId() ,
 	    		$object->getId() ,
 	    		Model_Historylog::Unpublish ,
@@ -364,7 +364,7 @@ class Db_Object_Store
     	*/
     	if($log && $object->getConfig()->get('save_history'))
     	{
-    		Model::factory($this->_historyObject)->log(
+    		Model::factory($this->config['historyObject'])->log(
 	    		User::getInstance()->getId() ,
 	    		$object->getId() ,
 	    		Model_Historylog::Publish ,
@@ -447,7 +447,7 @@ class Db_Object_Store
     {
         $order = 0;
         $links = array_keys($links);
-        $linksObj  = new Db_Object($this->config['_linksObject']);
+        $linksObj  = new Db_Object($this->config['linksObject']);
         $db = $this->_getDbConnection($linksObj);
 
         foreach ($links as $k=>$v)
@@ -516,7 +516,7 @@ class Db_Object_Store
         	/**
         	 * @todo   убрать жесткую связанность
         	 */
-            Model::factory($this->_historyObject)->log(
+            Model::factory($this->config['historyObject'])->log(
             	User::getInstance()->id ,
             	$object->getId() ,
             	Model_Historylog::Create ,
@@ -696,7 +696,7 @@ class Db_Object_Store
     	 */
     	if($log && $object->getConfig()->get('save_history'))
     	{
-    		Model::factory($this->_historyObject)->log(
+    		Model::factory($this->config['historyObject'])->log(
 	    		User::getInstance()->getId() ,
 	    		$object->getId() ,
 	    		Model_Historylog::NewVersion ,
@@ -752,7 +752,7 @@ class Db_Object_Store
         	 * @todo убрать жесткую связанность
         	 */
         	if($log && $object->getConfig()->hasHistory()){
-             	Model::factory($this->_historyObject)->log(
+             	Model::factory($this->config['historyObject'])->log(
              		User::getInstance()->id ,
              		$object->getId() ,
              		Model_Historylog::Delete ,
@@ -824,7 +824,7 @@ class Db_Object_Store
 	     */
 	    Model::factory($this->vonfig['linksObject'])->clearLinksFor($objectName , $ids);
 
-        $history = Model::factory($this->_historyObject);
+        $history = Model::factory($this->config['historyObject']);
         $userId = User::getInstance()->id;
 
         /*

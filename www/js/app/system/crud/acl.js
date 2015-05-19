@@ -50,7 +50,6 @@ Ext.define('app.crud.acl.Permissions',{
 				{name:'publish', type:'boolean'},
 				{name:'rc', type:'boolean'}
 			],
-			model: 'app.crud.user.PermissionsModel',
 			proxy: {
 				type: 'ajax',
 				reader: {
@@ -266,7 +265,6 @@ Ext.define('app.crud.acl.Groups',{
 	},
 	initComponent:function(){
 		this.dataStore = Ext.create('Ext.data.Store', {
-			model: 'app.crud.acl.GroupModel',
 			proxy: {
 				type: 'ajax',
 				url: app.root + 'grouplist',
