@@ -11,23 +11,23 @@ Ext.ns('app.objectLink');
 Ext.define('app.objectLink.Field',{
 	extend:'Ext.form.FieldContainer',
 	alias:'widget.objectlinkfield',
-	triggerCls : 'urlTrigger',
 	dataField:null,
-	triggerButton:null,
-	layout: 'vbox',
 	controllerUrl:'?',
 	objectName:'',
 	value:"",
-	hideId:true,
 	name:'',
 	fieldLabel:'',
 	readOnly:false,
+	allowBlank:true,
 	/**
 	 * Extra params for requests
 	 * @property {Object}
 	 */
 	extraParams:null,
-
+	actions:{
+		title:'otitle',
+		list:'linkedlist'
+	},
 	constructor: function(config) {
 		config = Ext.apply({
 			extraParams:{}
@@ -38,14 +38,7 @@ Ext.define('app.objectLink.Field',{
 	initComponent:function(){
 
 		var  me = this;
-		var fieldClass = 'Ext.form.field.Text';
-		var fieldFlex = 1;
-
-		if(this.hideId){
-			fieldClass = 'Ext.form.field.Hidden';
-		}
-
-		this.dataField = Ext.create(fieldClass,{
+		this.dataField = Ext.create('Ext.form.field.Hidden',{
 			anchor:"100%",
 			readOnly :true,
 			name:this.name,
@@ -84,15 +77,6 @@ Ext.define('app.objectLink.Field',{
 				}
 			}
 		});
-
-		if(this.hideId){
-			this.layout ={
-				type: 'hbox',
-				pack: 'center',
-				align: 'middle'
-			};
-		}
-
 		this.items = [this.dataFieldLabel , this.dataField ];
 
 		this.callParent();
@@ -118,7 +102,7 @@ Ext.define('app.objectLink.Field',{
 			height:500,
 			selectMode:true,
 			objectName:this.objectName,
-			controllerUrl:this.controllerUrl + 'linkedlist',
+			controllerUrl:this.controllerUrl + this.actions.list,
 			title:this.fieldLabel,
 			extraParams:this.extraParams
 		});
@@ -156,7 +140,7 @@ Ext.define('app.objectLink.Field',{
 		me.dataFieldLabel.setValue(appLang.LOADING);
 
 		Ext.Ajax.request({
-			url:this.controllerUrl + 'otitle',
+			url:this.controllerUrl + this.actions.title,
 			method: 'post',
 			params:Ext.apply({
 				object:this.objectName,
@@ -198,24 +182,18 @@ Ext.define('app.objectLink.Field',{
 	},
 	updateViewState:function(){
 		if(this.disabled){
-			//this.triggerButton.hide();
-			//this.removeButton.hide();
-			this.dataField.hide();
-			return;
+			this.dataFieldLabel.getTrigger('select').hide();
+			this.dataFieldLabel.getTrigger('clear').hide();
 		}
 		else{
-			this.dataField.enable();
-			this.dataField.show();
 			if(this.readOnly){
-				//this.dataFieldLabel.setReadOnly(true);
-				//this.triggerButton.hide();
-				//this.removeButton.hide();
-				this.dataField.setReadOnly(true);
+				this.dataFieldLabel.getTrigger('select').hide();
+				this.dataFieldLabel.getTrigger('clear').hide();
 			}else{
-				//this.dataFieldLabel.setReadOnly(false);
-				//this.dataField.setReadOnly(false);
-				//this.triggerButton.show();
-				//this.removeButton.show();
+				this.dataFieldLabel.getTrigger('select').show();
+				if(this.allowBlank){
+					this.dataFieldLabel.getTrigger('clear').show();
+				}
 			}
 		}
 	}
