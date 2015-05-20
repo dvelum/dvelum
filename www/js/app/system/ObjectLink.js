@@ -39,6 +39,7 @@ Ext.define('app.objectLink.Field',{
 
 		var  me = this;
 		var fieldClass = 'Ext.form.field.Text';
+		var fieldFlex = 1;
 
 		if(this.hideId){
 			fieldClass = 'Ext.form.field.Hidden';
@@ -60,51 +61,39 @@ Ext.define('app.objectLink.Field',{
 			}
 		});
 
-		this.dataFieldLabel = Ext.create('Ext.form.field.Display',{
+		this.dataFieldLabel = Ext.create('Ext.form.field.Text',{
 			anchor:"100%",
 			flex:1,
 			value:"...",
-			cls:'d_objectLink_input',
-			listeners : {
-				afterrender:{
-					fn:function(cmp){
-						cmp.getEl().on('click',me.showSelectionWindow,me);
+			editable:false,
+		//	cls:'d_objectLink_input',
+			triggers: {
+				select: {
+					cls: 'x-form-search-trigger',
+					handler:me.showSelectionWindow,
+					tooltip:appLang.SELECT,
+					scope:this
+				},
+				clear: {
+					cls: 'x-form-clear-trigger',
+					tooltip:appLang.RESET,
+					handler:function(){
+						me.setValue("");
 					},
 					scope:this
 				}
 			}
 		});
 
-		this.triggerButton = Ext.create('Ext.button.Button',{
-			iconCls:'editIcon2',
-			scope:me,
-			text:appLang.SELECT,
-			tooltip:appLang.SELECT,
-			handler:me.showSelectionWindow,
-			scope:this
-		});
-
-		this.removeButton = Ext.create('Ext.button.Button',{
-			iconCls:'deleteIcon',
-			tooltip:appLang.RESET,
-			scope:me,
-			handler:function(){
-				me.setValue("");
-			}
-		});
-
 		if(this.hideId){
-			this.layout = 'hbox';
+			this.layout ={
+				type: 'hbox',
+				pack: 'center',
+				align: 'middle'
+			};
 		}
 
-		var valueContainer = {
-			xtype:'fieldcontainer',
-			layout: 'hbox',
-			items:[this.dataField , this.triggerButton , this.removeButton]
-		};
-
-		this.items = [this.dataFieldLabel , valueContainer];
-
+		this.items = [this.dataFieldLabel , this.dataField ];
 
 		this.callParent();
 
@@ -209,8 +198,8 @@ Ext.define('app.objectLink.Field',{
 	},
 	updateViewState:function(){
 		if(this.disabled){
-			this.triggerButton.hide();
-			this.removeButton.hide();
+			//this.triggerButton.hide();
+			//this.removeButton.hide();
 			this.dataField.hide();
 			return;
 		}
@@ -218,13 +207,15 @@ Ext.define('app.objectLink.Field',{
 			this.dataField.enable();
 			this.dataField.show();
 			if(this.readOnly){
-				this.triggerButton.hide();
-				this.removeButton.hide();
+				//this.dataFieldLabel.setReadOnly(true);
+				//this.triggerButton.hide();
+				//this.removeButton.hide();
 				this.dataField.setReadOnly(true);
 			}else{
-				this.dataField.setReadOnly(false);
-				this.triggerButton.show();
-				this.removeButton.show();
+				//this.dataFieldLabel.setReadOnly(false);
+				//this.dataField.setReadOnly(false);
+				//this.triggerButton.show();
+				//this.removeButton.show();
 			}
 		}
 	}

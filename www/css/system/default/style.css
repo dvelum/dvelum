@@ -270,8 +270,9 @@
 .d_objectLink_input{
 	border:1px solid #ccc;
 	margin:0 2px 0 2px;
-	padding:2px;
+	paddingl:0px 2px 0px 2px;
 	background-color:#F1F1F1;
+    height:22px;
 }
 
 .d_objectLink_input .x-form-display-field{
