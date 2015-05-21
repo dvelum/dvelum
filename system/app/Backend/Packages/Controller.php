@@ -1,5 +1,5 @@
 <?php
-class Backend_Compiler_Controller extends Backend_Controller
+class Backend_Packages_Controller extends Backend_Controller
 {
 	/**
 	 * @var Config_File_Array

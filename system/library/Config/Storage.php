@@ -99,6 +99,31 @@ class Config_Storage
     }
 
     /**
+     * Get list of available configs
+     * @param bool $path
+     * @param bool $recursive
+     * @throws Exception
+     */
+    public function getList($path = false, $recursive = false)
+    {
+        $files = array();
+        foreach($this->config['file_array']['paths'] as $item)
+        {
+            if($path)
+                $item.=$path;
+
+            if(!is_dir($item))
+                continue;
+
+            $list = File::scanFiles($item , array('.php'), $recursive , File::Files_Only);
+            if(!empty($list))
+                $files = array_merge($files , $list);
+
+        }
+        return $files;
+    }
+
+    /**
      * Check if config file exists
      * @param $localPath
      * @return bool

@@ -26,9 +26,8 @@ class Backend_Orm_Controller extends Backend_Controller
             $dbConfigs[]= array('id'=>$k , 'title'=>$this->_lang->get($v['title']));
         }
         //tooltips
-        $lPath = $this->_configMain->get('lang_path').$this->_configMain->get('language').'/orm.php';
+        $lPath = Lang::storage()->getPath($this->_configMain->get('language').'/orm.php');
         Lang::addDictionaryLoader('orm_tooltips', $lPath, Config::File_Array);
-
 
         $this->_resource->addInlineJs('
           var canPublish =  '.((integer)$this->_user->canPublish($this->_module)).';

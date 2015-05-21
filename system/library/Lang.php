@@ -18,6 +18,12 @@
  */
 class Lang
 {
+	/**
+	 * Configuration options for Config_Storage
+	 * @var array
+	 */
+	protected static $_storageConfig = array();
+
 	protected $_dictionary = false;
 	protected $_dictionaryName = '';
 	
@@ -102,7 +108,7 @@ class Lang
 		
 		if(isset(self::$_loaders[$name]))
 		{
-			self::$_dictionaries[$name] = new Config_File_Array(self::$_loaders[$name]['src']);
+			self::$_dictionaries[$name] = static::storage()->get(self::$_loaders[$name]['src'] , true , false);
 			$this->_dictionary = self::$_dictionaries[$name];
 		}
 	}
@@ -165,5 +171,27 @@ class Lang
 			throw new Exception('Lang::lang Dictionary "'.$name.'" is not found');
 
 		return new self($name);
+	}
+
+	/**
+	 * Get configuration storage
+	 * @param boolean $force, optional - reload storage
+	 */
+	static public function storage($force = false)
+	{
+		static $store = false;
+
+		if(!$store || $force){
+			$store = new Config_Storage(static::$_storageConfig);
+		}
+
+		return $store;
+	}
+	/**
+	 * Inject storage options
+	 * @param array $options
+	 */
+	static public function setStorageOptions(array $options){
+		self::$_storageConfig = $options;
 	}
 }

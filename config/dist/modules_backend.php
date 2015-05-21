@@ -42,7 +42,7 @@
   'Packages' =>
   array (
     'id' => 'Packages',
-    'class' => 'Backend_Compiler_Controller',
+    'class' => 'Backend_Packages_Controller',
     'dev' => true,
     'active' => true,
     'designer' => '',

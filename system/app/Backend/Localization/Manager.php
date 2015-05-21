@@ -15,9 +15,9 @@ class Backend_Localization_Manager
 
   /**
    * Localizations file path
-   * @var string
+   * @var array
    */
-  protected $_langsPath;
+  protected $_langsPaths;
 
   /**
    * @param Config_Abstract $appConfig
@@ -25,7 +25,7 @@ class Backend_Localization_Manager
   public function __construct(Config_Abstract $appConfig)
   {
     $this->_appConfig =  $appConfig;
-    $this->_langsPath =  $this->_appConfig->get('lang_path');
+    $this->_langsPaths = Lang::storage()->getPaths();
     $this->_lang = Lang::lang();
   }
   /**
@@ -35,24 +35,14 @@ class Backend_Localization_Manager
    */
   public function getLangs($onlyMain = true)
   {
-    $langDir = $this->_appConfig->get('lang_path');
-    if(!is_dir($langDir))
-      return array();
+    $langs = Lang::storage()->getList(false , !$onlyMain);
 
-    $files = File::scanFiles($langDir , array('.php'), !$onlyMain , File::Files_Only);
     $data = array();
-
-    foreach ($files as $file)
+    foreach ($langs as $file)
     {
-      // Windows fix
-      if(DIRECTORY_SEPARATOR !=='/')
-          $file = str_replace(DIRECTORY_SEPARATOR, '/', $file);
-
-      $file = str_replace('//','/' , $file);
-
-      $lang = str_replace($langDir, '', substr($file,0,-4));
+      //$lang = str_replace($langDir, '', substr($file,0,-4));
       if(strpos($file , 'index')===false && basename($file)!=='objects.php')
-        $data[] = $lang;
+        $data[] = $file;
     }
 
     return $data;
@@ -77,29 +67,23 @@ class Backend_Localization_Manager
    */
   public function getSubPackages($lang = false)
   {
-    if(!$lang)
-      $lang = $this->_indexLanguage;
+      if(!$lang)
+        $lang = $this->_indexLanguage;
 
-    $langDir = $this->_appConfig->get('lang_path') . $lang;
-    if(!is_dir($langDir))
-      return array();
+      if($lang)
+          $lang = $lang.'/';
+      else
+          $lang = false;
 
-    $files = File::scanFiles($langDir , array('.php'), false , File::Files_Only);
-    $data = array();
+      $langs = Lang::storage()->getList($lang , false);
 
-    foreach ($files as $file)
-    {
-      // IIS fix
-      if(DIRECTORY_SEPARATOR !=='/')
-        $file = str_replace(DIRECTORY_SEPARATOR,'/' , $file);
-
-      $file = str_replace('//','/' , $file);
-
-      $lang = str_replace($langDir, '', substr($file,0,-4));
-      if(basename($file)!=='objects.php')
-          $data[] = $lang;
-    }
-    return $data;
+      foreach ($langs as $file)
+      {
+        //  $lang = str_replace($langDir, '', substr($file,0,-4));
+          if(basename($file)!=='objects.php')
+              $data[] = $lang;
+      }
+      return $data;
   }
   /**
    * Get list of sub dictionaries (names only)
