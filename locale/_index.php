@@ -558,5 +558,6 @@
   556 => 'ERROR',
   557 => 'ENC_KEY',
   558 => 'ACL_ACCESS_DENIED',
-  559 => 'IMAGES'
+  559 => 'IMAGES',
+  560 => 'DESIGNER_PROJECT'
 ); 

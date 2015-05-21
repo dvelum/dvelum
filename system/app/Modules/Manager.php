@@ -164,15 +164,19 @@ class Modules_Manager
 	 */
 	public function updateModule($name , array $data)
 	{
+		if($name !== $data['code']){
+			$this->_modulesLocale->remove($name);
+			$this->_config->remove($name);
+		}
+
 		if(isset($data['title'])){
-			$this->_modulesLocale->set($name , $data['title']);
+			$this->_modulesLocale->set($data['code'] , $data['title']);
 			if(!$this->_modulesLocale->save()){
 				return false;
 			}
 			unset($data['title']);
 		}
-		$cfg = array_merge($this->getModuleConfig($name),$data);
-		$this->_config->set($name , $cfg);
+		$this->_config->set($data['code'] , $data);
 		return $this->save();
 	}
 

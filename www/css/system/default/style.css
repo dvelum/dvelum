@@ -312,6 +312,20 @@
     padding:3px;
 }
 
+.module-wrap div.tools{
+    float:right;
+}
+
+.module-wrap .tools .modulesBtn{
+    cursor:pointer;
+    float:left;
+    margin:2px;
+}
+
+.clear{
+    clear:both;
+}
+
 div.module-target{
     border-right:1px solid #cccccc !important;
     padding:10px;

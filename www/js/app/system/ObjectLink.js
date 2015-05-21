@@ -62,18 +62,18 @@ Ext.define('app.objectLink.Field',{
 			editable:false,
 		//	cls:'d_objectLink_input',
 			triggers: {
-				select: {
-					cls: 'x-form-search-trigger',
-					handler:me.showSelectionWindow,
-					tooltip:appLang.SELECT,
-					scope:this
-				},
 				clear: {
 					cls: 'x-form-clear-trigger',
 					tooltip:appLang.RESET,
 					handler:function(){
 						me.setValue("");
 					},
+					scope:this
+				},
+				select: {
+					cls: 'x-form-search-trigger',
+					handler:me.showSelectionWindow,
+					tooltip:appLang.SELECT,
 					scope:this
 				}
 			}

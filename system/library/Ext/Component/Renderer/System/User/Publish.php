@@ -1,5 +1,5 @@
 <?php
-class Ext_Component_Renderer_User_Publish extends Ext_Component_Renderer
+class Ext_Component_Renderer_System_User_Publish extends Ext_Component_Renderer
 {
     public function __toString()
     {

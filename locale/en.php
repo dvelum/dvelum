@@ -117,6 +117,7 @@
   'DELETE_RELATED_TABLE_NOTE' => 'Attention: a db table related to the object will be deleted. A breach of data integrity may occur.',
   'DELETE_OBJECT' => 'Delete object',
   'DESCRIPTION' => 'Description',
+  'DESIGNER_PROJECT' => 'Designer project',
   'DICTIONARY' => 'Dictionary',
   'DICTIONARY_LINK' => 'Dictionary link',
   'DICTIONARIES' => 'Dictionaries',

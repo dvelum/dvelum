@@ -109,9 +109,40 @@ class Backend_Modules_Controller extends Backend_Controller{
     }
 
 	/**
+	 * Update frontend module record
+	 */
+	protected function updateFrontendRecord()
+	{
+		$acceptedFields =  array(
+			'id' => Filter::FILTER_STRING ,
+			'code' => Filter::FILTER_STRING ,
+			'title' => Filter::FILTER_STRING ,
+			'class'=> Filter::FILTER_STRING,
+		);
+
+		$data = array();
+		$errors = array();
+		foreach($acceptedFields as $name => $type){
+			$data[$name] = Request::post($name , $type , false);
+			if(empty($data[$name]))
+				$errors[$name] = $this->_lang->get('CANT_BE_EMPTY');
+		}
+
+		if(!empty($errors))
+			Response::jsonError($this->_lang->get('FILL_FORM') , $errors);
+
+		$manager = new Modules_Manager_Frontend();
+
+		if(!$manager->updateModule($data['id'] , $data)){
+			Response::jsonError($this->_lang->get('CANT_WRITE_FS'));
+		}
+		Response::jsonSuccess(array('id'=>$data['code']));
+	}
+
+	/**
 	 * Update module record
 	 */
-	public function updateBackendRecord()
+	protected function updateBackendRecord()
 	{
 		$id = Request::post('id' , Filter::FILTER_STRING , false);
 
@@ -292,7 +323,9 @@ class Backend_Modules_Controller extends Backend_Controller{
 				break;
 			case 'frontend':
 				$manager = new Modules_Manager_Frontend();
-				Response::jsonSuccess($manager->getModuleConfig($id));
+				$data = $manager->getModuleConfig($id);
+				$data['id'] = $data['code'];
+				Response::jsonSuccess($data);
 				break;
 			default:
 				Response::jsonError($this->_lang->get('WRONG_REQUEST'));
@@ -310,7 +343,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 
 		switch($type){
 			case 'backend':
-
+				$this->deleteBackendModule();
 				break;
 			case 'frontend':
 				$this->deleteFrontendModule();
@@ -343,6 +376,8 @@ class Backend_Modules_Controller extends Backend_Controller{
 	 */
 	protected function deleteBackendModule()
 	{
+		Response::jsonError('NOT IMPLEMENTED');
+		/*
 	  $this->_checkCanEdit();
 	  $module = Request::post('id', 'string', false);
 	  $removeRelated = Request::post('delete_related', 'boolean', false);
@@ -411,6 +446,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 	      Response::jsonError($this->_lang->CANT_WRITE_FS . "\n<br>".implode(",\n<br>", $err));
 	  }
 	  Response::jsonSuccess();
+		*/
 	}
 
 	/**

@@ -116,6 +116,7 @@
   'DELETE_RELATED_TABLE_NOTE' => 'Внимание! Таблица базы данных связанная с объектом будет также удалена. Возможна потеря данных. ',
   'DELETE_OBJECT' => 'Удалить объект',
   'DESCRIPTION' => 'Описание',
+  'DESIGNER_PROJECT' => 'Проект дизайнера',
   'DICTIONARY' => 'Словарь',
   'DICTIONARY_LINK' => 'ссылка на словарь',
   'DICTIONARIES' => 'Словари',

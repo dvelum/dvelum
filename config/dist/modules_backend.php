@@ -39,9 +39,9 @@
     'in_menu' => true,
     'icon' =>'i/system/icons/default.png'
   ),
-  'Compiler' => 
+  'Packages' =>
   array (
-    'id' => 'Compiler',
+    'id' => 'Packages',
     'class' => 'Backend_Compiler_Controller',
     'dev' => true,
     'active' => true,

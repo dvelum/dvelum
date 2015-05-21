@@ -527,7 +527,7 @@ Ext.define('app.crud.modules.EditBackendWindow',{
 				valueField:"id",
 				allowBlank: false,
 				xtype:"combo",
-				fieldLabel:'[controller]',
+				fieldLabel:appLang.CONTROLLER,
 				store:Ext.create('app.crud.modules.ControllersStore',{
 					controllerUrl: this.controllerUrl,
 					extraParams: this.extraParams
@@ -536,7 +536,7 @@ Ext.define('app.crud.modules.EditBackendWindow',{
 			},{
 				xtype:'interfaceField',
 				controllerUrl:this.controllerUrl,
-				fieldLabel:'[designer peoject]',
+				fieldLabel:appLang.DESIGNER_PROJECT,
 				name:'designer',
 				anchor:'100%',
 				width:this.width
@@ -551,8 +551,8 @@ Ext.define('app.crud.modules.EditBackendWindow',{
 				width:this.width
 
 			},
-			{ fieldLabel: '[active]', name: 'active', xtype:'checkbox'},
-			{ fieldLabel: '[development]', name: 'dev', xtype:'checkbox'}
+			{ fieldLabel:appLang.ENABLED, name: 'active', xtype:'checkbox'},
+			{ fieldLabel:appLang.DEVELOPMENT, name: 'dev', xtype:'checkbox'}
 		];
 		this.callParent();
 	}
@@ -567,7 +567,7 @@ Ext.define('app.crud.modules.EditFrontendWindow',{
 	editAction:'update',
 	showToolbar:false,
 	maximizable:false,
-	primaryKey:'code',
+	primaryKey:'id',
 	initComponent:function(){
 
 		this.items = [
@@ -584,7 +584,7 @@ Ext.define('app.crud.modules.EditFrontendWindow',{
 				valueField:"id",
 				allowBlank: false,
 				xtype:"combo",
-				fieldLabel:'[controller]',
+				fieldLabel:appLang.CONTROLLER,
 				store:Ext.create('app.crud.modules.ControllersStore',{
 					controllerUrl: this.controllerUrl,
 					extraParams: this.extraParams
@@ -593,13 +593,46 @@ Ext.define('app.crud.modules.EditFrontendWindow',{
 			},{
 				xtype:'textfield',
 				controllerUrl:this.controllerUrl,
-				fieldLabel:'[code]',
+				fieldLabel:appLang.CODE,
 				name:'code',
 				anchor:'100%',
 				width:this.width
 			}
 		];
 		this.callParent();
+	}
+});
+
+Ext.define('app.crud.modules.toolsPlugin',{
+	extend: 'Ext.Editor',
+	shim: false,
+	labelSelector: 'modulesBtn',
+	autoSize: {
+		width: 'boundEl'
+	},
+	//bubbleEvents:['toolClick'],
+	init: function(view) {
+		this.view = view;
+		this.mon(view, 'afterrender', function(){
+			this.mon(this.view.getEl(), {
+				click: {
+					fn: this.onClick,
+					scope: this
+				}
+			});
+		}, this);
+	},
+	// on mousedown show editor
+	onClick: function(e, target) {
+		var me = this;
+		var	item, record;
+		var node = Ext.fly(target);
+		if (node.hasCls(me.labelSelector)) {
+			e.stopEvent();
+			item = me.view.findItemByChild(target);
+			record = me.view.store.getAt(me.view.indexOf(item));
+			this.fireEvent('toolClick' , record , node);
+		}
 	}
 });
 
@@ -614,11 +647,17 @@ Ext.define('app.crud.modules.backendView',{
 	},
 	canEdit:false,
 	canDelete:false,
+
 	initComponent:function(){
+		var me = this;
 
 		var itemTpl = new Ext.XTemplate(
 			'<tpl for=".">',
 				'<div class="module-wrap">',
+					'<div class="tools" align="right">',
+						'<img class="modulesBtn" action-type="edit" src="'+app.wwwRoot+'i/system/edit.png" data-qtip="'+appLang.EDIT+'">',
+						'<img class="modulesBtn" action-type="delete" src="'+app.wwwRoot+'i/system/delete.gif" data-qtip="'+appLang.DELETE+'">',
+					'</div>',
 					'<div class="title">{title}</div>',
 					'<span class="controller">{class}</span>',
 					'<div class="icon"><img src="{iconUrl}" title="{title:htmlEncode}"></div>',
@@ -634,19 +673,39 @@ Ext.define('app.crud.modules.backendView',{
 			itemSelector: 'div.module-wrap',
 			singleSelect: true,
 			bodyCls:'formBody',
+			plugins:[
+				Ext.create('app.crud.modules.toolsPlugin', {
+					dataIndex: 'id',
+					listeners:{
+						toolClick:{
+							fn:function(record,target){
+								switch(target.getAttribute('action-type')){
+									case 'edit' :
+										this.editModule(record);
+										break;
+									case 'delete':
+										this.deleteModule(record);
+										break;
+								}
+							},
+							scope:this
+						}
+					}
+				})
+			],
 			listeners: {
 				render: {
 					fn:function(v){
 						this.initDragZone(v);
 						this.initDropZone(v);
 					},
-					scope:this
+					scope:me
 				},
 				itemdblclick:{
 					fn:function(view, record, item, index, e, eOpts){
 						this.editModule(record);
 					},
-					scope:this
+					scope:me
 				}
 			}
 		});
@@ -668,6 +727,8 @@ Ext.define('app.crud.modules.backendView',{
 				frame:false
 			}
 		];
+
+
 
 		this.callParent();
 	},
@@ -797,6 +858,43 @@ Ext.define('app.crud.modules.backendView',{
 			resizable:false
 		});
 		w.show();
+	},
+	/**
+	 * Show delete module dialog
+	 * @param record
+	 */
+	deleteModule:function(record){
+		var me = this;
+		var win = Ext.create('app.crud.modules.DeleteWindow',{
+			moduleId:record.get('id'),
+			controllerUrl:this.controllerUrl,
+			title:appLang.REMOVE_MODULE + ' "' + record.get('title')+'"',
+			relatedFiles:record.get('related_files')
+		});
+
+		win.on('deleteItems' , function(deleteRelated){
+			Ext.Ajax.request({
+				url: this.controllerUrl + 'delete',
+				method: 'post',
+				params:Ext.apply(this.extraParams || {}, {
+					id:record.get('id'),
+					delete_related:deleteRelated
+				}),
+				success: function(response, request) {
+					response =  Ext.JSON.decode(response.responseText);
+					if(response.success){
+						me.dataStore.remove(record);
+						win.close();
+					}else{
+						Ext.Msg.alert(appLang.MESSAGE, response.msg);
+					}
+				},
+				failure: function(){
+					Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
+				}
+			});
+		},this);
+		win.show();
 	}
 });
 
@@ -1037,6 +1135,10 @@ Ext.define('app.crud.modules.Frontend',{
 			canEdit:this.canEdit,
 			resizable:false
 		});
+		w.on('dataSaved',function(){
+			this.getStore().load();
+			w.close();
+		},this);
 		w.show();
 	},
 	/**
