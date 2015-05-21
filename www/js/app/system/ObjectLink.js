@@ -17,6 +17,7 @@ Ext.define('app.objectLink.Field',{
 	value:"",
 	name:'',
 	fieldLabel:'',
+	layout:'fit',
 	readOnly:false,
 	allowBlank:true,
 	/**
