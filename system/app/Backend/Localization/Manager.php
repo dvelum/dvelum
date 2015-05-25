@@ -35,17 +35,19 @@ class Backend_Localization_Manager
    */
   public function getLangs($onlyMain = true)
   {
-    $langs = Lang::storage()->getList(false , !$onlyMain);
+    $langStorage = Lang::storage();
+    $langs = $langStorage->getList(false , !$onlyMain);
+    $paths = $langStorage->getPaths();
 
     $data = array();
     foreach ($langs as $file)
     {
+      $file = str_replace($paths,'' , $file);
       //$lang = str_replace($langDir, '', substr($file,0,-4));
       if(strpos($file , 'index')===false && basename($file)!=='objects.php')
-        $data[] = $file;
+        $data[] = substr($file,0,-4);
     }
-
-    return $data;
+    return array_unique($data);
   }
 
   /**
@@ -159,7 +161,8 @@ class Backend_Localization_Manager
   {
     $subPackage = basename($dictionary);
     $indexName = $this->getIndexName($subPackage);
-    $indexFile = $this->_appConfig->get('lang_path') . $indexName;
+
+    $indexFile = Lang::storage()->getPath($indexName);
 
     if(!file_exists($indexFile))
       return false;
@@ -196,14 +199,7 @@ class Backend_Localization_Manager
    */
   public function getLocalization($dictionary)
   {
-    $dFile = $this->_appConfig->get('lang_path') . $dictionary . '.php';
-    $dictionaryData = array();
-
-    if(file_exists($dFile)){
-      $dictionaryData = include $dFile;
-      if(!is_array($dictionaryData))
-        $dictionaryData = array();
-    }
+    $dictionaryData = Lang::storage()->get($dictionary.'.php')->__toArray();
 
     if(strpos($dictionary , '/')!==false)
       $index = $this->getIndex($dictionary);

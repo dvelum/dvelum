@@ -192,11 +192,6 @@ class Application
          */
         Dictionary::setConfigPath($this->_config->get('dictionary'));
 
-        /*
-         * Prepare Controllers
-         */
-        Controller::setDefaultDb($this->_db);
-
         $this->_init = true;
     }
 
