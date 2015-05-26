@@ -4,8 +4,13 @@ class Ext_Events_Component extends Ext_Events
 	static protected $_componentOptions = array(
 		'cmp'=>'Ext.Component', 
 		'eOpts'=>'Object'
-	);	
-	static protected $_statefulStateOptions = array( 
+	);
+	static protected $_evOptions = array(
+		'cmp'=>'Ext.Component',
+		'e'=>'Object',
+		'eOpts'=>'Object'
+	);
+	static protected $_statefulStateOptions = array(
 		'stateful'=>'Ext.state.Stateful', 
 		'state'=>'Object', 
 		'eOpts'=>'Object'
@@ -27,10 +32,18 @@ class Ext_Events_Component extends Ext_Events
 	public $beforeshow;
 	public $beforestaterestore;
 	public $beforestatesave;
+	public $blur;
+	public $boxready = array(
+		'cmp'=>'Ext.Component',
+		'width'=>'Number',
+		'height'=>'Number',
+		'eOpts'=>'Object'
+	);
 	public $deactivate;
 	public $destroy;
 	public $disable;
 	public $enable;
+	public $focus;
 	public $hide;
 	public $move = array(
 		'cmp'=>'Ext.Component',
@@ -68,10 +81,12 @@ class Ext_Events_Component extends Ext_Events
 		$this->beforeshow = static::$_componentOptions;
 		$this->beforestaterestore = static::$_statefulStateOptions;
 		$this->beforestatesave = static::$_statefulStateOptions;
+		$this->blur = static::$_evOptions;
 		$this->deactivate = static::$_componentOptions;
 		$this->destroy = static::$_componentOptions;
 		$this->disable = static::$_componentOptions;
 		$this->enable = static::$_componentOptions;
+		$this->focus = static::$_evOptions;
 		$this->hide = static::$_componentOptions;
 		$this->render = static::$_componentOptions;
 		$this->show = static::$_componentOptions;

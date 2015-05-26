@@ -4,13 +4,11 @@ class Ext_Events_Panel extends Ext_Events_Component
 	static protected $_panelOptions = array(
 		'p'=>'Ext.panel.Panel',
 		'eOpts'=> 'Object'
-	);	
-	public $bodyresize = array( 
-		'p'=>'Ext.panel.Panel', 
-		'width'=>'Number',
-		'height'=>'Number',
-		'eOpts'=>'Object'  
 	);
+	static protected $_floatOptions = array(
+		'eOpts'=> 'Object'
+	);
+
 	public $beforeclose;
 	public $beforecollapse = array(
 		'p'=>'Ext.panel.Panel', 
@@ -23,19 +21,38 @@ class Ext_Events_Panel extends Ext_Events_Component
 		'animate'=>'Boolean',
 		'eOpts'=> 'Object'
 	);
+	public $close = array(
+		'panel'=>'Ext.panel.Panel',
+		'eOpts'=> 'Object'
+	);
 	public $collapse;
 	public $expand;
-	public $iconchange = array(
-		 'p' => 'Ext.panel.Panel',
-		 'newIconCls'=>'String',
-		 'eOpts'=>'Object'
+	public $float;
+	public $glyphchange = array(
+		'cmp'=>'Ext.panel.Panel',
+		'newGlyph'=>'String',
+		'oldGlyph'=>'String',
+		'eOpts'=>'Object'
 	);
-	public $titlechange = array( 
+	public $iconchange = array(
+		'p' => 'Ext.panel.Panel',
+		'newIcon'=>'String',
+		'oldIcon'=>'String',
+		'eOpts'=>'Object'
+	);
+	public $iconclschange = array(
+		'p' => 'Ext.panel.Panel',
+		'newIconCls'=>'String',
+		'oldIconCls'=>'String',
+		'eOpts'=>'Object'
+	);
+	public $titlechange = array(
 		'p' => 'Ext.panel.Panel',
 		'newTitle'=>'String',
 		'oldTitle'=>'String',
 		'eOpts'=>'Object'
 	);
+	public $unfloat;
 	
 	public function _initConfig()
 	{
@@ -43,5 +60,7 @@ class Ext_Events_Panel extends Ext_Events_Component
 		$this->beforeclose = static::$_panelOptions;
 		$this->collapse = static::$_panelOptions;
 		$this->expand = static::$_panelOptions;
+		$this->float = static::$_floatOptions;
+		$this->unfloat = static::$_floatOptions;
 	}
 }
