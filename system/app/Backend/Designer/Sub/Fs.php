@@ -68,11 +68,16 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 		
 		if(strlen($path)){
 			$savePath =  $writePath . $configsPath . $path . DIRECTORY_SEPARATOR . $name.'.designer.dat';
-			$actionFilePath = $actionsPath . str_replace($configsPath, '', $path) . DIRECTORY_SEPARATOR . $name.'.js';		
+			$relPath = $path . DIRECTORY_SEPARATOR . $name.'.designer.dat';
+			$actionFilePath = $actionsPath . str_replace($configsPath, '', $path) . DIRECTORY_SEPARATOR . $name.'.js';
 		}else {
 			$savePath = $writePath . $configsPath . $name . '.designer.dat';
+			$relPath = DIRECTORY_SEPARATOR . $name.'.designer.dat';
 			$actionFilePath = $actionsPath . $name . '.js';
 		}
+
+		$relPath = str_replace('//', '/', $relPath);
+		$savePath = str_replace('//', '/', $savePath);
 		
 		if(file_exists($savePath))
 			Response::jsonError($this->_lang->FILE_EXISTS);
@@ -81,7 +86,7 @@ class Backend_Designer_Sub_Fs extends Backend_Designer_Sub
 		$obj->actionjs = $actionFilePath;
 
 		if($this->_storage->save($savePath, $obj))
-			Response::jsonSuccess(array('file'=>$savePath));
+			Response::jsonSuccess(array('file'=>$relPath));
 		else
 			Response::jsonError($this->_lang->CANT_WRITE_FS.' '.$savePath);	
 	}
