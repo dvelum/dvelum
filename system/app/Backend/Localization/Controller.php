@@ -106,7 +106,7 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
 
   public function updaterecordsAction()
   {
-    $this->_checkCanDelete();
+    $this->_checkCanEdit();
     $dictionary = Request::post('dictionary', Filter::FILTER_CLEANED_STR, false);
     $data = Request::post('data', Filter::FILTER_RAW, false);
 

@@ -348,17 +348,15 @@ class Backend_Packages_Controller extends Backend_Controller
      */
 	public function langAction()
     {
-    	$langPath = $this->_configMain->get('lang_path');
     	$jsPath = $this->_configMain->get('js_lang_path');
     	
         $lManager = new Backend_Localization_Manager($this->_configMain);
         $langs = $lManager->getLangs(false);
  
     	foreach ($langs as $lang)
-    	{   	
-    	    $langFile =  $langPath .  $lang .'.php';
+    	{
     		$name = $lang;   		
-    		$dictionary = new Config_File_Array($langFile);
+    		$dictionary = Lang::storage()->get( $lang .'.php');
     		Lang::addDictionary($name, $dictionary);
     		
     		$filePath = $jsPath . $lang .'.js';	
@@ -376,7 +374,7 @@ class Backend_Packages_Controller extends Backend_Controller
     		}
     		
     		if(!@file_put_contents($filePath, 'var '.$varName.' = '.Lang::lang($name)->getJsObject().';'))
-    			Response::jsonError($this->_lang->CANT_WRITE_FS . ' '.$filePath);
+    			Response::jsonError($this->_lang->get('CANT_WRITE_FS') . ' ' . $filePath);
     		
     	}
     	Response::jsonSuccess();

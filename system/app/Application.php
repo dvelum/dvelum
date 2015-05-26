@@ -104,6 +104,9 @@ class Application
          */
         Filter::setDelimiter($this->_config->get('urlDelimiter'));
 
+        /*
+         * Set localization storage options
+         */
         Lang::setStorageOptions(
             Config::storage()->get('lang_storage.php')->__toArray()
         );

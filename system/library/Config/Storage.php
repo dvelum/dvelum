@@ -31,6 +31,10 @@ class Config_Storage
      */
     public function get($localPath , $useCache = true , $merge = true)
     {
+        // storage config prohibits merging
+        if($this->config['file_array']['apply_to'] === false)
+            $merge = false;
+
         $key = $localPath.intval($merge);
 
         if(isset(static::$runtimeCache[$key]) && $useCache)
@@ -71,7 +75,10 @@ class Config_Storage
             return false;
 
         $object = new Config_File_Array($this->config['file_array']['write'] . $localPath , false);
-        $object->setApplyTo($this->config['file_array']['apply_to'] . $localPath );
+
+        if($this->config['file_array']['apply_to']!==false)
+            $object->setApplyTo($this->config['file_array']['apply_to'] . $localPath );
+
         $object->setData($data);
 
         if($useCache)

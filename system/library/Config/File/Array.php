@@ -74,8 +74,7 @@ class Config_File_Array extends Config_File
     		{
     			return false;	
     		}
-    	} 
-            
+    	}
         if(Utils::exportArray($this->_name, $data)!==false){
            Config::cache();              
            return true;     

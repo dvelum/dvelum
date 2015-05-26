@@ -8,8 +8,8 @@ return array(
             './lang/dist/',
             './lang/local/',
         ),
-        'write' =>  './config/local/',
-        'apply_to' => './lang/dist/',
+        'write' =>  './lang/local/',
+        'apply_to' => false,
     ),
     'debug'=>false
 );
