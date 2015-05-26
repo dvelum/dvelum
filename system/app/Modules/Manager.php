@@ -23,7 +23,7 @@ class Modules_Manager
 		$configPath =  $this->_appConfig->get($this->_mainconfigKey);
 		$this->_config = Config::storage()->get($configPath , true , false);
 		$locale = Lang::lang()->getName();
-		$this->_modulesLocale = new Config_File_Array($this->_appConfig->get('lang_path').$locale.'/modules/'.basename($configPath));
+		$this->_modulesLocale = Lang::storage()->get($locale.'/modules/'.basename($configPath));
 	}
 
 	/**

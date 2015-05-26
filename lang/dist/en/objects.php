@@ -291,56 +291,6 @@
       'order_no' => 'Sorting Order',
     ),
   ),
-  'dvelum_vote' => 
-  array (
-    'title' => 'Votes',
-    'fields' => 
-    array (
-      'object_name' => 'Commented object name',
-      'object_id' => 'Commented object id',
-      'user_id' => 'Author',
-      'value' => 'Vote value',
-    ),
-  ),
-  'dvelum_news' => 
-  array (
-    'title' => 'DVelum News',
-    'fields' => 
-    array (
-      'title' => 'Title',
-      'text' => 'Text',
-      'news_date' => 'Date',
-    ),
-  ),
-  'dvelum_votes' => 
-  array (
-    'title' => 'Votes Data',
-    'fields' => 
-    array (
-      'object_name' => 'object_name',
-      'object_id' => 'object_id',
-      'user_id' => 'user_id',
-      'value' => 'value',
-    ),
-  ),
-  'testdate' => 
-  array (
-    'title' => 'testdate',
-    'fields' => 
-    array (
-      'title' => 'title',
-      'date' => 'date',
-    ),
-  ),
-  'testdatetwo' => 
-  array (
-    'title' => 'testdatetwo',
-    'fields' => 
-    array (
-      'title' => 'title',
-      'date' => 'date',
-    ),
-  ),
   'mediacategory' => 
   array (
     'title' => 'Medialibrary category',

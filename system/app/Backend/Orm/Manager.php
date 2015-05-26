@@ -59,6 +59,7 @@ class Backend_Orm_Manager
 	}
 	/**
 	 * Get list of localization files
+	 * @todo UPDATE with new Lang storage!!
 	 */
 	public function getLocalisations()
 	{

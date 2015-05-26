@@ -31,6 +31,10 @@ class Config_Storage
      */
     public function get($localPath , $useCache = true , $merge = true)
     {
+        // storage config prohibits merging
+        if($this->config['file_array']['apply_to'] === false)
+            $merge = false;
+
         $key = $localPath.intval($merge);
 
         if(isset(static::$runtimeCache[$key]) && $useCache)
@@ -71,7 +75,10 @@ class Config_Storage
             return false;
 
         $object = new Config_File_Array($this->config['file_array']['write'] . $localPath , false);
-        $object->setApplyTo($this->config['file_array']['apply_to'] . $localPath );
+
+        if($this->config['file_array']['apply_to']!==false)
+            $object->setApplyTo($this->config['file_array']['apply_to'] . $localPath );
+
         $object->setData($data);
 
         if($useCache)
@@ -96,6 +103,31 @@ class Config_Storage
 
             return $path . $localPath;
         }
+    }
+
+    /**
+     * Get list of available configs
+     * @param bool $path
+     * @param bool $recursive
+     * @throws Exception
+     */
+    public function getList($path = false, $recursive = false)
+    {
+        $files = array();
+        foreach($this->config['file_array']['paths'] as $item)
+        {
+            if($path)
+                $item.=$path;
+
+            if(!is_dir($item))
+                continue;
+
+            $list = File::scanFiles($item , array('.php'), $recursive , File::Files_Only);
+            if(!empty($list))
+                $files = array_merge($files , $list);
+
+        }
+        return $files;
     }
 
     /**

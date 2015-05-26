@@ -73,7 +73,6 @@ return array(
 		 */
 		'language' => $language ,
 		'system' => $docRoot . '/system/',
-		'lang_path' => $docRoot . '/system/lang/' ,
 		'js_lang_path' => $docRoot. '/js/lang/',
 		'salt' => 'ThSc-9086' ,
 		'timezone' => 'Europe/Moscow' ,
@@ -168,7 +167,6 @@ return array(
 		 */
 		'frontend_hardcache'=>60,
 		'themes' => $docRoot . '/templates/public/' ,
-		'usersOnline' => false, //Collect users online info,
 		// Autoloader config
 		'autoloader' => array(
 			 /*

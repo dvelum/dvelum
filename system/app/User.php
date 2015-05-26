@@ -3,7 +3,7 @@
  * The class is used to identify the current system User.
  * @author Kirill Egorov
  */
-class User implements User_Interface
+class User
 {
 	protected static $_instance;
 	

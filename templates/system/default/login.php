@@ -42,7 +42,7 @@ $wwwRoot = $this->get('wwwRoot');
 		</div>
 	</div>    
 	<div id="footer">
-		<div class="wrapper">Copyright &copy; 2011 - <?php echo date('Y');?>DVelum team</div>
+		<div class="wrapper">Copyright &copy; 2011 - <?php echo date('Y');?> DVelum team</div>
 	</div>
 </body>
 </html>

@@ -513,7 +513,6 @@ return array(
 		 */
 		\'language\' => $language ,
 		\'system\' => $docRoot . \'/system/\',
-		\'lang_path\' => $docRoot . \'/system/lang/\' ,
 		\'js_lang_path\' => $docRoot. \'/js/lang/\',
 		\'salt\' => \'#salt#\' ,
 		\'timezone\' => \'#timezone#\' ,
@@ -600,7 +599,6 @@ return array(
 		 */
 		\'frontend_hardcache\'=>30,
 		\'themes\' => $docRoot . \'/templates/public/\' ,
-		\'usersOnline\' => false, //Collect users online info,
 		// Autoloader config
 		\'autoloader\' => array(
 			 // Paths for autoloading

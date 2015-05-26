@@ -104,6 +104,13 @@ class Application
          */
         Filter::setDelimiter($this->_config->get('urlDelimiter'));
 
+        /*
+         * Set localization storage options
+         */
+        Lang::setStorageOptions(
+            Config::storage()->get('lang_storage.php')->__toArray()
+        );
+
         Request::setConfig(array(
             'delimiter' => $this->_config->get('urlDelimiter'),
             'extension' => $this->_config->get('urlExtension'),
@@ -119,7 +126,7 @@ class Application
         * Init lang dictionary (Lazy Load)
         */
         $lang = $this->_config->get('language');
-        Lang::addDictionaryLoader($lang ,  $this->_config->get('lang_path') . $lang . '.php' , Config::File_Array);
+        Lang::addDictionaryLoader($lang ,  $lang . '.php' , Config::File_Array);
         Lang::setDefaultDictionary($this->_config->get('language'));
 
         $eventManager = new Eventmanager();
@@ -142,7 +149,6 @@ class Application
         ));
         $objectStore->setEventManager($eventManager);
 
-
         /*
          * Prepare models
          */
@@ -153,12 +159,10 @@ class Application
             'defaultDbManager' => $conManager,
             'errorLog' => false
         ));
-
         /*
          * Prepare Db_Object
          */
-        $translator = new Db_Object_Config_Translator( $this->_config->get('lang_path') . $this->_config->get('language') . '/objects.php');
-        $translator->addTranslations(array($this->_config->get('lang_path') . $this->_config->get('language') . '/system_objects.php'));
+        $translator = new Db_Object_Config_Translator(Lang::storage()->getPath($this->_config->get('language') . '/objects.php'));
         Db_Object_Config::setConfigPath($this->_config->get('object_configs'));
         Db_Object_Config::setTranslator($translator);
 
@@ -190,11 +194,6 @@ class Application
          * Prepare dictionaries
          */
         Dictionary::setConfigPath($this->_config->get('dictionary'));
-
-        /*
-         * Prepare Controllers
-         */
-        Controller::setDefaultDb($this->_db);
 
         $this->_init = true;
     }
@@ -297,11 +296,6 @@ class Application
         $page->setTemplatesPath(self::$_templates);
 
         $user = User::getInstance();
-        /*
-         * Update "Users Online" statistics
-         */
-        if($this->_config->get('usersOnline') && $user->isAuthorized())
-            Model::factory('Online')->addOnline(session_id() , $user->id);
 
         /*
          * Start routing
@@ -330,18 +324,18 @@ class Application
         $template = new Template();
         $template->disableCache();
         $template->setProperties(array(
-                        'wwwRoot'=>$this->_config->get('wwwroot'),
-                        'page' => $page,
-                        'urlPath' => $controller,
-                        'resource' => $res,
-                        'path' => self::$_templates,
-                        'adminPath' => $this->_config->get('adminPath'),
-                        'development' => $this->_config->get('development'),
-                        'version' => Config::factory(Config::File_Array , $this->_config->get('configs') . 'versions.php')->get('core'),
-                        'lang' => $this->_config->get('language'),
-                        'modules' => $modulesManager->getList(),
-                        'userModules' => $user->getAvailableModules(),
-                        'useCSRFToken' => $cfgBackend->get('use_csrf_token')
+            'wwwRoot'=>$this->_config->get('wwwroot'),
+            'page' => $page,
+            'urlPath' => $controller,
+            'resource' => $res,
+            'path' => self::$_templates,
+            'adminPath' => $this->_config->get('adminPath'),
+            'development' => $this->_config->get('development'),
+            'version' => Config::factory(Config::File_Array , $this->_config->get('configs') . 'versions.php')->get('core'),
+            'lang' => $this->_config->get('language'),
+            'modules' => $modulesManager->getList(),
+            'userModules' => $user->getAvailableModules(),
+            'useCSRFToken' => $cfgBackend->get('use_csrf_token')
         ));
         Response::put($template->render(self::$_templates . 'layout.php'));
     }
@@ -357,15 +351,6 @@ class Application
             $tpl->set('msg' , Lang::lang()->get('MAINTENANCE'));
             echo $tpl->render( $this->_config->get('templates') . 'public/error.php');
             self::close();
-        }
-
-        /*
-         * Update "Users Online" statistics
-         */
-        if($this->_config->get('usersOnline')){
-            $user = User::getInstance();
-            if($user->isAuthorized())
-                Model::factory('Online')->addOnline(session_id() , $user->id);
         }
 
         self::$_templates = $this->_config->get('templates') . 'public/';

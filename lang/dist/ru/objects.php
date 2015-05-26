@@ -130,16 +130,6 @@
       'title' => 'Заголовок',
     ),
   ),
-  'online' => 
-  array (
-    'title' => 'Пользователи онлайн',
-    'fields' => 
-    array (
-      'ssid' => 'SSID',
-      'update_time' => 'Время обновления',
-      'user_id' => 'ID пользователя',
-    ),
-  ),
   'page' => 
   array (
     'title' => 'Страницы',
@@ -209,17 +199,6 @@
       'data' => 'Дата',
       'user_id' => 'Автор',
       'version' => 'Версия',
-    ),
-  ),
-  'vote' => 
-  array (
-    'title' => 'Голосование',
-    'fields' => 
-    array (
-      'object_name' => 'Имя объекта',
-      'object_id' => 'ID объекта',
-      'user_id' => 'Автор',
-      'value' => 'Значение',
     ),
   ),
   'apikeys' => 
