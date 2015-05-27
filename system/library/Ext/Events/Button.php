@@ -18,6 +18,12 @@ class Ext_Events_Button extends Ext_Events_Component
 		'eOpts'=>'Object'
 	);
 
+	// Dvelum hack
+	public $handler = array(
+		'button' => 'Ext.button.Button',
+		'e' => 'Ext.EventObject'
+	);
+
 	public $click;
 	public $glyphchange = array(
 		'cmp'=>'Ext.button.Button',
