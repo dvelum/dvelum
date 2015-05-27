@@ -2,13 +2,13 @@
 class Ext_Events_Form_Field_Text extends Ext_Events_Form_Field_Base
 {
 	static protected $_fieldEventOptions = array(
-	 	 'field'=>'Ext.form.field.Text', 
+	 	 'cmp'=>'Ext.form.field.Text',
 	 	 'e'=>'Ext.EventObject', 
 	 	 'eOpts'=>'Object' 
 	);
 	
 	public $autosize = array( 
-		'field'=>'Ext.form.field.Text',  
+		'cmp'=>'Ext.form.field.Text',
 		'width'=>'Number', 
 		'eOpts'=>'Object' 
 	);

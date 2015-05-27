@@ -2,14 +2,14 @@
 abstract class Ext_Events_Form_Field_Picker extends Ext_Events_Form_Field_Text
 {
 	static protected  $_fieldOptions = array(
-		 'field'=>'Ext.form.field.Picker',  
+		 'cmp'=>'Ext.form.field.Picker',
 		 'eOpts'=>'Object'
 	);
 		
 	public $collapse;
 	public $expand;
 	public $select = array( 
-		'field'=>'Ext.form.field.Picker', 
+		'cmp'=>'Ext.form.field.Picker',
 		'value'=>'Object', 
 		'eOpts'=>'Object'
 	);

@@ -2,11 +2,12 @@
 abstract class Ext_Events_Form_Field_Spinner extends Ext_Events_Form_Field_Text
 {
 	static protected $_spinnerDirectionOptions = array(
-		'field'=>'Ext.form.field.Spinner',
+		'cmp'=>'Ext.form.field.Spinner',
 		'eOpts'=>'Object'
-	); 	
+	);
+
 	public $spin = array( 
-		'field'=>'Ext.form.field.Spinner',
+		'cmp'=>'Ext.form.field.Spinner',
 		'direction'=>'String', 
 		'eOpts'=>'Object'
 	);
