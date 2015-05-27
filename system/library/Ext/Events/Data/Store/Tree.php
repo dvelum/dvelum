@@ -1,98 +1,101 @@
 <?php
-class Ext_Events_Data_Store_Tree extends Ext_Events_Data_Abstractstore
+class Ext_Events_Data_Store_Tree extends Ext_Events_Data_Store
 {
-	public $append = array(
-		'store' =>'Ext.data.NodeInterface',
-		'node'=>'Ext.data.NodeInterface',
-		'index'=>'Number',
+    public $load = array(
+        'cmp'=>'Ext.data.TreeStore',
+        'records'=>'Ext.data.TreeModel[]',
+        'successful'=>'Boolean',
+        'operation'=>'Ext.data.Operation',
+        'node'=>'Ext.data.NodeInterface',
+        'eOpts'=>'Object'
+    );
+
+    public $nodeappend = array(
+        'cmp'=>'Ext.data.NodeInterface',
+        'node'=>'Ext.data.NodeInterface',
+        'index'=>'Number',
+        'eOpts'=>'Object'
+    );
+
+    public $nodebeforeappend = array(
+        'cmp'=>'Ext.data.NodeInterface',
+        'node'=>'Ext.data.NodeInterface',
+        'eOpts'=>'Object'
+    );
+
+    public $nodebeforecollapse = array(
+        'cmp'=>'Ext.data.NodeInterface',
+        'eOpts'=>'Object'
+    );
+	
+	public $nodebeforeexpand = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'eOpts'=>'Object'
 	);
 	
-	public $beforeappend = array(
-		'store' =>'Ext.data.NodeInterface',
-		'node'=>'Ext.data.NodeInterface',
-		'eOpts'=>'Object'
-	);
-	
-	public $beforecollapse = array(
-		'store' =>'Ext.data.NodeInterface',
-		'eOpts'=>'Object'
-	);
-	
-	public $beforeexpand = array(
-		'store' =>'Ext.data.NodeInterface',
-		'eOpts'=>'Object'
-	);
-	
-	public $beforeinsert = array(
-		'store' =>'Ext.data.NodeInterface',
+	public $nodebeforeinsert = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'node'=>'Ext.data.NodeInterface',
 		'refNode'=>'Ext.data.NodeInterface',
 		'eOpts'=>'Object'
 	);
 	
-	public $beforemove = array(
-		'store' =>'Ext.data.NodeInterface',
+	public $nodebeforemove = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'oldParent'=>'Ext.data.NodeInterface',
 		'newParent'=>'Ext.data.NodeInterface',
 		'index'=>'Number',
 		'eOpts'=>'Object'
 	);
 	
-	public $beforeremove = array(
-		'store' =>'Ext.data.NodeInterface',
+	public $nodebeforeremove = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'node'=>'Ext.data.NodeInterface',
 		'isMove'=>'Boolean',
 		'eOpts'=>'Object'
 	);
 	
-	public $collapse = array(
-		'store' =>'Ext.data.NodeInterface',
+	public $nodecollapse = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'eOpts'=>'Object'
 	);
 	
-	public $expand = array(
-		'store' =>'Ext.data.NodeInterface',
+	public $nodeexpand = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'eOpts'=>'Object'
 	);
 	
-	public $insert = array(
-		'store' =>'Ext.data.NodeInterface',
+	public $nodeinsert = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'node'=>'Ext.data.NodeInterface',
 		'refNode'=>'Ext.data.NodeInterface',
 		'eOpts'=>'Object'
 	);
 	
-	public $load = array(
-		'store' =>'Ext.data.NodeInterface',
-		'node'=>'Ext.data.NodeInterface',
-		'records'=>'Ext.data.Model[]',
-		'successful'=>'Boolean',
-		'eOpts'=>'Object'
-	);
-	
-	public $move = array(
-		'store' =>'Ext.data.NodeInterface',
+	public $nodemove = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'oldParent'=>'Ext.data.NodeInterface',
 		'newParent'=>'Ext.data.NodeInterface',
 		'index'=>'Number',
 		'eOpts'=>'Object'
 	);
 	
-	public $remove = array(
-		'store' =>'Ext.data.NodeInterface',
+	public $noderemove = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'node'=>'Ext.data.NodeInterface',
 		'isMove'=>'Boolean',
+        'context'=>'Object',
 		'eOpts'=>'Object'
 	);
 	
 	public $rootchange = array(
-		'root'=>'Ext.data.Model',	
+		'newRoot'=>'Ext.data.NodeInterface',
+        'oldRoot'=>'Ext.data.NodeInterface',
 		'eOpts'=>'Object'
 	);
 	
-	public $sort = array(
-		'store' =>'Ext.data.NodeInterface',
+	public $nodesort = array(
+		'cmp' =>'Ext.data.NodeInterface',
 		'childNodes' =>'Ext.data.NodeInterface[]',
 		'eOpts'=>'Object'
 	);

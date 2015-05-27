@@ -16,7 +16,7 @@ class Ext_Events_Menu_Item extends Ext_Events_Component
      */
     public $click = array(
         'item' => 'Ext.menu.Item',
-        'e' => 'Ext.EventObject',
+        'e' => 'Ext.event.Event',
         'eOpts' => 'Object'
     );
 
@@ -41,7 +41,7 @@ class Ext_Events_Menu_Item extends Ext_Events_Component
     /**
      * Fired when the item's text is changed by the setText method.
      */
-    public $extchange = array(
+    public $textchange = array(
         'cmp' => 'Ext.menu.Item',
         'oldText' => 'String',
         'newText' => 'String',
