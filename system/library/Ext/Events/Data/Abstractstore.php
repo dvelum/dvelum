@@ -7,53 +7,55 @@ abstract class Ext_Events_Data_Abstractstore extends Ext_Events
 			'index'=>'Number',
 			'eOpts'=>'Object'
 	);
-	
-	public $beforeload = array(
-			'store'=>'Ext.data.Store',
-			'operation'=>'Ext.data.Operation',
-			'eOpts '=>'Object'
-	);
-	
-	public $beforesync = array(
-			'options'=>'Object',
-			'eOpts'=>'Object'
-	);
+
+    public $beforesort = array(
+            'store'=>'Ext.data.Store',
+            'sorters'=>'Ext.util.Sorter[]',
+            'eOpts'=>'Object'
+    );
+
+    public $beginupdate = array(
+            'eOpts'=>'Object'
+    );
 	
 	public $clear = array(
-			'store'=>'Ext.data.Store',
+			'cmp'=>'Ext.data.Store',
 			'eOpts '=>'Object'
 	);
 	
 	public $datachanged = array(
-			'this'=>'Ext.data.Store',
+			'cmp'=>'Ext.data.Store',
 			'eOpts'=>'Object'
 	);
+
+    public $endupdate = array(
+            'eOpts'=>'Object'
+    );
+
+    public $refresh = array(
+            'cmp'=>'Ext.data.Store',
+            'eOpts'=>'Object'
+    );
 	
 	public $remove = array(
 			'store'=>'Ext.data.Store',
-			'record'=>'Ext.data.Model',
+			'records'=>'Ext.data.Model[]',
 			'index'=>'Number',
+            'isMove'=>'Boolean',
 			'eOpts'=>'Object'
 	);
-	
+
+    public $sort = array(
+            'store'=>'Ext.Data.Store',
+            'eOpts'=>'Object'
+    );
+
 	public $update = array(
-			'store'=>'Ext.data.Store',
+			'cmp'=>'Ext.data.Store',
 			'record'=>'Ext.data.Model',
 			'operation'=>'String',
-			'eOpts'=>'Object'
-	);
-	
-	public $write = array(
-			'store'=>'Ext.data.Store',
-			'operation'=>'Ext.data.Operation',
-			'eOpts'=>'Object'
-	);
-	
-	public $load = array(
-			'store'=>'Ext.data.Store',
-			'records'=>'Ext.util.Grouper[]',
-			'successful'=>'Boolean',
-			'operation'=>'Ext.data.Operation',
+            'modifiedFieldNames'=>'String[]',
+            'details'=>'Object',
 			'eOpts'=>'Object'
 	);
 }

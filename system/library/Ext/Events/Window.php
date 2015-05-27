@@ -3,7 +3,7 @@ class Ext_Events_Window extends Ext_Events_Panel
 {
 	
 	static protected $_windowOptions = array(
-		'w'=>'Ext.window.Window',
+		'cmp'=>'Ext.window.Window',
 		'eOpts'=>'Object'
 	);
 	
@@ -12,7 +12,7 @@ class Ext_Events_Window extends Ext_Events_Panel
 	public $maximize;
 	public $minimize;
 	public $resize = array( 
-		'w'=>'Ext.window.Window', 
+		'cmp'=>'Ext.window.Window',
 		'width'=>'Number', 
 		'height'=>'Number', 
 		'eOpts'=>'Object'

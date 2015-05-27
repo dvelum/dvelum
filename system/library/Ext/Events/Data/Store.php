@@ -1,23 +1,29 @@
 <?php
-class Ext_Events_Data_Store extends Ext_Events_Data_Abstractstore
+class Ext_Events_Data_Store extends Ext_Events_Data_Proxystore
 {
 	public $beforeprefetch = array(
-			'store'=>'Ext.data.Store',
-			'operation'=>'Ext.data.Operation',
+			'cmp'=>'Ext.data.Store',
+			'operation'=>'Ext.data.operation.Operation',
 			'eOpts'=>'Object'
 	);
 	
 	public $groupchange = array(
 			'store'=>'Ext.data.Store',
-			'groupers'=>'Ext.util.Grouper[]',
+			'grouper'=>'Ext.util.Grouper',
 			'eOpts '=>'Object'
 	);
+
+    public $filterchange = array(
+            'store'=>'Ext.data.Store',
+            'filters'=>'Ext.Util.Filter[]',
+            'eOpts'=>'Object'
+    );
 	
 	public $prefetch = array(
-			'store'=>'Ext.data.Store',
+			'cmp'=>'Ext.data.Store',
 			'records'=>'Ext.data.Model[]',
 			'successful' => 'Boolean',
-			'operation'=>'Ext.data.Operation',
+			'operation'=>'Ext.data.operation.Operation',
 			'eOpts'=>'Object'
 	);
 }
