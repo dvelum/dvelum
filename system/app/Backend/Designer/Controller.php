@@ -174,20 +174,19 @@ class Backend_Designer_Controller extends Backend_Controller
 		
 		$s = '';
 		$totalSize = 0;
-		
 		foreach (self::$_scripts as $filePath){
-			$s.=file_get_contents('.'.$filePath)."\n";
-			$totalSize+=filesize('.'.$filePath);
+			$s.=file_get_contents($this->_configMain['wwwpath'].$filePath)."\n";
+			$totalSize+=filesize($this->_configMain['wwwpath'].$filePath);
 		}
 		
 		$time = microtime(true);	
-		file_put_contents('.'.$this->_config->get('compiled_js'), Code_Js_Minify::minify($s));	
+		file_put_contents($this->_configMain['wwwpath'].$this->_config->get('compiled_js'), Code_Js_Minify::minify($s));
 		
 		echo '
 			Compilation time: '.number_format(microtime(true)-$time,5).' sec<br>
 			Files compiled: '.sizeof(self::$_scripts).' <br>
 			Total size: '.Utils::formatFileSize($totalSize).'<br>
-			Compiled File size: '.Utils::formatFileSize(filesize('.'.$this->_config->get('compiled_js'))).' <br>
+			Compiled File size: '.Utils::formatFileSize(filesize($this->_configMain['wwwpath'].$this->_config->get('compiled_js'))).' <br>
 		';
 		
 		exit;

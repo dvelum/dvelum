@@ -10,7 +10,7 @@ return array(
 	'filter_conponents'=>'./system/library/Ext/Component/Filter',
 	'controllers'=>'./system/app/',
 	'actionjs_path'=>'www/js/app/actions/',
-	'compiled_js'=>'/js/app/system/Designer.js',
+	'compiled_js'=>'js/app/system/Designer.js',
     'langs_path'=>'www/js/lang/',
     'langs_url'=>'/js/lang/',
 	'js_path'=>'www/js/',
