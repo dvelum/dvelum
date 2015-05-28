@@ -73,24 +73,6 @@ abstract class Controller
   }
 
   /**
-   * Set adapter connecting to the default database
-   * @param Zend_Db_Adapter_Abstract $db          
-   */
-  static public function setDefaultDb(Zend_Db_Adapter_Abstract $db)
-  {
-    self::$_defaultDb = $db;
-  }
-
-  /**
-   * Set adapter connecting to the current object database
-   * @param Zend_Db_Adapter_Abstract $db          
-   */
-  public function setDb(Zend_Db_Adapter_Abstract $db)
-  {
-    $this->_db = $db;
-  }
-
-  /**
    * Set link to router
    * @param Router $router          
    */

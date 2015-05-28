@@ -47,9 +47,9 @@ abstract class Db_Object_Acl
   abstract public function canRead(Db_Object $object);  
   /**
    * Set current User
-   * @param User_Interface $user
+   * @param mixed $user
    */
-  public function setUser(User_Interface $user)
+  public function setUser($user)
   {
     $this->_user = $user;
   }

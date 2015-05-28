@@ -1,65 +1,77 @@
 <?php
 $docRoot = dirname(dirname(dirname(__FILE__))) . '/www';
-$_SERVER['DOCUMENT_ROOT'] = $docRoot;
+$_SERVER['DOCUMENT_ROOT'] = str_replace('\\', '/' ,$docRoot);
 
+define('DVELUM', true);
+define('DVELUM_ROOT' , dirname($docRoot));
+
+chdir(DVELUM_ROOT);
+
+//===== loading kernel =========
 /*
- * Connecting main configuration file
+ * Including initial config
  */
-$config = include_once __DIR__ . '/config.php';
-$devObjectsPath = $config['object_configs'];
-$config['object_configs'] = __DIR__ . '/../objects/';
-
-// Copy objects
-$d = opendir($devObjectsPath);
-while($file = readdir($d)){
-        if(is_file($devObjectsPath.$file))
-                copy($devObjectsPath.$file, $config['object_configs'].$file);
-}
-closedir($d);
-
+$bootCfg = include DVELUM_ROOT . '/config/dist/init.php';
 /*
  * Including Autoloader class
  */
-require $config['docroot'].'/system/library/Autoloader.php';
+require DVELUM_ROOT . '/system/library/Autoloader.php';
+$autoloader = new Autoloader($bootCfg['autoloader']);
+Config::setStorageOptions($bootCfg['config_storage']);
+
+//==== Loading system ===========
+/*
+ * Reload storage options from local system
+ */
+$storageConfig = Config::storage()->get('config_storage.php')->__toArray();
+$storageConfig['file_array'] = array(
+    'paths' => array(
+        './config/dist/',
+        './config/local/',
+        './test/config/',
+    ),
+    'write' =>  './test/config/',
+    'apply_to' => false,
+);
+
+Config::setStorageOptions(
+    $storageConfig
+);
+/*
+ * Connecting main configuration file
+ */
+$config = Config::storage()->get('main.php');
+$config->set('development' ,2);
+
+/*
+ * Disable op caching for test mode
+ */
+ini_set('opcache.enable', 0);
+
 /*
  * Setting autoloader config
  */
-$autoloaderCfg = $config['autoloader'];
-$autoloaderCfg['debug'] = $config['development'];
+$autoloaderCfg = $config->get('autoloader');
+$autoloaderCfg['debug'] = true;
 $autoloaderCfg['map'] = false;
 
-$autoloaderCfg['paths'] =array(
-        $docRoot . '/system/app',
-        $docRoot . '/system/library',
-);
+$autoloader->setConfig($autoloaderCfg);
 
-$autoloader = new Autoloader($autoloaderCfg);
-/**
- * Convert the data of main_config file
- * in to the general form of configuration
- * and save a reference for it (for convenience)
- * @var Config_Simple $appConfig
- */
-$appConfig = Config::factory(Config::Simple, 'main');
-$appConfig->setData($config);
-Registry::set('main', $appConfig , 'config');
-/**
- * Convert the data of main_config file
- * in to the general form of configuration
- * and save a reference for it (for convenience)
- * @var Config_Simple $appConfig
- */
+Registry::set('main', $config , 'config');
+
+// clear test configs
+File::rmdirRecursive('./test/config/' , false);
+
 /*
  * Starting the application
  */
-$app = new Application($appConfig);
+$app = new Application($config);
 $app->setAutoloader($autoloader);
 $app->init();
 
-//  build objects
-$objectFiles = File::scanFiles($config['object_configs'] , array('.php') , false , File::Files_Only);
-foreach ($objectFiles as $file){
-        $object = substr( basename($file),0,-4);
+$dbObjectManager = new Db_Object_Manager();
+foreach($dbObjectManager->getRegisteredObjects() as $object)
+{
         echo 'build ' . $object . ' : ';
         $builder = new Db_Object_Builder($object);
         if($builder->build()){
@@ -69,4 +81,3 @@ foreach ($objectFiles as $file){
         }
         echo "\n";
 }
-

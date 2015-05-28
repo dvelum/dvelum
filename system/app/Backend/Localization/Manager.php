@@ -15,9 +15,9 @@ class Backend_Localization_Manager
 
   /**
    * Localizations file path
-   * @var string
+   * @var array
    */
-  protected $_langsPath;
+  protected $_langsPaths;
 
   /**
    * @param Config_Abstract $appConfig
@@ -25,7 +25,7 @@ class Backend_Localization_Manager
   public function __construct(Config_Abstract $appConfig)
   {
     $this->_appConfig =  $appConfig;
-    $this->_langsPath =  $this->_appConfig->get('lang_path');
+    $this->_langsPaths = Lang::storage()->getPaths();
     $this->_lang = Lang::lang();
   }
   /**
@@ -35,27 +35,19 @@ class Backend_Localization_Manager
    */
   public function getLangs($onlyMain = true)
   {
-    $langDir = $this->_appConfig->get('lang_path');
-    if(!is_dir($langDir))
-      return array();
+    $langStorage = Lang::storage();
+    $langs = $langStorage->getList(false , !$onlyMain);
+    $paths = $langStorage->getPaths();
 
-    $files = File::scanFiles($langDir , array('.php'), !$onlyMain , File::Files_Only);
     $data = array();
-
-    foreach ($files as $file)
+    foreach ($langs as $file)
     {
-      // Windows fix
-      if(DIRECTORY_SEPARATOR !=='/')
-          $file = str_replace(DIRECTORY_SEPARATOR, '/', $file);
-
-      $file = str_replace('//','/' , $file);
-
-      $lang = str_replace($langDir, '', substr($file,0,-4));
+      $file = str_replace($paths,'' , $file);
+      //$lang = str_replace($langDir, '', substr($file,0,-4));
       if(strpos($file , 'index')===false && basename($file)!=='objects.php')
-        $data[] = $lang;
+        $data[] = substr($file,0,-4);
     }
-
-    return $data;
+    return array_unique($data);
   }
 
   /**
@@ -63,11 +55,10 @@ class Backend_Localization_Manager
    */
   public function rebuildAllIndexes()
   {
-    $this->rebuildIndex();
+    $this->rebuildIndex(false);
     $sub = $this->getSubPackages();
-
     foreach ($sub as $pack)
-     $this->rebuildIndex($pack);
+        $this->rebuildIndex($pack);
   }
 
   /**
@@ -77,29 +68,23 @@ class Backend_Localization_Manager
    */
   public function getSubPackages($lang = false)
   {
-    if(!$lang)
-      $lang = $this->_indexLanguage;
+      if(!$lang)
+        $lang = $this->_indexLanguage;
 
-    $langDir = $this->_appConfig->get('lang_path') . $lang;
-    if(!is_dir($langDir))
-      return array();
+      if($lang)
+          $lang = $lang.'/';
+      else
+          $lang = false;
 
-    $files = File::scanFiles($langDir , array('.php'), false , File::Files_Only);
-    $data = array();
+      $langs = Lang::storage()->getList($lang , false);
 
-    foreach ($files as $file)
-    {
-      // IIS fix
-      if(DIRECTORY_SEPARATOR !=='/')
-        $file = str_replace(DIRECTORY_SEPARATOR,'/' , $file);
-
-      $file = str_replace('//','/' , $file);
-
-      $lang = str_replace($langDir, '', substr($file,0,-4));
-      if(basename($file)!=='objects.php')
-          $data[] = $lang;
-    }
-    return $data;
+      foreach ($langs as $file)
+      {
+        //  $lang = str_replace($langDir, '', substr($file,0,-4));
+          if(basename($file)!=='objects.php')
+              $data[] = $lang;
+      }
+      return $data;
   }
   /**
    * Get list of sub dictionaries (names only)
@@ -132,29 +117,34 @@ class Backend_Localization_Manager
     if(!$subPackage)
     {
       $indexName = $this->getIndexName();
-      $indexBase = $this->_appConfig->get('lang_path') . $this->_indexLanguage.'.php';
+      $indexBaseName =   $this->_indexLanguage.'.php';
     }else
     {
       $indexName = $this->getIndexName($subPackage);
-      $indexBase = $this->_appConfig->get('lang_path') . $this->_indexLanguage.'/'.$subPackage.'.php';
+      $indexBaseName = $this->_indexLanguage.'/'.$subPackage.'.php';
     }
-    $indexFile = $this->_appConfig->get('lang_path').$indexName;
 
-    if(file_exists($indexFile) && !is_writable($indexFile))
-      throw new Exception($this->_lang->get('CANT_WRITE_FS') . ' ' . $indexFile);
+    $indexBase = Lang::storage()->get($indexBaseName);
+    if($indexBase  === false)
+        throw new Exception($this->_lang->get('CANT_LOAD') . ' ' . $indexBaseName);
 
-    if(!file_exists($indexBase))
-      throw new Exception($this->_lang->get('CANT_LOAD') . ' ' . $indexBase);
+    $baseKeys = array_keys($indexBase->__toArray());
 
-    $data = include $indexBase;
-
-    if(!is_array($data))
-      throw new Exception($this->_lang->get('CANT_LOAD') . ' ' . $indexBase);
-
-    $index = array_keys($data);
-
-    if(!Utils::exportArray($indexFile , $index)){
-      throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $indexFile);
+    $indexPath =  Lang::storage()->getPath($indexName);
+    $writePath =  Lang::storage()->getWrite();
+    if(!file_exists($indexPath) && !file_exists($writePath . $indexName)) {
+        if(!Utils::exportArray($writePath . $indexFile , array())){
+            throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath . $indexName);
+        }
+    }
+    $indexConfig = Lang::storage()->get($indexName);
+    if($indexConfig === false){
+        throw new Exception($this->_lang->get('CANT_LOAD') . ' ' . $indexName);
+    }
+    $indexConfig->removeAll();
+    $indexConfig->setData($baseKeys);
+    if(!$indexConfig->save()){
+        throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $indexConfig->getName());
     }
   }
   /**
@@ -164,7 +154,7 @@ class Backend_Localization_Manager
    */
   public function getIndexName($dictionary='')
   {
-  	return $dictionary.'_index.php';
+  	return str_replace('/','_',$dictionary).'_index.php';
   }
   /**
    * Get dictionary_index
@@ -175,7 +165,8 @@ class Backend_Localization_Manager
   {
     $subPackage = basename($dictionary);
     $indexName = $this->getIndexName($subPackage);
-    $indexFile = $this->_appConfig->get('lang_path') . $indexName;
+
+    $indexFile = Lang::storage()->getPath($indexName);
 
     if(!file_exists($indexFile))
       return false;
@@ -198,10 +189,19 @@ class Backend_Localization_Manager
   {
     $subPackage = basename($dictionary);
     $indexName = $this->getIndexName($subPackage);
-    $indexFile = $this->_appConfig->get('lang_path') . $indexName;
 
-    if(!Utils::exportArray($indexFile , $data)){
-        throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $indexFile);
+    $writePath =  Lang::storage()->getWrite();
+
+    if(!file_exists($writePath . $indexName)){
+        if(!Utils::exportArray($writePath . $indexName , array())){
+            throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath . $indexName);
+        }
+    }
+    $indexConfig = Lang::storage()->get($indexName);
+    $indexConfig->removeAll();
+    $indexConfig->setData($data);
+    if(!$indexConfig->save()){
+        throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath . $indexName);
     }
   }
 
@@ -212,14 +212,7 @@ class Backend_Localization_Manager
    */
   public function getLocalization($dictionary)
   {
-    $dFile = $this->_appConfig->get('lang_path') . $dictionary . '.php';
-    $dictionaryData = array();
-
-    if(file_exists($dFile)){
-      $dictionaryData = include $dFile;
-      if(!is_array($dictionaryData))
-        $dictionaryData = array();
-    }
+    $dictionaryData = Lang::storage()->get($dictionary.'.php')->__toArray();
 
     if(strpos($dictionary , '/')!==false)
       $index = $this->getIndex($dictionary);
@@ -275,9 +268,10 @@ class Backend_Localization_Manager
    */
   public function removeFromIndex($key , $dictionary = '')
   {
-    $index = $this->getIndex($dictionary);
-    if(!in_array($key, $index , true))
-       return ;
+      $index = $this->getIndex($dictionary);
+      if (!in_array($key, $index, true)) {
+             return;
+      }
 
     foreach ($index as $k=>$v)
       if($v===$key)
@@ -320,24 +314,29 @@ class Backend_Localization_Manager
 
      $mainLangs = $this->getLangs(true);
 
+     $writePath = Lang::storage()->getWrite();
+
      if(!$isSub)
      {
+/*
        // check write permissions
        foreach ($langs as $langName => $value)
        {
-         $langFile = $this->_langsPath . $langName .'.php';
+         $langFile = $writePath . $langName .'.php';
          if(!$this->checkCanEdit($langFile)){
-            throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
+            throw new Exception($this->_lang->get('CANT_WRITE_FS') . ' ' . $langFile);
          }
        }
-
-
+*/
        foreach ($langs as $langName => $value)
        {
-         $langFile = $this->_langsPath . $langName .'.php';
-         $langData = include $langFile;
-         $langData[$key] = $value;
-         if(!Utils::exportArray($langFile, $langData)){
+         $langFile = $writePath . $langName .'.php';
+         $langConfig = Lang::storage()->get($langName .'.php');
+         if($langConfig === false){
+             throw new Exception($this->_lang->get('CANT_LOAD').' '.$langName);
+         }
+         $langConfig->set($key , $value);
+         if(!$langConfig->save()){
            throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
          }
        }
@@ -346,20 +345,24 @@ class Backend_Localization_Manager
      else
      {
        // check write permissions
+       /*
        foreach ($langs as $langName => $value)
        {
-           $langFile = $this->_langsPath . $langName .'/'.$dictionaryName.'.php';
+           $langFile = $writePath .  $langName .'/'.$dictionaryName.'.php';
            if(!$this->checkCanEdit($langFile)){
                throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
            }
        }
-
+        */
        foreach ($langs as $langName => $value)
        {
-           $langFile = $this->_langsPath . $langName .'/'.$dictionaryName.'.php';
-           $langData = include $langFile;
-           $langData[$key] = $value;
-           if(!Utils::exportArray($langFile, $langData)){
+           $langFile = $writePath .  $langName .'/'.$dictionaryName.'.php';
+           $langConfig = Lang::storage()->get( $langName .'/'.$dictionaryName.'.php');
+           if($langConfig === false){
+               throw new Exception($this->_lang->get('CANT_LOAD').' '.$langName .'/'.$dictionaryName);
+           }
+           $langConfig->set($key , $value);
+           if(!$langConfig->save()){
                throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
            }
        }
@@ -397,13 +400,15 @@ class Backend_Localization_Manager
     if($isSub)
         $this->removeFromIndex($key , $dictionary);
     else
-      $this->removeFromIndex($key);
+        $this->removeFromIndex($key);
 
     $mainLangs = $this->getLangs(true);
 
+    $writePath = Lang::storage()->getWrite();
     if(!$isSub)
     {
         // check write permissions
+        /*
         foreach ($mainLangs as $langName)
         {
             $langFile = $this->_langsPath . $langName .'.php';
@@ -411,19 +416,25 @@ class Backend_Localization_Manager
                 throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
             }
         }
-
+        */
         foreach ($mainLangs as $langName)
         {
-            $langFile = $this->_langsPath . $langName .'.php';
-            $langData = include $langFile;
-            unset($langData[$key]);
-            if(!Utils::exportArray($langFile, $langData)){
+            $langFile = $writePath . $langName .'.php';
+            $langConfig = Lang::storage()->get($langName .'.php');
+            if($langConfig === false){
+                throw new Exception($this->_lang->get('CANT_LOAD').' '.$langName);
+            }
+            $langConfig->remove($key);
+            if(!$langConfig->save()){
                 throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
             }
         }
+
+
     }
     else
     {
+        /*
         // check write permissions
         foreach ($mainLangs as $langName)
         {
@@ -432,13 +443,17 @@ class Backend_Localization_Manager
                 throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
             }
         }
+        */
 
         foreach ($mainLangs as $langName)
         {
-            $langFile = $this->_langsPath . $langName .'/'.$dictionaryName.'.php';
-            $langData = include $langFile;
-            unset($langData[$key]);
-            if(!Utils::exportArray($langFile, $langData)){
+            $langFile = $writePath .  $langName .'/'.$dictionaryName.'.php';
+            $langConfig = Lang::storage()->get( $langName .'/'.$dictionaryName.'.php');
+            if($langConfig === false){
+                throw new Exception($this->_lang->get('CANT_LOAD').' '.$langName .'/'.$dictionaryName);
+            }
+            $langConfig->remove($key);
+            if(!$langConfig->save()){
                 throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
             }
         }
@@ -452,17 +467,17 @@ class Backend_Localization_Manager
    */
   public function updateRecords($dictionary , $data)
   {
-     $langFile = $this->_langsPath . $dictionary . '.php';
-     if(!$this->checkCanEdit($langFile)){
-         throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
+     $writePath = Lang::storage()->getWrite() . $dictionary . '.php';
+     if(!$this->checkCanEdit($writePath)){
+         throw new Exception($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath);
      }
-     $langData = include $langFile;
 
+     $langConfig = Lang::storage()->get($dictionary . '.php');
      foreach ($data as $k=>$rec)
-       $langData[$rec['id']] = $rec['title'];
+         $langConfig->set( $rec['id'] , $rec['title']);
 
-     if(!Utils::exportArray($langFile, $langData)){
-         throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
+     if(!$langConfig->save()){
+         throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$writePath);
      }
   }
   /**
@@ -486,14 +501,15 @@ class Backend_Localization_Manager
    */
   public function createDictionary($name)
   {
-    $filePath = $this->_langsPath . $this->getIndexName($name);
+    $writePath = Lang::storage()->getWrite();
+    $indexPath = $writePath . $this->getIndexName($name);
 
-    if(!Utils::exportArray($filePath, array()))
-        throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$filePath);
+    if(!Utils::exportArray($indexPath, array()))
+        throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$indexPath);
 
     $langs = $this->getLangs(true);
     foreach ($langs as $lang){
-        $filePath = $this->_langsPath . $lang . '/' . $name . '.php';
+        $filePath = $writePath . $lang . '/' . $name . '.php';
         if(!Utils::exportArray($filePath, array()))
             throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$filePath);
     }

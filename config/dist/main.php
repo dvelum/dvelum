@@ -76,7 +76,6 @@ return array(
     /**
      * Localization files path
      */
-    'lang_path' => $docRoot . '/locale/',
     'js_lang_path' => $wwwPath . 'js/lang/',
     'salt' => 'ThSc-9086',
     'timezone' => 'Europe/Moscow',
@@ -162,14 +161,15 @@ return array(
      */
     'frontend_hardcache' => 30,
     'themes' => $docRoot . '/templates/public/',
-    'usersOnline' => false, // Collect users online info,
+    'packages' => './system/packages/',
     // Autoloader config
     'autoloader' => array(
         // Paths for autoloading
         'paths' => array(
             './application',
             './system/app',
-            './system/library'
+            './system/library',
+            './vendor'
         ),
         /*
         * Use class map
