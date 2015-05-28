@@ -257,9 +257,8 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		    $object->autoLoad = false;
 
 		    $reader = Ext_Factory::object('Data_Reader_Json');
-		    $reader->root = 'data';
+		    $reader->rootProperty = 'data';
 		    $reader->totalProperty = 'count';
-		    $reader->idProperty = 'id';
 
 		    $proxy = Ext_Factory::object('Data_Proxy_Ajax');
 		    $proxy->type = 'ajax';
