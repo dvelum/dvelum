@@ -310,6 +310,7 @@ Ext.define('designer.application',{
 			defaults:{
 				showType:'loaded',
 				iconCls: 'add16',
+                textAlign: 'left',
 				scope:this,
 				handler:this.addObject
 			},
