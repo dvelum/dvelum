@@ -17,5 +17,8 @@ class Ext_Property_Data_Field extends Ext_Property
 	public $unique = self::Boolean;
 	public $validators = self::Object;
 
+	// Dvelum designer property
+	public $type = self::String;
+
 	static public $extend = 'Ext.data.field.Field';
 }
