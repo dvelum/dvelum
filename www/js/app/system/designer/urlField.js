@@ -145,6 +145,7 @@ Ext.define('designer.urlField',{
 	layout: 'hbox',
 	onlyController:false,
 	controllerUrl:'',
+	resetOriginalValue:function(){ this.dataField.resetOriginalValue(); },
 	initComponent:function(){
 		var  me = this;
 
