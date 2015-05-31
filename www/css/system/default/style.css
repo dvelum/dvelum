@@ -267,6 +267,16 @@
 	    background-image: url('../../../../i/system/upload.png');
 }
 
+.urlTriggerIcon{
+    width:25px;
+    height:22px;
+    background: url('../../../../i/system/url_trigger.png') 0 0 !important;
+    background-repeat: no-repeat!important;
+}
+.urlTriggerIcon.x-form-trigger-over{
+    background: url('../../../../i/system/url_trigger.png') 0 25!important;
+}
+
 .d_objectLink_input{
 	border:1px solid #ccc;
 	margin:0 2px 0 2px;

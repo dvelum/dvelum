@@ -103,7 +103,6 @@ Ext.define('designer.urlWindow',{
 
 	},
 	onSelect:function(){
-
 		if(this.onlyController)
 		{
 
@@ -135,60 +134,39 @@ Ext.define('designer.urlWindow',{
  * @param {Ext.Window}
  */
 Ext.define('designer.urlField',{
-	extend:'Ext.form.FieldContainer',
-	mixins:{completeEdit:'Ext.Editor'},
-	//alias:'widget.urlfield',
-	alias:'widget.designerUrlField',
-	triggerCls : 'urlTrigger',
-	dataField:null,
-	triggerButton:null,
-	layout: 'hbox',
-	onlyController:false,
-	controllerUrl:'',
-	resetOriginalValue:function(){ this.dataField.resetOriginalValue(); },
-	initComponent:function(){
-		var  me = this;
-
-		this.dataField = Ext.create('Ext.form.field.Text',{
-			flex:1
-		});
-
-		this.triggerButton = Ext.create('Ext.button.Button',{
-			iconCls:'urltriggerIcon',
-			width:25,
-			scope:me,
-			handler:function(){
-				var win = Ext.create('designer.urlWindow', {
-					width:600,
-					height:400,
-					onlyController:this.onlyController,
-					controllerUrl:this.controllerUrl,
-					listeners:{
-						select:{
-							fn:function(url){
-								this.setValue(url);
-								this.fireEvent('select');
-							},
-							scope:this
-						}
-					}
-				}).show();
+	extend:'Ext.form.field.Text',
+	constructor:function(config){
+		var me = this;
+		config = Ext.apply({
+			extraParams:{},
+			triggers : {
+				select:{
+					hideOnReadOnly:true,
+					cls: 'urlTriggerIcon',
+					width:25,
+					handler: function() {
+						me.showSelectWindow();
+					},
+					scope:me
+				}
 			}
-		});
-
-		this.items = [this.dataField , this.triggerButton];
-		this.callParent();
+		}, config || {});
+		this.callParent(arguments);
 	},
-	setValue:function(value){
-		this.dataField.setValue(value);
-	},
-	getValue:function(){
-		return this.dataField.getValue();
-	},
-	reset:function(){
-		this.dataField.reset();
-	},
-	isValid:function(){
-		return true;
+	showSelectWindow:function(){
+		var win = Ext.create('designer.urlWindow', {
+			width:600,
+			height:400,
+			onlyController:this.onlyController,
+			controllerUrl:this.controllerUrl,
+			listeners:{
+				select:{
+					fn:function(url){
+						this.setValue(url);
+					},
+					scope:this
+				}
+			}
+		}).show();
 	}
 });
