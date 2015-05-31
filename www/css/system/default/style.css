@@ -270,11 +270,11 @@
 .urlTriggerIcon{
     width:25px;
     height:22px;
-    background: url('../../../../i/system/url_trigger.png') 0 0 !important;
+    background: url('../../../../i/system/url_trigger.png') 0px 0px !important;
     background-repeat: no-repeat!important;
 }
 .urlTriggerIcon.x-form-trigger-over{
-    background: url('../../../../i/system/url_trigger.png') 0 25!important;
+    background: url('../../../../i/system/url_trigger.png') -26px 0px !important;
 }
 
 .d_objectLink_input{
