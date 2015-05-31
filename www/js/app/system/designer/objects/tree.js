@@ -11,6 +11,17 @@
  *
  * @event objectRemoved
  */
+Ext.define('designer.objects.TreeModel',{
+	extend:'Ext.data.Model',
+	fields:[
+		{name:'id' ,  type:'string'},
+		{name:'text' , type:'string'},
+		{name:'objClass',type:'string'},
+		{name:'isInstance' , type:'boolean'}
+	],
+	idProperty:'id'
+})
+
 Ext.define('designer.objects.Tree',{
 	extend:'Ext.Panel',
 	controllerUrl:'',
@@ -21,6 +32,7 @@ Ext.define('designer.objects.Tree',{
 	initComponent:function(){
 
 		this.dataStore = Ext.create('Ext.data.TreeStore',{
+			model:'designer.objects.TreeModel',
 			proxy: {
 				type: 'ajax',
 				url:this.controllerUrl + 'visuallist',
@@ -30,12 +42,6 @@ Ext.define('designer.objects.Tree',{
 				},
 				autoLoad:false
 			},
-			fields: [
-				{name:'id' ,  type:'string'},
-				{name:'text' , type:'string'},
-				{name:'objClass',type:'string'},
-				{name:'isInstance' , type:'boolean'}
-			],
 			root: {
 				text: '/',
 				expanded: true,
@@ -52,7 +58,6 @@ Ext.define('designer.objects.Tree',{
 			store:this.dataStore,
 			rootVisible:false,
 			useArrows: true,
-
 			viewConfig:{
 				plugins: {
 					ptype: 'treeviewdragdrop'
@@ -75,8 +80,7 @@ Ext.define('designer.objects.Tree',{
 		this.dataStore.on('load',function(){
 			if(this.selectedNode){
 				this.treePanel.getSelectionModel().select(this.selectedNode);
-				this.treePanel.getSelectionModel().setLastFocused(this.selectedNode);
-				this.treePanel.getView().focusRow(this.treePanel.getView().store.indexOf(this.selectedNode));
+				this.treePanel.getView().focusRow(this.selectedNode);
 			}
 		},this);
 

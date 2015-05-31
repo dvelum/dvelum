@@ -84,6 +84,7 @@ var desLang = {
 		file:'File',
 		form:'Form',
 		formField:'Form field',
+		formPanel:'Form Panel',
 		filters:'Filters',
 		field:'Field',
 		fields:'Fields',

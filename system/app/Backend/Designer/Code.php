@@ -140,7 +140,8 @@ class Backend_Designer_Code
 		if(!empty($methods))
 		{
 			Request::setDelimiter($templates['urldelimiter']);
-			Request::setRoot($templates['wwwroot']);
+			Request::setConfigOption('wwwRoot', $templates['wwwroot']);
+
 			foreach ($methods as $method)
 			{
 				if(substr($method->name , -6) !== 'Action')
@@ -153,13 +154,13 @@ class Backend_Designer_Code
 				$actions[] = array(
 					'name'=>$actionName,
 					'code'=>$method->name,
-					'url'=>Request::url($paths , false),
+					'url'=>Request::url($paths, false),
 					'comment'=>self::_clearDocSymbols($method->getDocComment()) 
 				);
 			}
 			
 			Request::setDelimiter($appCfg['urlDelimiter']);
-			Request::setRoot($appCfg['wwwroot']);
+			Request::setConfigOption('wwwRoot', $appCfg['wwwroot']);
 		}
 		return $actions;
 	}

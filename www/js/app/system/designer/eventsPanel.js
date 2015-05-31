@@ -13,8 +13,10 @@ Ext.define('designer.eventsPanel',{
 
 	autoLoadData:true,
 
-	constructor:function(){
-		this.extraParams = {};
+	constructor:function(config){
+		config = Ext.apply({
+			extraParams:{}
+		}, config || {});
 		this.callParent(arguments);
 	},
 

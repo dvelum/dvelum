@@ -223,15 +223,7 @@ Ext.define('designer.properties.Panel', {
             },
             'url': {
                 editor: Ext.create('designer.urlField', {
-                    controllerUrl: app.createUrl([designer.controllerUrl, 'url', 'actions', '']),
-                    listeners: {
-                        select: {
-                            fn: function () {
-                                this.ownerCt.completeEdit();
-                            }
-                        }
-                    }
-
+                    controllerUrl: app.createUrl([designer.controllerUrl, 'url', 'actions', ''])
                 })
             },
             'icon': {

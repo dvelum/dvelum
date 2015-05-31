@@ -1,10 +1,3 @@
-var Ext = Ext || {};
-Ext.manifest = { // the same content as "app.json"
-	compatibility: {
-		ext: '4.2'
-	}
-}
-
 app.application = false;
 
 app.content =  Ext.create('Ext.Panel',{
