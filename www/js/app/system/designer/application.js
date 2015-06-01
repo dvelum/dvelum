@@ -434,9 +434,8 @@ Ext.define('designer.application',{
 					]
 				})
 			},{
-				text:desLang.formField,
-				iconCls:'textFieldIcon',
-				tooltip: desLang.add + ' ' + desLang.formField,
+				text:desLang.form,
+				iconCls:'formIcon',
 				oClass:'',
 				menu:Ext.create('Ext.menu.Menu', {
 					style: {
@@ -451,7 +450,8 @@ Ext.define('designer.application',{
 							text:desLang.formPanel,
 							iconCls:'formIcon',
 							tooltip: desLang.add + ' ' + desLang.form,
-							oClass:'form'
+							oClass:'form',
+							showType:'loaded'
 						},
 						{
 							text:'Text',
