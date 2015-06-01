@@ -428,8 +428,8 @@ class Modules_Generator
       $name = Utils_String::formatClassName($object);
 
       $jsName = str_replace('_','', $name);
-      $runNamespace = 'app'.$jsName.'Run';
-      $classNamespace = 'app'.$jsName.'Classes';
+      $runNamespace = 'app'.$jsName.'Runtime';
+      $classNamespace = 'app'.$jsName.'Components';
 
       $objectConfig = Db_Object_Config::getInstance($object);
       $primaryKey = $objectConfig->getPrimaryKey();

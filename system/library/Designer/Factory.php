@@ -149,9 +149,10 @@ class Designer_Factory
 	 * @param Designer_Project $project
 	 * @param boolean $selfInclude
 	 * @param array $replace
+	 * @param boolean $debug, optional default - false (no minification)
 	 * @return array
 	 */
-	static public function getProjectIncludes($cacheKey , Designer_Project $project , $selfInclude = true , $replace = array())
+	static public function getProjectIncludes($cacheKey , Designer_Project $project , $selfInclude = true , $replace = array() , $debug = false)
 	{
 		$applicationConfig = Registry::get('main' , 'config');
 		$designerConfig = Config::factory(Config::File_Array, $applicationConfig->get('configs').'designer.php');
@@ -191,7 +192,7 @@ class Designer_Factory
 						$projectFile = $designerConfig->get('configs') . $file;
 						$subProject = Designer_Factory::loadProject($designerConfig,  $projectFile);
 						$projectKey = self::getProjectCacheKey($projectFile);
-						$files = self::getProjectIncludes($projectKey , $subProject , true , $replace);
+						$files = self::getProjectIncludes($projectKey , $subProject , true , $replace , $debug);
 						unset($subProject);
 						if(!empty($files))
 							$includes = array_merge($includes , $files);
@@ -209,8 +210,14 @@ class Designer_Factory
 			/**
 			 * @todo remove slow operation
 			 */
-			if(!file_exists($layoutCacheFile))
-				file_put_contents($layoutCacheFile, Code_Js_Minify::minify($project->getCode($replace)));
+			if(!file_exists($layoutCacheFile)){
+				if($debug){
+					file_put_contents($layoutCacheFile, $project->getCode($replace));
+				} else {
+					file_put_contents($layoutCacheFile, Code_Js_Minify::minify($project->getCode($replace)));
+				}
+			}
+
 
 			$includes[] = '/'.str_replace($applicationConfig->get('jsCacheSysPath'), $applicationConfig->get('jsCacheSysUrl') , $layoutCacheFile);
 		}

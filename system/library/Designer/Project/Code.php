@@ -61,6 +61,9 @@ class Designer_Project_Code
 
 	  foreach ($items as $k=>$v)
 	  {
+		 if($v instanceof Designer_Project_Container)
+			continue;
+
 	  	 if(method_exists($v, 'getViewObject')){
 	  	 	$o = $v->getViewObject();
 
@@ -106,6 +109,20 @@ class Designer_Project_Code
 				foreach ($models as $id=>$item)
 					$definesCode.= $this->getObjectDefineJs($id);
 
+			if($this->_project->itemExist('_Component_') && $this->_project->hasChilds('_Component_'))
+			{
+				foreach($this->_project->getChilds('_Component_') as $itemData)
+				{
+					$item = $itemData['data'];
+					$item->extendedComponent(true);
+					$result = $this->_compileExtendedItem($itemData['id'] , '_Component_');
+					$definesCode.= $result['defines'];
+					//$definesCode.= $this->getObjectDefineJs($itemData['id']);
+					//$items[] = $this->_project->runnamespace . '.' . $item->getName();
+				}
+			}
+
+			/*
 			$stores = $this->_project->getStores();
 			if(!empty($stores))
 			{
@@ -122,7 +139,7 @@ class Designer_Project_Code
 					$layoutCode.=  $this->getObjectLayoutCode($id);
 				    $items[] = $this->_project->runnamespace . '.' . $item->getName();
 				}
-			}
+			}*/
 		}
 
 		if($this->_project->hasChilds($parent))
@@ -131,22 +148,25 @@ class Designer_Project_Code
 
 			foreach($childs as $k => $item)
 			{
+				if($item['data'] instanceof Designer_Project_Container)
+					continue;
+
 				$itemObject = $item['data'];
 				$oClass = $item['data']->getClass();
 			    /*
-				 * Skip Stores amd Models
+				 * Skip Models
 				 */
-				if($oClass === 'Store' || $oClass==='Model' || $oClass==='Data_Store' || $oClass==='Data_Store_Tree'){
+				if($oClass==='Model'){
 					continue;
 				}
 
-				if($itemObject->isExtendedComponent() || in_array($oClass , Designer_Project::$defines , true) || Designer_Project::isWindowComponent($oClass))
+				/*if($itemObject->isExtendedComponent() || in_array($oClass , Designer_Project::$defines , true) || Designer_Project::isWindowComponent($oClass))
 				{
 					$result = $this->_compileExtendedItem($item['id'] , $item['id']);
 					$definesCode.= $result['defines'];
 					continue;
 				}
-
+*/
 				switch($oClass)
 				{
 					case 'Docked' :

@@ -23,7 +23,7 @@
  */
 class Designer_Project
 {
-	static protected $reservedNames = array('_Model_','_Component_','_Runtime_');
+	static protected $reservedNames = array('_Component_');
 
 	protected static $_containers = array(
 			'Panel' ,
@@ -82,10 +82,10 @@ class Designer_Project
 
 	protected static $_nonDraggable = array(
 			'Window' ,
-			'Store' ,
+			//'Store' ,
 			'Model',
-			'Data_Store_Tree',
-			'Data_Store'
+			//'Data_Store_Tree',
+			//'Data_Store'
 	);
 
 	public static $storeClasses = array(
@@ -133,9 +133,8 @@ class Designer_Project
 	 */
 	protected function initContainers()
 	{
-		$this->_tree->addItem('_Model_' , false, new Designer_Project_Container('Model'), 0);
-		$this->_tree->addItem('_Component_' , false, new Designer_Project_Container('Component'), 1);
-		$this->_tree->addItem('_Runtime_' , false, new Designer_Project_Container('Runtime'), 2);
+		$this->_tree->addItem('_Component_' , false, new Designer_Project_Container('Components'), -1000);
+		$this->_tree->sortItems('_Component_' );
 	}
 
 	/**
@@ -424,6 +423,25 @@ class Designer_Project
 	{
 		return $this->_tree->hasChilds($name);
 	}
+
+	/**
+	 * Check if object has instances
+	 * @param $name
+	 * @return bool
+	 */
+	public function hasInstances($name)
+	{
+		$items = $this->getObjectsByClass('Object_Instance');
+		if(!empty($items))
+		{
+			foreach($items as $id => $object)
+			{
+				if($object->getObject()->getName() == $name)
+					return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * Get object childs
 	 * @param string $name
@@ -488,7 +506,15 @@ class Designer_Project
 			return $codeGen->getObjectCode($name);
 		}
 	}
-
+	/**
+	 * Check if item exists
+	 * @param $id
+	 * @return bool
+	 */
+	public function itemExist($id)
+	{
+		return $this->_tree->itemExists($id);
+	}
 	/**
 	 * Get item data
 	 * @param mixed $id
@@ -551,47 +577,37 @@ class Designer_Project
 
 	/**
 	 * Project converter 0.9.x to  1.x
+	 * @return boolean -  update flag
 	 */
-	protected function convertTo1x()
+	public function convertTo1x()
 	{
-		if($this->_tree->itemExists('_Runtime_'))
-			return;
+		if($this->itemExist('_Component_'))
+			return false;
 
 		$this->initContainers();
 
 		$items = $this->_tree->getChilds(0);
+		$stores = $this->getStores();
+
+		foreach($stores as $id=>$object){
+			$this->changeParent($id , 0 );
+		}
 
 		foreach($items as $cmpData)
 		{
-			if(in_array($cmpData['id']  , static::$reservedNames , true)){
+			$object = $cmpData['data'];
+
+			if($object instanceof Designer_Project_Container){
 				continue;
 			}
 
-			$object = $cmpData['data'];
-
-			/*
-			 * Instance to runtime
-			 */
-			if($object->isInstance())
-			{
-				$this->_tree->changeParent($cmpData['id'] , '_Runtime_');
-				contimue;
-			}
-			/*
-			 * Model to spacial containers
-			 */
-			if($object->getClass() == 'Model'){
-				$this->_tree->changeParent($cmpData['id'] , '_Model_');
-				contimue;
-			}
 			/*
 			 * Defined components without autolayout
 			 */
-			if($object->isExtendedComponent() && $object->isValidProperty('defineOnly') && $object->defineOnly) {
+			if($object->isExtendedComponent() && $object->isValidProperty('definedOnly') && $object->defineOnly) {
 				$this->_tree->changeParent($cmpData['id'] , '_Component_');
-				contimue;
+				continue;
 			}
-
 
 			if($object->isExtendedComponent())
 			{
@@ -600,10 +616,9 @@ class Designer_Project
 				$objectInstance = Ext_Factory::object('Object_Instance');
 				$objectInstance->setObject($object);
 				$objectInstance->setName($object->getName());
-				$this->_tree->addItem($objectInstance->getName().'_instance','_Runtime_', $objectInstance, $cmpData['order']);
+				$this->_tree->addItem($objectInstance->getName().'_instance', 0, $objectInstance, $cmpData['order']);
 			}
-
-			$this->_tree->changeParent($cmpData['id'] , '_Runtime_');
 		}
+		return true;
 	}
 }

@@ -260,13 +260,27 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
     	$this->_checkLoaded();
         $id = Request::post('id','string',false);
         $newParent = Request::post('newparent','string',false);
+
         if(!strlen($newParent))
         	$newParent = 0;
+
         $order = Request::post('order', 'array' , array());
         $project = $this->_getProject();
 
         if(!$id  || !$project->objectExists($id))
             Response::jsonError($this->_lang->WRONG_REQUEST .' code1');
+
+		$itemData = $project->getTree()->getItem($id);
+
+		if(in_array($itemData['data']->getClass() , Designer_Project::$storeClasses , true)){
+			if($newParent != '0' && $newParent !='_Component_'){
+				Response::jsonError('Store can exist only at Project root or Components root');
+			}
+		}
+
+		if($itemData['parent'] == '_Component_' && $newParent !=='_Component_' && $project->hasInstances($id)){
+			Response::jsonError('Component cannot be converted. Object Instances detected');
+		}
 
         $project->changeParent($id, $newParent);
         $count = 0;
