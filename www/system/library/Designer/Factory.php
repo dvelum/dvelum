@@ -80,33 +80,35 @@ class Designer_Factory
 
 		if(!empty($names))
 		{
-			foreach ($names as $name)
-			{
-			  if($project->getObject($name)->isExtendedComponent())
-			  {
-			    if($project->getObject($name)->getConfig()->defineOnly)
-			        continue;
-			    
-			    $initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
-			  }
-			}
-			
-			if($renderTo)
-			{
-      		  $renderTo = str_replace('-', '_', $renderTo);
-      		  $initCode.= '
+			if($renderTo){
+				$renderTo = str_replace('-', '_', $renderTo);
+				$initCode.= '
 				app.content = Ext.create("Ext.container.Container", {
 					layout:"fit",
 					renderTo:"'.$renderTo.'"
 				});
       		   ';
+			}
 
-			  $initCode.='
-			      app.content.add('.Ext_Code::appendRunNamespace($name).');
-			      app.content.doComponentLayout();
-			      ';
-			}else{
-			  $initCode.='app.content.add('.Ext_Code::appendRunNamespace($name).');';
+			foreach ($names as $name)
+			{
+				if($project->getObject($name)->isExtendedComponent())
+				{
+					if($project->getObject($name)->getConfig()->defineOnly)
+						continue;
+
+					$initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
+				}
+				$initCode.='
+					app.content.add('.Ext_Code::appendRunNamespace($name).');
+				';
+			}
+
+			if($renderTo)
+			{
+				$initCode.='
+			      	app.content.doComponentLayout();
+				';
 			}
 		}
 
@@ -120,21 +122,21 @@ class Designer_Factory
 		{
 			foreach ($projectData['includes'] as $file)
 			{
-			    if(File::getExt($file) == '.css')
-			    {
-			        if(strpos($file , '?') === false){
-			        	$file = $file .'?'. $cachedKey;
-			        }
+				if(File::getExt($file) == '.css')
+				{
+					if(strpos($file , '?') === false){
+						$file = $file .'?'. $cachedKey;
+					}
 
-			        $resource->addCss($file , false);
-			    }else{
+					$resource->addCss($file , false);
+				}else{
 
-			        if(strpos($file , '?') === false){
-			        	$file = $file .'?'. $cachedKey;
-			        }
+					if(strpos($file , '?') === false){
+						$file = $file .'?'. $cachedKey;
+					}
 
-				    $resource->addJs($file , false, false);
-			    }
+					$resource->addJs($file , false, false);
+				}
 			}
 		}
 		$resource->addInlineJs($initCode);
@@ -161,40 +163,40 @@ class Designer_Factory
 		// include langs
 		if(isset($projectConfig['langs']) && !empty($projectConfig['langs']))
 		{
-		  $language = Lang::getDefaultDictionary();
-		  $lansPath = $designerConfig->get('langs_path');
-		  $langsUrl = $designerConfig->get('langs_url');
+			$language = Lang::getDefaultDictionary();
+			$lansPath = $designerConfig->get('langs_path');
+			$langsUrl = $designerConfig->get('langs_url');
 
-		  foreach ($projectConfig['langs'] as $k=>$file)
-		  {
-		     $file =  $language.'/'.$file.'.js';
-		     if(file_exists($lansPath.$file)){
-		       $includes[] = $langsUrl . $file . '?' . filemtime($lansPath.$file);
-		     }
-		  }
+			foreach ($projectConfig['langs'] as $k=>$file)
+			{
+				$file =  $language.'/'.$file.'.js';
+				if(file_exists($lansPath.$file)){
+					$includes[] = $langsUrl . $file . '?' . filemtime($lansPath.$file);
+				}
+			}
 		}
 
 		if(isset($projectConfig['files']) && !empty($projectConfig['files']))
 		{
-				foreach ($projectConfig['files'] as $file)
+			foreach ($projectConfig['files'] as $file)
+			{
+				$ext = File::getExt($file);
+
+				if($ext === '.js' || $ext === '.css')
 				{
-				    $ext = File::getExt($file);
+					$includes[] = $designerConfig->get('js_url') . $file;
 
-					if($ext === '.js' || $ext === '.css')
-					{
-						$includes[] = $designerConfig->get('js_url') . $file;
-
-					}else
-					{
-						$projectFile = $designerConfig->get('configs') . $file;
-						$subProject = Designer_Factory::loadProject($designerConfig,  $projectFile);
-						$projectKey = self::getProjectCacheKey($projectFile);
-						$files = self::getProjectIncludes($projectKey , $subProject , true , $replace);
-						unset($subProject);
-						if(!empty($files))
-							$includes = array_merge($includes , $files);
-					}
+				}else
+				{
+					$projectFile = $designerConfig->get('configs') . $file;
+					$subProject = Designer_Factory::loadProject($designerConfig,  $projectFile);
+					$projectKey = self::getProjectCacheKey($projectFile);
+					$files = self::getProjectIncludes($projectKey , $subProject , true , $replace);
+					unset($subProject);
+					if(!empty($files))
+						$includes = array_merge($includes , $files);
 				}
+			}
 		}
 
 		Ext_Code::setRunNamespace($projectConfig['runnamespace']);
@@ -221,7 +223,7 @@ class Designer_Factory
 		 */
 		$mTime = 0;
 		if(file_exists('.'.$actionFile))
-		  $mTime = filemtime('.'.$actionFile);
+			$mTime = filemtime('.'.$actionFile);
 
 		$includes[] = $actionFile . '?' . $mTime;
 		return $includes;
@@ -247,17 +249,17 @@ class Designer_Factory
 	 */
 	static public function replaceCodeTemplates(array $replaces , $code)
 	{
-	  if(!empty($replaces))
-	  {
-	      $k = array();
-	      $v = array();
-	      foreach ($replaces as $item)
-	      {
-	          $k[] = $item['tpl'];
-	          $v[] = $item['value'];
-	      }
-	      return str_replace($k , $v , $code);
-	  }
+		if(!empty($replaces))
+		{
+			$k = array();
+			$v = array();
+			foreach ($replaces as $item)
+			{
+				$k[] = $item['tpl'];
+				$v[] = $item['value'];
+			}
+			return str_replace($k , $v , $code);
+		}
 		return $code;
 	}
 }
