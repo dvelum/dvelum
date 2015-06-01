@@ -80,33 +80,35 @@ class Designer_Factory
 
 		if(!empty($names))
 		{
-			foreach ($names as $name)
-			{
-			  if($project->getObject($name)->isExtendedComponent())
-			  {
-			    if($project->getObject($name)->getConfig()->defineOnly)
-			        continue;
-			    
-			    $initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
-			  }
-			}
-			
-			if($renderTo)
-			{
-      		  $renderTo = str_replace('-', '_', $renderTo);
-      		  $initCode.= '
+			if($renderTo){
+				$renderTo = str_replace('-', '_', $renderTo);
+				$initCode.= '
 				app.content = Ext.create("Ext.container.Container", {
 					layout:"fit",
 					renderTo:"'.$renderTo.'"
 				});
       		   ';
+			}
 
-			  $initCode.='
-			      app.content.add('.Ext_Code::appendRunNamespace($name).');
-			      app.content.doComponentLayout();
-			      ';
-			}else{
-			  $initCode.='app.content.add('.Ext_Code::appendRunNamespace($name).');';
+			foreach ($names as $name)
+			{
+				if($project->getObject($name)->isExtendedComponent())
+				{
+					if($project->getObject($name)->getConfig()->defineOnly)
+						continue;
+
+					$initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
+				}
+				$initCode.='
+					app.content.add('.Ext_Code::appendRunNamespace($name).');
+				';
+			}
+
+			if($renderTo)
+			{
+				$initCode.='
+			      	app.content.doComponentLayout();
+				';
 			}
 		}
 
