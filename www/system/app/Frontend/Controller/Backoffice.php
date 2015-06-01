@@ -168,8 +168,6 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
 
     public function indexAction()
     {
-        var_dump($this->_module);
-
       $this->_resource->addInlineJs('
 	     var canEdit = ' . intval($this->_user->canEdit($this->_module)) . ';
 	     var canDelete = ' . intval($this->_user->canDelete($this->_module)) . ';
