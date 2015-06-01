@@ -1201,6 +1201,11 @@ Ext.define('designer.application',{
 		this.propertiesPanel.removeAll(true);
 		var panelClass = null;
 
+		if(objectClass == 'Designer_Project_Container'){
+			return;
+		}
+
+
 		if(!isInstance){
 			switch (objectClass) {
 				case 'Panel':

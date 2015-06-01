@@ -76,7 +76,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
      * @param mixed $root
      * @return array
      */
-    protected function _fillContainers(Tree $tree , $root = 0 , $exceptStorage = true)
+    protected function _fillContainers(Tree $tree , $root = 0)
     {
     	   $exceptions = array('Store' , 'Data_Store' , 'Data_Store_Tree' , 'Model');
            $result = array();
@@ -87,15 +87,34 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 
            foreach($childs as $k=>$v)
            {
-           		$object = $v['data'];
+			   $object = $v['data'];
+
+			   $item = new stdClass();
+			   $item->id = $v['id'];
+
+			    /**
+			     *  Stub for project container
+			     */
+			    if($object instanceof Designer_Project_Container){
+					$item->text =  $object->getName();
+					$item->expanded = true;
+					$item->objClass = 'Designer_Project_Container';
+					$item->isInstance = false;
+					$item->leaf=false;
+					//$item->iconCls = self::getIconClass($objectClass);
+					$item->allowDrag = false;
+					$item->children = array();
+
+					if($tree->hasChilds($v['id']))
+						$item->children = $this->_fillContainers($tree ,  $v['id'] , false);
+
+					$result[] = $item;
+					continue;
+				}
+
+
            		$objectClass = $object->getClass();
            		$objectName = $object->getName();
-
-           		if($exceptStorage && in_array($objectClass , $exceptions , true))
-           			continue;
-
-           		$item = new stdClass();
-                $item->id = $v['id'];
 
                 $inst = '';
                 $ext = '';
@@ -132,7 +151,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
                 }
 
                 if($tree->hasChilds($v['id']))
-                   $item->children = $this->_fillContainers($tree ,  $v['id'] , $exceptStorage);
+                   $item->children = $this->_fillContainers($tree ,  $v['id']);
 
                 $result[] = $item;
           }

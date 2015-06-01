@@ -296,7 +296,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	  	  
 	  $instanceObject = $project->getObject($instance);
 	  
-	  if($instanceObject->isInstance() || !Designer_Project::isVisibleComponent($instanceObject->getClass()))	  
+	  if($instanceObject->isInstance() /*|| !Designer_Project::isVisibleComponent($instanceObject->getClass())*/)
 	    $errors['instance'] = $this->_lang->get('INVALID_VALUE');
 	  	  
 	  /*

@@ -201,6 +201,10 @@ Ext.define('designer.objects.Tree',{
 			return;
 		}
 
+		if(selected.get('objClass') == 'Designer_Project_Container'){
+			 return;
+		}
+
 		Ext.Ajax.request({
 			url:this.controllerUrl + 'remove',
 			method: 'post',

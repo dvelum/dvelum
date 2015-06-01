@@ -23,6 +23,8 @@
  */
 class Designer_Project
 {
+	static protected $reservedNames = array('_Model_','_Component_','_Runtime_');
+
 	protected static $_containers = array(
 			'Panel' ,
 			'Tabpanel' ,
@@ -123,6 +125,17 @@ class Designer_Project
 	public function __construct()
 	{
 		$this->_tree = new Tree();
+		$this->initContainers();
+	}
+
+	/**
+	 * Init system layout
+	 */
+	protected function initContainers()
+	{
+		$this->_tree->addItem('_Model_' , false, new Designer_Project_Container('Model'), 0);
+		$this->_tree->addItem('_Component_' , false, new Designer_Project_Container('Component'), 1);
+		$this->_tree->addItem('_Runtime_' , false, new Designer_Project_Container('Runtime'), 2);
 	}
 
 	/**
@@ -534,5 +547,63 @@ class Designer_Project
 	    $postfix++;
 	  }
 	  return $prefix.$postfix;
+	}
+
+	/**
+	 * Project converter 0.9.x to  1.x
+	 */
+	protected function convertTo1x()
+	{
+		if($this->_tree->itemExists('_Runtime_'))
+			return;
+
+		$this->initContainers();
+
+		$items = $this->_tree->getChilds(0);
+
+		foreach($items as $cmpData)
+		{
+			if(in_array($cmpData['id']  , static::$reservedNames , true)){
+				continue;
+			}
+
+			$object = $cmpData['data'];
+
+			/*
+			 * Instance to runtime
+			 */
+			if($object->isInstance())
+			{
+				$this->_tree->changeParent($cmpData['id'] , '_Runtime_');
+				contimue;
+			}
+			/*
+			 * Model to spacial containers
+			 */
+			if($object->getClass() == 'Model'){
+				$this->_tree->changeParent($cmpData['id'] , '_Model_');
+				contimue;
+			}
+			/*
+			 * Defined components without autolayout
+			 */
+			if($object->isExtendedComponent() && $object->isValidProperty('defineOnly') && $object->defineOnly) {
+				$this->_tree->changeParent($cmpData['id'] , '_Component_');
+				contimue;
+			}
+
+
+			if($object->isExtendedComponent())
+			{
+				$this->_tree->changeParent($cmpData['id'] , '_Component_');
+
+				$objectInstance = Ext_Factory::object('Object_Instance');
+				$objectInstance->setObject($object);
+				$objectInstance->setName($object->getName());
+				$this->_tree->addItem($objectInstance->getName().'_instance','_Runtime_', $objectInstance, $cmpData['order']);
+			}
+
+			$this->_tree->changeParent($cmpData['id'] , '_Runtime_');
+		}
 	}
 }
