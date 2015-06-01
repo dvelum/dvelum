@@ -899,7 +899,7 @@ Ext.define('app.crud.modules.backendView',{
 });
 
 Ext.define('app.crud.modules.Backend',{
-	extend:'Ext.container.Container',
+	extend:'Ext.panel.Panel',
 	controllerUrl:'',
 	canEdit:false,
 	canDelete:false,
@@ -916,6 +916,23 @@ Ext.define('app.crud.modules.Backend',{
 		align: 'stretch'
 	},
 	initComponent:function(){
+
+		if(this.canEdit){
+			this.tbar = [
+				{
+					iconCls:'newdocIcon',
+					text:appLang.ADD_ITEM,
+					scope:this,
+					handler:this.addAction
+				},'-',{
+					iconCls:'newdocIcon',
+					text:appLang.GENERATE_MODULE,
+					scope:this,
+					handler:this.createAction
+				}
+			];
+		}
+
 
 		this.productionStore = Ext.create('app.crud.modules.BackendStore');
 		this.developmentStore = Ext.create('app.crud.modules.BackendStore');
@@ -1002,6 +1019,25 @@ Ext.define('app.crud.modules.Backend',{
 
 		this.callParent();
 
+	},
+	addAction:function(){
+
+	},
+	createAction:function(){
+
+		var win = Ext.create('app.crud.modules.CreateWindow',{
+			controllerUrl:this.controllerUrl,
+			title:appLang.NEW_MODULE
+		});
+
+		win.on('dataSaved',function(data){
+			/**
+			 * @todo Reload Controllers & modules store
+			 */
+
+		},this);
+
+		win.show();
 	}
 });
 
@@ -1258,13 +1294,14 @@ Ext.define('app.crud.modules.CreateWindow',{
 
 		this.buttons = [
 			{
+				text:appLang.GENERATE_MODULE,
+				scope:this,
+				handler:this.createModule
+			},
+			{
 				text:appLang.CANCEL,
 				scope:this,
 				handler:this.close
-			},{
-				text:appLang.CREATE,
-				scope:this,
-				handler:this.createModule
 			}
 		];
 		this.items = [this.dataForm];
