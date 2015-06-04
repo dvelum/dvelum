@@ -23,7 +23,7 @@
  */
 class Designer_Project
 {
-	static protected $reservedNames = array('_Component_');
+	static protected $reservedNames = array('_Component_','_Layout_');
 
 	protected static $_containers = array(
 			'Panel' ,
@@ -134,7 +134,10 @@ class Designer_Project
 	protected function initContainers()
 	{
 		$this->_tree->addItem('_Component_' , false, new Designer_Project_Container('Components'), -1000);
-		$this->_tree->sortItems('_Component_' );
+		$this->_tree->sortItems('_Component_');
+
+		$this->_tree->addItem('_Layout_' , false, new Designer_Project_Container('Layout'), -500);
+		$this->_tree->sortItems('_Layout_' );
 	}
 
 	/**
@@ -273,6 +276,17 @@ class Designer_Project
 	public function getConfig()
 	{
 		return $this->_config;
+	}
+
+	/**
+	 * Set project config options
+	 * @param array $config
+	 */
+	public function setConfig(array $config)
+	{
+		foreach($config as $name=>$value){
+			$this->_config[$name] = $value;
+		}
 	}
 
 	public function __get($name)
@@ -529,7 +543,7 @@ class Designer_Project
 	 */
 	public function getRootPanels()
 	{
-		$list = $this->_tree->getChilds(0);
+		$list = $this->_tree->getChilds('_Layout_');
 		$names = array();
 
 		if(empty($list))
@@ -616,8 +630,11 @@ class Designer_Project
 				$objectInstance = Ext_Factory::object('Object_Instance');
 				$objectInstance->setObject($object);
 				$objectInstance->setName($object->getName());
-				$this->_tree->addItem($objectInstance->getName().'_instance', 0, $objectInstance, $cmpData['order']);
+				$this->_tree->addItem($objectInstance->getName().'_instance', '_Layout_', $objectInstance, $cmpData['order']);
+				continue;
 			}
+
+			$this->_tree->changeParent($cmpData['id'] , '_Layout_');
 		}
 		return true;
 	}

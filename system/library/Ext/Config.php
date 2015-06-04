@@ -117,6 +117,27 @@ class Ext_Config
 		
 		return $this->_data[$name] = $value;
 	}
+
+	/**
+	 * Set valid properties from config
+	 * @param array $data
+	 */
+	public function importValues(array $data)
+	{
+		foreach($data as $name => $value)
+		{
+			if($this->_properties->isValid($name))
+			{
+				switch ($this->_properties->$name) {
+					case Ext_Property::Boolean:
+						if((is_string($value) && strlen($value)) || !is_string($value))
+							$value = Filter::filterValue('boolean', $value);
+						break;
+				}
+				$this->_data[$name] = $value;
+			}
+		}
+	}
 	
 	public function __isset($key)
 	{

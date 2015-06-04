@@ -1,8 +1,7 @@
 <?php
 return array(
-  'core'=>'0.9.5.1',
-  'designer'=>'0.11',
-  'reports'=>'0.3.1',
+  'core'=>'1.0.0',
+  'designer'=>'1.0',
   'medialib'=>'0.4',
-  'orm'=>'0.9.5'
+  'orm'=>'0.9.6'
 );

@@ -211,14 +211,16 @@ class Ext_Store extends Ext_Object
 		$config = $this->getConfig()->__toArray(true);
 		$proxy = '';
 		$reader = '';
-		if(isset($config['proxy']) && $config['proxy'] instanceof Ext_Object){
+		if(isset($config['proxy']) && $config['proxy'] instanceof Ext_Object)
+		{
 			$proxyObject = $config['proxy'];
 			unset($config['proxy']);
+
 			$proxy = array(
 				'class' => get_class($proxyObject),
 				'extClass' => $proxyObject->getClass(),
 				'state'=> $proxyObject->getState()
-			)
+			);
 
 			if($proxyObject->isValidProperty('reader') && $proxyObject->reader instanceof Ext_Object){
 				$readerObject = $proxyObject->reader;

@@ -31,6 +31,12 @@ class Designer_Factory
 		return $storage->load($projectFile);
 	}
 
+	static public function importProject(Config_Abstract $designerConfig , $projectFile)
+	{
+		$storage = Designer_Storage::getInstance($designerConfig->get('storage') , $designerConfig);
+		return $storage->import($projectFile);
+	}
+
 	/**
 	 * Get storage
 	 * @param array $designerConfig

@@ -65,7 +65,7 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 			$this->_errors[] = 'write: ' . $id;
 			return false;
 		}
-		return $this->exportProjectContent($id , $obj);
+		return $this->export($id , $obj);
 	}
 
 	/**
@@ -92,7 +92,7 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 	 * @param $file - project file path
 	 * @param Designer_Project $project
 	 */
-	protected function exportProjectContent($file , Designer_Project $project)
+	protected function export($file , Designer_Project $project)
 	{
 		$this->_errors = array();
 
@@ -120,32 +120,43 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 		}
 		*/
 
-		if(!Utils::exportArray($this->exportPath.'_config.php' , $project->getConfig())){
-			$this->_errors[] = 'write: ' . $this->exportPath . 'config.php';
+		// Export Project config
+		if(!Utils::exportArray($this->exportPath.'__config.php' , $project->getConfig())){
+			$this->_errors[] = 'write: ' . $this->exportPath . '__config.php';
 			return false;
 		}
-
+		// Export Project events
 		$events = $this->exportEvents($project);
 
 		if($events === false)
 			return false;
 
-		if(!Utils::exportArray($this->exportPath.'_events.php' , $events)){
-			$this->_errors[] = 'write: ' . $this->exportPath . '_events.php';
+		if(!Utils::exportArray($this->exportPath.'__events.php' , $events)){
+			$this->_errors[] = 'write: ' . $this->exportPath . '__events.php';
+			return false;
+		}
+		// Export Project methods
+		$methods = $this->exportMethods($project);
+
+		if($methods === false)
+			return false;
+
+		if(!Utils::exportArray($this->exportPath.'__methods.php' , $methods)){
+			$this->_errors[] = 'write: ' . $this->exportPath . '__methods.php';
 			return false;
 		}
 
+		// Export Project Tree
 		$tree = $this->parseTree($project);
 		if($tree === false){
 			return false;
 		}
 
-		if(!Utils::exportArray($this->exportPath . '_tree.php' , $tree)){
-			$this->_errors[] = 'write: ' . $this->exportPath . 'tree.php';
+		if(!Utils::exportArray($this->exportPath . '__tree.php' , $tree)){
+			$this->_errors[] = 'write: ' . $this->exportPath . '__tree.php';
 			return false;
 		}
 		return true;
-
 	}
 
 	/**
@@ -197,7 +208,7 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 			return false;
 		}
 
-		return $objectFile;
+		return  $id . '.config.php';
 	}
 
 	/**
@@ -237,5 +248,104 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 			$eventsIndex[$object] = $object . '.events.php';
 		}
 		return $eventsIndex;
+	}
+
+	/**
+	 * Export project events
+	 */
+	protected function exportMethods(Designer_Project $project)
+	{
+		$methodManager = $project->getMethodManager();
+		$list = $methodManager->getMethods();
+		$methodIndex = array();
+
+		foreach($list as $object => $methods)
+		{
+			if(empty($methods)){
+				continue;
+			}
+
+			foreach($methods as $name => $item)
+			{
+				if(!$item instanceof Designer_Project_Methods_Item){
+					continue;
+				}
+
+				$data = array(
+					'name' => $item->getName(),
+					'code' => $item->getCode(),
+					'description' => $item->getDescription(),
+					'params' => $item->getParams(),
+				);
+
+				if(!empty($data['code']))
+				{
+					$eventFile = $this->exportPath . $object . '.methods.' . $name . '.js';
+					if(!@file_put_contents($eventFile , $data['code'])){
+						$this->_errors[] = 'write: ' . $eventFile;
+						return false;
+					}
+					$data['code'] = $object . '.methods.' . $name . '.js';
+				}else{
+					$data['code'] = false;
+				}
+			}
+			$listFile = $this->exportPath . $object . '.methods.php';
+			if(!Utils::exportArray($listFile , $data)){
+				$this->_errors[] = 'write: ' . $eventFile;
+				return false;
+			}
+			$methodIndex[$object] = $object . '.methods.php';
+		}
+		return $methodIndex;
+	}
+
+	/**
+	 * Import project from content dir
+	 * @param string $file
+	 * @return Designer_Project | false
+	 */
+	public function import($file)
+	{
+		$this->exportPath = $this->getContentDir($file);
+		$baseFiles = array('__config.php','__tree.php','__events.php','__methods.php');
+
+		foreach($baseFiles as $file){
+			if(file_exists($this->exportPath . $file))
+				return false;
+		}
+
+		$config = require $this->exportPath . '__config.php';
+		$project = new Designer_Project();
+		$project->setConfig($config);
+
+		$treeData = require $this->exportPath . '__tree.php';
+		$this->importTree($project , $treeData);
+
+
+		return $project;
+	}
+
+	/**
+	 * Restore project Tree from config
+	 * @param Designer_Project $project
+	 * @param $data
+	 */
+	protected function importTree(Designer_Project $project , $data)
+	{
+		$tree = $project->getTree();
+		foreach($data as $id=>$v)
+		{
+			$cfg = require $this->_configPath . $v['data'];
+
+			if($v['class'] == 'Designer_Project_Container'){
+				$o = new Designer_Project_Container($id);
+			}else{
+				//$o = new $v['class']($v['name']);
+				$o = Ext_Factory::object($v['extClass']);
+				$o->setState($v['state']);
+			}
+			$tree->addItem($v['id'],$v['parent'], $o, $v['order']);
+		}
 	}
 }

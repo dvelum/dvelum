@@ -360,4 +360,14 @@ class Ext_Object
 			'config' => $this->getConfig()->__toArray(true)
 		);
 	}
+	/**
+	 * Set object state
+	 * @param $state
+	 */
+	public function setState($state)
+	{
+		if(isset($state['config'])){
+			$this->getConfig()->importValues($state['config']);
+		}
+	}
 }

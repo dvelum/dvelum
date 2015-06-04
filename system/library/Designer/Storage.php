@@ -123,6 +123,15 @@ class Designer_Storage
 	}
 
 	/**
+	 * Import project from contents
+	 * @param $id
+	 * @return mixed
+	 */
+	public function import($id)
+	{
+		return  $this->_adapter->import($id);
+	}
+	/**
 	 * Save Designer_Project
 	 * @param string $id
 	 * @param Designer_Project $obj

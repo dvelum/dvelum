@@ -483,7 +483,6 @@ class Ext_Grid extends Ext_Object
 			}
 		}
 
-
 		return array(
 			'config' => $this->getConfig()->__toArray(true),
 			'state' => array(
