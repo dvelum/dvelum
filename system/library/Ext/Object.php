@@ -320,6 +320,9 @@ class Ext_Object
 			$this->_config->listeners = "{\n\t\t".implode(",\n\t\t", $listenersArray)."\n\t}\n";
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		$this->_convertListeners();
@@ -347,5 +350,14 @@ class Ext_Object
 	public function isInstance()
 	{
 	  return false;
+	}
+	/**
+	 * Get object state for smart export
+	 */
+	public function getState()
+	{
+		return array(
+			'config' => $this->getConfig()->__toArray(true)
+		);
 	}
 }

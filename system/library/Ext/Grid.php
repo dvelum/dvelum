@@ -460,4 +460,36 @@ class Ext_Grid extends Ext_Object
 	
 	  return $this->_filtersFeature;
 	}
+
+	/**
+	 * Get object state for smart export
+	 */
+	public function getState()
+	{
+		$columns = $this->_columns->getItems();
+		$colData = array();
+
+		if(!empty($columns)){
+			foreach($columns as $k=>$v){
+				$colData[$v['id']] = array(
+					'id' =>$v['id'],
+					'parent' => $v['parent'],
+					'class' => get_class($v['data']),
+					'extClass' => $v['data']->getClass(),
+					'order' => $v['order'],
+					'name'=> $v['data']->getName(),
+					'state' => $v['data']->getState()
+				);
+			}
+		}
+
+
+		return array(
+			'config' => $this->getConfig()->__toArray(true),
+			'state' => array(
+				'_advancedPropertyValues'=>$this->_advancedPropertyValues,
+			),
+			'columns' => $colData
+		);
+	}
 }

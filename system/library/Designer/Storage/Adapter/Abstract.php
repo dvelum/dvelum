@@ -27,6 +27,11 @@ abstract class Designer_Storage_Adapter_Abstract
 	 * @var Config_Abstract - optional
 	 */
 	protected $_config;
+
+	/**
+	 * Adapter errors
+	 */
+	protected $_errors = array();
 	
 	/**
 	 * @param array $config, optional
@@ -82,5 +87,13 @@ abstract class Designer_Storage_Adapter_Abstract
 			throw new Exception('Invalid data type');
 		
 		return $query;
+	}
+	/**
+	 * Get errors
+	 * @return array
+	 */
+	public function getErrors()
+	{
+		return $this->_errors;
 	}
 }

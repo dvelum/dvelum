@@ -103,10 +103,14 @@ class Designer_Storage
 	public function load($id)
 	{		
 		$cacheIndex = $this->cacheIndex($id);
-		
-		if(self::$_cache && $query = self::$_cache->load($cacheIndex) && $query instanceof Db_Query)
-			return $query;
-		
+
+		if(self::$_cache){
+			$query = self::$_cache->load($cacheIndex);
+			if($query  && $query instanceof Db_Query){
+				return $query;
+			}
+		}
+
 		$query = $this->_adapter->load($id);
 		
 		if(!$query instanceof Designer_Project)
@@ -129,9 +133,9 @@ class Designer_Storage
 		if(!$this->_adapter->save($id , $obj))
 			return false;
 			
-		if(self::$_cache)
-			self::$_cache->save($obj , $this->cacheIndex());
-		
+		if(self::$_cache) {
+			self::$_cache->save($obj, $this->cacheIndex());
+		}
 		return true;
 	}
 
@@ -144,5 +148,12 @@ class Designer_Storage
 		if(self::$_cache)
 			self::$_cache->remove($this->cacheIndex($id));
 		return $this->_adapter->delete($id);
+	}
+	/**
+	 * Get error list
+	 */
+	public function getErrors()
+	{
+		return $this->_adapter->getErrors();
 	}
 }

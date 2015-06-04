@@ -325,7 +325,8 @@ class Ext_Config
 		return $this->_data['xtype'];
 	}
 	
-	public function getFType(){
+	public function getFType()
+	{
 	  if(!isset($this->_data['ftype']))
 	      return '';
 	  

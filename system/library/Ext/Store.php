@@ -190,4 +190,53 @@ class Ext_Store extends Ext_Object
 		}	
 		return $this->_config->__toString();
 	}
+
+	/**
+	 * Get object state for smart export
+	 */
+	public function getState()
+	{
+		$fields = $this->_fields;
+		$fieldData = array();
+		if(!empty($fields)){
+			foreach($fields as $name=>$v){
+				$fieldData[$name] = array(
+					'class' => get_class($v),
+					'extClass' => $v->getClass(),
+					'state' => $v->getState()
+				);
+			}
+		}
+
+		$config = $this->getConfig()->__toArray(true);
+		$proxy = '';
+		$reader = '';
+		if(isset($config['proxy']) && $config['proxy'] instanceof Ext_Object){
+			$proxyObject = $config['proxy'];
+			unset($config['proxy']);
+			$proxy = array(
+				'class' => get_class($proxyObject),
+				'extClass' => $proxyObject->getClass(),
+				'state'=> $proxyObject->getState()
+			)
+
+			if($proxyObject->isValidProperty('reader') && $proxyObject->reader instanceof Ext_Object){
+				$readerObject = $proxyObject->reader;
+				$reader = array(
+					'class' => get_class($readerObject),
+					'extClass' => $readerObject->getClass(),
+					'state'=> $readerObject->getState()
+				);
+				$proxyObject->reader = false;
+			}
+		}
+
+		return array(
+			'config' => $config,
+			'state' => array(),
+			'fields' =>  $fieldData,
+			'proxy' => $proxy,
+			'reader'=> $reader
+		);
+	}
 }

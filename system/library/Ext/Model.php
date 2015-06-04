@@ -283,4 +283,38 @@ class Ext_Model extends Ext_Object
 	    
 		return parent::__toString();
 	}
+	/**
+	 * @see Ext_Object::getState()
+	 */
+	public function getState()
+	{
+		$fields = $this->_fields;
+		$fieldData = array();
+		if(!empty($fields)){
+			foreach($fields as $name=>$v){
+				$fieldData[$name] = array(
+					'class' => get_class($v),
+					'extClass' => $v->getClass(),
+					'state' => $v->getState()
+				);
+			}
+		}
+
+		$config = $this->getConfig()->__toArray(true);
+
+		return array(
+			'config' => $config,
+			'state' => array(
+				'_validations'=> $this->_validations,
+				'_associations'=>$this->__associations
+			),
+			'fields' =>  $fieldData,
+			'proxy' => array(
+				'class' => get_class($proxy),
+				'extClass' => $proxy->getClass(),
+				'state'=> $proxy->getState()
+			),
+			'reader'=> $reader
+		);
+	}
 }

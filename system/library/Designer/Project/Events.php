@@ -209,4 +209,23 @@ class Designer_Project_Events
 
 		return true;
 	}
+	/**
+	 * Convert params list to string representation
+	 */
+	public function paramsToString($list)
+	{
+		if(empty($list))
+			return '';
+
+		$params = array();
+		foreach($list as $k=>$v)
+		{
+			if(!empty($v)){
+				$params[] = $v . ' ' . $k;
+			}else{
+				$params[] = $k;
+			}
+		}
+		return implode(' , ', $params);
+	}
 }

@@ -84,10 +84,11 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 				Response::jsonError($this->_lang->CANT_WRITE_FS. ' ' .$dir);
 		}
 
-		if($this->_storage->save($this->_session->get('file'), $this->_getProject()))
+		if($this->_storage->save($this->_session->get('file'), $this->_getProject())){
 			Response::jsonSuccess();
-		else
-			Response::jsonError($this->_lang->CANT_WRITE_FS. ' ' .$this->_session->get('file'));
+		}else{
+			Response::jsonError($this->_lang->CANT_EXEC. ' ' . implode(', ',  $this->_storage->getErrors()));
+		}
 	}
 	/**
 	 * Get project config
