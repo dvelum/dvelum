@@ -306,15 +306,9 @@ class Ext_Model extends Ext_Object
 			'config' => $config,
 			'state' => array(
 				'_validations'=> $this->_validations,
-				'_associations'=>$this->__associations
+				'_associations'=>$this->_associations
 			),
-			'fields' =>  $fieldData,
-			'proxy' => array(
-				'class' => get_class($proxy),
-				'extClass' => $proxy->getClass(),
-				'state'=> $proxy->getState()
-			),
-			'reader'=> $reader
+			'fields' =>  $fieldData
 		);
 	}
 }
