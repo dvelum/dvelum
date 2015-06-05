@@ -311,4 +311,22 @@ class Ext_Model extends Ext_Object
 			'fields' =>  $fieldData
 		);
 	}
+	/**
+	 * Set object state
+	 * @param $state
+	 */
+	public function setState(array $state)
+	{
+		if(isset($state['config'])){
+			$this->getConfig()->importValues($state['config']);
+		}
+
+		if(isset($state['fields']) && !empty($state['fields'])){
+			foreach($state['fields'] as $k=>$v){
+				$field = Ext_Factory::object($v['extClass']);
+				$field->setState($v['state']);
+				$this->_fields[$k] = $field;
+			}
+		}
+	}
 }
