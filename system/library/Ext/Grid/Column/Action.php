@@ -151,8 +151,8 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 					'parent' => $v['parent'],
 					'class' => get_class($v['data']),
 					'extClass' => $v['data']->getClass(),
-					'state' => $v['data']->getState(),
-					//'v'=>$v['data']
+					'order' => $v['order'],
+					'state' => $v['data']->getState()
 				);
 			}
 		}
@@ -164,5 +164,21 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 			),
 			'actions'=> $actionsData
 		);
+	}
+	/**
+	 * Set object state
+	 * @param $state
+	 */
+	public function setState(array $state)
+	{
+		parent::setState($state);
+
+		if(isset($state['actions']) && !empty($state['actions'])){
+			foreach($state['actions'] as $k=>$v){
+				$action = Ext_Factory::object($v['extClass']);
+				$action->setState($v['state']);
+				$this->_actions->addItem($v['id'],$v['parent'] , $action, $v['order']);
+			}
+		}
 	}
 }

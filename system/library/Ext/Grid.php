@@ -491,4 +491,23 @@ class Ext_Grid extends Ext_Object
 			'columns' => $colData
 		);
 	}
+
+	/**
+	 * Set object state
+	 * @param $state
+	 */
+	public function setState(array $state)
+	{
+		parent::setState($state);
+
+		if(isset($state['columns']) && !empty($state['columns'])){
+			foreach($state['columns'] as $k=>$v){
+				$col = Ext_Factory::object($v['extClass']);
+				$col->setName($v['name']);
+				$col->setState($v['state']);
+				$this->_columns->addItem($v['id'],$v['parend'], $col, $v['order']);
+			}
+		}
+	}
+
 }

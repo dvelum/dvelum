@@ -364,10 +364,16 @@ class Ext_Object
 	 * Set object state
 	 * @param $state
 	 */
-	public function setState($state)
+	public function setState(array $state)
 	{
 		if(isset($state['config'])){
 			$this->getConfig()->importValues($state['config']);
+		}
+
+		if(isset($state['state']) && !empty($state['state'])){
+			foreach($state['state'] as $property => $value){
+				$this->{$property} = $value;
+			}
 		}
 	}
 }

@@ -216,11 +216,6 @@ class Ext_Store extends Ext_Object
 			$proxyObject = $config['proxy'];
 			unset($config['proxy']);
 
-			$proxy = array(
-				'class' => get_class($proxyObject),
-				'extClass' => $proxyObject->getClass(),
-				'state'=> $proxyObject->getState()
-			);
 
 			if($proxyObject->isValidProperty('reader') && $proxyObject->reader instanceof Ext_Object){
 				$readerObject = $proxyObject->reader;
@@ -231,6 +226,12 @@ class Ext_Store extends Ext_Object
 				);
 				$proxyObject->reader = false;
 			}
+
+			$proxy = array(
+				'class' => get_class($proxyObject),
+				'extClass' => $proxyObject->getClass(),
+				'state'=> $proxyObject->getState()
+			);
 		}
 
 		return array(
@@ -240,5 +241,39 @@ class Ext_Store extends Ext_Object
 			'proxy' => $proxy,
 			'reader'=> $reader
 		);
+	}
+
+	/**
+	 * Set object state
+	 * @param $state
+	 */
+	public function setState(array $state)
+	{
+		parent::setState($state);
+
+		if(isset($state['fields']) && !empty($state['fields']))
+		{
+			foreach($state['fields'] as $k=>$v){
+				$field = Ext_Factory::object($v['extClass']);
+				$field->setState($v['state']);
+				$this->_fields[$k] = $field;
+			}
+		}
+
+		$reader = false;
+
+		if(isset($state['reader']) && !empty($state['reader'])){
+			$reader = Ext_Factory::object($state['reader']['extClass']);
+			$reader->setState($state['reader']['state']);
+		}
+
+		if(isset($state['proxy']) && !empty($state['proxy'])){
+			$proxy = Ext_Factory::object($state['proxy']['extClass']);
+			$proxy->setState($state['proxy']['state']);
+			if($reader!==false){
+				$proxy->reader = $reader;
+			}
+			$this->proxy = $proxy;
+		}
 	}
 }
