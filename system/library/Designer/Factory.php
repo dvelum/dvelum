@@ -75,7 +75,6 @@ class Designer_Factory
 		$projectData['includes'] = self::getProjectIncludes($cachedKey , $project , true , $replace);
 
 		$names = $project->getRootPanels();
-		$actionJs = $project->getActionsFile();
 
 		$initCode = '
 		    var applicationClassesNamespace = "'.$projectCfg['namespace'].'";

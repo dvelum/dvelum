@@ -1,5 +1,7 @@
 /**
  * Edit window for ORM object field
+ *
+ * @event dataSaved
  */
 Ext.define('app.crud.orm.FieldWindow', {
 	extend: 'Ext.window.Window',
@@ -533,13 +535,6 @@ Ext.define('app.crud.orm.FieldWindow', {
 		}
 
 		this.items = [this.dataForm];
-
-		this.addEvents(
-			/**
-			 * @event dataSaved
-			 */
-			'dataSaved'
-		);
 
 //		this.dbTypeSelected('boolean');
 

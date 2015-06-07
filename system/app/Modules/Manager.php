@@ -73,7 +73,10 @@ class Modules_Manager
 			return false;
 
 		$cfg = $this->_config->get($name);
-		return $cfg['class'];
+		if(isset($cfg['class']) && !empty($cfg['class']))
+			return $cfg['class'];
+		else
+			return '';
 	}
 
 	/**
