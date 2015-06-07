@@ -139,7 +139,7 @@ class Designer_Project_Events
 	}
 	
 	/**
-	 * Get evant configuration
+	 * Get event configuration
 	 * @param string $object
 	 * @param string $event
 	 * @return array | false

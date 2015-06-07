@@ -106,8 +106,7 @@ class Designer_Project
 	 */
 	protected $_config = array(
 			'namespace' => 'appClasses' ,
-			'runnamespace' => 'appRun' ,
-			'actionjs' => '',
+			'runnamespace' => 'appRun',
 			'files'=>array(),
 	        'langs'=>array()
 	);
@@ -121,6 +120,11 @@ class Designer_Project
 	 * @var Designer_Project_Methods
 	 */
 	protected $_methodManager = false;
+	/**
+	 * JS Action Code
+	 * @var string
+	 */
+	protected $_actionJs = '';
 
 	public function __construct()
 	{
@@ -562,15 +566,24 @@ class Designer_Project
 		}
 		return $names;
 	}
-
 	/**
-	 * Get ActionJs filte path
+	 * Get Application ActionJs code
 	 * @return string
 	 */
-	public function getActionsFile()
+	public function getActionJs()
 	{
-		return str_replace(array('./','//') , '/' , $this->actionjs);
+		return $this->_actionJs;
 	}
+
+	/**
+	 * Set Application ActionJs code
+	 * @param $code
+	 */
+	public function setActionJs($code)
+	{
+		$this->_actionJs = $code;
+	}
+
 	/**
 	 * Create unique component id
 	 * @param string $prefix

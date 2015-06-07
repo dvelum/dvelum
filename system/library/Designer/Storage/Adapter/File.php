@@ -119,7 +119,11 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 			return false;
 		}
 		*/
-
+		// Export ActionJs
+		if(@file_put_contents($this->exportPath.'ActionJS.js', $project->getActionJs())===false){
+			$this->_errors[] = 'write: ' . $this->exportPath.'ActionJS.js';
+			return false;
+		}
 		// Export Project config
 		if(!Utils::exportArray($this->exportPath.'__config.php' , $project->getConfig())){
 			$this->_errors[] = 'write: ' . $this->exportPath . '__config.php';
@@ -319,9 +323,16 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 		$project = new Designer_Project();
 		$project->setConfig($config);
 
+		$project->setActionJs(@file_get_contents($this->exportPath . 'ActionJS.js'));
+
 		$treeData = require $this->exportPath . '__tree.php';
 		$this->importTree($project , $treeData);
 
+		$events = require $this->exportPath . '__events.php';
+		$this->importEvents($project , $events);
+
+		$methods = require $this->exportPath . '__methods.php';
+		$this->importMethods($project , $methods);
 
 		return $project;
 	}
@@ -346,6 +357,51 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 				$o->setState($v['state']);
 			}
 			$tree->addItem($v['id'],$v['parent'], $o, $v['order']);
+		}
+	}
+
+	/**
+	 * Restore project methods from config
+	 * @param Designer_Project $project
+	 * @param array $methods
+	 */
+	protected function importMethods(Designer_Project $project, array $methods)
+	{
+		$methodManager = $project->getMethodManager();
+		foreach($methods as $object => $configFile)
+		{
+			$objectMethods = require $this->exportPath . $configFile;
+			foreach($objectMethods as $data)
+			{
+				$code = '';
+				if(!empty($data['code'])){
+					$code = @file_get_contents($this->exportPath . $data['code']);
+				}
+				$m = $methodManager->addMethod($object , $data['name'] , $data['params'] , $code);
+				$m->setDescription($data['description']);
+			}
+		}
+	}
+
+	/**
+	 * Restore project events from config
+	 * @param Designer_Project $project
+	 * @param array $events
+	 */
+	protected function importEvents(Designer_Project $project, array $events)
+	{
+		$eventManager = $project->getEventManager();
+		foreach($events as $object => $configFile)
+		{
+			$objectEvents = require $this->exportPath . $configFile;
+			foreach($objectEvents as $name => $data)
+			{
+				$code = '';
+				if(!empty($data['code'])){
+					$code = @file_get_contents($this->exportPath . $data['code']);
+				}
+				$eventManager->setEvent($object, $name, $code, $data['params'], $data['is_local']);
+			}
 		}
 	}
 }

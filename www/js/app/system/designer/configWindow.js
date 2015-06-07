@@ -136,9 +136,6 @@ Ext.define('designer.configWindow',{
 				},{
 					name:'runnamespace',
 					fieldLabel:desLang.projectRunNamespace
-				},{
-					name:'actionjs',
-					fieldLabel:desLang.actionJsFile
 				},
 				this.includesGrid ,
 				this.langsGrid

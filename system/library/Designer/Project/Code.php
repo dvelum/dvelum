@@ -46,7 +46,8 @@ class Designer_Project_Code
 		return '
 		Ext.ns("' . $this->_project->namespace . '","' . $this->_project->runnamespace . '");
 		' . $code['defines'] . '
-	    ' . $code['layout'];
+	    ' . $code['layout'].'
+	    ' . $this->_project->getActionJs();
 	}
 
     /**

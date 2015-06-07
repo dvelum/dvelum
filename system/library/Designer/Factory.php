@@ -227,18 +227,6 @@ class Designer_Factory
 
 			$includes[] = '/'.str_replace($applicationConfig->get('jsCacheSysPath'), $applicationConfig->get('jsCacheSysUrl') , $layoutCacheFile);
 		}
-		/*
-		 * Project actions
-		 */
-		$actionFile = $project->getActionsFile();
-		/**
-		 * @todo slow operation
-		 */
-		$mTime = 0;
-		if(file_exists('.'.$actionFile))
-		  $mTime = filemtime('.'.$actionFile);
-
-		$includes[] = $actionFile . '?' . $mTime;
 		return $includes;
 	}
 	/**
