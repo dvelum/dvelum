@@ -682,11 +682,9 @@ class Designer_Project
 				}
 
 				$model->defineOnly = true;
-				$this->_tree->addItem($modelName, '_Component_', $model);
+				$this->_tree->addItem($modelName, '_Component_', $model, -10);
 				$object->model = $modelName;
 				$object->resetFields();
-				//echo '<pre>';
-				//print_r($this->getItemData($modelName));
 			}
 
 		}
