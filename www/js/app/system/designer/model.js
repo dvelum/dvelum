@@ -98,6 +98,7 @@ Ext.define('designer.model.configWindow',{
 		this.fieldsGrid = Ext.create('Ext.grid.Panel', {
 			region:'center',
 			store:this.fieldsStore,
+			columnLines: true,
 			columns:[
 			         {
 			        	 text:desLang.field,

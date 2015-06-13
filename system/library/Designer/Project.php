@@ -606,22 +606,36 @@ class Designer_Project
 	 * Project converter 0.9.x to  1.x
 	 * @return boolean -  update flag
 	 */
-	public function convertTo1x()
+	public function convertTo1x($jsPath)
 	{
 		if($this->itemExist('_Component_'))
 			return false;
 
-		$this->initContainers();
+		// migrate actionJS
+		if(isset($this->_config['actionjs']) && !empty($this->_config['actionjs']))
+		{
+			$jsFilePath = str_replace('./js/' ,$jsPath , $this->_config['actionjs']);
+			if(file_exists($jsFilePath)){
+				$code = @file_get_contents($jsFilePath);
+				$this->setActionJs($code);
+				unset($this->_config['actionjs']);
+			}
+		}
 
+		$this->initContainers();
 		$items = $this->_tree->getChilds(0);
 		$stores = $this->getStores();
 
-		foreach($stores as $id=>$object){
+		foreach($stores as $id=>$object)
+		{
 			$this->changeParent($id , 0 );
 		}
 
 		foreach($items as $cmpData)
 		{
+			/**
+			 * @var Ext_Object
+			 */
 			$object = $cmpData['data'];
 
 			if($object instanceof Designer_Project_Container){
@@ -629,7 +643,7 @@ class Designer_Project
 			}
 
 			/*
-			 * Defined components without autolayout
+			 * Defined components without auto layout
 			 */
 			if($object->isExtendedComponent() && $object->isValidProperty('definedOnly') && $object->defineOnly) {
 				$this->_tree->changeParent($cmpData['id'] , '_Component_');
@@ -648,6 +662,33 @@ class Designer_Project
 			}
 
 			$this->_tree->changeParent($cmpData['id'] , '_Layout_');
+		}
+		foreach($stores as $id => $object) {
+			// create models
+			$modelName = $object->getName() . 'Model';
+
+			if(!$this->objectExists($modelName)) {
+				/**
+				 * @var Ext_Model $model
+				 */
+				$model = Ext_Factory::object('Model');
+				$model->setName($modelName);
+				$model->idProperty = 'id';
+
+				$storeFields = $object->getFields();
+				foreach($storeFields as $name => $field) {
+					$field->name = $name;
+					$model->addField(Ext_Factory::object('Data_Field', $field->getConfig()->__toArray(true)));
+				}
+
+				$model->defineOnly = true;
+				$this->_tree->addItem($modelName, '_Component_', $model);
+				$object->model = $modelName;
+				$object->resetFields();
+				//echo '<pre>';
+				//print_r($this->getItemData($modelName));
+			}
+
 		}
 		return true;
 	}

@@ -49,8 +49,9 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 			//if(!$project instanceof Designer_Project){
 				$project = Designer_Factory::loadProject($this->_config, $file);
 				// convert project to 1.x version
-				if($project->convertTo1x())
+				if($project->convertTo1x($this->_config->get('js_path'))){
 					$this->_storeProject();
+				}
 			//}
 		}catch (Exception $e){;
 			Response::jsonError($this->_lang->WRONG_REQUEST);

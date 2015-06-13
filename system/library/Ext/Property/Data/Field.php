@@ -19,6 +19,7 @@ class Ext_Property_Data_Field extends Ext_Property
 
 	// Dvelum designer property
 	public $type = self::String;
+	public $dateFormat = self::String;
 
 	static public $extend = 'Ext.data.field.Field';
 }

@@ -95,8 +95,7 @@ class Ext_Model extends Ext_Object
 	    if($object instanceof  Ext_Model_Field){
 	        $object = get_object_vars($object);    
 	    }
-	    
-	    
+
 	    if($object instanceof Ext_Virtual && $object->getClass()=='Data_Field')
 	    {
 	        if(empty($object->name))
@@ -224,16 +223,6 @@ class Ext_Model extends Ext_Object
 	 */
 	protected function _convertFields()
 	{
-	    
-	    if(!empty($this->_fields))
-	    {
-	        foreach ($this->_fields as $k=>&$v){
-	            if($v instanceof Ext_Model_Field && isset($v->name)){
-	                $v = Ext_Factory::object('Data_Field' , get_object_vars($v));
-	            }
-	        }unset($v);
-	    }
-	    	    
 	    if(empty($this->_config->fields))
 	        return;
 	    
