@@ -54,17 +54,13 @@ Ext.define('designer.objects.Store',{
  *
  * @event objectRemoved
  */
-Ext.define('designer.objects.Panel',{
-	extend:'Ext.tab.Panel',
-	activeTab:0,
-	title:desLang.layoutObjects,
-
-	panelsTab:null,
-	storesTab:null,
-	modelsTab:null,
-
+Ext.define('designer.objects.Manager',{
+	extend:'Ext.container.Container',
+	layout:'fit',
+	componentsTree:null,
+	storesStore:null,
+	modelsStore:null,
 	menuStore:null,
-
 	controllerUrl:'',
 
 	initComponent:function(){
@@ -92,29 +88,16 @@ Ext.define('designer.objects.Panel',{
 			}
 		};
 
-		this.panelsTab = Ext.create('designer.objects.Tree',{
-			title:desLang.panels,
+		this.componentsTree = Ext.create('designer.objects.Tree',{
 			listType:'visual',
 			controllerUrl:this.controllerUrl,
 			listeners:curListeners
 		});
 
-		this.storesTab = Ext.create('designer.objects.Grid',{
-			title:desLang.stores,
-			controllerUrl:this.controllerUrl,
-			dataStore:this.createStore('stores'),
-			listeners:curListeners
-		});
+		this.storesStore = this.createStore('stores');
+		this.modelsStore = this.createStore('models');
 
-		this.modelsTab = Ext.create('designer.objects.Grid',{
-			title:desLang.models,
-			controllerUrl:this.controllerUrl,
-			dataStore:this.createStore('models'),
-			listeners:curListeners
-		});
-
-
-		this.items = [this.panelsTab , this.storesTab , this.modelsTab];
+		this.items = [this.componentsTree];
 
 		this.callParent();
 	},
@@ -122,18 +105,18 @@ Ext.define('designer.objects.Panel',{
 	 * Clear project data
 	 */
 	clearData:function(){
-		this.panelsTab.getStore().getRootNode().removeAll();
-		this.storesTab.dataStore.removeAll();
-		this.modelsTab.dataStore.removeAll();
+		this.componentsTree.getStore().getRootNode().removeAll();
+		this.storesStore.removeAll();
+		this.modelsStore.removeAll();
 		this.menuStore.removeAll();
 	},
 	/**
 	 * Load objects info
 	 */
 	loadInfo:function(){
-		this.panelsTab.reload();
-		this.storesTab.dataStore.load();
-		this.modelsTab.dataStore.load();
+		this.componentsTree.reload();
+		this.storesStore.load();
+		this.modelsStore.load();
 		this.menuStore.load();
 	},
 	/**

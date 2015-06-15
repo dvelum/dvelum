@@ -122,12 +122,12 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
                 if($object->isInstance())
                 {
                   $inst = ' <span class="extInstanceLabel" data-qtip="Object instance">instance of </span>' . $object->getObject()->getName() ;
-                }elseif($object->isExtendedComponent()){
-                  $ext = ' <span class="extCmpLabel" data-qtip="Extended component">ext</span> ';
-                  if($object->defineOnly){
-                    $objectName = '<span class="extClassLabel" data-qtip="defineOnly:true">'.$objectName.'</span>';
-                  }
                 }
+
+				if($root === Designer_Project::COMPONENT_ROOT){
+					$ext = ' <span class="extCmpLabel" data-qtip="Extended component">ext</span> ';
+					$objectName = '<span class="extClassLabel">'.$objectName.'</span>';
+				}
 
                 $item->text = $ext . $objectName . ' ('.$objectClass.')' . $inst;
                 $item->expanded = true;

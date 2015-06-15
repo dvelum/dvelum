@@ -156,6 +156,7 @@ var desLang = {
 		projectConfig:'Project Config',
 		projectNamespace:'Components namespace',
 		projectRunNamespace:'Layout namespace',
+		projectTree: 'Project Tree',
 		proxy:'Proxy',
 		proxyReader:'Proxy Reader',
 		proxyWriter:'Proxy Writer',

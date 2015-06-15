@@ -24,6 +24,8 @@
 class Designer_Project
 {
 	static protected $reservedNames = array('_Component_','_Layout_');
+	const COMPONENT_ROOT = '_Component_';
+	const LAYOUT_ROOT = '_Layout_';
 
 	protected static $_containers = array(
 			'Panel' ,
@@ -137,11 +139,11 @@ class Designer_Project
 	 */
 	protected function initContainers()
 	{
-		$this->_tree->addItem('_Component_' , false, new Designer_Project_Container('Components'), -1000);
-		$this->_tree->sortItems('_Component_');
+		$this->_tree->addItem(self::COMPONENT_ROOT , false, new Designer_Project_Container('Components'), -1000);
+		$this->_tree->sortItems(self::COMPONENT_ROOT );
 
-		$this->_tree->addItem('_Layout_' , false, new Designer_Project_Container('Layout'), -500);
-		$this->_tree->sortItems('_Layout_' );
+		$this->_tree->addItem(self::LAYOUT_ROOT, false, new Designer_Project_Container('Layout'), -500);
+		$this->_tree->sortItems(self::LAYOUT_ROOT);
 	}
 
 	/**
