@@ -217,7 +217,8 @@ Ext.define('designer.objects.Tree',{
 				if(response.success){
 					me.fireEvent('objectRemoved');
 					me.fireEvent('dataChanged');
-					me.reload();
+					me.getStore().remove(selected);
+					//me.reload();
 				}else{
 					Ext.Msg.alert(appLang.MESSAGE, response.msg);
 				}
