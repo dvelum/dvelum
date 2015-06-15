@@ -312,14 +312,17 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	   */
 	  $rootClasses = array('Window','Store','Data_Store','Data_Store_Tree','Model');
 	  $isWindowComponent = (strpos($instanceObject->getClass(),'Component_Window_')!==false);
-	  
+
+	  if($parent === Designer_Project::COMPONENT_ROOT)
+		  $parent = Designer_Project::COMPONENT_ROOT;
+
 	  if(in_array($instanceObject->getClass(), $rootClasses , true) || $isWindowComponent)
-	      $parent = 0;
+	      $parent = Designer_Project::COMPONENT_ROOT;
 	  /*
 	   * Check if parent object exists and can has childs
 	  */
 	  if(!$project->objectExists($parent) || !Designer_Project::isContainer($project->getObject($parent)->getClass()))
-	      $parent = 0;
+	      $parent =  Designer_Project::COMPONENT_ROOT;
 	    
 	  if($project->objectExists($name))
 	    $errors['name'] = $this->_lang->get('SB_UNIQUE');
@@ -503,11 +506,11 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	{
 	  $list = array();
 	  $project = $this->_getProject();
-	  $items = $project->getObjects();
+	  $items = $project->getComponents();
 	  
 	  foreach ($items as $name => $object)
 	  {
-	     if(!$object->isInstance() && $object->isExtendedComponent() && Designer_Project::isVisibleComponent($object->getClass())){
+	     if(Designer_Project::isVisibleComponent($object->getClass())){
 	       $list[] = array('name'=>$name);
 	     }  
 	  }

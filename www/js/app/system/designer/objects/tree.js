@@ -178,6 +178,7 @@ Ext.define('designer.objects.Tree',{
 					this.fireEvent('dataChanged');
 					this.updateLayout();
 				}else{
+					this.reload();
 					Ext.Msg.alert(appLang.MESSAGE, response.msg);
 				}
 			},

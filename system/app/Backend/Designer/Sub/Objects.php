@@ -261,8 +261,8 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
         $id = Request::post('id','string',false);
         $newParent = Request::post('newparent','string',false);
 
-        if(!strlen($newParent))
-        	$newParent = 0;
+        if(empty($newParent))
+        	$newParent = Designer_Project::LAYOUT_ROOT;
 
         $order = Request::post('order', 'array' , array());
         $project = $this->_getProject();
@@ -273,12 +273,16 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 		$itemData = $project->getTree()->getItem($id);
 
 		if(in_array($itemData['data']->getClass() , Designer_Project::$storeClasses , true)){
-			if($newParent != '0' && $newParent !='_Component_'){
+			if($newParent != '0' && $newParent !=Designer_Project::COMPONENT_ROOT){
 				Response::jsonError('Store can exist only at Project root or Components root');
 			}
 		}
 
-		if($itemData['parent'] == '_Component_' && $newParent !=='_Component_' && $project->hasInstances($id)){
+		if($itemData['data']->isInstance() && $newParent == Designer_Project::COMPONENT_ROOT){
+			Response::jsonError('Object instance cannot be converted to component');
+		}
+
+		if($itemData['parent'] == Designer_Project::COMPONENT_ROOT && $newParent !==Designer_Project::COMPONENT_ROOT && $project->hasInstances($id)){
 			Response::jsonError('Component cannot be converted. Object Instances detected');
 		}
 

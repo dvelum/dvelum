@@ -3,7 +3,7 @@ var desLang = {
 		addColumn:'Add column',
 		addEvent:'Add Event',
 		addInstance:'Add Instance',
-		addInstanceTip:'Add instance of existing object (isExtended:true)',
+		addInstanceTip:'Add instance of existing component',
 		addMethod:'Add method',
 		addFilter:'Add Filter',
 		addLangFile:'Add localization dictionary',

@@ -353,6 +353,22 @@ class Designer_Project
 	}
 
 	/**
+	 * Get extended components
+	 * @return array
+	 */
+	public function getComponents()
+	{
+		$data = array();
+		if($this->_tree->hasChilds(self::COMPONENT_ROOT)) {
+			$childs = $this->_tree->getChilds(self::COMPONENT_ROOT);
+			foreach ($childs as $k => $v) {
+				$data[$v['id']] = $v['data'];
+			}
+		}
+		return $data;
+	}
+
+	/**
 	 * Get objects tree
 	 * @return Tree
 	 */
