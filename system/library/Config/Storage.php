@@ -76,7 +76,7 @@ class Config_Storage
 
         $object = new Config_File_Array($this->config['file_array']['write'] . $localPath , false);
 
-        if($this->config['file_array']['apply_to']!==false)
+        if($this->config['file_array']['apply_to']!==false && $merge)
             $object->setApplyTo($this->config['file_array']['apply_to'] . $localPath );
 
         $object->setData($data);
