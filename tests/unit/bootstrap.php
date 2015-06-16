@@ -11,11 +11,11 @@ chdir(DVELUM_ROOT);
 /*
  * Including initial config
  */
-$bootCfg = include DVELUM_ROOT . '/config/dist/init.php';
+$bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/system/library/Autoloader.php';
+require DVELUM_ROOT . '/dvelum/library/Autoloader.php';
 $autoloader = new Autoloader($bootCfg['autoloader']);
 Config::setStorageOptions($bootCfg['config_storage']);
 
@@ -26,11 +26,11 @@ Config::setStorageOptions($bootCfg['config_storage']);
 $storageConfig = Config::storage()->get('config_storage.php')->__toArray();
 $storageConfig['file_array'] = array(
     'paths' => array(
-        './config/dist/',
-        './config/local/',
-        './test/config/',
+        './application/configs/dist/',
+        './application/configs/local/',
+        './tests/configs/',
     ),
-    'write' =>  './test/config/',
+    'write' =>  './tests/configs/',
     'apply_to' => false,
 );
 
@@ -60,7 +60,7 @@ $autoloader->setConfig($autoloaderCfg);
 Registry::set('main', $config , 'config');
 
 // clear test configs
-File::rmdirRecursive('./test/config/' , false);
+File::rmdirRecursive('./tests/configs/' , false);
 
 /*
  * Starting the application
