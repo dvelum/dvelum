@@ -35,7 +35,7 @@ ini_set("session.cookie_httponly", 1);
 ob_start();
 
 //===== loading kernel =========
-/*может
+/*
  * Including initial config
  */
 $bootCfg = include DVELUM_ROOT . '/config/dist/init.php';
