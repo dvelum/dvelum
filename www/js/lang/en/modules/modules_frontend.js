@@ -1,0 +1,1 @@
+var modules_frontendLang = {api:"API Controller [System]",console:"Cronjobs"};

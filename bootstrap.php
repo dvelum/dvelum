@@ -38,11 +38,11 @@ ob_start();
 /*
  * Including initial config
  */
-$bootCfg = include DVELUM_ROOT . '/config/dist/init.php';
+$bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/system/library/Autoloader.php';
+require DVELUM_ROOT . '/dvelum/library/Autoloader.php';
 $autoloader = new Autoloader($bootCfg['autoloader']);
 Config::setStorageOptions($bootCfg['config_storage']);
 
@@ -73,9 +73,7 @@ $autoloaderCfg['debug'] = $config->get('development');
 if(!isset($autoloaderCfg['useMap']))
     $autoloaderCfg['useMap'] = true;
 
-if($autoloaderCfg['useMap'] && $autoloaderCfg['usePackages'] && $autoloaderCfg['mapPackaged'])
-    $autoloaderCfg['map'] = require Config::storage()->getPath($autoloaderCfg['mapPackaged']);
-elseif($autoloaderCfg['useMap'] && !$autoloaderCfg['usePackages'] && $autoloaderCfg['map'])
+if($autoloaderCfg['useMap'] && $autoloaderCfg['map'])
     $autoloaderCfg['map'] = require Config::storage()->getPath($autoloaderCfg['map']);
 else
     $autoloaderCfg['map'] = false;
