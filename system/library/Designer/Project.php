@@ -670,16 +670,19 @@ class Designer_Project
 
 			if($object->isExtendedComponent())
 			{
-				$this->_tree->changeParent($cmpData['id'] , '_Component_');
+				$this->_tree->changeParent($cmpData['id'] , Designer_Project::COMPONENT_ROOT);
 
-				$objectInstance = Ext_Factory::object('Object_Instance');
-				$objectInstance->setObject($object);
-				$objectInstance->setName($object->getName());
-				$this->_tree->addItem($objectInstance->getName().'_instance', '_Layout_', $objectInstance, $cmpData['order']);
+				if(strpos($object->getClass(),'Window')===false) {
+					$objectInstance = Ext_Factory::object('Object_Instance');
+					$objectInstance->setObject($object);
+					$objectInstance->setName($object->getName());
+					$this->_tree->addItem($objectInstance->getName() . '_instance', '_Layout_', $objectInstance,
+						$cmpData['order']);
+				}
 				continue;
 			}
 
-			$this->_tree->changeParent($cmpData['id'] , '_Layout_');
+			$this->_tree->changeParent($cmpData['id'] , Designer_Project::LAYOUT_ROOT);
 		}
 		foreach($stores as $id => $object) {
 			// create models
@@ -700,7 +703,7 @@ class Designer_Project
 				}
 
 				$model->defineOnly = true;
-				$this->_tree->addItem($modelName, '_Component_', $model, -10);
+				$this->_tree->addItem($modelName, Designer_Project::COMPONENT_ROOT , $model, -10);
 				$object->model = $modelName;
 				$object->resetFields();
 			}
