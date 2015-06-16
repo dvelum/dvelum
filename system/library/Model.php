@@ -875,16 +875,6 @@ class Model
     }
 
     /**
-     * Get Global bd connection
-     * @return Zend_Db_Adapter_Abstract
-     * @deprecated since 0.9.1
-     */
-//    static public function getGlobalDbConnection()
-//    {
-//        return Registry::get('db');
-//    }
-
-    /**
      * Set default error log adapter
      * @param Log $log
      */

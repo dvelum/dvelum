@@ -23,6 +23,10 @@
  */
 class Designer_Project
 {
+	static protected $reservedNames = array('_Component_','_Layout_');
+	const COMPONENT_ROOT = '_Component_';
+	const LAYOUT_ROOT = '_Layout_';
+
 	protected static $_containers = array(
 			'Panel' ,
 			'Tabpanel' ,
@@ -80,10 +84,10 @@ class Designer_Project
 
 	protected static $_nonDraggable = array(
 			'Window' ,
-			'Store' ,
+			//'Store' ,
 			'Model',
-			'Data_Store_Tree',
-			'Data_Store'
+			//'Data_Store_Tree',
+			//'Data_Store'
 	);
 
 	public static $storeClasses = array(
@@ -104,8 +108,7 @@ class Designer_Project
 	 */
 	protected $_config = array(
 			'namespace' => 'appClasses' ,
-			'runnamespace' => 'appRun' ,
-			'actionjs' => '',
+			'runnamespace' => 'appRun',
 			'files'=>array(),
 	        'langs'=>array()
 	);
@@ -119,10 +122,28 @@ class Designer_Project
 	 * @var Designer_Project_Methods
 	 */
 	protected $_methodManager = false;
+	/**
+	 * JS Action Code
+	 * @var string
+	 */
+	protected $_actionJs = '';
 
 	public function __construct()
 	{
 		$this->_tree = new Tree();
+		$this->initContainers();
+	}
+
+	/**
+	 * Init system layout
+	 */
+	protected function initContainers()
+	{
+		$this->_tree->addItem(self::COMPONENT_ROOT , false, new Designer_Project_Container('Components'), -1000);
+		$this->_tree->sortItems(self::COMPONENT_ROOT );
+
+		$this->_tree->addItem(self::LAYOUT_ROOT, false, new Designer_Project_Container('Layout'), -500);
+		$this->_tree->sortItems(self::LAYOUT_ROOT);
 	}
 
 	/**
@@ -263,6 +284,17 @@ class Designer_Project
 		return $this->_config;
 	}
 
+	/**
+	 * Set project config options
+	 * @param array $config
+	 */
+	public function setConfig(array $config)
+	{
+		foreach($config as $name=>$value){
+			$this->_config[$name] = $value;
+		}
+	}
+
 	public function __get($name)
 	{
 		if(!isset($this->_config[$name]))
@@ -317,6 +349,22 @@ class Designer_Project
 		if(!empty($items))
 			foreach($items as $config)
 				$data[$config['id']] = $config['data'];
+		return $data;
+	}
+
+	/**
+	 * Get extended components
+	 * @return array
+	 */
+	public function getComponents()
+	{
+		$data = array();
+		if($this->_tree->hasChilds(self::COMPONENT_ROOT)) {
+			$childs = $this->_tree->getChilds(self::COMPONENT_ROOT);
+			foreach ($childs as $k => $v) {
+				$data[$v['id']] = $v['data'];
+			}
+		}
 		return $data;
 	}
 
@@ -411,6 +459,25 @@ class Designer_Project
 	{
 		return $this->_tree->hasChilds($name);
 	}
+
+	/**
+	 * Check if object has instances
+	 * @param $name
+	 * @return bool
+	 */
+	public function hasInstances($name)
+	{
+		$items = $this->getObjectsByClass('Object_Instance');
+		if(!empty($items))
+		{
+			foreach($items as $id => $object)
+			{
+				if($object->getObject()->getName() == $name)
+					return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * Get object childs
 	 * @param string $name
@@ -475,7 +542,15 @@ class Designer_Project
 			return $codeGen->getObjectCode($name);
 		}
 	}
-
+	/**
+	 * Check if item exists
+	 * @param $id
+	 * @return bool
+	 */
+	public function itemExist($id)
+	{
+		return $this->_tree->itemExists($id);
+	}
 	/**
 	 * Get item data
 	 * @param mixed $id
@@ -490,7 +565,7 @@ class Designer_Project
 	 */
 	public function getRootPanels()
 	{
-		$list = $this->_tree->getChilds(0);
+		$list = $this->_tree->getChilds('_Layout_');
 		$names = array();
 
 		if(empty($list))
@@ -509,15 +584,24 @@ class Designer_Project
 		}
 		return $names;
 	}
-
 	/**
-	 * Get ActionJs filte path
+	 * Get Application ActionJs code
 	 * @return string
 	 */
-	public function getActionsFile()
+	public function getActionJs()
 	{
-		return str_replace(array('./','//') , '/' , $this->actionjs);
+		return $this->_actionJs;
 	}
+
+	/**
+	 * Set Application ActionJs code
+	 * @param $code
+	 */
+	public function setActionJs($code)
+	{
+		$this->_actionJs = $code;
+	}
+
 	/**
 	 * Create unique component id
 	 * @param string $prefix
@@ -534,5 +618,97 @@ class Designer_Project
 	    $postfix++;
 	  }
 	  return $prefix.$postfix;
+	}
+
+	/**
+	 * Project converter 0.9.x to  1.x
+	 * @return boolean -  update flag
+	 */
+	public function convertTo1x($jsPath)
+	{
+		if($this->itemExist('_Component_'))
+			return false;
+
+		// migrate actionJS
+		if(isset($this->_config['actionjs']) && !empty($this->_config['actionjs']))
+		{
+			$jsFilePath = str_replace('./js/' ,$jsPath , $this->_config['actionjs']);
+			if(file_exists($jsFilePath)){
+				$code = @file_get_contents($jsFilePath);
+				$this->setActionJs($code);
+				unset($this->_config['actionjs']);
+			}
+		}
+
+		$this->initContainers();
+		$items = $this->_tree->getChilds(0);
+		$stores = $this->getStores();
+
+		foreach($stores as $id=>$object)
+		{
+			$this->changeParent($id , 0 );
+		}
+
+		foreach($items as $cmpData)
+		{
+			/**
+			 * @var Ext_Object
+			 */
+			$object = $cmpData['data'];
+
+			if($object instanceof Designer_Project_Container){
+				continue;
+			}
+
+			/*
+			 * Defined components without auto layout
+			 */
+			if($object->isExtendedComponent() && $object->isValidProperty('definedOnly') && $object->defineOnly) {
+				$this->_tree->changeParent($cmpData['id'] , '_Component_');
+				continue;
+			}
+
+			if($object->isExtendedComponent())
+			{
+				$this->_tree->changeParent($cmpData['id'] , Designer_Project::COMPONENT_ROOT);
+
+				if(strpos($object->getClass(),'Window')===false) {
+					$objectInstance = Ext_Factory::object('Object_Instance');
+					$objectInstance->setObject($object);
+					$objectInstance->setName($object->getName());
+					$this->_tree->addItem($objectInstance->getName() . '_instance', '_Layout_', $objectInstance,
+						$cmpData['order']);
+				}
+				continue;
+			}
+
+			$this->_tree->changeParent($cmpData['id'] , Designer_Project::LAYOUT_ROOT);
+		}
+		foreach($stores as $id => $object) {
+			// create models
+			$modelName = $object->getName() . 'Model';
+
+			if(!$this->objectExists($modelName)) {
+				/**
+				 * @var Ext_Model $model
+				 */
+				$model = Ext_Factory::object('Model');
+				$model->setName($modelName);
+				$model->idProperty = 'id';
+
+				$storeFields = $object->getFields();
+				foreach($storeFields as $name => $field) {
+					$field->name = $name;
+					$model->addField(Ext_Factory::object('Data_Field', $field->getConfig()->__toArray(true)));
+				}
+
+				$model->defineOnly = true;
+				$this->_tree->addItem($modelName, Designer_Project::COMPONENT_ROOT , $model, -10);
+				$object->model = $modelName;
+				$object->resetFields();
+			}
+
+		}
+		return true;
 	}
 }

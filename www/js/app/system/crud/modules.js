@@ -456,6 +456,7 @@ Ext.define('app.crud.modules.Main',{
 Ext.define('app.crud.modules.Model',{
 	extend:'Ext.data.Model',
 	fields: [
+		{name:'id',type:'string'},
 		{name:'class',type:'string'},
 		{name:'dev' , type:'boolean'},
 		{name:'active', type:'boolean'},
@@ -983,7 +984,7 @@ Ext.define('app.crud.modules.Backend',{
 				reader: {
 					type: 'json',
 					rootProperty: 'data',
-					idProperty: 'class'
+					idProperty: 'id'
 				},
 				simpleSortMode: true
 			},

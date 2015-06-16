@@ -12,6 +12,21 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 
 		$res = Resource::getInstance();
 		$res->addJs('/js/lib/jquery.js'  , 0);
+
+		$backendScripts = Config::factory(Config::File_Array,  $this->_configMain['configs'] . 'js_inc_backend.php');
+		if($backendScripts->getCount())
+		{
+			$js = $backendScripts->get('js');
+			if(!empty($js))
+				foreach($js as $file => $config)
+					$res->addJs($file , $config['order'] , $config['minified']);
+
+			$css = $backendScripts->get('css');
+			if(!empty($css))
+				foreach($css as $file => $config)
+					$res->addCss($file , $config['order']);
+		}
+
 		Model::factory('Medialib')->includeScripts();
 
 		$res->addJs('/js/app/system/SearchPanel.js');
@@ -67,7 +82,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
     			array('tpl'=>$templates['urldelimiter'],'value'=>$this->_configMain->get('urlDelimiter')),
     	);
 
-    	$includes = Designer_Factory::getProjectIncludes($key, $project , true , $replaces);
+    	$includes = Designer_Factory::getProjectIncludes($key, $project , true , $replaces , true);
 
 	   if(!empty($includes))
 		{

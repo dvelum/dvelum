@@ -150,11 +150,12 @@ class Backend_Modules_Controller extends Backend_Controller{
 			Response::jsonError($this->_lang->get('INVALID_VALUE'));
 
 		$acceptedFields =  array(
+			'id'=> Filter::FILTER_STRING ,
 			'dev' => Filter::FILTER_BOOLEAN ,
 			'active' => Filter::FILTER_BOOLEAN ,
 			'title'=> Filter::FILTER_STRING ,
+			'class'=> Filter::FILTER_STRING ,
 			'designer'=> Filter::FILTER_STRING,
-			'controller'=> Filter::FILTER_STRING,
 			'in_menu'=> Filter::FILTER_BOOLEAN ,
 			'icon'=> Filter::FILTER_STRING
 		);

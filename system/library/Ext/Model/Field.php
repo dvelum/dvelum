@@ -3,9 +3,9 @@
  * Model field
  * @deprecated
  */
-class Ext_Model_Field
+class Ext_Model_Field extends  Ext_Property_Data_Field
 {
-	public $name;
+	/*public $name;
 	public $type;
 	public $defaultValue;
 	
@@ -15,4 +15,5 @@ class Ext_Model_Field
 		$this->type = $type;
 		$this->defaultValue = $defaultValue;
 	}
+	*/
 }

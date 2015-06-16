@@ -5,7 +5,18 @@ Ext.define('designer.properties.Model',{
 	extend:'designer.properties.Panel',
 	
 	controllerUrl:null,	
-	initComponent:function(){	
+	initComponent:function()
+	{
+		this.tbar = [{
+			iconCls:'fieldIcon',
+			tooltip:desLang.fields,
+			scope:this,
+			handler:function(){
+				this.showColumnsWindow(0);
+			}
+		}];
+
+
 		var returnDots = function(v){return '...';};
 		this.sourceConfig = Ext.apply({	
 			'fields':{

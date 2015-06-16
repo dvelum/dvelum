@@ -55,7 +55,12 @@ class Designer_Debugger
      */
     public function getObjectProperties($objectName , $exceptEmpty = true)
     {
-        return $this->_getObject($objectName)->getConfig()->__toArray($exceptEmpty);
+        $o = $this->_getObject($objectName);
+        if($o instanceof Ext_Object){
+            return $o->getConfig()->__toArray($exceptEmpty);
+        }else{
+            return array();
+        }
     }
     
     /**
@@ -223,7 +228,12 @@ class Designer_Debugger
     */
     public function isExtendedObject($objectName)
     {
-      return $this->_project->getObject($objectName)->isExtendedComponent();
+        $o = $this->_project->getObject($objectName);
+        if($o instanceof Ext_Object){
+            return $this->_project->getObject($objectName)->isExtendedComponent();
+        }else{
+            return false;
+        }
     }
     
    /**

@@ -31,6 +31,12 @@ class Designer_Factory
 		return $storage->load($projectFile);
 	}
 
+	static public function importProject(Config_Abstract $designerConfig , $projectFile)
+	{
+		$storage = Designer_Storage::getInstance($designerConfig->get('storage') , $designerConfig);
+		return $storage->import($projectFile);
+	}
+
 	/**
 	 * Get storage
 	 * @param array $designerConfig
@@ -69,7 +75,6 @@ class Designer_Factory
 		$projectData['includes'] = self::getProjectIncludes($cachedKey , $project , true , $replace);
 
 		$names = $project->getRootPanels();
-		$actionJs = $project->getActionsFile();
 
 		$initCode = '
 		    var applicationClassesNamespace = "'.$projectCfg['namespace'].'";
@@ -80,33 +85,35 @@ class Designer_Factory
 
 		if(!empty($names))
 		{
-			foreach ($names as $name)
-			{
-			  if($project->getObject($name)->isExtendedComponent())
-			  {
-			    if($project->getObject($name)->getConfig()->defineOnly)
-			        continue;
-			    
-			    $initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
-			  }
-			}
-			
-			if($renderTo)
-			{
-      		  $renderTo = str_replace('-', '_', $renderTo);
-      		  $initCode.= '
+			if($renderTo){
+				$renderTo = str_replace('-', '_', $renderTo);
+				$initCode.= '
 				app.content = Ext.create("Ext.container.Container", {
 					layout:"fit",
 					renderTo:"'.$renderTo.'"
 				});
       		   ';
+			}
 
-			  $initCode.='
-			      app.content.add('.Ext_Code::appendRunNamespace($name).');
-			      app.content.doComponentLayout();
-			      ';
-			}else{
-			  $initCode.='app.content.add('.Ext_Code::appendRunNamespace($name).');';
+			foreach ($names as $name)
+			{
+				if($project->getObject($name)->isExtendedComponent())
+				{
+					if($project->getObject($name)->getConfig()->defineOnly)
+						continue;
+
+					$initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
+				}
+				$initCode.='
+					app.content.add('.Ext_Code::appendRunNamespace($name).');
+				';
+			}
+
+			if($renderTo)
+			{
+				$initCode.='
+			      	app.content.doComponentLayout();
+				';
 			}
 		}
 
@@ -147,9 +154,10 @@ class Designer_Factory
 	 * @param Designer_Project $project
 	 * @param boolean $selfInclude
 	 * @param array $replace
+	 * @param boolean $debug, optional default - false (no minification)
 	 * @return array
 	 */
-	static public function getProjectIncludes($cacheKey , Designer_Project $project , $selfInclude = true , $replace = array())
+	static public function getProjectIncludes($cacheKey , Designer_Project $project , $selfInclude = true , $replace = array() , $debug = false)
 	{
 		$applicationConfig = Registry::get('main' , 'config');
 		$designerConfig = Config::factory(Config::File_Array, $applicationConfig->get('configs').'designer.php');
@@ -189,7 +197,7 @@ class Designer_Factory
 						$projectFile = $designerConfig->get('configs') . $file;
 						$subProject = Designer_Factory::loadProject($designerConfig,  $projectFile);
 						$projectKey = self::getProjectCacheKey($projectFile);
-						$files = self::getProjectIncludes($projectKey , $subProject , true , $replace);
+						$files = self::getProjectIncludes($projectKey , $subProject , true , $replace , $debug);
 						unset($subProject);
 						if(!empty($files))
 							$includes = array_merge($includes , $files);
@@ -207,23 +215,17 @@ class Designer_Factory
 			/**
 			 * @todo remove slow operation
 			 */
-			if(!file_exists($layoutCacheFile))
-				file_put_contents($layoutCacheFile, Code_Js_Minify::minify($project->getCode($replace)));
+			if(!file_exists($layoutCacheFile)){
+				if($debug){
+					file_put_contents($layoutCacheFile, $project->getCode($replace));
+				} else {
+					file_put_contents($layoutCacheFile, Code_Js_Minify::minify($project->getCode($replace)));
+				}
+			}
+
 
 			$includes[] = '/'.str_replace($applicationConfig->get('jsCacheSysPath'), $applicationConfig->get('jsCacheSysUrl') , $layoutCacheFile);
 		}
-		/*
-		 * Project actions
-		 */
-		$actionFile = $project->getActionsFile();
-		/**
-		 * @todo slow operation
-		 */
-		$mTime = 0;
-		if(file_exists('.'.$actionFile))
-		  $mTime = filemtime('.'.$actionFile);
-
-		$includes[] = $actionFile . '?' . $mTime;
 		return $includes;
 	}
 	/**

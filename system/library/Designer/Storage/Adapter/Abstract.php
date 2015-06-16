@@ -27,6 +27,11 @@ abstract class Designer_Storage_Adapter_Abstract
 	 * @var Config_Abstract - optional
 	 */
 	protected $_config;
+
+	/**
+	 * Adapter errors
+	 */
+	protected $_errors = array();
 	
 	/**
 	 * @param array $config, optional
@@ -36,12 +41,18 @@ abstract class Designer_Storage_Adapter_Abstract
 		$this->_config = $config;
 	}
 	/**
-	 * Load Db_Query object
+	 * Load Designer_Project object
 	 * @param string $id
-	 * @throws Exception
-	 * @return Db_Query
+	 * @return Designer_Project
 	 */
 	abstract public function load($id);
+
+	/**
+	 * Import  Designer_Project  from contents
+	 * @param string $id
+	 * @return Designer_Project
+	 */
+	abstract public function import($id);
 
 	/**
 	 * Save Db_Query object
@@ -82,5 +93,13 @@ abstract class Designer_Storage_Adapter_Abstract
 			throw new Exception('Invalid data type');
 		
 		return $query;
+	}
+	/**
+	 * Get errors
+	 * @return array
+	 */
+	public function getErrors()
+	{
+		return $this->_errors;
 	}
 }

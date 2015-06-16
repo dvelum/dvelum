@@ -139,7 +139,7 @@ class Designer_Project_Events
 	}
 	
 	/**
-	 * Get evant configuration
+	 * Get event configuration
 	 * @param string $object
 	 * @param string $event
 	 * @return array | false
@@ -208,5 +208,24 @@ class Designer_Project_Events
 	  $this->_events[$object][$newName] = $cfg;
 
 		return true;
+	}
+	/**
+	 * Convert params list to string representation
+	 */
+	public function paramsToString($list)
+	{
+		if(empty($list))
+			return '';
+
+		$params = array();
+		foreach($list as $k=>$v)
+		{
+			if(!empty($v)){
+				$params[] = $v . ' ' . $k;
+			}else{
+				$params[] = $k;
+			}
+		}
+		return implode(' , ', $params);
 	}
 }

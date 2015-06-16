@@ -26,7 +26,10 @@ Ext.define('designer.application',{
 	rightPanel:null,
 	centerPanel:null,
 
-	objectsTabs:null,
+	/**
+	 * @var {designer.objects.Manager}
+	 */
+	projectItems:null,
 	rightBottom:null,
 	componentsBar:null,
 	topToolbar:null,
@@ -119,7 +122,7 @@ Ext.define('designer.application',{
 	{
 		this.layout = 'border';
 		// Right
-		this.objectsTabs = Ext.create('designer.objects.Panel',{
+		this.projectItems = Ext.create('designer.objects.Manager',{
 			region:'north',
 			split:true,
 			height:300,
@@ -149,18 +152,19 @@ Ext.define('designer.application',{
 			split:true,
 			layout:'fit',
 			title:desLang.properties,
-			collapsible:true,
+			collapsible:false,
 			border:false
 		});
 
 		this.rightPanel = Ext.create('Ext.Panel',{
 			region:'east',
+			title:desLang.projectTree,
 			split:true,
 			minWidth:250,
 			width:350,
 			collapsible:true,
 			layout:'border',
-			items: [this.objectsTabs , this.propertiesPanel]
+			items: [this.projectItems , this.propertiesPanel]
 		});
 
 
@@ -434,9 +438,8 @@ Ext.define('designer.application',{
 					]
 				})
 			},{
-				text:desLang.formField,
-				iconCls:'textFieldIcon',
-				tooltip: desLang.add + ' ' + desLang.formField,
+				text:desLang.form,
+				iconCls:'formIcon',
 				oClass:'',
 				menu:Ext.create('Ext.menu.Menu', {
 					style: {
@@ -451,7 +454,8 @@ Ext.define('designer.application',{
 							text:desLang.formPanel,
 							iconCls:'formIcon',
 							tooltip: desLang.add + ' ' + desLang.form,
-							oClass:'form'
+							oClass:'form',
+							showType:'loaded'
 						},
 						{
 							text:'Text',
@@ -863,7 +867,7 @@ Ext.define('designer.application',{
 	},
 
 	loadInterface:function(force){
-		this.objectsTabs.loadInfo();
+		this.projectItems.loadInfo();
 		this.refreshCodeframe(force);
 	},
 	/**
@@ -1037,7 +1041,7 @@ Ext.define('designer.application',{
 			this.codeEditor.setValue('');
 			this.eventsEditor.disable();
 			this.methodsEditor.disable();
-			this.objectsTabs.clearData();
+			this.projectItems.clearData();
 			this.propertiesPanel.removeAll();
 			this.projectPathLabel.setText('');
 			this.rightPanel.disable();
@@ -1075,7 +1079,7 @@ Ext.define('designer.application',{
 				return;
 			}
 
-			var selection = me.objectsTabs.panelsTab.treePanel.getSelectionModel();
+			var selection = me.projectItems.componentsTree.treePanel.getSelectionModel();
 
 			if(selection.hasSelection()){
 				selected = selection.getSelection()[0];
@@ -1113,7 +1117,7 @@ Ext.define('designer.application',{
 	 */
 	addInstance:function(btn){
 		var parent = '';
-		var selection = this.objectsTabs.panelsTab.treePanel.getSelectionModel();
+		var selection = this.projectItems.componentsTree.treePanel.getSelectionModel();
 
 		if(selection.hasSelection()){
 			var selected = selection.getSelection()[0];
@@ -1148,7 +1152,7 @@ Ext.define('designer.application',{
 				return;
 			}
 
-			var selection = me.objectsTabs.panelsTab.treePanel.getSelectionModel();
+			var selection = me.projectItems.componentsTree.treePanel.getSelectionModel();
 
 			if(selection.hasSelection()){
 				selected = selection.getSelection()[0];
@@ -1200,6 +1204,11 @@ Ext.define('designer.application',{
 		this.activePropertyPanel = null;
 		this.propertiesPanel.removeAll(true);
 		var panelClass = null;
+
+		if(objectClass == 'Designer_Project_Container'){
+			return;
+		}
+
 
 		if(!isInstance){
 			switch (objectClass) {
@@ -1342,21 +1351,14 @@ Ext.define('designer.application',{
 	 * @returns {Ext.data.Store}
 	 */
 	storesStore:function(){
-		return this.objectsTabs.panelsTab.getStore();
-	},
-	/**
-	 * Get storage of project stores
-	 * @returns {Ext.data.Store}
-	 */
-	getStoresStore:function(){
-		return this.objectsTabs.storesTab.dataStore;
+		return this.projectItems.panelsTab.getStore();
 	},
 	/**
 	 * Get storage for "store" selector
 	 * @returns {Ext.data.Store}
 	 */
 	getStoreSelector:function(){
-		var store = this.objectsTabs.createStore('stores');
+		var store = this.projectItems.createStore('stores');
 		store.proxy.setExtraParam('instances' , true);
 		return store;
 	},
@@ -1365,21 +1367,14 @@ Ext.define('designer.application',{
 	 * @returns {Ext.data.Store}
 	 */
 	getMenuStore:function(){
-		return this.objectsTabs.menuStore;
+		return this.projectItems.menuStore;
 	},
 	/**
 	 * Get storage of project models
 	 * @returns {Ext.data.Store}
 	 */
 	getModelsStore:function(){
-		return this.objectsTabs.modelsTab.dataStore;
-	},
-	/**
-	 * Get storage for project models
-	 * @returns {Ext.data.Store}
-	 */
-	objectsStore:function(){
-		return this.objectsTabs.storesTab.modelsTab;
+		return this.projectItems.modelsStore;
 	},
 	/**
 	 * Send command for layout frame

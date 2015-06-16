@@ -6,7 +6,7 @@ Ext.define('designer.properties.Window',{
 	
 	initComponent:function()
 	{
-		if(this.tbar === undefined){
+		if(!this.tbar){
 			this.tbar = [];
 		}
 		

@@ -178,6 +178,7 @@ Ext.define('designer.objects.Tree',{
 					this.fireEvent('dataChanged');
 					this.updateLayout();
 				}else{
+					this.reload();
 					Ext.Msg.alert(appLang.MESSAGE, response.msg);
 				}
 			},
@@ -201,6 +202,10 @@ Ext.define('designer.objects.Tree',{
 			return;
 		}
 
+		if(selected.get('objClass') == 'Designer_Project_Container'){
+			 return;
+		}
+
 		Ext.Ajax.request({
 			url:this.controllerUrl + 'remove',
 			method: 'post',
@@ -212,7 +217,8 @@ Ext.define('designer.objects.Tree',{
 				if(response.success){
 					me.fireEvent('objectRemoved');
 					me.fireEvent('dataChanged');
-					me.reload();
+					me.getStore().remove(selected);
+					//me.reload();
 				}else{
 					Ext.Msg.alert(appLang.MESSAGE, response.msg);
 				}

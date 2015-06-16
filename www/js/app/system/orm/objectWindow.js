@@ -1002,7 +1002,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			this.indexStore.load();
 			this.fireEvent('dataSaved');
 		},this);
-
 		win.show();
 	},
 	showEditIndex:function(index){

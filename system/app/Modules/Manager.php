@@ -21,7 +21,7 @@ class Modules_Manager
 	{
 		$this->_appConfig = Registry::get('main' , 'config');
 		$configPath =  $this->_appConfig->get($this->_mainconfigKey);
-		$this->_config = Config::storage()->get($configPath , true , false);
+		$this->_config = Config::storage()->get($configPath , false , false);
 		$locale = Lang::lang()->getName();
 		$this->_modulesLocale = Lang::storage()->get($locale.'/modules/'.basename($configPath));
 	}
@@ -73,7 +73,10 @@ class Modules_Manager
 			return false;
 
 		$cfg = $this->_config->get($name);
-		return $cfg['class'];
+		if(isset($cfg['class']) && !empty($cfg['class']))
+			return $cfg['class'];
+		else
+			return '';
 	}
 
 	/**
@@ -95,6 +98,7 @@ class Modules_Manager
 	{
 		if(!self::$_classRoutes){
 		    $config = $this->_config->__toArray();
+
 			foreach ($config as $module=>$cfg)
 				self::$_classRoutes[$cfg['class']] = $module;
 		}
@@ -164,19 +168,19 @@ class Modules_Manager
 	 */
 	public function updateModule($name , array $data)
 	{
-		if($name !== $data['code']){
+		if($name !== $data['id']){
 			$this->_modulesLocale->remove($name);
 			$this->_config->remove($name);
 		}
 
 		if(isset($data['title'])){
-			$this->_modulesLocale->set($data['code'] , $data['title']);
+			$this->_modulesLocale->set($data['id'] , $data['title']);
 			if(!$this->_modulesLocale->save()){
 				return false;
 			}
 			unset($data['title']);
 		}
-		$this->_config->set($data['code'] , $data);
+		$this->_config->set($data['id'] , $data);
 		return $this->save();
 	}
 

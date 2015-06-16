@@ -45,7 +45,14 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
 		try{
-			$project = Designer_Factory::loadProject($this->_config, $file);
+			//$project = Designer_Factory::importProject($this->_config, $file);
+			//if(!$project instanceof Designer_Project){
+				$project = Designer_Factory::loadProject($this->_config, $file);
+				// convert project to 1.x version
+				if($project->convertTo1x($this->_config->get('js_path'))){
+					$this->_storeProject();
+				}
+			//}
 		}catch (Exception $e){;
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 		}
@@ -81,10 +88,11 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 				Response::jsonError($this->_lang->CANT_WRITE_FS. ' ' .$dir);
 		}
 
-		if($this->_storage->save($this->_session->get('file'), $this->_getProject()))
+		if($this->_storage->save($this->_session->get('file'), $this->_getProject())){
 			Response::jsonSuccess();
-		else
-			Response::jsonError($this->_lang->CANT_WRITE_FS. ' ' .$this->_session->get('file'));
+		}else{
+			Response::jsonError($this->_lang->CANT_EXEC. ' ' . implode(', ',  $this->_storage->getErrors()));
+		}
 	}
 	/**
 	 * Get project config
@@ -296,7 +304,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	  	  
 	  $instanceObject = $project->getObject($instance);
 	  
-	  if($instanceObject->isInstance() || !Designer_Project::isVisibleComponent($instanceObject->getClass()))	  
+	  if($instanceObject->isInstance() /*|| !Designer_Project::isVisibleComponent($instanceObject->getClass())*/)
 	    $errors['instance'] = $this->_lang->get('INVALID_VALUE');
 	  	  
 	  /*
@@ -304,14 +312,17 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	   */
 	  $rootClasses = array('Window','Store','Data_Store','Data_Store_Tree','Model');
 	  $isWindowComponent = (strpos($instanceObject->getClass(),'Component_Window_')!==false);
-	  
+
+	  if($parent === Designer_Project::COMPONENT_ROOT)
+		  $parent = Designer_Project::COMPONENT_ROOT;
+
 	  if(in_array($instanceObject->getClass(), $rootClasses , true) || $isWindowComponent)
-	      $parent = 0;
+	      $parent = Designer_Project::COMPONENT_ROOT;
 	  /*
 	   * Check if parent object exists and can has childs
 	  */
 	  if(!$project->objectExists($parent) || !Designer_Project::isContainer($project->getObject($parent)->getClass()))
-	      $parent = 0;
+	      $parent =  Designer_Project::COMPONENT_ROOT;
 	    
 	  if($project->objectExists($name))
 	    $errors['name'] = $this->_lang->get('SB_UNIQUE');
@@ -495,11 +506,11 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	{
 	  $list = array();
 	  $project = $this->_getProject();
-	  $items = $project->getObjects();
+	  $items = $project->getComponents();
 	  
 	  foreach ($items as $name => $object)
 	  {
-	     if(!$object->isInstance() && $object->isExtendedComponent() && Designer_Project::isVisibleComponent($object->getClass())){
+	     if(Designer_Project::isVisibleComponent($object->getClass())){
 	       $list[] = array('name'=>$name);
 	     }  
 	  }

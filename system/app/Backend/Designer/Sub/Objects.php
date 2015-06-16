@@ -76,7 +76,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
      * @param mixed $root
      * @return array
      */
-    protected function _fillContainers(Tree $tree , $root = 0 , $exceptStorage = true)
+    protected function _fillContainers(Tree $tree , $root = 0)
     {
     	   $exceptions = array('Store' , 'Data_Store' , 'Data_Store_Tree' , 'Model');
            $result = array();
@@ -87,15 +87,34 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 
            foreach($childs as $k=>$v)
            {
-           		$object = $v['data'];
+			   $object = $v['data'];
+
+			   $item = new stdClass();
+			   $item->id = $v['id'];
+
+			    /**
+			     *  Stub for project container
+			     */
+			    if($object instanceof Designer_Project_Container){
+					$item->text =  $object->getName();
+					$item->expanded = true;
+					$item->objClass = 'Designer_Project_Container';
+					$item->isInstance = false;
+					$item->leaf=false;
+					//$item->iconCls = self::getIconClass($objectClass);
+					$item->allowDrag = false;
+					$item->children = array();
+
+					if($tree->hasChilds($v['id']))
+						$item->children = $this->_fillContainers($tree ,  $v['id'] , false);
+
+					$result[] = $item;
+					continue;
+				}
+
+
            		$objectClass = $object->getClass();
            		$objectName = $object->getName();
-
-           		if($exceptStorage && in_array($objectClass , $exceptions , true))
-           			continue;
-
-           		$item = new stdClass();
-                $item->id = $v['id'];
 
                 $inst = '';
                 $ext = '';
@@ -103,12 +122,12 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
                 if($object->isInstance())
                 {
                   $inst = ' <span class="extInstanceLabel" data-qtip="Object instance">instance of </span>' . $object->getObject()->getName() ;
-                }elseif($object->isExtendedComponent()){
-                  $ext = ' <span class="extCmpLabel" data-qtip="Extended component">ext</span> ';
-                  if($object->defineOnly){
-                    $objectName = '<span class="extClassLabel" data-qtip="defineOnly:true">'.$objectName.'</span>';
-                  }
                 }
+
+				if($root === Designer_Project::COMPONENT_ROOT){
+					$ext = ' <span class="extCmpLabel" data-qtip="Extended component">ext</span> ';
+					$objectName = '<span class="extClassLabel">'.$objectName.'</span>';
+				}
 
                 $item->text = $ext . $objectName . ' ('.$objectClass.')' . $inst;
                 $item->expanded = true;
@@ -132,7 +151,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
                 }
 
                 if($tree->hasChilds($v['id']))
-                   $item->children = $this->_fillContainers($tree ,  $v['id'] , $exceptStorage);
+                   $item->children = $this->_fillContainers($tree ,  $v['id']);
 
                 $result[] = $item;
           }
@@ -241,13 +260,31 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
     	$this->_checkLoaded();
         $id = Request::post('id','string',false);
         $newParent = Request::post('newparent','string',false);
-        if(!strlen($newParent))
-        	$newParent = 0;
+
+        if(empty($newParent))
+        	$newParent = Designer_Project::LAYOUT_ROOT;
+
         $order = Request::post('order', 'array' , array());
         $project = $this->_getProject();
 
         if(!$id  || !$project->objectExists($id))
             Response::jsonError($this->_lang->WRONG_REQUEST .' code1');
+
+		$itemData = $project->getTree()->getItem($id);
+
+		if(in_array($itemData['data']->getClass() , Designer_Project::$storeClasses , true)){
+			if($newParent != '0' && $newParent !=Designer_Project::COMPONENT_ROOT){
+				Response::jsonError('Store can exist only at Project root or Components root');
+			}
+		}
+
+		if($itemData['data']->isInstance() && $newParent == Designer_Project::COMPONENT_ROOT){
+			Response::jsonError('Object instance cannot be converted to component');
+		}
+
+		if($itemData['parent'] == Designer_Project::COMPONENT_ROOT && $newParent !==Designer_Project::COMPONENT_ROOT && $project->hasInstances($id)){
+			Response::jsonError('Component cannot be converted. Object Instances detected');
+		}
 
         $project->changeParent($id, $newParent);
         $count = 0;

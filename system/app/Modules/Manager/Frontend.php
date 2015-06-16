@@ -33,4 +33,27 @@ class Modules_Manager_Frontend extends Modules_Manager
         }
         return $data;
     }
+    /**
+     * Update module data
+     * @param $name
+     * @param array $data
+     * @return boolean
+     */
+    public function updateModule($name , array $data)
+    {
+        if($name !== $data['code']){
+            $this->_modulesLocale->remove($name);
+            $this->_config->remove($name);
+        }
+
+        if(isset($data['title'])){
+            $this->_modulesLocale->set($data['code'] , $data['title']);
+            if(!$this->_modulesLocale->save()){
+                return false;
+            }
+            unset($data['title']);
+        }
+        $this->_config->set($data['code'] , $data);
+        return $this->save();
+    }
 }

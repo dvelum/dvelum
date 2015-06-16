@@ -46,7 +46,8 @@ class Designer_Project_Code
 		return '
 		Ext.ns("' . $this->_project->namespace . '","' . $this->_project->runnamespace . '");
 		' . $code['defines'] . '
-	    ' . $code['layout'];
+	    ' . $code['layout'].'
+	    ' . $this->_project->getActionJs();
 	}
 
     /**
@@ -61,6 +62,9 @@ class Designer_Project_Code
 
 	  foreach ($items as $k=>$v)
 	  {
+		 if($v instanceof Designer_Project_Container)
+			continue;
+
 	  	 if(method_exists($v, 'getViewObject')){
 	  	 	$o = $v->getViewObject();
 
@@ -96,33 +100,21 @@ class Designer_Project_Code
 		$menu = array();
 
 		/*
-		 * Compile Models and Stores primarily for root node
+		 * Compile Components
 		 */
 		if($parent === 0)
 		{
-			$models = $this->_project->getModels();
-
-			if(!empty($models))
-				foreach ($models as $id=>$item)
-					$definesCode.= $this->getObjectDefineJs($id);
-
-			$stores = $this->_project->getStores();
-			if(!empty($stores))
+			if($this->_project->itemExist('_Component_') && $this->_project->hasChilds('_Component_'))
 			{
-				foreach ($stores as  $id=>$item)
+				foreach($this->_project->getChilds('_Component_') as $itemData)
 				{
-					if($item->isExtendedComponent()){
-
-						$definesCode.= $this->getObjectDefineJs($id);
-
-					    if($item->getConfig()->defineOnly)
-					        continue;
-					}
-
-					$layoutCode.=  $this->getObjectLayoutCode($id);
-				    $items[] = $this->_project->runnamespace . '.' . $item->getName();
+					$item = $itemData['data'];
+					$item->extendedComponent(true);
+					$result = $this->_compileExtendedItem($itemData['id'] , '_Component_');
+					$definesCode.= $result['defines'];
 				}
 			}
+			$parent = '_Layout_';
 		}
 
 		if($this->_project->hasChilds($parent))
@@ -131,21 +123,11 @@ class Designer_Project_Code
 
 			foreach($childs as $k => $item)
 			{
+				if($item['data'] instanceof Designer_Project_Container)
+					continue;
+
 				$itemObject = $item['data'];
 				$oClass = $item['data']->getClass();
-			    /*
-				 * Skip Stores amd Models
-				 */
-				if($oClass === 'Store' || $oClass==='Model' || $oClass==='Data_Store' || $oClass==='Data_Store_Tree'){
-					continue;
-				}
-
-				if($itemObject->isExtendedComponent() || in_array($oClass , Designer_Project::$defines , true) || Designer_Project::isWindowComponent($oClass))
-				{
-					$result = $this->_compileExtendedItem($item['id'] , $item['id']);
-					$definesCode.= $result['defines'];
-					continue;
-				}
 
 				switch($oClass)
 				{
@@ -185,15 +167,16 @@ class Designer_Project_Code
 		if($parent !== 0)
 		{
 			$parentObject = $this->_project->getItemData($parent);
+			if($parent instanceof Ext_Object){
+				if(!empty($items) && $parentObject->isValidProperty('items'))
+					$parentObject->items = Utils_String::addIndent("[\n" . Utils_String::addIndent(implode(",\n" , $items)) . "\n]\n");
 
-			if(!empty($items) && $parentObject->isValidProperty('items'))
-				$parentObject->items = Utils_String::addIndent("[\n" . Utils_String::addIndent(implode(",\n" , $items)) . "\n]\n");
+				if(!empty($docked) && $parentObject->isValidProperty('dockedItems'))
+					$parentObject->dockedItems = $docked;
 
-			if(!empty($docked) && $parentObject->isValidProperty('dockedItems'))
-				$parentObject->dockedItems = $docked;
-
-			if(!empty($menu) && $parentObject->isValidProperty('menu'))
-				$parentObject->menu = $menu;
+				if(!empty($menu) && $parentObject->isValidProperty('menu'))
+					$parentObject->menu = $menu;
+			}
 		}
 
 		return array(

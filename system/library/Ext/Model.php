@@ -95,8 +95,7 @@ class Ext_Model extends Ext_Object
 	    if($object instanceof  Ext_Model_Field){
 	        $object = get_object_vars($object);    
 	    }
-	    
-	    
+
 	    if($object instanceof Ext_Virtual && $object->getClass()=='Data_Field')
 	    {
 	        if(empty($object->name))
@@ -224,16 +223,6 @@ class Ext_Model extends Ext_Object
 	 */
 	protected function _convertFields()
 	{
-	    
-	    if(!empty($this->_fields))
-	    {
-	        foreach ($this->_fields as $k=>&$v){
-	            if($v instanceof Ext_Model_Field && isset($v->name)){
-	                $v = Ext_Factory::object('Data_Field' , get_object_vars($v));
-	            }
-	        }unset($v);
-	    }
-	    	    
 	    if(empty($this->_config->fields))
 	        return;
 	    
@@ -282,5 +271,51 @@ class Ext_Model extends Ext_Object
 	        $this->fields = '['.implode(',',array_values($this->_fields)).']';
 	    
 		return parent::__toString();
+	}
+	/**
+	 * @see Ext_Object::getState()
+	 */
+	public function getState()
+	{
+		$fields = $this->_fields;
+		$fieldData = array();
+		if(!empty($fields)){
+			foreach($fields as $name=>$v){
+				$fieldData[$name] = array(
+					'class' => get_class($v),
+					'extClass' => $v->getClass(),
+					'state' => $v->getState()
+				);
+			}
+		}
+
+		$config = $this->getConfig()->__toArray(true);
+
+		return array(
+			'config' => $config,
+			'state' => array(
+				'_validations'=> $this->_validations,
+				'_associations'=>$this->_associations
+			),
+			'fields' =>  $fieldData
+		);
+	}
+	/**
+	 * Set object state
+	 * @param $state
+	 */
+	public function setState(array $state)
+	{
+		if(isset($state['config'])){
+			$this->getConfig()->importValues($state['config']);
+		}
+
+		if(isset($state['fields']) && !empty($state['fields'])){
+			foreach($state['fields'] as $k=>$v){
+				$field = Ext_Factory::object($v['extClass']);
+				$field->setState($v['state']);
+				$this->_fields[$k] = $field;
+			}
+		}
 	}
 }

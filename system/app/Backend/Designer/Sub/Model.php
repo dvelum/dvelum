@@ -93,25 +93,18 @@ class Backend_Designer_Sub_Model extends Backend_Designer_Sub
         $this->_project = $project;
         $this->_object = $project->getObject($name);
 
-        $fields = $this->_object->fields;
-        
-        if(is_string($fields))
+        $result = array();
+        $fields = $this->_object->getFields();
+
+        foreach ($fields as $field)
         {
-            $fields = json_decode($fields , true);
-        }
-        elseif(is_array($fields) && !empty($fields))
-        {
-            foreach($fields as $name => &$field)
-            {
-                if($field instanceof Ext_Object)
-                    $field = $field->getConfig()->__toArray(true);
-                elseif($field instanceof stdClass)
-                    $field = get_object_vars($field);
+            if($field instanceof Ext_Object){
+                $result[] = $field->getConfig()->__toArray(true);
+            } elseif($field instanceof stdClass) {
+                $result[] =  $field = get_object_vars($field);
             }
-            unset($field);
         }
-        
-        Response::jsonSuccess($fields);
+        Response::jsonSuccess($result);
     }
     
     /**
