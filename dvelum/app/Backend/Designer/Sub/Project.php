@@ -174,12 +174,12 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		$this->_checkLoaded();
 		$name = Request::post('name', 'alphanum', false);
 		$class = Request::post('class', 'alphanum', false);
-		$parent = Request::post('parent', 'alphanum', 0);
+		$parent = Request::post('parent', 'alphanum', Designer_Project::LAYOUT_ROOT);
 		$class = ucfirst($class);
 		$project = $this->_getProject();
 
 		if(!strlen($parent))
-			$parent = 0;
+			$parent = Designer_Project::LAYOUT_ROOT;
 
 		if($name == false)
 			Response::jsonError($this->_lang->INVALID_VALUE);
@@ -195,12 +195,12 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		$rootClasses = array('Window','Store','Data_Store','Data_Store_Tree','Model');
 		$isWindowComponent = strpos($class,'Component_Window_')!==false;
 		if(in_array($class, $rootClasses , true) || $isWindowComponent)
-			$parent = 0;
+			$parent = Designer_Project::LAYOUT_ROOT;
 		/*
 		 * Check if parent object exists and can has childs
 		 */
 		if(!$project->objectExists($parent) || !Designer_Project::isContainer($project->getObject($parent)->getClass()))
-			$parent = 0;
+			$parent = Designer_Project::LAYOUT_ROOT;
 
 		if(!$name || !$class)
 			Response::jsonError($this->_lang->WRONG_REQUEST);
