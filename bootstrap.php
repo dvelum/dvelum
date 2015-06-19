@@ -20,8 +20,14 @@
  * Startup time
  */
 $scriptStart = microtime(true);
+
+$dvelumRoot =  str_replace('\\', '/' , __DIR__);
+// should be without last slash
+if ($dvelumRoot[strlen($dvelumRoot) - 1] == '/')
+    $dvelumRoot = substr($dvelumRoot, 0, -1);
+
 define('DVELUM', true);
-define('DVELUM_ROOT' , str_replace('\\', '/' , __DIR__));
+define('DVELUM_ROOT' ,$dvelumRoot);
 
 chdir(DVELUM_ROOT);
 
@@ -79,12 +85,25 @@ else
     $autoloaderCfg['map'] = false;
 
 $autoloader->setConfig($autoloaderCfg);
+
+/*
+ * Installation mode
+ */
+if($config->get('development') === 3){
+    $controller = new Install_Controller();
+    $controller->run();
+    exit;
+}
+
 Registry::set('main', $config , 'config');
+
 /*
  * Starting the application
  */
 $app = new Application($config);
 $app->setAutoloader($autoloader);
+$app->init();
+
 $app->run();
 /*
  * Clean the buffer and send response

@@ -16,4 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+$wwwPath = str_replace('\\', '/' , __DIR__);
+// should be without last slash
+if ($wwwPath[strlen($wwwPath) - 1] == '/')
+    $wwwPath = substr($wwwPath, 0, -1);
+
+define('DVELUM_WWW_PATH', $wwwPath);
+
 require '../bootstrap.php';

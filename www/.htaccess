@@ -6,5 +6,5 @@ Options +FollowSymLinks
 DirectoryIndex index.php
 
 
-RewriteRule !(^js/.*|^i/.*|^res/.*|^media/.*|^css/.*|^install/.*|^favicon\.ico)$ index.php [NC,L]
+RewriteRule !(^js/.*|^i/.*|^res/.*|^media/.*|^css/.*|^favicon\.ico)$ index.php [NC,L]
 

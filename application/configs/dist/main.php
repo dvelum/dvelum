@@ -1,15 +1,7 @@
 <?php
 $docRoot = DVELUM_ROOT;
-
-$len = strlen($docRoot);
-
-// should be without last slash
-if ($docRoot[$len - 1] == '/')
-    $docRoot = substr($docRoot, 0, -1);
-
+$wwwPath = DVELUM_WWW_PATH;
 $wwwRoot = '/';
-$wwwPath = $docRoot.'/www'.$wwwRoot;
-
 $language = 'en';
 return array(
     'docroot' => $docRoot,
@@ -18,8 +10,9 @@ return array(
      * 0 - production
      * 1 - development
      * 2 - test (development mode + test DB)
+     * 3 - installation mode
      */
-    'development' => 1,
+    'development' => 3,
     /*
      * Development version (used by use_orm_build_log)
      */

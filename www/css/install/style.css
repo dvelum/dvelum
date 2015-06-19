@@ -101,7 +101,7 @@ h6 { font-size: 14px; }
 /* Buttons style
 -----------------------------*/
 .dv_button {
-        background-color:#3c9220;      
+        background-color:#3c9220;
         font-size:11px;
         font-weight: bold;
         text-transform: uppercase;
@@ -250,7 +250,7 @@ div.selector {
     width: auto;
 }
 div.selector span {
-    background: url("../i/selectArrow.png") no-repeat scroll 100% center transparent;
+    background: url("../../i/selectArrow.png") no-repeat scroll 100% center transparent;
     color: #808080;
     cursor: pointer;
     display: block;
@@ -300,7 +300,7 @@ div.checker input {
     width: 16px;
 }
 div.checker span {
-    background: url("../i/checkboxes.png") no-repeat scroll 0 0 transparent;
+    background: url("../../i/checkboxes.png") no-repeat scroll 0 0 transparent;
     display: inline-block;
     height: 16px;
     text-align: center;
@@ -327,7 +327,7 @@ div.radio input {
     width: 16px;
 }
 div.radio span {
-    background: url("../i/radios.png") no-repeat scroll 0 0 transparent;
+    background: url("../../i/radios.png") no-repeat scroll 0 0 transparent;
     display: inline-block;
     height: 17px;
     text-align: center;
