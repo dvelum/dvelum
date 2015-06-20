@@ -3,12 +3,12 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title><?php echo $this->dictionary->get('SBI'); ?></title>
-		<link type="text/css" href="./css/install/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
-		<link type="text/css" href="./css/install/style.css" rel="stylesheet" />
-		<script type="text/javascript" src="./js/install/jquery-1.6.2.min.js"></script>
-		<script type="text/javascript" src="./js/install/jquery-ui-1.8.16.custom.min.js"></script>
-		<script type="text/javascript" src="./js/install/jquery.uniform.min.js"></script>
-		<script type="text/javascript" src="./js/install/handlers.js"></script>
+		<link type="text/css" href="<?php echo $this->wwwRoot;?>css/install/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
+		<link type="text/css" href="<?php echo $this->wwwRoot;?>css/install/style.css" rel="stylesheet" />
+		<script type="text/javascript" src="<?php echo $this->wwwRoot;?>js/install/jquery-1.6.2.min.js"></script>
+		<script type="text/javascript" src="<?php echo $this->wwwRoot;?>js/install/jquery-ui-1.8.16.custom.min.js"></script>
+		<script type="text/javascript" src="<?php echo $this->wwwRoot;?>js/install/jquery.uniform.min.js"></script>
+		<script type="text/javascript" src="<?php echo $this->wwwRoot;?>js/install/handlers.js"></script>
 		<script>
 		var passMsg = "<?php echo $this->dictionary->get('PASS_MISMATCH');?>";
 		var admPanel = "<?php echo $this->dictionary->get('ADMIN_PANEL');?>";
@@ -16,8 +16,9 @@
 		var newLang = lang;
 		var passMatch = false;
 		var curStep = 0;
-		var wwwRoot = "<?php echo $this->wwwRoot;?>";
+		var wwwRoot = "<?php echo $this->wwwRoot;?>install/";
 		var url = wwwRoot;
+		var appRoot = wwwRoot;
 		$(function() {
 			$( "#tabs" ).tabs();
 			$('#nextBtn').bind('click', showLicenseStep).removeAttr('disabled').removeClass('disabled');
@@ -55,7 +56,7 @@
 	</head>
 	<body class="installerPage">
 		<div class="installerWrapper">
-			<div class="Logo"><img title="DVelum" src="./i/logo.large.png" /></div>
+			<div class="Logo"><img title="DVelum" src="<?php echo $this->wwwRoot;?>i/logo.large.png" /></div>
 			<div class="widget">
 				<div id="tabs">
 					<ul>
@@ -134,7 +135,7 @@
 					<div id="tabs-4">
 						<?php echo  $this->dictionary->get('DB_CREATING')?>
 						<br />
-						<div id="dbCreateMsg"><img src="./i/ajaxload.gif"/></div>
+						<div id="dbCreateMsg"><img src="<?php echo $this->wwwRoot;?>i/ajaxload.gif"/></div>
 					</div>
 					<div id="tabs-5"  style="padding: 0;">
 						<form class="form" action="<?php echo $this->url?>" id="userpass">

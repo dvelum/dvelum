@@ -59,4 +59,13 @@
      public function setWritePath($path){
          $this->writePath = writePath;
      }
+
+     /**
+      * Get save path
+      * @return string
+      */
+     public function getWritePath(){
+         return $this->writePath;
+     }
+
 }

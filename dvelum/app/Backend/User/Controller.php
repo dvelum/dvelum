@@ -1,26 +1,6 @@
 <?php
 class Backend_User_Controller extends Backend_Controller
 {
-
-  /**
-   * (non-PHPdoc)
-   * Old UI
-   */
-  /*public function indexAction()
-  {
-    $res = Resource::getInstance();
-    $res->addJs('/js/lib/ext_ux/SearchField.js');
-    $this->_resource->addJs('/js/lib/extjs4/ux/CheckColumn.js' , 0);
-    $this->_resource->addJs('/js/app/system/SearchPanel.js' , 0);
-    $res->addJs('/js/app/system/crud/user.js' , true , 1);
-    $this->_resource->addInlineJs('
-          var canPublish =  ' . ((integer) $this->_user->canPublish($this->_module)) . ';
-        	var canEdit = ' . ((integer) $this->_user->canEdit($this->_module)) . ';
-        	var canDelete = ' . ((integer) $this->_user->canDelete($this->_module)) . ';
-        ');
-  }
-  */
-
   /**
    * Load user info action
    */

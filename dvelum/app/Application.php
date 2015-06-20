@@ -23,9 +23,12 @@
  */
 class Application
 {
+    const MODE_PRODUCTION = 0;
+    const MODE_DEVELOPMENT = 1;
+    const MODE_TEST = 2;
+    const MODE_INSTALL = 3;
 
     protected static $_templates = '';
-
     /**
      * Application config
      * @var Config_Abstract

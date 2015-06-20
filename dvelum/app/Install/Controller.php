@@ -27,19 +27,18 @@ class Install_Controller {
     protected $session;
     protected $wwwRoot;
 
+    /**
+     * @var Autoloader
+     */
+    protected $autoloader;
+
     public function __construct()
     {
         $this->session = Store::factory(Store::Session , 'install');
         $this->appConfig = Config::storage()->get('main.php' , false , false);
         $this->wwwPath = DVELUM_WWW_PATH;
-
-        /*
-        $this->docRoot = DVELUM_ROOT . '/';
+        $this->docRoot = DVELUM_ROOT;
         $this->wwwRoot = '/';
-        $docRoot = $_SERVER['DOCUMENT_ROOT'];
-
-        if($docRoot[(strlen($docRoot)-1)]==='/')
-            $docRoot = substr($docRoot, 0,-1);
 
         $uri = $_SERVER['REQUEST_URI'];
         $parts = explode('/', $uri);
@@ -50,14 +49,17 @@ class Install_Controller {
             }
             $this->wwwRoot.=$parts[$i].'/';
         }
-        */
-
         /*
          * Set localization storage options
          */
         Lang::setStorageOptions(
             Config::storage()->get('lang_storage.php')->__toArray()
         );
+    }
+
+    public function setAutoloader(Autoloader $autoloader)
+    {
+        $this->autoloader = $autoloader;
     }
 
     public function run()
@@ -110,8 +112,8 @@ class Install_Controller {
     protected function _checkWritable($path, $required, $msg){
         $data = array();
         $data['title'] = $this->localization->get('WRITE_PERMISSIONS') . ' ' . $path;
-        @chmod($this->docRoot . $path, 0775);
-        if(is_writable($this->docRoot . $path)){
+       // @chmod($this->docRoot . $path, 0775);
+        if(is_writable($path)){
             $data['success'] = true;
         }else{
             $data['success'] = !$required;
@@ -189,6 +191,14 @@ class Install_Controller {
                 'accessType'=>'required'
             ),
             array(
+                'path'=>'temp',
+                'accessType'=>'required'
+            ),
+            array(
+                'path'=>'data/logs',
+                'accessType'=>'required'
+            ),
+            array(
                 'path'=>$this->wwwPath . '/js/lang',
                 'accessType'=>'required'
             ),
@@ -204,14 +214,7 @@ class Install_Controller {
                 'path'=>$this->wwwPath . '/media',
                 'accessType'=>'required'
             ),
-            array(
-                'path'=>'temp',
-                'accessType'=>'required'
-            ),
-            array(
-                'path'=>'data/logs',
-                'accessType'=>'required'
-            )
+
         );
 
         foreach ($extentions as $v){
@@ -314,18 +317,26 @@ class Install_Controller {
      */
     public function createtablesAction()
     {
-        $mainCfgPath = $this->docRoot . 'system/config/main.php';
-        $config = include $mainCfgPath;
-        $inlineConfig = Config::factory(Config::Simple, 'main');
-        $inlineConfig->setData($config);
+        $mainConfig = Config::storage()->get('main.php', false ,true);
 
-        $app = new Application($inlineConfig);
+        $app = new Application($mainConfig);
+        $app->setAutoloader($this->autoloader);
         $app->init();
 
+        $dbObjectManager = new Db_Object_Manager();
+        $objects = $dbObjectManager->getRegisteredObjects();
+
+        foreach ($objects as $name)
+        {
+            $dbObjectBuilder = new Db_Object_Builder($name);
+            if(!$dbObjectBuilder->build())
+                $buildErrors[] = $name;
+        }
+
+        /*
         $zendDb = Model::getGlobalDbConnection();
 
         $installDocs = $this->session->get('install_docs');
-
 
         $config = Config::factory(Config::File_Array, $this->docRoot . 'install/cfg/cfg.php')->__toArray();
 
@@ -341,25 +352,7 @@ class Install_Controller {
                 Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR') .' '. $e->getMessage());
             }
         }
-
-        $paths = File::scanFiles($this->docRoot . $config['configsPath'], array('.php'),false, File::Files_Only);
-
-        foreach ($paths as &$v)
-            $v = substr(basename($v), 0, -4);
-
-        unset($v);
-
-        $buildErrors = array();
-
-        if(!empty($paths))
-        {
-            foreach ($paths as $v)
-            {
-                $dbObjectBuilder = new Db_Object_Builder($v);
-                if(!$dbObjectBuilder->build())
-                    $buildErrors[] = $v;
-            }
-        }
+        */
 
         if(!empty($buildErrors))
             Response::jsonError($this->localization->get('BUILD_ERR') . ' ' . implode(', ', $buildErrors));
@@ -377,7 +370,6 @@ class Install_Controller {
         $adminpath = strtolower(Request::post('adminpath', 'string', ''));
         $user = Request::post('user',  'str', '');
 
-
         $errors = array();
 
         if(!strlen($user))
@@ -393,326 +385,62 @@ class Install_Controller {
         if(!Validator_Email::validate($email))
             $errors[] = $this->localization->get('INVALID_EMAIL');
 
-        if(!Validator_Alphanum::validate($adminpath)  || is_dir($this->docRoot .'system/app/Backend/'.ucfirst($adminpath)))
+        if(!Validator_Alphanum::validate($adminpath)  || is_dir('./dvelum/app/Backend/'.ucfirst($adminpath)))
             $errors[] = $this->localization->get('INVALID_ADMINPATH');
 
         if(!empty($errors))
             Response::jsonError(implode(', ', $errors));
 
+        $mainConfig = array(
+            'salt'=> Utils::getRandomString(4) . '_' . Utils::getRandomString(4),
+            'development' => 1,
+            'timezone' => $timezone,
+            'adminPath'=> $adminpath,
+            'language' =>$lang,
+            'wwwroot' => $this->wwwRoot
+        );
 
-        $salt = Utils::getRandomString(4) . '_' . Utils::getRandomString(4);
+        $mainCfg = Config::storage()->get('main.php' , false , false);
+        $writePath = $mainCfg->getWritePath();
 
-        $mainCfgPath = $this->docRoot . 'system/config/main.php';
-        $encConfigPath = $this->docRoot . 'system/config/objects/enc/config.php';
-        $config = include $mainCfgPath;
-        $inlineConfig = Config::factory(Config::Simple, 'main');
-        $inlineConfig->setData($config);
+        if(!is_dir(dirname($writePath)) && !@mkdir($writePath , 0655, true)){
+            Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.dirname($writePath));
+        }
 
-        $app = new Application($inlineConfig);
+        if(!Utils::exportArray($writePath , $mainConfig))
+            Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.$writePath);
+
+
+        if(extension_loaded('mcrypt')){
+            $key = base64_encode(mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_CAST_256, MCRYPT_MODE_CFB),MCRYPT_DEV_RANDOM));
+        }else{
+            $key = md5(uniqid(md5(time())));
+        }
+
+        $encConfig = array(
+            'key' =>  $key,
+            'iv_field' => 'enc_key'
+        );
+
+        $encFields = Config::storage()->get($mainCfg->get('object_configs').'/enc/config.php', false , false);
+        $encFields->setData($encConfig);
+
+        if(!$encFields->save())
+            Response::jsonError($this->localization->get('CANT_WRITE_FS') . ' '.$encFields->getWritePath());
+
+
+        $mainConfig = Config::storage()->get('main.php', false ,true);
+        Registry::set('main', $mainConfig , 'config');
+
+        /*
+         * Starting the application
+         */
+        $app = new Application($mainConfig);
+        $app->setAutoloader($this->autoloader);
         $app->init();
-
-
-
-
-        $mainCfg = '<?php
-$docRoot = DVELUM_ROOT;
-
-$language = \'#lang#\';
-
-return array(
-		\'docroot\' => $docRoot ,
-		/*
-		 * Development mode
-		 * 0 - production
-		 * 1 - development
-		 * 2 - test (development mode + test DB)
-		 */
-		\'development\' =>1,
-		/*
-		 * Development version (used by use_orm_build_log)
-		 */
-		\'development_version\'=>\'0.1\',
-		/*
-		 * Write SQL commands when updating Database structure.
-		 * It can help to determine if there have been performed any rename operations.
-		 * Please note that renaming operations in ORM interface causes loss of data
-		 * during server synchronization, so it\'s better to use SQL log.
-		 */
-		\'use_orm_build_log\'=>true,
-		/*
-		 * ORM SQL logs path
-		 */
-		\'orm_log_path\'=>$docRoot.\'/.log/orm/\',
-		/*
-		 * Background tasks log path
-		 */
-		\'task_log_path\'=>$docRoot.\'/.log/task/\',
-		/*
-		 * ORM system object used as links storage
-		 */
-		\'orm_links_object\'=>\'Links\',
-		/*
-		 * ORM system object used as history storage
-		 */
-		\'orm_history_object\'=>\'Historylog\',
-		/*
-		 * File uploads path
-		 */
-		\'uploads\' => $docRoot . \'/media/\' ,
-		/*
-		 * Admin panel URL
-		 * For safety reasons adminPath may be changed, however,
-		 * keep in mind that IDE builds full paths in the current version,
-		 * thus, they would have to be manually updated in the projects.
-		 */
-		\'adminPath\' => \'#adminpath#\' ,
-		/*
-		 * Templates directory
-		 */
-		\'templates\' => $docRoot . \'/templates/\' ,
-		/*
-		 * Url paths delimiter  "_" , "-" or "/"
-		 */
-		\'urlDelimiter\' => \'/\',
-		\'urlExtension\' => \'.html\' ,
-		/*
-		 * System language
-		 * Please note. Changing the language will switch ORM storage settings.
-		 */
-		\'language\' => $language ,
-		\'system\' => $docRoot . \'/system/\',
-		\'jslang_path\' => $docRoot. \'/js/lang/\',
-		\'salt\' => \'#salt#\' ,
-		\'timezone\' => \'#timezone#\' ,
-		\'jsCacheUrl\' => \'js/cache/\' ,
-		\'jsCachePath\' => $docRoot . \'/js/cache/\' ,
-
-		\'jsCacheSysUrl\' => \'js/syscache/\',
-		\'jsCacheSysPath\' => \'./js/syscache/\',
-		 /*
-		  * Сlear the object version history when deleting an object.
-		  * The recommended setting is “false”.  Thus, even though the object has been deleted,
-		  * it can be restored from the previous control system revision.
-		  * If set to "true", the object and its history will be  totally removed. However,
-		  * this allows you to get rid of redundant records in the database.
-		  */
-		\'vc_clear_on_delete\' => false,
-		/*
-		 * Main directory for config files
-		 */
-		\'configs\' => $docRoot . \'/system/config/\' ,  // configs path
-		/*
-		 * ORM configs directory
-		 */
-		\'object_configs\' => $docRoot . \'/system/config/objects/\' ,
-		/*
-		 * Report configs directory
-		 */
-		\'report_configs\' => $docRoot . \'/system/config/reports/\' ,
-		/*
-		 * Modules directory
-		 */
-		\'modules\'=> $docRoot . \'/system/config/modules/\',
-		/*
-		 * Backend modules config file
-		 */
-		\'backend_modules\'=> $docRoot . \'/system/config/modules/\'.$language.\'/backend_modules.php\',
-		/*
-		 * Backend controllers path
-		 */
-		\'backend_controllers\'=>$docRoot . \'/system/app/Backend/\',
-		/*
-		 * Frontend controllers path
-		 */
-		\'frontend_controllers\'=>$docRoot . \'/system/app/Frontend/\',
-		/*
-		 * Frontend modules config file
-		 */
-		\'frontend_modules\'=>$docRoot . \'/system/config/modules/\'.$language.\'/frontend_modules.php\',
-		/*
-		 * Application path
-		 */
-		\'application_path\'=>$docRoot . \'/system/app/\',
-		/*
-		 * Blocks path
-		 */
-		\'blocks\'=>$docRoot . \'/system/app/Block/\',
-		 /*
-		  * Dictionary configs directory depending on localization
-		  */
-		\'dictionary\'=>$docRoot . \'/system/config/dictionary/\'.$language.\'/\',
-		/*
-		 * Dictionary directory
-		 */
-		\'dictionary_folder\'=>$docRoot . \'/system/config/dictionary/\',
-		 /*
-		  * Backups directory
-		  */
-		\'backups\' => $docRoot . \'/.backups/\' ,
-		\'tmp\' => $docRoot . \'/.tmp/\' ,
-		\'mysqlExecPath\' => \'mysql\',
-		\'mysqlDumpExecPath\' => \'mysqldump\',
-		/*
-		 * the type of frontend router with two possible values:
-		 * \'module\' — using tree-like page structure  (‘Pages’ section of the administrative panel);
-		 * \'path\' — the router based on the file structure of client controllers.
-		 */
-		\'frontend_router_type\'=>\'module\',// \'module\',\'path\',\'config\'
-		/*
-		 * Use memcached
-		 */
-		\'use_cache\' => false,
-		/*
-		 * Hard caching time (without validation) for frondend , seconds
-		 */
-		\'frontend_hardcache\'=>30,
-		\'themes\' => $docRoot . \'/templates/public/\' ,
-		// Autoloader config
-		\'autoloader\' => array(
-			 // Paths for autoloading
-			 \'paths\'=> array(
-			    \'./system/rewrite\',
-				\'./system/app\',
-				\'./system/library\',
-			 ),
-		  /*
-		   * Use class map
-		   */
-		  \'useMap\'=>true,
-			 /*
-			  *	Use precompiled code packages
-			  *	requires useMap property to be set to true
-			  */
-			 \'usePackages\' => false,
-		   // Use class map (Reduce IO load during autoload)
-			 // Class map file path (string / false)
-			 \'map\' => $docRoot . \'/system/config/class_map.php\',
-			 // Class map file path (with packages)
-			 \'mapPackaged\'=> $docRoot . \'/system/config/class_map_packaged.php\',
-			 // Packages config path
-			 \'packagesConfig\'=>	$docRoot . \'/system/config/packages.php\',
-		),
-		/*
-		 * Stop the site with message "Essential maintenance in progress. Please check back later."
-		 */
-		\'maintenance\' => false,
-		/*
-		 * Show debug panel (development mode)
-		 */
-		\'debug_panel\'=> false,
-		/*
-		 * HTML WYSIWYG Editor
-		 * default  - ckeditor
-		 */
-		\'html_editor\' =>\'ckeditor\',
-		/*
-		 * Use the console command to compile the file system map
-		 * (accelerates the compilation process; works only on Linux systems;
-		 * execution of the system function should be allowed).
-		 */
-		\'deploy_use_console\'=>false,
-		/*
-		 *  Use hard cache expiration time defined in frontend_hardcache for caching blocks;
-		 *  allows to reduce the cache time of dynamic blocks;
-		 *  is used if there are not enough triggers for cache invalidation
-		 */
-		\'blockmanager_use_hardcache_time\'=>false,
-		/*
-		 * Use foreign keys
-		 */
-		\'foreign_keys\' => false,
-		/*
-		 * www root
-		 */
-		\'wwwroot\' =>\'#wwwroot#\',
-		/*
-		 * External modules path (Experimental)
-		 */
-		\'external_modules\' => \'./system/external/\',
-		/*
-		 * Log Db_Object errors
-		 */
-		\'db_object_error_log\' =>true,
-		\'db_object_error_log_path\'=>$docRoot.\'/.log/error/db_object.error.log\',
-		/*
-		* Get real rows count for innodb tables (COUNT(*))
-		* Set it "false" for large data volumes
-		*/
-		\'orm_innodb_real_rows_count\'=>false,
-		/*
-		* Directories for storing data base connection settings as per the system mode
-		*/
-		\'db_configs\' => array(
-		      /* key as development mode code */
-		      0 => array(
-			      \'title\'=>\'PRODUCTION\',
-			      \'dir\'=> $docRoot . \'/system/config/db/prod/\'
-		      ),
-		      1 => array(
-			      \'title\'=>\'DEVELOPMENT\',
-			      \'dir\'=> $docRoot . \'/system/config/db/dev/\'
-		      ),
-		      2=> array(
-			      \'title\'=>\'TEST\',
-			      \'dir\'=> $docRoot . \'/system/config/db/test/\'
-		      ),
-		),
-		/*
-         * Check modification time for template file. Invalidate cache
-         */
-        \'template_check_mtime\' => true,
-    	/*
-    	 * ORM system object used as version storage
-    	 */
-    	\'orm_version_object\' => \'Vc\',
-		/*
-         * Db_Object for error log 
-         */
-        \'erorr_log_object\'=>\'error_log\'
-);';
-        $mainCfg = str_replace(	array(
-            '#salt#',
-            '#timezone#',
-            '#lang#',
-            '#adminpath#',
-            '#wwwroot#'
-        ),
-            array(
-                $salt,
-                $timezone,
-                $lang,
-                $adminpath,
-                $this->wwwRoot,
-            ), $mainCfg);
-
-
-        if(!@file_put_contents($mainCfgPath, $mainCfg))
-            Response::jsonError($this->localization->get('CANT_WRITE_FS'));
-
-        $key = md5(uniqid(md5(time())));
-        $encConfig = '
-		<?php
-			return array(
-				\'key\'=>\''.$key.'\',
-				\'iv_field\'=>\'enc_key\'
-			);
-		';
-        if(!@file_put_contents($encConfigPath ,$encConfig ))
-            Response::jsonError($this->localization->get('CANT_WRITE_FS') . ' '.$encConfigPath);
-
-        Utils::setSalt($salt);
-        $mainCfgPath = $this->docRoot . 'system/config/main.php';
-        $config = include $mainCfgPath;
-        $inlineConfig = Config::factory(Config::Simple, 'main');
-        $inlineConfig->setData($config);
-        Registry::set('main', $inlineConfig, 'config');
 
         if(!$this->_prepareRecords($pass, $email, $user))
             Response::jsonError($this->localization->get('CANT_WRITE_TO_DB'));
-
-        ob_start();
-        File::rmdirRecursive($this->docRoot . 'install', true);
-        ob_end_clean();
 
         Response::jsonSuccess(array('link'=>Registry::get('main' , 'config')->get('adminPath')));
     }

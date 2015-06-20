@@ -37,7 +37,7 @@ function backAction()
 		case 5:
 			showTab(3);
 			
-			$('#dbCreateMsg').html('<img src="../i/ajaxload.gif"></img>').removeClass('success');
+			$('#dbCreateMsg').html('<img src="'+wwwRoot+'i/ajaxload.gif"></img>').removeClass('success');
 			$('#checkBtn').css('display', '');
 			$('#nextBtn').unbind('click').bind('click', createTables).removeAttr('disabled').removeClass('disabled');
 			
@@ -186,7 +186,7 @@ function savePass(){
 		var div = $('#link');
 		if (data.success) {
 			div.removeClass('fail');
-			div.html('<a href="'+wwwRoot+data.data['link']+'">' + admPanel + '</a>');
+			div.html('<a href="'+appRoot+data.data['link']+'">' + admPanel + '</a>');
 			$('#nextBtn').remove();
 			$('#backBtn').remove();
 			showTab(6);

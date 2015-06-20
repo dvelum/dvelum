@@ -89,14 +89,14 @@ $autoloader->setConfig($autoloaderCfg);
 /*
  * Installation mode
  */
-if($config->get('development') === 3){
+if($config->get('development') === 3 && strpos($_SERVER['REQUEST_URI'],'install')){
     $controller = new Install_Controller();
+    $controller->setAutoloader($autoloader);
     $controller->run();
     exit;
 }
 
 Registry::set('main', $config , 'config');
-
 /*
  * Starting the application
  */

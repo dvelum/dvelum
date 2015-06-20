@@ -51,7 +51,10 @@ class Db_Manager implements Db_Manager_Interface
     public function getDbConfig($name)
     {
         $workMode = $this->_appConfig->get('development');
-        
+
+        if($workMode == Application::MODE_INSTALL)
+            $workMode = Application::MODE_DEVELOPMENT;
+
         if(!isset($this->_dbConfigs[$workMode][$name]))
         {         
             $dbConfigPaths = $this->_appConfig->get('db_configs');
