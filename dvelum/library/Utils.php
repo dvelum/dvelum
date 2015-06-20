@@ -129,24 +129,6 @@ class Utils
   {
     return md5(md5($string . self::$_salt . $string));
   }
-// Utils::hash
-  /**
-   * Scan files and create class map for autoloader
-   *
-   * @param array $startPaths
-   *          - paths for scan (relative paths)
-   * @param string $mapFile
-   *          - output php file path
-   * @param string $mapPackagesFile
-   *          - output php file path (with packages)
-   * @param
-   *          Config_File_Array - $packagesConfig
-   * @return boolean
-   */
-  static public function createClassMap(array $startPaths , $mapFile , $mapPackagesFile , Config_File_Array $packagesConfig)
-  {
-    return Utils_Fs::createClassMap($startPaths , $mapFile , $mapPackagesFile , $packagesConfig);
-  }
 
   /**
    * Format file size in user friendly

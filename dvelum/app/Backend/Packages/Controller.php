@@ -8,8 +8,7 @@ class Backend_Packages_Controller extends Backend_Controller
     
     public function __construct(){
         parent::__construct();
-        $this->_autoloaderConfig = $this->_configMain->get('autoloader');
-        $this->_packagesConfig = Config::factory(Config::File_Array, $this->_autoloaderConfig['packagesConfig']);
+        $this->_autoloaderConfig = $this->_configMain->get('autoloader');;
     }
     
     public function indexAction(){
@@ -419,10 +418,13 @@ class Backend_Packages_Controller extends Backend_Controller
     public function buildmapAction()
     {      
         $paths = $this->_configMain['autoloader']['paths'];
+
 		foreach ($paths as &$item)
 		    $item.='/'; 
-		
-    	return Utils::createClassMap($paths ,  $this->_autoloaderConfig['map'] , $this->_autoloaderConfig['mapPackaged'] , $this->_packagesConfig);
+
+		$writePath = Config::storage()->getWrite();
+
+    	return Utils_Fs::createClassMap($paths ,  $writePath . $this->_configMain['autoloader']['map']);
     }
 
     public function rebuildmapAction()

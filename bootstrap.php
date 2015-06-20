@@ -89,7 +89,7 @@ $autoloader->setConfig($autoloaderCfg);
 /*
  * Installation mode
  */
-if($config->get('development') === 3 && strpos($_SERVER['REQUEST_URI'],'install')){
+if($config->get('development') === 3 && strpos($_SERVER['REQUEST_URI'],'install')!==false){
     $controller = new Install_Controller();
     $controller->setAutoloader($autoloader);
     $controller->run();

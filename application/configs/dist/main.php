@@ -165,12 +165,12 @@ return array(
             './vendor'
         ),
         /*
-        * Use class map
+        * Use class maps
         */
         'useMap' => true,
         // Use class map (Reduce IO load during autoload)
         // Class map file path (string / false)
-        'map' => 'class_map.php',
+        'map' => 'classmap.php',
     ),
     /*
      * Stop the site with message "Essential maintenance in progress. Please check back later."
