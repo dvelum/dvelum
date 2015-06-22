@@ -43,7 +43,7 @@ Ext.define('designer.properties.Grid',{
 			},
 			frame:true,
 			border:false,
-			autoScroll:true,
+			scrollable:true,
 			items:[
 				{
 			    	   xtype:'fieldset',

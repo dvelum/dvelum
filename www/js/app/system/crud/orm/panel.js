@@ -477,7 +477,7 @@ Ext.define('app.crud.orm.Main',{
 			width:400,
 			height:500,
 			modal:true,
-			autoScroll:true,
+			scrollable:true,
 			layout:'fit',
 			title:appLang.REBUILD_INFO,
 			closeAction:'destroy',
@@ -518,7 +518,7 @@ Ext.define('app.crud.orm.Main',{
 					}else{
 						handle.win.add({
 							xtype:'panel',
-							autoScroll:true,
+							scrollable:true,
 							html:response.text,
 							bodyPadding:3
 						});

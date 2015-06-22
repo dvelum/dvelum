@@ -71,7 +71,7 @@ class Backend_Designer_Sub_Crudwindow extends Backend_Designer_Sub
 			$tab->bodyPadding = 3;
 			$tab->bodyCls = 'formBody';
 			$tab->anchor = '100%';
-			$tab->autoScroll = true;
+			$tab->scrollable = true;
 			$tab->title = Lang::lang()->GENERAL;
 			$tab->fieldDefaults = "{
 			            labelAlign: 'right',

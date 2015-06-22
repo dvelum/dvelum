@@ -51,11 +51,10 @@ Ext.define('designer.defaultsWindow',{
 		
 		this.dataGrid = Ext.create('Ext.grid.Panel',{
 			store:this.dataStore,
-			autoScroll:true,
+			scrollable:true,
 			frame: false,
 		    loadMask:true,
 			columnLines: true,
-			autoScroll:true,
 			plugins: [this.cellEditing],
 			columns:[{
         		text:desLang.key,

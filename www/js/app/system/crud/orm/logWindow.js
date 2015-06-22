@@ -7,7 +7,7 @@ Ext.define('app.crud.orm.logWindow',{
 	layout:'fit',
 	title:appLang.LOG,
 	bodyPadding:5,
-	autoScroll:true,
+	scrollable:true,
 	displayField:false,
 	bodyStyle:{
 		backgroundColor:'#ffffff'

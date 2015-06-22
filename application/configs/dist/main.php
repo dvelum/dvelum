@@ -27,11 +27,11 @@ return array(
     /*
      * ORM SQL logs path
      */
-    'orm_log_path' => $docRoot . '/log/orm/',
+    'orm_log_path' => $docRoot . '/data/logs/orm/',
     /*
      * Background tasks log path
      */
-    'task_log_path' => $docRoot . '/log/task/',
+    'task_log_path' => $docRoot . '/data/logs/task/',
     /*
      * ORM system object used as links storage
      */

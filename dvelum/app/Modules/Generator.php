@@ -365,7 +365,7 @@ class Modules_Generator
       $tab->bodyCls = 'formBody';
       $tab->anchor = '100%';
       $tab->title = $lang->GENERAL;
-      $tab->autoScroll = true;
+      $tab->scrollable = true;
       $tab->fieldDefaults = "{
                     labelAlign: 'right',
                     labelWidth: 160,
@@ -691,7 +691,7 @@ class Modules_Generator
       $tab->bodyCls = 'formBody';
       $tab->anchor = '100%';
       $tab->title = $lang->GENERAL;
-      $tab->autoScroll = true;
+      $tab->scrollable = true;
       $tab->fieldDefaults = "{
                     labelAlign: 'right',
                     labelWidth: 160,

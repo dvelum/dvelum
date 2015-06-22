@@ -5,7 +5,7 @@
  */
 Ext.define('designer.eventsEditor',{
 	extend:'Ext.grid.Panel',
-	autoScroll:true,
+	scrollable:true,
 	controllerUrl:null,
 	
 	searchField:null,

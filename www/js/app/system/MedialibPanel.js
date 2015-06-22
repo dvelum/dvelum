@@ -35,7 +35,7 @@ Ext.define('app.imageSizeWindow',{
 	        title: appLang.MODULE_MEDIALIB + ' :: '+ appLang.SELECT_IMAGE_SIZE,
 	        width: 300,
 	        height: 198,
-	        autoScroll:true,
+	        scrollable:true,
 	        closeAction: 'destroy',
 	        resizable:true,
 	        bodyPadding:3
@@ -251,7 +251,7 @@ Ext.define('app.fileUploadWindow',{
 			  frame: false,
 		      loadMask:true,
 			  columnLines: false,
-			  autoScroll:true,
+			  scrollable:true,
 			  columns:[
 			           {
 			        	  text:appLang.ICON,
@@ -326,7 +326,7 @@ Ext.define('app.fileUploadWindow',{
 			  frame: false,
 		      loadMask:true,
 			  columnLines: false,
-			  autoScroll:true,
+			  scrollable:true,
 			  columns:[
 			           {
 			        	  text:appLang.ICON,
@@ -520,7 +520,7 @@ Ext.define('app.fileUploadWindow',{
 		this.contentPanel = Ext.create('Ext.tab.Panel' , {
 			  activeTab: 1,
 			  frame:true,
-			  autoScroll:true,
+			  scrollable:true,
 			  items:[this.simplePanel , this.multiplePanel]
 		});
 
@@ -912,7 +912,7 @@ Ext.define('app.medialibPanel',{
 				frame: false,
 		        loadMask:true,
 				columnLines: false,
-				autoScroll:true,
+				scrollable:true,
 				columns:columnConfig,
 				bbar: Ext.create('Ext.PagingToolbar', {
 		            store: this.dataStore,
@@ -926,7 +926,7 @@ Ext.define('app.medialibPanel',{
 					hidden:true,
 					frame:true,
 					border:false,
-					autoScroll:true,
+					scrollable:true,
 
 					fieldDefaults:{
 						labelAlign:'left',
@@ -976,7 +976,7 @@ Ext.define('app.medialibPanel',{
 					layout:'fit',
 					width:350,
 					minWidth:350,
-					autoScroll:false,
+					scrollable:false,
 					split:true,
 					frame:true,
 					border:false,

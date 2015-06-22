@@ -368,7 +368,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 			bodyCls:'formBody',
 			bodyBorder:false,
 			border:false,
-			autoScroll:true,
+			scrollable:true,
 			fieldDefaults: {
 				labelWidth: 140,
 				labelAlign:'right',

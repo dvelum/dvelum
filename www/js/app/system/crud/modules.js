@@ -277,7 +277,7 @@ Ext.define('app.crud.modules.Main',{
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+ 			scrollable:true,
 			selModel: {
 				selType: 'cellmodel'
 			},
@@ -639,7 +639,7 @@ Ext.define('app.crud.modules.toolsPlugin',{
 
 Ext.define('app.crud.modules.backendView',{
 	extend:'Ext.container.Container',
-	autoScroll:false,
+	scrollable:false,
 	dataView:null,
 	layout: {
 		type: 'vbox',
@@ -1056,7 +1056,7 @@ Ext.define('app.crud.modules.Frontend',{
 	canDelete:false,
 	loadMask:true,
 	columnLines: true,
-	autoScroll:true,
+	scrollable:true,
 	extraParams:null,
 	initComponent:function(){
 
@@ -1216,7 +1216,7 @@ Ext.define('app.crud.modules.Main',{
 			canEdit:this.canEdit,
 			canDelete:this.canDelete,
 			extraParams:{type:'backend'},
-			autoScroll:true
+			scrollable:true
 		});
 
 		this.frontendTab = Ext.create('app.crud.modules.Frontend',{

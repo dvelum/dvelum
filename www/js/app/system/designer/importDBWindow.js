@@ -145,7 +145,7 @@ Ext.define('designer.importDBWindow',{
 		this.fieldsGrid = Ext.create('Ext.grid.Panel', {
 			title:desLang.fields,
 			height:300,
-			autoScroll:true,
+			scrollable:true,
 			selModel:Ext.create('Ext.selection.CheckboxModel',{}),
 			store:Ext.create('Ext.data.Store', {
 				fields:[

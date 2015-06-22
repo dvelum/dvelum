@@ -69,7 +69,7 @@ Ext.define('app.report.Results',{
 					frame: false,
 					loadMask:true,
 					columnLines: true,
-					autoscroll:true,
+					scrollable:true,
 					bodyBorder:false,
 					border:false,
 					columns: response.data.columns,

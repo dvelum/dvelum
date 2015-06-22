@@ -20,6 +20,7 @@ class Db_Object_Manager
     {
     	if(is_null(self::$_objects))
     	{
+			self::$_objects = array();
 			$paths = Config::storage()->getPaths();
 			$list = array();
 
@@ -31,7 +32,7 @@ class Db_Object_Manager
 					continue;
 
 				$items = File::scanFiles($path.$cfgPath , array('.php'), false, File::Files_Only);
-				self::$_objects = array();
+
 				if(!empty($items))
 				{
 					foreach ($items as $o){
@@ -43,7 +44,7 @@ class Db_Object_Manager
 					}
 				}
 			}
-    	}  
+    	}
     	return self::$_objects;
     }
     

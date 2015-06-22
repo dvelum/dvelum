@@ -198,7 +198,7 @@ Ext.define('app.iconSelectorWindow',{
             items:[this.dataView],
             frame: false,
             bodyCls:'formBody',
-            autoScroll:true
+            scrollable:true
         });
 
         this.items = [this.dataTree , this.viewPanel];

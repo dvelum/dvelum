@@ -94,7 +94,7 @@ Ext.define('app.historyPanel',{
 		        frame: false,
 		        loadMask:true,
 				columnLines: true,
-				autoScroll:true,
+				scrollable:true,
 				columns:[
 				        {
 						     header:appLang.DATE,

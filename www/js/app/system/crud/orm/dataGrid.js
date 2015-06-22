@@ -52,7 +52,7 @@ Ext.define('app.crud.orm.dataGrid',{
 	frame: false,
 	loadMask:true,
 	columnLines: true,
-	autoscroll:true,
+	scrollable:true,
 	bodyBorder:false,
 	border:false,
 

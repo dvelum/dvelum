@@ -186,7 +186,7 @@ Ext.define('app.crud.mediaconfig.Main',{
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 			selModel: {
 				selType: 'cellmodel'
 			},
@@ -265,7 +265,7 @@ Ext.define('app.crud.mediaconfig.CropWindow', {
 
 		this.dataForm = Ext.create('Ext.form.Panel',{
 			bodyPadding:5,
-			autoScroll:true,
+			scrollable:true,
 			bodyCls:'formBody',
 			items:[
 				{

@@ -101,7 +101,7 @@ Ext.define('app.crud.acl.Permissions',{
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 			clicksToEdit:1,
 			selModel: {
 				selType: 'cellmodel'
@@ -301,7 +301,7 @@ Ext.define('app.crud.acl.Groups',{
 			},
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 			frame: false,
 			width:300,
 			title:appLang.GROUPS,

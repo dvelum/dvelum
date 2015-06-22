@@ -63,7 +63,7 @@ Ext.define('designer.connections.Window',{
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoscroll:true,
+			scrollable:true,
 			tbar:[
 				{
 					text:appLang.ADD,

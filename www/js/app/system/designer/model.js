@@ -374,7 +374,7 @@ Ext.define('designer.model.configWindow',{
 			layout:'fit',
 			defaults:{
 				layout:'fit',
-				autoScroll: true
+				scrollable: true
 			},
 			items:[this.fieldsEditor,this.associationsGrid,this.validationsGrid]
 		});

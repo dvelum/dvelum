@@ -244,7 +244,7 @@ Ext.define('app.editWindow',{
 		if(!this.useTabs){
 			this.contentPanel = Ext.create('Ext.Panel',{
 				layout:'form',
-				autoScroll:true,
+				scrollable:true,
 				border:false,
 				frame:false,
 				bodyCls:'formBody',

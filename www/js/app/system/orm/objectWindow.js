@@ -25,7 +25,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			modal: false,
 			layout:'fit',
 			width: app.checkWidth(700),
-			height:app.checkHeight(520),
+			height:app.checkHeight(530),
 			closeAction: 'destroy'
 		}, config || {});
 
@@ -154,7 +154,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 			bodyBorder:false,
 			border:false,
 			title:appLang.FIELDS,
@@ -272,7 +272,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 			bodyBorder:false,
 			border:false,
 			title:appLang.INDEXES,

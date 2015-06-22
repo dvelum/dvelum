@@ -51,7 +51,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 		foreach ($data as $k=>&$item)
 		{
 			$item['related_files']= '';
-			$classFile = './system/app/'.str_replace('_', '/', $item['class']).'.php';
+			$classFile = './dvelum/app/'.str_replace('_', '/', $item['class']).'.php';
 
 			if(file_exists($classFile))
 				$item['related_files'].= $classFile.'</br>';

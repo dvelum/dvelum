@@ -362,7 +362,7 @@ Ext.define('app.crud.menu.ItemWindow',{
 	{
 		this.dataForm = Ext.create('Ext.form.Panel',{
 			bodyCls:'formBody',
-			autoScroll:true,
+			scrollable:true,
 			bodyPadding:5,
 			fieldDefaults:{
 				anchor:'100%'

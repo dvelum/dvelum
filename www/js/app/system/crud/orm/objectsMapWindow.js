@@ -11,7 +11,7 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
 	controllerUrl: '',
 	plain: true,
 	layout: 'fit',
-	autoScroll: true,
+	scrollable: true,
 	maximized: true,
 	modal: true,
 	width: app.checkWidth(700),

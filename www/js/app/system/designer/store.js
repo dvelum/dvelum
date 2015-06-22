@@ -944,7 +944,7 @@ Ext.define('designer.store.rootWindow',{
 	initComponent:function(){
 		this.dataGrid = Ext.create('Ext.grid.property.Grid', {
 			border:false,
-			autoScroll:true,
+			scrollable:true,
 			nameColumnWidth:150,
 			source:this.initialData
 		});

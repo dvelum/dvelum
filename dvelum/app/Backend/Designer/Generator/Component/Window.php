@@ -30,7 +30,7 @@ class Backend_Designer_Generator_Component_Window implements Backend_Designer_Ge
         $form->bodyCls = 'formBody';
         $form->bodyPadding = 5;
         $form->fieldDefaults = '{anchor:"100%",labelWidth:150}';
-        $form->autoScroll = true;
+        $form->scrollable = true;
                  
         $dockObject = Ext_Factory::object('Docked');
         $dockObject->setName($dockedName);

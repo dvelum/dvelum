@@ -94,7 +94,7 @@ Ext.define('app.orm.connections.Window',{
             frame: false,
             loadMask:true,
 		    columnLines: true,
-		    autoscroll:true,
+			scrollable:true,
 		    forceFit:true,
 		    viewConfig:{
 				enableTextSelection: true

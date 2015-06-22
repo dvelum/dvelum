@@ -191,7 +191,7 @@ Ext.define('app.relatedGridPanel',{
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 			enableHdMenu:false,
 			columns:columns
 		});

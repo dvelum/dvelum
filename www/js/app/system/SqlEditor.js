@@ -1,7 +1,7 @@
 Ext.define('designer.sqlEditor',{
 	extend:'Ext.Panel',
 	layout:'fit',
-	autoScroll:false,
+	scrollable:false,
 	codeMirror:null,
 	codeMirrorInit:false,
 	styleHtmlContent:true,

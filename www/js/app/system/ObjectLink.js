@@ -267,7 +267,7 @@ Ext.define('app.objectLink.SelectWindow',{
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 			store:this.dataStore,
 			tbar:[
 				'->' , this.searchField

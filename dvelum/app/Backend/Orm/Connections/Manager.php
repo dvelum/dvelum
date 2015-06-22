@@ -22,14 +22,14 @@ class Backend_Orm_Connections_Manager
     {
         if(!$this->typeExists($devType))
             throw new Exception('Backend_Orm_Connections_Manager :: getConnections undefined dev type ' . $devType);
-        
-        $files = File::scanFiles($this->_config[$devType]['dir'] , array('.php') , false , File::Files_Only);
+
+        $files = Config::storage()->getList($this->_config[$devType]['dir']);
         $result = array();
-        
-        if(!empty($files))
-            foreach ($files as $item)
-                $result[substr(basename($item),0,-4)] = Config::factory(Config::File_Array, $item);
-            
+        if(!empty($files)){
+            foreach($files as $path){
+                $result[substr(basename($path),0,-4)] =  Config::storage()->get($this->_config[$devType]['dir'] . basename($path) , true , false);
+            }
+        }
         return $result;
     }
         
@@ -73,11 +73,13 @@ class Backend_Orm_Connections_Manager
     {
         if(!$this->typeExists($devType))
             return false;
-           
-        if(!file_exists($this->_config[$devType]['dir'] . $id . '.php'))
+
+        $cfg = Config::storage()->get($this->_config[$devType]['dir'] . $id . '.php');
+
+        if(empty($cfg))
             return false;
         
-        return Config::factory(Config::File_Array, $this->_config[$devType]['dir'] . $id . '.php');
+        return $cfg;
     }
     
     public function createConnection($id)

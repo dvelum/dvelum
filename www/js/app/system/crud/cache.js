@@ -7,7 +7,7 @@ Ext.define('app.crud.cache.Main',{
 	canDelete:false,
 	controllerUrl:null,
 	columnLines:true,
-	autoScroll:true,
+	scrollable:true,
 	
 	initComponent:function(){
 		

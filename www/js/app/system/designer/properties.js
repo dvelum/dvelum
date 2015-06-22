@@ -26,7 +26,7 @@ Ext.define('designer.properties.Panel', {
     dataStore: null,
     dataGrid: null,
     controllerUrl: '',
-    autoScroll: false,
+    scrollable: false,
 
     controllerUr: '',
     eventsControllerUrl: '',
@@ -402,7 +402,7 @@ Ext.define('designer.properties.Panel', {
             border: false,
             region: 'center',
             split: true,
-            autoScroll: true,
+            scrollable: true,
             title: this.mainConfigTitle,
             tbar: [this.searchPanel, '->', showCodeBtn],
             sourceConfig: this.sourceConfig,

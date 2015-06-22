@@ -127,7 +127,7 @@ Ext.define('app.fileUploadWindow',{
 			  frame: false,
 		      loadMask:true,
 			  columnLines: false,
-			  autoScroll:true,
+			  scrollable:true,
 			  columns:[
 			           {
 			        	  text:appLang.ICON,
@@ -202,7 +202,7 @@ Ext.define('app.fileUploadWindow',{
 			  frame: false,
 		      loadMask:true,
 			  columnLines: false,
-			  autoScroll:true,
+			  scrollable:true,
 			  columns:[
 			           {
 			        	  text:appLang.ICON,
@@ -396,7 +396,7 @@ Ext.define('app.fileUploadWindow',{
 		this.contentPanel = Ext.create('Ext.tab.Panel' , {
 			  activeTab: 1,
 			  frame:true,
-			  autoScroll:true,
+			  scrollable:true,
 			  items:[this.simplePanel , this.multiplePanel]
 		});
 		

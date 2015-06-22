@@ -5,7 +5,7 @@ Ext.define('designer.codeEditor',{
 	extend:'Ext.Panel',
 	layout:'fit',
 	autoRender:true,
-	autoScroll:false,
+	scrollable:false,
 	codeMirror:null,
 	codeMirrorInit:false,
 	styleHtmlContent:true,

@@ -20,8 +20,8 @@ Ext.define('app.imageSizeWindow',{
 	        layout:'fit',
 	        title: appLang.MODULE_MEDIALIB + ' :: '+ appLang.SELECT_IMAGE_SIZE,
 	        width: 300,
-	        height: 198,      
-	        autoScroll:true,
+	        height: 198,
+			scrollable:true,
 	        closeAction: 'destroy',
 	        resizable:true,
 	        bodyPadding:3

@@ -291,7 +291,7 @@ Ext.define('app.medialibPanel',{
 				frame: false,
 		        loadMask:true,
 				columnLines: false,
-				autoScroll:true,
+				scrollable:true,
 				columns:columnConfig,
 				bbar: Ext.create('Ext.PagingToolbar', {
 		            store: this.dataStore,
@@ -305,7 +305,7 @@ Ext.define('app.medialibPanel',{
 					hidden:true,
 					frame:true,
 					border:false,
-					autoScroll:true,
+				scrollable:true,
 
 					fieldDefaults:{
 						labelAlign:'left',
@@ -389,7 +389,7 @@ Ext.define('app.medialibPanel',{
 				layout:'fit',
 				width:350,
 				minWidth:350,
-				autoScroll:false,
+				scrollable:false,
 				split:true,
 				frame:true,
 				border:false,

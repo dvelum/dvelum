@@ -57,7 +57,7 @@ Ext.define('app.crud.orm.restoreBackupWindow', {
 			frame: false,
             loadMask:true,
 		    columnLines: true,
-		    autoscroll:true,
+			scrollable:true,
 		    bodyBorder:false,
 			border:false,
 			columns: [{

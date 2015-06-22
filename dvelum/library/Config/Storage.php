@@ -107,8 +107,8 @@ class Config_Storage
 
     /**
      * Get list of available configs
-     * @param bool $path
-     * @param bool $recursive
+     * @param bool $path - optioanal, default false
+     * @param bool $recursive - optioanal, default false
      * @throws Exception
      */
     public function getList($path = false, $recursive = false)

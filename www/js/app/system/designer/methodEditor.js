@@ -3,7 +3,7 @@
  */
 Ext.define('designer.methodsEditor',{
 	extend:'Ext.grid.Panel',
-	autoScroll:true,
+	scrollable:true,
 	controllerUrl:null,
 	searchField:null,
 	columnLines:true,

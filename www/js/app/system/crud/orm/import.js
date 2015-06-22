@@ -28,7 +28,7 @@ Ext.define('app.orm.import.Window',{
 		this.dataGrid = Ext.create('Ext.grid.Panel', {
 			title:appLang.DB_TABLES,
 			region:'center',
-			autoScroll:true,
+			scrollable:true,
 			hideHeaders:true,
 			columnLines:true,
 			store:Ext.create('Ext.data.Store', {

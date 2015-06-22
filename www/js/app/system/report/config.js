@@ -55,8 +55,7 @@ Ext.define('app.report.ConfigWindow',{
 			split:true,
 			bodyPadding:10,
 			layout:'fit',
-			autoScroll:true,
-			split:true,
+			scrollable:true,
 			collapsible:true,
 			tbar:[this.buttonSqlReload]
 		 });
@@ -91,7 +90,7 @@ Ext.define('app.report.ConfigWindow',{
 			 bodyPadding:3,
 			 title:this.dataTitle,
 			 bodyCls :'formBody',
-			 autoScroll:true,
+			 scrollable:true,
 			 border:true,
 			 tbar:[
 			      this.buttonDeleteBase,

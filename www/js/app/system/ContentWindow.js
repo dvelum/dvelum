@@ -160,7 +160,7 @@ Ext.define('app.contentWindow',{
 				border:false,
 				frame:false,
 				bodyCls:'formBody',
-				autoScroll:true,
+				scrollable:true,
 				items:this.itemsConfig,
 				bodyPadding:'3px',
 				defaults:{

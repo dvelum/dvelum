@@ -88,7 +88,7 @@ Ext.define('app.revisionPanel',{
 		        frame: false,
 		        loadMask:true,
 				columnLines: true,
-				autoScroll:true,
+				scrollable:true,
 				columns:[{
 							xtype:'actioncolumn',
 							width:30,

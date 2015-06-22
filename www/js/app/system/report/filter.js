@@ -85,7 +85,7 @@ Ext.define('app.report.filter.Conditions',{
 	extend:'Ext.panel.Panel',
 	controllerUrl:'',
 	frame: false,
-	autoScroll:true,
+	scrollable:true,
 	minHeignt:100,
 	height:300,
 	canEdit:false,
@@ -256,7 +256,7 @@ Ext.define('app.report.filter.Filters',{
 	frame: false,
 	loadMask:true,
 	columnLines: true,
-	autoScroll:true,
+	scrollable:true,
 	canEdit:false,
 	canDelete:false,
 	initComponent:function(){

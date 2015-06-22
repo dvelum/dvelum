@@ -13,7 +13,10 @@ class Ext_Property_Container extends Ext_Property_Component
 	public $layout = self::Object;
 	public $referenceHolder = self::Boolean;
 	public $suspendLayout = self::Boolean;
-    
+
+	// dvelum mixin fix
+	public $fieldDefaults =  self::Object;
+
     static public $extend = 'Ext.container.Container';
     static public $xtype = 'container';
 }

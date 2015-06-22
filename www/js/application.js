@@ -5,7 +5,7 @@ app.content =  Ext.create('Ext.Panel',{
 	border:false,
 	layout:'fit',
 	margins: '0 5 0 0',
-	autoScroll:false,
+	scrollable:false,
 	items:[],
 	collapsible:false
 });

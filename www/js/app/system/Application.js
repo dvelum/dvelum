@@ -6,7 +6,7 @@ app.content =  Ext.create('Ext.Panel',{
 	border:false,
 	layout:'fit',
 	margins: '0 5 0 0',
-	autoScroll:false,
+	scrollable:false,
 	items:[],
 	collapsible:false
 });
@@ -81,7 +81,7 @@ app.menu = Ext.create('Ext.Panel',{
 			iconCls: 'nav',
 			frame:true,
 			titleCollapse:true,
-			autoScroll:true,
+			scrollable:true,
 			listeners:{
 				'expand':{
 					fn:function(panel){
@@ -99,7 +99,7 @@ app.menu = Ext.create('Ext.Panel',{
 			contentEl:'systemMenu',
 			frame:true,
 			collapsed :true,
-			autoScroll:true,
+			scrollable:true,
 			titleCollapse : true,
 			listeners:{
 				'expand':{

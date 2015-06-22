@@ -82,8 +82,10 @@ class Backend_Orm_Connections_Controller extends Backend_Controller
         
         
         $data = $this->_manager->getConnection($devType , $id);
+
         if(!$data)
             Response::jsonError($this->_lang->CANT_LOAD);
+
         $data = $data->__toArray();
         $data['id'] = $id;
         unset($data['password']);

@@ -262,15 +262,11 @@ class Backend_Orm_Dataview extends Backend_Controller
 		$tab->border=false;
 		$tab->layout='anchor';
 		$tab->bodyPadding=3;
-		$tab->autoScroll = true;
+		$tab->scrollable = true;
 		$tab->bodyCls='formBody';
 		$tab->anchor= '100%';
 		$tab->title = $this->_lang->get('GENERAL');
-		$tab->fieldDefaults="{
-		            labelAlign: 'right',
-		            labelWidth: 160,
-		            anchor: '100%'
-		     }";
+		$tab->fieldDefaults="{labelAlign: 'right',labelWidth: 160,anchor: '100%'}";
 
 		$tabs[] = $tab;
 		$related = array();

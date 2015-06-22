@@ -116,7 +116,7 @@ Ext.define('app.crud.compiller.AddPackageItemWin', {
 		this.fileTree = Ext.create('Ext.tree.Panel',{
 			rootVisible:false,
 	        useArrows: true,
-	        autoScrolle:true,
+			scrollable:true,
 	        border:false,
 	        store:Ext.create('Ext.data.TreeStore',{
 				proxy: {
@@ -352,7 +352,7 @@ Ext.define('app.crud.compiller.Main',{
 		    region:'center',
 		    split:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 		    columns:columns,
 		 	plugins:plugins
 		});
@@ -466,7 +466,7 @@ Ext.define('app.crud.compiller.Main',{
 			frame: false,
 		    loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 		    columns:col,
 		    split:true,
 		    width:500

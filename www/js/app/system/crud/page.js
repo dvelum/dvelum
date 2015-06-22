@@ -48,7 +48,7 @@ Ext.define('app.crud.page.Window',{
 			bodyPadding:'3px',
 			bodyCls:'formBody',
 			anchor: '100%',
-			autoScroll:true,
+			scrollable:true,
 			fieldDefaults: {
 				labelAlign: 'right',
 				labelWidth: 160,
@@ -462,7 +462,7 @@ Ext.define('app.crud.page.Panel',{
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true
+			scrollable:true
 		});
 
 		this.searchField = new SearchPanel({

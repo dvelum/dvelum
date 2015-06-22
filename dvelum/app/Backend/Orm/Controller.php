@@ -669,6 +669,7 @@ class Backend_Orm_Controller extends Backend_Controller
     	$db = $connection;
     	$tables = $db->listTables();
     	$oConfigPath = Db_Object_Config::getConfigPath();
+        $configDir  = Config::storage()->getWrite() . $oConfigPath;
 
     	$tableName = $data['table'];
 
@@ -679,17 +680,19 @@ class Backend_Orm_Controller extends Backend_Controller
     	if(in_array($tableName, $tables ,true))
     		Response::jsonError($this->_lang->FILL_FORM , array(array('id'=>'table','msg'=>$this->_lang->SB_UNIQUE)));
 
-
-    	if(file_exists($oConfigPath . strtolower($name).'.php'))
+    	if(file_exists($configDir . strtolower($name).'.php'))
     		Response::jsonError($this->_lang->FILL_FORM , array(array('id'=>'name','msg'=>$this->_lang->SB_UNIQUE)));
 
+        if(!is_dir($configDir) && !@mkdir($configDir, 0655, true)){
+            Response::jsonError($this->_lang->CANT_WRITE_FS.' '.$configDir);
+        }
     	/*
     	 * Write object config
     	 */
-    	if(!Config_File_Array::create($oConfigPath . $name . '.php'))
-    		Response::jsonError($this->_lang->CANT_WRITE_FS);
+    	if(!Config_File_Array::create($configDir. $name . '.php'))
+    		Response::jsonError($this->_lang->CANT_WRITE_FS . ' ' . $configDir . $name . '.php');
 
-    	$cfg = Config::factory(Config::File_Array, $oConfigPath . strtolower($name).'.php');
+        $cfg = Config::storage()->get($oConfigPath. strtolower($name).'.php' , false , false);
     	/*
     	 * Add fields config
     	 */
@@ -1410,7 +1413,7 @@ class Backend_Orm_Controller extends Backend_Controller
 	public function listvalidatorsAction()
 	{
 		$validators = array(array('id'=>'','title'=>'---'));
-		$files = File::scanFiles('./system/library/Validator', array('.php'), false, File::Files_Only);
+		$files = File::scanFiles('./dvelum/library/Validator', array('.php'), false, File::Files_Only);
 
 		foreach ($files as $v)
 		{
@@ -1453,17 +1456,17 @@ class Backend_Orm_Controller extends Backend_Controller
 
         $wwwPath = $this->_configMain->get('wwwpath');
 	    foreach ($sources as $filePath){
-	        $s.=file_get_contents($wwwPath.$filePath)."\n";
-	        $totalSize+=filesize($wwwPath.$filePath);
+	        $s.=file_get_contents($wwwPath.'/'.$filePath)."\n";
+	        $totalSize+=filesize($wwwPath.'/'.$filePath);
 	    }
 
 	    $time = microtime(true);
-	    file_put_contents($wwwPath.'js/app/system/ORM.js', Code_Js_Minify::minify($s));
+	    file_put_contents($wwwPath.'/js/app/system/ORM.js', Code_Js_Minify::minify($s));
 	    echo '
 			Compilation time: '.number_format(microtime(true)-$time,5).' sec<br>
 			Files compiled: '.sizeof($sources).' <br>
 			Total size: '.Utils::formatFileSize($totalSize).'<br>
-			Compiled File size: '.Utils::formatFileSize(filesize($wwwPath.'js/app/system/ORM.js')).' <br>
+			Compiled File size: '.Utils::formatFileSize(filesize($wwwPath.'/js/app/system/ORM.js')).' <br>
 		';
 	    exit;
 	}
@@ -1474,9 +1477,9 @@ class Backend_Orm_Controller extends Backend_Controller
 	public function listaclAction()
 	{
 	    $list = array(array('id'=>'','title'=>'---'));
-	    $files = File::scanFiles('./system/app/Acl', array('.php'), true, File::Files_Only);
+	    $files = File::scanFiles('./dvelum/app/Acl', array('.php'), true, File::Files_Only);
 	    foreach ($files as $v){
-	      $path = str_replace('./system/app/', '', $v);
+	      $path = str_replace('./dvelum/app/', '', $v);
 	      $name = Utils::classFromPath($path);
 	      $list[] = array('id'=>$name,'title'=>$name);
 	    }

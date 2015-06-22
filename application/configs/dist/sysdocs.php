@@ -7,13 +7,13 @@ return array(
     'default_languge'=> 'ru',
     'default_version' => '0.9.5',
     'locations'=>array(
-        './system/rewrite',
-		'./system/app',
-        './system/library',
+        './dvelum/rewrite',
+		'./dvelum/app',
+        './dvelum/library',
 	),
     'exceptions'=>array(
-    	'./system/library/Zend',
-        './system/library/Spreadsheet'
+    	'./dvelum/library/Zend',
+        './dvelum/library/Spreadsheet'
     ),
     'hid_generator' => array(
         'adapter' => 'Sysdocs_Historyid',

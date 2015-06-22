@@ -18,8 +18,8 @@
  */
 $wwwPath = str_replace('\\', '/' , __DIR__);
 // should be without last slash
-if ($wwwPath[strlen($wwwPath) - 1] == '/')
-    $wwwPath = substr($wwwPath, 0, -1);
+if ($wwwPath[strlen($wwwPath) - 1] !== '/')
+    $wwwPath.= '/';
 
 define('DVELUM_WWW_PATH', $wwwPath);
 

@@ -174,7 +174,7 @@ Ext.define('app.crud.tasks.Main',{
 			frame: false,
 			loadMask:false,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 			columns: gridColumns
 		});
 

@@ -43,7 +43,7 @@ Ext.define('designer.objects.Grid',{
 			frame: false,
 			loadMask:true,
 			columnLines: true,
-			autoScroll:true,
+			scrollable:true,
 			listeners : {
 				'itemclick':{
 					fn:function(view , record , number , event , options){

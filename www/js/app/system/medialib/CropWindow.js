@@ -29,7 +29,7 @@ Ext.define('app.medialib.CropWindow',{
 			maximizable:true,
 			items:[],
 			labelWidth:1,
-			autoScroll:true,
+			scrollable:true,
 			tbar:[]
 		}, config || {});
 		this.callParent(arguments);
@@ -178,7 +178,7 @@ Ext.define('app.medialib.CropWindow',{
 
 		this.centerRegion = Ext.create('Ext.Panel',{
 			region:'center',
-			autoScroll:true,
+			scrollable:true,
 			xtype:'panel',
 			frame:true,
 			html:'<img src="'+imgSrc+'" id="cropSrc"  style="border:1px solid #000" />'

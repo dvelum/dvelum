@@ -88,7 +88,7 @@ Ext.define('app.crud.logs.Main',{
 		            frame: false,
 		            loadMask:true,
 				    columnLines: true,
-				    autoScroll:true,
+					scrollable:true,
 				    tbar:[
 				      appLang.ACTION + ': ',this.operationFilter
 				    ],
