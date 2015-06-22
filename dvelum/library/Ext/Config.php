@@ -282,33 +282,40 @@ class Ext_Config
 				continue;	
 
 			$val =  $this->_data[$name];
-			
 
-			switch($type){
-				case Ext_Property::Boolean: 
+
+			if(is_bool($val)){
+				if($val)
+					$val = 'true';
+				else
+					$val = 'false';
+			}else{
+				switch($type){
+					case Ext_Property::Boolean:
 						if($val)
 							$val = 'true';
-						else 
+						else
 							$val = 'false';
 						break;
-				case Ext_Property::Number:
-				case Ext_Property::Numeric: 
+					case Ext_Property::Number:
+					case Ext_Property::Numeric:
 						$val = floatval($val);
 						break;
-				case Ext_Property::String: 	
-				        $trimed = trim($val);
-				        if(substr($trimed, 0 , strlen(self::JS_TOKEN)) == self::JS_TOKEN){
-				          $val = substr($trimed , strlen(self::JS_TOKEN));
-				        }else{				          
-    				        if(strpos($val, '{') === 0)
-    				            $val = $stringVal;
-    				        else    
-    						    $val = '"'.$stringVal.'"';
-				        }
-						break;		
-				case Ext_Property::Object;
+					case Ext_Property::String:
+						$trimed = trim($val);
+						if(substr($trimed, 0 , strlen(self::JS_TOKEN)) == self::JS_TOKEN){
+							$val = substr($trimed , strlen(self::JS_TOKEN));
+						}else{
+							if(strpos($val, '{') === 0)
+								$val = $stringVal;
+							else
+								$val = '"'.$stringVal.'"';
+						}
+						break;
+					case Ext_Property::Object;
 						$val = $stringVal;
-						break;		
+						break;
+				}
 			}
 			$result[] = $name.":".$val;
 		}
