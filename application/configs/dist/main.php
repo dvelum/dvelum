@@ -107,13 +107,21 @@ return array(
      */
     'backend_modules' => 'modules_backend.php',
     /*
-     * Backend controllers path
+     * DVelum Backend controllers path
      */
     'backend_controllers' => $docRoot . '/dvelum/app/Backend/',
     /*
-     * Frontend controllers path
+     * Local application backend controllers
+     */
+    'local_backend_controllers' => $docRoot . '/application/controllers/Backend/',
+    /*
+     * DVelum Frontend controllers path
      */
     'frontend_controllers' => $docRoot . '/dvelum/app/Frontend/',
+    /*
+     * Local application frontend controllers
+     */
+    'local_frontend_controllers' => $docRoot . '/application/controllers/Frontend/',
     /*
      * Frontend modules config file
      */

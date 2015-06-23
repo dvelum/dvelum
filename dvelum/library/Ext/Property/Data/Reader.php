@@ -12,5 +12,8 @@ class Ext_Property_Data_Reader extends Ext_Property{
 	public $transform = self::Object;
 	public $typeProperty = self::String;
 
+	// dvelum designer Property
+	public $type = self::String;
+
 	static public $extend = 'Ext.data.reader.Reader';
 }

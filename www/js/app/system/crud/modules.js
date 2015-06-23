@@ -1234,6 +1234,7 @@ Ext.define('app.crud.modules.Main',{
 });
 
 /**
+ * Module generator window
  * @event dataSaved
  * @params data
  */
@@ -1244,10 +1245,8 @@ Ext.define('app.crud.modules.CreateWindow',{
 	width:400,
 	height:120,
 	layout:'fit',
-
 	dataForm:null,
 	controllerUrl:'',
-
 
 	initComponent:function(){
 

@@ -29,5 +29,6 @@ return array(
 	'use_csrf_token_lifetime'=>7200,
 	// count of tokens to enable garbage collector
 	'use_csrf_token_garbage_limit'=>500,
-    'modules_codegen'=>'Backend_Modules_Generator_Oop'
+	// Code generator class
+    'modules_generator'=>'Modules_Generator'
 );

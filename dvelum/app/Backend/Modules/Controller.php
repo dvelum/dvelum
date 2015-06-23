@@ -242,23 +242,18 @@ class Backend_Modules_Controller extends Backend_Controller{
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 		
 		$object = Utils_String::formatClassName($object);
-		
+
 		$class = 'Backend_' . $object . '_Controller';
 				
 		if(class_exists($class))
 			Response::jsonError($this->_lang->FILL_FORM , array('id'=>'name','msg'=>$this->_lang->SB_UNIQUE));
-		
+
 		$designerConfig = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'designer.php');
-				
-		$projectFile = $designerConfig->get('configs') . strtolower($object) . '.designer.dat';
+
+		$projectFile = Config::storage()->getWrite() . $designerConfig->get('configs') . strtolower($object) . '.designer.dat';
 		
 		if(file_exists($projectFile))
 			Response::jsonError($this->_lang->FILE_EXISTS . '(' . $projectFile . ')');
-		
-		$actionFile = $designerConfig->get('actionjs_path') . strtolower($object) . '.js';
-		
-		if(file_exists($actionFile))
-			Response::jsonError($this->_lang->FILE_EXISTS . '(' . $actionFile . ')');
 
 		$objectConfig = Db_Object_Config::getInstance($object);
 
@@ -275,19 +270,19 @@ class Backend_Modules_Controller extends Backend_Controller{
 		if(!$manager->objectExists($object))
 			Response::jsonError($this->_lang->FILL_FORM , array('id'=>'object','msg'=>$this->_lang->INVALID_VALUE));
 			
-	    $codeGenadApter = $this->_configBackend->get('modules_codegen');
+	    $codeGenadApter = $this->_configBackend->get('modules_generator');
+
 	    $codeGen = new $codeGenadApter();
 		try{
 			if($objectConfig->isRevControl())
-				$codeGen->createVcModule($object,  $projectFile , $actionFile);
+				$codeGen->createVcModule($object,  $projectFile);
 			else
-				$codeGen->createModule($object,  $projectFile , $actionFile);
-			
+				$codeGen->createModule($object,  $projectFile);
+
 		}catch (Exception $e){
 			Response::jsonError($e->getMessage());
 		}
 
-		
 		$userInfo = User::getInstance()->getInfo();	
 		$per = Model::factory('Permissions');
 		

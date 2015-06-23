@@ -24,6 +24,7 @@ class Modules_Generator
    * @param string $dir - controller dirrectory
    * @param string $content - file content
    * @throws Exception
+   * @return string file path
   */
   protected function _createControllerFile($dir , $content)
   {
@@ -35,12 +36,16 @@ class Modules_Generator
               throw new Exception(Lang::lang()->get('CANT_WRITE_FS') . ' ' . $dir);
       }
 
-      if(!@file_put_contents($dir . DIRECTORY_SEPARATOR . 'Controller.php' ,  $content))
+      if(!@file_put_contents($dir . '/' . 'Controller.php' ,  $content))
           throw new Exception('Cant create Controller');
+
+      @chmod($dir . '/' . 'Controller.php', 0775);
+
+      return $dir . '/' . 'Controller.php';
   }
 
 
-  public function createVcModule($object , $projectFile , $actionFile)
+  public function createVcModule($object , $projectFile)
   {
       $lang = Lang::lang();
 
@@ -104,10 +109,8 @@ class Modules_Generator
       /*
        * Create controller
       */
-      $controllerDir = $this->appConfig->get('backend_controllers') . str_replace('_' , '/' , $name);
-      $this->_createControllerFile($controllerDir , $controllerContent);
-      @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
-
+      $controllerDir = $this->appConfig->get('local_backend_controllers') . str_replace('_' , '/' , $name);
+      $controllerFile = $this->_createControllerFile($controllerDir , $controllerContent);
 
       /*
        * Designer project
@@ -140,13 +143,20 @@ class Modules_Generator
       $urlTemplates =  $this->designerConfig->get('templates');
 
 
-      $controllerUrl = Request::url(array( $urlTemplates['adminpath'] , $object , '') , false);
+      $controllerUrl = Request::url(array($urlTemplates['adminpath'] , $object , '') , false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , 'list'));
+
+      $modelName = $name.'Model';
+      $model = Ext_Factory::object('Model');
+      $model->setName($modelName);
+      $model->idProperty = $primaryKey;
+      $model->addFields($storeFields);
+
+      $project->addObject(Designer_Project::COMPONENT_ROOT , $model, -10);
 
       $dataStore = Ext_Factory::object('Data_Store');
       $dataStore->setName('dataStore');
-      $dataStore->addFields($storeFields);
-
+      $dataStore->model = $modelName;
       $dataStore->autoLoad = true;
 
       $dataProxy = Ext_Factory::object('Data_Proxy_Ajax');
@@ -155,7 +165,6 @@ class Modules_Generator
       $dataReader = Ext_Factory::object('Data_Reader_Json');
       $dataReader->rootProperty = 'data';
       $dataReader->totalProperty = 'count';
-      $dataReader->idProperty = $primaryKey;
       $dataReader->type = 'json';
 
       $dataProxy->reader = $dataReader;
@@ -170,7 +179,7 @@ class Modules_Generator
       $dataStore->proxy = $dataProxy;
       $dataStore->remoteSort = true;
 
-      $project->addObject(0 , $dataStore);
+      $project->addObject(Designer_Project::COMPONENT_ROOT  , $dataStore);
 
       /*
        * Data grid
@@ -183,7 +192,6 @@ class Modules_Generator
       $dataGrid->title = $objectConfig->getTitle() . ' :: ' . $lang->HOME;
       $dataGrid->setAdvancedProperty('paging' , true);
       $dataGrid->viewConfig = '{enableTextSelection: true}';
-
       $dataGrid->extendedComponent(true);
 
       $this->addGridMethods($project , $dataGrid , $object , true);
@@ -243,37 +251,40 @@ class Modules_Generator
           $column->setName($fieldConfig->name);
           $column->itemId = $column->getName();
 
-          switch($fieldConfig->name){
-            case $primaryKey:
-                $column->renderer = 'Ext_Component_Renderer_System_Version';
-                $column->text = $lang->VERSIONS_HEADER;
-                $column->align = 'center';
-                $column->width = 147;
-                break;
+          switch($fieldConfig->name)
+          {
+                case $primaryKey:
+                    $column->renderer = 'Ext_Component_Renderer_System_Version';
+                    $column->text = $lang->VERSIONS_HEADER;
+                    $column->align = 'center';
+                    $column->width = 147;
+                    break;
 
-            case 'published':
-                $column->renderer = 'Ext_Component_Renderer_System_Publish';
-                $column->text = $lang->STATUS;
-                $column->align = 'center';
-                $column->width = 50;
-                break;
+                case 'published':
+                    $column->renderer = 'Ext_Component_Renderer_System_Publish';
+                    $column->text = $lang->STATUS;
+                    $column->align = 'center';
+                    $column->width = 50;
+                    break;
 
-            case 'date_created':
-                $column->renderer = 'Ext_Component_Renderer_System_Creator';
-                $column->text = $lang->CREATED_BY;
-                $column->align = 'center';
-                $column->width = 142;
-                break;
+                case 'date_created':
+                    $column->renderer = 'Ext_Component_Renderer_System_Creator';
+                    $column->text = $lang->CREATED_BY;
+                    $column->align = 'center';
+                    $column->width = 142;
+                    break;
 
-            case 'date_updated':
-                $column->renderer = 'Ext_Component_Renderer_System_Updater';
-                $column->text = $lang->UPDATED_BY;
-                $column->align = 'center';
-                $column->width = 146;
-                break;
+                case 'date_updated':
+                    $column->renderer = 'Ext_Component_Renderer_System_Updater';
+                    $column->text = $lang->UPDATED_BY;
+                    $column->align = 'center';
+                    $column->width = 146;
+                    break;
           }
+
           $dataGrid->addColumn($column->getName() , $column , $parent = 0);
       }
+
       $column = Ext_Factory::object('Grid_Column_Action');
       $column->text = '[js:] appLang.ACTIONS';
       $column->setName($dataGrid->getName().'_actions');
@@ -292,11 +303,19 @@ class Modules_Generator
       $column->addAction($deleteButton->getName() ,$deleteButton);
       $dataGrid->addColumn($column->getName() , $column , $parent = 0);
 
-      $project->addObject(0 , $dataGrid);
+      $project->addObject(Designer_Project::COMPONENT_ROOT, $dataGrid);
+
+      /**
+       * Instance of data grid to layout
+       */
+      $gridInstance = Ext_Factory::object('Object_Instance');
+      $gridInstance->setObject($dataGrid);
+      $gridInstance->setName($dataGrid->getName());
+      $project->getTree()->addItem($gridInstance->getName() . '_instance', Designer_Project::LAYOUT_ROOT, $gridInstance);
 
       /*
        * Top toolbar
-      */
+       */
       $dockObject = Ext_Factory::object('Docked');
       $dockObject->setName($dataGrid->getName() . '__docked');
       $project->addObject($dataGrid->getName() , $dockObject);
@@ -307,8 +326,7 @@ class Modules_Generator
 
       /*
        * Top toolbar items
-      */
-
+       */
       $addButton = Ext_Factory::object('Button');
       $addButton->setName('addButton');
       $addButton->text = $lang->ADD_ITEM;
@@ -354,7 +372,8 @@ class Modules_Generator
       /*if(!$objectConfig->hasHistory())
        $editWindow->hideEastPanel = true;
       */
-      $project->addObject(0 , $editWindow);
+
+      $project->addObject(Designer_Project::COMPONENT_ROOT, $editWindow);
 
       $tab = Ext_Factory::object('Panel');
       $tab->setName($editWindow->getName() . '_generalTab');
@@ -366,11 +385,7 @@ class Modules_Generator
       $tab->anchor = '100%';
       $tab->title = $lang->GENERAL;
       $tab->scrollable = true;
-      $tab->fieldDefaults = "{
-                    labelAlign: 'right',
-                    labelWidth: 160,
-                    anchor: '100%'
-             }";
+      $tab->fieldDefaults = "{labelAlign:'right', labelWidth: 160, anchor: '100%'}";
 
       $project->addObject($editWindow->getName() , $tab);
 
@@ -403,20 +418,19 @@ class Modules_Generator
               $project->addObject($tab->getName() , $newField);
       }
 
-      $project->actionjs = $actionFile;
+     /*
+      * Create ActionJS code
+      */
+      $project->setActionJs($this->_createActionJS($runNamespace, $classNamespace , true));
+
       /*
        * Save designer project
-      */
+       */
       $designerStorage = Designer_Factory::getStorage($this->designerConfig);
-
-      if(!$designerStorage->save($projectFile , $project))
+      if(!$designerStorage->save($projectFile , $project)){
+          @unlink($controllerFile);
           throw new Exception('Can`t create Designer project');
-
-      /*
-       * Create ActionJS file
-      */
-      $this->_createActionJS($runNamespace, $classNamespace, $actionFile, $jsName , true);
-
+      }
       return true;
   }
 
@@ -737,21 +751,19 @@ class Modules_Generator
       */
       $designerStorage = Designer_Factory::getStorage( $this->designerConfig);
 
-      $project->actionjs = $actionFile;
+      /*
+       * Create ActionJS code
+       */
+       $project->setActionJs($this->_createActionJS($runNamespace, $classNamespace));
 
       if(!$designerStorage->save($projectFile , $project))
           throw new Exception('Can`t create Designer project');
-
-      /*
-       * Create ActionJS file
-      */
-      $this->_createActionJS($runNamespace, $classNamespace, $actionFile, $jsName);
 
       return true;
   }
 
   /**
-   * Create actionJs file for designer project
+   * Create actionJs code for designer project
    * @param string $runNamespace
    * @param string $classNamespace
    * @param string $fileName
@@ -759,10 +771,8 @@ class Modules_Generator
    * @param boolean $vc - use version control
    * @throws Exception
    */
-  protected function _createActionJS($runNamespace , $classNamespace , $fileName , $jsObjectName , $vc = false)
+  protected function _createActionJS($runNamespace , $classNamespace , $vc = false)
   {
-    //   Ext.Function.defer(function(){
-    //                }, 100);
       $actionJs = '
         /*
          * Here you can define application logic
@@ -787,10 +797,7 @@ class Modules_Generator
                 });
           });';
 
-      if(!@file_put_contents($fileName , $actionJs))
-          throw new Exception('Can`t create Action file');
-
-      @chmod($fileName, 0775);
+    return $actionJs;
   }
 
   public function addGridMethods(Designer_Project $project ,  Ext_Object $grid , $object, $vc = false)
