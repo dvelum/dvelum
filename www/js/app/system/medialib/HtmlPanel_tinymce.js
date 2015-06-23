@@ -6,13 +6,15 @@ Ext.define('app.medialib.HtmlPanel',{
 	textEditor:null,
 	value:'',
 	layout:'fit',
+	bodyPadding:0,
+	padding:0,
+	margin:0,
+	border:false,
+	frame:false,
 	
 	constructor: function(config) {	
 		config.layout = 'fit';
 		config = Ext.apply({
-			bodyPadding:0,
-			border:false,
-			frame:false,
 			tbar:[]
 	    }, config || {});		
 		config.fieldLabel='';
@@ -21,8 +23,9 @@ Ext.define('app.medialib.HtmlPanel',{
 	},
 	initComponent:function(){
 		
-		this.textEditor = new Ext.ux.TinyMCE({
-		name:this.editorName,
+		this.textEditor = Ext.create('Ext.ux.TinyMCE',{
+			padding:0,
+			name:this.editorName,
 			tinymceSettings:{	
 					theme : "advanced",
 					plugins: "pagebreak,fullscreen,style,layer,table,advhr,advimage,advlink,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,noneditable,visualchars,nonbreaking,xhtmlxtras",

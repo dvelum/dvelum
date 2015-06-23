@@ -229,6 +229,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 		var me = this;		
 		var related = this.editorCfg.related;
 		var fields = Ext.JSON.decode(this.editorCfg.fields);
+
 		this.relatedGrids = [];
 				
 		if(!Ext.isEmpty(related)){

@@ -48,6 +48,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $res->addJs('/js/app/system/ContentWindow.js' , 1);
         $res->addJs('/js/app/system/RevisionPanel.js', 2);
         $res->addJs('/js/app/system/RelatedGridPanel.js', 2);
+        Model::factory('Medialib')->includeScripts();
         $res->addJs('/js/lib/uml/raphael.js'  , 3);
        // $res->addJs('/js/lib/uml/raphael.2.1.min.js'  , 3);
         $res->addJs('/js/lib/uml/joint.js'  , 4);

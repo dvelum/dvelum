@@ -10,7 +10,7 @@ class Ext_Property_Container extends Ext_Property_Component
 	public $defaults = self::Object;
 	public $detachOnRemove = self::Boolean;
 	public $items = self::Object;
-	public $layout = self::Object;
+	public $layout = self::String;
 	public $referenceHolder = self::Boolean;
 	public $suspendLayout = self::Boolean;
 
