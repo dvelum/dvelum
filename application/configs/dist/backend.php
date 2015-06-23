@@ -15,14 +15,19 @@ return array(
 			'Medialib',
 			'Menu_item',
 			'Menu',
-			'Online',
 			'Page',
 			'Permissions',
 			'User',
 			'Vc',
-			'Vote',
 	        'Acl_simple',
-	        'Mediacategory'
+	        'Mediacategory',
+			'Sysdocs_class',
+			'Sysdocs_class_method',
+			'Sysdocs_class_method_param',
+			'Sysdocs_class_property',
+			'Sysdocs_file',
+			'Sysdocs_localization'
+
 	),
 	'use_csrf_token'=>true,
 	// token lifetime seconds by default 2 hours 7200 s

@@ -223,7 +223,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 		$systemObjects = $this->_configBackend['system_objects'];
 		
 		foreach ($list as $key)
-			if(!in_array(ucfirst($key), $systemObjects) && !class_exists('Backend_'.Utils_String::formatClassName($key).'_Controller'))
+			if(!in_array(ucfirst($key), $systemObjects , true) && !class_exists('Backend_'.Utils_String::formatClassName($key).'_Controller'))
 				$data[]= array('id'=>$key , 'title'=>Db_Object_Config::getInstance($key)->getTitle());
 		
 		Response::jsonSuccess($data);
