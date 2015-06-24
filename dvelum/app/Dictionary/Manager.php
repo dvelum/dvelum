@@ -130,8 +130,8 @@ class Dictionary_Manager
 		 */	
 		if(isset(self::$_validDictionary[$name]))
 			return true;
-			
-		if(is_file($this->_path . $name . '.php'))
+
+		if( Config::storage()->exists($this->_path . $name . '.php'))
 		{
 			self::$_validDictionary[$name] = true;
 			return true;

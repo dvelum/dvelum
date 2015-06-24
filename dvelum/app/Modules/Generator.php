@@ -434,7 +434,7 @@ class Modules_Generator
       return true;
   }
 
-  public function createModule($object , $projectFile , $actionFile)
+  public function createModule($object , $projectFile)
   {
       $lang = Lang::lang();
 
@@ -523,12 +523,20 @@ class Modules_Generator
       $controllerUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , ''),false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] , $object , 'list'));
 
+      $modelName = $name.'Model';
+      $model = Ext_Factory::object('Model');
+      $model->setName($modelName);
+      $model->idProperty = $primaryKey;
+      $model->addFields($storeFields);
+
+      $project->addObject(Designer_Project::COMPONENT_ROOT , $model, -10);
 
 
       $dataStore = Ext_Factory::object('Data_Store');
       $dataStore->setName('dataStore');
       $dataStore->autoLoad = true;
-      $dataStore->addFields($storeFields);
+      $dataStore->model = $modelName;
+     // $dataStore->addFields($storeFields);
 
       $dataProxy = Ext_Factory::object('Data_Proxy_Ajax');
       $dataProxy->type = 'ajax';
@@ -536,7 +544,6 @@ class Modules_Generator
       $dataReader = Ext_Factory::object('Data_Reader_Json');
       $dataReader->rootProperty = 'data';
       $dataReader->totalProperty = 'count';
-      $dataReader->idProperty = $primaryKey;
       $dataReader->type = 'json';
 
       $dataProxy->reader = $dataReader;
@@ -634,7 +641,16 @@ class Modules_Generator
           $column->addAction($deleteButton->getName() ,$deleteButton);
           $dataGrid->addColumn($column->getName() , $column , $parent = 0);
       }
-      $project->addObject(0 , $dataGrid);
+      $project->addObject(Designer_Project::COMPONENT_ROOT , $dataGrid);
+
+
+      /**
+       * Instance of data grid to layout
+       */
+      $gridInstance = Ext_Factory::object('Object_Instance');
+      $gridInstance->setObject($dataGrid);
+      $gridInstance->setName($dataGrid->getName());
+      $project->getTree()->addItem($gridInstance->getName() . '_instance', Designer_Project::LAYOUT_ROOT, $gridInstance);
 
       /*
        * Top toolbar
@@ -694,7 +710,7 @@ class Modules_Generator
       if(!$objectConfig->hasHistory())
           $editWindow->hideEastPanel = true;
 
-      $project->addObject(0 , $editWindow);
+      $project->addObject(Designer_Project::COMPONENT_ROOT , $editWindow);
 
       $tab = Ext_Factory::object('Panel');
       $tab->setName($editWindow->getName() . '_generalTab');
@@ -720,7 +736,6 @@ class Modules_Generator
       {
           if($field == $primaryKey)
               continue;
-
 
           $fieldConfig = $objectConfig->getFieldConfig($field);
 

@@ -21,6 +21,7 @@ class Ext_Component_Field_System_Dictionary extends Ext_Component_Field
 		if($this->isValidProperty('dictionary') && strlen($this->dictionary))
 		{
 			$dM = Dictionary_Manager::factory();
+
 			if($dM->isValidDictionary($this->dictionary))
 			{
 			    $allowBlank = false;

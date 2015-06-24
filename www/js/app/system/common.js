@@ -15,6 +15,7 @@ Ext.data.DataReader.messageProperty = "msg";
  */
 Ext.define('app.comboModel', {
 	extend: 'Ext.data.Model',
+	idProperty:'id',
 	fields: [
 		{name:'id' ,  type:'integer'},
 		{name:'title' , type:'string'}
@@ -25,6 +26,7 @@ Ext.define('app.comboModel', {
  */
 Ext.define('app.comboStringModel', {
 	extend: 'Ext.data.Model',
+	idProperty:'id',
 	fields: [
 		{name:'id' ,  type:'string'},
 		{name:'title' , type:'string'}
@@ -34,6 +36,7 @@ Ext.define('app.comboStringModel', {
  * Model for ComboBox data using the fields: name - string, value - string
  */
 Ext.define('app.comboValueModel', {
+	idProperty:'name',
 	extend: 'Ext.data.Model',
 	fields: [
 		{name:'name' ,  type:'string'},

@@ -1,10 +1,12 @@
 <?php
 abstract class Ext_Property_Form_Field_Base extends Ext_Property_Component
 {
+	use Ext_Property_Form_Labelable;
+
 	public $checkChangeBuffer = self::Number;
 	public $checkChangeEvents = self::Object;
 	public $dirtyCls = self::String;
-	public $fieldBodyCls = self::String;
+	//public $fieldBodyCls = self::String;
 	public $fieldCls = self::String;
 	public $fieldStyle = self::String;
 	public $fieldSubTpl = self::Object;

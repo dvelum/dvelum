@@ -1,6 +1,8 @@
 <?php
 class Ext_Property_Form_Fieldcontainer extends Ext_Property_Container
 {
+	use Ext_Property_Form_Labelable;
+
 	public $combineErrors = self::Boolean;
 	public $combineLabels = self::Boolean;
 	public $invalidCls = self::String;
