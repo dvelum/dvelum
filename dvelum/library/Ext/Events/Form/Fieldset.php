@@ -15,10 +15,10 @@ class Ext_Events_Form_Fieldset extends Ext_Events_Container
 	{
 		parent::_initConfig();
 
-		$this->$beforecollapse = static::$_fieldsetOptions;
-		$this->$beforeexpand = static::$_fieldsetOptions;
-		$this->$collapse = static::$_fieldsetOptions;
-		$this->$expand = static::$_fieldsetOptions;
+		$this->beforecollapse = static::$_fieldsetOptions;
+		$this->beforeexpand = static::$_fieldsetOptions;
+		$this->collapse = static::$_fieldsetOptions;
+		$this->expand = static::$_fieldsetOptions;
 	}
 
 }

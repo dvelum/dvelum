@@ -1,9 +1,14 @@
 <?php
-$docRoot = dirname(dirname(dirname(__FILE__))) . '/www';
-$_SERVER['DOCUMENT_ROOT'] = str_replace('\\', '/' ,$docRoot);
+$dvelumRoot =  str_replace('\\', '/' ,  dirname(dirname(dirname(__FILE__))));
+// should be without last slash
+if ($dvelumRoot[strlen($dvelumRoot) - 1] == '/')
+    $dvelumRoot = substr($dvelumRoot, 0, -1);
 
 define('DVELUM', true);
-define('DVELUM_ROOT' , dirname($docRoot));
+define('DVELUM_ROOT' ,$dvelumRoot);
+define('DVELUM_WWW_PATH', $dvelumRoot.'/www');
+$_SERVER['DOCUMENT_ROOT'] = DVELUM_WWW_PATH;
+
 
 chdir(DVELUM_ROOT);
 
@@ -31,12 +36,13 @@ $storageConfig['file_array'] = array(
         './tests/configs/',
     ),
     'write' =>  './tests/configs/',
-    'apply_to' => false,
+    'apply_to' => './application/configs/dist/',
 );
 
 Config::setStorageOptions(
     $storageConfig
 );
+
 /*
  * Connecting main configuration file
  */
