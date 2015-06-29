@@ -252,7 +252,7 @@ class Tree
 	 */
 	public function changeParent($id , $newParent)
 	{
-		if(! $this->itemExists($id) || (! $this->itemExists($newParent) && strval($newParent) !== '0'))
+		if(!$this->itemExists($id) || (!$this->itemExists($newParent) && strval($newParent) !== '0') || strval($id)==strval($newParent))
 			return false;
 		
 		$oldParent = $this->_items[$id]['parent'];
