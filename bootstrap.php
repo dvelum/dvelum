@@ -86,6 +86,11 @@ else
 
 $autoloader->setConfig($autoloaderCfg);
 
+/**
+ * Enable Zend Framework 1.x library support
+ */
+set_include_path(get_include_path() . PATH_SEPARATOR . $config->get('vendor_lib'));
+
 /*
  * Installation mode
  */

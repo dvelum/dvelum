@@ -267,5 +267,9 @@ return array(
     /*
      * Db_Object for error log 
      */
-    'erorr_log_object' => 'error_log'
+    'erorr_log_object' => 'error_log',
+    /*
+     * Vendor library path
+     */
+    'vendor_lib'=> $docRoot . '/vendor/'
 );
