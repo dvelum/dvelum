@@ -194,8 +194,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		 */
 		$rootClasses = array('Window','Store','Data_Store','Data_Store_Tree','Model');
 		$isWindowComponent = strpos($class,'Component_Window_')!==false;
-		if(in_array($class, $rootClasses , true) || $isWindowComponent)
-			$parent = Designer_Project::LAYOUT_ROOT;
+
 		/*
 		 * Check if parent object exists and can has childs
 		 */
@@ -208,12 +207,17 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		if($project->objectExists($name))
 			Response::jsonError($this->_lang->SB_UNIQUE);
 
-		$class = ucfirst($class);
+		if(in_array($class, $rootClasses , true) || $isWindowComponent)
+			$parent = Designer_Project::COMPONENT_ROOT;
+
+
 		$object = Ext_Factory::object($class);
 		$object->setName($name);
 
-		if($isWindowComponent)
+		if($parent === Designer_Project::COMPONENT_ROOT)
 			$object->extendedComponent(true);
+		else
+			$object->extendedComponent(false);
 
 		$this->_initDefaultProperties($object);
 
@@ -240,7 +244,6 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		}
 
 		if(in_array($class, Designer_Project::$hasDocked , true)){
-
 			$dockObject = Ext_Factory::object('Docked');
 			$dockObject->setName($name.'__docked');
 			$project->addObject($name, $dockObject);

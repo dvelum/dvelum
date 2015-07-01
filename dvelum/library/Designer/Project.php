@@ -201,9 +201,18 @@ class Designer_Project
 	 */
 	public function addObject($parent , Ext_Object $object)
 	{
-		if(strlen($parent) && $parent !== 0 && !$this->objectExists($parent) || in_array($object->getClass(),self::$_nonDraggable,true))
-			$parent = 0;
+		if(strlen($parent))
+		{
+			if(in_array($object->getClass(),self::$_nonDraggable,true) && $parent!==Designer_Project::COMPONENT_ROOT){
+				$parent = Designer_Project::LAYOUT_ROOT;
+				$object->isExtendedComponent(false);
+			}
 
+			if(!$this->objectExists($parent)){
+				$parent = Designer_Project::LAYOUT_ROOT;
+				$object->isExtendedComponent(false);
+			}
+		}
 		return $this->_tree->addItem($object->getName() , $parent , $object);
 	}
 
