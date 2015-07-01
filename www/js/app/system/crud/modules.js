@@ -637,6 +637,9 @@ Ext.define('app.crud.modules.toolsPlugin',{
 	}
 });
 
+/**
+ * @event dataSaved
+ */
 Ext.define('app.crud.modules.backendView',{
 	extend:'Ext.container.Container',
 	scrollable:false,
@@ -858,6 +861,10 @@ Ext.define('app.crud.modules.backendView',{
 			canEdit:this.canEdit,
 			resizable:false
 		});
+		w.on('dataSaved',function(){
+			this.fireEvent('dataSaved');
+			w.close();
+		},this);
 		w.show();
 	},
 	/**
@@ -947,8 +954,13 @@ Ext.define('app.crud.modules.Backend',{
 			recordOptions:{active:true,dev:false},
 			extraParams:this.extraParams,
 			canDelete:this.canDelete,
-			canEdit:this.canEdit
-
+			canEdit:this.canEdit,
+			listeners:{
+				dataSaved:{
+					fn:this.loadData,
+					scope:this
+				}
+			}
 		});
 
 		this.developmentView = Ext.create('app.crud.modules.backendView',{
@@ -959,7 +971,13 @@ Ext.define('app.crud.modules.Backend',{
 			recordOptions:{active:true,dev:true},
 			extraParams:this.extraParams,
 			canDelete:this.canDelete,
-			canEdit:this.canEdit
+			canEdit:this.canEdit,
+			listeners:{
+				dataSaved:{
+					fn:this.loadData,
+					scope:this
+				}
+			}
 		});
 
 		this.disabledView = Ext.create('app.crud.modules.backendView',{
@@ -970,7 +988,13 @@ Ext.define('app.crud.modules.Backend',{
 			recordOptions:{active:false,dev:true},
 			extraParams:this.extraParams,
 			canDelete:this.canDelete,
-			canEdit:this.canEdit
+			canEdit:this.canEdit,
+			listeners:{
+				dataSaved:{
+					fn:this.loadData,
+					scope:this
+				}
+			}
 		});
 
 		this.dataStore =  Ext.create('Ext.data.Store' , {
@@ -995,6 +1019,9 @@ Ext.define('app.crud.modules.Backend',{
 			listeners: {
 				load: {
 					fn: function (store, records) {
+						this.disabledStore.removeAll();
+						this.developmentStore.removeAll();
+						this.productionStore.removeAll();
 						Ext.each(records, function (item, index) {
 							if (!item.get('active')) {
 								this.disabledStore.add(item);
@@ -1020,6 +1047,9 @@ Ext.define('app.crud.modules.Backend',{
 
 		this.callParent();
 
+	},
+	loadData:function(){
+		this.dataStore.load();
 	},
 	addAction:function(){
 
