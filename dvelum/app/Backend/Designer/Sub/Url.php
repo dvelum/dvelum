@@ -8,17 +8,24 @@ class Backend_Designer_Sub_Url extends Backend_Designer_Sub
 	{
 		$path = Request::post('node', 'string', '');
 		$path = str_replace('.','', $path);
-			
-		$dirPath = $this->_config->get('controllers');
-				
-		if(!is_dir($dirPath))
-			Response::jsonArray(array());
-			
-		if(!strlen($path)){
-			$files = array($dirPath.'Backend',$dirPath.'Frontend');
-		}else{	
-			$files = File::scanFiles($dirPath . $path, array('.php') , false , File::Files_Dirs);
+
+		$autoloaderConfig  = $this->_configMain->get('autoloader');
+		$classPaths = $autoloaderConfig['paths'];
+
+		$files = [];
+		foreach($classPaths as $item){
+			if(is_dir($item.$path)){
+				$list = File::scanFiles($item.$path, array('.php') , false , File::Files_Dirs);
+				if(!empty($list)){
+					$pathLen = strlen($item);
+					foreach($list as $k=>&$v){
+						$v = substr($v,$pathLen);
+					}unset($v);
+					$files = array_merge($files, $list);
+				}
+			}
 		}
+
 		if(empty($files))
 			Response::jsonArray(array());
 			
@@ -28,32 +35,28 @@ class Backend_Designer_Sub_Url extends Backend_Designer_Sub
 		foreach($files as $k=>$fpath)
 		{
 			$text  = basename($fpath);
-			if($text ==='.svn')
-				continue;
 		
 			$obj = new stdClass();
-			$obj->id = str_replace($dirPath, '', $fpath);
+			$obj->id = $fpath;
 			$obj->text = $text;
 
 			if($obj->text ==='Controller.php')
 			{
-				$controllerName =  str_replace(array($dirPath , DIRECTORY_SEPARATOR) , array('','_') , substr($fpath,0,-4));
+				$controllerName =  str_replace('/' , '_' , substr($fpath,0,-4));
 				$obj->url = Backend_Designer_Code::getControllerUrl($controllerName); 
 			}else{
 				$obj->url = '';
 			}
-			
-			if(is_dir($fpath))
+
+			if(File::getExt($fpath) === '.php')
 			{
+				if($text!=='Controller.php' || $path === '/')
+					continue;
+
+				$obj->leaf = true;
+			}else{
 				$obj->expanded = false;
 				$obj->leaf = false;
-			} 
-			else
-			{
-				if($text!=='Controller.php')
-					continue;
-					
-				$obj->leaf = true;
 			}
 			$list[] = $obj;	
 		}
