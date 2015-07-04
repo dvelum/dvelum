@@ -42,7 +42,7 @@ class Backend_Designer_Sub_Url extends Backend_Designer_Sub
 
 			if($obj->text ==='Controller.php')
 			{
-				$controllerName =  str_replace('/' , '_' , substr($fpath,0,-4));
+				$controllerName =  str_replace('/' , '_' , substr($fpath,1,-4));
 				$obj->url = Backend_Designer_Code::getControllerUrl($controllerName); 
 			}else{
 				$obj->url = '';
@@ -83,7 +83,7 @@ class Backend_Designer_Sub_Url extends Backend_Designer_Sub
 		$path = Request::post('node', 'string', '');
 		$path = str_replace('.','', $path);
 			
-		$dirPath = $this->_configMain->get('docroot');
+		$dirPath = $this->_configMain->get('wwwpath');
 				
 		if(!is_dir($dirPath.$path))
 			Response::jsonArray(array());
@@ -125,7 +125,7 @@ class Backend_Designer_Sub_Url extends Backend_Designer_Sub
 	{
 		$templates = $this->_config->get('templates');
 		
-		$dirPath = $this->_configMain->get('docroot');
+		$dirPath = $this->_configMain->get('wwwpath');
 		$dir = Request::post('dir', 'string', '');
 
 		if(!is_dir($dirPath . $dir))

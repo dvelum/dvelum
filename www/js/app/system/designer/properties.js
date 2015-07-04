@@ -223,7 +223,15 @@ Ext.define('designer.properties.Panel', {
             },
             'url': {
                 editor: Ext.create('designer.urlField', {
-                    controllerUrl: app.createUrl([designer.controllerUrl, 'url', 'actions', ''])
+                    controllerUrl: app.createUrl([designer.controllerUrl, 'url', 'actions', '']),
+                    listeners: {
+                        select: {
+                            fn: function (url) {
+                                me.dataGrid.setProperty('url' , url);
+                            },
+                            scope:me
+                        }
+                    }
                 })
             },
             'icon': {
@@ -231,12 +239,12 @@ Ext.define('designer.properties.Panel', {
                     controllerUrl: app.createUrl([designer.controllerUrl, 'url', '']),
                     listeners: {
                         select: {
-                            fn: function () {
-                                this.ownerCt.completeEdit();
-                            }
+                            fn: function (url) {
+                                me.dataGrid.setProperty('icon' , url);
+                            },
+                            scope:me
                         }
                     }
-
                 })
             },
             'controllerUrl': {
@@ -245,9 +253,10 @@ Ext.define('designer.properties.Panel', {
                     controllerUrl: app.createUrl([designer.controllerUrl, 'url', 'actions', '']),
                     listeners: {
                         select: {
-                            fn: function () {
-                                this.ownerCt.completeEdit();
-                            }
+                            fn: function (url) {
+                                me.dataGrid.setProperty('controllerUrl' , url);
+                            },
+                            scope:me
                         }
                     }
                 })

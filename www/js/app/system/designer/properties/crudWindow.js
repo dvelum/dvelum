@@ -8,7 +8,7 @@ Ext.define('designer.properties.CrudWindow',{
 	{
 		var me = this;
 		
-		if(this.tbar === undefined){
+		if(!this.tbar){
 			this.tbar = [];
 		}
 		

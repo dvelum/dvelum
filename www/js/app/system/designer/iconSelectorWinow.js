@@ -1,3 +1,11 @@
+Ext.define('designer.iconModel',{
+	extend: 'Ext.data.Model',
+	fields: [
+		{name: 'name'},
+		{name: 'url'},
+		{name: 'path'}
+	]
+});
 /**
  *
  * @event select Fires when action is selected
@@ -16,10 +24,8 @@ Ext.define('designer.iconSelectorWindow',{
 	width:500,
 	height:300,
 	modal:true,
-
 	iconWidth:16,
 	iconHeight:16,
-
 
 	initComponent:function(){
 
@@ -42,19 +48,9 @@ Ext.define('designer.iconSelectorWindow',{
 			}
 		});
 
-
-		ImageModel = Ext.define('ImageModel', {
-		        extend: 'Ext.data.Model',
-		        fields: [
-		           {name: 'name'},
-		           {name: 'url'},
-		           {name: 'path'}
-		        ]
-		});
-
 		this.dataView =  Ext.create('Ext.view.View', {
             store: Ext.create('Ext.data.Store', {
-                model: 'ImageModel',
+                model: 'designer.iconModel',
                 proxy: {
                     type: 'ajax',
                     url: this.controllerUrl + this.imagesAction,
@@ -85,13 +81,6 @@ Ext.define('designer.iconSelectorWindow',{
                     shortName: Ext.util.Format.ellipsis(data.name, 15)
                 });
                 return data;
-            },
-            listeners: {
-                selectionchange: function(dv, nodes ){
-                    var l = nodes.length,
-                        s = l !== 1 ? 's' : '';
-                    this.up('panel').setTitle('Simple DataView (' + l + ' item' + s + ' selected)');
-                }
             }
         });
 

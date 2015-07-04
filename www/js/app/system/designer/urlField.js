@@ -105,11 +105,9 @@ Ext.define('designer.urlWindow',{
 	onSelect:function(){
 		if(this.onlyController)
 		{
-
 			if(!this.fileTree.getSelectionModel().hasSelection()){
 				return;
 			}
-
 			var selected = this.fileTree.getSelectionModel().getSelection()[0];
 			this.fireEvent('select' , selected.get('url'));
 			this.close();
@@ -154,17 +152,17 @@ Ext.define('designer.urlField',{
 		this.callParent(arguments);
 	},
 	showSelectWindow:function(){
+		var me = this;
 		var win = Ext.create('designer.urlWindow', {
 			width:600,
 			height:400,
 			onlyController:this.onlyController,
 			controllerUrl:this.controllerUrl,
-			listeners:{
-				select:{
-					fn:function(url){
-						this.setValue(url);
-					},
-					scope:this
+			listeners: {
+				scope: me,
+				select:function(url){
+					me.setValue(url);
+					me.fireEvent('select' , url);
 				}
 			}
 		}).show();

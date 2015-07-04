@@ -60,12 +60,11 @@ class Backend_Designer_Code
 			}
 		}
 		$url[]='';
-		
-		Request::setDelimiter($templates['urldelimiter']);
-		Request::setRoot($templates['wwwroot']);
-		$url = Request::url($url , false);	
-		Request::setDelimiter($appCfg['urlDelimiter']);
-		Request::setRoot($appCfg['wwwroot']);
+		Request::setConfigOption('urldelimiter' , $templates['urldelimiter']);
+		Request::setConfigOption('wwwroot' , $templates['wwwroot']);
+		$url = Request::url($url , false);
+		Request::setConfigOption('urldelimiter' , $appCfg['urlDelimiter']);
+		Request::setConfigOption('wwwroot' , $appCfg['wwwroot']);
 		return $url;
 	}
 	/**
