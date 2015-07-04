@@ -1,6 +1,8 @@
 <?php
 if(!defined('DVELUM'))exit;
 
+	$extTheme = $this->get('extjs_theme');
+
 	$res = Resource::getInstance();
 	$res->addJs('js/app/system/common.js' , -1);
 	$token = '';
@@ -13,16 +15,19 @@ if(!defined('DVELUM'))exit;
 	$res->addJs('/js/lang/'.$this->lang.'.js', -3 , true);
 
 	if($this->get('development'))
-		$res->addJs('/js/lib/ext5/build/ext-all-debug.js', -2 , true);
+		$res->addJs('/js/lib/ext6/build/ext-all-debug.js', -2 , true );
 	else
-		$res->addJs('/js/lib/ext5/build/ext-all.js', -2, true );
+		$res->addJs('/js/lib/ext6/build/ext-all.js', -2 , true );
 
-	$res->addJs('/js/lib/ext5/build/packages/ext-theme-gray/build/ext-theme-gray.js', -1 , true );
-	$res->addJs('/js/lib/ext5/build/packages/ext-locale/build/ext-locale-'.$this->get('lang').'.js', -1 , true );
+	$res->addJs('/js/lib/ext6/build/theme-'.$extTheme.'/theme-'.$extTheme.'.js', -1 , true );
 
+	$res->addJs('/js/lib/ext6/build/locale/locale-'.$this->get('lang').'.js', -1 , true );
 
-$res->addCss('/js/lib/ext5/build/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css' , 1);
-$res->addCss('/css/system/default/style.css' , 2);
+	$res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');
+
+	$res->addCss('/js/lib/ext6/build/theme-'.$extTheme.'/resources/theme-'.$extTheme.'-all.css' , 1);
+	$res->addCss('/css/system/default/style.css' , 2);
+
 ?>
 <html>
 <head>
