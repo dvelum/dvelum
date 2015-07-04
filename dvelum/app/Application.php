@@ -319,7 +319,6 @@ class Application
         	app.root = "' . $this->_config->get('wwwroot') .  $this->_config->get('adminPath') . $this->_config->get('urlDelimiter') . $controller . $this->_config->get('urlDelimiter') . '";
         ');
 
-
         $modulesManager = new Modules_Manager();
         /*
          * Load template
@@ -338,7 +337,8 @@ class Application
             'lang' => $this->_config->get('language'),
             'modules' => $modulesManager->getList(),
             'userModules' => $user->getAvailableModules(),
-            'useCSRFToken' => $cfgBackend->get('use_csrf_token')
+            'useCSRFToken' => $cfgBackend->get('use_csrf_token'),
+            'extjs_theme' => $cfgBackend->get('extjs_theme')
         ));
         Response::put($template->render(self::$_templates . 'layout.php'));
     }

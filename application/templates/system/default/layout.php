@@ -3,6 +3,8 @@ if(!defined('DVELUM'))exit;
 
 	header('Content-Type: text/html; charset=utf-8');
 
+	$extTheme = $this->get('extjs_theme');
+
 	$res = Resource::getInstance();
 	$res->addJs('/js/app/system/common.js' , -2);
 	$res->addJs('/js/app/system/Application.js' , -1);
@@ -11,17 +13,17 @@ if(!defined('DVELUM'))exit;
 	$res->addJs('/js/lang/'.$this->get('lang').'.js', 1 , true , 'head');
 
 	if($this->get('development'))
-	    $res->addJs('/js/lib/ext5/build/ext-all-debug.js', 2 , true , 'head');
+	    $res->addJs('/js/lib/ext6/build/ext-all-debug.js', 2 , true , 'head');
 	else
-	    $res->addJs('/js/lib/ext5/build/ext-all.js', 2 , true , 'head');
+	    $res->addJs('/js/lib/ext6/build/ext-all.js', 2 , true , 'head');
 
-	$res->addJs('/js/lib/ext5/build/packages/ext-theme-gray/build/ext-theme-gray.js', 3 , true , 'head');
+	$res->addJs('/js/lib/ext6/build/theme-'.$extTheme.'/theme-'.$extTheme.'.js', 3 , true , 'head');
 
-	$res->addJs('/js/lib/ext5/build/packages/ext-locale/build/ext-locale-'.$this->get('lang').'.js', 4 , true , 'head');
+	$res->addJs('/js/lib/ext6/build/locale/locale-'.$this->get('lang').'.js', 4 , true , 'head');
 
 	$res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');
 
-    $res->addCss('/js/lib/ext5/build/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css' , 1);
+    $res->addCss('/js/lib/ext6/build/theme-'.$extTheme.'/resources/theme-'.$extTheme.'-all.css' , 1);
 	$res->addCss('/css/system/default/style.css' , 2);
 
 
