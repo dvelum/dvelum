@@ -5,7 +5,6 @@
   'Cache' =>  'Cache Info',
   'Packages' => 'Code Packages',
   'Orm' =>  'Data objects (ORM)',
-  'Deploy' => 'Deploy',
   'Docs' => 'Documentation',
   'Error_Log' =>  'Error Log',
   'Filestorage' => 'Filestorage',

@@ -300,6 +300,16 @@
     float:left;
     cursor:pointer !important;
 }
+.module-wrap.home{
+     width:120px;
+     height:110px;
+ }
+
+.module-wrap.home.dev{
+    width:120px;
+    height:110px;
+    background-color: #F2F2F2;
+}
 
 .module-wrap:hover{
     background-color: #F5F5F5;
