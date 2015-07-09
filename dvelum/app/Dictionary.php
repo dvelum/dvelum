@@ -47,8 +47,19 @@ class Dictionary
 	 * Instantiate a dictionary by name
 	 * @param string $name
 	 * @return Dictionary
+	 * @deprecated
 	 */
 	static public function getInstance($name)
+	{
+		return self::factory($name);
+	}
+
+	/**
+	 * Instantiate a dictionary by name
+	 * @param string $name
+	 * @return Dictionary
+	 */
+	static public function factory($name)
 	{
 		$name = strtolower($name);
 		if(!isset(self::$_instances[$name]))
