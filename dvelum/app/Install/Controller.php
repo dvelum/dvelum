@@ -355,68 +355,33 @@ class Install_Controller {
         $objectList = $installCfg->get('objects');
         $chunkSize = $installCfg->get('chunk_size');
 
-        foreach($objectList as $object)
+        foreach($objectList as $object=>$fields)
         {
             $filePath = $dataPath.$object.'.csv';
+
             if(!file_exists($filePath)){
                 Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR') .' '. $this->localization->get('IMPORT_ERR').' '.$filePath);
             }
 
-            $model = Model::factory($object);
+            $model =  Model::factory($object);
+            $db = $model->getDbConnection();
             $csvHandler = fopen($filePath , 'r');
-            $cache = [];
             while(($row = fgetcsv($csvHandler , 0,';','"'))!==false)
             {
-                $cache[] = $row;
-                if(count($cache) >= $chunkSize)
-                {
-                    try{
-                        $this->insertData($model , $cache);
-                    }catch (Exception $e){
-                        Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR').' '.$e->getMessage() );
+                foreach($row as $k=>&$v){
+                    if($v==='NULL'){
+                        $v = null;
                     }
-                    $cache = [];
-                }
-            }
-            if(!empty($cache)){
+                }unset($v);
+
                 try{
-                    $this->insertData($model , $cache);
+                    $db->insert($model->table() , array_combine($fields , $row));
                 }catch (Exception $e){
                     Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR').' '.$e->getMessage() );
                 }
-                $cache = [];
             }
             fclose($csvHandler);
         }
-    }
-
-    /**
-     * Insert records
-     * @param Model $model
-     * @param array $data
-     * @throws Exception
-     */
-    protected function insertData($model , $data)
-    {
-        $db = $model->getDbConnection();
-        $tableName = $db->quoteIdentifier($model->table());
-        // quote values
-        foreach ($data as &$item)
-        {
-            foreach ($item as &$colValue)
-            {
-                if(is_bool($colValue)){
-                    $colValue = intval($colValue);
-                }elseif ($colValue === 'NULL'){
-
-                }else{
-                    $colValue = $db->quote($colValue);
-                }
-            }unset($colValue);
-            $item = implode(',', $item);
-        }unset($item);
-        $sql = 'INSERT INTO ' . $tableName . ' VALUES ('.implode('),(', array_values($data)).');';
-        $db->query($sql);
     }
 
     public function setuserpassAction()
