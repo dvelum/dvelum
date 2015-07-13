@@ -333,31 +333,90 @@ class Install_Controller {
                 $buildErrors[] = $name;
         }
 
-        /*
-        $zendDb = Model::getGlobalDbConnection();
-
-        $installDocs = $this->session->get('install_docs');
-
-        $config = Config::factory(Config::File_Array, $this->docRoot . 'install/cfg/cfg.php')->__toArray();
-
-        if($installDocs){
-            try{
-                $dbConfig = $zendDb->getConfig();
-                $cmd = 'mysql -h'.escapeshellarg($dbConfig['host']).' -P '.escapeshellarg($dbConfig['port']).' -u' . escapeshellarg($dbConfig['username']) . ' -p' . escapeshellarg($dbConfig['password']) . ' -D' . escapeshellarg($dbConfig['dbname']).' < '. escapeshellarg($this->docRoot.$config['docs_sql']);
-
-                if(system($cmd) === false)
-                    throw new Exception('Cannot exec shell command: '.$cmd);
-
-            }catch (Exception $e){
-                Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR') .' '. $e->getMessage());
-            }
+        // install documentation
+        if($this->session->get('install_docs')){
+            $this->installDocs();
         }
-        */
 
         if(!empty($buildErrors))
             Response::jsonError($this->localization->get('BUILD_ERR') . ' ' . implode(', ', $buildErrors));
         else
             Response::jsonSuccess('', array('msg'=>$this->localization->get('DB_DONE')));
+    }
+
+    /**
+     * Install documentation
+     * @throws Exception
+     */
+    public function installDocs()
+    {
+        $installCfg = Config::storage()->get('install.php');
+        $dataPath = $installCfg->get('dumpdir');
+        $objectList = $installCfg->get('objects');
+        $chunkSize = $installCfg->get('chunk_size');
+
+        foreach($objectList as $object)
+        {
+            $filePath = $dataPath.$object.'.csv';
+            if(!file_exists($filePath)){
+                Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR') .' '. $this->localization->get('IMPORT_ERR').' '.$filePath);
+            }
+
+            $model = Model::factory($object);
+            $csvHandler = fopen($filePath , 'r');
+            $cache = [];
+            while(($row = fgetcsv($csvHandler , 0,';','"'))!==false)
+            {
+                $cache[] = $row;
+                if(count($cache) >= $chunkSize)
+                {
+                    try{
+                        $this->insertData($model , $cache);
+                    }catch (Exception $e){
+                        Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR').' '.$e->getMessage() );
+                    }
+                    $cache = [];
+                }
+            }
+            if(!empty($cache)){
+                try{
+                    $this->insertData($model , $cache);
+                }catch (Exception $e){
+                    Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR').' '.$e->getMessage() );
+                }
+                $cache = [];
+            }
+            fclose($csvHandler);
+        }
+    }
+
+    /**
+     * Insert records
+     * @param Model $model
+     * @param array $data
+     * @throws Exception
+     */
+    protected function insertData($model , $data)
+    {
+        $db = $model->getDbConnection();
+        $tableName = $db->quoteIdentifier($model->table());
+        // quote values
+        foreach ($data as &$item)
+        {
+            foreach ($item as &$colValue)
+            {
+                if(is_bool($colValue)){
+                    $colValue = intval($colValue);
+                }elseif ($colValue === 'NULL'){
+
+                }else{
+                    $colValue = $db->quote($colValue);
+                }
+            }unset($colValue);
+            $item = implode(',', $item);
+        }unset($item);
+        $sql = 'INSERT INTO ' . $tableName . ' VALUES ('.implode('),(', array_values($data)).');';
+        $db->query($sql);
     }
 
     public function setuserpassAction()
