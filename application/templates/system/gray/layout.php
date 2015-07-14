@@ -24,7 +24,8 @@ if(!defined('DVELUM'))exit;
 	$res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');
 
     $res->addCss('/js/lib/ext6/build/theme-'.$theme.'/resources/theme-'.$theme.'-all.css' , 1);
-	$res->addCss('/css/system/'.$theme.'/style.css' , 2);
+    $res->addCss('/css/system/style.css' , 2);
+	$res->addCss('/css/system/'.$theme.'/style.css' , 3);
 
 
 	$token = '';
@@ -32,6 +33,25 @@ if(!defined('DVELUM'))exit;
 		$csrf = new Security_Csrf();
 		$token = $csrf->createToken();
 	}
+
+	$menuData = [];
+	$modules = $this->modules;
+	foreach($modules as $data)
+	{
+		if(!$data['active'] || !$data['in_menu'] || !isset($this->userModules[$data['id']])){
+			continue;
+		}
+		$menuData[] = [
+			'id' => $data['id'],
+			'dev' => $data['dev'],
+			'url' =>  Request::url(array($this->get('adminPath'),$data['id'])),
+			'title'=> $data['title'],
+			'icon'=> Request::wwwRoot().$data['icon']
+		];
+	}
+	$res->addInlineJs('
+		app.menuData = '.json_encode($menuData).';
+	');
 
 	$wwwRoot = Request::wwwRoot();
 ?>

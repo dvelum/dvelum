@@ -1,5 +1,4 @@
 app.application = false;
-
 app.content =  Ext.create('Ext.Panel',{
 	region: 'center',
 	frame:false,
@@ -15,103 +14,6 @@ app.cookieProvider = new Ext.state.CookieProvider({
 	expires: new Date(new Date().getTime()+(1000*60*60*24)) //1 day
 });
 
-app.saveMenuState = function(panel){
-	app.cookieProvider.set('memuState',panel.id);
-};
-
-app.saveMenuPanelState = function(expanded){
-	app.cookieProvider.set('memuPanelState',expanded);
-};
-
-app.menuPanelState = function(){
-	var curState = app.cookieProvider.get('memuPanelState');
-	if(typeof curState != undefined){
-		return curState;
-	}
-	return true;
-};
-
-app.restoreMenuState = function(){
-	var curState = app.cookieProvider.get('memuState');
-	if(typeof curState != undefined)
-	{
-		if(Ext.getCmp(curState)){
-			Ext.getCmp(curState).expand();
-		}
-	}
-};
-
-app.menu = Ext.create('Ext.Panel',{
-	region: 'west',
-	title:appLang.MENU,
-	split: true,
-	width: 240,
-	minSize: 185,
-	maxSize: 400,
-	collapsible: true,
-	collapsed:!app.menuPanelState(),
-	collapseMode:'header',
-	collapseFirst:true,
-	bodyCls:'formBody',
-	cls: 'adminWestMenu',
-	layout: 'accordion',
-	header:	{
-		tag: 'div',
-		cls: 'sysMenuLogo'
-	},
-	listeners:{
-		'expand':{
-			fn:function(panel){
-				app.saveMenuPanelState(true);
-			}
-		},
-		'collapse':{
-			fn:function(panel){
-				app.saveMenuPanelState(false);
-			}
-		}
-	},
-	items: [
-		{
-			title: appLang.MAIN,
-			itemId:'main',
-			border: false,
-			collapsible: true,
-			contentEl:'mainMenu',
-			iconCls: 'nav',
-			frame:true,
-			titleCollapse:true,
-			scrollable:true,
-			listeners:{
-				'expand':{
-					fn:function(panel){
-						app.saveMenuState(panel);
-					}
-				}
-			}
-		},{
-			title: appLang.SYSTEM_PREFERENCES,
-			itemId:'system',
-			hidden:true,
-			border: false,
-			collapsible: true,
-			iconCls: 'nav',
-			contentEl:'systemMenu',
-			frame:true,
-			collapsed :true,
-			scrollable:true,
-			titleCollapse : true,
-			listeners:{
-				'expand':{
-					fn:function(panel){
-						app.saveMenuState(panel);
-					}
-				}
-			}
-		}
-	]
-});
-
 app.header = Ext.create('Ext.Panel',{
 	region:'north',
 	contentEl:'header',
@@ -124,20 +26,41 @@ Ext.application({
 	name: 'DVelum',
 	launch: function() {
 		app.application = this;
-		/*
-		 * Global scope config variable
-		 */
-		if(developmentMode){
-			app.menu.getComponent('system').show();
-		}
+
+		this.buildMenu(app.menuData);
 
 		app.viewport = Ext.create('Ext.container.Viewport', {
 			layout: 'border',
 			items:[app.header, app.content , app.menu]
 		});
+	},
+	buildMenu:function(menuData){
 
-		if(app.menuPanelState()){
-			app.restoreMenuState();
-		}
+		var menuButtons = [];
+
+		Ext.each(menuData,function(item){
+
+			if(!developmentMode && item.dev){
+				return;
+			}
+
+			menuButtons.push({
+				tooltip:item.title,
+				href:item.url,
+				text:'<img src="'+item.icon+'" width="30" height="30"/>',
+				textAlign:'left'
+			});
+		});
+
+		app.menu = Ext.create('Ext.Panel',{
+			region: 'west',
+			scrollable:true,
+			split: false,
+			lbar: {
+				items:menuButtons,
+				enableOverflow:true,
+				xtype:'toolbar'
+			}
+		});
 	}
 });

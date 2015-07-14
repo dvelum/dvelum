@@ -25,7 +25,8 @@ if(!defined('DVELUM'))exit;
 	$res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');
 
 	$res->addCss('/js/lib/ext6/build/theme-'.$theme.'/resources/theme-'.$theme.'-all.css' , 1);
-	$res->addCss('/css/system/'.$theme.'/style.css' , 2);
+	$res->addCss('/css/system/style.css' , 2);
+	$res->addCss('/css/system/'.$theme.'/style.css' , 3);
 
 ?>
 <html>
