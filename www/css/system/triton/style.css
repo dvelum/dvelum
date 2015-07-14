@@ -1,5 +1,12 @@
 @CHARSET "UTF-8";
-.app-combo-item{ font:normal 11px tahoma, arial, helvetica, sans-serif; padding:3px 10px 3px 10px; border:1px solid #fff; border-bottom:1px solid #eeeeee; white-space:normal; color:#555; }
+
+.app-combo-item{
+    font:normal 11px tahoma, arial, helvetica, sans-serif;
+    padding:3px 10px 3px 10px;
+    border:1px solid #fff;
+    border-bottom:1px solid #eeeeee;
+    white-space:normal; color:#555;
+}
 .app-disabled{background-color:#EFEEEC;color:#858483;}
 
 .x-form-field-wrap .x-form-clear-trigger{background-image: url(../../../../i/system/clear-trigger.gif);}
@@ -8,20 +15,16 @@
 .renderLast{
   height:100%;
   width:100%;
-  /*
-  display:block;  
-  */
   background-color:#C0FFC0 !important;
 }
 .renderNotLast{
   height:100%;
   width:100%;
-  /*
-  display:block;  
-  */
   background-color:#FFD1DD !important;
 }
-.formBody{background-color:#EDEDED;}
+/*.formBody{background-color:#EDEDED;}*/
+.formBody{background-color:#fff;}
+
 .buttonIcon{cursor:pointer;}
 .cellRed{background-color:#FFAFAF;height:100%;width:100%;}
 .upload-icon {background: url(../../../../../../../../i/system/image_add.png)  !important;}
@@ -79,7 +82,7 @@
   */
 }
 
-.adminHeader #header{height: 30px; background: url(../../../../i/bg.gray.png) 0 0 repeat;}
+.adminHeader #header{height: 30px;}
 .adminWestMenu #main,
 .adminWestMenu #system {background: url(../../../../i/bg.gray.png) 0 0 repeat;}
 .adminWestMenu #main .x-panel-body-default-framed,

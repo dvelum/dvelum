@@ -1,8 +1,5 @@
 <?php
 if(!defined('DVELUM'))exit;
-
-	$extTheme = $this->get('extjs_theme');
-
 	$res = Resource::getInstance();
 	$res->addJs('js/app/system/common.js' , -1);
 	$token = '';
@@ -10,6 +7,8 @@ if(!defined('DVELUM'))exit;
 		$csrf = new Security_Csrf();
 		$token = $csrf->createToken();
 	}
+
+	$theme = $this->theme;
 
 	$res->addJs('/js/lib/jquery.js', -4 , true );
 	$res->addJs('/js/lang/'.$this->lang.'.js', -3 , true);
@@ -19,14 +18,14 @@ if(!defined('DVELUM'))exit;
 	else
 		$res->addJs('/js/lib/ext6/build/ext-all.js', -2 , true );
 
-	$res->addJs('/js/lib/ext6/build/theme-'.$extTheme.'/theme-'.$extTheme.'.js', -1 , true );
+	$res->addJs('/js/lib/ext6/build/theme-'.$theme.'/theme-'.$theme.'.js', -1 , true );
 
 	$res->addJs('/js/lib/ext6/build/locale/locale-'.$this->get('lang').'.js', -1 , true );
 
 	$res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');
 
-	$res->addCss('/js/lib/ext6/build/theme-'.$extTheme.'/resources/theme-'.$extTheme.'-all.css' , 1);
-	$res->addCss('/css/system/default/style.css' , 2);
+	$res->addCss('/js/lib/ext6/build/theme-'.$theme.'/resources/theme-'.$theme.'-all.css' , 1);
+	$res->addCss('/css/system/'.$theme.'/style.css' , 2);
 
 ?>
 <html>

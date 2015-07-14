@@ -1,7 +1,6 @@
 <?php
 return array(
-  'theme'=>'default',
-  'extjs_theme'=>'gray', // gray / triton
+  'theme'=>'gray', // gray / triton
   'system_controllers' => array('Backend_Index_Controller' ,'Backend_Mediacategory_Controller', 'Backend_Vcs_Controller' , 'Backend_History_Controller', 'Backend_Permissions_Controller'),
 	//reserved object names
 	'system_objects'=>array(

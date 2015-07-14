@@ -157,7 +157,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$tpl->development = $this->_configMain['development'];
 		$tpl->resource = $res;
 		$tpl->useCSRFToken = Registry::get('backend' , 'config')->get('use_csrf_token');
-		$tpl->extjs_theme = Config::storage()->get('backend.php')->get('extjs_theme');
+		$tpl->theme = Config::storage()->get('backend.php')->get('theme');
 
 		Response::put($tpl->render(Application::getTemplatesPath().'designer/viewframe.php'));
 	}

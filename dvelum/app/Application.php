@@ -338,7 +338,7 @@ class Application
             'modules' => $modulesManager->getList(),
             'userModules' => $user->getAvailableModules(),
             'useCSRFToken' => $cfgBackend->get('use_csrf_token'),
-            'extjs_theme' => $cfgBackend->get('extjs_theme')
+            'theme' => $cfgBackend->get('theme')
         ));
         Response::put($template->render(self::$_templates . 'layout.php'));
     }

@@ -104,6 +104,9 @@ class Backend_Designer_Controller extends Backend_Controller
 	
 	public function indexAction()
 	{
+		$backendConfig = Config::storage()->get('backend.php');
+		$backendConfig->set('theme' , $this->_config->get('theme'));
+
 		$this->_resource->addJs('/js/lib/jquery.js'  , 1);
 		Model::factory('Medialib')->includeScripts();
 	    $this->_resource->addJs('/js/app/system/designer/lang/'.$this->_config->get('lang').'.js'  , 1);

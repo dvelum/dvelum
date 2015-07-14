@@ -18,5 +18,6 @@ return array(
 		'wwwroot' => '[%wroot%]',
 		'adminpath' => '[%admp%]',
 		'urldelimiter' => '[%-%]'
-	)
+	),
+	'theme'=>'gray'
 );
