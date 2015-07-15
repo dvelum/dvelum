@@ -509,13 +509,11 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	{
 	  $list = array();
 	  $project = $this->_getProject();
-	  $items = $project->getComponents();
-	  
+	  $items = $project->getChilds(Designer_Project::COMPONENT_ROOT);
+
 	  foreach ($items as $name => $object)
 	  {
-	     if(Designer_Project::isVisibleComponent($object->getClass())){
 	       $list[] = array('name'=>$name);
-	     }  
 	  }
 	  Response::jsonSuccess($list);
 	}

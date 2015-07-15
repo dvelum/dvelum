@@ -403,7 +403,14 @@ class Designer_Project
 	 */
 	public function getStores($treeStores = true)
 	{
-		return $this->getObjectsByClass(array('Store','Data_Store','Data_Store_Tree'));
+		$list = $this->getObjectsByClass(['Store','Data_Store','Data_Store_Tree','Object_Instance']);
+
+		foreach($list as $k=>$v){
+			if($v->isInstance() &&  !in_array($v->getObject()->getClass(),['Store','Data_Store','Data_Store_Tree'],true)){
+				unset($list[$k]);
+			}
+		}
+		return $list;
 	}
 
 	/**
@@ -452,10 +459,14 @@ class Designer_Project
 
 		$result = array();
 
-		foreach($items as $config)
-			if(in_array($config['data']->getClass() , $class , true))
+		foreach($items as $config){
+			if(in_array($config['data']->getClass() , $class , true)){
+				if($config['parent'] == self::COMPONENT_ROOT && $config['data'] instanceof Ext_Object && !$config['data']->isInstance()) {
+					$config['data']->extendedComponent(true);
+				}
 				$result[$config['id']] = $config['data'];
-
+			}
+		}
 		return $result;
 	}
 

@@ -29,6 +29,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 			case 'stores' :
 			                $addInstances = Request::post('instances', Filter::FILTER_BOOLEAN, false);
 							$stores = $project->getStores();
+
 							$list = array();
 
 							$cfg = $project->getConfig();
@@ -43,11 +44,11 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 									if($class === 'Data_Store_Tree')
 										$title.= ' (Tree)';
 
-									$list[] = array('id'=>$name, 'title'=>$title , 'objClass'=>$class);
-
 									// append instance token
 									if($addInstances && $object->isExtendedComponent())
-									   $list[] = array('id'=>Designer_Project_Code::$NEW_INSTANCE_TOKEN.' ' . $name, 'title'=>Designer_Project_Code::$NEW_INSTANCE_TOKEN.' ' . $name, 'objClass'=>$cfg['namespace'] .'.' . $name);
+										$list[] = array('id'=>Designer_Project_Code::$NEW_INSTANCE_TOKEN.' ' . $name, 'title'=>Designer_Project_Code::$NEW_INSTANCE_TOKEN.' ' . $name, 'objClass'=>$cfg['namespace'] .'.' . $name);
+									else
+										$list[] = array('id'=>$name, 'title'=>$title , 'objClass'=>$class);
 								}
 							}
 							Response::jsonSuccess($list);
@@ -273,8 +274,8 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 		$itemData = $project->getTree()->getItem($id);
 
 		if(in_array($itemData['data']->getClass() , Designer_Project::$storeClasses , true)){
-			if($newParent != '0' && $newParent !=Designer_Project::COMPONENT_ROOT){
-				Response::jsonError('Store can exist only at Project root or Components root');
+			if($newParent != Designer_Project::LAYOUT_ROOT && $newParent !=Designer_Project::COMPONENT_ROOT){
+				Response::jsonError('Store can exist only at Layout root or Components root');
 			}
 		}
 
@@ -284,6 +285,14 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 
 		if($itemData['parent'] == Designer_Project::COMPONENT_ROOT && $newParent !==Designer_Project::COMPONENT_ROOT && $project->hasInstances($id)){
 			Response::jsonError('Component cannot be converted. Object Instances detected');
+		}
+
+		$object = $project->getObject($id);
+
+		if($newParent == Designer_Project::COMPONENT_ROOT){
+			$object->extendedComponent(true);
+		}else{
+			$object->extendedComponent(false);
 		}
 
         $project->changeParent($id, $newParent);
