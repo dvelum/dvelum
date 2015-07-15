@@ -74,7 +74,6 @@ if(!defined('DVELUM'))exit;
  ?>
 </head>
 <body>
-<?php  echo $this->render($this->get('path') . 'menu.php'); ?>
 <div id="header" class="x-hidden">
  <div class="sysVersion"><img src="<?php echo $wwwRoot;?>i/logo-s.png" /><span class="num"><?php echo $this->get('version');?></span></div>
 </div>

@@ -196,7 +196,7 @@ class Sysdocs_Generator
     	    }
 	    }
 
-	    $analyzer = new sysdocs_Analyzer($className);
+	    $analyzer = new Sysdocs_Analyzer($className);
 
 	    $extends = $analyzer->getExtends();
 	    $parentId = null;

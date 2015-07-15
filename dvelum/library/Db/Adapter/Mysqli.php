@@ -9,6 +9,7 @@
 class Db_Adapter_Mysqli extends Zend_Db_Adapter_Mysqli
 {
 	protected $_connectionErrorHandler = null;
+	protected $_defaultStmtClass = 'Db_Adapter_Mysqli_Statement';
 
 	 /**
      * Constructor.
@@ -91,6 +92,9 @@ class Db_Adapter_Mysqli extends Zend_Db_Adapter_Mysqli
 		catch (Zend_Db_Adapter_Mysqli_Exception $e)
 		{
 			if(!is_null($this->_connectionErrorHandler)){
+				/**
+				 * @var callable $f
+				 */
 				$f = $this->_connectionErrorHandler;
 				$f($e);
 			}
@@ -209,46 +213,4 @@ class Db_Adapter_Mysqli extends Zend_Db_Adapter_Mysqli
         $this->_profiler->setEnabled(false);
         return $this->_profiler;
     }
-
-    /**
-     * (non-PHPdoc)
-     * @see Zend_Db_Adapter_Abstract::fetchAll()
-     * @todo fix, may cause losing data type
-     *
-    public function fetchAll($sql, $bind = array(), $fetchMode = null)
-    {
-    	if ($fetchMode === null) {
-    		$fetchMode = $this->_fetchMode;
-    	}
-
-    	$fastModes = array(Zend_Db::FETCH_ASSOC);
-
-    	// fast query hack
-    	if(empty($bind) && in_array($this->_fetchMode, $fastModes , true))
-    	{
-    	    $mysqli = $this->getConnection();
-
-    	    if(!$result = $mysqli->query($sql)){
-    	    	throw new Exception($mysqli->error);
-    	    }
-
-            switch ($this->_fetchMode)
-            {
-            	case Zend_Db::FETCH_ASSOC :
-                	   $data = $result->fetch_all(MYSQLI_ASSOC);
-            	       break;
-
-                default: throw new Exception('Db_Adapter_Mysqli::fetchAll undefined fetch mode '.$this->_fetchMode);
-            }
-            // free result set
-            $result->free();
-            return $data;
-    	}
-    	else
-    	{
-    	    $stmt = $this->query($sql, $bind);
-    	    $result = $stmt->fetchAll($fetchMode);
-    	}
-    }
-    */
 }

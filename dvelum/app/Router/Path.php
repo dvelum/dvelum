@@ -1,5 +1,5 @@
 <?php
-class Router_Module extends Router
+class Router_Path extends Router
 {
     protected $_appConfig = false;
 

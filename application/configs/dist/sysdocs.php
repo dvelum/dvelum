@@ -2,17 +2,19 @@
 return array(
     'gen_version'=>4,
 	'versions'=>array(
-       '0.9.5'=>3
+       '0.9.5'=>3,
+       '1.0.0'=>4
     ),
     'default_languge'=> 'ru',
     'default_version' => '0.9.5',
     'locations'=>array(
-        './dvelum/rewrite',
+        './application/controllers',
+        './application/library',
+        './application/models',
 		'./dvelum/app',
         './dvelum/library',
 	),
     'exceptions'=>array(
-    	'./dvelum/library/Zend',
         './dvelum/library/Spreadsheet'
     ),
     'hid_generator' => array(

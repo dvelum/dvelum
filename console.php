@@ -11,50 +11,79 @@ if (isset($_SERVER['argc']) && $_SERVER['argc']!==2 ){
     exit(1);   
 }
 
-$_SERVER['DOCUMENT_ROOT'] = __DIR__.'/www';
-chdir(__DIR__.'/www');
+$scriptStart = microtime(true);
+
+$dvelumRoot =  str_replace('\\', '/' , __DIR__);
+// should be without last slash
+if ($dvelumRoot[strlen($dvelumRoot) - 1] == '/')
+    $dvelumRoot = substr($dvelumRoot, 0, -1);
 
 define('DVELUM', true);
+define('DVELUM_ROOT' ,$dvelumRoot);
 define('DVELUM_CONSOLE', true);
-define('DVELUM_ROOT' , __DIR__.'/www');
+define('DVELUM_WWW_PATH', DVELUM_ROOT . '/www');
 
+chdir(DVELUM_ROOT);
+
+//===== loading kernel =========
 /*
- * Connecting main configuration file
-*/
-$config = include './system/config/main.php';
+ * Including initial config
+ */
+$bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 /*
  * Including Autoloader class
-*/
-require $config['docroot'].'/system/library/Autoloader.php';
+ */
+require DVELUM_ROOT . '/dvelum/library/Autoloader.php';
+$autoloader = new Autoloader($bootCfg['autoloader']);
+Config::setStorageOptions($bootCfg['config_storage']);
+
+//==== Loading system ===========
+/*
+ * Reload storage options from local system
+ */
+Config::setStorageOptions(
+    Config::storage()->get('config_storage.php')->__toArray()
+);
+/*
+ * Connecting main configuration file
+ */
+$config = Config::storage()->get('main.php');
+$_SERVER['DOCUMENT_ROOT'] = $config->get('wwwpath');
+
+/*
+ * Disable op caching for development mode
+ */
+if($config->get('development')){
+    ini_set('opcache.enable', 0);
+}
 /*
  * Setting autoloader config
  */
-$autoloaderCfg = $config['autoloader'];
-$autoloaderCfg['debug'] = $config['development'];
+$autoloaderCfg = $config->get('autoloader');
+$autoloaderCfg['debug'] = $config->get('development');
 
-if($autoloaderCfg['useMap'] && $autoloaderCfg['usePackages'] && $autoloaderCfg['mapPackaged'])
-	$autoloaderCfg['map'] = require $autoloaderCfg['mapPackaged'];
-elseif($autoloaderCfg['useMap'] && !$autoloaderCfg['usePackages'] && $autoloaderCfg['map'])
-	$autoloaderCfg['map'] = require $autoloaderCfg['map'];
-else 
-   $autoloaderCfg['map'] = false;
+if(!isset($autoloaderCfg['useMap']))
+    $autoloaderCfg['useMap'] = true;
 
-$autoloader = new Autoloader($autoloaderCfg);
+if($autoloaderCfg['useMap'] && $autoloaderCfg['map'])
+    $autoloaderCfg['map'] = require Config::storage()->getPath($autoloaderCfg['map']);
+else
+    $autoloaderCfg['map'] = false;
+
+$autoloader->setConfig($autoloaderCfg);
+
 /**
- * Convert the data of main_config file
- * in to the general form of configuration
- * and save a reference for it (for convenience)
- * @var Config_Simple $appConfig
+ * Enable Zend Framework 1.x library support
  */
-$appConfig = Config::factory(Config::Simple, 'main');
-$appConfig->setData($config);
-Registry::set('main', $appConfig , 'config');
+set_include_path(get_include_path() . PATH_SEPARATOR . $config->get('vendor_lib'));
 
+Registry::set('main', $config , 'config');
 /*
  * Starting the application
  */
-$app = new Application($appConfig);
+$app = new Application($config);
 $app->setAutoloader($autoloader);
+$app->init();
 
 Request::getInstance()->setUri($_SERVER['argv'][1]);
 
