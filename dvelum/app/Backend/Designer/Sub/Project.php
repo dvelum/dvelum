@@ -317,15 +317,15 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 	  $isWindowComponent = (strpos($instanceObject->getClass(),'Component_Window_')!==false);
 
 	  if($parent === Designer_Project::COMPONENT_ROOT)
-		  $parent = Designer_Project::COMPONENT_ROOT;
+		  $parent = Designer_Project::LAYOUT_ROOT;
 
 	  if(in_array($instanceObject->getClass(), $rootClasses , true) || $isWindowComponent)
-	      $parent = Designer_Project::COMPONENT_ROOT;
+	      $parent = Designer_Project::LAYOUT_ROOT;
 	  /*
 	   * Check if parent object exists and can has childs
 	  */
 	  if(!$project->objectExists($parent) || !Designer_Project::isContainer($project->getObject($parent)->getClass()))
-	      $parent =  Designer_Project::COMPONENT_ROOT;
+	      $parent =  Designer_Project::LAYOUT_ROOT;
 	    
 	  if($project->objectExists($name))
 	    $errors['name'] = $this->_lang->get('SB_UNIQUE');
