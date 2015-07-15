@@ -956,13 +956,11 @@ class Model
         	try{
         	   $this->_db->query($sql);
         	} catch (Exception $e){
-                echo $sql;
-                echo $e->getMessage();
         		$this->logError('multiInsert: '.$e->getMessage());
         		return false;
         	}
         }
-        return true; //Invalid bind-variable name
+        return true;
     }
 
     /**

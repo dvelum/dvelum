@@ -366,6 +366,7 @@ class Install_Controller {
             $model =  Model::factory($object);
             $db = $model->getDbConnection();
             $csvHandler = fopen($filePath , 'r');
+            $rows = [];
             while(($row = fgetcsv($csvHandler , 0,';','"'))!==false)
             {
                 foreach($row as $k=>&$v){
@@ -373,11 +374,19 @@ class Install_Controller {
                         $v = null;
                     }
                 }unset($v);
+                if(count($rows) < $chunkSize){
+                    $rows[] = array_combine($fields , $row);
+                }else{
+                    if(!$model->multiInsert($rows , $chunkSize)){
+                        Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR'));
+                    }
+                    $rows = [];
+                }
 
-                try{
-                    $db->insert($model->table() , array_combine($fields , $row));
-                }catch (Exception $e){
-                    Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR').' '.$e->getMessage() );
+            }
+            if(!empty($rows)){
+                if(!$model->multiInsert($rows , $chunkSize)){
+                    Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR'));
                 }
             }
             fclose($csvHandler);

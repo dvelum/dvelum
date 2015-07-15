@@ -37,7 +37,7 @@ function backAction()
 		case 5:
 			showTab(3);
 			
-			$('#dbCreateMsg').html('<img src="'+wwwRoot+'i/ajaxload.gif"></img>').removeClass('success');
+			$('#dbCreateMsg').html('<img src="'+url+'i/ajaxload.gif"></img>').removeClass('success');
 			$('#checkBtn').css('display', '');
 			$('#nextBtn').unbind('click').bind('click', createTables).removeAttr('disabled').removeClass('disabled');
 			
