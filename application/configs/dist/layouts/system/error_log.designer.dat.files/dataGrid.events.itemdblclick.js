@@ -1,0 +1,1 @@
+showErrorLogEditWindow(record.get("id"));
