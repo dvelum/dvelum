@@ -1,0 +1,1 @@
+this.deleteRecord(grid.getStore().getAt(rowIndex));
