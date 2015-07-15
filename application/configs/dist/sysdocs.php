@@ -12,7 +12,7 @@ return array(
         './application/library',
         './application/models',
 		'./dvelum/app',
-        './dvelum/library',
+        './dvelum/library'
 	),
     'exceptions'=>array(
         './dvelum/library/Spreadsheet'

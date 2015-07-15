@@ -12,7 +12,7 @@ class Model_Sysdocs_File extends Model
         */
         $fields = array('id','parentId','path','isDir','name','hid');
         $data = $this->getList(array('sort'=>array('isDir'=>'DESC','path','name'),'dir'=>'ASC'), array('vers'=>$version), $fields);
-        
+
         if(empty($data))
             return array();
         

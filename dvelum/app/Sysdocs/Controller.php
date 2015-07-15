@@ -132,7 +132,7 @@ class Sysdocs_Controller
            app.docVersion = "'.$this->version.'";
            var canEdit = '.intval($this->canEdit).';    
       ');
-        $this->_runDesignerProject($this->configMain->get('configs').'layouts/system/documentation.designer.dat', $this->container);
+        $this->_runDesignerProject('./application/configs/dist/layouts/system/documentation.designer.dat', $this->container);
 
     }
 
@@ -225,20 +225,28 @@ class Sysdocs_Controller
         $includesPath = $this->configMain->get('configs') . 'js_inc_backend.php';
         $cfg = Config::factory(Config::File_Array , $includesPath);
 
-        $resource->addJs('/js/lib/jquery.js',0 , true , 'head');
+        $theme = 'gray';
+        $lang = $this->configMain->get('language');
 
-        if($this->configMain->get('development')){
-            $resource->addJs('/js/lib/extjs4/ext-all-debug.js' , 0 , true , 'head');
-        }else{
-            $resource->addJs('/js/lib/extjs4/ext-all.js' , 0 , true , 'head');
-        }
-        $resource->addJs('/js/lang/'.$this->configMain['language'].'.js', 1 , true , 'head');
-        $resource->addJs('/js/lib/extjs4/locale/ext-lang-'.$this->configMain['language'].'.js', 2 , true , 'head');
+        $resource->addJs('/js/lib/jquery.js', 1 , true , 'head');
+        $resource->addJs('/js/lang/'.$lang.'.js', 1 , true , 'head');
         $resource->addJs('/js/app/system/common.js', 3 , false ,  'head');
 
-        $resource->addJs('/js/lib/extjs4/ext-theme-gray.js' , 2);
-        $resource->addCss('/js/lib/extjs4/resources/css/ext-all-gray.css');
-        $resource->addCss('/css/system/default/style.css');
+        if($this->configMain->get('development'))
+            $resource->addJs('/js/lib/ext6/build/ext-all-debug.js', 2 , true , 'head');
+        else
+            $resource->addJs('/js/lib/ext6/build/ext-all.js', 2 , true , 'head');
+
+        $resource->addJs('/js/lib/ext6/build/theme-'.$theme.'/theme-'.$theme.'.js', 3 , true , 'head');
+
+
+        $resource->addJs('/js/lib/ext6/build/locale/locale-'.$lang.'.js', 4 , true , 'head');
+
+        $resource->addInlineJs('var developmentMode = '.intval($this->configMain->get('development')).';');
+
+        $resource->addCss('/js/lib/ext6/build/theme-'.$theme.'/resources/theme-'.$theme.'-all.css' , 1);
+        $resource->addCss('/css/system/style.css' , 2);
+        $resource->addCss('/css/system/'.$theme.'/style.css' , 3);
 
         if($cfg->getCount())
         {
