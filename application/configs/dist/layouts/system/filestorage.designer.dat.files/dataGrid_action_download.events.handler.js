@@ -1,0 +1,1 @@
+this.downloadFile(grid.getStore().getAt(rowIndex));

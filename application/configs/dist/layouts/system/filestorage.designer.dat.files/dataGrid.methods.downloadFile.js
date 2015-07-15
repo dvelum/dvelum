@@ -1,0 +1,1 @@
+window.location = "[%wroot%][%admp%][%-%]filestorage[%-%]download[%-%]" + record.get('id');

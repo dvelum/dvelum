@@ -1,0 +1,10 @@
+Ext.create('appFilestorageClasses.fileUploadWindow',{
+  listeners:{
+    dataSaved:{
+      fn:function(){
+          this.getStore().loadPage(1);
+      },
+      scope:this
+    }
+  }
+}).show();

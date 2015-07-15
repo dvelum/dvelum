@@ -1,0 +1,1 @@
+this.deleteFile(grid.getStore().getAt(rowIndex));
