@@ -190,6 +190,7 @@ class Frontend_Console_Controller extends Frontend_Controller
 
         $sysdocsCfg = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'sysdocs.php');
         $sysdocs = new Sysdocs_Generator($sysdocsCfg);
+		$sysdocs->setAutoloaderPaths($this->_configMain->get('autoloader')['paths']);
 
 		if($part === 'locale'){
 			$sysdocs->migrateLocale();

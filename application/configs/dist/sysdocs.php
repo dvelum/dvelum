@@ -1,21 +1,19 @@
 <?php
 return array(
-    'gen_version'=>4,
+    'gen_version'=>5,
 	'versions'=>array(
-       '0.9.5'=>3,
        '1.0.0'=>4
     ),
     'default_languge'=> 'ru',
-    'default_version' => '0.9.5',
+    'default_version' => '1.0.0',
     'locations'=>array(
-        './application/controllers',
-        './application/library',
-        './application/models',
-		'./dvelum/app',
-        './dvelum/library'
+        './application',
+		'./dvelum'
 	),
-    'exceptions'=>array(
-        './dvelum/library/Spreadsheet'
+    'skip'=>array(
+        './application/configs',
+        './application/locales',
+        './application/templates'
     ),
     'hid_generator' => array(
         'adapter' => 'Sysdocs_Historyid',

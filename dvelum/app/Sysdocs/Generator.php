@@ -20,6 +20,11 @@ class Sysdocs_Generator
      * @var sysdocs_Historyid
      */
     protected $historyId;
+	/**
+	 * Autoloader class paths
+	 * @var array
+	 */
+	protected $autoloaderPaths = [];
 
 	public function __construct(Config_Abstract $config)
 	{
@@ -30,6 +35,15 @@ class Sysdocs_Generator
 		$this->historyId = new $hidGeneratorCfg['adapter'];
 
 		Model::factory('sysdocs_file')->getDbConnection()->getProfiler()->setEnabled(false);
+	}
+
+	/**
+	 * Set list of paths for autoloading
+	 * @param array $paths
+	 */
+	public function setAutoloaderPaths(array $paths)
+	{
+		$this->autoloaderPaths = $paths;
 	}
 
 	/**
@@ -107,7 +121,7 @@ class Sysdocs_Generator
 	protected function scanFs()
 	{
 	   $dirs = $this->config->get('locations');
-	   $exceptions = $this->config->get('exceptions');
+	   $skip = $this->config->get('skip');
 	   $files = $dirs;
 
 	   foreach ($dirs as $path)
@@ -119,7 +133,7 @@ class Sysdocs_Generator
 
 	   if(!empty($files))
 	   {
-	      foreach ($exceptions as $item)
+	      foreach ($skip as $item)
 	      {
 	           foreach ($files as $k=>$filepath)
 	           {
@@ -173,11 +187,10 @@ class Sysdocs_Generator
 	protected function storeClass($data)
 	{
 	    $time = microtime(true);
-
 	    $path = $data['path'];
 
 	    // replace basepath
-	    foreach ($this->config->get('locations') as $basepath){
+	    foreach ($this->autoloaderPaths as $basepath){
 	      $path = str_replace($basepath, '', $path);
 	    }
 
