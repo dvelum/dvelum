@@ -39,7 +39,7 @@ function backAction()
 			
 			$('#dbCreateMsg').html('<img src="'+appRoot+'i/ajaxload.gif"></img>').removeClass('success');
 			$('#checkBtn').css('display', '');
-			$('#nextBtn').unbind('click').bind('click', createTables).removeAttr('disabled').removeClass('disabled');
+			$('#nextBtn').unbind('click').bind('click', createTables).removeAttr('disabled').removeClass('disabled').removeClass('fail');
 			
 			curStep = 3;
 			break;
