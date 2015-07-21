@@ -1,0 +1,1 @@
+this.fireEvent('saveData' , this.childObjects.htmlEditorText.getValue());

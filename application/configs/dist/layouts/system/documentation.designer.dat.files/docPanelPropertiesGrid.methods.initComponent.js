@@ -1,0 +1,39 @@
+this.addDesignerItems();
+this.store = Ext.create("Ext.data.Store",	{
+		xtype:"store",
+		autoLoad:false,
+		fields:[
+			{
+				name:"const",
+				type:"boolean"
+			},{
+				name:"constValue",
+				type:"string"
+			},{
+				name:"deprecated",
+				type:"boolean"
+			},{
+				name:"description",
+				type:"string"
+			},{
+				name:"name",
+				type:"string"
+			},{
+				name:"inherited",
+				type:"boolean"
+			},{
+				name:"static",
+				type:"boolean"
+			},{
+				name:"type",
+				type:"string"
+			},{
+				name:"visibility",
+				type:"string"
+			}
+		],
+        data:this.listData
+	}
+);
+
+this.callParent();

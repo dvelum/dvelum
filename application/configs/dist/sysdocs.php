@@ -1,6 +1,6 @@
 <?php
 return array(
-    'gen_version'=>5,
+    'gen_version'=>4,
 	'versions'=>array(
        '1.0.0'=>4
     ),
