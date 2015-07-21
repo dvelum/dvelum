@@ -43,11 +43,12 @@ class Config_File_Array extends Config_File
      */
     public function save()
     {
-		if(!empty($this->_applyTo)){
+		if(!empty($this->_applyTo))
+		{
 			$src = include $this->_applyTo;
-			$data = $src;
+			$data = [];
 			foreach($this->_data as $k=>$v){
-				if(!isset($data[$k]) || $data[$k]!==$v){
+				if(!isset($src[$k]) || $src[$k]!=$v){
 					$data[$k] = $v;
 				}
 			}

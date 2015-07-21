@@ -463,6 +463,7 @@ Ext.define('app.crud.modules.Model',{
 		{name:'title', type:'string'},
 		{name:'designer',type:'string'},
 		{name:'in_menu' , type:'boolean'},
+		{name:'dist', type:'boolean'},
 		{name:'related_files', type:'string'},
 		{name:'icon', type:'string'},
 		{name:'iconUrl', type:'string'}
@@ -660,7 +661,9 @@ Ext.define('app.crud.modules.backendView',{
 				'<div class="module-wrap">',
 					'<div class="tools" align="right">',
 						'<img class="modulesBtn" action-type="edit" src="'+app.wwwRoot+'i/system/edit.png" data-qtip="'+appLang.EDIT+'">',
-						'<img class="modulesBtn" action-type="delete" src="'+app.wwwRoot+'i/system/delete.gif" data-qtip="'+appLang.DELETE+'">',
+						'<tpl if="dist == false">',
+							'<img class="modulesBtn" action-type="delete" src="'+app.wwwRoot+'i/system/delete.gif" data-qtip="'+appLang.DELETE+'">',
+						'</tpl>',
 					'</div>',
 					'<div class="title">{title}</div>',
 					'<span class="controller">{class}</span>',

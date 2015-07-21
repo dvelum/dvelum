@@ -164,6 +164,15 @@ class Config_Storage
 	}
 
     /**
+     * Get src file path (to apply)
+     * @return string
+     */
+    public function getApplyTo()
+    {
+        return $this->config['file_array']['apply_to'];
+    }
+
+    /**
      * Get debug information. (loaded configs)
      * @return array
      */

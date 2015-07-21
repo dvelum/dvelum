@@ -5,6 +5,7 @@
 class Modules_Manager
 {
 	protected $_config;
+	protected $_distConfig;
 	protected $_mainconfigKey = 'backend_modules';
 	/**
 	 * @var Config_Abstract
@@ -21,7 +22,10 @@ class Modules_Manager
 	{
 		$this->_appConfig = Registry::get('main' , 'config');
 		$configPath =  $this->_appConfig->get($this->_mainconfigKey);
-		$this->_config = Config::storage()->get($configPath , false , false);
+		$this->_config = Config::storage()->get($configPath , false , true);
+
+		$this->_distConfig = new Config_File_Array(Config::storage()->getApplyTo() . $configPath);
+
 		$locale = Lang::lang()->getName();
 		$this->_modulesLocale = Lang::storage()->get($locale.'/modules/'.basename($configPath));
 	}
@@ -111,13 +115,19 @@ class Modules_Manager
 
 	/**
 	 * Get modules list
-	 * @return multitype:
+	 * @return array:
 	 */
 	public function getList()
 	{
 		$data = $this->_config->__toArray();
 		foreach ($data as $module=>&$cfg)
 		{
+			if($this->_distConfig->offsetExists($module)){
+				$cfg['dist'] = true;
+			}else{
+				$cfg['dist'] = false;
+			}
+
 			if(!isset($cfg['in_menu']))
 				$cfg['in_menu'] = true;
 
