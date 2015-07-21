@@ -9,7 +9,7 @@ return array(
             './application/locales/local/',
         ),
         'write' =>  './application/locales/local/',
-        'apply_to' => false,
+        'apply_to' => './application/locales/dist/',
     ),
     'debug'=>false
 );

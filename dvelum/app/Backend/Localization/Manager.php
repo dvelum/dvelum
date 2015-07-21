@@ -468,9 +468,6 @@ class Backend_Localization_Manager
   public function updateRecords($dictionary , $data)
   {
      $writePath = Lang::storage()->getWrite() . $dictionary . '.php';
-     if(!$this->checkCanEdit($writePath)){
-         throw new Exception($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath);
-     }
 
      $langConfig = Lang::storage()->get($dictionary . '.php');
      foreach ($data as $k=>$rec)
