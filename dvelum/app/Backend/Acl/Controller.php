@@ -10,9 +10,6 @@ class Backend_Acl_Controller extends Backend_Controller
   public function indexAction()
   {
     $res = Resource::getInstance();
-    $res->addJs('/js/lib/ext_ux/SearchField.js');
-    $this->_resource->addJs('/js/lib/extjs4/ux/CheckColumn.js' , 0);
-    $this->_resource->addJs('/js/app/system/SearchPanel.js' , 0);
     $res->addJs('/js/app/system/crud/acl.js' , true , 1);
     $this->_resource->addInlineJs('
         	var canEdit = ' . ((integer) $this->_user->canEdit($this->_module)) . ';
