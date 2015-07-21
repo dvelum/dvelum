@@ -47,6 +47,7 @@ Ext.application({
 			menuButtons.push({
 				tooltip:item.title,
 				href:item.url,
+				hrefTarget:'_self',
 				text:'<img src="'+item.icon+'" width="30" height="30"/>',
 				textAlign:'left'
 			});
