@@ -9,8 +9,7 @@ class Backend_Acl_Controller extends Backend_Controller
    */
   public function indexAction()
   {
-    $res = Resource::getInstance();
-    $res->addJs('/js/app/system/crud/acl.js' , true , 1);
+    $this->_resource->addJs('/js/app/system/crud/acl.js' , true , 1);
     $this->_resource->addInlineJs('
         	var canEdit = ' . ((integer) $this->_user->canEdit($this->_module)) . ';
         	var canDelete = ' . ((integer) $this->_user->canDelete($this->_module)) . ';
