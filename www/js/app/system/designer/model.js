@@ -384,7 +384,7 @@ Ext.define('designer.model.configWindow',{
     	    handler:this.saveData,
     	   	scope:this
        	},{
-			text:desLang.cancel,
+			text:desLang.close,
 			scope:this,
 			handler:this.close
        	}];

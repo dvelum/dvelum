@@ -139,7 +139,7 @@ class Ext_Object
 	}
 
 	/**
-	 * Check if properti is valid
+	 * Check if property is valid
 	 * @param string $name
 	 * @return bolean
 	 */

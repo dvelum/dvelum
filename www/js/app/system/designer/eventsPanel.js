@@ -8,9 +8,8 @@ Ext.define('designer.eventsModel',{
 		{name:'has_code', type:'boolean'},
 		{name:'is_local' , type:'boolean'}
 	],
-	idProperty:'id'
+	idProperty:'event'
 });
-
 
 /**
  *
@@ -49,8 +48,7 @@ Ext.define('designer.eventsPanel',{
 				url:this.controllerUrl +  'objectevents',
 				reader: {
 					type: 'json',
-					rootProperty: 'data',
-					idProperty: 'id'
+					rootProperty: 'data'
 				},
 				extraParams:this.extraParams,
 				simpleSortMode: true
@@ -127,7 +125,7 @@ Ext.define('designer.eventsPanel',{
 					}
 
 				}
-			},{//configLoaded
+			},{
 				xtype:'actioncolumn',
 				width:40,
 				text:desLang.event,

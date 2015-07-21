@@ -342,6 +342,9 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 	    		$objects = $project->getObjects();
 	    		foreach ($objects as $object)
 	    		{
+					if(!$object instanceof Ext_Object){
+						continue;
+					}
 	    		    // remove object instances
 	    		    if($object->isInstance() && $object->getObject()->getName() === $id){
 	    		         $project->removeObject($object->getName());

@@ -39,7 +39,6 @@ abstract class Ext_Property
 	static public $ftype = '';
 
     public $isExtended = self::Boolean;
-    public $defineOnly = self::Boolean;
 
 	static public function getInstance()
 	{

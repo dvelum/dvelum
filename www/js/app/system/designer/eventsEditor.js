@@ -1,3 +1,15 @@
+Ext.define('designer.eventsEditorModel',{
+	extend:'Ext.data.Model',
+	fields:[
+		{name:'id', type:'integer'},
+		{name:'object', type:'string'},
+		{name:'event', type:'string'},
+		{name:'params', type:'string'},
+		{name:'is_local' , type:'boolean'}
+	],
+	idProperty:'id'
+});
+
 /**
  *
  * @event eventsUpdated
@@ -17,15 +29,9 @@ Ext.define('designer.eventsEditor',{
 		if(!this.controllerUrl.length){
 			this.controllerUrl = app.createUrl([designer.controllerUrl ,'events','']);
 		}
-		
+
 		this.store = Ext.create('Ext.data.Store',{
-			fields:[
-			        {name:'id', type:'integer'},
-			        {name:'object', type:'string'},
-			        {name:'event', type:'string'},
-			        {name:'params', type:'string'},
-			        {name:'is_local', type:'boolean'}
-			],
+			model:'designer.eventsEditorModel',
 			proxy: {
 		        type: 'ajax',
 		    	url:this.controllerUrl +  'list',
