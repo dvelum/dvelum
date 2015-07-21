@@ -18,7 +18,7 @@
 		var curStep = 0;
 		var wwwRoot = "<?php echo $this->wwwRoot;?>install/";
 		var url = wwwRoot;
-		var appRoot = wwwRoot;
+		var appRoot = "<?php echo $this->wwwRoot;?>";
 		$(function() {
 			$( "#tabs" ).tabs();
 			$('#nextBtn').bind('click', showLicenseStep).removeAttr('disabled').removeClass('disabled');
