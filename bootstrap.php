@@ -32,7 +32,7 @@ define('DVELUM_ROOT' ,$dvelumRoot);
 chdir(DVELUM_ROOT);
 
 /*
- * Httponly cookies (brakes the uplodify multy file uploader)
+ * Httponly cookies
  */
 ini_set("session.cookie_httponly", 1);
 /*
