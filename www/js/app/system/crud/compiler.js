@@ -607,9 +607,7 @@ Ext.define('app.crud.compiller.Main',{
 		this.recordsStore.proxy.setExtraParam('package',this.curPackage);
 		this.recordsStore.load();
 		this.recordsGrid.updateLayout();
-		this.recordsGrid.doLayout();
 		this.updateLayout();
-		this.doLayout();
 	},
 	showAddRecordsWin:function(){
 		var win = Ext.create('app.crud.compiller.AddPackageItemWin',{

@@ -1,3 +1,14 @@
+Ext.define('designer.methodsModel',{
+	extend:'Ext.data.Model',
+	fields:[
+		{name:'object', type:'string'},
+		{name:'method', type:'string'},
+		{name:'params', type:'string'},
+		{name:'has_code', type:'boolean'}
+	],
+	idProperty:'method'
+});
+
 /**
  *
  * @event methodsUpdated
@@ -26,19 +37,13 @@ Ext.define('designer.methodsPanel',{
 		this.extraParams['object'] = this.objectName;
 				
 		this.store = Ext.create('Ext.data.Store',{
-			fields:[
-			        {name:'object', type:'string'},
-			        {name:'method', type:'string'},
-			        {name:'params', type:'string'},
-			        {name:'has_code', type:'boolean'}
-			],
+			model:'designer.methodsModel',
 			proxy: {
 		        type: 'ajax',
 		    	url:this.controllerUrl +  'objectmethods',
 		        reader: {
 		            type: 'json',
-					rootProperty: 'data',
-		            idProperty: 'method'
+					rootProperty: 'data'
 		        },
 		        extraParams:this.extraParams,
 			    simpleSortMode: true

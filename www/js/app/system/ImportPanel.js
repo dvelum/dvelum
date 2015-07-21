@@ -470,8 +470,8 @@ Ext.define('app.import.Panel',{
 		if(result.settings){
 			this.applySettings(result.settings);
 		}
-		this.importFormContainer.doLayout();
-		this.doLayout();
+		this.importFormContainer.updateLayout();
+		this.updateLayout();
 
 	},
 	/**

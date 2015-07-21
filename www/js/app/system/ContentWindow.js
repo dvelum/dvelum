@@ -544,7 +544,7 @@ Ext.define('app.contentWindow',{
 						});
 					}
 					handle.previewUrl = action.result.data.staging_url;
-					handle.doLayout();
+					handle.updateLayout();
 					handle.fireEvent('dataLoaded' ,action.result);
 				}
 				else

@@ -183,7 +183,7 @@ Ext.define('app.crud.page.Window',{
 				me.editForm.getForm().findField('code').setReadOnly(false);
 				me.deleteBtn.show();
 			}
-			me.doLayout();
+			me.updateLayout();
 		}, me);
 	},
 	/**

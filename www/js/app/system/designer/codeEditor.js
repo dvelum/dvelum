@@ -126,7 +126,7 @@ Ext.define('designer.codeEditor',{
 			scroller.style.height = me.getEl().getHeight() - 54 + 'px';
 			scroller.style.width = me.getEl().getWidth() + 'px';
 			me.codeMirror.refresh();
-			me.doLayout();
+			me.updateLayout();
 		};
 		Ext.Function.createBuffered(fnc, 500)();
 	},

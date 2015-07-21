@@ -262,7 +262,7 @@ Ext.define('app.medialib.CategoryTree',{
 						response =  Ext.JSON.decode(response.responseText);
 						if(response.success){										 
 							record.remove();
-							me.doLayout();
+							me.updateLayout();
 						}else{
 							Ext.Msg.alert(appLang.MESSAGE, response.msg);
 						}	

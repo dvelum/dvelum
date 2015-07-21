@@ -1,3 +1,17 @@
+Ext.define('designer.eventsModel',{
+	extend:'Ext.data.Model',
+	fields:[
+		{name:'id', type:'integer'},
+		{name:'object', type:'string'},
+		{name:'event', type:'string'},
+		{name:'params', type:'string'},
+		{name:'has_code', type:'boolean'},
+		{name:'is_local' , type:'boolean'}
+	],
+	idProperty:'id'
+});
+
+
 /**
  *
  * @event eventsUpdated
@@ -29,14 +43,7 @@ Ext.define('designer.eventsPanel',{
 		this.extraParams['object'] = this.objectName;
 
 		this.store = Ext.create('Ext.data.Store',{
-			fields:[
-				{name:'id', type:'integer'},
-				{name:'object', type:'string'},
-				{name:'event', type:'string'},
-				{name:'params', type:'string'},
-				{name:'has_code', type:'boolean'},
-				{name:'is_local' , type:'boolean'}
-			],
+			model:'designer.eventsModel',
 			proxy: {
 				type: 'ajax',
 				url:this.controllerUrl +  'objectevents',
@@ -120,7 +127,7 @@ Ext.define('designer.eventsPanel',{
 					}
 
 				}
-			},{
+			},{//configLoaded
 				xtype:'actioncolumn',
 				width:40,
 				text:desLang.event,
