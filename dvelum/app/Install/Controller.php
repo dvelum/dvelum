@@ -165,6 +165,11 @@ class Install_Controller {
                 'msg'=>false
             ),
             array(
+                'name'=>'mbstring',
+                'accessType'=>'required',
+                'msg'=>false
+            ),
+            array(
                 'name'=>'curl',
                 'accessType'=>'allowed',
                 'msg'=>$this->localization->get('DEPLOY_WARNING')
