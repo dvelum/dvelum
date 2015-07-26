@@ -658,7 +658,6 @@ Ext.define('designer.store.proxyWindow',{
 	width:500,
 	height:500,
 	layout:'border',
-	modal:true,
 	title:desLang.proxy,
 	dataGrid:null,
 

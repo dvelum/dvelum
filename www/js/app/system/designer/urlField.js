@@ -6,7 +6,6 @@
  */
 Ext.define('designer.urlWindow',{
 	extend:'Ext.Window',
-	modal:true,
 	fileTree:null,
 	actionsGrid:null,
 	layout:'border',
@@ -166,5 +165,6 @@ Ext.define('designer.urlField',{
 				}
 			}
 		}).show();
+		win.manager.bringToFront(win);
 	}
 });
