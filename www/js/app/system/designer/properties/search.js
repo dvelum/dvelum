@@ -170,14 +170,15 @@ Ext.define('designer.properties.SearchFieldsWindow',{
 		});
 
 		this.items = [this.dataGrid];
+
 		this.buttons = [
 			{
 				text:desLang.save,
 				handler: this.sendData,
 				scope:this
 			},{
-				text:desLang.cancel,
-				handle:this.close,
+				text:desLang.close,
+				handler:this.close,
 				scope:this
 			}
 		];
