@@ -24,7 +24,7 @@ class Backend_Designer_Sub_Properties extends Backend_Designer_Sub
     			     unset($properties['listeners']);
 			    break;
 		}
-		unset($properties['isExtended']);
+		//unset($properties['isExtended']);
 		unset($properties['extend']);
 
 		if(isset($properties['dockedItems']))
