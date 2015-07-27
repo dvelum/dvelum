@@ -232,10 +232,9 @@ Ext.define('app.objectLink.SelectWindow',{
 			proxy: {
 				type: 'ajax',
 				url: this.controllerUrl,
-				reader: 'json',
 				reader: {
 					type: 'json',
-					root: 'data',
+					rootProperty: 'data',
 					totalProperty: 'count',
 					idProperty: 'id'
 				},
