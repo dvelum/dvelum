@@ -262,6 +262,7 @@ Ext.define('designer.methodEditorWindow',{
 						pack: 'start',
 						align: 'stretch'
 					},
+					height:22,
 					items:[
 						{
 							xtype:'textfield',
@@ -271,8 +272,8 @@ Ext.define('designer.methodEditorWindow',{
 								border:'none',
 								//   textAlign:'right',
 								background:'none',
-								backgroundColor:'#F4F4F4',
-								borderBottom:'1px solid #000000'
+								backgroundColor:'#F4F4F4'
+								//borderBottom:'1px solid #000000'
 							}
 						},{
 							xtype:'displayfield',
@@ -286,7 +287,7 @@ Ext.define('designer.methodEditorWindow',{
 								//   textAlign:'left',
 								background:'none',
 								backgroundColor:'#F4F4F4',
-								borderBottom:'1px solid #000000',
+								//borderBottom:'1px solid #000000',
 								color:'#5C3BFB'
 							}
 						},{
@@ -341,7 +342,7 @@ Ext.define('designer.methodEditorWindow',{
 				form.findField('description').setValue(response.data['description']);
 				form.findField('method_name').setValue(response.data['name']);
 				form.findField('params').setValue(response.data['paramsLine']);
-				this.add(this.editor);
+				this.add(me.editor);
 				this.saveButton.enable();
 			},
 			failure:function() {
