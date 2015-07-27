@@ -63,8 +63,8 @@ Ext.define('designer.properties.Panel', {
 
     constructor: function () {
         this.extraParams = {};
-        this.customEditors = {};
-        this.customRenderers = {};
+       // this.customEditors = {};
+       // this.customRenderers = {};
         this.sourceConfig = {};
         this.callParent(arguments);
     },
@@ -271,7 +271,10 @@ Ext.define('designer.properties.Panel', {
                             scope: me
                         }
                     }
-                })
+                }),
+                renderer:function(){
+                    return '...';
+                }
             },
             'extraParams': {
                 editor: Ext.create('Ext.form.field.Text', {
@@ -283,7 +286,10 @@ Ext.define('designer.properties.Panel', {
                             scope: me
                         }
                     }
-                })
+                }),
+                renderer:function(){
+                    return '...';
+                }
             },
             'fieldDefaults': {
                 editor: Ext.create('Ext.form.field.Text', {
@@ -295,7 +301,10 @@ Ext.define('designer.properties.Panel', {
                             scope: me
                         }
                     }
-                })
+                }),
+                renderer:function(){
+                    return '...';
+                }
             },
             'dictionary': {
                 editor: Ext.create('Ext.form.field.ComboBox', {
@@ -374,24 +383,13 @@ Ext.define('designer.properties.Panel', {
                                 }, me);
                             }
                         }
-                    })
+                    }),
+                    renderer:function(){
+                        return '...';
+                    }
                 })
             }
         }, this.sourceConfig);
-
-
-        this.customRenderers.defaults = function () {
-            return '...';
-        };
-        this.customRenderers.fieldDefaults = function () {
-            return '...';
-        };
-        this.customRenderers.extraParams = function () {
-            return '...';
-        };
-        this.customRenderers.objectName = function (v) {
-            return me.objectNames[v];
-        };
 
         this.searchPanel = Ext.create('SearchPanel', {
             fieldNames: ['name'],
@@ -487,13 +485,14 @@ Ext.define('designer.properties.Panel', {
         this.callParent();
 
 
+        /*
         this.on('scrollershow', function (scroller) {
             if (scroller && scroller.scrollEl) {
                 scroller.clearManagedListeners();
                 scroller.mon(scroller.scrollEl, 'scroll', scroller.onElScroll, scroller);
             }
         }, this);
-
+        */
 
         if (this.autoLoadData) {
             this.loadProperties();
@@ -659,7 +658,7 @@ Ext.define('designer.properties.Panel', {
                 } else {
                     this.fireEvent('dataSaved', recordId, value);
                     designer.msg(desLang.msg, desLang.msg_propertySaved);
-                    if (recordId == 'isExtended') {
+                   /* if (recordId == 'isExtended') {
                         if (value) {
                             this.eventsPanel.setCanEditLocalEvents(true);
                             this.methodsPanel.enable();
@@ -668,6 +667,7 @@ Ext.define('designer.properties.Panel', {
                             this.methodsPanel.disable();
                         }
                     }
+                    */
                 }
             },
             failure: function () {

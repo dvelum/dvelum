@@ -1,4 +1,11 @@
 @CHARSET "UTF-8";
+
+/*
+* ExtJS Gray theme bugfix
+*/
+.x-form-text {  display: inherit;  }
+/*-----*/
+
 .app-combo-item{ font:normal 11px tahoma, arial, helvetica, sans-serif; padding:3px 10px 3px 10px; border:1px solid #fff; border-bottom:1px solid #eeeeee; white-space:normal; color:#555; }
 .app-disabled{background-color:#EFEEEC;color:#858483;}
 
