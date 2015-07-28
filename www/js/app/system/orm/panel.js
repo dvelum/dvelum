@@ -147,6 +147,7 @@ Ext.define('app.crud.orm.Main',{
 		}
 
 		this.isSystemField = Ext.create('Ext.form.Checkbox',{
+			boxLabel:appLang.HIDE_SYSTEM_OBJ,
 			listeners:{
 				scope:this,
 				change:function(field, value){
@@ -223,10 +224,7 @@ Ext.define('app.crud.orm.Main',{
 		 */
 
 
-		this.toolbarDataGrid.add('-', ' ', {
-			xtype: 'fieldcontainer',
-			items:[this.isSystemField]
-		},appLang.HIDE_SYSTEM_OBJ);
+		this.toolbarDataGrid.add('-', ' ', this.isSystemField);
 
 		this.dataGrid = Ext.create('app.crud.orm.dataGrid',{
 			store: this.dataStore,
