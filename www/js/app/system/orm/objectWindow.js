@@ -242,7 +242,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 				colid:'deleteindex',
 				renderer:function(value, metaData, record, rowIndex, colIndex, store){
 					if(app.crud.orm.canDelete && !record.get('system')){
-						return '<img src="'+app.wwwRoot+'i/system/delete.gif" title="'+appLang.DELETE_FIELD+'" style="cursor:pointer;">';
+						return '<img src="'+app.wwwRoot+'i/system/delete.png" title="'+appLang.DELETE_FIELD+'" style="cursor:pointer;">';
 					}
 					return '';
 				}
@@ -330,7 +330,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 				colid:'deleteindex',
 				renderer:function(value, metaData, record, rowIndex, colIndex, store){
 					if(app.crud.orm.canDelete && !record.get('primary')){
-						return '<img src="'+app.wwwRoot+'i/system/delete.gif" title="'+appLang.EDIT_INDEX+'" style="cursor:pointer;">';
+						return '<img src="'+app.wwwRoot+'i/system/delete.png" title="'+appLang.EDIT_INDEX+'" style="cursor:pointer;">';
 					}
 					return '';
 				}
