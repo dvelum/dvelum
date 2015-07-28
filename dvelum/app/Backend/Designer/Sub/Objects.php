@@ -215,6 +215,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
   	    'Data_Store'=>'storeIcon',
   	    'Data_Store_Tree'=>'storeIcon',
   	    'Model'=>'modelIcon',
+        'Image'=>'imageIcon',
 
   	    'Component_Window_System_Crud'=>'objectWindowIcon',
   	    'Component_Window_System_Crud_Vc'=>'objectWindowIcon',

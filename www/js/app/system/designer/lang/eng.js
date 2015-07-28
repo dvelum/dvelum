@@ -104,6 +104,7 @@ var desLang = {
 		importFiltersStore:'Import filters from store',
 		items:'Items',
 		icon:'Icon',
+		image:'Image',
 		images:'Images',
 		instanceOf:'Instance of',
 

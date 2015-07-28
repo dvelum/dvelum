@@ -210,6 +210,9 @@
 .modelIcon{
   background-image: url(../../../../i/system/designer/model.png) !important;
 }
+.imageIcon{
+    background-image: url(../../../../i/system/designer/image.png) !important;
+}
 .addIcon{
   background-image: url(../../../../i/system/designer/plus.png) !important;
 }
