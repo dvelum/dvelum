@@ -294,7 +294,7 @@ class Modules_Generator
       $deleteButton = Ext_Factory::object('Grid_Column_Action_Button');
       $deleteButton->setName($dataGrid->getName().'_actions_delete');
       $deleteButton->text = 'dg_action_delete';
-      $deleteButton->icon = '[%wroot%]i/system/delete.gif';
+      $deleteButton->icon = '[%wroot%]i/system/delete.png';
       $deleteButton->tooltip = '[js:] appLang.DELETE';
       $deleteButton->isDisabled = 'function(){return !this.canDelete;}';
 
@@ -632,7 +632,7 @@ class Modules_Generator
           $deleteButton = Ext_Factory::object('Grid_Column_Action_Button');
           $deleteButton->setName($dataGrid->getName().'_actions_delete');
           $deleteButton->text = 'dg_action_delete';
-          $deleteButton->icon = '[%wroot%]i/system/delete.gif';
+          $deleteButton->icon = '[%wroot%]i/system/delete.png';
           $deleteButton->tooltip = '[js:] appLang.DELETE';
           $deleteButton->isDisabled = 'function(){return !this.canDelete;}';
 

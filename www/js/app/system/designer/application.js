@@ -574,12 +574,18 @@ Ext.define('designer.application',{
 						showType:'loaded'
 					}]
 				})
-			},{
-				text:desLang.tree,
-				iconCls:'treeIcon',
-				tooltip: desLang.add + ' ' + desLang.tree,
-				oClass:'tree'
-			},'-',
+				},{
+					text:desLang.tree,
+					iconCls:'treeIcon',
+					tooltip: desLang.add + ' ' + desLang.tree,
+					oClass:'tree'
+				},
+				{
+					text:'Image',
+					iconCls:'imageIcon',
+					tooltip: desLang.add + ' ' + desLang.image,
+					oClass:'image'
+				},'-',
 				{
 					text:desLang.window,
 					iconCls:'windowIcon',

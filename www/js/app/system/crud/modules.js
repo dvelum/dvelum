@@ -662,7 +662,7 @@ Ext.define('app.crud.modules.backendView',{
 					'<div class="tools" align="right">',
 						'<img class="modulesBtn" action-type="edit" src="'+app.wwwRoot+'i/system/edit.png" data-qtip="'+appLang.EDIT+'">',
 						'<tpl if="dist == false">',
-							'<img class="modulesBtn" action-type="delete" src="'+app.wwwRoot+'i/system/delete.gif" data-qtip="'+appLang.DELETE+'">',
+							'<img class="modulesBtn" action-type="delete" src="'+app.wwwRoot+'i/system/delete.png" data-qtip="'+appLang.DELETE+'">',
 						'</tpl>',
 					'</div>',
 					'<div class="title">{title}</div>',

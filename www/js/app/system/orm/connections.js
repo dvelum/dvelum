@@ -163,7 +163,7 @@ Ext.define('app.orm.connections.Window',{
 		    				if(value) {
 								return '<img src="'+app.wwwRoot+'i/system/locked.png" title="'+appLang.SYSTEM_PROTECTED_FIELD+'">';
 						    }else{
-		    					return '<img src="'+app.wwwRoot+'i/system/delete.gif" title="'+appLang.DELETE_ITEM+'" style="cursor:pointer;">';
+		    					return '<img src="'+app.wwwRoot+'i/system/delete.png" title="'+appLang.DELETE_ITEM+'" style="cursor:pointer;">';
 		    				}
 			            }
 			        }
