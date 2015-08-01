@@ -79,7 +79,9 @@ class Config_Storage
         if($this->config['file_array']['apply_to']!==false && $merge)
             $object->setApplyTo($this->config['file_array']['apply_to'] . $localPath );
 
-        $object->setData($data);
+        // fast data injection
+        $link = & $object->dataLink();
+        $link = $data;
 
         if($useCache)
             static::$runtimeCache[$key] = $object;

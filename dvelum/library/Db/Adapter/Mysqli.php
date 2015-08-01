@@ -213,4 +213,65 @@ class Db_Adapter_Mysqli extends Zend_Db_Adapter_Mysqli
         $this->_profiler->setEnabled(false);
         return $this->_profiler;
     }
+
+    /**
+     * Fetches all SQL result rows as a sequential array.
+     * Uses the current fetchMode for the adapter.
+     *
+     * @param string|Zend_Db_Select $sql  An SQL SELECT statement.
+     * @param mixed                 $bind Data to bind into SELECT placeholders.
+     * @param mixed                 $fetchMode Override current fetch mode.
+     * @return array
+     */
+    public function fetchAll($sql, $bind = array(), $fetchMode = null)
+    {
+        if ($fetchMode === null) {
+            $fetchMode = $this->_fetchMode;
+        }
+        // DVelum performance patch
+        if($fetchMode === Zend_Db::FETCH_ASSOC && extension_loaded('mysqlnd')){
+            $stmt = $this->queryAll($sql, $bind);
+            $result = $stmt->fetchAllAssoc($fetchMode);
+        }else{
+            $stmt = $this->query($sql, $bind);
+            $result = $stmt->fetchAll($fetchMode);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Prepares and executes an SQL statement with bound data.
+     * [DVelum performance patch]
+     * @param  mixed  $sql  The SQL statement with placeholders. May be a string or Zend_Db_Select.
+     * @param  mixed  $bind An array of data to bind to the placeholders.
+     * @return Zend_Db_Statement_Interface
+     */
+    public function queryAll($sql, $bind = array())
+    {
+        // connect to the database if needed
+        $this->_connect();
+
+        // is the $sql a Zend_Db_Select object?
+        if ($sql instanceof Zend_Db_Select) {
+            if (empty($bind)) {
+                $bind = $sql->getBind();
+            }
+
+            $sql = $sql->assemble();
+        }
+
+        // make sure $bind to an array;
+        // don't use (array) typecasting because
+        // because $bind may be a Zend_Db_Expr object
+        if (!is_array($bind)) {
+            $bind = array($bind);
+        }
+        // prepare and execute the statement with profiling
+        $stmt = $this->prepare($sql);
+        $stmt->executeFastAssoc($bind);
+        // return the results embedded in the prepared statement object
+        $stmt->setFetchMode($this->_fetchMode);
+        return $stmt;
+    }
 }
