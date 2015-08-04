@@ -274,4 +274,139 @@ class Db_Adapter_Mysqli extends Zend_Db_Adapter_Mysqli
         $stmt->setFetchMode($this->_fetchMode);
         return $stmt;
     }
+
+    /**
+     * Returns the column descriptions for a table.
+     *
+     * The return value is an associative array keyed by the column name,
+     * as returned by the RDBMS.
+     *
+     * The value of each array element is an associative array
+     * with the following keys:
+     *
+     * SCHEMA_NAME      => string; name of database or schema
+     * TABLE_NAME       => string;
+     * COLUMN_NAME      => string; column name
+     * COLUMN_POSITION  => number; ordinal position of column in table
+     * DATA_TYPE        => string; SQL datatype name of column
+     * DEFAULT          => string; default expression of column, null if none
+     * NULLABLE         => boolean; true if column can have nulls
+     * LENGTH           => number; length of CHAR/VARCHAR
+     * SCALE            => number; scale of NUMERIC/DECIMAL
+     * PRECISION        => number; precision of NUMERIC/DECIMAL
+     * UNSIGNED         => boolean; unsigned property of an integer type
+     * PRIMARY          => boolean; true if column is part of the primary key
+     * PRIMARY_POSITION => integer; position of column in primary key
+     * IDENTITY         => integer; true if column is auto-generated with unique values
+     *
+     * @param string $tableName
+     * @param string $schemaName OPTIONAL
+     * @return array
+     */
+    public function describeTable($tableName, $schemaName = null)
+    {
+        /**
+         * @todo  use INFORMATION_SCHEMA someday when
+         * MySQL's implementation isn't too slow.
+         */
+        if ($schemaName) {
+            $sql = 'DESCRIBE ' . $this->quoteIdentifier("$schemaName.$tableName", true);
+        } else {
+            $sql = 'DESCRIBE ' . $this->quoteIdentifier($tableName, true);
+        }
+        /**
+         * Use mysqli extension API, because DESCRIBE doesn't work
+         * well as a prepared statement on MySQL 4.1.
+         */
+        if ($queryResult = $this->getConnection()->query($sql)) {
+            while ($row = $queryResult->fetch_assoc()) {
+                $result[] = $row;
+            }
+            $queryResult->close();
+        } else {
+            /**
+             * @see Zend_Db_Adapter_Mysqli_Exception
+             */
+            //require_once 'Zend/Db/Adapter/Mysqli/Exception.php';
+            throw new Zend_Db_Adapter_Mysqli_Exception($this->getConnection()->error);
+        }
+        $desc = array();
+        $row_defaults = array(
+            'Length'          => null,
+            'Scale'           => null,
+            'Precision'       => null,
+            'Unsigned'        => null,
+            'Primary'         => false,
+            'PrimaryPosition' => null,
+            'Identity'        => false
+        );
+        $i = 1;
+        $p = 1;
+        foreach ($result as $key => $row) {
+            $row = array_merge($row_defaults, $row);
+            if (preg_match('/unsigned/', $row['Type'])) {
+                $row['Unsigned'] = true;
+            }
+            if (preg_match('/^((?:var)?char)\((\d+)\)/', $row['Type'], $matches)) {
+                $row['Type'] = $matches[1];
+                $row['Length'] = $matches[2];
+            } else if (preg_match('/^decimal\((\d+),(\d+)\)/', $row['Type'], $matches)) {
+                $row['Type'] = 'decimal';
+                $row['Precision'] = $matches[2];
+                $row['Scale'] = $matches[1];
+            }
+            /*
+             * DVelum fix for double database type
+             */
+            else if (preg_match('/^double\((\d+),(\d+)\)/', $row['Type'], $matches)) {
+                $row['Type'] = 'double';
+                $row['Precision'] = $matches[2];
+                $row['Scale'] = $matches[1];
+            }
+            /*
+             * end fix
+             */
+            else if (preg_match('/^float\((\d+),(\d+)\)/', $row['Type'], $matches)) {
+                $row['Type'] = 'float';
+                $row['Precision'] = $matches[2];
+                $row['Scale'] = $matches[1];
+            } else if (preg_match('/^((?:big|medium|small|tiny)?int)\((\d+)\)/', $row['Type'], $matches)) {
+                $row['Type'] = $matches[1];
+                $row['Length'] = $matches[2];
+                /**
+                 * The optional argument of a MySQL int type is not precision
+                 * or length; it is only a hint for display width.
+                 * DVelum fix. But it needed for foreign keys
+                 */
+            }
+            if (strtoupper($row['Key']) == 'PRI') {
+                $row['Primary'] = true;
+                $row['PrimaryPosition'] = $p;
+                if ($row['Extra'] == 'auto_increment') {
+                    $row['Identity'] = true;
+                } else {
+                    $row['Identity'] = false;
+                }
+                ++$p;
+            }
+            $desc[$this->foldCase($row['Field'])] = array(
+                'SCHEMA_NAME'      => null, // @todo
+                'TABLE_NAME'       => $this->foldCase($tableName),
+                'COLUMN_NAME'      => $this->foldCase($row['Field']),
+                'COLUMN_POSITION'  => $i,
+                'DATA_TYPE'        => $row['Type'],
+                'DEFAULT'          => $row['Default'],
+                'NULLABLE'         => (bool) ($row['Null'] == 'YES'),
+                'LENGTH'           => $row['Length'],
+                'SCALE'            => $row['Scale'],
+                'PRECISION'        => $row['Precision'],
+                'UNSIGNED'         => $row['Unsigned'],
+                'PRIMARY'          => $row['Primary'],
+                'PRIMARY_POSITION' => $row['PrimaryPosition'],
+                'IDENTITY'         => $row['Identity']
+            );
+            ++$i;
+        }
+        return $desc;
+    }
 }
