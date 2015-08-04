@@ -1457,17 +1457,17 @@ class Backend_Orm_Controller extends Backend_Controller
 
         $wwwPath = $this->_configMain->get('wwwpath');
 	    foreach ($sources as $filePath){
-	        $s.=file_get_contents($wwwPath.'/'.$filePath)."\n";
-	        $totalSize+=filesize($wwwPath.'/'.$filePath);
+	        $s.=file_get_contents($wwwPath.$filePath)."\n";
+	        $totalSize+=filesize($wwwPath.$filePath);
 	    }
 
 	    $time = microtime(true);
-	    file_put_contents($wwwPath.'/js/app/system/ORM.js', Code_Js_Minify::minify($s));
+	    file_put_contents($wwwPath.'js/app/system/ORM.js', Code_Js_Minify::minify($s));
 	    echo '
 			Compilation time: '.number_format(microtime(true)-$time,5).' sec<br>
 			Files compiled: '.sizeof($sources).' <br>
 			Total size: '.Utils::formatFileSize($totalSize).'<br>
-			Compiled File size: '.Utils::formatFileSize(filesize($wwwPath.'/js/app/system/ORM.js')).' <br>
+			Compiled File size: '.Utils::formatFileSize(filesize($wwwPath.'js/app/system/ORM.js')).' <br>
 		';
 	    exit;
 	}

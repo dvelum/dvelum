@@ -66,7 +66,7 @@ class Dictionary
 		{
 			$obj = new self();
 			$obj->name = $name;
-			$obj->_data = Config::factory(Config::File_Array , self::$_configPath . $name . '.php');
+			$obj->_data = Config::storage()->get(self::$_configPath . $name . '.php' , true , false);
 
 			self::$_instances[$name] = $obj;
 		}

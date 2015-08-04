@@ -41,7 +41,7 @@ class Dictionary_Manager
 	{
 		$this->_appConfig =  $appConfig;
 		$this->_language = $appConfig->get('language');
-		$this->_path = $appConfig->get('dictionary');
+		$this->_path = Config::storage()->getWrite();
 		$this->_baseDir = $appConfig->get('dictionary_folder');
 		$this->_cache = $cache;
 
@@ -59,14 +59,15 @@ class Dictionary_Manager
 			return array_keys(self::$_list);
 
 		$paths = Config::storage()->getPaths();
+
 		$list = array();
 
 		foreach($paths as $path)
 		{
-			if(!file_exists($path.$this->_baseDir.'index/'))
+			if(!file_exists($path . $this->_baseDir . 'index/'))
 				continue;
 
-			$files = File::scanFiles($path.$this->_baseDir.'index/', array('.php'), false, File::Files_Only);
+			$files = File::scanFiles($path.$this->_baseDir . 'index/', array('.php'), false, File::Files_Only);
 
 			if(!empty($files)){
 				foreach($files as $path){
@@ -75,6 +76,7 @@ class Dictionary_Manager
 				}
 			}
 		}
+
 		self::$_list = $list;
 		
 		if($this->_cache)
@@ -85,17 +87,28 @@ class Dictionary_Manager
 	/**
 	 * Create dictionary
 	 * @param string $name
+	 * @param string $language, optional
 	 * @return boolean
 	 */
-	public function create($name)
+	public function create($name , $language = false)
 	{
-		if(!file_exists($this->_path . $name . '.php') && Config_File_Array::create($this->_path . $name . '.php'))
+		if($language == false){
+			$language = $this->_language;
+		}
+
+		$indexFile = $this->_path . $this->_baseDir . 'index/' . $name . '.php';
+		$dictionaryFile =  $this->_path . $this->_baseDir . $language . '/' .  $name . '.php';
+
+		if(!file_exists($dictionaryFile) && Config_File_Array::create($dictionaryFile))
 		{
+			if(!file_exists($indexFile) && !Config_File_Array::create($indexFile)){
+				return false;
+			}
+
 			self::$_validDictionary[$name]=true;
 			$this->resetCache();
 			return true;
 		}
-					
 		return false;		
 	}
 	/**
@@ -106,8 +119,15 @@ class Dictionary_Manager
 	 */
 	public function rename($oldName, $newName) 
 	{
-		if(!@rename($this->_path.$oldName.'.php', $this->_path.$newName.'.php'))
-			return false;
+		$dirs = File::scanFiles($this->_path. $this->_baseDir, false, false, File::Dirs_Only);
+
+		foreach($dirs as $path){
+			if(file_exists($path . '/' . $oldName . '.php')){
+				if(!@rename($path . '/' . $oldName . '.php', $path . '/' . $newName.'.php')){
+					return false;
+				}
+			}
+		}
 				
 		if(isset(self::$_validDictionary[$oldName]))
 			unset(self::$_validDictionary[$oldName]);
@@ -131,7 +151,7 @@ class Dictionary_Manager
 		if(isset(self::$_validDictionary[$name]))
 			return true;
 
-		if( Config::storage()->exists($this->_path . $name . '.php'))
+		if(Config::storage()->exists($this->_path . $this->_baseDir . 'index/' . $name . '.php'))
 		{
 			self::$_validDictionary[$name] = true;
 			return true;
@@ -148,10 +168,14 @@ class Dictionary_Manager
 	 */
 	public function remove($name)
 	{
-		$file = $this->_path . $name . '.php';
-		if(!is_file($file) || !@unlink($file))
-			return false;
-			
+		$dirs = File::scanFiles($this->_path. $this->_baseDir, false, false, File::Dirs_Only);
+
+		foreach($dirs as $path){
+			$file = $path . '/' . $name . '.php';
+			if(!is_file($file) || !@unlink($file))
+				return false;
+		}
+
 		if(isset(self::$_validDictionary[$name]))
 			unset(self::$_validDictionary[$name]);
 			
@@ -184,7 +208,7 @@ class Dictionary_Manager
 		
 		if(!empty($list))	
 			foreach ($list as $name)	
-				$s.= $name.':'.Dictionary::getInstance($name)->__toJs();
+				$s.= $name.':'.Dictionary::factory($name)->__toJs();
 					
 		$s = md5($s);
 		
@@ -220,7 +244,7 @@ class Dictionary_Manager
 	 */
 	public function saveChanges($name)
 	{
-		$dict = Dictionary::getInstance($name);
+		$dict = Dictionary::factory($name);
 		if(!$dict->save())
 			return false;
 
@@ -237,7 +261,7 @@ class Dictionary_Manager
 	 */
 	public function rebuildIndex($name)
 	{
-		$dict = Dictionary::getInstance($name);
+		$dict = Dictionary::factory($name);
 		$index = Config::storage()->get($this->_baseDir . 'index/' . $name . '.php', false, false);
 
 		$index->removeAll();
@@ -256,6 +280,7 @@ class Dictionary_Manager
 	public function mergeLocales($name, $baseLocale)
 	{
 		$baseDict = Config::storage()->get($this->_baseDir . $baseLocale . '/' . $name . '.php', false, false);
+
 		$locManager = new Backend_Localization_Manager($this->_appConfig);
 
 		foreach($locManager->getLangs(true) as $locale)
@@ -264,13 +289,17 @@ class Dictionary_Manager
 				continue;
 
 			$dict = Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false);
-
+			if($dict === false){
+				if(!$this->create($name , $locale) || ! $dict=Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false)){
+					return false;
+				}
+			}
 			// Add new records from base dictionary and remove redundant records from current
 			$mergedData = array_merge(
 				// get elements from current dictionary with keys common for arrays
 				array_intersect_key($dict->__toArray(), $baseDict->__toArray()),
 				// get new records for current dictionary
-				array_diff_key($baseDict->__toArray(),$dict->__toArray())
+				array_diff_key($baseDict->__toArray(), $dict->__toArray())
 			);
 
 			$dict->removeAll();

@@ -12,7 +12,8 @@ Ext.define('app.crud.orm.DictionaryRecordModel',{
         {name:'id' , type:'string'},
         {name:'key' ,  type:'string'},
         {name:'value' ,  type:'string'}
-    ]
+	],
+	idProperty:'id'
 });
 
 Ext.define('app.crud.orm.AddDictionaryWindow', {
@@ -156,10 +157,12 @@ Ext.define('app.crud.orm.DictionaryWindow', {
 	   if(this.canDelete){
 		   dictionaryGridColumns.push({
 			   xtype:'actioncolumn',
-			   width:18,
+			   width:20,
+			   align:'center',
 			   itemId:'removeAction',
 			   items: [{
 				   iconCls: 'deleteIcon',
+				   width:20,
 				   tooltip: appLang.DELETE,
 				   scope:this,
 				   handler: this.deleteDictionary
@@ -210,8 +213,7 @@ Ext.define('app.crud.orm.DictionaryWindow', {
 		        url:this.controllerUrl + 'records',
 		        reader: {
 		            type: 'json',
-					rootProperty: 'data',
-		            idProperty: 'id'
+					rootProperty: 'data'
 		        }
 		    },
 		    autoLoad: false,
@@ -253,11 +255,12 @@ Ext.define('app.crud.orm.DictionaryWindow', {
 	   if(this.canDelete){
 		   recordsGridColumns.push({
 	            xtype:'actioncolumn',
-	            width:18,
+	            width:20,
+			    align:'center',
 	            itemId:'removeAction',
-	            id:'removeAction',
 	            items: [{
 	            	iconCls: 'deleteIcon',
+					width:20,
 	                tooltip:appLang.DELETE,
 	                scope:this,
 	                handler:this.deleteDictionaryRec
@@ -363,9 +366,14 @@ Ext.define('app.crud.orm.DictionaryWindow', {
 	},
 	addDictionaryRec:function(){
 		var r = Ext.create('app.crud.orm.DictionaryRecordModel');
-        r.set({key:'new',value:'empty'},{dirty: true});
-    	this.recordsStore.insert(0, r);
-    	this.cellEditingRecords.startEditByPosition({row: 0, column: 0});
+		var pos  = this.recordsStore.getCount();
+        r.set({key:'new',value:'empty','id':pos},{dirty: true});
+
+    	this.recordsStore.insert(pos, r);
+		var index = this.recordsStore.findExact('id',pos);
+		if(index >=0){
+			this.cellEditingRecords.startEdit({row:index, column: 0});
+		}
 	},
 	updateDictionary:function(){
 		var record = this.dictionaryGrid.getView().getSelectionModel().getSelection()[0];

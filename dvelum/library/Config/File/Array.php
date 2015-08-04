@@ -90,6 +90,11 @@ class Config_File_Array extends Config_File
      */
     static public function create($file)
     {
+		$dir = dirname($file);
+
+		if(!file_exists($dir) && !@mkdir($dir,0755, true))
+			throw new Exception('Cannot create '.$dir);
+
     	if(File::getExt($file)!=='.php')
     		throw new Exception('Invalid file name');
     	

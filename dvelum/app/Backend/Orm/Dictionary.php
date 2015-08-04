@@ -54,7 +54,7 @@ class Backend_Orm_Dictionary extends Backend_Controller
     	$manager = Dictionary_Manager::factory();
     	$data = array();
     	$list = $manager->getList();
-    	
+
     	if(!empty($list))
     		foreach ($list as $v)
     			$data[] = array('id' => $v,'title' => $v);
@@ -68,14 +68,16 @@ class Backend_Orm_Dictionary extends Backend_Controller
     {
     	$name = strtolower(Request::post('dictionary','string',false));
     	if (empty($name))
-    		Response::jsonError($this->_lang->WRONG_REQUEST);
+    		Response::jsonError($this->_lang->get('WRONG_REQUEST'));
 
-    	$list = Dictionary::getInstance($name)->getData();
+		$list = Dictionary::factory($name)->getData();
+
     	$data = array();
     	
     	if(!empty($list))
     		foreach ($list as $k=>$v)
     			$data[] = array('id' => $k,'key' => $k,'value' => $v);
+
     	Response::jsonSuccess($data);
     }
     /**
@@ -91,7 +93,7 @@ class Backend_Orm_Dictionary extends Backend_Controller
     	if(empty($data) || !strlen($dictionaryName))
     		Response::jsonError($this->_lang->WRONG_REQUEST);
     	
-    	$dictionary = Dictionary::getInstance($dictionaryName);
+    	$dictionary = Dictionary::factory($dictionaryName);
     	foreach ($data as $v)
     	{
     		if($dictionary->isValidKey($v['key']) && $v['key'] != $v['id'])
@@ -116,10 +118,12 @@ class Backend_Orm_Dictionary extends Backend_Controller
     	if(!strlen($name) || !strlen($dictionaryName))
     		Response::jsonError($this->_lang->WRONG_REQUEST);
     	
-    	$dictionary = Dictionary::getInstance($dictionaryName);
+    	$dictionary = Dictionary::factory($dictionaryName);
     	$dictionary->removeRecord($name);
+
 		if(!Dictionary_Manager::factory()->saveChanges($dictionaryName))
     		Response::jsonError($this->_lang->CANT_WRITE_FS);
+
     	Response::jsonSuccess();
     }
 }
