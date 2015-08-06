@@ -10,9 +10,17 @@ class Model_Filestorage extends Model
 		$configMain = Registry::get('main' , 'config');
 
 		$storageConfig = Config::factory(Config::File_Array, $configMain->get('configs').'/filestorage.php');
-		$storageConfig->set('user_id', User::getInstance()->id);
+		$storageCfg = new Config_Simple($configMain->get('configs').'_filestorage');
 
-		$fileStorage = Filestorage::factory($storageConfig->get('adapter'), $storageConfig);
+		if($configMain->get('development')){
+			$storageCfg->setData($storageConfig->get('development'));
+		}else{
+			$storageCfg->setData($storageConfig->get('production'));
+		}
+
+		$storageCfg->set('user_id', User::getInstance()->id);
+
+		$fileStorage = Filestorage::factory($storageCfg->get('adapter'), $storageCfg);
 		$fileStorage->setLog($this->getLogsAdapter());
 
 		return $fileStorage;
