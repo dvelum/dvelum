@@ -158,7 +158,7 @@ class Frontend_Console_Controller extends Frontend_Controller
     public function indexAction()
     {
         Response::redirect('/');
-        exit();
+		Application::close();
     }
     /**
      * Remove obsolete Bgtask data
@@ -168,16 +168,6 @@ class Frontend_Console_Controller extends Frontend_Controller
     	$this->_launchTask('clearmemory');
     }
 
-    public function sometaskAction()
-    {
-        $this->_launchTask('sometask');
-    }
-
-    public function somejobAction()
-    {
-        $this->_launchJob('somejob');
-    }
-    
     public function gendocAction()
     {
         if(!$this->_configMain->get('development')){
@@ -198,6 +188,37 @@ class Frontend_Console_Controller extends Frontend_Controller
 			$sysdocs->run();
 		}
 
-        exit();
+		Application::close();
     }
+
+	/**
+	 * Rebuild ORM objects
+	 */
+	public function ormMigrateAction()
+	{
+		$dbObjectManager = new Db_Object_Manager();
+		foreach($dbObjectManager->getRegisteredObjects() as $object)
+		{
+			echo 'build ' . $object . ' : ';
+			$builder = new Db_Object_Builder($object);
+			if($builder->build()){
+				echo 'OK';
+			}else{
+				echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
+			}
+			echo "\n";
+		}
+		Application::close();
+	}
+
+    // Demo actions
+	public function sometaskAction()
+	{
+		$this->_launchTask('sometask');
+	}
+
+	public function somejobAction()
+	{
+		$this->_launchJob('somejob');
+	}
 }
