@@ -168,6 +168,9 @@ class Frontend_Console_Controller extends Frontend_Controller
     	$this->_launchTask('clearmemory');
     }
 
+	/**
+	 * Generate new version fo documentation
+	 */
     public function gendocAction()
     {
         if(!$this->_configMain->get('development')){
