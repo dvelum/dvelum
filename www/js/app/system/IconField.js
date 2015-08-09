@@ -23,6 +23,7 @@ Ext.define('app.iconField',{
     imageField:null,
     value:'',
     wwwRoot:'/',
+    prependWebRoot:false,
     anchor:'100%',
     initComponent:function(){
         var  me = this;
@@ -34,7 +35,8 @@ Ext.define('app.iconField',{
 
         this.imageField =  Ext.create('app.ImageField',{
             value:selectedImage,
-            wwwRoot:this.wwwRoot
+            wwwRoot:this.wwwRoot,
+            prependWebRoot:this.prependWebRoot
         });
 
         this.dataField = Ext.create('Ext.form.field.Text',{

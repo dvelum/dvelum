@@ -143,7 +143,7 @@ return array(
      */
     'dictionary_folder' => 'dictionary/',
 
-    'tmp' => $docRoot . '/tmp/',
+    'tmp' => $docRoot . '/temp/',
     'mysqlExecPath' => 'mysql',
     'mysqlDumpExecPath' => 'mysqldump',
     /*

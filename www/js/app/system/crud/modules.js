@@ -549,6 +549,7 @@ Ext.define('app.crud.modules.EditBackendWindow',{
 				fieldLabel:appLang.ICON,
 				anchor:'100%',
 				wwwRoot:app.wwwRoot,
+				prependWebRoot:true,
 				controllerUrl:this.controllerUrl,
 				width:this.width
 
