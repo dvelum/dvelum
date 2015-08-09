@@ -7,7 +7,7 @@
   array (
     'config' => 
     array (
-      'store' => '[new:] dataStore',
+      'store' => 'dataStore',
       'columnLines' => true,
       'viewConfig' => '{enableTextSelection: true}',
       'title' => '[js:] appLang.FILESTORAGE+\' :: \' + appLang.HOME',

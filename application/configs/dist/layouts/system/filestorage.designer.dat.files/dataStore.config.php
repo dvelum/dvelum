@@ -11,7 +11,7 @@
       'model' => 'dataStoreModel',
       'remoteSort' => true,
       'sorters' => '[{"property":"date","direction":"DESC"}]',
-      'isExtended' => true,
+      'isExtended' => false,
     ),
     'state' => 
     array (

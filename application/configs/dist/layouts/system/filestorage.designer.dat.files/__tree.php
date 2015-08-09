@@ -1,11 +1,4 @@
 <?php return array (
-  '_Component_' => 
-  array (
-    'id' => '_Component_',
-    'parent' => false,
-    'data' => '_Component_.config.php',
-    'order' => -1000,
-  ),
   '_Layout_' => 
   array (
     'id' => '_Layout_',
@@ -13,12 +6,12 @@
     'data' => '_Layout_.config.php',
     'order' => -500,
   ),
-  'dataStoreModel' => 
+  '_Component_' => 
   array (
-    'id' => 'dataStoreModel',
-    'parent' => '_Component_',
-    'data' => 'dataStoreModel.config.php',
-    'order' => 3,
+    'id' => '_Component_',
+    'parent' => false,
+    'data' => '_Component_.config.php',
+    'order' => -1000,
   ),
   'dataGrid' => 
   array (
@@ -27,13 +20,6 @@
     'data' => 'dataGrid.config.php',
     'order' => 0,
   ),
-  'dataStore' => 
-  array (
-    'id' => 'dataStore',
-    'parent' => '_Component_',
-    'data' => 'dataStore.config.php',
-    'order' => 2,
-  ),
   'fileUploadWindow' => 
   array (
     'id' => 'fileUploadWindow',
@@ -41,11 +27,25 @@
     'data' => 'fileUploadWindow.config.php',
     'order' => 1,
   ),
+  'dataStoreModel' => 
+  array (
+    'id' => 'dataStoreModel',
+    'parent' => '_Component_',
+    'data' => 'dataStoreModel.config.php',
+    'order' => 3,
+  ),
   'mainPanel' => 
   array (
     'id' => 'mainPanel',
     'parent' => '_Layout_',
     'data' => 'mainPanel.config.php',
+    'order' => 1,
+  ),
+  'dataStore' => 
+  array (
+    'id' => 'dataStore',
+    'parent' => '_Layout_',
+    'data' => 'dataStore.config.php',
     'order' => 0,
   ),
   'dataGrid__docked' => 
