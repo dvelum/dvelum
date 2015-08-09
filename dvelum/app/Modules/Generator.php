@@ -179,7 +179,7 @@ class Modules_Generator
       $dataStore->proxy = $dataProxy;
       $dataStore->remoteSort = true;
 
-      $project->addObject(Designer_Project::COMPONENT_ROOT  , $dataStore);
+      $project->addObject(Designer_Project::LAYOUT_ROOT  , $dataStore);
 
       /*
        * Data grid
@@ -558,7 +558,7 @@ class Modules_Generator
       $dataStore->proxy = $dataProxy;
       $dataStore->remoteSort = true;
 
-      $project->addObject(0 , $dataStore);
+      $project->addObject(Designer_Project::LAYOUT_ROOT , $dataStore);
 
       /*
        * Data grid
