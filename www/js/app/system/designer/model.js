@@ -5,7 +5,8 @@ Ext.define('designer.model.fieldsModel', {
     fields: [
 		{name:'name',type:'string'},
 		{name:'type',type:'string'}
-    ]
+    ],
+	idProperty:'name'
 });
 Ext.define('designer.model.associationsModel', {
     extend: 'Ext.data.Model',

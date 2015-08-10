@@ -109,7 +109,7 @@ class Modules_Generator
       /*
        * Create controller
       */
-      $controllerDir = $this->appConfig->get('local_backend_controllers') . str_replace('_' , '/' , $name);
+      $controllerDir = $this->appConfig->get('local_controllers') . $this->appConfig->get('backend_controllers_dir') . '/' . str_replace('_' , '/' , $name);
       $controllerFile = $this->_createControllerFile($controllerDir , $controllerContent);
 
       /*
@@ -497,7 +497,7 @@ class Modules_Generator
       /*
        * Create controller
       */
-      $controllerDir =  $this->appConfig->get('backend_controllers') . str_replace('_' , '/' , $name);
+      $controllerDir =  $this->appConfig->get('local_controllers') . $this->appConfig->get('backend_controllers_dir') . '/' . str_replace('_' , '/' , $name);
       $this->_createControllerFile($controllerDir , $controllerContent);
       @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
 

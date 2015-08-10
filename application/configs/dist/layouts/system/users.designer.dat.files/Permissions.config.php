@@ -41,26 +41,6 @@
     ),
     'columns' => 
     array (
-      'module' => 
-      array (
-        'id' => 'module',
-        'parent' => 0,
-        'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => 0,
-        'name' => 'module',
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'dataIndex' => 'module',
-            'text' => '[js:] appLang.MODULE',
-            'itemId' => 'module',
-            'width' => 227,
-            'editable' => false,
-          ),
-        ),
-      ),
       'view' => 
       array (
         'id' => 'view',
@@ -145,7 +125,7 @@
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
         'extClass' => 'Grid_Column',
-        'order' => 5,
+        'order' => 4,
         'name' => 'publish',
         'state' => 
         array (
@@ -156,6 +136,25 @@
             'renderer' => 'Ext_Component_Renderer_System_User_Publish',
             'text' => '[js:] appLang.TO_PUBLISH',
             'itemId' => 'publish',
+          ),
+        ),
+      ),
+      'title' => 
+      array (
+        'id' => 'title',
+        'parent' => 0,
+        'class' => 'Ext_Grid_Column',
+        'extClass' => 'Grid_Column',
+        'order' => 0,
+        'name' => 'title',
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'dataIndex' => 'title',
+            'text' => '[js:] appLang.MODULE ',
+            'itemId' => 'title',
+            'width' => 189,
           ),
         ),
       ),

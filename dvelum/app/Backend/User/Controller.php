@@ -96,14 +96,15 @@ class Backend_User_Controller extends Backend_Controller
     
     $manager = new Modules_Manager();
     $modules = $manager->getRegisteredModules();
+    $list = $manager->getList();
 
     foreach($modules as $name)
     {
       if(! isset($data[$name]))
       {
         $data[$name] = array(
-            'module' => $name , 
-            'view' => false , 
+            'module' => $name ,
+            'view' => false ,
             'edit' => false , 
             'delete' => false , 
             'publish' => false
@@ -113,6 +114,11 @@ class Backend_User_Controller extends Backend_Controller
     
     foreach($data as $k => &$v)
     {
+      $v['title'] = $v['module'];
+      if(isset($list[$v['module']]) && !empty($list[$v['module']]['title'])){
+        $v['title'] = $list[$v['module']]['title'];
+      }
+
       $class = $manager->getModuleController($k);
       if(! class_exists($class))
       {

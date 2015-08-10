@@ -18,6 +18,19 @@
     ),
     'fields' => 
     array (
+      'title' => 
+      array (
+        'class' => 'Ext_Virtual',
+        'extClass' => 'Data_Field',
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'name' => 'title',
+            'type' => 'string',
+          ),
+        ),
+      ),
     ),
     'proxy' => 
     array (

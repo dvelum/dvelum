@@ -11,27 +11,34 @@ class Modules_Manager_Frontend extends Modules_Manager
      */
     public function getControllers()
     {
-        $appPath = $this->_appConfig->get('application_path');
-        $folders = File::scanFiles($this->_appConfig->get('frontend_controllers') , false , true , File::Dirs_Only);
+        $autoloadCfg = $this->_appConfig->get('autoloader');
+        $paths = $autoloadCfg['paths'];
+        $dir = $this->_appConfig->get('frontend_controllers_dir');
+
         $data = array();
 
-        if(!empty($folders))
-        {
-            foreach($folders as $item)
+        foreach($paths as $path){
+            if(!is_dir($path.'/'.$dir)){
+                continue;
+            }
+            $folders = File::scanFiles($path . '/' . $dir, false, true, File::Dirs_Only);
+
+            if(empty($folders))
+                continue;
+
+            foreach ($folders as $item)
             {
                 $name = basename($item);
-                if(file_exists($item . '/Controller.php'))
+
+                if(file_exists($item.'/Controller.php'))
                 {
-                    $name = str_replace($appPath , '' , $item . '/Controller.php');
+                    $name = str_replace($path.'/', '', $item.'/Controller.php');
                     $name = Utils::classFromPath($name);
-                    $data[] = array(
-                        'id' => $name ,
-                        'title' => $name
-                    );
+                    $data[$name] = array('id'=>$name,'title'=>$name);
                 }
             }
         }
-        return $data;
+        return array_values($data);
     }
     /**
      * Update module data
@@ -55,5 +62,20 @@ class Modules_Manager_Frontend extends Modules_Manager
         }
         $this->_config->set($data['code'] , $data);
         return $this->save();
+    }
+
+    /**
+     * Get modules list
+     * @return array
+     */
+    public function getList()
+    {
+        $list = parent::getList();
+        if(!empty($list)){
+            foreach($list as $k=>&$v){
+                $v['id'] = $v['code'];
+            }
+        }
+        return $list;
     }
 }

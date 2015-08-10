@@ -51,27 +51,17 @@ class Backend_Modules_Controller extends Backend_Controller{
 		foreach ($data as $k=>&$item)
 		{
 			$item['related_files']= '';
-			$classFile = './dvelum/app/'.str_replace('_', '/', $item['class']).'.php';
 
-			if(file_exists($classFile))
-				$item['related_files'].= $classFile.'</br>';
-
-			$item['iconUrl'] = $this->_configMain->get('wwwroot').$item['icon'];
-
-			if(!empty($item['designer']))
-			{
-				$item['related_files'].=$item['designer'].'</br>';
-				$crudJs = './js/app/system/crud/' . strtolower($manager->getModuleName($item['class'])) . '.js';
-				if(file_exists($crudJs)){
-					$item['related_files'].=$crudJs.'</br>';
-				}
-
-				$actionJs = './js/app/actions/' . strtolower($manager->getModuleName($item['class'])) . '.js';
-				if(file_exists($actionJs)){
-					$item['related_files'].=$actionJs.'</br>';
+			if(empty($item['dist'])){
+				$relatedFiles = $this->getRelatedFiles($item);
+				if(!empty($relatedFiles)){
+					$item['related_files'] = implode('<br>' , $relatedFiles);
 				}
 			}
+
+			$item['iconUrl'] = $this->_configMain->get('wwwroot').$item['icon'];
 		}
+
 		Response::jsonSuccess(array_values($data));
 	}
 
@@ -113,8 +103,9 @@ class Backend_Modules_Controller extends Backend_Controller{
 	 */
 	protected function updateFrontendRecord()
 	{
+		$id = Request::post('id' , Filter::FILTER_STRING , false);
+
 		$acceptedFields =  array(
-			'id' => Filter::FILTER_STRING ,
 			'code' => Filter::FILTER_STRING ,
 			'title' => Filter::FILTER_STRING ,
 			'class'=> Filter::FILTER_STRING,
@@ -133,9 +124,18 @@ class Backend_Modules_Controller extends Backend_Controller{
 
 		$manager = new Modules_Manager_Frontend();
 
-		if(!$manager->updateModule($data['id'] , $data)){
+		if(empty($id) && $manager->isValidModule($data['code'])){
+			Response::jsonError($this->_lang->get('INVALID_VALUE'),array('code'=>$this->_lang->get('SB_UNIQUE')));
+		}
+
+		if(empty($id)){
+			$id = $data['code'];
+		}
+
+		if(!$manager->updateModule($id , $data)){
 			Response::jsonError($this->_lang->get('CANT_WRITE_FS'));
 		}
+
 		Response::jsonSuccess(array('id'=>$data['code']));
 	}
 
@@ -144,13 +144,26 @@ class Backend_Modules_Controller extends Backend_Controller{
 	 */
 	protected function updateBackendRecord()
 	{
-		$id = Request::post('id' , Filter::FILTER_STRING , false);
 
-		if(!$id)
-			Response::jsonError($this->_lang->get('INVALID_VALUE'));
+		$manager = new Modules_Manager();
+
+		$id = Request::post('id' , Filter::FILTER_STRING , false);
+		$controller = Request::post('class' , Filter::FILTER_STRING , false);
+
+		if(!$id){
+			if(!$controller){
+				Response::jsonError($this->_lang->get('INVALID_VALUE'),array('class'=>$this->_lang->get('CANT_BE_EMPTY')));
+			}else{
+				$moduleName = str_replace(array('Backend_','_Controller'),'', $controller);
+				$list = $manager->getRegisteredModules();
+				if(in_array($moduleName, $list , true)){
+					Response::jsonError($this->_lang->get('INVALID_VALUE'),array('class'=>$this->_lang->get('SB_UNIQUE')));
+				}
+			}
+		}
 
 		$acceptedFields =  array(
-			'id'=> Filter::FILTER_STRING ,
+			//'id'=> Filter::FILTER_STRING ,
 			'dev' => Filter::FILTER_BOOLEAN ,
 			'active' => Filter::FILTER_BOOLEAN ,
 			'title'=> Filter::FILTER_STRING ,
@@ -160,15 +173,19 @@ class Backend_Modules_Controller extends Backend_Controller{
 			'icon'=> Filter::FILTER_STRING
 		);
 
-		$data = array();
 		foreach($acceptedFields as $name => $type){
 			$data[$name] = Request::post($name , $type , null);
 		}
 
-		$manager = new Modules_Manager();
+		if($id) {
+			if (!$manager->isValidModule($id)) {
+				Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+			}
+		}else{
+			$id = $moduleName;
+		}
 
-		if(!$manager->isValidModule($id))
-			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+		$data['id'] = $id;
 
 		if($manager->updateModule($id , $data)){
 			Response::jsonSuccess(array('id'=>$id));
@@ -367,82 +384,90 @@ class Backend_Modules_Controller extends Backend_Controller{
 			Response::jsonError($this->_lang->get('CANT_WRITE_FS'));
 		}
 	}
+
+	/**
+	 * Get list of module files which can be deleted
+	 * @param array $moduleConfig
+	 * @return array
+	 */
+	protected function getRelatedFiles($moduleConfig)
+	{
+		$relatedFiles = [];
+		$classFile = $this->_configMain->get('local_controllers').str_replace('_', '/', $moduleConfig['class']).'.php';
+
+		if(empty($moduleConfig['dist']) && file_exists($classFile))
+			$relatedFiles[] = $classFile;
+
+		if(empty($moduleConfig['dist']) && !empty($moduleConfig['designer']))
+		{
+			$configWrite = Config::storage()->getWrite();
+			if(strpos($moduleConfig['designer'],$configWrite)!==false){
+				$relatedFiles[] = $moduleConfig['designer'];
+				if(is_dir($moduleConfig['designer'].'.files')){
+					$relatedFiles[]=$moduleConfig['designer'].'.files';
+				}
+			}
+		}
+		return $relatedFiles;
+	}
 	/**
 	 * Delete module
 	 */
 	protected function deleteBackendModule()
 	{
-		Response::jsonError('NOT IMPLEMENTED');
-		/*
-	  $this->_checkCanEdit();
-	  $module = Request::post('id', 'string', false);
-	  $removeRelated = Request::post('delete_related', 'boolean', false);
-	  
-	  $manager = new Modules_Manager();
-	  $moduleName = $manager->getModuleName($module);
-	  
-	  if(!$module || !strlen($module) || !$manager->isValidModule($moduleName))
-	      Response::jsonError($this->_lang->WRONG_REQUEST);
-	  
-      $filesToDelete = array();
-      
-	  if($removeRelated)
-	  {    	  
-      	  $item = $manager->getModuleConfig($moduleName);
-      	  
-          $classFile = './system/app/'.str_replace('_', '/', $item['class']).'.php';
-      	  if(file_exists($classFile))
-      	    $filesToDelete[] = $classFile;
-      		   	
-      	  if(!empty($item['designer']))
-      	  {
-      	    if(file_exists($item['designer']))
-      	      $filesToDelete[] = $item['designer'];
-   	    
-      	    $crudJs = './js/app/system/crud/' . strtolower($manager->getModuleName($item['class'])) . '.js';
-      	    if(file_exists($crudJs)){
-      	       $filesToDelete[]=$crudJs;
-      	    }
-      	    
-      	    $actionJs = './js/app/actions/' . strtolower($manager->getModuleName($item['class'])) . '.js';
-      	    if(file_exists($actionJs)){
-      	       $filesToDelete[]=$actionJs;
-      	    }       		  		    
-      	 }
-	  }
-	  
-	  // check before deleting
-	  if(!empty($filesToDelete))
-	  {
-	    $err = array();
-	    foreach ($filesToDelete as $file){
-	      if(!is_writable($file))
-	        $err[] = $file;
-	    }
-	    
-	    if(!empty($err))
-	      Response::jsonError($this->_lang->CANT_WRITE_FS . "\n<br>".implode(",\n<br>", $err));
-	  }
-	  
-	  $manager->removeModule($moduleName);
-	  
-	  if(!$manager->save())
-	    Response::jsonError($this->_lang->CANT_WRITE_FS.' '.$manager->getConfig()->getName());
-	  
-	  // try to delete
-	  if(!empty($filesToDelete))
-	  {
-	    $err = array();
-	    foreach ($filesToDelete as $file){
-	      if(!unlink($file))
-	        $err[] = $file;
-	    }
-	    
-	    if(!empty($err))
-	      Response::jsonError($this->_lang->CANT_WRITE_FS . "\n<br>".implode(",\n<br>", $err));
-	  }
-	  Response::jsonSuccess();
-		*/
+		$this->_checkCanDelete();
+		$module = Request::post('id', 'string', false);
+		$removeRelated = Request::post('delete_related', 'boolean', false);
+
+		$manager = new Modules_Manager();
+		$data = $manager->getList();
+		if(!$module || !strlen($module) || !$manager->isValidModule($module) || !isset($data[$module]))
+			Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+
+		$item = $data[$module];
+
+		$filesToDelete = array();
+
+		if($removeRelated && empty($item['dist'])){
+			$filesToDelete = $this->getRelatedFiles($item);
+		}
+
+		// check before deleting
+		if(!empty($filesToDelete))
+		{
+			$err = array();
+			foreach ($filesToDelete as $file){
+				if(!is_writable($file))
+					$err[] = $file;
+			}
+
+			if(!empty($err))
+				Response::jsonError($this->_lang->get('CANT_WRITE_FS') . "\n<br>" . implode(",\n<br>", $err));
+		}
+
+		$manager->removeModule($module);
+
+		if(!$manager->save())
+			Response::jsonError($this->_lang->get('CANT_WRITE_FS') .' ' . $manager->getConfig()->getName());
+
+		// try to delete related files
+		if(!empty($filesToDelete))
+		{
+			$err = array();
+			foreach ($filesToDelete as $file){
+				if(is_dir($file) && !File::rmdirRecursive($file , true)){
+					$err[] = $file;
+				}
+				else{
+					if(!unlink($file))
+						$err[] = $file;
+				}
+			}
+
+			if(!empty($err))
+				Response::jsonError($this->_lang->get('CANT_WRITE_FS') . "\n<br>".implode(",\n<br>", $err));
+		}
+		Response::jsonSuccess();
 	}
 
 	/**

@@ -7,7 +7,9 @@
   array (
     'config' => 
     array (
+      'associations' => '[]',
       'idProperty' => 'id',
+      'validators' => '[]',
       'defineOnly' => true,
     ),
     'state' => 
@@ -135,6 +137,19 @@
           array (
             'name' => 'rc',
             'type' => 'boolean',
+          ),
+        ),
+      ),
+      'title' => 
+      array (
+        'class' => 'Ext_Virtual',
+        'extClass' => 'Data_Field',
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'name' => 'title',
+            'type' => 'string',
           ),
         ),
       ),

@@ -227,32 +227,42 @@ class Modules_Manager
 	public function getControllers()
 	{
 		$backendConfig = Config::storage()->get('backend.php');
-
-		$appPath = $this->_appConfig->get('application_path');
-		$folders = File::scanFiles($this->_appConfig->get('backend_controllers'),false,true,File::Dirs_Only);
-		$data = array();
-
+		$autoloadCfg = $this->_appConfig->get('autoloader');
 		$systemControllers = $backendConfig->get('system_controllers');
 
-		if(!empty($folders))
-		{
+		$paths = $autoloadCfg['paths'];
+		$dir = $this->_appConfig->get('backend_controllers_dir');
+
+		$data = array();
+
+		foreach($paths as $path){
+			if(!is_dir($path.'/'.$dir)){
+				continue;
+			}
+			$folders = File::scanFiles($path.'/'.$dir,false,true,File::Dirs_Only);
+
+			if(empty($folders))
+			 	continue;
+
 			foreach ($folders as $item)
 			{
 				$name = basename($item);
-				/*
-                 * Skip system controller
-                 */
-				if(in_array($name, $systemControllers , true))
-					continue;
 
 				if(file_exists($item.'/Controller.php'))
 				{
-					$name = str_replace($appPath, '', $item.'/Controller.php');
+					$name = str_replace($path.'/', '', $item.'/Controller.php');
 					$name = Utils::classFromPath($name);
-					$data[] = array('id'=>$name,'title'=>$name);
+
+					/*
+					 * Skip system controller
+					 */
+					if(in_array($name, $systemControllers , true))
+						continue;
+
+					$data[$name] = array('id'=>$name,'title'=>$name);
 				}
 			}
 		}
-		return $data;
+		return array_values($data);
 	}
 }

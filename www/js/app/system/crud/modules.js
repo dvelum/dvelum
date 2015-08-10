@@ -1,5 +1,15 @@
 Ext.ns('app.crud.modules');
 
+Ext.define('app.crud.modules.FrontendModel',{
+	extend:'Ext.data.Model',
+	fields: [
+		{name:'class',type:'string'},
+		{name:'code', type:'string'},
+		{name:'title', type:'string'}
+	],
+	idProperty:'code'
+});
+
 /**
  * @event completeEdit value
  */
@@ -85,7 +95,6 @@ Ext.define('app.crud.modules.interfaceField',{
 		}).show();
 	},
 	setValue:function(value){
-		console.log(value);
 		this.dataField.setValue(value);
 	},
 	getValue:function(){
@@ -846,7 +855,6 @@ Ext.define('app.crud.modules.backendView',{
 		this.dataStore.remove(record);
 		Ext.apply(record.data, sourceCmp.recordOptions);
 		sourceCmp.dataStore.add(record);
-		console.log(sourceCmp.dataStore.getCount() + ' ' +  this.dataStore.getCount());
 	},
 	/**
 	 * Show module editor
@@ -1056,7 +1064,24 @@ Ext.define('app.crud.modules.Backend',{
 		this.dataStore.load();
 	},
 	addAction:function(){
-
+		var me = this;
+		var w = Ext.create('app.crud.modules.EditBackendWindow',{
+			modal:true,
+			dataItemId:0,
+			controllerUrl:this.controllerUrl,
+			extraParams:this.extraParams,
+			title:'',
+			width:500,
+			height:340,
+			canDelete:this.canDelete,
+			canEdit:this.canEdit,
+			resizable:false
+		});
+		w.on('dataSaved',function(){
+			me.loadData();
+			w.close();
+		},this);
+		w.show();
 	},
 	createAction:function(){
 
@@ -1066,10 +1091,7 @@ Ext.define('app.crud.modules.Backend',{
 		});
 
 		win.on('dataSaved',function(data){
-			/**
-			 * @todo Reload Controllers & modules store
-			 */
-
+			this.loadData();
 		},this);
 
 		win.show();
@@ -1095,11 +1117,7 @@ Ext.define('app.crud.modules.Frontend',{
 	initComponent:function(){
 
 		this.store =  Ext.create('Ext.data.Store' , {
-			fields: [
-				{name:'class',type:'string'},
-				{name:'code', type:'string'},
-				{name:'title', type:'string'}
-			],
+			model:'app.crud.modules.FrontendModel',
 			autoLoad:true,
 			autoSave:false,
 			proxy:{
@@ -1108,8 +1126,7 @@ Ext.define('app.crud.modules.Frontend',{
 				extraParams:this.extraParams,
 				reader: {
 					type: 'json',
-					rootProperty: 'data',
-					idProperty: 'class'
+					rootProperty: 'data'
 				},
 				simpleSortMode: true
 			},
@@ -1141,6 +1158,12 @@ Ext.define('app.crud.modules.Frontend',{
 					]
 				}
 			);
+			this.tbar = [{
+				text:appLang.ADD_ITEM,
+				iconCls:'newdocIcon',
+				scope:this,
+				handler:this.addModule
+			}];
 
 		}
 
@@ -1177,6 +1200,9 @@ Ext.define('app.crud.modules.Frontend',{
 							handler:function(grid , row , col){
 								var store = grid.getStore();
 								this.removeModule(store.getAt(row));
+							},
+							isDisabled:function(v,r,c,i,record){
+								return record.get('dist');
 							}
 						}
 					]
@@ -1192,6 +1218,25 @@ Ext.define('app.crud.modules.Frontend',{
 				this.editModule(record);
 			},this);
 		}
+	},
+	addModule:function(){
+		var w = Ext.create('app.crud.modules.EditFrontendWindow',{
+			modal:true,
+			dataItemId:'',
+			controllerUrl:this.controllerUrl,
+			extraParams:this.extraParams,
+			title:'',
+			width:500,
+			height:340,
+			canDelete:this.canDelete,
+			canEdit:this.canEdit,
+			resizable:false
+		});
+		w.on('dataSaved',function(){
+			this.getStore().load();
+			w.close();
+		},this);
+		w.show();
 	},
 	editModule:function(record){
 		var w = Ext.create('app.crud.modules.EditFrontendWindow',{

@@ -1,4 +1,15 @@
-
+Ext.define('designer.grid.column.Model',{
+	extend:'Ext.data.Model',
+	fields: [
+		{name:'id' ,  type:'string'},
+		{name:'text' , type:'string'},
+		{name:'dataIndex',type:'string'},
+		{name:'type',type:'string'},
+		{name:'editor',type:'string'},
+		{name:'order',type:'integer'}
+	],
+	idProperty:'id'
+});
 Ext.define('designer.grid.column.Window',{
 
 	extend:'Ext.Window',
@@ -110,14 +121,7 @@ Ext.define('designer.grid.column.Window',{
 					object:this.objectName
 				}
 			},
-			fields: [
-				{name:'id' ,  type:'string'},
-				{name:'text' , type:'string'},
-				{name:'dataIndex',type:'string'},
-				{name:'type',type:'string'},
-				{name:'editor',type:'string'},
-				{name:'order',type:'integer'}
-			],
+			model:'designer.grid.column.Model',
 			autoLoad:true,
 			sorters: [{
 				property : 'order',
@@ -170,7 +174,8 @@ Ext.define('designer.grid.column.Window',{
 						editable:true
 					}
 				},
-				{dataIndex:'dataIndex' , text:desLang.dataIndex,
+				{
+					dataIndex:'dataIndex' , text:desLang.dataIndex,
 					editable:true,
 					editor:{
 						xtype: 'combobox',
@@ -181,6 +186,7 @@ Ext.define('designer.grid.column.Window',{
 						valueField:'name',
 						displayField:'name',
 						queryMode:'local',
+						multiSelect:false,
 						store:Ext.create('Ext.data.Store', {
 							model:'designer.model.fieldsModel',
 							proxy: {
@@ -188,8 +194,7 @@ Ext.define('designer.grid.column.Window',{
 								url:app.createUrl([designer.controllerUrl ,'store','']) +  'listfields',
 								reader: {
 									type: 'json',
-									rootProperty: 'data',
-									idProperty: 'id'
+									rootProperty: 'data'
 								},
 								extraParams:{
 									object:this.storeName
@@ -204,9 +209,11 @@ Ext.define('designer.grid.column.Window',{
 							}]
 						}),
 						listeners:{
-							scope:this,
-							select:function(combo, records){
-								this.propertiesPanel.dataGrid.setProperty('dataIndex',records[0].get('name'));
+							select:{
+								fn:function(combo, record){
+									this.propertiesPanel.dataGrid.setProperty('dataIndex',record.get('name'));
+								},
+								scope:this
 							}
 						}
 					}
