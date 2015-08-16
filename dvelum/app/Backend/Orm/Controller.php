@@ -1590,7 +1590,6 @@ class Backend_Orm_Controller extends Backend_Controller
     {
         $object = Request::post('object' , 'string' , false);
         $type = Request::post('type' , 'string' , false);
-        $field = Request::post('field', 'string' , false);
 
         if(!$object || ! $type)
             Response::jsonError();
@@ -1600,7 +1599,6 @@ class Backend_Orm_Controller extends Backend_Controller
                 $container = $this->encryptContainerPrefix . $object;
                 break;
             case 'decrypt':
-                $field =
                 $container = $this->decryptContainerPrefix . $object;
                 break;
             default: Response::jsonError($this->_lang->get('WRONG_REQUEST'));
