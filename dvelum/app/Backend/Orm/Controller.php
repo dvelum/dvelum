@@ -136,9 +136,9 @@ class Backend_Orm_Controller extends Backend_Controller
                  $size = Utils::formatFileSize($tables[$oDbHash][$objectTable]['data_length'] + $tables[$oDbHash][$objectTable]['index_length']);
              }
 
-             $title=  '';
+             $title = '';
              $saveHistory = true;
-             $linktitle='';
+             $linktitle = '';
 
              if(isset($config['title']) && !empty($config['title']))
                  $title = $config['title'];
@@ -155,8 +155,8 @@ class Backend_Orm_Controller extends Backend_Controller
              	$hasBroken = true;
 
              $data[] = array(
-                'name'=> $objectName,
-			 	'table'=> $objectTable,
+                'name'=>$objectName,
+			 	'table'=>$objectTable,
              	//'title'=>$config['title'],
                 'engine'=>$config['engine'],
                 'vc'=>$config['rev_control'],
@@ -172,7 +172,7 @@ class Backend_Orm_Controller extends Backend_Controller
                 'system'=>$configObject->isSystem(),
                 'validdb'=>$builder->validate(),
                 'broken'=>$hasBroken,
-                'db_host'=> $oDbConfig['host'] ,
+                'db_host'=>$oDbConfig['host'] ,
                 'db_name'=>$oDbConfig['dbname'],
                 'locked'=>$config['locked'],
                 'readonly'=>$config['readonly'],
@@ -724,7 +724,7 @@ class Backend_Orm_Controller extends Backend_Controller
 
     protected function _updateObject($recordId , $name , array $data)
     {
-    	$objectConfigPath = $this->_configMain->get('object_configs').$recordId.'.php';
+    	$objectConfigPath = Config::storage()->getWrite() . $this->_configMain->get('object_configs').$recordId.'.php';
 
     	if(!is_writable($objectConfigPath))
     		Response::jsonError($this->_lang->CANT_WRITE_FS);

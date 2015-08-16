@@ -94,12 +94,20 @@ class Config_Storage
     }
 
     /**
+     * Create new config file
+     * @param $localPath
+     */
+    public function create($localPath)
+    {
+        $this->config = new Config_file_Array($this->getWrite() . $localPath);
+    }
+
+    /**
      * Find path for config file (no merge)
      * @param $localPath
      */
     public function getPath($localPath)
     {
-        $configPath = false;
         $list = array_reverse($this->config['file_array']['paths']);
 
         foreach($list as $path)
@@ -109,12 +117,13 @@ class Config_Storage
 
             return $path . $localPath;
         }
+        return false;
     }
 
     /**
      * Get list of available configs
-     * @param bool $path - optioanal, default false
-     * @param bool $recursive - optioanal, default false
+     * @param bool $path - optional, default false
+     * @param bool $recursive - optional, default false
      * @throws Exception
      */
     public function getList($path = false, $recursive = false)
