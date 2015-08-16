@@ -66,7 +66,12 @@ class Dictionary
 		{
 			$obj = new self();
 			$obj->name = $name;
-			$obj->_data = Config::storage()->get(self::$_configPath . $name . '.php' , true , false);
+			$cfgPath = self::$_configPath . $name . '.php';
+
+			if(!Config::storage()->exists($cfgPath))
+				Config::storage()->create($cfgPath);
+
+			$obj->_data = Config::storage()->get($cfgPath, true, false);
 
 			self::$_instances[$name] = $obj;
 		}
