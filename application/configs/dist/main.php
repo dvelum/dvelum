@@ -269,5 +269,9 @@ return array(
     /*
      * Vendor library path
      */
-    'vendor_lib'=> $docRoot . '/vendor/'
+    'vendor_lib'=> $docRoot . '/vendor/',
+	/*
+	 * Default Authentification provider. Or uncomment 'uprovider' select in login template.
+	 */
+	'default_auth_provider' => 'dvelum'
 );

@@ -17,7 +17,7 @@ class User
 	protected $_id = false;
 	
 	protected $_authChecked = false;
-	
+
 	/**
      * @var Store_Session
      */

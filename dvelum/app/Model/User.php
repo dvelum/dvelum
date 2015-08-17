@@ -3,6 +3,7 @@ class Model_User extends Model
 {
 	const AUTH_LOGIN = 'ulogin';
 	const AUTH_PASSWORD = 'upassword';
+	const AUTH_PROVIDER = 'uprovider';
 	
     /**
      * Get user info
@@ -14,29 +15,34 @@ class Model_User extends Model
     {
         return $this->getCachedItem($id);  
     }
+
     /**
      * Login as user
      * @param string $login
      * @param string $password
+     * @param string $provider
      * @return array | boolean false   User DATA or false
      */
-    public function login($login , $password)
+    public function login($login, $password, $provider = 'dvelum')
     {
-    	$sql = $this->_dbSlave->select()
-                         ->from($this->table())
-                         ->where('`login` =?' , $login)
-                         ->where('`enabled` = 1');
+        $providerCfg = Config::storage()->get('auth/' . $provider . '.php', false, true);
+        if (!$providerCfg)
+            throw new Exception('Wrong auth provider config: ' . 'auth/' . $provider . '.php');
 
-         $data = $this->_dbSlave->fetchRow($sql);
+        $authProvider = User_Auth::factory($providerCfg);
+        if (!$authProvider->auth($login, $password))
+            return false;
 
-         if(empty($data) || !password_verify($password , $data['pass']))
-             return false;
+        $data = $authProvider->getUserData();
 
-         $user = User::getInstance();
-         $user->setId($data['id']);
-         $user->setInfo($data);
+        if (!$data)
+            return false;
 
-         return $data;
+        $user = User::getInstance();
+        $user->setId($data['id']);
+        $user->setInfo($data);
+
+        return $data;
     }
 
 	/**
@@ -47,14 +53,17 @@ class Model_User extends Model
     {
         $user = Request::post(self::AUTH_LOGIN, 'login', false);
         $pass = Request::post(self::AUTH_PASSWORD , 'string' , false);
+        $provider = Request::post(self::AUTH_PROVIDER , 'string' ,
+			Config::storage()->get('main.php')->get('default_auth_provider'));
 
         if($user === false || $pass=== false)
             return false;
 
         // slow check
         sleep(1);
-        return $this->login($user, $pass);
+        return $this->login($user, $pass , $provider);
     }
+
     /**
      * Find user avatar
      * Will be used for sharding
