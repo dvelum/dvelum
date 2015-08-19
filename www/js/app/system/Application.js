@@ -48,29 +48,22 @@ Ext.define('app.menuPanel',{
 	showButtons:function(){
 		this.toolbarContainer.removeAll();
 		var menuButtons = [];
-
-		if(this.menuCollapsed){
-			menuButtons.push({
-				iconAlign:'right',
-				textAlign:'right',
-				width:22,
-				maxWidth:22,
-				icon:  app.wwwRoot + 'i/system/right-btn.gif',
-				scope:this,
-				handler:this.expandMenu
-			});
-		}else{
-			menuButtons.push(
-				{
-					iconAlign:'right',
-					textAlign:'right',
-					width:22,
-					maxWidth:22,
-					icon:  app.wwwRoot + 'i/system/left-btn.gif',
-					scope:this,
-					handler:this.collapseMenu
-				});
+		var	menuTriggerIcon = app.wwwRoot + 'i/system/right-btn.gif';
+		var menuHandler = this.expandMenu;
+		if(!this.menuCollapsed){
+		    menuTriggerIcon = app.wwwRoot + 'i/system/left-btn.gif';
+			menuHandler = this.collapseMenu
 		}
+
+		menuButtons.push({
+			iconAlign:'right',
+			textAlign:'right',
+			width:22,
+			maxWidth:22,
+			icon:  menuTriggerIcon,
+			scope:this,
+			handler:menuHandler
+		});
 
 		Ext.each(this.menuData,function(item){
 			if(!this.devMode && item.dev){
@@ -95,24 +88,7 @@ Ext.define('app.menuPanel',{
 				});
 			}
 		},this);
-		if(this.menuCollapsed) {
-			menuButtons.push({
-				tooltip:appLang.LOGOUT,
-				href:app.admin + '/?logout=1',
-				hrefTarget:'_self',
-				text:'<img src="' + app.wwwRoot + 'i/system/icons/logout.png" width="32" height="32"/> ',
-				textAlign:'left'
-			});
-		}else{
-			menuButtons.push({
-				xtype: 'button',
-				tooltip:appLang.LOGOUT,
-				href: app.admin + '/?logout=1',
-				hrefTarget: '_self',
-				text: '<img src="' + app.wwwRoot + 'i/system/icons/logout.png" width="14" height="14"/> ' + appLang.LOGOUT,
-				textAlign: 'left'
-			});
-		}
+
 		this.toolbarContainer.add(menuButtons);
 	},
 	collapseMenu:function(){

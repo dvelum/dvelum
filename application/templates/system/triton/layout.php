@@ -48,6 +48,14 @@ foreach($modules as $data)
 		'title'=> $data['title'],
 		'icon'=> Request::wwwRoot().$data['icon']
 	];
+
+	$menuData[] = [
+		'id' => 'logout',
+		'dev' => false,
+		'url' =>  Request::url([$this->get('adminPath'),'']) . '?logout=1',
+		'title'=>Lang::lang()->get('LOGOUT'),
+		'icon' => Request::wwwRoot() . 'i/system/icons/logout.png'
+	];
 }
 $res->addInlineJs('
 	app.menuData = '.json_encode($menuData).';
