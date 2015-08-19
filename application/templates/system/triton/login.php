@@ -32,7 +32,18 @@ $wwwRoot = $this->get('wwwRoot');
 						<div class="loginInput"><input name="upassword" class="validate[required]" id="pass" type="password"></div>
 						<div class="clear"></div>
 					</div>
-					
+
+<!--					<div class="formRow">
+						<label for="provider">Provider:</label>
+						<div class="loginInput">
+							<select name="uprovider" class="validate[required]" id="provider">
+								<option value="dvelum">Dvelum</option>
+								<option value="ldap">LDAP</option>
+							</select>
+						</div>
+						<div class="clear"></div>
+					</div>
+-->
 					<div class="loginControl">
 						<input type="submit" value="LOG IN" class="dv_button LogMeIn"/>
 						<div class="clear"></div>
