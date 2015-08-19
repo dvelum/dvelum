@@ -95,6 +95,24 @@ Ext.define('app.menuPanel',{
 				});
 			}
 		},this);
+		if(this.menuCollapsed) {
+			menuButtons.push({
+				tooltip:appLang.LOGOUT,
+				href:app.admin + '/?logout=1',
+				hrefTarget:'_self',
+				text:'<img src="' + app.wwwRoot + 'i/system/icons/logout.png" width="32" height="32"/> ',
+				textAlign:'left'
+			});
+		}else{
+			menuButtons.push({
+				xtype: 'button',
+				tooltip:appLang.LOGOUT,
+				href: app.admin + '/?logout=1',
+				hrefTarget: '_self',
+				text: '<img src="' + app.wwwRoot + 'i/system/icons/logout.png" width="14" height="14"/> ' + appLang.LOGOUT,
+				textAlign: 'left'
+			});
+		}
 		this.toolbarContainer.add(menuButtons);
 	},
 	collapseMenu:function(){
