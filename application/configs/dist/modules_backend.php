@@ -87,7 +87,7 @@
     'class' => 'Backend_Error_Log_Controller',
     'designer' => './application/configs/dist/layouts/system/error_log.designer.dat',
     'in_menu' => true,
-    'icon' => 'i/system/icons/log.png',
+    'icon' => 'i/system/icons/error_log.png',
   ),
   'Filestorage' => 
   array (

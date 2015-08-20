@@ -115,8 +115,26 @@ class User
 	}
 
 	/**
+	 * Set user auth provider
+	 * @param User_Auth_Abstract $authProvider
+	 */
+	public function setAuthProvider($authProvider)
+	{
+		$this->authProvider = $authProvider;
+	}
+
+	/**
+	 * Get user auth provider
+	 * @return User_Auth_Abstract $authProvider
+	 */
+	public function getAuthProvider()
+	{
+		return $this->authProvider;
+	}
+
+	/**
 	 * The object has a getter defined, which can be invoked by a key. 
-	 * @param unknown_type $val
+	 * @param mixed $val
 	 * @throws Exception
 	 * @return mixed:
 	 */
