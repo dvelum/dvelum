@@ -53,7 +53,7 @@ class Modules_Generator
       $name = Utils_String::formatClassName($object);
 
       $jsName = str_replace('_','', $name);
-      $runNamespace = 'app'.$jsName.'Layout';
+      $runNamespace = 'app'.$jsName.'Application';
       $classNamespace = 'app'.$jsName.'Components';
 
       $objectConfig = Db_Object_Config::getInstance($object);
@@ -442,7 +442,7 @@ class Modules_Generator
       $name = Utils_String::formatClassName($object);
 
       $jsName = str_replace('_','', $name);
-      $runNamespace = 'app'.$jsName.'Runtime';
+      $runNamespace = 'app'.$jsName.'Application';
       $classNamespace = 'app'.$jsName.'Components';
 
       $objectConfig = Db_Object_Config::getInstance($object);

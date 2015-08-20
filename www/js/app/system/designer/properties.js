@@ -306,6 +306,9 @@ Ext.define('designer.properties.Panel', {
                     return '...';
                 }
             },
+            'isExtended':{
+                editor: Ext.create('Ext.form.field.Display', {})
+            },
             'dictionary': {
                 editor: Ext.create('Ext.form.field.ComboBox', {
                     typeAhead: true,

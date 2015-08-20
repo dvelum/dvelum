@@ -107,8 +107,8 @@ class Designer_Project
 	 * @var array
 	 */
 	protected $_config = array(
-			'namespace' => 'appClasses' ,
-			'runnamespace' => 'appRun',
+			'namespace' => 'appComponents' ,
+			'runnamespace' => 'appApplication',
 			'files'=>array(),
 	        'langs'=>array()
 	);
@@ -142,7 +142,7 @@ class Designer_Project
 		$this->_tree->addItem(self::COMPONENT_ROOT , false, new Designer_Project_Container('Components'), -1000);
 		$this->_tree->sortItems(self::COMPONENT_ROOT );
 
-		$this->_tree->addItem(self::LAYOUT_ROOT, false, new Designer_Project_Container('Layout'), -500);
+		$this->_tree->addItem(self::LAYOUT_ROOT, false, new Designer_Project_Container('Application'), -500);
 		$this->_tree->sortItems(self::LAYOUT_ROOT);
 	}
 

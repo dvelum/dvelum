@@ -97,6 +97,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 			     *  Stub for project container
 			     */
 			    if($object instanceof Designer_Project_Container){
+
 					$item->text =  $object->getName();
 					$item->expanded = true;
 					$item->objClass = 'Designer_Project_Container';
@@ -130,7 +131,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 					$objectName = '<span class="extClassLabel">'.$objectName.'</span>';
 				}
 
-                $item->text = $ext . $objectName . ' ('.$objectClass.')' . $inst;
+			    $item->text = $ext . $objectName . ' ('.$objectClass.')' . $inst;
                 $item->expanded = true;
                 $item->objClass = $objectClass;
                 $item->isInstance = $object->isInstance();
