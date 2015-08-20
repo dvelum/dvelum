@@ -41,6 +41,7 @@ class Model_User extends Model
         $user = User::getInstance();
         $user->setId($data['id']);
         $user->setInfo($data);
+		$user->setAuthProvider($authProvider);
 
         return $data;
     }
