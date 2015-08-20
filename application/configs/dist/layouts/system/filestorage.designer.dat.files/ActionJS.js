@@ -8,6 +8,6 @@
 Ext.onReady(function(){ 
       // Init permissions
   	  app.application.on("projectLoaded",function(){
-         appFilestorageRun.dataGrid.setPermissions(canEdit , canDelete);
+         appFilestorageRun.mainPanel.setPermissions(canEdit , canDelete);
   	  });
 });
