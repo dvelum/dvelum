@@ -313,6 +313,7 @@
       'delete' => 'delete',
       'publish' => 'Can publish',
       'object' => 'object',
+      'create' => 'create',
     ),
   ),
   'filestorage' => 
@@ -444,14 +445,14 @@
       'date' => 'Date',
     ),
   ),
-  'user_auth' =>
+  'user_auth' => 
   array (
     'title' => 'Auth settings',
-    'fields' =>
+    'fields' => 
     array (
       'user' => 'User',
       'type' => 'Auth type',
       'config' => 'Configuration',
     ),
   ),
-);
+); 

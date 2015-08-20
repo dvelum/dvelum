@@ -1,6 +1,6 @@
 <?php return array (
   'table' => 'menu',
-  'engine' => 'MyISAM',
+  'engine' => 'InnoDB',
   'rev_control' => false,
   'save_history' => true,
   'link_title' => '',
@@ -51,4 +51,6 @@
   'disable_keys' => false,
   'primary_key' => 'id',
   'use_db_prefix' => true,
+  'acl' => false,
+  'slave_connection' => 'default',
 ); 

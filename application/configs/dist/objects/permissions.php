@@ -1,6 +1,6 @@
 <?php return array (
   'table' => 'permissions',
-  'engine' => 'MyISAM',
+  'engine' => 'InnoDB',
   'rev_control' => false,
   'link_title' => 'module',
   'save_history' => false,
@@ -123,4 +123,6 @@
   'primary_key' => 'id',
   'use_db_prefix' => true,
   'disable_keys' => false,
+  'acl' => false,
+  'slave_connection' => 'default',
 ); 

@@ -1,6 +1,6 @@
 <?php return array (
   'table' => 'menu_items',
-  'engine' => 'MyISAM',
+  'engine' => 'InnoDB',
   'rev_control' => false,
   'save_history' => true,
   'link_title' => '',
@@ -34,15 +34,6 @@
       'db_len' => 255,
       'is_search' => false,
       'allow_html' => false,
-    ),
-    'published' => 
-    array (
-      'type' => '',
-      'unique' => '',
-      'db_isNull' => false,
-      'required' => false,
-      'db_type' => 'boolean',
-      'db_default' => 0,
     ),
     'menu_id' => 
     array (
@@ -152,4 +143,7 @@
   'readonly' => false,
   'primary_key' => 'id',
   'use_db_prefix' => true,
+  'acl' => false,
+  'slave_connection' => 'default',
+  'disable_keys' => false,
 ); 

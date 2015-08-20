@@ -1,6 +1,6 @@
 <?php return array (
   'table' => 'blocks',
-  'engine' => 'MyISAM',
+  'engine' => 'InnoDB',
   'rev_control' => true,
   'link_title' => 'title',
   'save_history' => true,
@@ -102,4 +102,6 @@
   'disable_keys' => false,
   'primary_key' => 'id',
   'use_db_prefix' => true,
+  'acl' => false,
+  'slave_connection' => 'default',
 ); 
