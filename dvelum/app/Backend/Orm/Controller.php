@@ -565,10 +565,14 @@ class Backend_Orm_Controller extends Backend_Controller
 
     protected function _updateObject($recordId , $name , array $data)
     {
-    	$objectConfigPath = Config::storage()->getWrite() . $this->_configMain->get('object_configs').$recordId.'.php';
+        $dataDir = Config::storage()->getWrite() . $this->_configMain->get('object_configs');
+    	$objectConfigPath = $dataDir . $recordId.'.php';
 
-    	if(!is_writable($objectConfigPath))
-    		Response::jsonError($this->_lang->CANT_WRITE_FS);
+    	if(!is_writable($dataDir))
+    		Response::jsonError($this->_lang->get('CANT_WRITE_FS') . ' ' . $dataDir);
+
+        if(file_exists($objectConfigPath) && !is_writable($objectConfigPath))
+            Response::jsonError($this->_lang->get('CANT_WRITE_FS') . ' ' . $objectConfigPath);
 
     	/*
     	 * Rename object
