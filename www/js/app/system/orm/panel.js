@@ -203,27 +203,6 @@ Ext.define('app.crud.orm.Main',{
 			]
 		});
 
-		/*	if(app.crud.orm.canEdit && app.crud.orm.canUseBackup)
-		 {
-		 this.toolbarDataGrid.add({
-		 text:appLang.MAKE_BACKUP,
-		 tooltip:appLang.MSG_MAKE_BACKUP_ALL,
-		 icon:'i/system/database-export.png',
-		 scope:this,
-		 handler:this.makeBackUp
-		 });
-
-		 this.toolbarDataGrid.add({
-		 text:appLang.RESTORE_BACKUP,
-		 tooltip:appLang.RESTORE_BACKUP_TOOLTIP,
-		 icon:'i/system/database-import.png',
-		 scope:this,
-		 handler:this.restoreBackUp
-		 });
-		 }
-		 */
-
-
 		this.toolbarDataGrid.add('-', ' ', this.isSystemField,appLang.HIDE_SYSTEM_OBJ);
 
 		this.dataGrid = Ext.create('app.crud.orm.dataGrid',{
@@ -354,36 +333,6 @@ Ext.define('app.crud.orm.Main',{
 				}
 			]
 		}).show();
-	},
-	restoreBackUp:function(){
-		app.crud.orm.restoreWin = Ext.create('app.crud.orm.restoreBackupWindow',{});
-		app.crud.orm.restoreWin.on('backupRestored',function(){
-			this.dataStore.load();
-		},this);
-		app.crud.orm.restoreWin.show();
-	},
-	makeBackUp:function(){
-		Ext.getBody().mask(appLang.MSG_BACKUP_PROCESSING);
-		Ext.Ajax.request({
-			url: app.crud.orm.Actions.makeBackUp,
-			method: 'post',
-			scope:this,
-			timeout:3600000,
-			success: function(response, request) {
-				response =  Ext.JSON.decode(response.responseText);
-				if(!response.success){
-					Ext.Msg.alert(appLang.MESSAGE , response.msg);
-				}
-				if(!Ext.isEmpty(app.crud.orm.restoreWin)){
-					app.crud.orm.restoreWin.dataGrid.getStore().load();
-				}
-				Ext.getBody().unmask();
-			},
-			failure:function() {
-				Ext.Msg.alert(appLang.MESSAGE , appLang.MSG_LOST_CONNECTION);
-				Ext.getBody().unmask();
-			}
-		});
 	},
 	rebuildAllObjects:function(){
 		Ext.Msg.confirm(appLang.CONFIRMATION, appLang.MSG_CONFIRM_REBUILD, function(btn){
