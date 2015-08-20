@@ -2,7 +2,6 @@
 class Db_Object_Config_Translator
 {
 	protected $_mainConfig = '';
-	protected $_extTranslations = array();
 	protected $_translation = false;
 	/**
 	 * @var Lang
@@ -18,45 +17,16 @@ class Db_Object_Config_Translator
 
 	/**
 	 * Get object fields translation
-	 * @param boolean $autoCreate , otional default - true
 	 * @return Config_Abstract | boolean false
 	 */
-	public function getTranslation($autoCreate = true)
+	public function getTranslation()
 	{
-		if($this->_translation)
-			return $this->_translation;
-		
-		if(!file_exists($this->_mainConfig))
-		{
-			if(!$autoCreate)
-				return false;				
-			//create translation config
-			if(!Config_File_Array::create($this->_mainConfig))
-				return false;
-		}
-
-		$this->_translation = new Config_File_Array($this->_mainConfig);
-
-		if(!empty($this->_extTranslations))
-		{
-			foreach ($this->_extTranslations as $path)
-			{
-				$extCfg = new Config_File_Array($path);
-				foreach ($extCfg as $k=>$v)
-					if(!$this->_translation->offsetExists($k))
-						$this->_translation->set($k, $v);
-			}
+		if(!$this->_translation){
+			$this->_translation = Lang::storage()->get($this->_mainConfig);
 		}
 		return $this->_translation;
 	}
-	/**
-	 * Add external translations
-	 * @param array $paths
-	 */
-	public function addTranslations(array $paths)
-	{
-		$this->_extTranslations = array_merge($this->_extTranslations, $paths);
-	}
+
 	/**
 	 * Get Main config path
 	 * @return string

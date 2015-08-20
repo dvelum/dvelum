@@ -165,7 +165,7 @@ class Application
         /*
          * Prepare Db_Object
          */
-        $translator = new Db_Object_Config_Translator(Lang::storage()->getPath($this->_config->get('language') . '/objects.php'));
+        $translator = new Db_Object_Config_Translator($this->_config->get('language') . '/objects.php');
         Db_Object_Config::setConfigPath($this->_config->get('object_configs'));
         Db_Object_Config::setTranslator($translator);
 
