@@ -79,7 +79,7 @@ Ext.define('SearchPanel', {
 			listeners:{
 				'keyup' : {
 					fn:this.startFilter,
-					buffer:800,
+					buffer:700,
 					scope: this
 				}
 			}
@@ -126,10 +126,10 @@ Ext.define('SearchPanel', {
 			this.clearFilter();
 			this.store.filter({fn:this.isSearched,scope:this});
 		} else{
-			this.lastQuery = query;
 			this.store.getProxy().setExtraParam(this.searchParam , this.searchField.getValue());
 			this.store.loadPage(1);
 		}
+		this.lastQuery = query;
 	},
 	/**
 	 * Record filter function
