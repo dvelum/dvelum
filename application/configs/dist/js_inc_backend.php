@@ -1,7 +1,6 @@
 <?php
 return array(
     'js'=>array(
-    	'/js/lib/ext_ux/SearchField.js' => array('order'=>0  ,'minified'=>false),
     	'/js/app/system/SearchPanel.js' => array('order'=>0 ,'minified'=>false),
     	'/js/app/system/RelatedGridPanel.js' => array('order'=>0 ,'minified'=>false),
       	'/js/app/system/ObjectLink.js'  => array('order'=>1 ,'minified'=>false),

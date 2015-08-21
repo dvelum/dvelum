@@ -16,8 +16,7 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
         $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
        
         Model::factory('Medialib')->includeScripts();
-        
-	    $this->_resource->addJs('/js/lib/ext_ux/SearchField.js', 0); 
+
         $this->_resource->addJs('/js/app/system/SearchPanel.js', 0);          
         $this->_resource->addJs('/js/app/system/HistoryPanel.js', 0);
         $this->_resource->addJs('/js/app/system/EditWindow.js' , 0);    
