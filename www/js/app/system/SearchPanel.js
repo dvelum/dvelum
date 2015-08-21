@@ -30,7 +30,13 @@ Ext.define('SearchPanel', {
 	 * @property string  - local / remote
 	 */
 	local:false,
-
+	/**
+	 * @property string - last search query
+	 */
+	lastQuery:'',
+	/**
+	 * @property string  request param
+	 */
 	searchParam:'search',
 
 	constructor: function(config) {
@@ -68,17 +74,17 @@ Ext.define('SearchPanel', {
 		});
 
 		this.searchField = Ext.create('Ext.form.field.Text',{
-			//width:this.width - 30,
 			enableKeyEvents:true,
 			flex:2,
 			listeners:{
 				'keyup' : {
 					fn:this.startFilter,
-					buffer:550,
+					buffer:800,
 					scope: this
 				}
 			}
 		});
+
 		this.items = [];
 
 		if(!this.hideLabel){
@@ -93,6 +99,7 @@ Ext.define('SearchPanel', {
 	 */
 	clearFilter:function(){
 		this.store.clearFilter();
+		this.lastQuery = '';
 		if(!this.local){
 			this.store.proxy.setExtraParam(this.searchParam , '');
 			this.store.load({
@@ -109,15 +116,18 @@ Ext.define('SearchPanel', {
 	 * Start filtering data
 	 */
 	startFilter : function(){
+		var query = this.searchField.getValue();
+
+		if(this.lastQuery === query){
+			return;
+		}
 
 		if(this.local){
 			this.clearFilter();
-			if(!this.searchField.getValue().length){
-				return
-			}
 			this.store.filter({fn:this.isSearched,scope:this});
 		} else{
-		    	this.store.getProxy().setExtraParam(this.searchParam , this.searchField.getValue());
+			this.lastQuery = query;
+			this.store.getProxy().setExtraParam(this.searchParam , this.searchField.getValue());
 			this.store.loadPage(1);
 		}
 	},
