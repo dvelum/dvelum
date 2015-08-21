@@ -8,5 +8,6 @@ return array(
 	'loginAttribute' => 'krbPrincipalName',
 	'loginSearchFilter' => 'krbPrincipalName=%l@LOCAL',
 	'firstBindDn' => '',
-	'firstBindPassword' => ''
+	'firstBindPassword' => '',
+	'saveCredentials' => true
 );

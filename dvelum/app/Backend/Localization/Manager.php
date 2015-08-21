@@ -43,7 +43,6 @@ class Backend_Localization_Manager
     foreach ($langs as $file)
     {
       $file = str_replace($paths,'' , $file);
-      //$lang = str_replace($langDir, '', substr($file,0,-4));
       if(strpos($file , 'index')===false && basename($file)!=='objects.php')
         $data[] = substr($file,0,-4);
     }
@@ -80,9 +79,8 @@ class Backend_Localization_Manager
 
       foreach ($langs as $file)
       {
-        //  $lang = str_replace($langDir, '', substr($file,0,-4));
           if(basename($file)!=='objects.php')
-              $data[] = $lang;
+              $data[] = substr(basename($file),0,-4);
       }
       return $data;
   }
