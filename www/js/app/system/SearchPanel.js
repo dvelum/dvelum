@@ -115,7 +115,7 @@ Ext.define('SearchPanel', {
 			if(!this.searchField.getValue().length){
 				return
 			}
-			this.store.filter({fn:this.isSerched,scope:this});
+			this.store.filter({fn:this.isSearched,scope:this});
 		} else{
 		    	this.store.getProxy().setExtraParam(this.searchParam , this.searchField.getValue());
 			this.store.loadPage(1);
@@ -124,7 +124,7 @@ Ext.define('SearchPanel', {
 	/**
 	 * Record filter function
 	 */
-	isSerched : function(record){
+	isSearched : function(record){
 		var flag = false;
 		var recordHandle = record;
 		var searchText = this.searchField.getValue();
