@@ -18,6 +18,8 @@ class User
 	
 	protected $_authChecked = false;
 
+	protected $authProvider = false;
+
 	/**
      * @var Store_Session
      */

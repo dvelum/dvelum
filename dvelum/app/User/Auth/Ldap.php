@@ -9,6 +9,12 @@ class User_Auth_Ldap extends User_Auth_Abstract
 	protected $lc = false;
 
 	/**
+	 * LDAP bind status
+	 * @var bool
+	 */
+	private $bindStatus = false;
+
+	/**
 	 * @param Config_Abstract $config - auth provider config
 	 */
 	public function __construct(Config_Abstract $config)
@@ -99,20 +105,53 @@ class User_Auth_Ldap extends User_Auth_Abstract
 		$userEntry = ldap_get_entries($this->lc,$res);
 		$userEntry = $userEntry[0];
 
-		$userBind = @ldap_bind($this->lc,$userEntry['dn'],$password);
-		if(!$userBind)
+		$this->bindStatus = @ldap_bind($this->lc,$userEntry['dn'],$password);
+		if(!$this->bindStatus)
 			return false;
+
+		if($this->config->get('saveCredentials'))
+			$this->saveCredentials(array('dn'=>$userEntry['dn'],'password'=>$password));
 
 		$this->userData = $userData;
 		return true;
 	}
 
 	/**
+	 * Save credentials
+	 * @param array $credentials
+	 */
+	private function saveCredentials($credentials)
+	{
+		Store::factory(Store::Session, $this->config->get('adapter'))->set('credentials',$credentials);
+	}
+
+	/**
+	 * Return credentials
+	 * @return bool|mixed
+	 */
+	private function getCredentials()
+	{
+		if($this->config->get('saveCredentials'))
+			return Store::factory(Store::Session, $this->config->get('adapter'))->get('credentials');
+		else
+			return false;
+	}
+
+	/**
 	 * Get LDAP connection resource
 	 * @return bool|resource
 	 */
-	public function getLc()
+	public function getLC()
 	{
+		if(!$this->bindStatus) {
+			$credentials = $this->getCredentials();
+			if(!$credentials)
+				throw new Exception('No saved LDAP credentials! Do User_Auth_Ldap::auth($login, $password) first!');
+
+			$this->bindStatus = @ldap_bind($this->lc,$credentials['dn'],$credentials['password']);
+		}
+		if(!$this->bindStatus)
+			return false;
 		return $this->lc;
 	}
 }
