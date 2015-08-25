@@ -8,11 +8,13 @@ class Ext_Grid_Column extends Ext_Object
 	public function __toString()
 	{
 		$this->_convertListeners();
-		
-		if(strlen($this->_config->renderer) )
+
+		$renderer = $this->_config->renderer;
+
+		if(is_string($renderer) && strlen($renderer) )
 		{
-			if(class_exists($this->_config->renderer)){
-				$obj = new $this->_config->renderer();
+			if(class_exists($renderer)){
+				$obj = new $renderer();
 				$this->_config->renderer = $obj->__toString();
 			}else{
 				$this->_config->renderer = '';
@@ -30,5 +32,26 @@ class Ext_Grid_Column extends Ext_Object
 			}
 		}
 		return $this->_config->__toString();
+	}
+
+	public function getState()
+	{
+		$state = ['config' => $this->getConfig()->__toArray(true)];
+		if($this->renderer instanceof Ext_Helper_Grid_Column_Renderer){
+			$state['renderer'] = ['type'=> $this->renderer->getType(),'value'=>$this->renderer->getValue()];
+			$state['config']['renderer'] = '';
+		}
+		return $state;
+	}
+
+	public function setState(array $state)
+	{
+		parent::setState($state);
+		if(isset($state['renderer']) && !empty($state['renderer'])){
+			$renderer = new Ext_Helper_Grid_Column_Renderer();
+			$renderer->setType($state['renderer']['type']);
+			$renderer->setValue($state['renderer']['value']);
+			$this->renderer = $renderer;
+		}
 	}
 }

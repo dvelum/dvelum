@@ -141,6 +141,8 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 	 */
 	public function getState()
 	{
+		$state = parent::getState();
+
 		$actions = $this->_actions->getItems();
 		$actionsData = array();
 
@@ -157,13 +159,8 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 			}
 		}
 
-		return array(
-			'config' => $this->getConfig()->__toArray(true),
-			'state' => array(
-				'_isExtended' => $this->_isExtended,
-			),
-			'actions'=> $actionsData
-		);
+		$state['actions'] = $actionsData;
+		return $state;
 	}
 	/**
 	 * Set object state

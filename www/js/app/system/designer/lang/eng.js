@@ -48,6 +48,7 @@ var desLang = {
 		configureEditor: 'Configure field editor',
 		clicksToEdit:'Clicks to edit',
 		checkboxSelection:'Checkbox Selection',
+
 		codeEditor:'Code Editor',
 		cantDeleteDocked:'Removing docked Items is not allowed',
 		changeFieldType:'Change field type',
@@ -80,6 +81,8 @@ var desLang = {
 		eventsEditor:'Events Editor',
 		expanderRowBodyTpl:'Row body tpl',
 		expandAll:'Expand All',
+
+		extRenderer:'ExtJS Renderer',
 		
 		file:'File',
 		form:'Form',
@@ -97,6 +100,9 @@ var desLang = {
 		header:'Header',
 		hideGroupedHeader:'Hide group header',
 		hasCode:'Has code',
+
+		jsCall:'JavaScript Call',
+
 		
 		importDb:'Import from Database',
 		importOrm:'Import from ORM',
@@ -150,6 +156,7 @@ var desLang = {
 		panel:'Panel',
 		panels:'Panels',
 		password:'Password',
+
 		properties:'Properties',
 		property:'Property',
 		passwordConfirm:'Password Confirmation',
@@ -162,7 +169,9 @@ var desLang = {
 		proxyReader:'Proxy Reader',
 		proxyWriter:'Proxy Writer',
 		proxyConfig:'Proxy configuration',
-		
+
+	    renderer:'Renderer',
+		rendererType:'Renderer type',
 		refreshView:'Refresh view',
 		remove:'Remove item',
 		removeAction:'Remove action',

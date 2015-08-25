@@ -62,6 +62,7 @@ class Backend_Designer_Controller extends Backend_Controller
 		'/js/app/system/designer/grid.js',	
 		'/js/app/system/designer/grid/column.js',
 		'/js/app/system/designer/grid/column/ActionsWindow.js',
+		'/js/app/system/designer/grid/column/RendererWindow.js',
 		'/js/app/system/designer/grid/filters.js',
 		
 		'/js/app/system/designer/properties.js',

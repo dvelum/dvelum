@@ -104,7 +104,7 @@ Ext.define('designer.grid.exportFieldsWin',{
 Ext.define('designer.grid.filterOptionsModel', {
 	extend: 'Ext.data.Model',
 	fields: [
-		{name:'value',type:'string'},
+		{name:'value',type:'string'}
 	]
 });
 /**

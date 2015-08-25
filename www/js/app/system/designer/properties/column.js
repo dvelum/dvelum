@@ -9,29 +9,7 @@ Ext.define('designer.properties.GridColumn',{
 	initComponent:function(){
 		
 		var me = this;
-		this.renderersStore = Ext.create('Ext.data.Store',{
-			model:'app.comboStringModel',
-			proxy: {
-				type: 'ajax',
-				url:this.controllerUrl + 'renderers',
-				reader: {
-					type: 'json',
-					rootProperty: 'data',
-					idProperty: 'id'
-				},
-				extraParams:{
-					object:this.objectName
-				},
-				simpleSortMode: true
-			},
-			remoteSort: false,
-			autoLoad: true,
-			sorters: [{
-				property : 'title',
-				direction: 'DESC'
-			}]
-		});
-		
+
 		var summaryEditor = Ext.create('Ext.form.field.ComboBox',{		
 			typeAhead: true,
 		    triggerAction: 'all',
@@ -43,19 +21,7 @@ Ext.define('designer.properties.GridColumn',{
 		    valueField:'id',
 			store: this.renderersStore
 		});
-		
-		var rendererEditor = Ext.create('Ext.form.field.ComboBox',{		
-			typeAhead: true,
-		    triggerAction: 'all',
-		    selectOnTab: true,
-		    labelWidth:80,
-		    forceSelection:true,
-		    queryMode:'local',
-		    displayField:'title',
-		    valueField:'id',
-			store: this.renderersStore
-		});
-		
+
 		this.sourceConfig = Ext.apply({		
 			'summaryType':{
 				editor: Ext.create('Ext.form.field.ComboBox',{
@@ -86,8 +52,15 @@ Ext.define('designer.properties.GridColumn',{
 				renderer:app.comboBoxRenderer(summaryEditor)
 			},
 			'renderer':{
-				editor:rendererEditor,
-				renderer:app.comboBoxRenderer(rendererEditor)
+				editor: Ext.create('Ext.form.field.Text', {
+					listeners: {
+						focus: {
+							fn: me.showRendererWindow,
+							scope: me
+						}
+					}
+				}),
+				renderer:function(v){return '...';}
 			},
 			'items':{
 				editor:Ext.create('Ext.form.field.Text',{
@@ -104,6 +77,14 @@ Ext.define('designer.properties.GridColumn',{
 		
 		this.callParent();		
 	},
+	showRendererWindow:function(){
+		Ext.create('designer.grid.column.RendererWindow',{
+			title:desLang.renderer,
+			objectName : this.objectName,
+			columnId: this.extraParams.id,
+			controllerUrl:this.controllerUrl
+		}).show().toFront();
+	},
 	showItemsWindow:function()
 	{			
 		Ext.create('designer.grid.column.ActionsWindow',{
@@ -111,6 +92,6 @@ Ext.define('designer.properties.GridColumn',{
 	    	objectName : this.objectName,
 	    	columnId: this.extraParams.id,
 	    	controllerUrl:this.controllerUrl
-	    }).show();		
+	    }).show().toFront();
 	}
 });    

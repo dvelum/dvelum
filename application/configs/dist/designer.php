@@ -4,7 +4,7 @@ return array(
 	'configs'=> 'layouts/',
 	'lang'=>'eng',
 	'connections'=> 'DesignerConnections.php',
-	'development'=>true,
+	'development'=>false,
 	'components'=>'./dvelum/library/Ext/Component',
 	'field_components'=>'./dvelum/library/Ext/Component/Field',
 	'filter_conponents'=>'./dvelum/library/Ext/Component/Filter',

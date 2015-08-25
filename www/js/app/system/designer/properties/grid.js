@@ -196,7 +196,7 @@ Ext.define('designer.properties.Grid',{
 	},
 	showColumnsWindow:function(){
 	    var win = Ext.create('designer.grid.column.Window',{
-		title:desLang.gridColumnsConfig,
+			title:desLang.gridColumnsConfig,
 	    	objectName : this.objectName,
 	        storeName : this.dataGrid.getSource().store
 	    });

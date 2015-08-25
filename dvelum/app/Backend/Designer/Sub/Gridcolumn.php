@@ -48,10 +48,12 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		$config = $column->getConfig();
 		$properties = $config->__toArray();
 
+		$properties['renderer'] = '';
+
 		if($config->xtype !== 'actioncolumn'){
 			unset($properties['items']);
+
 		}else{
-			unset($properties['renderer']);
 			unset($properties['summaryRenderer']);
 			unset($properties['summaryType']);
 		}
@@ -290,6 +292,90 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 			if($index>0)
 				$columnObject->sortActions();
 		}
+
+		$this->_storeProject();
+		Response::jsonSuccess();
+	}
+
+	public function rendererLoadAction()
+	{
+		$object = $this->_object;
+		$column = Request::post('column','string',false);
+		$data = [];
+
+		if($column === false)
+			Response::jsonErrot($this->_lang->WRONG_REQUEST . ' code 1');
+
+		if($object->getClass()!=='Grid' || !$object->columnExists($column))
+			Response::jsonError($this->_lang->WRONG_REQUEST  . ' code 2');
+
+		$columnObject = $object->getColumn($column);
+		$renderer = $columnObject->renderer;
+
+		if(empty($renderer) || is_string($renderer))
+		{
+			$data = [
+				'type'=> 'adapter',
+				'adapter' => $renderer
+			];
+		}
+		elseif($renderer instanceof Ext_Helper_Grid_Column_Renderer)
+		{
+			$data = [
+				'type'=> $renderer->getType(),
+			];
+			switch($renderer->getType()){
+				case Ext_Helper_Grid_Column_Renderer::TYPE_ADAPTER:
+					$data['adapter'] = $renderer->getValue();
+					break;
+				case Ext_Helper_Grid_Column_Renderer::TYPE_JSCALL:
+					$data['call'] = $renderer->getValue();
+					break;
+				case Ext_Helper_Grid_Column_Renderer::TYPE_JSCODE:
+					$data['code'] = $renderer->getValue();
+					break;
+			}
+		}
+
+		Response::jsonSuccess($data);
+	}
+
+	public function rendererSaveAction()
+	{
+		$object = $this->_object;
+		$column = Request::post('column','string',false);
+
+		if($column === false)
+			Response::jsonErrot($this->_lang->WRONG_REQUEST . ' code 1');
+
+		if($object->getClass()!=='Grid' || !$object->columnExists($column))
+			Response::jsonError($this->_lang->WRONG_REQUEST  . ' code 2');
+
+		$rendererHelper = new Ext_Helper_Grid_Column_Renderer();
+
+		$type =  Request::post('type','string',false);
+
+		if(!in_array($type , $rendererHelper->getTypes() , true)){
+			Response::jsonError($this->_lang->get('FILL_FORM') , array('type'=>$this->_lang->get('INVALID_VALUE')));
+		}
+
+		$rendererHelper->setType($type);
+
+		switch($type){
+			case Ext_Helper_Grid_Column_Renderer::TYPE_ADAPTER:
+				$rendererHelper->setValue(Request::post('adapter' , Filter::FILTER_RAW , ''));
+				break;
+			case Ext_Helper_Grid_Column_Renderer::TYPE_JSCALL:
+				$rendererHelper->setValue(Request::post('call' , Filter::FILTER_RAW , ''));
+				break;
+			case Ext_Helper_Grid_Column_Renderer::TYPE_JSCODE:
+				$rendererHelper->setValue(Request::post('code' , Filter::FILTER_RAW , ''));
+				break;
+
+		}
+
+		$columnObject = $object->getColumn($column);
+		$columnObject->renderer = $rendererHelper;
 
 		$this->_storeProject();
 		Response::jsonSuccess();

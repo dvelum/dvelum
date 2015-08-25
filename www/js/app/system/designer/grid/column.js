@@ -11,7 +11,6 @@ Ext.define('designer.grid.column.Model',{
 	idProperty:'id'
 });
 Ext.define('designer.grid.column.Window',{
-
 	extend:'Ext.Window',
 	layout:'border',
 	dataStore:null,
