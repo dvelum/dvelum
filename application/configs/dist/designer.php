@@ -19,5 +19,6 @@ return array(
 		'adminpath' => '[%admp%]',
 		'urldelimiter' => '[%-%]'
 	),
-	'theme'=>'gray'
+	'theme'=>'gray',
+	'vcs_support' => false
 );
