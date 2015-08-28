@@ -207,7 +207,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 		switch($type){
 			case 'backend':
 				$manager = new Modules_Manager();
-				Response::jsonSuccess($manager->getControllers());
+				Response::jsonSuccess($manager->getAvailableControllers());
 				break;
 			case 'frontend':
 				$manager = new Modules_Manager_Frontend();

@@ -265,4 +265,23 @@ class Modules_Manager
 		}
 		return array_values($data);
 	}
+
+	/**
+	 * Get list of controllers without modules
+	 */
+	public function getAvailableControllers()
+	{
+		$list = $this->getControllers();
+
+		/*
+         * Hide registered controllers
+         */
+		$registered = array_flip(Utils::fetchCol('class' , $this->getConfig()->__toArray()));
+		foreach($list as $k=>$v){
+			if(isset($registered[$v['id']])){
+				unset($list[$k]);
+			}
+		}
+		return array_values($list);
+	}
 }
