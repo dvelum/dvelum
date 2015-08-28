@@ -10,7 +10,7 @@ this.childObjects.apiTree.getSelectionModel().on('selectionchange',function(sm, 
   }
     
   var rec = selected[0];
-  
+  console.log(rec);
   if(!rec.get('isDir')){
      this.showDoc(rec.get('hid') , rec.get('path'), rec.get('name') , false);
   }

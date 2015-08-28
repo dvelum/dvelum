@@ -1,5 +1,5 @@
 var me = this;
-me.getEl().mask(appLang.LOADING);
+//me.getEl().mask(appLang.LOADING);
 Ext.Ajax.request({
     url: this.controllerUrl + 'info',
     method: 'post',
@@ -19,10 +19,10 @@ Ext.Ajax.request({
       } else {
           Ext.Msg.alert(appLang.MESSAGE , response.msg);
       }
-      me.getEl().unmask();
+     // me.getEl().unmask();
     },
     failure:function() {	
-	   me.getEl().unmask();
+	 //  me.getEl().unmask();
 	   app.ajaxFailure(arguments);
     }
 });

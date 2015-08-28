@@ -167,7 +167,7 @@ class Sysdocs_Generator
 	  $fileModel =  $exists = Model::factory('sysdocs_file');
 
       $parentDir = basename($o->get('path'));
-      $parentPath = dirname($o->get('path'));
+      $parentPath = dirname($o->get('path')).'/';
 
 	  $filters = [
 		  'path'=>$parentPath,

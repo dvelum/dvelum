@@ -1,8 +1,8 @@
 var tab = false;
-var curItemId = path+name;
+var curItemId =  fileHid;
 
 this.childObjects.center.items.each(function(item , index){
-  if(item.itemId === curItemId){
+  if(item.itemIdHash === curItemId){
     tab = item;
   }
 });
@@ -13,7 +13,7 @@ if(!tab)
     fileHid:fileHid,
     closable:true,
     title:name,
-    itemId:curItemId,
+    itemIdHash:fileHid,
     canEdit:this.canEdit,
     controllerUrl:this.controllerUrl,
     tooltip: path + '/' + name,
