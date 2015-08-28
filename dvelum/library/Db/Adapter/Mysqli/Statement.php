@@ -39,6 +39,7 @@ class Db_Adapter_Mysqli_Statement extends Zend_Db_Statement_Mysqli
     {
         $data = array();
         if ($this->_stmt) {
+            $this->_stmt->execute();
             $result = $this->_stmt->get_result();
             if($result)
                 $data = $result->fetch_all(MYSQLI_ASSOC);

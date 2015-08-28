@@ -231,7 +231,7 @@ class Db_Adapter_Mysqli extends Zend_Db_Adapter_Mysqli
         // DVelum performance patch
         if($fetchMode === Zend_Db::FETCH_ASSOC && extension_loaded('mysqlnd')){
             $stmt = $this->queryAll($sql, $bind);
-            $result = $stmt->fetchAllAssoc($fetchMode);
+            $result = $stmt->fetchAllAssoc();
         }else{
             $stmt = $this->query($sql, $bind);
             $result = $stmt->fetchAll($fetchMode);
