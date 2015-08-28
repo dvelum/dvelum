@@ -50,8 +50,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 			}else{
 				$project = Designer_Factory::loadProject($this->_config, $file);
 			}
-			if(!$project instanceof Designer_Project){
-				$project = Designer_Factory::loadProject($this->_config, $file);
+			if($project instanceof Designer_Project){
 				// convert project to 1.x version
 				if($project->convertTo1x($this->_config->get('js_path'))){
 					$this->_storeProject();
@@ -60,7 +59,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 				throw new Exception('Cannot load project ' . $file);
 			}
 		}catch (Exception $e){;
-			Response::jsonError($this->_lang->WRONG_REQUEST);
+			Response::jsonError($this->_lang->WRONG_REQUEST. ' '. $e->getMessage());
 		}
 
 		$this->_session->set('loaded' , true);
