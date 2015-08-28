@@ -156,7 +156,7 @@ class Sysdocs_Generator
 
 	  $o = Db_Object::factory('sysdocs_file');
 	  $o->setValues(array(
-	    'path'=>dirname($filepath),
+	    'path'=>dirname($filepath).'/',
 	    'name'=>basename($filepath),
 	    'vers'=>$this->vers,
 	    'isDir'=>$isDir
@@ -169,7 +169,13 @@ class Sysdocs_Generator
       $parentDir = basename($o->get('path'));
       $parentPath = dirname($o->get('path'));
 
-      $parentFile = $fileModel->getList(array('limit'=>1) , array('path'=>$parentPath,'name'=>$parentDir,'vers'=>$this->vers,'isDir'=>true), array('id'));
+	  $filters = [
+		  'path'=>$parentPath,
+		  'name'=>$parentDir,
+		  'vers'=>$this->vers,
+		  'isDir'=>true
+	  ];
+      $parentFile = $fileModel->getList(['limit'=>1] , $filters, ['id']);
 
       if(!empty($parentFile)){
         $o->set('parentId', $parentFile[0]['id']);
