@@ -219,7 +219,6 @@
                    'weight' => 1,
                    'width' => 1,
                    'isExtended' => 4,
-                   'defineOnly' => 4,
                    'activeError' => 2,
                    'activeErrorsTpl' => 3,
                    'afterBodyEl' => 2,
@@ -248,6 +247,7 @@
                    'labelWidth' => 1,
                    'msgTarget' => 2,
                    'preventMark' => 4,
+                   'defineOnly' => 4,
                    'cols' => 1,
                    'rows' => 1,
                    'size' => 1,
@@ -442,10 +442,6 @@
             'dataIndex' => 'id',
             'itemId' => 'actions',
             'width' => 40,
-          ),
-          'state' => 
-          array (
-            '_isExtended' => false,
           ),
           'actions' => 
           array (
