@@ -20,7 +20,35 @@ Ext.define('designer.objects.TreeModel',{
 		{name:'isInstance' , type:'boolean'}
 	],
 	idProperty:'id'
-})
+});
+
+Ext.define('designer.objects.StatefullTree',{
+	extend:'Ext.tree.Panel',
+	getNodesState: function()
+	{
+		var state = {};
+		this.getStore().each(function(node){
+			if(node.isExpanded()){
+				state[node.get('id')] = true;
+			}
+		});
+		return state;
+	},
+	applyNodesState : function(state)
+	{
+		this.getStore().each(function(node){
+			if(Ext.isEmpty(node)){
+				return;
+			}
+
+			if(!Ext.isEmpty(state[node.get('id')])) {
+				node.expand();
+			}else{
+				node.collapse();
+			}
+		});
+	}
+});
 
 Ext.define('designer.objects.Tree',{
 	extend:'Ext.Panel',
@@ -30,6 +58,8 @@ Ext.define('designer.objects.Tree',{
 	firstLoad:true,
 	selectedNode: false,
 	initComponent:function(){
+
+		this.nodesState = {};
 
 		this.dataStore = Ext.create('Ext.data.TreeStore',{
 			model:'designer.objects.TreeModel',
@@ -51,10 +81,18 @@ Ext.define('designer.objects.Tree',{
 			},
 			defaultRootId:0,
 			clearOnLoad:true,
-			autoLoad:false
+			autoLoad:false,
+			listeners:{
+				load:{
+					fn:function(store){
+						this.treePanel.applyNodesState(this.nodesState);
+					},
+					scope:this
+				}
+			}
 		});
 
-		this.treePanel = Ext.create('Ext.tree.Panel',{
+		this.treePanel = Ext.create('designer.objects.StatefullTree',{
 			store:this.dataStore,
 			rootVisible:false,
 			useArrows: true,
@@ -142,6 +180,7 @@ Ext.define('designer.objects.Tree',{
 	 * @todo wait for official fix
 	 */
 	reload:function(){
+		this.nodesState =  this.treePanel.getNodesState();
 		this.dataStore.getRootNode().removeAll();
 		this.dataStore.load();
 	},

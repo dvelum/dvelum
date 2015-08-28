@@ -1049,6 +1049,7 @@ Ext.define('designer.application',{
 			this.methodsEditor.disable();
 			this.projectItems.clearData();
 			this.propertiesPanel.removeAll();
+			this.activePropertyPanel = null;
 			this.projectPathLabel.setText('');
 			this.rightPanel.disable();
 			this.centerPanel.disable();
