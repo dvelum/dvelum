@@ -13,6 +13,8 @@ class Backend_Reports_Controller extends Backend_Controller
 	 * @var Store_Session
 	 */
 	protected $_session;
+
+    protected $_reportsPath;
 	
 	public function __construct()
 	{
@@ -30,8 +32,12 @@ class Backend_Reports_Controller extends Backend_Controller
 			
 		$this->_storage = Db_Query_Storage::getInstance('file');	
 		$this->_session = Store_Session::getInstance('Reports');
-		
-	}
+
+        $conManager = Model::getDefaultDbManager();
+        $this->_db = $conManager->getDbConnection('default');
+        $this->_reportsPath = Config::storage()->getWrite() .  $this->_configMain->get('report_configs');
+    }
+
 	
 	public function indexAction()
 	{
@@ -91,7 +97,7 @@ class Backend_Reports_Controller extends Backend_Controller
 	public function loadAction()
 	{
 		$file = Request::post('file', 'string', false);
-		$path = $this->_configMain->get('report_configs');
+		$path = $this->_reportsPath;
 
 		
 		if(!$file || !file_exists($path.$file))
@@ -436,13 +442,12 @@ class Backend_Reports_Controller extends Backend_Controller
 	{
 		$path = Request::post('node', 'string', '');
 		$path = str_replace('.','', $path);
-			
-		$dirPath = $this->_configMain->get('report_configs');
-				
-		if(!is_dir($dirPath))
-			Response::jsonArray(array());
-			
-		$files = File::scanFiles($this->_configMain->get('report_configs') . $path, array('.dat'),false,File::Files_Dirs);
+
+        if(!is_dir($this->_reportsPath) && !@mkdir($this->_reportsPath , 0755)){
+            Response::jsonError($this->_lang->get('CANT_WRITE_FS') . ' ' . $this->_reportsPath);
+        }
+
+		$files = File::scanFiles($this->_reportsPath . $path, array('.dat'),false,File::Files_Dirs);
 		
 		if(empty($files))
 			Response::jsonArray(array());
@@ -456,7 +461,7 @@ class Backend_Reports_Controller extends Backend_Controller
 				continue;
 			
 			$obj = new stdClass();
-			$obj->id = str_replace($dirPath, '', $fpath);
+			$obj->id = str_replace($this->_reportsPath, '', $fpath);
 			$obj->text = basename($fpath);
 			
 			if(is_dir($fpath))
@@ -488,7 +493,7 @@ class Backend_Reports_Controller extends Backend_Controller
 		if(!strlen($name))
 			Response::jsonError($this->_lang->WRONG_REQUEST . ' [code 1]');
 		
-		$newPath = $this->_configMain->get('report_configs');
+		$newPath = $this->_reportsPath;
 		
 		if(strlen($path))
 		{
@@ -521,12 +526,17 @@ class Backend_Reports_Controller extends Backend_Controller
 		if(!strlen($name))
 			Response::jsonError($this->_lang->WRONG_REQUEST . ' [code 1]');
 		
-		$newPath = $this->_configMain->get('report_configs');
+		$newPath = $this->_reportsPath;
 
 		if(strlen($path))
 			$filepath = $newPath. $path . DIRECTORY_SEPARATOR . $name.'.report.dat';
 		else 
 			$filepath = $newPath . $name . '.report.dat';
+
+        /**
+         * @todo refactor fast fix
+         */
+        $filepath = str_replace('//','/', $filepath);
 		
 		if(file_exists($filepath))
 			Response::jsonError($this->_lang->FILE_EXISTS);
@@ -613,20 +623,11 @@ class Backend_Reports_Controller extends Backend_Controller
 	 */
 	public function objectsAction()
 	{
-		$cfgPath = $this->_configMain['object_configs'];          
-        /*
-         * Getting list of objects
-         */
-        $configs = File::scanFiles($cfgPath , array('.php'), false, File::Files_Only);
-        if(empty($configs))
-             Response::jsonSuccess(array());
+        $manager = new Db_Object_Manager();
+        $list = $manager->getRegisteredObjects();
+        foreach ($list as $key)
+           $data[]= array('id'=>$key , 'title'=>Db_Object_Config::getInstance($key)->getTitle());
 
-        $data = array();     
-        foreach($configs as $file){
-        	$file = basename(substr($file,0,-4));
-        	$conf = Db_Object_Config::getInstance($file);
-        	$data[] = array('id'=>$file , 'title'=>$conf->get('title'));
-        }      
         Response::jsonArray($data);
 	}
 	

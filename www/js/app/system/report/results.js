@@ -37,11 +37,16 @@ Ext.define('app.report.Results',{
 				if(!response.success)
 					return;
 
+                var model = Ext.create('Ext.data.Model',{
+                    fields:response.data.fields,
+                    idProperty:'id'
+                });
+
 				me.dataStore = Ext.create('Ext.data.Store', {
-					fields:response.data.fields,
+					model:model,
 					proxy: {
 						type: 'ajax',
-						url: app.root+ 'data',
+						url: app.root + 'data',
 						reader: {
 							type: 'json',
 							rootProperty: 'data',

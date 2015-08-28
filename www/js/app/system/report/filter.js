@@ -194,7 +194,7 @@ Ext.define('app.report.filter.Conditions',{
 
 
 		this.on('resize',function(){
-			this.dataGrid.doComponentLayout();
+			//this.dataGrid.doComponentLayout();
 		},this);
 	},
 	/**

@@ -126,6 +126,15 @@ class Model
     }
 
     /**
+     * Get default Db Connection manager
+     * @return Db_Manager
+     */
+    static public function getDefaultDbManager()
+    {
+        return static::$_defaults['defaultDbManager'];
+    }
+
+    /**
      * @param string $objectName
      */
     protected function __construct($objectName)

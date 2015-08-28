@@ -32,7 +32,7 @@
   'Cache' => 
   array (
     'id' => 'Cache',
-    'dev' => false,
+    'dev' => true,
     'active' => true,
     'class' => 'Backend_Cache_Controller',
     'designer' => '',
@@ -184,7 +184,6 @@
     'in_menu' => true,
     'icon' => 'i/system/icons/pages.png',
   ),
-  /*
   'Reports' => 
   array (
     'id' => 'Reports',
@@ -195,7 +194,6 @@
     'in_menu' => true,
     'icon' => 'i/system/icons/reports.png',
   ),
-  */
   'User' => 
   array (
     'id' => 'User',

@@ -147,7 +147,7 @@ Ext.define('app.report.ConfigWindow',{
 		 if(!Ext.isEmpty(this.dataItems))
 		 {
 			this.reportBuilder.add(this.dataItems);
-			this.reportBuilder.doComponentLayout();
+			//this.reportBuilder.doComponentLayout();
 			this.reportBuilder.setTitle(this.dataTitle);
 			this.buttonBase.hide();
 			this.buttonSub.show();
