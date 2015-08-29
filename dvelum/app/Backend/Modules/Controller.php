@@ -544,4 +544,22 @@ class Backend_Modules_Controller extends Backend_Controller{
 		}
 		Response::jsonSuccess($list);
 	}
+
+	/**
+	 * Rebuild class map
+	 */
+	public function rebuildMapAction()
+	{
+		$this->_checkCanEdit();
+
+		$paths = $this->_configMain['autoloader']['paths'];
+
+		foreach ($paths as &$item)
+			$item.='/';
+
+		$writePath = Config::storage()->getWrite();
+
+		Utils_Fs::createClassMap($paths ,  $writePath . $this->_configMain['autoloader']['map']);
+		Response::jsonSuccess();
+	}
 }

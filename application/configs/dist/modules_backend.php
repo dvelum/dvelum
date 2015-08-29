@@ -39,18 +39,6 @@
     'in_menu' => true,
     'icon' => 'i/system/icons/cache.png',
   ),
-  /*
-  'Packages' =>
-  array (
-    'id' => 'Packages',
-    'dev' => true,
-    'active' => true,
-    'class' => 'Backend_Packages_Controller',
-    'designer' => '',
-    'in_menu' => true,
-    'icon' => 'i/system/icons/package.png',
-  ),
-  */
   'Orm' => 
   array (
     'id' => 'Orm',
@@ -61,19 +49,6 @@
     'in_menu' => true,
     'icon' => 'i/system/icons/orm.png',
   ),
-  /*
-  'Deploy' =>
-  array (
-    'id' => 'Deploy',
-    'dev' => true,
-    'active' => true,
-    'class' => 'Backend_Deploy_Controller',
-    'designer' => '',
-    'in_menu' => true,
-    'icon' => 'i/system/icons/deploy.png',
-  )
-  ,
-  */
   'Docs' => 
   array (
     'id' => 'Docs',
