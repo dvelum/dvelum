@@ -1,11 +1,4 @@
 <?php return array (
-  '_Component_' => 
-  array (
-    'id' => '_Component_',
-    'parent' => false,
-    'data' => '_Component_.config.php',
-    'order' => -1000,
-  ),
   '_Layout_' => 
   array (
     'id' => '_Layout_',
@@ -13,19 +6,26 @@
     'data' => '_Layout_.config.php',
     'order' => -500,
   ),
-  'versionsStore' => 
+  '_Component_' => 
   array (
-    'id' => 'versionsStore',
+    'id' => '_Component_',
+    'parent' => false,
+    'data' => '_Component_.config.php',
+    'order' => -1000,
+  ),
+  'searchStore' => 
+  array (
+    'id' => 'searchStore',
     'parent' => '_Component_',
-    'data' => 'versionsStore.config.php',
+    'data' => 'searchStore.config.php',
     'order' => 4,
   ),
-  'apiTree' => 
+  'htmlEditor' => 
   array (
-    'id' => 'apiTree',
+    'id' => 'htmlEditor',
     'parent' => '_Component_',
-    'data' => 'apiTree.config.php',
-    'order' => 0,
+    'data' => 'htmlEditor.config.php',
+    'order' => 7,
   ),
   'versionsStoreModel' => 
   array (
@@ -41,19 +41,26 @@
     'data' => 'searchStoreModel.config.php',
     'order' => 9,
   ),
+  'langsStoreModel' => 
+  array (
+    'id' => 'langsStoreModel',
+    'parent' => '_Component_',
+    'data' => 'langsStoreModel.config.php',
+    'order' => 10,
+  ),
+  'langsStore' => 
+  array (
+    'id' => 'langsStore',
+    'parent' => '_Component_',
+    'data' => 'langsStore.config.php',
+    'order' => 5,
+  ),
   'main' => 
   array (
     'id' => 'main',
     'parent' => '_Component_',
     'data' => 'main.config.php',
     'order' => 2,
-  ),
-  'htmlEditor' => 
-  array (
-    'id' => 'htmlEditor',
-    'parent' => '_Component_',
-    'data' => 'htmlEditor.config.php',
-    'order' => 7,
   ),
   'textEditor' => 
   array (
@@ -62,6 +69,20 @@
     'data' => 'textEditor.config.php',
     'order' => 6,
   ),
+  'versionsStore' => 
+  array (
+    'id' => 'versionsStore',
+    'parent' => '_Component_',
+    'data' => 'versionsStore.config.php',
+    'order' => 3,
+  ),
+  'apiTree' => 
+  array (
+    'id' => 'apiTree',
+    'parent' => '_Component_',
+    'data' => 'apiTree.config.php',
+    'order' => 0,
+  ),
   'docPanel' => 
   array (
     'id' => 'docPanel',
@@ -69,12 +90,12 @@
     'data' => 'docPanel.config.php',
     'order' => 1,
   ),
-  'searchStore' => 
+  'searchStore_instance' => 
   array (
-    'id' => 'searchStore',
-    'parent' => '_Component_',
-    'data' => 'searchStore.config.php',
-    'order' => 5,
+    'id' => 'searchStore_instance',
+    'parent' => '_Layout_',
+    'data' => 'searchStore_instance.config.php',
+    'order' => 6,
   ),
   'versionsStore_instance' => 
   array (
@@ -82,13 +103,6 @@
     'parent' => '_Layout_',
     'data' => 'versionsStore_instance.config.php',
     'order' => 4,
-  ),
-  'searchStore_instance' => 
-  array (
-    'id' => 'searchStore_instance',
-    'parent' => '_Layout_',
-    'data' => 'searchStore_instance.config.php',
-    'order' => 6,
   ),
   'mainPanel' => 
   array (
@@ -118,12 +132,12 @@
     'data' => 'editClassDesctiptionBtn.config.php',
     'order' => 0,
   ),
-  'docPanelPropertyContainer' => 
+  'docToolbar' => 
   array (
-    'id' => 'docPanelPropertyContainer',
+    'id' => 'docToolbar',
     'parent' => 'docPanel',
-    'data' => 'docPanelPropertyContainer.config.php',
-    'order' => 5,
+    'data' => 'docToolbar.config.php',
+    'order' => 2,
   ),
   'docPanelPropertiesHeader' => 
   array (
@@ -132,19 +146,26 @@
     'data' => 'docPanelPropertiesHeader.config.php',
     'order' => 4,
   ),
-  'docPanelHeader' => 
-  array (
-    'id' => 'docPanelHeader',
-    'parent' => 'docPanel',
-    'data' => 'docPanelHeader.config.php',
-    'order' => 1,
-  ),
   'docPanelMethodsHeader' => 
   array (
     'id' => 'docPanelMethodsHeader',
     'parent' => 'docPanel',
     'data' => 'docPanelMethodsHeader.config.php',
     'order' => 6,
+  ),
+  'docPanel__docked' => 
+  array (
+    'id' => 'docPanel__docked',
+    'parent' => 'docPanel',
+    'data' => 'docPanel__docked.config.php',
+    'order' => 0,
+  ),
+  'docPanelPropertyContainer' => 
+  array (
+    'id' => 'docPanelPropertyContainer',
+    'parent' => 'docPanel',
+    'data' => 'docPanelPropertyContainer.config.php',
+    'order' => 5,
   ),
   'docPanelMethodContainer' => 
   array (
@@ -153,12 +174,12 @@
     'data' => 'docPanelMethodContainer.config.php',
     'order' => 7,
   ),
-  'docToolbar' => 
+  'docPanelHeader' => 
   array (
-    'id' => 'docToolbar',
+    'id' => 'docPanelHeader',
     'parent' => 'docPanel',
-    'data' => 'docToolbar.config.php',
-    'order' => 2,
+    'data' => 'docPanelHeader.config.php',
+    'order' => 1,
   ),
   'docPanel_descriptionContainer' => 
   array (
@@ -166,13 +187,6 @@
     'parent' => 'docPanel',
     'data' => 'docPanel_descriptionContainer.config.php',
     'order' => 3,
-  ),
-  'docPanel__docked' => 
-  array (
-    'id' => 'docPanel__docked',
-    'parent' => 'docPanel',
-    'data' => 'docPanel__docked.config.php',
-    'order' => 0,
   ),
   'docPanel_hierarchy' => 
   array (
@@ -188,19 +202,19 @@
     'data' => 'classDescriptionEditContainer.config.php',
     'order' => 0,
   ),
-  'docPanel_descriptionBlocks' => 
-  array (
-    'id' => 'docPanel_descriptionBlocks',
-    'parent' => 'docPanel_descriptionContainer',
-    'data' => 'docPanel_descriptionBlocks.config.php',
-    'order' => 3,
-  ),
   'docPanelDescription' => 
   array (
     'id' => 'docPanelDescription',
     'parent' => 'docPanel_descriptionContainer',
     'data' => 'docPanelDescription.config.php',
     'order' => 2,
+  ),
+  'docPanel_descriptionBlocks' => 
+  array (
+    'id' => 'docPanel_descriptionBlocks',
+    'parent' => 'docPanel_descriptionContainer',
+    'data' => 'docPanel_descriptionBlocks.config.php',
+    'order' => 3,
   ),
   'docPanel_hierarchy__docked' => 
   array (
@@ -230,6 +244,34 @@
     'data' => 'docToolbar_showBtn__menu.config.php',
     'order' => false,
   ),
+  'showType_protected' => 
+  array (
+    'id' => 'showType_protected',
+    'parent' => 'docToolbar_showBtn__menu',
+    'data' => 'showType_protected.config.php',
+    'order' => 1,
+  ),
+  'showType_inherited' => 
+  array (
+    'id' => 'showType_inherited',
+    'parent' => 'docToolbar_showBtn__menu',
+    'data' => 'showType_inherited.config.php',
+    'order' => 4,
+  ),
+  'sgowType_sep' => 
+  array (
+    'id' => 'sgowType_sep',
+    'parent' => 'docToolbar_showBtn__menu',
+    'data' => 'sgowType_sep.config.php',
+    'order' => 3,
+  ),
+  'showType_deprecated' => 
+  array (
+    'id' => 'showType_deprecated',
+    'parent' => 'docToolbar_showBtn__menu',
+    'data' => 'showType_deprecated.config.php',
+    'order' => 5,
+  ),
   'showType_private' => 
   array (
     'id' => 'showType_private',
@@ -244,39 +286,18 @@
     'data' => 'showType_public.config.php',
     'order' => 0,
   ),
-  'showType_protected' => 
-  array (
-    'id' => 'showType_protected',
-    'parent' => 'docToolbar_showBtn__menu',
-    'data' => 'showType_protected.config.php',
-    'order' => 1,
-  ),
-  'showType_deprecated' => 
-  array (
-    'id' => 'showType_deprecated',
-    'parent' => 'docToolbar_showBtn__menu',
-    'data' => 'showType_deprecated.config.php',
-    'order' => 5,
-  ),
-  'sgowType_sep' => 
-  array (
-    'id' => 'sgowType_sep',
-    'parent' => 'docToolbar_showBtn__menu',
-    'data' => 'sgowType_sep.config.php',
-    'order' => 3,
-  ),
-  'showType_inherited' => 
-  array (
-    'id' => 'showType_inherited',
-    'parent' => 'docToolbar_showBtn__menu',
-    'data' => 'showType_inherited.config.php',
-    'order' => 4,
-  ),
   'editClassDesctiptionBtn__menu' => 
   array (
     'id' => 'editClassDesctiptionBtn__menu',
     'parent' => 'editClassDesctiptionBtn',
     'data' => 'editClassDesctiptionBtn__menu.config.php',
+    'order' => false,
+  ),
+  'htmlEditor__docked' => 
+  array (
+    'id' => 'htmlEditor__docked',
+    'parent' => 'htmlEditor',
+    'data' => 'htmlEditor__docked.config.php',
     'order' => false,
   ),
   'htmlEditorText' => 
@@ -285,13 +306,6 @@
     'parent' => 'htmlEditor',
     'data' => 'htmlEditorText.config.php',
     'order' => 1,
-  ),
-  'htmlEditor__docked' => 
-  array (
-    'id' => 'htmlEditor__docked',
-    'parent' => 'htmlEditor',
-    'data' => 'htmlEditor__docked.config.php',
-    'order' => false,
   ),
   'htmlEditorCancel__menu' => 
   array (
@@ -307,19 +321,19 @@
     'data' => 'htmlEditorSave__menu.config.php',
     'order' => false,
   ),
-  'htmlEditorFill' => 
-  array (
-    'id' => 'htmlEditorFill',
-    'parent' => 'htmlEditorToolbar',
-    'data' => 'htmlEditorFill.config.php',
-    'order' => false,
-  ),
   'htmlEditorSave' => 
   array (
     'id' => 'htmlEditorSave',
     'parent' => 'htmlEditorToolbar',
     'data' => 'htmlEditorSave.config.php',
     'order' => 1,
+  ),
+  'htmlEditorFill' => 
+  array (
+    'id' => 'htmlEditorFill',
+    'parent' => 'htmlEditorToolbar',
+    'data' => 'htmlEditorFill.config.php',
+    'order' => false,
   ),
   'htmlEditorCancel' => 
   array (
@@ -342,13 +356,6 @@
     'data' => 'center.config.php',
     'order' => 2,
   ),
-  'main__docked' => 
-  array (
-    'id' => 'main__docked',
-    'parent' => 'main',
-    'data' => 'main__docked.config.php',
-    'order' => 0,
-  ),
   'navigation' => 
   array (
     'id' => 'navigation',
@@ -356,12 +363,12 @@
     'data' => 'navigation.config.php',
     'order' => 1,
   ),
-  'search' => 
+  'main__docked' => 
   array (
-    'id' => 'search',
-    'parent' => 'mainToolbar',
-    'data' => 'search.config.php',
-    'order' => 6,
+    'id' => 'main__docked',
+    'parent' => 'main',
+    'data' => 'main__docked.config.php',
+    'order' => 0,
   ),
   'versionSelectorLabel' => 
   array (
@@ -369,13 +376,6 @@
     'parent' => 'mainToolbar',
     'data' => 'versionSelectorLabel.config.php',
     'order' => 4,
-  ),
-  'mainToolBarLangLabel' => 
-  array (
-    'id' => 'mainToolBarLangLabel',
-    'parent' => 'mainToolbar',
-    'data' => 'mainToolBarLangLabel.config.php',
-    'order' => 2,
   ),
   'langSelector' => 
   array (
@@ -398,12 +398,26 @@
     'data' => 'mainToolbarLabel.config.php',
     'order' => false,
   ),
+  'mainToolBarLangLabel' => 
+  array (
+    'id' => 'mainToolBarLangLabel',
+    'parent' => 'mainToolbar',
+    'data' => 'mainToolBarLangLabel.config.php',
+    'order' => 2,
+  ),
   'versionSelector' => 
   array (
     'id' => 'versionSelector',
     'parent' => 'mainToolbar',
     'data' => 'versionSelector.config.php',
     'order' => 5,
+  ),
+  'search' => 
+  array (
+    'id' => 'search',
+    'parent' => 'mainToolbar',
+    'data' => 'search.config.php',
+    'order' => 6,
   ),
   'mainToolbar' => 
   array (
@@ -447,12 +461,12 @@
     'data' => 'textEditorSaveBtn__menu.config.php',
     'order' => 0,
   ),
-  'textEditorCancelBtn' => 
+  'textEditorSaveBtn' => 
   array (
-    'id' => 'textEditorCancelBtn',
+    'id' => 'textEditorSaveBtn',
     'parent' => 'textEditorToolbar',
-    'data' => 'textEditorCancelBtn.config.php',
-    'order' => 2,
+    'data' => 'textEditorSaveBtn.config.php',
+    'order' => 1,
   ),
   'textEditorFill' => 
   array (
@@ -461,12 +475,12 @@
     'data' => 'textEditorFill.config.php',
     'order' => 0,
   ),
-  'textEditorSaveBtn' => 
+  'textEditorCancelBtn' => 
   array (
-    'id' => 'textEditorSaveBtn',
+    'id' => 'textEditorCancelBtn',
     'parent' => 'textEditorToolbar',
-    'data' => 'textEditorSaveBtn.config.php',
-    'order' => 1,
+    'data' => 'textEditorCancelBtn.config.php',
+    'order' => 2,
   ),
   'textEditorToolbar' => 
   array (

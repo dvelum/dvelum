@@ -98,12 +98,15 @@ this.childObjects.docPanelMethodContainer.update(html);
 if(this.canEdit)
 {
   var el = this.childObjects.docPanelMethodContainer.getEl();
-  var btns = el.select('.methodEditor'); 
-  
-  btns.on('click', function( aEvent, aElement ){  
-    this.editMethodDescription(parseInt(aElement.getAttribute('data-id')));   
+  var btns = el.query('.methodEditor' , false); 
+  Ext.Array.each(btns, function(item){
+    Ext.get(item).on('click', function( aEvent, aElement ){  
+      me.editMethodDescription(parseInt(aElement.getAttribute('data-id')));   
+    },me);
   },me);
-  
 }
 
-this.childObjects.docPanelMethodContainer.getEl().select('.docs-methodDescription').addClsOnOver('docs-over');
+var labels = this.childObjects.docPanelMethodContainer.getEl().query('.docs-methodDescription');
+Ext.Array.each(labels, function(item){
+    Ext.get(item).addClsOnOver('docs-over');
+},me);

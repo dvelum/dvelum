@@ -63,12 +63,14 @@ this.childObjects.docPanelPropertyContainer.update(html);
 if(this.canEdit)
 {
   var el = this.childObjects.docPanelPropertyContainer.getEl();
-  var btns = el.select('.docPropertyEditor'); 
-  
-  btns.on('click', function( aEvent, aElement ){  
-    this.editPropertyDescription(parseInt(aElement.getAttribute('data-id')));   
+  var btns = el.query('.docPropertyEditor' , false); 
+  Ext.Array.each(btns, function(item){
+    Ext.get(item).on('click', function( aEvent, aElement ){  
+      me.editPropertyDescription(parseInt(aElement.getAttribute('data-id')));   
+    },me);
   },me);
 }
-
-
-this.childObjects.docPanelMethodContainer.getEl().select('.docs-propertyDescription').addClsOnOver('docs-over');
+var labels = this.childObjects.docPanelMethodContainer.getEl().query('.docs-propertyDescription');
+Ext.Array.each(labels, function(item){
+    Ext.get(item).addClsOnOver('docs-over');
+},me);

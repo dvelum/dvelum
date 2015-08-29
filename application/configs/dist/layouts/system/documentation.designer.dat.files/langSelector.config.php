@@ -9,6 +9,7 @@
     array (
       'dictionary' => 'sysdocs_language',
       'showAll' => false,
+      'store' => '[new:] langsStore',
       'valueField' => 'id',
       'displayField' => 'title',
       'forceSelection' => true,

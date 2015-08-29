@@ -2,15 +2,16 @@ if(!id){
   return;
 }
 
+var labels = this.childObjects.docPanelMethodContainer.getEl().query('.docs-methodDescription' , false);
+Ext.Array.each(labels, function(item){
+    Ext.get(item).removeCls('selected');
+});
 
-  var el = this.childObjects.docPanelMethodContainer.getEl();
-  el.select('div.docs-methodDescription').removeCls('selected'); 
-  var els = el.select('div[methodid='+id+']'); 
 
-
-if(els.getCount()){
-  this.getTargetEl().scrollTo('top' , els.elements[0].offsetTop);
-  els.addCls('selected');
+labels = this.childObjects.docPanelMethodContainer.getEl().query('div[methodid="'+id+'"]',false);
+if(labels.length){
+  this.getTargetEl().scrollTo('top' , labels[0].dom.offsetTop);
+  Ext.get(labels[0]).addCls('selected');
 }
 
 
