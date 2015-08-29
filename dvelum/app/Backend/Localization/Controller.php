@@ -33,7 +33,7 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
     $result = array();
 
     foreach ($langs as $lang)
-        $result[] = array('id'=>$lang);
+      $result[] = array('id'=>$lang);
 
     return $result;
   }
@@ -80,7 +80,7 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
     try{
       $this->_manager->addRecord($dictionary , $key , $lang);
       $this->_router->runController('Backend_Packages_Controller' , 'lang');
-     // Response::jsonSuccess();
+      // Response::jsonSuccess();
     }catch(Exception $e){
       Response::jsonError($e->getMessage());
     }
@@ -93,14 +93,14 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
     $id = Request::post('id', Filter::FILTER_CLEANED_STR, false);
 
     if($dictionary === false || empty($dictionary) || $id ===false){
-        Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+      Response::jsonError($this->_lang->get('WRONG_REQUEST'));
     }
     try{
-        $this->_manager->removeRecord($dictionary , $id);
-        $this->_router->runController('Backend_Packages_Controller' , 'lang');
-       // Response::jsonSuccess();
+      $this->_manager->removeRecord($dictionary , $id);
+      $this->_router->runController('Backend_Packages_Controller' , 'lang');
+      // Response::jsonSuccess();
     }catch(Exception $e){
-        Response::jsonError($e->getMessage());
+      Response::jsonError($e->getMessage());
     }
   }
 
@@ -111,17 +111,17 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
     $data = Request::post('data', Filter::FILTER_RAW, false);
 
     if($dictionary === false || empty($dictionary) ||  $data ===false){
-        Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+      Response::jsonError($this->_lang->get('WRONG_REQUEST'));
     }
 
     $data = json_decode($data , true);
 
     try{
-        $this->_manager->updateRecords($dictionary , $data);
-        $this->_router->runController('Backend_Packages_Controller' , 'lang');
-        //Response::jsonSuccess();
+      $this->_manager->updateRecords($dictionary , $data);
+      $this->_router->runController('Backend_Packages_Controller' , 'lang');
+      //Response::jsonSuccess();
     }catch(Exception $e){
-        Response::jsonError($e->getMessage());
+      Response::jsonError($e->getMessage());
     }
   }
   /**
@@ -129,20 +129,58 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
    */
   public function createsubAction()
   {
-  	 $name = Request::post('name', Filter::FILTER_ALPHANUM, false);
+    $name = Request::post('name', Filter::FILTER_ALPHANUM, false);
 
-  	 if(empty($name))
-  	 	Response::jsonError($this->_lang->get('INVALID_VALUE_FOR_FIELD').' '.$this->_lang->get('DICTIONARY_NAME'));
+    if(empty($name))
+      Response::jsonError($this->_lang->get('INVALID_VALUE_FOR_FIELD').' '.$this->_lang->get('DICTIONARY_NAME'));
 
-  	 if($this->_manager->dictionaryExists($name))
-  	     Response::jsonError($this->_lang->get('DICTIONARY_EXISTS'));
+    if($this->_manager->dictionaryExists($name))
+      Response::jsonError($this->_lang->get('DICTIONARY_EXISTS'));
 
-  	 try{
-  	     $this->_manager->createDictionary($name);
-  	 } catch (Exception $e){
-  	     Response::jsonError($e->getMessage());
-  	 }
+    try{
+      $this->_manager->createDictionary($name);
+    } catch (Exception $e){
+      Response::jsonError($e->getMessage());
+    }
 
-  	 Response::jsonSuccess();
+    Response::jsonSuccess();
+  }
+
+  /**
+   * Rebuild lang files
+   */
+  public function compileLangAction()
+  {
+    $this->_checkCanEdit();
+
+    $jsPath = $this->_configMain->get('js_lang_path');
+
+    $lManager = new Backend_Localization_Manager($this->_configMain);
+    $langs = $lManager->getLangs(false);
+
+    foreach ($langs as $lang)
+    {
+      $name = $lang;
+      $dictionary = Lang::storage()->get( $lang .'.php');
+      Lang::addDictionary($name, $dictionary);
+
+      $filePath = $jsPath . $lang .'.js';
+
+      $dir = dirname($lang);
+      if(!empty($dir) && $dir!=='.' && !is_dir($jsPath.'/'.$dir))
+      {
+        mkdir($jsPath.'/'.$dir , 0755 , true);
+      }
+
+      if(strpos($name , '/')===false){
+        $varName = 'appLang';
+      }else{
+        $varName = basename($name).'Lang';
+      }
+
+      if(!@file_put_contents($filePath, 'var '.$varName.' = '.Lang::lang($name)->getJsObject().';'))
+        Response::jsonError($this->_lang->get('CANT_WRITE_FS') . ' ' . $filePath);
+    }
+    Response::jsonSuccess();
   }
 }

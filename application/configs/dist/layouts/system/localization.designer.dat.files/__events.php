@@ -9,4 +9,5 @@
   'addWindowSaveBtn' => 'addWindowSaveBtn.events.php',
   'saveBtn' => 'saveBtn.events.php',
   'addDictionaryBtn' => 'addDictionaryBtn.events.php',
+  'compileLangBtn' => 'compileLangBtn.events.php',
 ); 

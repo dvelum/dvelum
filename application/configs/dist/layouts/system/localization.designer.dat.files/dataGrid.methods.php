@@ -1,7 +1,7 @@
 <?php return array (
-  'name' => 'addSubDictionary',
-  'code' => 'dataGrid.methods.addSubDictionary.js',
-  'description' => 'Create sub dictionary',
+  'name' => 'compileLang',
+  'code' => 'dataGrid.methods.compileLang.js',
+  'description' => 'Rebuild lang files',
   'params' => 
   array (
   ),
