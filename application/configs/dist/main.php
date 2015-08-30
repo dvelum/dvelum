@@ -220,7 +220,7 @@ return array(
     /*
      * Use foreign keys
      */
-    'foreign_keys' => true,
+    'foreign_keys' => false,
     /*
      * www root
      */

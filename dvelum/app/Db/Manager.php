@@ -36,7 +36,7 @@ class Db_Manager implements Db_Manager_Interface
             */
             if($this->_appConfig->get('development')){
                 $db->getProfiler()->setEnabled(true);
-                Debug::setDbProfiler($db->getProfiler());
+                Debug::addDbProfiler($db->getProfiler());
             }
             $this->_dbConnections[$workMode][$name] = $db;            
         }        

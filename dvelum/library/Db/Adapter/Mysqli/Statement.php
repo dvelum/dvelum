@@ -112,7 +112,7 @@ class Db_Adapter_Mysqli_Statement extends Zend_Db_Statement_Mysqli
          * Simple case - no query profiler to manage.
          */
         if ($this->_queryId === null) {
-            return $this->_execute($params);
+            return $this->_executeFast($params);
         }
         /*
          * Do the same thing, but with query profiler
