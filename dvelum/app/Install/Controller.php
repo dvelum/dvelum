@@ -184,6 +184,11 @@ class Install_Controller {
                 'accessType'=>'allowed',
                 'msg'=>$this->localization->get('WARNING')
             ),
+            array(
+                'name'=>'json',
+                'accessType'=>'required',
+                'msg'=>false
+            )
         );
 
         $writablePaths = array(
