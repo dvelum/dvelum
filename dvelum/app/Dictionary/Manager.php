@@ -151,15 +151,11 @@ class Dictionary_Manager
 		if(isset(self::$_validDictionary[$name]))
 			return true;
 
-		if(Config::storage()->exists($this->_path . $this->_baseDir . 'index/' . $name . '.php'))
-		{
+		if(Config::storage()->exists($this->_baseDir . 'index/' . $name . '.php')) {
 			self::$_validDictionary[$name] = true;
 			return true;
 		}
-		else
-		{
-			return false;
-		}	
+		return false;
 	}
 	/**
 	 * Remove dictionary

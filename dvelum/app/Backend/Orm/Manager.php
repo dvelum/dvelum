@@ -59,21 +59,24 @@ class Backend_Orm_Manager
 	}
 	/**
 	 * Get list of localization files
-	 * @todo UPDATE with new Lang storage!!
 	 */
 	public function getLocalisations()
 	{
-		$langDir = Registry::get('main' , 'config')->get('lang_path');
-		$dirs = File::scanFiles($langDir,false,false,File::Dirs_Only);
-	
-		$result = array();
-		
-		if(!empty($dirs))
-			foreach ($dirs as $path)
-				if(file_exists($path . DIRECTORY_SEPARATOR . 'objects.php'))
-					$result[] = $path . DIRECTORY_SEPARATOR . 'objects.php';
-			
-		return $result;
+		$paths = Lang::storage()->getPaths();
+		$dirs = [];
+
+		foreach($paths as $path){
+			$data =  File::scanFiles($path,false,false,File::Dirs_Only);
+			foreach($data as $k=>&$v){
+				if(!file_exists($v . '/objects.php')){
+					unset($data[$k]);
+					continue;
+				}
+				$v = str_replace($path , '',$v) .'/objects.php';
+			}
+			$dirs = array_merge($dirs,$data);
+		}
+		return array_unique($dirs);
 	}
 	
 	/**
@@ -139,7 +142,9 @@ class Backend_Orm_Manager
 	 * @return bool  - 0 - success or error code
 	 */
 	public function removeField($objectName , $fieldName)
-	{		
+	{
+		$localisations = $this->getLocalisations();
+
 		try{
 			$objectCfg = Db_Object_Config::getInstance($objectName);
 		}catch (Exception $e){
@@ -150,10 +155,7 @@ class Backend_Orm_Manager
 			return self::ERROR_INVALID_FIELD;
 		
 		$localisations = $this->getLocalisations();
-		foreach ($localisations as $file)
-			if(!is_writable($file))
-				return self::ERROR_FS_LOCALISATION;
-		
+
 		$objectCfg->removeField($fieldName);
 		 
 		if(!$objectCfg->save())
@@ -162,7 +164,7 @@ class Backend_Orm_Manager
 		$localisationKey = strtolower($objectName);
 		foreach ($localisations as $file)
 		{
-			$cfg = Config::factory(Config::File_Array, $file);
+			$cfg = Lang::storage()->get($file);
 			if($cfg->offsetExists($localisationKey))
 			{
 				$cfgArray = $cfg->get($localisationKey);
@@ -170,7 +172,9 @@ class Backend_Orm_Manager
 				{
 					unset($cfgArray['fields'][$fieldName]);
 					$cfg->set($localisationKey, $cfgArray);
-					$cfg->save();
+					if(!$cfg->save()){
+						return self::ERROR_FS_LOCALISATION;
+					}
 				}
 			}			
 		}	
