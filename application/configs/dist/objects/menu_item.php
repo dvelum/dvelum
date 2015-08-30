@@ -51,6 +51,15 @@
       'db_default' => false,
       'db_unsigned' => true,
     ),
+    'published' =>
+    array (
+        'type' => '',
+        'unique' => '',
+        'db_isNull' => false,
+        'required' => false,
+        'db_type' => 'boolean',
+        'db_default' => 0,
+    ),
     'order' => 
     array (
       'type' => '',
