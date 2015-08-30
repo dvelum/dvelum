@@ -22,12 +22,15 @@ class Backend_Orm_Manager
 			return self::ERROR_HAS_LINKS;
 			
 		$localisations = $this->getLocalisations();
-		foreach ($localisations as $file)
-			if(!is_writable($file))
+		$langWritePath = Lang::storage()->getWrite();
+		$objectsWrite = Config::storage()->getWrite();
+
+		foreach ($localisations as $file){
+			if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file))
 				return self::ERROR_FS_LOCALISATION;
-				
-		$path = Registry::get('main' , 'config')->get('object_configs') . $name . '.php';
-		 
+		}
+
+		$path = $objectsWrite . Registry::get('main' , 'config')->get('object_configs') . $name . '.php';
 
 		try{
 		  $cfg = Db_Object_Config::getInstance($name);
@@ -49,7 +52,7 @@ class Backend_Orm_Manager
 		$localisationKey = strtolower($name);
 		foreach ($localisations as $file) 
 		{		
-			$cfg = Config::factory(Config::File_Array, $file);
+			$cfg = Lang::storage()->get($file);
 			if($cfg->offsetExists($localisationKey)){
 				$cfg->remove($localisationKey);
 				$cfg->save();
