@@ -47,10 +47,6 @@ class Config_Storage
         if(!$merge)
             $list = array_reverse($list);
 
-      /*  echo '<pre>';
-        print_r($list);
-        var_dump($localPath);
-        */
         foreach($list as $path)
         {
             if(!file_exists($path . $localPath))
@@ -99,7 +95,7 @@ class Config_Storage
      */
     public function create($localPath)
     {
-        $this->config = new Config_file_Array($this->getWrite() . $localPath);
+        return Config_File_Array::create($this->getWrite() . $localPath);
     }
 
     /**

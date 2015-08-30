@@ -43,7 +43,7 @@ class Config_File_Array extends Config_File
      */
     public function save()
     {
-		if(!empty($this->_applyTo))
+		if(!empty($this->_applyTo) && file_exists($this->_applyTo))
 		{
 			$src = include $this->_applyTo;
 			$data = [];
@@ -91,13 +91,12 @@ class Config_File_Array extends Config_File
     static public function create($file)
     {
 		$dir = dirname($file);
-
 		if(!file_exists($dir) && !@mkdir($dir,0755, true))
 			throw new Exception('Cannot create '.$dir);
 
     	if(File::getExt($file)!=='.php')
     		throw new Exception('Invalid file name');
-    	
+
     	if(Utils::exportArray($file, array())!==false)
     	    return true;
 

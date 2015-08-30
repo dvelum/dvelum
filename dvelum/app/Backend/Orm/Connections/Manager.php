@@ -41,14 +41,15 @@ class Backend_Orm_Connections_Manager
      */
     public function removeConnection($id)
     {
+        $writePath = Config::storage()->getWrite();
         $errors = array();
         /*
          * Check for write permissions before operation
          */
         foreach ($this->_config as $devType =>$data)
         {
-            $file = $data['dir'] . $id .'.php';
-            if(file_exists($file) && !is_writable($file))
+            $file = $writePath . $data['dir'] . $id .'.php';
+            if(!file_exists($file) && !is_writable($file))
                 $errors[] = $file;
         }
         
@@ -57,7 +58,7 @@ class Backend_Orm_Connections_Manager
              
         foreach ($this->_config as $devType=>$data)
         {
-            $file = $data['dir'] . $id .'.php';
+            $file = $writePath . $data['dir'] . $id .'.php';
             if(!@unlink($file)){
                 throw new Exception(Lang::lang()->get('CANT_WRITE_FS') . ' ' . $file);
             }
@@ -90,7 +91,7 @@ class Backend_Orm_Connections_Manager
         
         foreach ($this->_config as $devType=>$data)
         {
-            if(!Config_File_Array::create($this->_config[$devType]['dir'] . $id . '.php'))
+            if(!Config::storage()->create($this->_config[$devType]['dir'] . $id . '.php'))
                 return false;
             
             $c = $this->getConnection($devType, $id);
@@ -103,7 +104,8 @@ class Backend_Orm_Connections_Manager
                     'prefix'   => '',
                     'adapter'  => 'Mysqli',
                     'adapterNamespace' => 'Db_Adapter'
-            )); 
+            ));
+
             if(!$c->save())
                 return false;
         }
@@ -117,21 +119,22 @@ class Backend_Orm_Connections_Manager
      */
     public function renameConnection($oldId , $newId)
     {
+        $writePath = Config::storage()->getWrite();
         /**
          * Check permissions
          */
         foreach ($this->_config as $devType=>$data)
         {
-            if(!is_writable($data['dir']) 
+            if(!is_writable($writePath . $data['dir'])
                || $this->connectionExists($devType, $newId) 
-               || !file_exists($data['dir'] . $oldId . '.php')
-               || !is_writable($data['dir'] . $oldId . '.php')
+               || !file_exists($writePath . $data['dir'] . $oldId . '.php')
+               || !is_writable($writePath . $data['dir'] . $oldId . '.php')
             ){
                 return false;
             }
         }       
         foreach ($this->_config as $devType=>$data){
-            rename($this->_config[$devType]['dir'] . $oldId . '.php', $this->_config[$devType]['dir'] . $newId . '.php');
+            rename($writePath .$this->_config[$devType]['dir'] . $oldId . '.php', $writePath.$this->_config[$devType]['dir'] . $newId . '.php');
         }       
         return true;
     }
