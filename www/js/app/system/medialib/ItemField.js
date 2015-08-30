@@ -68,7 +68,7 @@ Ext.define('app.medialib.ItemField', {
 	setRawValue: function(value)
 	{
 	    var me = this;
-	    value = Ext.value(value, '');
+	   // value = Ext.value(value, '');
 	    me.rawValue = value;
 	    if (me.rendered) {
 	    	this.loadInfo();
