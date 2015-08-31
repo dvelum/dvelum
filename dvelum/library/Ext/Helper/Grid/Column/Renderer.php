@@ -4,6 +4,7 @@ class Ext_Helper_Grid_Column_Renderer
     const TYPE_JSCALL = 'jscall';
     const TYPE_JSCODE = 'jscode';
     const TYPE_ADAPTER = 'adapter';
+    const TYPE_DICTIONARY = 'dictionary';
 
     protected $type = 'adapter';
     protected $value = '';
@@ -63,6 +64,10 @@ class Ext_Helper_Grid_Column_Renderer
                 ' . $this->value .'
                 }';
                 break;
+            case self::TYPE_DICTIONARY:
+                $dictionaryRenderer = new Ext_Component_Dictionary_Renderer($this->value);
+                $string = $dictionaryRenderer->__toString();
+                break;
         }
         return $string;
     }
@@ -72,7 +77,8 @@ class Ext_Helper_Grid_Column_Renderer
         return [
             self::TYPE_ADAPTER,
             self::TYPE_JSCALL,
-            self::TYPE_JSCODE
+            self::TYPE_JSCODE,
+            self::TYPE_DICTIONARY
         ];
     }
 }

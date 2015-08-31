@@ -117,6 +117,21 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		}
 		Response::jsonArray($data);
 	}
+
+	/**
+	 * Get list of accepted dictionaries for cell renderer
+	 */
+	public function dictionariesAction()
+	{
+		$manager = Dictionary_Manager::factory();
+		$data = array();
+		$list = $manager->getList();
+
+		foreach($list as $name=>$path){
+			$data[] = array('id'=>$path , 'title'=>$path);
+		}
+		Response::jsonSuccess($data);
+	}
 	/**
 	 * Change column width
 	 */
@@ -325,6 +340,9 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 				'type'=> $renderer->getType(),
 			];
 			switch($renderer->getType()){
+				case Ext_Helper_Grid_Column_Renderer::TYPE_DICTIONARY:
+					$data['dictionary'] = $renderer->getValue();
+					break;
 				case Ext_Helper_Grid_Column_Renderer::TYPE_ADAPTER:
 					$data['adapter'] = $renderer->getValue();
 					break;
@@ -362,6 +380,9 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		$rendererHelper->setType($type);
 
 		switch($type){
+			case Ext_Helper_Grid_Column_Renderer::TYPE_DICTIONARY:
+				$rendererHelper->setValue(Request::post('dictionary' , Filter::FILTER_RAW , ''));
+				break;
 			case Ext_Helper_Grid_Column_Renderer::TYPE_ADAPTER:
 				$rendererHelper->setValue(Request::post('adapter' , Filter::FILTER_RAW , ''));
 				break;

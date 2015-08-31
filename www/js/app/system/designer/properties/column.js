@@ -78,12 +78,16 @@ Ext.define('designer.properties.GridColumn',{
 		this.callParent();		
 	},
 	showRendererWindow:function(){
-		Ext.create('designer.grid.column.RendererWindow',{
+		var win = Ext.create('designer.grid.column.RendererWindow',{
 			title:desLang.renderer,
+			modal:true,
 			objectName : this.objectName,
 			columnId: this.extraParams.id,
 			controllerUrl:this.controllerUrl
-		}).show().toFront();
+		});
+		win.show().toFront();
+		Ext.windowManager.register(win);
+		Ext.windowManager.bringToFront(win);
 	},
 	showItemsWindow:function()
 	{			

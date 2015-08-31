@@ -38,6 +38,29 @@ Ext.define('designer.grid.column.RendererWindow', {
             }]
         });
 
+        this.dictionaryStore = Ext.create('Ext.data.Store',{
+            model:'app.comboStringModel',
+            proxy: {
+                type: 'ajax',
+                url:this.controllerUrl + 'dictionaries',
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data',
+                    idProperty: 'id'
+                },
+                extraParams:{
+                    object:this.objectName
+                },
+                simpleSortMode: true
+            },
+            remoteSort: false,
+            autoLoad: true,
+            sorters: [{
+                property : 'title',
+                direction: 'DESC'
+            }]
+        });
+
         this.callEditor = Ext.create('designer.codeEditor',{
             readOnly:false,
             showSaveBtn:false,
@@ -74,6 +97,20 @@ Ext.define('designer.grid.column.RendererWindow', {
             name:'adapter'
         });
 
+        this.dictionaryAdapter = Ext.create('Ext.form.field.ComboBox',{
+            typeAhead: true,
+            triggerAction: 'all',
+            selectOnTab: true,
+            forceSelection:true,
+            queryMode:'local',
+            displayField:'title',
+            valueField:'id',
+            fieldLabel:desLang.dictionary,
+            store: this.dictionaryStore,
+            hidden:true,
+            name:'dictionary'
+        });
+
         this.typeBox = Ext.create('Ext.form.field.ComboBox',{
             fieldLabel:desLang.rendererType,
             name:'type',
@@ -86,7 +123,8 @@ Ext.define('designer.grid.column.RendererWindow', {
                 data:[
                     {id:'adapter',title:desLang.adapter},
                     {id:'jscall',title:desLang.jsCall},
-                    {id:'jscode',title:desLang.extRenderer}
+                    {id:'jscode',title:desLang.extRenderer},
+                    {id:'dictionary', title:desLang.dictionary}
                 ]
             }),
             queryMode:'local',
@@ -120,6 +158,7 @@ Ext.define('designer.grid.column.RendererWindow', {
         });
 
         this.codeEditorHead = Ext.create('Ext.form.FieldContainer',{
+            hidden:true,
             layout: {
                 type: 'hbox',
                 pack: 'start',
@@ -164,6 +203,7 @@ Ext.define('designer.grid.column.RendererWindow', {
             items:[
                 this.typeBox,
                 this.rendererAdapter,
+                this.dictionaryAdapter,
                 this.callEditor,
                 this.codeEditorHead,
                 this.editor
@@ -192,7 +232,11 @@ Ext.define('designer.grid.column.RendererWindow', {
         this.codeEditorHead.hide();
         this.editor.hide();
         this.callEditor.hide();
+        this.dictionaryAdapter.hide();
         switch(v){
+            case 'dictionary':
+                this.dictionaryAdapter.show();
+                break;
             case 'jscall':
                 this.callEditor.show();
                 break;
