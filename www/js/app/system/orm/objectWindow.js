@@ -486,7 +486,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 				name:'table',
 				fieldLabel:appLang.TABLE_NAME,
 				allowBlank:false,
-				vtype:'alpha',
+				vtype:'alphanum',
 				listeners:{
 					render:{fn:this.initTooltip,scope:this}
 				}
