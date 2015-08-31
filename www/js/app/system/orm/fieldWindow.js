@@ -187,6 +187,30 @@ Ext.define('app.crud.orm.FieldWindow', {
 			}
 		});
 
+		this.relationsType = this.fieldLinkType = Ext.create('Ext.form.RadioGroup', {
+			fieldLabel:appLang.RELATIONSHIP_TYPE,
+			columns: 1,
+			hidden:true,
+			items: [
+				{
+					boxLabel:appLang.RELATIONSHIP_POLYMORPHIC,
+					name:'relations_type',
+					inputValue:'polymorphic',
+					checked:true,
+					listeners:{
+						render:{fn:this.initTooltip,scope:this}
+					}
+				},{
+					boxLabel:appLang.RELATIONSHIP_MANY_TO_MANY,
+					name:'relations_type',
+					inputValue:'many_to_many',
+					listeners:{
+						render:{fn:this.initTooltip,scope:this}
+					}
+				}
+			]
+		});
+
 		this.fieldLinkType = Ext.create('Ext.form.RadioGroup', {
 			fieldLabel: appLang.LINK_TYPE,
 			columns: 2,
@@ -199,7 +223,8 @@ Ext.define('app.crud.orm.FieldWindow', {
 								if(newValue){
 									this.processFields(
 										[
-											this.fieldDictionaries
+											this.fieldDictionaries,
+											this.relationsType
 										],[
 											this.fieldObject,
 											this.fieldRequired
@@ -220,9 +245,10 @@ Ext.define('app.crud.orm.FieldWindow', {
 									this.processFields(
 										[
 											this.fieldDictionaries,
-											this.fieldRequired
+											this.fieldRequired,
 										],[
 											this.fieldObject,
+											this.relationsType
 										]
 									);
 								}
@@ -241,7 +267,8 @@ Ext.define('app.crud.orm.FieldWindow', {
 								if(newValue){
 									this.processFields(
 										[
-											this.fieldObject
+											this.fieldObject,
+											this.relationsType
 										],[
 											this.fieldDictionaries,
 											this.fieldRequired
@@ -501,6 +528,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 					]
 				},
 				this.fieldLinkType,
+				this.relationsType,
 				this.fieldObject,
 				this.fieldType,
 				this.validatorField,

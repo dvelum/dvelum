@@ -108,9 +108,15 @@ class Lang
 		
 		if(isset(self::$_loaders[$name]))
 		{
-			self::$_dictionaries[$name] = static::storage()->get(self::$_loaders[$name]['src'] , true , false);
-			$this->_dictionary = self::$_dictionaries[$name];
+
+			switch(self::$_loaders[$name]['type']){
+				case Config::File_Array :
+					self::$_dictionaries[$name] = static::storage()->get(self::$_loaders[$name]['src'] , true , true);
+					$this->_dictionary = self::$_dictionaries[$name];
+					break;
+			}
 		}
+
 	}
 	
 	/**

@@ -33,4 +33,5 @@
   31 => 'qtip_object_set_default',
   32 => 'qtip_object_use_acl',
   33 => 'qtip_object_acl',
+  34 => 'qtip_field_relations_type',
 ); 

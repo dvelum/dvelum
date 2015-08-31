@@ -560,5 +560,8 @@
   'ERROR' => 'Error',
   'ENC_KEY' => 'Encryption key',
   'ACL_ACCESS_DENIED' => 'Access denied by access control list (ACL)',
-  'GENERATE_MODULE' => 'Generate module'
+  'GENERATE_MODULE' => 'Generate module',
+  'RELATIONSHIP_TYPE' => 'Relationship type',
+  'RELATIONSHIP_POLYMORPHIC' => 'Polymorphic Associations',
+  'RELATIONSHIP_MANY_TO_MANY' => 'Many to many (associations table)',
 ); 

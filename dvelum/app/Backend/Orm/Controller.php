@@ -884,6 +884,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $newConfig['required'] = Request::post('required', 'boolean', false);
         $newConfig['validator'] = Request::post('validator', 'string', '');
 
+
         if($newConfig['type']=='link')
         {
         	if($newConfig['db_isNull'])
@@ -923,6 +924,12 @@ class Backend_Orm_Controller extends Backend_Controller
 	        	switch ($newConfig['link_config']['link_type'])
 	        	{
 	        		case Db_Object_Config::LINK_OBJECT_LIST:
+
+                        $newConfig['link_config']['relations_type'] = Request::post('relations_type' , 'string' , false);
+                        if(!in_array($newConfig['link_config']['relations_type'] , array('polymorphic','many_to_many') , true)){
+                            $newConfig['link_config']['relations_type'] = 'polymorphic';
+                        }
+
 	        			$newConfig['db_type'] = 'longtext';
 	        			$newConfig['db_isNull'] = false;
 	        			$newConfig['db_default'] = '';

@@ -79,7 +79,7 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
 
     try{
       $this->_manager->addRecord($dictionary , $key , $lang);
-      $this->_router->runController('Backend_Packages_Controller' , 'lang');
+      $this->compileLangAction();
       // Response::jsonSuccess();
     }catch(Exception $e){
       Response::jsonError($e->getMessage());

@@ -39,7 +39,8 @@ class Db_Object_Property
             'readonly',
             'connection',
             'use_db_prefix',
-            'hidden'
+            'hidden',
+            'relations_type'
     );
     public static $numberLength = array(
             'tinyint' => 3 , 

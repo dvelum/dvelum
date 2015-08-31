@@ -561,6 +561,8 @@
   'ERROR' => 'Ошибка',
   'ENC_KEY' => 'Ключ шифрования',
   'ACL_ACCESS_DENIED' => 'Доступ запрещен (ACL)',
-   'GENERATE_MODULE' => 'Сгенерировать модуль'
-
+  'GENERATE_MODULE' => 'Сгенерировать модуль',
+  'RELATIONSHIP_TYPE' => 'Тип связи',
+  'RELATIONSHIP_POLYMORPHIC' => 'Полиморфная связь',
+  'RELATIONSHIP_MANY_TO_MANY' => 'Многие ко многим (таблица связей)',
 ); 
