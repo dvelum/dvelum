@@ -194,7 +194,6 @@ Ext.define('app.medialib.CropWindow',{
 				region:'east',
 				xtype:'panel',
 				split:true,
-				width:this.extList[curImg][0] + 6,
 				frame:false,
 				layout:'border',
 				width:255,
