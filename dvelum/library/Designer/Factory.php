@@ -99,9 +99,9 @@ class Designer_Factory
 			{
 				if($project->getObject($name)->isExtendedComponent())
 				{
-					if($project->getObject($name)->getConfig()->defineOnly)
+					/*if($project->getObject($name)->getConfig()->defineOnly)
 						continue;
-
+					*/
 					$initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
 				}
 				$initCode.='

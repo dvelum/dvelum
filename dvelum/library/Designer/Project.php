@@ -722,7 +722,7 @@ class Designer_Project
 					$model->addField(Ext_Factory::object('Data_Field', $field->getConfig()->__toArray(true)));
 				}
 
-				$model->defineOnly = true;
+				//$model->defineOnly = true;
 				$this->_tree->addItem($modelName, Designer_Project::COMPONENT_ROOT , $model, -10);
 				$object->model = $modelName;
 				$object->resetFields();

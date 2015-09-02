@@ -135,9 +135,9 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 			{
 				if($project->getObject($name)->isExtendedComponent()){
 
-					if($project->getObject($name)->getConfig()->defineOnly)
+					/*if($project->getObject($name)->getConfig()->defineOnly)
 						continue;
-
+					*/
 					$initCode.= Ext_Code::appendRunNamespace($name).' = Ext.create("'.Ext_Code::appendNamespace($name).'",{});';
 				}
 				$initCode.='
