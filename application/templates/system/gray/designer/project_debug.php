@@ -198,13 +198,20 @@ if(!$project)
 
 $debugger = new Designer_Debugger($project);
 $wwwRoot = Request::wwwRoot();
+
+$res = Resource::getInstance();
+$res->addCss('/css/system/style.css' , 2);
+$res->addCss('/css/system/gray/style.css' , 3);
 ?>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<link rel="stylesheet" type="text/css" href="<?php echo $wwwRoot;?>css/system/default/style.css" />
+
 <script type="text/javascript" src="<?php echo $wwwRoot;?>js/lib/jquery-2.0.0.min.js"></script>
 <title>Project Debug</title>
+    <?php
+    echo $res->includeCss();
+    ?>
 </head>
 <body>
 <?php 

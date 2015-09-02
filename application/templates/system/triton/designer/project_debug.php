@@ -21,11 +21,11 @@ function recursiveElement(Designer_Debugger $debugger , $parent = 0)
                 </div>
             <div class="sep"></div>
             <div class="objectItem collapsed" id="o_item_'.$name.'">' . commentItem($debugger , $name);
-             
-            if($hasChilds)
-                $s.= ' <b>[Childs]</b>: <br>' . recursiveElement($debugger , $name);
-             
-         $s.='</div>
+
+        if($hasChilds)
+            $s.= ' <b>[Childs]</b>: <br>' . recursiveElement($debugger , $name);
+
+        $s.='</div>
         </div>';
     }
     return $s;
@@ -54,21 +54,21 @@ function commentItem(Designer_Debugger $debugger , $name)
 
        ';
 
-    
+
     if($debugger->isExtendedObject($name))
     {
-      $s.='
+        $s.='
       <div class="collapseButton" data-id="'.$name.'" data-prefix="extmethods_">
       <img id="img_extmethods_'.$name.'"  src="'.$wwwRoot.'i/system/plus.gif" align="left"><div class="catName">[Local JS Methods]</div>
       </div>
       <div class="sep"></div>
       '.objectLocalMethods($debugger->getObjectLocalMethods($name) , 'extmethods_'.$name).
-      '<div class="sep"></div>';
-      
+            '<div class="sep"></div>';
+
     }
-    
-       
-               
+
+
+
     $s.='<div class="collapseButton" data-id="'.$name.'" data-prefix="vars_">
            <img id="img_vars_'.$name.'"  src="'.$wwwRoot.'i/system/plus.gif" align="left"> <div class="catName">[PHP Variables]</div>
        </div>
@@ -83,7 +83,7 @@ function commentItem(Designer_Debugger $debugger , $name)
        '.objectMethods($debugger->getObjectMethods($name) , 'method_'.$name).' 
                            
        <div class="sep"></div>';
-    
+
     return $s;
 }
 
@@ -99,7 +99,7 @@ function objectProperties(array $data , $id)
                 <td width="150">'.$key.'</td>
                 <td>'.$value.' &nbsp;</td>
              </tr>';
-    
+
     $s.='</table>';
     return $s;
 }
@@ -119,13 +119,13 @@ function objectEvents(array $data , $id)
         if(!empty($event['params']))
             foreach ($event['params'] as $name=>$type)
                 $paramsList[] = '<span style="color:green;">'.$type.'</span> '.$name;
-        
-        
+
+
         if(isset($event['is_local']) && $event['is_local'])
-          $isLocal = 'Yes';
+            $isLocal = 'Yes';
         else
-          $isLocal = '&nbsp;';
-        
+            $isLocal = '&nbsp;';
+
         $s.='<tr class="row" >
                 <td width="20">'.$isLocal.'</td>
                 <td width="120">'.$event['name'].'</td>
@@ -144,7 +144,7 @@ function objectVariables(array $data , $id)
              <th>Name</th>
              <th>Value</th>   
         </tr>';
-    
+
     foreach ($data as $item)
     {
         $s.='<tr class="row" >
@@ -179,14 +179,14 @@ function objectMethods(array $data , $id)
 
 function objectLocalMethods(array $methods , $id)
 {
-  $s='<div id="'.$id.'" style=="width:100%" class="collapsed">';
-  if(!empty($methods)){
-    foreach ($methods as $item){
-      $s.='<div><pre>'.$item->getJsDoc().'<br>'.$item->getName().':function('.$item->getParamsLine().'){'."\n".Utils_String::addIndent($item->getCode())."\n".'}</pre></div>';
+    $s='<div id="'.$id.'" style=="width:100%" class="collapsed">';
+    if(!empty($methods)){
+        foreach ($methods as $item){
+            $s.='<div><pre>'.$item->getJsDoc().'<br>'.$item->getName().':function('.$item->getParamsLine().'){'."\n".Utils_String::addIndent($item->getCode())."\n".'}</pre></div>';
+        }
     }
-  }
-  $s.='</div>';
-  return $s;
+    $s.='</div>';
+    return $s;
 }
 
 
@@ -198,39 +198,46 @@ if(!$project)
 
 $debugger = new Designer_Debugger($project);
 $wwwRoot = Request::wwwRoot();
+
+$res = Resource::getInstance();
+$res->addCss('/css/system/style.css' , 2);
+$res->addCss('/css/system/gray/style.css' , 3);
 ?>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<link rel="stylesheet" type="text/css" href="<?php echo $wwwRoot;?>css/system/default/style.css" />
-<script type="text/javascript" src="<?php echo $wwwRoot;?>js/lib/jquery-2.0.0.min.js"></script>
-<title>Project Debug</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <script type="text/javascript" src="<?php echo $wwwRoot;?>js/lib/jquery-2.0.0.min.js"></script>
+    <title>Project Debug</title>
+    <?php
+    echo $res->includeCss();
+    ?>
 </head>
 <body>
-<?php 
+<?php
 
 if($debugger->getTree()->hasChilds(0))
     echo recursiveElement($debugger , 0);
 ?>
 <script type="text/javascript">
-$(document).ready(function(){	
-    $('.collapseButton').bind('click',function(){
-    	var dataId = $(this).attr('data-id');
-    	var dataPrefix = $(this).attr('data-prefix');    	
-    	var item = $('#' + dataPrefix + dataId);
+    $(document).ready(function(){
+        $('.collapseButton').bind('click',function(){
+            var dataId = $(this).attr('data-id');
+            var dataPrefix = $(this).attr('data-prefix');
+            var item = $('#' + dataPrefix + dataId);
 
-    	if(item.hasClass('collapsed')){
-    	    item.show();
-    	    $('#img_' + dataPrefix + dataId).attr('src' , '<?php echo $wwwRoot;?>i/system/minus.gif');
-    	    item.removeClass('collapsed');
-    	   
-    	}else{
-    		item.hide();
-    	    $('#img_' + dataPrefix + dataId).attr('src' , '<?php echo $wwwRoot;?>i/system/plus.gif');
-    	    item.addClass('collapsed');
-    	}
+            if(item.hasClass('collapsed')){
+                item.show();
+                $('#img_' + dataPrefix + dataId).attr('src' , '<?php echo $wwwRoot;?>i/system/minus.gif');
+                item.removeClass('collapsed');
+
+            }else{
+                item.hide();
+                $('#img_' + dataPrefix + dataId).attr('src' , '<?php echo $wwwRoot;?>i/system/plus.gif');
+                item.addClass('collapsed');
+            }
+        });
     });
-});
 </script>
 </body>
 </html>
