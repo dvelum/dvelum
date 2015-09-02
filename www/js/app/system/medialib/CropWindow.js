@@ -120,7 +120,7 @@ Ext.define('app.medialib.CropWindow',{
 		var cbItems = [];
 
 		this.extList = app.mediaConfig.image.sizes;
-
+		var lastSize = '';
 		for (i in this.extList )
 		{
 			if(typeof i == 'function'){
@@ -132,7 +132,11 @@ Ext.define('app.medialib.CropWindow',{
 				title:i+ ' ('+this.extList[i][0]+'x'+this.extList[i][1]+')' ,
 				id:i
 			});
+
+			lastSize = i;
 		}
+
+
 
 		this.comboFld = Ext.create('Ext.form.field.ComboBox',{
 			remote:false,
@@ -142,7 +146,7 @@ Ext.define('app.medialib.CropWindow',{
 			triggerAction:"all",
 			valueField:"id",
 			displayField:'title',
-			value:'medium',
+			value:lastSize,
 			store:Ext.create('Ext.data.Store',{
 				model:'app.comboStringModel',
 				data:cbItems
@@ -193,6 +197,7 @@ Ext.define('app.medialib.CropWindow',{
 				width:this.extList[curImg][0] + 6,
 				frame:false,
 				layout:'border',
+				width:255,
 				items:[
 					north ,
 					this.preview
