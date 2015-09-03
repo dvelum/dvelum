@@ -94,24 +94,19 @@ Ext.define('designer.codeEditor',{
 		}
 
 		var editor = CodeMirror.fromTextArea(document.getElementById(this.editorId), {
+			styleActiveLine: true,
 			lineNumbers: true,
 			lineWrapping: true,
 			matchBrackets: true,
 			readOnly:this.readOnly,
 			extraKeys: keymap,
-			onCursorActivity: function() {
-				hline = editor.setLineClass(hline, null);
-				editor.setLineClass(editor.getCursor().line, "activeline");
-				editor.matchHighlight("CodeMirror-matchhighlight");
-			},
+			highlightSelectionMatches: {showToken: /\w/},
 			onChange:function(){
 				me.onChange();
 			}
 		});
 
 		editor.setValue(this.sourceCode);
-
-		hline = editor.setLineClass(0, "activeline");
 
 		this.codeMirror = editor;
 		this.codeMirrorInit = true;
@@ -121,14 +116,18 @@ Ext.define('designer.codeEditor',{
 	},
 	syncEditor:function(){
 		var me = this;
+		me.codeMirror.setSize('100%',me.getEl().getHeight()-62);
+		me.codeMirror.refresh();
+		/*cm.setSize
 		var fnc = function(){
 			var scroller = me.codeMirror.getScrollerElement();
-			scroller.style.height = me.getEl().getHeight() - 54 + 'px';
+			scroller.style.height = me.getEl().getHeight()  + 'px';
 			scroller.style.width = me.getEl().getWidth() + 'px';
 			me.codeMirror.refresh();
 			me.updateLayout();
 		};
 		Ext.Function.createBuffered(fnc, 500)();
+		*/
 	},
 	getSelectedRange:function() {
 		return { from: this.codeMirror.getCursor(true), to: this.codeMirror.getCursor(false) };

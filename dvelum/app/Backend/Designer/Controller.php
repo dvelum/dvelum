@@ -14,14 +14,19 @@ class Backend_Designer_Controller extends Backend_Controller
 		 * External
 		 */
 		'/js/lib/CodeMirror/lib/codemirror.js', 
-		'/js/lib/CodeMirror/lib/util/formatting.js', 
-		'/js/lib/CodeMirror/lib/util/simple-hint.js',
-		'/js/lib/CodeMirror/lib/util/javascript-hint.js',
-		'/js/lib/CodeMirror/lib/util/searchcursor.js',
-		'/js/lib/CodeMirror/lib/util/match-highlighter.js',
-		'/js/lib/CodeMirror/lib/util/dialog.js',
-		'/js/lib/CodeMirror/lib/util/search.js',
+
+		'/js/lib/CodeMirror/addon/hint/show-hint.js',
+		'/js/lib/CodeMirror/addon/hint/javascript-hint.js',
+
+		'/js/lib/CodeMirror/addon/dialog/dialog.js',
+		'/js/lib/CodeMirror/addon/search/searchcursor.js',
+		'/js/lib/CodeMirror/addon/search/matchesonscrollbar.js',
+		'/js/lib/CodeMirror/addon/search/match-highlighter.js',
+		'/js/lib/CodeMirror/addon/selection/active-line.js',
+
 		'/js/lib/CodeMirror/mode/javascript/javascript.js',
+
+
 		'/js/lib/ext_ux/TreeCellEditing.js',
 		//'/js/lib/ext_ux/RowExpander.js',
 	);
@@ -113,8 +118,8 @@ class Backend_Designer_Controller extends Backend_Controller
 	    $this->_resource->addJs('/js/app/system/designer/lang/'.$this->_config->get('lang').'.js'  , 1);
 		$this->_resource->addCss('/js/app/system/designer/style.css' );		
 		$this->_resource->addCss('/js/lib/CodeMirror/lib/codemirror.css');
-		$this->_resource->addCss('/js/lib/CodeMirror/lib/util/dialog.css');
-		$this->_resource->addCss('/js/lib/CodeMirror/lib/util/simple-hint.css');
+		$this->_resource->addCss('/js/lib/CodeMirror/addon/dialog/dialog.css');
+		$this->_resource->addCss('/js/lib/CodeMirror/addon/hint/show-hint.css');
 		$this->_resource->addCss('/js/lib/CodeMirror/theme/eclipse.css');
 		
 		
