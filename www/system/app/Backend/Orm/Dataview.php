@@ -229,8 +229,19 @@ class Backend_Orm_Dataview extends Backend_Controller
 								{
 									$rec = @unserialize($rec);
 									if(!empty($rec))
-										foreach ($rec as $item)
-											$list[]='['.$item['id'].'] '.$item['title'];
+									{
+										$ids = Utils::fetchCol('id' , $rec);
+										if(!empty($ids)){
+											$objectsList = Db_Object::factory($cfg->getLinkedObject($name) , $ids);
+										}
+										foreach ($rec as $item){
+											if(isset($objectsList[$item['id']])){
+												$list[]='['.$item['id'].'] '.$objectsList[$item['id']]->getTitle();
+											}else{
+												$list[]='['.$item['id'].'] '.$item['title'].' (deleted)';
+											}
+										}
+									}
 								}
 								$row[$name] = implode(', ', $list);
 							}

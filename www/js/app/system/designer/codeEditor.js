@@ -101,8 +101,8 @@ Ext.define('designer.codeEditor',{
 			readOnly:this.readOnly,
 			extraKeys: keymap,
 			onCursorActivity: function() {
-				hline = editor.setLineClass(hlLine, null);
-				editor.setLineClass(editor.getCursor().line, "activeline");
+				editor.setLineClass(hline,null);
+				hline=editor.setLineClass(editor.getCursor().line,"activeline");
 				editor.matchHighlight("CodeMirror-matchhighlight");
 			},
 			onChange:function(){
