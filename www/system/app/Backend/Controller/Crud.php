@@ -331,7 +331,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
             if(!empty($data))
             {
-                $objectIds = Utils::fetchCol($primaryKey , $data);
+                $objectIds = Utils::fetchCol('id' , $data);
                 try{
                     $objects = Db_Object::factory($object ,$objectIds);
                 }catch (Exception $e){
