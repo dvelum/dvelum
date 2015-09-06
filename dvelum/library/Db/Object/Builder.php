@@ -174,6 +174,10 @@ class Db_Object_Builder
     if(! $this->tableExists())
       return false;
 
+    if(! $this->checkRelations()){
+      return false;
+    }
+
     $updateColumns = $this->prepareColumnUpdates();
     $updateIndexes = $this->prepareIndexUpdates();
     $engineUpdate = $this->prepareEngineUpdate();
@@ -526,6 +530,16 @@ class Db_Object_Builder
       catch(Exception $e)
       {
         $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+        return false;
+      }
+    }
+
+    $ralationsUpdate = $this->getObjectsUpdatesInfo();
+    if(!empty($ralationsUpdate)){
+      try{
+        $this->updateRelations($ralationsUpdate);
+      }catch (Exception $e){
+        $this->_errors[] = $e->getMessage();
         return false;
       }
     }
@@ -1139,5 +1153,149 @@ class Db_Object_Builder
       return false;
     else
       return $brokenFields;
+  }
+
+  /**
+   * Check relation objects
+   */
+  protected function checkRelations()
+  {
+    $list = $this->_objectConfig->getManyToMany();
+    if(!$list){
+       return true;
+    }
+
+    foreach($list as $objectName=>$fields)
+    {
+      if(!empty($fields)){
+        foreach($fields as $fieldName=>$linkType){
+          $relationObjectName = $this->_objectConfig->getRelationsObjects($fieldName);
+          if(!Db_Object_Config::configExists($relationObjectName)){
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  public function getObjectsUpdatesInfo()
+  {
+    $updates = [];
+    $list = $this->_objectConfig->getManyToMany();
+    foreach($list as $objectName=>$fields)
+    {
+      if(!empty($fields)){
+        foreach($fields as $fieldName=>$linkType){
+          $relationObjectName = $this->_objectConfig->getRelationsObjects($fieldName);
+          if(!Db_Object_Config::configExists($relationObjectName)){
+            $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
+          }
+        }
+      }
+    }
+    return $updates;
+  }
+
+  /**
+   * Create Db_Object`s for relations
+   * @throw Exception
+   * @param $list
+   */
+  protected function updateRelations($list)
+  {
+    $lang = Lang::lang();
+    $usePrefix = true;
+    $connection = $this->_objectConfig->get('connection');
+
+    $objectModel = Model::factory($this->_objectName);
+    $db = $objectModel->getDbConnection();
+    $tablePrefix = $objectModel->getDbPrefix();
+
+    $oConfigPath = Db_Object_Config::getConfigPath();
+    $configDir  = Config::storage()->getWrite() . $oConfigPath;
+
+    $fieldList = Config::storage()->get('objects/relations/fields.php');
+    $indexesList = Config::storage()->get('objects/relations/indexes.php');
+
+    if(empty($fieldList))
+      throw new Exception('Cannot get relation fields: ' . 'objects/relations/fields.php');
+
+    if(empty($indexesList))
+      throw new Exception('Cannot get relation indexes: ' . 'objects/relations/indexes.php');
+
+    $fieldList= $fieldList->__toArray();
+    $indexesList = $indexesList->__toArray();
+
+    $fieldList['source_id']['link_config']['object'] = $this->_objectName;
+
+
+    foreach($list as $fieldName=>$info)
+    {
+        $newObjectName = $info['name'];
+        $tableName = $newObjectName;
+
+        $linkedObject = $this->_objectConfig->getLinkedObject($fieldName);
+
+        $fieldList['target_id']['link_config']['object'] = $linkedObject;
+
+        $objectData = [
+          'parent_object' => $this->_objectName,
+          'connection'=>$connection,
+          'use_db_prefix'=>$usePrefix,
+          'disable_keys' => false,
+          'locked' => false,
+          'readonly' => false,
+          'primary_key' => 'id',
+          'table' => $newObjectName,
+          'engine' => 'InnoDB',
+          'rev_control' => false,
+          'link_title' => 'id',
+          'save_history' => false,
+          'system' => true,
+          'fields' => $fieldList,
+          'indexes' => $indexesList,
+        ];
+
+        $tables = $db->listTables();
+
+        if($usePrefix){
+          $tableName = $tablePrefix . $tableName;
+        }
+
+        if(in_array($tableName, $tables ,true))
+          throw new Exception($lang->get('INVALID_VALUE').' Table Name: '.$tableName .' '.$lang->get('SB_UNIQUE'));
+
+        if(file_exists($configDir . strtolower($newObjectName).'.php'))
+          throw new Exception($lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE'));
+
+        if(!is_dir($configDir) && !@mkdir($configDir, 0655, true)){
+          Response::jsonError($lang->get('CANT_WRITE_FS').' '.$configDir);
+        }
+
+        /*
+         * Write object config
+         */
+        if(!Config_File_Array::create($configDir. $newObjectName . '.php'))
+          Response::jsonError($lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php');
+
+        $cfg = Config::storage()->get($oConfigPath. strtolower($newObjectName).'.php' , false , false);
+
+        $cfg->setData($objectData);
+        $cfg->save();
+
+
+        $cfg = Db_Object_Config::getInstance($newObjectName);
+        $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->_objectName.' & '.$linkedObject);
+
+        if(!$cfg->save())
+          Response::jsonError($lang->get('CANT_WRITE_FS'));
+
+        /*
+         * Build database
+        */
+        $builder = new Db_Object_Builder($newObjectName);
+        $builder->build();
+    }
   }
 }

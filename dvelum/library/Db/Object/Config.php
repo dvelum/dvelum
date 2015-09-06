@@ -12,8 +12,9 @@ class Db_Object_Config
 {
     const LINK_OBJECT = 'object';
     const LINK_OBJECT_LIST = 'multy';
-    const Link_DICTIONARY = 'dictionary';
+    const LINK_DICTIONARY = 'dictionary';
     const DEFAULT_CONNECTION = 'default';
+    const RELATION_MANY_TO_MANY = 'many_to_many';
 
    /**
     * Path to configs
@@ -1373,5 +1374,62 @@ class Db_Object_Config
     public function createIv()
     {
         return Utils_String::createEncryptIv();
+    }
+
+    /**
+     * Check if object has ManyToMany relations
+     * @return bool
+     */
+    public function hasManyToMany()
+    {
+        $relations = $this->getManyToMany();
+        if(!empty($relations)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * Get manyToMany relations
+     */
+    public function getManyToMany()
+    {
+        $result = [];
+        $fieldConfigs = $this->getFieldsConfig();
+        foreach($fieldConfigs as $field=>$cfg)
+        {
+            if(isset($cfg['type']) && $cfg['type']==='link'
+                && isset($cfg['link_config']['link_type'])
+                && $cfg['link_config']['link_type'] == Self::LINK_OBJECT_LIST
+                && isset($cfg['link_config']['object'])
+                && isset($cfg['link_config']['relations_type'])
+                && $cfg['link_config']['relations_type'] == self::RELATION_MANY_TO_MANY
+            ){
+                $result[$cfg['link_config']['object']][$field] = self::RELATION_MANY_TO_MANY;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get name of relations Db_Object
+     * @param $field
+     * @return mixed  false || string
+     */
+    public function getRelationsObjects($field)
+    {
+        $cfg = $this->getFieldConfig($field);
+
+        if(isset($cfg['type']) && $cfg['type']==='link'
+            && isset($cfg['link_config']['link_type'])
+            && $cfg['link_config']['link_type'] == Self::LINK_OBJECT_LIST
+            && isset($cfg['link_config']['object'])
+            && isset($cfg['link_config']['relations_type'])
+            && $cfg['link_config']['relations_type'] == self::RELATION_MANY_TO_MANY
+        ){
+            return $this->getName().'_'.$field.'_to_'.$cfg['link_config']['object'];
+        }
+        return false;
     }
 }

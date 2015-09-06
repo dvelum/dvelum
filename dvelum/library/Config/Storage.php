@@ -67,6 +67,9 @@ class Config_Storage
                 $data = include $cfg;
             }else{
                 $cfgData = include $cfg;
+                if($data === false){
+                    $data = [];
+                }
                 $data = array_merge($data , $cfgData);
             }
         }

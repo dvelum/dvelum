@@ -143,7 +143,7 @@ class Db_Object_Expert
 
 		$data = array();
 
-		if(empty($multyLinks))
+		if(!empty($multyLinks))
 			foreach ($multyLinks as $record)
 				$data[$record['object']][] = $record['id'];
 
@@ -170,14 +170,14 @@ class Db_Object_Expert
 			if(empty($data))
 				continue;
 
-			foreach ($data as $oName => $ofields)
+			foreach ($data as $oName => $fields)
 			{
 				if($oName !== $objectName)
 					continue;
 
 				$associations[] =  array(
 					'object'=>$object,
-					'fields'=> $ofields
+					'fields'=> $fields
 				);
 			}
 		}
