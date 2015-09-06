@@ -1169,7 +1169,7 @@ class Db_Object_Builder
     {
       if(!empty($fields)){
         foreach($fields as $fieldName=>$linkType){
-          $relationObjectName = $this->_objectConfig->getRelationsObjects($fieldName);
+          $relationObjectName = $this->_objectConfig->getRelationsObject($fieldName);
           if(!Db_Object_Config::configExists($relationObjectName)){
             return false;
           }
@@ -1187,7 +1187,7 @@ class Db_Object_Builder
     {
       if(!empty($fields)){
         foreach($fields as $fieldName=>$linkType){
-          $relationObjectName = $this->_objectConfig->getRelationsObjects($fieldName);
+          $relationObjectName = $this->_objectConfig->getRelationsObject($fieldName);
           if(!Db_Object_Config::configExists($relationObjectName)){
             $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
           }

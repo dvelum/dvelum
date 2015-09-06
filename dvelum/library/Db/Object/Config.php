@@ -482,6 +482,24 @@ class Db_Object_Config
     }
 
     /**
+     * Check if field is ManyToMany relation
+     * @param $field
+     */
+    public function isManyToManyLink($field)
+    {
+        $cfg = $this->getFieldConfig($field);
+
+        if(isset($cfg['type']) && $cfg['type']==='link'
+            && is_array($cfg['link_config'])
+            && $cfg['link_config']['link_type'] === self::LINK_OBJECT_LIST
+            && $cfg['link_config']['relations_type'] === self::RELATION_MANY_TO_MANY
+        ){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Get the name of the object referenced by the field
      * @param string $field
      * @return string  or false on error
@@ -1417,7 +1435,7 @@ class Db_Object_Config
      * @param $field
      * @return mixed  false || string
      */
-    public function getRelationsObjects($field)
+    public function getRelationsObject($field)
     {
         $cfg = $this->getFieldConfig($field);
 

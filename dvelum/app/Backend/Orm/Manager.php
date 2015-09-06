@@ -38,7 +38,7 @@ class Backend_Orm_Manager
 			{
 				foreach($linkedFields as $field)
 				{
-					$relatedObject = $objectConfig->getRelationsObjects($field);
+					$relatedObject = $objectConfig->getRelationsObject($field);
 					$result = $this->removeObject($relatedObject , $deleteTable);
 
 					if($result!==0){
