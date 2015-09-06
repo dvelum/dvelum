@@ -564,4 +564,5 @@
   'RELATIONSHIP_TYPE' => 'Relationship type',
   'RELATIONSHIP_POLYMORPHIC' => 'Polymorphic Associations',
   'RELATIONSHIP_MANY_TO_MANY' => 'Many to many (associations table)',
+  'TARGET' => 'Target',
 ); 

@@ -565,4 +565,5 @@
   'RELATIONSHIP_TYPE' => 'Тип связи',
   'RELATIONSHIP_POLYMORPHIC' => 'Полиморфная связь',
   'RELATIONSHIP_MANY_TO_MANY' => 'Многие ко многим (таблица связей)',
+  'TARGET' => 'Назначение',
 ); 
