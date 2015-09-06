@@ -312,6 +312,7 @@ Ext.define('app.crud.orm.Main',{
 								response =  Ext.JSON.decode(response.responseText);
 								if(response.success){
 									store.removeAt(rowIndex);
+									store.load();
 								} else {
 									Ext.Msg.alert(appLang.MESSAGE , response.msg);
 								}

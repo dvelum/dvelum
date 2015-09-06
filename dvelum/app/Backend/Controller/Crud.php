@@ -113,8 +113,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                 if(empty($data[$field]))
                     continue;
 
-                $data[$field] = array_values(
-                        $this->_collectLinksData($data[$field] , $linkObject));
+                $data[$field] = array_values($this->_collectLinksData($data[$field] , $linkObject));
             }
         }
         $data['id'] = $obj->getId();
