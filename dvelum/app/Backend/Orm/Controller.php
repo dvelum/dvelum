@@ -307,6 +307,7 @@ class Backend_Orm_Controller extends Backend_Controller
     	    $info = $config->__toArray();
     	    $info['name'] = $object;
     	    $info['use_acl'] = false;
+
     	    if($info['acl'])
     	      $info['use_acl'] = true;
 
@@ -445,6 +446,8 @@ class Backend_Orm_Controller extends Backend_Controller
     	$useAcl = Request::post('use_acl', 'boolean', false);
     	$acl =  Request::post('acl', 'string', false);
 
+        $parentObject = Request::post('parent_object' , 'string', '');
+
 
     	$reqStrings = array('name','title','table', 'engine','connection');
     	$errors = array();
@@ -476,6 +479,7 @@ class Backend_Orm_Controller extends Backend_Controller
     	else
     	  $data['acl'] = false;
 
+        $data['parent_object'] = $parentObject;
     	$data['rev_control'] = $revControl;
     	$data['save_history'] = $saveHistory;
     	$data['link_title'] = $linkTitle;
@@ -706,7 +710,9 @@ class Backend_Orm_Controller extends Backend_Controller
         	$engineUpdate = $builder->prepareEngineUpdate();
         }
 
-        if(empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate)
+        $objects = $builder->getObjectsUpdatesInfo();
+
+        if(empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects))
              Response::jsonSuccess(array(),array('nothingToDo'=>true));
 
         $template = new Template();
@@ -714,6 +720,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $template->engineUpdate = $engineUpdate;
         $template->columns = $colUpd;
         $template->indexes = $indUpd;
+        $template->objects = $objects;
         $template->keys = $keyUpd;
         $template->tableExists = $tableExists;
         $template->tableName = $obj->getTable();
@@ -894,7 +901,7 @@ class Backend_Orm_Controller extends Backend_Controller
 	         */
         	$newConfig['link_config']['link_type'] = Request::post('link_type', 'str', 'object');
 
-        	if($newConfig['link_config']['link_type'] === Db_Object_Config::Link_DICTIONARY)
+        	if($newConfig['link_config']['link_type'] === Db_Object_Config::LINK_DICTIONARY)
         	{
         		$newConfig['link_config']['object'] = Request::post('dictionary', 'str', '');
         		$newConfig['db_type'] = 'varchar';

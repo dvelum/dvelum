@@ -391,14 +391,15 @@ class Db_Object_Store
         foreach ($updates as $k=>$v)
         {
         	$conf = $object->getConfig()->getFieldConfig($k);
+
             if($object->getConfig()->isMultiLink($k))
             {
-            	if(!$this->_clearLinks($object, $k,$conf['link_config']['object']))
+                if(!$this->_clearLinks($object, $k,$conf['link_config']['object']))
                     return false;
 
                 if(!empty($v) && is_array($v))
                     if(!$this->_createLinks($object , $k,$conf['link_config']['object'] , $v))
-                       return false;
+                        return false;
             }
         }
         return true;
@@ -413,21 +414,30 @@ class Db_Object_Store
      */
     protected function _clearLinks(Db_Object $object ,$objectField , $targetObjectName)
     {
-    	$linksObj  = new Db_Object($this->config['linksObject']);
 
-    	$db = $this->_getDbConnection($linksObj);
+        if($object->getConfig()->isManyToManyLink($objectField))
+        {
+            $linksObjModel = Model::factory($object->getConfig()->getRelationsObject($objectField));
+            $where = ' `source_id` = '.intval($object->getId());
+        }
+        else
+        {
+            $linksObjModel  = Model::factory($this->config['linksObject']);
 
-        $where = 'src = '.$db->quote($object->getName()).'
+            $db = $linksObjModel->getDbConnection();
+
+            $where = 'src = '.$db->quote($object->getName()).'
         		AND
         		 src_id = '.intval($object->getId()).'
         		AND
         		 src_field = '.$db->quote($objectField).'
                 AND
                  target = '.$db->quote($targetObjectName);
-
+        }
+        $db = $linksObjModel->getDbConnection();
 
         try{
-            $db->delete($linksObj->getTable() , $where);
+            $db->delete($linksObjModel->table() , $where);
             return true;
         } catch (Exception $e){
         	if($this->_log)
@@ -447,25 +457,41 @@ class Db_Object_Store
     {
         $order = 0;
         $links = array_keys($links);
-        $linksObj  = new Db_Object($this->config['linksObject']);
-        $db = $this->_getDbConnection($linksObj);
 
-        foreach ($links as $k=>$v)
+        $data = [];
+
+        if($object->getConfig()->isManyToManyLink($objectField))
         {
-            $data = array(
-                'src'=>$object->getName(),
-                'src_id'=>$object->getId(),
-                'src_field'=>$objectField,
-                'target'=>$targetObjectName,
-                'target_id'=>$v,
-                'order'=>$order
-            );
-
-            if(!$db->insert($linksObj->getTable(), $data))
-                return false;
-
-            $order++;
+            $linksObjModel = Model::factory($object->getConfig()->getRelationsObject($objectField));
+            foreach ($links as $k=>$v)
+            {
+                $data[] = array(
+                    'source_id'=>$object->getId(),
+                    'target_id'=>$v,
+                    'order_no'=>$order
+                );
+                $order++;
+            }
         }
+        else
+        {
+            $linksObjModel  = Model::factory($this->config['linksObject']);
+            foreach ($links as $k=>$v)
+            {
+                $data[] = array(
+                    'src'=>$object->getName(),
+                    'src_id'=>$object->getId(),
+                    'src_field'=>$objectField,
+                    'target'=>$targetObjectName,
+                    'target_id'=>$v,
+                    'order'=>$order
+                );
+                $order++;
+            }
+        }
+        if(!$linksObjModel->multiInsert($data))
+            return false;
+
         return true;
     }
     /**

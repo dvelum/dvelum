@@ -22,7 +22,7 @@ class Db_Object_Config_Translator
 	public function getTranslation()
 	{
 		if(!$this->_translation){
-			$this->_translation = Lang::storage()->get($this->_mainConfig);
+			$this->_translation = Lang::storage()->get($this->_mainConfig, true, true);
 		}
 		return $this->_translation;
 	}

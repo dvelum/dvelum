@@ -464,6 +464,9 @@ Ext.define('app.crud.orm.ObjectWindow', {
 				listeners:{
 					render:{fn:this.initTooltip,scope:this}
 				}
+			}, {
+				xtype:'hiddenfield',
+				name:'parent_object'
 			},{
 				xtype:'textfield',
 				name:'name',

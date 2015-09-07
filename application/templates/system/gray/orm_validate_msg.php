@@ -19,7 +19,7 @@ if(isset($this->columns) && !empty($this->columns)){
     $addStr='';
     $deleteStr='';
     $changeStr='';
-    
+
     foreach ($this->columns as $item){
         switch ($item['action']){
             case 'add'    : $addStr.= '<li>' . $item['name'] . '</li>';
@@ -30,7 +30,7 @@ if(isset($this->columns) && !empty($this->columns)){
                 break;       
         }
     }
-    
+
     if(strlen($deleteStr))
         echo '<h4>Fields to be deleted:</h4><ul class="ormUl">' , $deleteStr , '</ul>';
         
@@ -93,7 +93,26 @@ if(isset($this->keys) && !empty($this->keys))
 		echo '<h4>Foreign keys to be added:</h4><ul class="ormUl">' , $addStr , '</ul>';
 }
 
+if(isset($this->objects) && !empty($this->objects))
+{
+    $addStr='';
+    $deleteStr='';
 
+    foreach ($this->objects as $item){
+        switch ($item['action']){
+            case 'add'  : $addStr.='<li>' . $item['name'] . '</li><br>';
+                break;
+            case 'drop' : $deleteStr.='<li>' . $item['name'] . '</li><br>';
+                break;
+        }
+    }
+
+    if(strlen($deleteStr))
+        echo '<h4>Objects to be deleted:</h4><ul class="ormUl">' , $deleteStr , '</ul>';
+
+    if(strlen($addStr))
+        echo '<h4>Objects to be added:</h4><ul class="ormUl">' , $addStr , '</ul>';
+}
 
 ?>
 </div>

@@ -17,9 +17,37 @@ class Backend_Orm_Manager
 	 */
 	public function removeObject($name , $deleteTable = true)
 	{	
-		$assoc = Db_Object_Expert::getAssociatedStructures($name);
-		if(!empty($assoc))
-			return self::ERROR_HAS_LINKS;
+		//$assoc = Db_Object_Expert::getAssociatedStructures($name);
+		//if(!empty($assoc))
+		//	return self::ERROR_HAS_LINKS;
+
+		$objectConfig = Db_Object_Config::getInstance($name);
+		$manyToMany = $objectConfig->getManyToMany();
+
+		if(!empty($manyToMany))
+		{
+			$linkedFields = [];
+			foreach($manyToMany as $object=>$fields)
+			{
+				foreach($fields as $fieldName=>$cfg){
+					$linkedFields[] = $fieldName;
+				}
+			}
+
+			if(!empty($linkedFields))
+			{
+				foreach($linkedFields as $field)
+				{
+					$relatedObject = $objectConfig->getRelationsObject($field);
+					$result = $this->removeObject($relatedObject , $deleteTable);
+
+					if($result!==0){
+						return $result;
+					}
+				}
+			}
+		}
+
 			
 		$localisations = $this->getLocalisations();
 		$langWritePath = Lang::storage()->getWrite();

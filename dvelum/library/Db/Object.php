@@ -396,7 +396,7 @@ class Db_Object
           if(strlen($value))
           {
             $fieldConfig = $this->_config->getFieldConfig($name);
-            $dictionary = Dictionary::getInstance($fieldConfig['link_config']['object']);
+            $dictionary = Dictionary::factory($fieldConfig['link_config']['object']);
 
             if(!$dictionary->isValidKey($value))
               throw new Exception('Invalid dictionary value ['.$name.']');
@@ -420,7 +420,7 @@ class Db_Object
             }
 
             if(is_array($value))
-              throw new Exception('Invalid value for field '. $name);
+                throw new Exception('Invalid value for field '. $name);
 
         	if($this->_config->isRequired($name) && !strlen($value))
         		throw new Exception('Field '. $name.' cannot be empty');
@@ -455,7 +455,7 @@ class Db_Object
 				throw new Exception('Invalid length for bit value ['.$name.']');
         }
 
-        if(isset($this->_data[$name] ) && $this->_data[$name]  === $value){
+        if(isset($this->_data[$name] ) && $this->_data[$name] === $value){
             if(isset($this->_updates[$name]))
                 unset($this->_updates[$name]);
             return true;
