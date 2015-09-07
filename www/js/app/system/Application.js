@@ -16,7 +16,6 @@ app.header = Ext.create('Ext.Panel',{
 	height: 30
 });
 
-Ext.state.Manager.setProvider(new Ext.state.LocalStorageProvider());
 app.cookieProvider = new Ext.state.CookieProvider({
 	expires: new Date(new Date().getTime()+(1000*60*60*24)) //1 day
 });

@@ -9,6 +9,7 @@ Ext.Loader.setConfig({enabled: false});
 Ext.ns('app');
 Ext.tip.QuickTipManager.init();
 Ext.data.DataReader.messageProperty = "msg";
+Ext.state.Manager.setProvider(new Ext.state.LocalStorageProvider());
 
 /**
  * Model for ComboBox data using the fields: id - int, title - string fields
