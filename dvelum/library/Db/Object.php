@@ -709,16 +709,18 @@ class Db_Object
     }
 
     /**
-     * Serialize multilink properties
+     * Serialize Object List properties
      * @param array $data
      * @return array
      */
     public function serializeLinks($data)
     {
-        foreach ($data as $k=>&$v)
-            if($this->_config->isMultiLink($k) && !empty($v))
-                $v = serialize($v);
-
+        $isRev = $this->_config->isRevControl();
+        foreach ($data as $k=>&$v){
+            if($this->_config->isMultiLink($k) && !empty($v)) {
+                $isRev? $v = serialize($v): $v = '';
+            }
+        }
         return $data;
     }
 

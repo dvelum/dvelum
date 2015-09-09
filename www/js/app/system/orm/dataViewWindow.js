@@ -73,6 +73,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 		});
 	},
 	configurate:function(data){
+
 		this.dataStore =  Ext.create('Ext.data.Store', {
 		    fields:data.fields,
 		    remoteSort:true,
@@ -124,8 +125,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 		Ext.each(data.columns , function(item){
 			cols.push(item);
 		});
-		
-		
+
 		var tBar = [];
 		
 		if(!this.selectMode && !this.readOnly)
@@ -144,9 +144,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 		});
 		
 		tBar.push('->', this.searchField);
-		
-		
-		
+
 		this.dataGrid = Ext.create('Ext.grid.Panel',{
 			columns:cols,
 			selModel:Ext.create('Ext.selection.RowModel',{mode:'single'}),
@@ -254,10 +252,11 @@ Ext.define('app.crud.orm.DataViewWindow', {
 						            listeners: {
 						                scope: this,
 						                select:function(record){
-						                	published = true;
-						                	if(!Ext.isEmpty(record.fields.published)){
+						                	if(record.get('published')!= undefined){
 						                		published = record.get('published');
-						                	}
+						                	}else{
+												published = 1;
+											}
 						                	me.relatedGrids[item.field].addRecord(app.relatedGridModel.create({
 						                		'id':record.get('id'),
 						                		'published':published,

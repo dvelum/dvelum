@@ -104,16 +104,13 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $data = $obj->getData();
 
         /*
-         * Prepare mltilink properties
+         * Prepare object list properties
          */
         $linkedObjects = $obj->getConfig()->getLinks(array('multy'));
 
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
-                if(empty($data[$field]))
-                    continue;
-
-                $data[$field] = array_values($this->_collectLinksData($data[$field] , $linkObject));
+                $data[$field] = $this->_collectLinksData($field , $obj , $linkObject);
             }
         }
         $data['id'] = $obj->getId();
@@ -130,34 +127,53 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * version control (used in child classes)
      * The provided data is necessary for the RelatedGridPanel component,
      * which is used for visual representation of relationship management.
-     * @param array $data
-     * @param string $objectName
+     * @param string $fieldName
+     * @param Db_Object $object
+     * @param string $targetObjectName
      * @return array
      */
-    protected function _collectLinksData(array $data , $objectName)
+    protected function _collectLinksData($fieldName, Db_Object $object , $targetObjectName)
     {
+        if($object->getConfig()->isRevControl()){
+           $result = $this->_collectVcLinks($fieldName , $object, $targetObjectName);
+        }else{
+           $result = $this->_collectLinks($fieldName , $object, $targetObjectName);
+        }
+        return $result;
+    }
+
+    /**
+     * Collect data for "Object List" field under Data Version Control
+     * @param $fieldName
+     * @param Db_Object $object
+     * @param $targetObjectName
+     * @return array
+     */
+    protected function _collectVcLinks($fieldName , Db_Object $object , $targetObjectName)
+    {
+        $result = [];
+        $data = $object->getData();
+        $data = $data[$fieldName];
         $ids = Utils::fetchCol('id' , $data);
         $data = Utils::rekey('id' , $data);
 
-        $objectConfig = Db_Object_Config::getInstance($objectName);
-        $model = Model::factory(ucfirst($objectName));
+        $objectConfig = Db_Object_Config::getInstance($targetObjectName);
+        $model = Model::factory(ucfirst($targetObjectName));
 
         try{
-            $objectsList = Db_Object::factory(ucfirst($objectName) , $ids);
+            $objectsList = Db_Object::factory(ucfirst($targetObjectName) , $ids);
         }catch (Exception $e){
             $objectsList =  array();
         }
-
-       /*
-        * Find out deleted records
-        */
+        /*
+         * Find out deleted records
+         */
         if(empty($objectsList)){
             $deleted = $ids;
         }else{
             $deleted = array_diff($ids , array_keys($objectsList));
         }
 
-        $useVc = $objectConfig->isRevControl();
         $result = array();
         foreach($ids as $id)
         {
@@ -166,23 +182,84 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                     'id' => $id,
                     'deleted' => 1,
                     'title' => $data[$id]['title'],
-                    'published' => 1
+                    'published' => 0
                 );
-                if($useVc)
-                    $item['published'] = 0;
             }else{
-                $object =  $objectsList[$id];
+                $dataObject =  $objectsList[$id];
                 $item = array(
                     'id' => $id,
                     'deleted' => 0,
-                    'title' => $object->getTitle(),
-                    'published' => 1
+                    'title' => $dataObject->getTitle(),
+                    'published' => $dataObject->get('published')
                 );
-                if($useVc){
-                    $item['published'] = $object->get('published');
-                }
             }
             $result[] = $item;
+        }
+        return $result;
+    }
+
+    /**
+     * Collect data for "Object List" field
+     * @param $fieldName
+     * @param Db_Object $object
+     * @param $targetObjectName
+     * @return array
+     */
+    protected function _collectLinks($fieldName , Db_Object $object , $targetObjectName)
+    {
+        $result = [];
+        $srcObjectConfig = $object->getConfig();
+
+        if($srcObjectConfig->isManyToManyLink($fieldName))
+        {
+            $linksObject = $srcObjectConfig->getRelationsObject($fieldName);
+            $model = Model::factory($linksObject);
+            $data = $model->getList(
+                ['sort'=>'order_no','dir'=>'ASC'],
+                ['source_id' => $object->getId()],
+                [
+                    'id' => 'target_id'
+                ]
+            );
+        }else{
+            $linksObject = $this->_configMain->get('orm_links_object');
+            $model = Model::factory($linksObject);
+            $data = $model->getList(
+                ['sort'=>'order','dir'=>'ASC'],
+                [
+                    'src' => $object->getName(),
+                    'src_id' => $object->getId(),
+                    'src_field' =>$fieldName,
+                    'target' => $targetObjectName
+                ],
+                [
+                    'id' => 'target_id'
+                ]
+            );
+        }
+
+        if(!empty($data))
+        {
+            $list = Db_Object::factory($targetObjectName , Utils::fetchCol('id',$data));
+            $isVc = Db_Object_Config::getInstance($targetObjectName)->isRevControl();
+            foreach($data as $value){
+                if(isset($list[$value['id']])){
+                    $result[] = [
+                        'id' => $value['id'],
+                        'deleted' => 0,
+                        'title' => $list[$value['id']]->getTitle(),
+                        'published' => $isVc?$list[$value['id']]->get('published'):1
+                    ];
+
+                }else{
+                    $result[] = [
+                        'id' => $value['id'],
+                        'deleted' => 1,
+                        'title' => $value['id'],
+                        'published' => 0
+                    ];
+                }
+            }
         }
         return $result;
     }
@@ -343,11 +420,14 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                     if(!$rc)
                         $item['published'] = true;
 
+
                     $item['deleted'] = false;
 
                     if(isset($objects[$item[$primaryKey]])){
                         $o = $objects[$item[$primaryKey]];
                         $item['title'] = $o->getTitle();
+                        if($rc)
+                            $item['published'] = $data['published'];
                     }else{
                         $item['title'] = $item['id'];
                     }

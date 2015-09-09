@@ -193,7 +193,11 @@ class Db_Object_Store
             if($object->getConfig()->hasEncrypted())
                 $updates = $this->encryptData($object , $updates);
 
-            $db->update($object->getTable() , $object->serializeLinks($updates) , $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
+            $updates = $object->serializeLinks($updates);
+
+            if(!empty($updates))
+                $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
+
             $this->_updateLinks($object);
             /*
              * Fire "AFTER_UPDATE_BEFORE_COMMIT" Event if event manager exists
@@ -201,7 +205,9 @@ class Db_Object_Store
             if($this->_eventManager)
                 $this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_UPDATE_BEFORE_COMMIT, $object);
             $object->commitChanges();
+
             return true;
+
         }catch (Exception $e){
 
             if($this->_log)

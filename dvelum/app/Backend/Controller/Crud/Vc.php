@@ -115,15 +115,12 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $data['published'] = $object->get('published');
         $data['staging_url'] = static::getStagingUrl($object);
         /*
-         * Prepare multilink properties
+         * Prepare Object List properties
          */
         $linkedObjects = $object->getConfig()->getLinks(array('multy'));
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
-                if(empty($data[$field]))
-                    continue;
-
-                $data[$field] = array_values($this->_collectLinksData($data[$field] , $linkObject));
+                $data[$field] = $this->_collectLinksData($field, $object , $linkObject);
             }
         }
         return $data;
