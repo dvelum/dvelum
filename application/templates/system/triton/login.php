@@ -26,7 +26,7 @@ $wwwRoot = $this->get('wwwRoot');
 					<div class="loginInput">
 						<select name="ulang" class="validate[required]" id="lang" autocomplete="on">
 							<option value="en">English</option>
-							<option value="ru">Russian</option>
+							<option value="ru">Русский</option>
 						</select>
 					</div>
 					<div class="clear"></div>
