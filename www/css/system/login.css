@@ -188,8 +188,22 @@ input[type=submit], input[type=reset], input[type=button], button { padding: 7px
 .loginControl { border-top: 1px solid #fff; padding: 16px 14px; height:30px; }
 .logMeIn { float: right; border: none; font-size: 11px;}
 .loginInput { width: 190px; float: right; margin-right: 14px!important; }
-.loginInput input{width:100%;}
+.loginInput input{width:100%; border-radius: 3px;}
 
+.loginInput select {
+  background: #ffffff url("../../i/system/select-arrow.png") no-repeat scroll right center;
+  overflow: hidden;
+  padding: 6px 2%;
+  width: 100%;
+  -moz-appearance: none;
+  border: medium none;
+  border-radius: 3px;
+  color: #333;
+  display: block;
+  margin-bottom: 2px;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 0 2px #f4f4f4;
+}
 
 .fixed { box-shadow: inset 0 0 1px #748a9b; -moz-box-shadow: inset 0 0 1px #748a9b; -webkit-box-shadow: inset 0 0 1px #748a9b; }
 
@@ -199,7 +213,7 @@ input[type=submit], input[type=reset], input[type=button], button { padding: 7px
 .wButton, .nNote, .widget .num a, .tag, a.sButton, .tooltip, .tPagination ul li a, .bc, .pages li a, .smallButton, .search-choice, .horControlB ul li, .gallery ul li, .iconsGroup, .wContentButton
 { -moz-border-radius: 2px; -webkit-border-radius: 2px; -khtml-border-radius: 2px; border-radius: 2px; }
 
-.formRow { padding: 22px 14px; clear: both; border-bottom: 1px solid #E2E2E2; border-top: 1px solid white; position: relative; }
+.formRow { padding: 10px 14px!important; clear: both; border-bottom: 1px solid #E2E2E2; border-top: 1px solid white; position: relative; }
 .formRow:first-child { border-top: none; }
 .formRow:last-child { border-bottom: none; }
 .formRow .formRight { display: block; float: right; width: 80%; margin-right: 18px; }

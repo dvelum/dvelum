@@ -21,6 +21,17 @@ $wwwRoot = $this->get('wwwRoot');
 			<div class="title"><h6>Admin Panel</h6></div>
 			<form action="" id="validate" class="form" method="post">
 				<fieldset>
+					<div class="formRow half">
+						<label for="lang">Language:</label>
+						<div class="loginInput">
+							<select name="ulang" class="validate[required]" id="lang" autocomplete="on">
+								<option value="en">English</option>
+								<option value="ru">Russian</option>
+							</select>
+						</div>
+						<div class="clear"></div>
+					</div>
+
 					<div class="formRow">
 						<label for="login">Username:</label>
 						<div class="loginInput"><input name="ulogin" class="validate[required]" id="login" type="text"></div>
@@ -32,7 +43,6 @@ $wwwRoot = $this->get('wwwRoot');
 						<div class="loginInput"><input name="upassword" class="validate[required]" id="pass" type="password"></div>
 						<div class="clear"></div>
 					</div>
-
 <!--					<div class="formRow">
 						<label for="provider">Provider:</label>
 						<div class="loginInput">

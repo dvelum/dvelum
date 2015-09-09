@@ -132,8 +132,18 @@ abstract class Backend_Controller extends Controller
         $user = User::getInstance();
         $uid = false;
 
-        if($user->isAuthorized())
+        if($user->isAuthorized()) {
             $uid = $user->id;
+            $userLang =$user->getLanguage();
+            $langManager = new Backend_Localization_Manager($this->_configMain);
+            $acceptedLanguages = $langManager->getLangs(true);
+            // switch language
+            if(!empty($userLang) && $userLang!=$this->_configMain->get('language') && in_array($userLang, $acceptedLanguages , true)){
+                $this->_configMain->set('language' , $userLang);
+                Lang::addDictionaryLoader($userLang ,  $userLang . '.php' , Config::File_Array);
+                Lang::setDefaultDictionary($userLang);
+            }
+        }
 
         if(! $uid || ! $user->isAdmin()){
             if(Request::isAjax())
@@ -167,8 +177,6 @@ abstract class Backend_Controller extends Controller
             $this->_errorResponse($this->_lang->CANT_VIEW);
 
         $moduleManager = new Modules_Manager();
-
-       // $modules = Config::factory(Config::File_Array , $this->_configMain['backend_modules']);
 
         /*
          * Redirect for undefined module

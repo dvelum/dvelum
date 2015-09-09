@@ -4,6 +4,7 @@ class Model_User extends Model
 	const AUTH_LOGIN = 'ulogin';
 	const AUTH_PASSWORD = 'upassword';
 	const AUTH_PROVIDER = 'uprovider';
+    const AUTH_LANG = 'ulang';
 	
     /**
      * Get user info
@@ -54,15 +55,22 @@ class Model_User extends Model
     {
         $user = Request::post(self::AUTH_LOGIN, 'login', false);
         $pass = Request::post(self::AUTH_PASSWORD , 'string' , false);
-        $provider = Request::post(self::AUTH_PROVIDER , 'string' ,
-			Config::storage()->get('main.php')->get('default_auth_provider'));
+        $provider = Request::post(self::AUTH_PROVIDER , 'string' , Config::storage()->get('main.php')->get('default_auth_provider'));
+        $language = Request::post(self::AUTH_LANG, 'string' , '');
 
         if($user === false || $pass=== false)
             return false;
 
         // slow check
         sleep(1);
-        return $this->login($user, $pass , $provider);
+        $result = $this->login($user, $pass , $provider);
+
+        if($result) {
+            $user = User::getInstance();
+            $user->setLanguage($language);
+        }
+
+        return $result;
     }
 
     /**

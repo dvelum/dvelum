@@ -247,8 +247,27 @@ class User
      */
 	protected function _checkAuthSession()
 	{
-		if($this->_session->keyExists('auth') && $this->_session->get('auth') && $this->_session->keyExists('auth_id') && $this->_session->get('auth_id'))
-			$this->setId($this->_session->get('auth_id'));
+		if($this->_session->keyExists('auth') && $this->_session->get('auth') && $this->_session->keyExists('auth_id') && $this->_session->get('auth_id')){
+            $this->setId($this->_session->get('auth_id'));
+        }
+	}
+
+	/**
+	 * Get selected language
+	 * @return mixed|null|string
+	 */
+	public function getLanguage()
+	{
+		return $this->_session->get('lang');
+	}
+
+	/**
+	 * Set UI language
+	 * @param $lang
+	 */
+	public function setLanguage($lang)
+	{
+		$this->_session->set('lang' , $lang);
 	}
 	
 	

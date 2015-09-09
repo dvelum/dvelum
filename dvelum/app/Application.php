@@ -269,9 +269,8 @@ class Application
     {
         $this->init();
         $page = Request::getInstance()->getPart(0);
-        $cfg = Registry::get('main' , 'config');
 
-        if($page === $cfg['adminPath'])
+        if($page === $this->_config->get('adminPath'))
             $this->_runBackend();
         else
             $this->_runFrontend();
