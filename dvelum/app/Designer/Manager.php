@@ -35,7 +35,7 @@ class Designer_Manager
   public function __construct(Config_Abstract $appConfig)
   {
      $this->_appConfig = $appConfig;
-     $this->_designerConfig = Config::factory(Config::File_Array , $appConfig->get('configs') . 'designer.php');
+     $this->_designerConfig = Config::storage()->get('designer.php');
   }
   
   /**

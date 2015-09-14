@@ -9,7 +9,7 @@ class Backend_Designer_Code
 	static public function getControllerUrl($controllerName)
 	{
 		$appCfg = Registry::get('main' , 'config');
-		$designerConfig = Config::factory(Config::File_Array, $appCfg->get('configs').'designer.php');		
+		$designerConfig = Config::storage()->get($appCfg->get('configs').'designer.php');
     	$templates = $designerConfig->get('templates');	
 		
 		if(!class_exists($controllerName))
@@ -83,7 +83,7 @@ class Backend_Designer_Code
 	{				
 		$manager = new Modules_Manager();
 		$appCfg = Registry::get('main' , 'config');
-		$designerConfig = Config::factory(Config::File_Array, $appCfg->get('configs').'designer.php');		
+		$designerConfig = Config::storage()->get($appCfg->get('configs').'designer.php');
 		
 		$templates = $designerConfig->get('templates');	
 			

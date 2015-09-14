@@ -31,7 +31,7 @@ class Frontend_Console_Controller extends Frontend_Controller
 
 		parent::__construct();
 
-		$this->_configs = Config::factory(Config::File_Array , $this->_configMain->get('configs') . 'cronjob.php');
+		$this->_configs = Config::storage()->get('cronjob.php');
 		$this->_cronConfig = $this->_configs->get('config');
 
 		if($this->_cronConfig['log_file'])
@@ -181,7 +181,7 @@ class Frontend_Console_Controller extends Frontend_Controller
 
 		$part = intval(Request::getInstance()->getPart(2));
 
-        $sysdocsCfg = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'sysdocs.php');
+        $sysdocsCfg = Config::storage()->get('sysdocs.php');
         $sysdocs = new Sysdocs_Generator($sysdocsCfg);
 		$sysdocs->setAutoloaderPaths($this->_configMain->get('autoloader')['paths']);
 

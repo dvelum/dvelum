@@ -168,6 +168,7 @@ class Modules_Manager
 	{
 		$this->_config->set($name , $config);
 		$this->resetCache();
+		return  $this->save();
 	}
 
 	/**

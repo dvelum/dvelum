@@ -16,7 +16,7 @@ abstract class Frontend_Controller_Authorised extends Frontend_Controller
   {
     parent::__construct();
      
-    $this->_configFrontend = Config::factory(Config::File_Array, $this->_configMain->get('configs').'frontend.php');
+    $this->_configFrontend = Config::storage()->get('frontend.php');
     
     if(Request::get('logout' , 'boolean' , false)){
       User::getInstance()->logout();

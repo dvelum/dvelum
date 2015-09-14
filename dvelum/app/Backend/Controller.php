@@ -82,8 +82,7 @@ abstract class Backend_Controller extends Controller
     {
         $media = Model::factory('Medialib');
         $media->includeScripts();
-        $includesPath = $this->_configMain->get('configs') . 'js_inc_backend.php';
-        $cfg = Config::factory(Config::File_Array , $includesPath);
+        $cfg = Config::storage()->get('js_inc_backend.php');
 
         if($cfg->getCount())
         {

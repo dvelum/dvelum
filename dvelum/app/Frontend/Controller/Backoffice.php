@@ -60,7 +60,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
         $this->_configMain = Registry::get('main' , 'config');
         
         $cacheManager = new Cache_Manager();
-        $this->_configBackoffice = Config::factory(Config::File_Array, $this->_configMain->get('configs') . 'backend.php');
+        $this->_configBackoffice = Config::storage()->get('backend.php');
         $this->_cache = $cacheManager->get('data');
         
         if(Request::get('logout' , 'boolean' , false)){
@@ -84,8 +84,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
     {
         $media = Model::factory('Medialib');
         $media->includeScripts();
-        $includesPath = $this->_configMain->get('configs') . 'js_inc_backend.php';
-        $cfg = Config::factory(Config::File_Array , $includesPath);
+        $cfg = Config::storage()->get('js_inc_backend.php');
         
         $this->_resource->addJs('/js/lib/jquery.js',0 , true , 'head');
 

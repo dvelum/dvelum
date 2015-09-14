@@ -63,8 +63,8 @@ class Sysdocs_Controller
         $this->fileModel = Model::factory('Sysdocs_File');
         $this->lang = Lang::lang();
         $this->paramsIndex = $paramsIndex;
-        $this->docConfig = Config::factory(Config::File_Array, $this->configMain->get('configs').'sysdocs.php');
-        $langDictionary = Dictionary::getInstance('sysdocs_language');
+        $this->docConfig = Config::storage()->get('sysdocs.php');
+        $langDictionary = Dictionary::factory('sysdocs_language');
 
         $request = Request::getInstance();
 
@@ -222,8 +222,7 @@ class Sysdocs_Controller
 
         $media = Model::factory('Medialib');
         $media->includeScripts();
-        $includesPath = $this->configMain->get('configs') . 'js_inc_backend.php';
-        $cfg = Config::factory(Config::File_Array , $includesPath);
+        $cfg = Config::storage()->get('js_inc_backend.php');
 
         $theme = 'gray';
         $lang = $this->configMain->get('language');

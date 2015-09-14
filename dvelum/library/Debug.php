@@ -193,7 +193,11 @@ class Debug
 		{
 			$totalCount += $prof->getTotalNumQueries();
 			$totalTime += $prof->getTotalElapsedSecs();
-			$profiles[] =  $prof->getQueryProfiles();
+			$prof = $prof->getQueryProfiles();
+			if(!empty($prof)){
+				foreach($prof as $item)
+					$profiles[] = $item;
+			}
 		}
 
 
@@ -202,7 +206,7 @@ class Debug
 		{
 			if(!empty($profiles))
 				foreach($profiles as $queryProfile)
-					$str .= "\n<br> " . $queryProfile->getQuery();
+					$str .= '<span style="color:blue;font-size: 11px;">'.number_format($queryProfile->getElapsedSecs(),5).'s. </span><span style="font-size: 11px;color:green;">'. $queryProfile->getQuery()."</span><br>\n";
 		}
 		$str .= "<br>\n";
 
