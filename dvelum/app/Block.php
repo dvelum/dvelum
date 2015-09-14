@@ -29,7 +29,7 @@ abstract class Block
 	const dependsOnPage = false;
 
 	/**
-	 * Block constructur
+	 * Block constructor
 	 * @param array $config - block config
 	 */
 	public function __construct(array $config)

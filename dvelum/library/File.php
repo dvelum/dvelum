@@ -47,7 +47,7 @@ class File
 	 */
 	static public function getExt($name)
 	{
-		return strrchr($name, '.');
+		return strrchr(strtolower($name), '.');
 	}
 
 	/**
