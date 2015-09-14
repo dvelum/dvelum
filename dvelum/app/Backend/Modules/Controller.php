@@ -265,7 +265,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 		if(class_exists($class))
 			Response::jsonError($this->_lang->FILL_FORM , array('id'=>'name','msg'=>$this->_lang->SB_UNIQUE));
 
-		$designerConfig = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'designer.php');
+		$designerConfig = Config::storage()->get('designer.php');
 
 		$projectFile = Config::storage()->getWrite() . $designerConfig->get('configs') . strtolower($object) . '.designer.dat';
 		

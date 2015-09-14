@@ -160,7 +160,7 @@ class Model_Medialib extends Model
    */
   public function includeScripts()
   {
-    $version = Config::factory(Config::File_Array, Registry::get('main' , 'config')->get('configs') . 'versions.php')->get('medialib');
+    $version = Config::storage()->get('versions.php')->get('medialib');
 
   	if(self::$_scriptsIncluded)
   		return;
@@ -328,7 +328,7 @@ class Model_Medialib extends Model
   public function getConfig()
   {
     $cfg = Registry::get('main' , 'config');
-    return Config::factory(Config::File_Array , $cfg->get('configs') . '/media_library.php');
+    return Config::storage()->get('media_library.php');
   }
 
   /**

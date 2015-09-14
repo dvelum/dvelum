@@ -8,12 +8,12 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 			exit;
 		}
 
-		$designerConfig = Config::factory(Config::File_Array,  $this->_configMain['configs'] . 'designer.php');
+		$designerConfig = Config::storage()->get('designer.php');
 
 		$res = Resource::getInstance();
 		$res->addJs('/js/lib/jquery.js'  , 0);
 
-		$backendScripts = Config::factory(Config::File_Array,  $this->_configMain['configs'] . 'js_inc_backend.php');
+		$backendScripts = Config::storage()->get('js_inc_backend.php');
 		if($backendScripts->getCount())
 		{
 			$js = $backendScripts->get('js');

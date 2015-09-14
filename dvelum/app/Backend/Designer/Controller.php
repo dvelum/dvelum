@@ -104,8 +104,8 @@ class Backend_Designer_Controller extends Backend_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->_config = Config::storage()->get($this->_configMain['configs'] . 'designer.php');
-		$this->_version = Config::storage()->get($this->_configMain['configs'] . 'versions.php')->get('designer');
+		$this->_config = Config::storage()->get('designer.php');
+		$this->_version = Config::storage()->get('versions.php')->get('designer');
 	}
 	
 	public function indexAction()
@@ -128,7 +128,7 @@ class Backend_Designer_Controller extends Backend_Controller
 		    $dbConfigs[]= array('id'=>$k , 'title'=>$this->_lang->get($v['title']));
 		}
 		
-		$componentTemplates = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'designer_templates.php')->__toArray();
+		$componentTemplates = Config::storage()->get('designer_templates.php')->__toArray();
 		$this->_resource->addInlineJs('
 		      var dbConfigsList = '.json_encode($dbConfigs).';    
 		      var componentTemplates = ' . json_encode(array_values($componentTemplates)).';  

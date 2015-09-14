@@ -15,7 +15,7 @@ class Modules_Generator
 
    public function __construct(){
         $this->appConfig = Registry::get('main' , 'config');
-        $this->designerConfig = Config::factory(Config::File_Array , $this->appConfig->get('configs') . 'designer.php');
+        $this->designerConfig = Config::storage()->get('designer.php');
         Request::setDelimiter($this->appConfig->get('urlDelimiter'));
    }
 

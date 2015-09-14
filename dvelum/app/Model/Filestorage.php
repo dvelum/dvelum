@@ -9,8 +9,8 @@ class Model_Filestorage extends Model
 	{
 		$configMain = Registry::get('main' , 'config');
 
-		$storageConfig = Config::factory(Config::File_Array, $configMain->get('configs').'/filestorage.php');
-		$storageCfg = new Config_Simple($configMain->get('configs').'_filestorage');
+		$storageConfig = Config::storage()->get('filestorage.php');
+		$storageCfg = new Config_Simple('_filestorage');
 
 		if($configMain->get('development')){
 			$storageCfg->setData($storageConfig->get('development'));

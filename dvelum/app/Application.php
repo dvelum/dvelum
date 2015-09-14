@@ -209,7 +209,7 @@ class Application
         if(!$this->_config->get('use_cache'))
             return;
 
-        $cacheConfig = include $this->_config->get('configs') . 'cache.php';
+        $cacheConfig = Config::storage()->get('cache.php')->__toArray();
         $cacheManager = new Cache_Manager();
 
         foreach($cacheConfig as $name => $cfg)
@@ -332,7 +332,7 @@ class Application
             'path' => self::$_templates,
             'adminPath' => $this->_config->get('adminPath'),
             'development' => $this->_config->get('development'),
-            'version' => Config::factory(Config::File_Array , $this->_config->get('configs') . 'versions.php')->get('core'),
+            'version' => Config::storage()->get('versions.php')->get('core'),
             'lang' => $this->_config->get('language'),
             'modules' => $modulesManager->getList(),
             'userModules' => $user->getAvailableModules(),
@@ -395,7 +395,7 @@ class Application
                 return Registry::get('main' , 'config');
               break;
             case 'backend':
-                return Config::factory(Config::File_Array , Registry::get('main' , 'config')->get('configs') . 'backend.php');
+                return Config::storage()->get('backend.php');
               break;
         }
         return false;

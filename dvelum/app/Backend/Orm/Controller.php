@@ -17,7 +17,7 @@ class Backend_Orm_Controller extends Backend_Controller
 
     public function indexAction()
     {
-        $version = Config::factory(Config::File_Array, $this->_configMain['configs'] . 'versions.php')->get('orm');
+        $version = Config::storage()->get('versions.php')->get('orm');
 
         $res = Resource::getInstance();
         $dbConfigs = array();
@@ -1120,7 +1120,7 @@ class Backend_Orm_Controller extends Backend_Controller
 
 	public function getumldataAction()
     {
-    	$config = Config::factory(Config::File_Array, $this->_configMain['configs'] . self::UML_MAP_CFG);
+    	$config = Config::storage()->get(self::UML_MAP_CFG);
 
     	$items = $config->get('items');
 

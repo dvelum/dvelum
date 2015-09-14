@@ -194,8 +194,10 @@ class Debug
 			$totalCount += $prof->getTotalNumQueries();
 			$totalTime += $prof->getTotalElapsedSecs();
 			$prof = $prof->getQueryProfiles();
-			foreach($prof as $item)
-				$profiles[] = $item;
+			if(!empty($prof)){
+				foreach($prof as $item)
+					$profiles[] = $item;
+			}
 		}
 
 
