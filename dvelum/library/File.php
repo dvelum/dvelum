@@ -127,7 +127,7 @@ class File
 			if($add){
 				if($changeSep){
 					$name = str_replace(DIRECTORY_SEPARATOR , $changeSep ,$name);
-					$name = str_replace($changeSep.$changeSep , '', $name);
+					$name = str_replace($changeSep.$changeSep , $changeSep, $name);
 				}
 				$files[] = $name;
 			}
