@@ -305,6 +305,18 @@ class Backend_Modules_Controller extends Backend_Controller{
 		
 		if(!$per->setGroupPermissions($userInfo['group_id'], $object , 1 , 1 , 1 , 1))
 			Response::jsonError($this->_lang->CANT_EXEC);
+
+		$modulesManager = new Modules_Manager();
+		$modulesManager->addModule($object , array(
+			'class'=>$class,
+			'id'=>$object ,
+			'active'=>true,
+			'dev'=>false,
+			'title'=>$objectConfig->getTitle(),
+			'designer'=> $projectFile,
+			'icon'=>'i/system/icons/default.png',
+			'in_menu'=>true
+		));
 		
 		Response::jsonSuccess(
 				array(
@@ -454,9 +466,14 @@ class Backend_Modules_Controller extends Backend_Controller{
 		if(!empty($filesToDelete))
 		{
 			$err = array();
-			foreach ($filesToDelete as $file){
-				if(is_dir($file) && !File::rmdirRecursive($file , true)){
-					$err[] = $file;
+			foreach ($filesToDelete as $file)
+			{
+				if(!file_exists($file))
+					continue;
+
+				if(is_dir($file)){
+					if(!File::rmdirRecursive($file , true))
+						$err[] = $file;
 				}
 				else{
 					if(!unlink($file))
