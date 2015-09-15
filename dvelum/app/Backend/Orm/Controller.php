@@ -188,7 +188,8 @@ class Backend_Orm_Controller extends Backend_Controller
 
 	public function listAction()
     {
-    	$data = self::getDbStats($this->_db);
+        $db = Model::getDefaultDbManager()->getDbConnection('default');
+    	$data = self::getDbStats($db);
 
     	if(Request::post('hideSysObj', 'boolean', false)){
     		foreach ($data as $k => $v)

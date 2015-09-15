@@ -56,7 +56,6 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
         $this->_resource = Resource::getInstance();
         $this->_module = $this->getModule();
         $this->_lang = Lang::lang();
-        $this->_db = static::$_defaultDb;
         $this->_configMain = Registry::get('main' , 'config');
         
         $cacheManager = new Cache_Manager();
@@ -167,8 +166,6 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
 
     public function indexAction()
     {
-        var_dump($this->_module);
-
       $this->_resource->addInlineJs('
 	     var canEdit = ' . intval($this->_user->canEdit($this->_module)) . ';
 	     var canDelete = ' . intval($this->_user->canDelete($this->_module)) . ';

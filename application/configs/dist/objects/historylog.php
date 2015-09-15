@@ -59,9 +59,17 @@
       'db_default' => '',
     ),
   ),
-  'indexes' => 
-  array (
-  ),
+  'indexes' =>
+    array (
+        'date' => array(
+            'columns' => array(
+                    0 => 'date',
+            ),
+            'unique' => false,
+            'fulltext' => false,
+            'PRIMARY' => false,
+        ),
+    ),
   'connection' => 'default',
   'locked' => false,
   'readonly' => false,
