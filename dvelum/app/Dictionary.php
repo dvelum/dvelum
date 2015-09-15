@@ -10,10 +10,7 @@ class Dictionary
 {
 	protected static $_instances = array();
 
-	protected static $_external = array();
-
 	protected function __construct(){}
-
 	protected function __clone(){}
 
 	/**

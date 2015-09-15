@@ -17,25 +17,12 @@
 abstract class Controller
 {
   /**
-   * Adapter connecting to the default database
-   * 
-   * @var Zend_Db_Adapter_Abstract
-   */
-  protected static $_defaultDb;
-  /**
    * Link to Page object
    * 
    * @var Page
    */
   protected $_page;
-  
-  /**
-   * Adapter connecting to the current object database
-   * 
-   * @var Zend_Db_Adapter_Abstract
-   */
-  protected $_db;
-  
+
   /**
    * Link to Resource object
    * 
@@ -68,7 +55,6 @@ abstract class Controller
     $this->_page = Page::getInstance();
     $this->_resource = Resource::getInstance();
     $this->_lang = Lang::lang();
-    $this->_db = static::$_defaultDb;
     $this->_configMain = Registry::get('main' , 'config');
   }
 
