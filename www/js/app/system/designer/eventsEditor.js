@@ -244,6 +244,7 @@ Ext.define('designer.eventsEditorWindow',{
 							pack: 'start',
 							align: 'stretch'
 						},
+						height:22,
 						items:[
 						   {						   
 							   xtype:'textfield',
@@ -251,9 +252,10 @@ Ext.define('designer.eventsEditorWindow',{
 							   flex:1,
 							   fieldStyle:{
 								   border:'none',
+								   //   textAlign:'right',
 								   background:'none',
-								   backgroundColor:'#F4F4F4',
-								   borderBottom:'1px solid #000000'
+								   backgroundColor:'#F4F4F4'
+								   //borderBottom:'1px solid #000000'
 							   }
 						   },{						   
 							   xtype:'displayfield',
@@ -264,9 +266,10 @@ Ext.define('designer.eventsEditorWindow',{
 							   flex:2,
 							   fieldStyle:{
 								   border:'none',
+								   //   textAlign:'left',
 								   background:'none',
 								   backgroundColor:'#F4F4F4',
-								   borderBottom:'1px solid #000000',
+								   //borderBottom:'1px solid #000000',
 								   color:'#5C3BFB'
 							   }
 						   },{						   
