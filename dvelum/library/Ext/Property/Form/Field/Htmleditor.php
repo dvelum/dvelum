@@ -1,6 +1,15 @@
 <?php
-class Ext_Property_Form_Field_Htmleditor extends Ext_Property_Component
+class Ext_Property_Form_Field_Htmleditor extends Ext_Property_Form_Fieldcontainer
 {
+	// Ext.form.field.Field properties
+	public $disabled  = self::Boolean;
+	public $name =self::String;
+	public $submitValue  = self::Boolean;
+	public $validateOnChange  = self::Boolean;
+	public $validation  = self::Boolean;
+	public $value  = self::Object;
+	public $valuePublishEvent = self::Object;
+	// own properties
 	public $afterIFrameTpl = self::Object;
 	public $afterTextAreaTpl = self::Object;
 	public $allowDomMove = self::Boolean;
