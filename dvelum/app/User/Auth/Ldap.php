@@ -19,6 +19,9 @@ class User_Auth_Ldap extends User_Auth_Abstract
 	 */
 	public function __construct(Config_Abstract $config)
 	{
+		if(!extension_loaded('ldap'))
+			throw new Exception('Cannot find php-ldap extension!');
+
 		parent::__construct($config);
 
 		$this->lc = @ldap_connect($this->config->get('host'),$this->config->get('port'));
