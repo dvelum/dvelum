@@ -10,14 +10,13 @@ Ext.MessageBox.prompt(appLang.MESSAGE , appLang.ENTER_DICTIONARY_NAME,function(b
           params:{
             'name':text
           },
-          scope:this,
+          scope:me,
           success: function(response, request) {
               response =  Ext.JSON.decode(response.responseText);
               if(!response.success){	 				
                   Ext.Msg.alert(appLang.MESSAGE , response.msg);
               } else{
-                  
-                  appLocalizationRun.langsStore.load();
+                  me.childObjects.langSelectorCombo.getStore().load();
               }
           },
           failure:app.ajaxFailure

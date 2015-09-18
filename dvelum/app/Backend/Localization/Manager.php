@@ -499,12 +499,25 @@ class Backend_Localization_Manager
     $writePath = Lang::storage()->getWrite();
     $indexPath = $writePath . $this->getIndexName($name);
 
+    $indexLocation = dirname($indexPath);
+
+    if(!file_exists($indexLocation) && !@mkdir($indexLocation , 0775 , true))
+        throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$indexLocation);
+
     if(!Utils::exportArray($indexPath, array()))
         throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$indexPath);
 
     $langs = $this->getLangs(true);
-    foreach ($langs as $lang){
-        $filePath = $writePath . $lang . '/' . $name . '.php';
+
+    foreach ($langs as $lang)
+    {
+        $fileLocation = $writePath . $lang;
+
+        if(!file_exists($fileLocation) && !@mkdir($fileLocation , 0775 , true))
+            throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$fileLocation);
+
+        $filePath = $fileLocation . '/' . $name . '.php';
+
         if(!Utils::exportArray($filePath, array()))
             throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$filePath);
     }
