@@ -6,6 +6,7 @@ abstract class Ext_Property_Data_Abstractstore extends Ext_Property
 	public $groupDir = self::String;
 	public $groupField = self::String;
 	public $grouper = self::Object;
+	public $listeners = self::Object;
 	public $pageSize = self::Number;
 	public $remoteFilter = self::Boolean;
 	public $remoteSort = self::Boolean;
