@@ -80,7 +80,6 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
     try{
       $this->_manager->addRecord($dictionary , $key , $lang);
       $this->compileLangAction();
-      // Response::jsonSuccess();
     }catch(Exception $e){
       Response::jsonError($e->getMessage());
     }
@@ -97,8 +96,7 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
     }
     try{
       $this->_manager->removeRecord($dictionary , $id);
-      $this->_router->runController('Backend_Packages_Controller' , 'lang');
-      // Response::jsonSuccess();
+      $this->compileLangAction();
     }catch(Exception $e){
       Response::jsonError($e->getMessage());
     }
@@ -118,8 +116,7 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
 
     try{
       $this->_manager->updateRecords($dictionary , $data);
-      $this->_router->runController('Backend_Packages_Controller' , 'lang');
-      //Response::jsonSuccess();
+      $this->compileLangAction();
     }catch(Exception $e){
       Response::jsonError($e->getMessage());
     }
