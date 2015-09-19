@@ -7,7 +7,7 @@
   array (
     'config' => 
     array (
-      'icon' => '[%wroot%]i/system/delete.gif',
+      'icon' => '[%wroot%]i/system/cancel.png',
       'tooltip' => '[js:] appLang.DISCARD_CHANGES',
       'disabled' => true,
     ),
