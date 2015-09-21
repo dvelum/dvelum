@@ -742,7 +742,7 @@ Ext.define('designer.properties.Panel', {
             me.dataGrid.setProperty(property, value);
         }, me);
         win.show();
-        Ext.WindowMgr.bringToFron(win);
+        Ext.WindowMgr.bringToFront(win);
     },
     showParamsWindow: function (property) {
         var me = this;
