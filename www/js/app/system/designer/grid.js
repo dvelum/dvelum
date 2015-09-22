@@ -207,7 +207,6 @@ Ext.define('designer.grid.filterOptionsWindow',{
 			name:''
 		});
 		this.dataStore.insert(count, r);
-		r.setDirty();
 		this.cellEditing.startEditByPosition({row: count, column: 0});
 	},
 	saveData:function(){

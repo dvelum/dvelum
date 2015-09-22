@@ -42,7 +42,6 @@ Ext.define('designer.defaultsWindow',{
 		    				value:''
 		    	        });
 		    			this.dataStore.insert(0, r);
-		    			r.setDirty();
 		    			this.cellEditing.startEditByPosition({row: 0, column: 0});
 		    	 },
 		    	 scope:this
