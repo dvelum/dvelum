@@ -533,8 +533,7 @@ Ext.define('designer.model.configWindow',{
 		var count = store.getCount();
 		var r = Ext.create('designer.model.associationsModel', {});
 		store.insert(count, r);
-		r.setDirty();
-		
+
 		this.associationsGrid.getPlugin().startEditByPosition({row: count, column: 0});
 	},
 	addValidation:function(){
@@ -542,8 +541,7 @@ Ext.define('designer.model.configWindow',{
 		var count = store.getCount();
 		var r = Ext.create('designer.model.validationsModel', {});
 		store.insert(count, r);
-		r.setDirty();
-		
+
 		this.validationsGrid.getPlugin().startEditByPosition({row: count, column: 0});
 	},
 	saveData:function(){

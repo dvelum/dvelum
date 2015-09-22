@@ -171,7 +171,6 @@ Ext.define('designer.store.sortersWindow',{
 			direction:'ASC'
 		});
 		this.dataStore.insert(count, r);
-		r.setDirty();
 		this.cellEditing.startEditByPosition({row: count, column: 0});
 	},
 	saveData:function(){
@@ -316,7 +315,6 @@ Ext.define('designer.store.filtersWindow',{
 			value:''
 		});
 		this.dataStore.insert(count, r);
-		r.setDirty();
 		this.cellEditing.startEditByPosition({row: count, column: 0});
 	},
 	saveData:function(){
