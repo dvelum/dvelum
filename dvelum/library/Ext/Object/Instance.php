@@ -74,18 +74,21 @@ class Ext_Object_Instance extends Ext_Object
     */
    public function __toString()
    {
-   	 $this->_convertListeners();
-   	 $listeners = $this->_config->listeners;
-   	 $config = $this->_config->config;
+     $this->_convertListeners();
+     $listeners = $this->_config->listeners;
+     $config = $this->_config->config;
 
-   	 if(empty($config)){
-   	 	$config = '{}';
-   	 }
+     if(empty($config) || $config = '{}'){
+        $config = '{}';
+        $delim = '';
+     }else{
+        $delim = ',';
+     }
 
-   	 if(!empty($listeners)){
-   	    $pos = strrpos($config, '}');
-   	    $config = substr($config, 0 , $pos).', listeners:' . $listeners . '}';
-   	 }
-   	 return $config;
+     if(!empty($listeners)){
+        $pos = strrpos($config, '}');
+        $config = substr($config, 0 , $pos).$delim.' listeners:' . $listeners . '}';
+     }
+     return $config;
    }
 }
