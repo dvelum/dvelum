@@ -154,6 +154,10 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $result = [];
         $data = $object->getData();
         $data = $data[$fieldName];
+
+        if(empty($data))
+            return array();
+
         $ids = Utils::fetchCol('id' , $data);
         $data = Utils::rekey('id' , $data);
 
