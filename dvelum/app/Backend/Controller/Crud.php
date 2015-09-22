@@ -427,8 +427,8 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
                     $item['deleted'] = false;
 
-                    if(isset($objects[$item[$primaryKey]])){
-                        $o = $objects[$item[$primaryKey]];
+                    if(isset($objects[$item['id']])){
+                        $o = $objects[$item['id']];
                         $item['title'] = $o->getTitle();
                         if($rc)
                             $item['published'] = $data['published'];
