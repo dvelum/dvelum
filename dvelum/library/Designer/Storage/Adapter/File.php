@@ -314,9 +314,12 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 		$this->exportPath = $this->getContentDir($file);
 		$baseFiles = array('__config.php','__tree.php','__events.php','__methods.php');
 
-		foreach($baseFiles as $file){
-			if(file_exists($this->exportPath . $file))
+		// check base files
+		foreach($baseFiles as $file)
+		{
+			if(!file_exists($this->exportPath . $file)){
 				return false;
+			}
 		}
 
 		$config = require $this->exportPath . '__config.php';
@@ -347,14 +350,15 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 		$tree = $project->getTree();
 		foreach($data as $id=>$v)
 		{
-			$cfg = require $this->_configPath . $v['data'];
+			$cfg = require $this->exportPath . $v['data'];
 
-			if($v['class'] == 'Designer_Project_Container'){
+			if($cfg['class'] == 'Designer_Project_Container'){
 				$o = new Designer_Project_Container($id);
 			}else{
 				//$o = new $v['class']($v['name']);
-				$o = Ext_Factory::object($v['extClass']);
-				$o->setState($v['state']);
+				$o = Ext_Factory::object($cfg['extClass']);
+				$o->setState($cfg['state']);
+                $o->setName($v['name']);
 			}
 			$tree->addItem($v['id'],$v['parent'], $o, $v['order']);
 		}

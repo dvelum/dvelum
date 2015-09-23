@@ -24,11 +24,10 @@ class Ext_Object_Instance extends Ext_Object
    public function getClass()
    {
      return 'Object_Instance';
-     //return $this->_object->getClass();
    }
    /**
     * Set object to instantiate
-    * @param Ext_Object $_object
+    * @param Ext_Object $object
     */
    public function setObject(Ext_Object $object)
    {
@@ -87,7 +86,7 @@ class Ext_Object_Instance extends Ext_Object
 
      if(!empty($listeners)){
         $pos = strrpos($config, '}');
-        $config = substr($config, 0 , $pos).$delim.' listeners:' . $listeners . '}';
+        $config = substr($config, 0 , $pos) . $delim . ' listeners:' . $listeners . '}';
      }
      return $config;
    }

@@ -36,8 +36,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 
 		foreach($paths as $path) {
 			$file = str_replace('//', '/', $path . $cfgPath . $relFile);
-
-			if (file_exists($file))
+			if(file_exists($file))
 				break;
 		}
 
@@ -50,6 +49,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 			}else{
 				$project = Designer_Factory::loadProject($this->_config, $file);
 			}
+
 			if($project instanceof Designer_Project){
 				// convert project to 1.x version
 				if($project->convertTo1x($this->_config->get('js_path'))){
