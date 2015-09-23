@@ -270,7 +270,7 @@ class Designer_Project_Code
 		$eventManager = $this->_project->getEventManager();
 		$objectEvents = $eventManager->getObjectEvents($id);
 
-		if(!empty($objectEvents))
+		if(!$object->isInstance() && !empty($objectEvents))
 		{
 			$eventsConfig = $object->getConfig()->getEvents()->__toArray();
 
@@ -296,21 +296,25 @@ class Designer_Project_Code
 			$this->_applyFiltersEvents($object->getFiltersFeature());
 		}
 
+        $result = '';
+
+        $objectVar = Ext_Code::appendRunNamespace($object->getName());
+
 		switch($oClass)
 		{
 			case 'Docked' :
-									return "\n".Ext_Code::appendRunNamespace($object->getName()) . ' = ' . Utils_String::addIndent($object->__toString(),1,"\t",true) . ';' . "\n";
+                $result =  "\n". $objectVar . ' = ' . Utils_String::addIndent($object->__toString(),1,"\t",true) . ';' . "\n";
 					break;
 
 			case 'Component_Filter':
-									return "\n".Ext_Code::appendRunNamespace($object->getName()) . ' = Ext.create("' .
+                $result =  "\n". $objectVar . ' = Ext.create("' .
 										$object->getViewObject()->getConfig()->getExtends() . '",' .
 										Utils_String::addIndent($object->__toString()) . "\n" .
 									');' . "\n";
 					break;
 
 			case 'Menu':
-			                     return "\n".Ext_Code::appendRunNamespace($object->getName()) . ' = ' . Utils_String::addIndent($object->__toString(),1,"\t",true) . ';' . "\n";
+                $result =  "\n". $objectVar . ' = ' . Utils_String::addIndent($object->__toString(),1,"\t",true) . ';' . "\n";
 
 			    break;
 
@@ -319,7 +323,7 @@ class Designer_Project_Code
 			               if($object->isInstance())
 			               {
 
-			                 return "\n".Ext_Code::appendRunNamespace($object->getName()) . ' = Ext.create("' .
+                               $result =  "\n". $objectVar . ' = Ext.create("' .
 			                     Ext_Code::appendNamespace($object->getObject()->getName()) . '",' .
 			                     Utils_String::addIndent($object->__toString())."\n".
 			                     ');' . "\n";
@@ -327,10 +331,10 @@ class Designer_Project_Code
 			               }else{
 
 							   if($object->isExtendedComponent()){
-								   return "\n".Ext_Code::appendRunNamespace($object->getName()) . ' = Ext.create("' .
+                                   $result = "\n". $objectVar . ' = Ext.create("' .
 								   Ext_Code::appendNamespace($object->getName()) . '",{});' . "\n";
 							   }else{
-								   return "\n".Ext_Code::appendRunNamespace($object->getName()) . ' = Ext.create("' .
+                                   $result =  "\n". $objectVar . ' = Ext.create("' .
 								   $object->getConfig()->getExtends() . '",' .
 								   Utils_String::addIndent($object->__toString())."\n".
 								   ');' . "\n";
@@ -340,6 +344,27 @@ class Designer_Project_Code
 					break;
 
 		}
+        if($object->isInstance() && !empty($objectEvents))
+        {
+            /**
+             * @var Ext_Object_Instance $object
+             */
+            $eventsConfig = $object->getObject()->getConfig()->getEvents()->__toArray();
+
+            foreach ($objectEvents as $event => $config)
+            {
+                $params = '';
+                if(isset($eventsConfig[$event]))
+                    $params = implode(',', array_keys($eventsConfig[$event]));
+
+                if($event === 'handler')
+                    continue;
+               //    $result.= "\n". $objectVar. '.on("click", function(){'."\n".Utils_String::addIndent($config['code'],2)."\n})";
+                else
+                   $result.= "\n". $objectVar. '.on("'.$event.'" , function('.$params.'){'."\n".Utils_String::addIndent($config['code'],2)."\n})";
+            }
+        }
+        return $result;
 	}
 
 	/**
