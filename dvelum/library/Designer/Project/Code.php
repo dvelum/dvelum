@@ -361,7 +361,7 @@ class Designer_Project_Code
                     continue;
                //    $result.= "\n". $objectVar. '.on("click", function(){'."\n".Utils_String::addIndent($config['code'],2)."\n})";
                 else
-                   $result.= "\n". $objectVar. '.on("'.$event.'" , function('.$params.'){'."\n".Utils_String::addIndent($config['code'],2)."\n})";
+                   $result.= "\n". $objectVar. '.on("'.$event.'" , function('.$params.'){'."\n".Utils_String::addIndent($config['code'],2)."\n});";
             }
         }
         return $result;
