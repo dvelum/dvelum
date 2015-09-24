@@ -68,8 +68,8 @@ Ext.define('app.medialib.ItemField', {
 	setRawValue: function(value)
 	{
 	    var me = this;
-	   // value = Ext.value(value, '');
 	    me.rawValue = value;
+
 	    if (me.rendered) {
 	    	this.loadInfo();
 	    }else{
@@ -77,7 +77,6 @@ Ext.define('app.medialib.ItemField', {
 	    }
 	    return value;
 	},
-	
 	setValue:function(value){
 		this.setRawValue(value);
 	},
@@ -87,7 +86,7 @@ Ext.define('app.medialib.ItemField', {
 	 */
 	loadInfo:function()
 	{
-		if(Ext.isEmpty(this.getValue())){
+		if(Ext.isEmpty(this.rawValue)){
 			return;
 		}
 
@@ -96,7 +95,7 @@ Ext.define('app.medialib.ItemField', {
 			method: 'post',
 			scope:this,
 			params:{
-				id: this.getValue()
+				id: this.rawValue
 			},
 			success: function(response, request) {
 				response =  Ext.JSON.decode(response.responseText);
