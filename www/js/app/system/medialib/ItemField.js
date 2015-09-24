@@ -86,10 +86,10 @@ Ext.define('app.medialib.ItemField', {
 	 * Load item info
 	 */
 	loadInfo:function()
-	{	
-		if(this.getValue().length<1){
+	{
+		if(Ext.isEmpty(this.getValue())){
 			return;
-		}		
+		}
 
 		Ext.Ajax.request({
 			url: app.createUrl([app.admin,app.medialibControllerName,'info']),
