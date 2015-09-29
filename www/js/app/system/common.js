@@ -269,10 +269,31 @@ app.updaterRenderer = function(value, metaData, record, rowIndex, colIndex, stor
 	metaData.attr='data-qtip="'+s+'"';
 	return  s;
 };
-/*
- * Grid column, which allows for sorting and removing elements
+/**
+ * Grid column with delete record button
  */
-app.sotrColumn = function(){
+app.deleteColumn = function(){
+    return {
+        xtype:'actioncolumn',
+        width:20,
+        tooltip:appLang.SORT,
+        dataIndex:'id',
+        align:'center',
+        items:[
+            {
+                iconCls:'deleteIcon',
+                tooltip:appLang.DELETE,
+                handler:function(grid, rowIndex, colIndex){
+                    grid.getStore().removeAt(rowIndex);
+                }
+            }
+        ]
+    };
+};
+/*
+ * Grid column, which allows sorting and removing elements
+ */
+app.sortColumn = function(){
 	return {
 		xtype:'actioncolumn',
 		width:60,

@@ -17,6 +17,9 @@ Ext.define('app.relatedGridModel', {
  *
  * @event addItemCall
  *
+ * @event change
+ * @param app.relatedGridPanel this
+ *
  */
 Ext.define('app.relatedGridPanel',{
 	/*
@@ -44,6 +47,30 @@ Ext.define('app.relatedGridPanel',{
 	 * @property {Object}
 	 */
 	extraParams:null,
+    /**
+     * Show status column
+     */
+	statusColumn:true,
+    /**
+     * Show sort column
+     */
+	sortColumn:true,
+    /**
+     * Show delete column
+     */
+	deleteColumn:false,
+    /**
+     * Add nutton label
+     */
+    addButtonText:appLang.ADD_ITEM,
+    /**
+     * Data column header
+     */
+    dataColumnTitle:appLang.TITLE,
+    /**
+     * Data column store index
+     */
+    dataColumnIndex:'title',
 
 	constructor: function(config) {
 		config = Ext.apply({
@@ -55,7 +82,7 @@ Ext.define('app.relatedGridPanel',{
 	initComponent:function(){
 
 		this.addButton = Ext.create('Ext.Button',{
-			text:appLang.ADD_ITEM,
+			text:this.addButtonText,
 			disabled:this.readOnly,
 			listeners:{
 				'click':{
@@ -79,6 +106,10 @@ Ext.define('app.relatedGridPanel',{
 			},
 			autoLoad:false
 		});
+
+        this.dataStore.on('datachanged' , function(){
+            this.fireEvent('change' , this);
+        },this);
 
 		this.tbar = [this.addButton];
 
@@ -156,35 +187,45 @@ Ext.define('app.relatedGridPanel',{
 		this.showGrid();
 	},
 	showGrid:function(){
+
 		if(this.gridRendered && this.readOnly == this.gridReadOnly){
 			return;
 		}
-		var columns = [
-			{
-				sortable: false,
-				text: appLang.STATUS,
-				dataIndex: 'published',
-				width:50,
-				align:'center',
-				renderer:function(value, metaData, record, rowIndex, colIndex, store){
-					if(record.get('deleted')){
-						metaData.attr = 'style="background-color:#000000;white-space:normal;"';
-						return '<img src="'+app.wwwRoot+'i/system/trash.png" data-qtip="'+appLang.INSTANCE_DELETED+'" >';
-					}else{
-						return app.publishRenderer(value, metaData, record, rowIndex, colIndex, store);
-					}
-				}
-			},{
-				sortable: false,
-				text: appLang.TITLE,
-				flex:2,
-				dataIndex: 'title'
-			}
-		];
 
-		if(!this.readOnly){
-			columns.push(app.sotrColumn());
+        var columns = [];
+
+        if(this.statusColumn){
+            columns.push({
+                sortable: false,
+                text: appLang.STATUS,
+                dataIndex: 'published',
+                width:50,
+                align:'center',
+                renderer:function(value, metaData, record, rowIndex, colIndex, store){
+                    if(record.get('deleted')){
+                        metaData.attr = 'style="background-color:#000000;white-space:normal;"';
+                        return '<img src="'+app.wwwRoot+'i/system/trash.png" data-qtip="'+appLang.INSTANCE_DELETED+'" >';
+                    }else{
+                        return app.publishRenderer(value, metaData, record, rowIndex, colIndex, store);
+                    }
+                }
+            });
+        }
+
+        columns.push({
+            sortable: false,
+            text: this.dataColumnTitle,
+            flex:2,
+            dataIndex: this.dataColumnIndex
+        });
+
+		if(!this.readOnly && this.sortColumn){
+			columns.push(app.sortColumn());
 		}
+
+        if(this.deleteColumn){
+            this.columns.push(app.deleteColumn());
+        }
 
 		this.dataGrid = Ext.create('Ext.grid.Panel',{
 			store:this.dataStore,

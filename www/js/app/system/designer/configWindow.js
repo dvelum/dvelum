@@ -53,7 +53,7 @@ Ext.define('designer.configWindow',{
 					dataIndex:'file',
 					flex:1
 				},
-				app.sotrColumn()
+				app.sortColumn()
 			]
 		});
 
@@ -112,7 +112,7 @@ Ext.define('designer.configWindow',{
 					dataIndex:'name',
 					flex:1
 				},
-				app.sotrColumn()
+				app.sortColumn()
 			]
 		});
 
