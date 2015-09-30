@@ -53,7 +53,7 @@ class Backend_Designer_Generator_Component_Window implements Backend_Designer_Ge
         $cancelBtn->minWidth = 80;
         $cancelBtn->text = '[js:]appLang.CANCEL';
         
-        if(!$project->addObject(false, $editWindow))
+        if(!$project->addObject(Designer_Project::COMPONENT_ROOT, $editWindow))
             return false;
 
         if(!$project->addObject($windowName, $dockObject))

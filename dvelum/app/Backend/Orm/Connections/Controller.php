@@ -247,7 +247,12 @@ class Backend_Orm_Connections_Controller extends Backend_Controller
         
         
         $data = array();
-        $list = $db->listTables();
+        try{
+            $list = $db->listTables();
+        }catch (Exception $e){
+            Response::jsonError($e->getMessage());
+        }
+
          
         foreach($list as $v)
             $data[] = array('id'=>$v,'title'=>$v);

@@ -59,8 +59,8 @@ Ext.define('designer.importDBWindow',{
 			      	}]
 			}),
 			listeners:{
-    		  	select:function(field , records , options){
-    		  		this.tableField.getStore().proxy.setExtraParam('type' , records[0].get('id'));
+    		  	select:function(field , record , options){
+    		  		this.tableField.getStore().proxy.setExtraParam('type' , record.get('id'));
     		  		if(this.tableField.getStore().proxy.extraParams['connId']){
     		  			this.tableField.getStore().load();
     		  		}
@@ -96,8 +96,8 @@ Ext.define('designer.importDBWindow',{
 		      	}]
     	  	}),
     	  	listeners:{
-    		  	select:function(field , records , options){
-    		  		this.tableField.getStore().proxy.setExtraParam('connId' , records[0].get('id'));
+    		  	select:function(field , record , options){
+    		  		this.tableField.getStore().proxy.setExtraParam('connId' , record.get('id'));
     		  		if(this.tableField.getStore().proxy.extraParams['type']){
     		  			this.tableField.getStore().load();
     		  		}
