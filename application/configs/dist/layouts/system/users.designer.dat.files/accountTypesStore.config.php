@@ -7,7 +7,7 @@
   array (
     'config' => 
     array (
-      'data' => '[{id:\'\',title:appLang.ALL}, {id:\'1\' , title:appLang.BACKEND_USERS},  {id:\'0\' , title:appLang.FRONTEND_USERS}]',
+      'data' => '[{id:\'1\' , title:appLang.BACKEND_USERS},  {id:\'0\' , title:appLang.FRONTEND_USERS}]',
       'autoLoad' => false,
       'model' => 'accountTypesStoreModel',
       'isExtended' => true,

@@ -123,7 +123,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 
                 if($object->isInstance())
                 {
-                  $inst = ' <span class="extInstanceLabel" data-qtip="Object instance">instance of </span>' . $object->getObject()->getName() ;
+                  $inst = ' <span class="extInstanceLabel" data-qtip="Object instance">instance of </span>' . $object->getObject()->getName();
                 }
 
 				if($root === Designer_Project::COMPONENT_ROOT){

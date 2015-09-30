@@ -186,7 +186,7 @@ return array(
      * Debug panel configuration (Development mode)
      */
     'debug_panel' => array(
-        'enabled' => true,
+        'enabled' => false,
         'options' =>array(
             // cache requests
             'cache' => true,

@@ -1,18 +1,21 @@
 <?php return array (
-  'name' => 'showTabs',
-  'code' => 'mainPanel.methods.showTabs.js',
-  'description' => '',
-  'params' => 
+  0 => 
   array (
-    0 => 
+    'name' => 'showTabs',
+    'code' => 'mainPanel.methods.showTabs.js',
+    'description' => '',
+    'params' => 
     array (
-      'name' => 'canEdit',
-      'type' => '',
-    ),
-    1 => 
-    array (
-      'name' => 'canDelete',
-      'type' => '',
+      0 => 
+      array (
+        'name' => 'canEdit',
+        'type' => '',
+      ),
+      1 => 
+      array (
+        'name' => 'canDelete',
+        'type' => '',
+      ),
     ),
   ),
 ); 

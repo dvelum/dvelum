@@ -83,19 +83,12 @@
     'data' => 'usersPanel_tools.config.php',
     'order' => 0,
   ),
-  'groupsStore' => 
+  'Groups' => 
   array (
-    'id' => 'groupsStore',
+    'id' => 'Groups',
     'parent' => '_Component_',
-    'data' => 'groupsStore.config.php',
-    'order' => 8,
-  ),
-  'mainPanel' => 
-  array (
-    'id' => 'mainPanel',
-    'parent' => '_Component_',
-    'data' => 'mainPanel.config.php',
-    'order' => 14,
+    'data' => 'Groups.config.php',
+    'order' => 3,
   ),
   'permissionsStore' => 
   array (
@@ -111,12 +104,19 @@
     'data' => 'Permissions.config.php',
     'order' => 2,
   ),
-  'Groups' => 
+  'groupsStore' => 
   array (
-    'id' => 'Groups',
+    'id' => 'groupsStore',
     'parent' => '_Component_',
-    'data' => 'Groups.config.php',
-    'order' => 3,
+    'data' => 'groupsStore.config.php',
+    'order' => 8,
+  ),
+  'mainPanel' => 
+  array (
+    'id' => 'mainPanel',
+    'parent' => '_Component_',
+    'data' => 'mainPanel.config.php',
+    'order' => 14,
   ),
   'editWindow' => 
   array (
@@ -124,6 +124,48 @@
     'parent' => '_Component_',
     'data' => 'editWindow.config.php',
     'order' => 1,
+  ),
+  'groupsStoreModel' => 
+  array (
+    'id' => 'groupsStoreModel',
+    'parent' => '_Component_',
+    'data' => 'groupsStoreModel.config.php',
+    'order' => 12,
+  ),
+  'permissionsStoreModel' => 
+  array (
+    'id' => 'permissionsStoreModel',
+    'parent' => '_Component_',
+    'data' => 'permissionsStoreModel.config.php',
+    'order' => 13,
+  ),
+  'accountTypesStore' => 
+  array (
+    'id' => 'accountTypesStore',
+    'parent' => '_Component_',
+    'data' => 'accountTypesStore.config.php',
+    'order' => 5,
+  ),
+  'usersStore' => 
+  array (
+    'id' => 'usersStore',
+    'parent' => '_Component_',
+    'data' => 'usersStore.config.php',
+    'order' => 6,
+  ),
+  'statusStore' => 
+  array (
+    'id' => 'statusStore',
+    'parent' => '_Component_',
+    'data' => 'statusStore.config.php',
+    'order' => 7,
+  ),
+  'Users' => 
+  array (
+    'id' => 'Users',
+    'parent' => '_Component_',
+    'data' => 'Users.config.php',
+    'order' => 0,
   ),
   'statusStoreModel' => 
   array (
@@ -139,13 +181,6 @@
     'data' => 'accountTypesStoreModel.config.php',
     'order' => 9,
   ),
-  'accountTypesStore' => 
-  array (
-    'id' => 'accountTypesStore',
-    'parent' => '_Component_',
-    'data' => 'accountTypesStore.config.php',
-    'order' => 5,
-  ),
   'usersStoreModel' => 
   array (
     'id' => 'usersStoreModel',
@@ -153,47 +188,26 @@
     'data' => 'usersStoreModel.config.php',
     'order' => 11,
   ),
-  'permissionsStoreModel' => 
+  'statusStoreInstance' => 
   array (
-    'id' => 'permissionsStoreModel',
-    'parent' => '_Component_',
-    'data' => 'permissionsStoreModel.config.php',
-    'order' => 13,
-  ),
-  'groupsStoreModel' => 
-  array (
-    'id' => 'groupsStoreModel',
-    'parent' => '_Component_',
-    'data' => 'groupsStoreModel.config.php',
-    'order' => 12,
-  ),
-  'statusStore' => 
-  array (
-    'id' => 'statusStore',
-    'parent' => '_Component_',
-    'data' => 'statusStore.config.php',
-    'order' => 7,
-  ),
-  'usersStore' => 
-  array (
-    'id' => 'usersStore',
-    'parent' => '_Component_',
-    'data' => 'usersStore.config.php',
-    'order' => 6,
-  ),
-  'Users' => 
-  array (
-    'id' => 'Users',
-    'parent' => '_Component_',
-    'data' => 'Users.config.php',
-    'order' => 0,
-  ),
-  'mainPanel_instance' => 
-  array (
-    'id' => 'mainPanel_instance',
+    'id' => 'statusStoreInstance',
     'parent' => '_Layout_',
-    'data' => 'mainPanel_instance.config.php',
-    'order' => 0,
+    'data' => 'statusStoreInstance.config.php',
+    'order' => 3,
+  ),
+  'accountTypeStoreInstance' => 
+  array (
+    'id' => 'accountTypeStoreInstance',
+    'parent' => '_Layout_',
+    'data' => 'accountTypeStoreInstance.config.php',
+    'order' => 4,
+  ),
+  'usersStoreInstance' => 
+  array (
+    'id' => 'usersStoreInstance',
+    'parent' => '_Layout_',
+    'data' => 'usersStoreInstance.config.php',
+    'order' => 2,
   ),
   'groupsStoreInstance' => 
   array (
@@ -202,11 +216,25 @@
     'data' => 'groupsStoreInstance.config.php',
     'order' => 1,
   ),
+  'mainPanel_instance' => 
+  array (
+    'id' => 'mainPanel_instance',
+    'parent' => '_Layout_',
+    'data' => 'mainPanel_instance.config.php',
+    'order' => 0,
+  ),
   'addUserBtn__menu' => 
   array (
     'id' => 'addUserBtn__menu',
     'parent' => 'addUserBtn',
     'data' => 'addUserBtn__menu.config.php',
+    'order' => false,
+  ),
+  'editWindow__docked' => 
+  array (
+    'id' => 'editWindow__docked',
+    'parent' => 'editWindow',
+    'data' => 'editWindow__docked.config.php',
     'order' => false,
   ),
   'editWindow_form' => 
@@ -216,33 +244,12 @@
     'data' => 'editWindow_form.config.php',
     'order' => 1,
   ),
-  'editWindow__docked' => 
-  array (
-    'id' => 'editWindow__docked',
-    'parent' => 'editWindow',
-    'data' => 'editWindow__docked.config.php',
-    'order' => false,
-  ),
   'editWindow_bottom_toolbar' => 
   array (
     'id' => 'editWindow_bottom_toolbar',
     'parent' => 'editWindow__docked',
     'data' => 'editWindow_bottom_toolbar.config.php',
     'order' => false,
-  ),
-  'editWindow_footer_cancelBtn' => 
-  array (
-    'id' => 'editWindow_footer_cancelBtn',
-    'parent' => 'editWindow_bottom_toolbar',
-    'data' => 'editWindow_footer_cancelBtn.config.php',
-    'order' => 2,
-  ),
-  'editWindow_footer_saveBtn' => 
-  array (
-    'id' => 'editWindow_footer_saveBtn',
-    'parent' => 'editWindow_bottom_toolbar',
-    'data' => 'editWindow_footer_saveBtn.config.php',
-    'order' => 1,
   ),
   'editWindow_footer_fill' => 
   array (
@@ -251,11 +258,18 @@
     'data' => 'editWindow_footer_fill.config.php',
     'order' => false,
   ),
-  'editWindow_group_id' => 
+  'editWindow_footer_saveBtn' => 
   array (
-    'id' => 'editWindow_group_id',
-    'parent' => 'editWindow_form',
-    'data' => 'editWindow_group_id.config.php',
+    'id' => 'editWindow_footer_saveBtn',
+    'parent' => 'editWindow_bottom_toolbar',
+    'data' => 'editWindow_footer_saveBtn.config.php',
+    'order' => 1,
+  ),
+  'editWindow_footer_cancelBtn' => 
+  array (
+    'id' => 'editWindow_footer_cancelBtn',
+    'parent' => 'editWindow_bottom_toolbar',
+    'data' => 'editWindow_footer_cancelBtn.config.php',
     'order' => 2,
   ),
   'editWindow_login' => 
@@ -271,6 +285,13 @@
     'parent' => 'editWindow_form',
     'data' => 'editWindow_name.config.php',
     'order' => 3,
+  ),
+  'editWindow_group_id' => 
+  array (
+    'id' => 'editWindow_group_id',
+    'parent' => 'editWindow_form',
+    'data' => 'editWindow_group_id.config.php',
+    'order' => 2,
   ),
   'editWindow_admin' => 
   array (

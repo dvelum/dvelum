@@ -505,9 +505,9 @@ class Ext_Grid extends Ext_Object
 				$col = Ext_Factory::object($v['extClass']);
 				$col->setName($v['name']);
 				$col->setState($v['state']);
-				$this->_columns->addItem($v['id'],$v['parend'], $col, $v['order']);
+				$this->_columns->addItem($v['id'],$v['parent'], $col, $v['order']);
 			}
+			$this->_columns->sortItems();
 		}
 	}
-
 }

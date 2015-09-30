@@ -7,7 +7,7 @@
   array (
     'config' => 
     array (
-      'data' => '[ {id:\'\' ,title:appLang.ALL}, {id:1 , title:appLang.ACTIVE}, {id:0 , title:appLang.DISABLED}]',
+      'data' => '[  {id:1 , title:appLang.ACTIVE}, {id:0 , title:appLang.DISABLED}]',
       'autoLoad' => false,
       'model' => 'statusStoreModel',
       'isExtended' => true,

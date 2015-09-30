@@ -85,10 +85,6 @@
             'itemId' => 'delete',
             'width' => 30,
           ),
-          'state' => 
-          array (
-            '_isExtended' => false,
-          ),
           'actions' => 
           array (
             'Groups_action_delete' => 

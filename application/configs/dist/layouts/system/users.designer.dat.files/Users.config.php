@@ -7,10 +7,10 @@
   array (
     'config' => 
     array (
-      'store' => '[new:] usersStore',
+      'store' => 'usersStoreInstance',
       'columnLines' => true,
       'viewConfig' => '{enableTextSelection: true}',
-      'title' => '[js:] appLang.USERS',
+      'title' => '[js:] appLang.USERS +1',
       'isExtended' => true,
       'defineOnly' => true,
     ),
@@ -167,10 +167,6 @@
             'itemId' => 'preaction',
             'width' => 40,
           ),
-          'state' => 
-          array (
-            '_isExtended' => false,
-          ),
           'actions' => 
           array (
             'Users_action_edit' => 
@@ -210,10 +206,6 @@
             'align' => 'center',
             'itemId' => 'postaction',
             'width' => 40,
-          ),
-          'state' => 
-          array (
-            '_isExtended' => false,
           ),
           'actions' => 
           array (

@@ -33,10 +33,27 @@ class Ext_Component_Field_System_Dictionary extends Ext_Component_Field
 			    	$allText = $this->_config->showAllText;
 			    }else{
 			        $allText = false;
-			    }			    
-				$data = Dictionary::getInstance($this->dictionary)->__toJs($this->_config->showAll , $allowBlank , $allText);
+			    }
 
-				if(strlen($data))
+				$data = Dictionary::factory($this->dictionary)->__toJs($this->_config->showAll , $allowBlank , $allText);
+
+
+                /*if($this->_config->isValidProperty('showAll') || $this->_config->isValidProperty('showReset')){
+                    $combo->triggers = '{
+                        clear: {
+                            cls: "x-form-clear-trigger",
+                            tooltip:appLang.RESET,
+                            handler:function(){
+                                this.setValue("");
+                            },
+                            scope:this
+                        }
+                    }';
+                }
+
+                $data = Dictionary::Factory($this->dictionary)->__toJs();
+				*/
+                if(strlen($data))
 				{
 					$combo->store = 'Ext.create("Ext.data.Store",{
 					        model:"app.comboStringModel",

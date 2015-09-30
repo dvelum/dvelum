@@ -160,6 +160,13 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 			$this->_errors[] = 'write: ' . $this->exportPath . '__tree.php';
 			return false;
 		}
+
+        $instances = $this->exportInstances($project);
+        if(!Utils::exportArray($this->exportPath . '__instances.php' , $instances)){
+            $this->_errors[] = 'write: ' . $this->exportPath . '__instances.php';
+            return false;
+        }
+
 		return true;
 	}
 
@@ -268,7 +275,7 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 			if(empty($methods)){
 				continue;
 			}
-
+            $methodList = [];
 			foreach($methods as $name => $item)
 			{
 				if(!$item instanceof Designer_Project_Methods_Item){
@@ -293,9 +300,10 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 				}else{
 					$data['code'] = false;
 				}
+                $methodList[] = $data;
 			}
 			$listFile = $this->exportPath . $object . '.methods.php';
-			if(!Utils::exportArray($listFile , $data)){
+			if(!Utils::exportArray($listFile , $methodList)){
 				$this->_errors[] = 'write: ' . $eventFile;
 				return false;
 			}
@@ -303,6 +311,29 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 		}
 		return $methodIndex;
 	}
+
+    /**
+     * Get object instances list
+     * @param Designer_Project $project
+     * @return array
+     */
+    public function exportInstances(Designer_Project $project)
+    {
+        $instances = [];
+        $items = $project->getTree()->getItems();
+
+        foreach($items as $item)
+        {
+            if(!$item['data'] instanceof Ext_Object_Instance){
+                continue;
+            }
+            /**
+             * @var Ext_Object_instance $item
+             */
+            $instances[] = ['id'=>$item['id'],'name' => $item['data']->getName(),'object'=>$item['data']->getObject()->getName()];
+        }
+        return $instances;
+    }
 
 	/**
 	 * Import project from content dir
@@ -312,7 +343,7 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 	public function import($file)
 	{
 		$this->exportPath = $this->getContentDir($file);
-		$baseFiles = array('__config.php','__tree.php','__events.php','__methods.php');
+		$baseFiles = array('__config.php','__tree.php','__events.php','__methods.php','__instances.php');
 
 		// check base files
 		foreach($baseFiles as $file)
@@ -329,13 +360,16 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 		$project->setActionJs(@file_get_contents($this->exportPath . 'ActionJS.js'));
 
 		$treeData = require $this->exportPath . '__tree.php';
-		$this->importTree($project , $treeData);
+		$this->importTree($project, $treeData);
 
 		$events = require $this->exportPath . '__events.php';
-		$this->importEvents($project , $events);
+		$this->importEvents($project, $events);
 
 		$methods = require $this->exportPath . '__methods.php';
-		$this->importMethods($project , $methods);
+		$this->importMethods($project, $methods);
+
+        $instances = require $this->exportPath . '__instances.php';
+        $this->importInstances($project, $instances);
 
 		return $project;
 	}
@@ -358,10 +392,12 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 				//$o = new $v['class']($v['name']);
 				$o = Ext_Factory::object($cfg['extClass']);
 				$o->setState($cfg['state']);
-                $o->setName($v['name']);
+                $o->setName($cfg['name']);
 			}
 			$tree->addItem($v['id'],$v['parent'], $o, $v['order']);
 		}
+
+        $tree->sortItems();
 	}
 
 	/**
@@ -374,16 +410,18 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 		$methodManager = $project->getMethodManager();
 		foreach($methods as $object => $configFile)
 		{
-			$objectMethods = require $this->exportPath . $configFile;
-			foreach($objectMethods as $data)
-			{
-				$code = '';
-				if(!empty($data['code'])){
-					$code = @file_get_contents($this->exportPath . $data['code']);
-				}
-				$m = $methodManager->addMethod($object , $data['name'] , $data['params'] , $code);
-				$m->setDescription($data['description']);
-			}
+            $methodData = require $this->exportPath . $configFile;
+
+            foreach($methodData as $methodItem)
+            {
+                $code = '';
+                if(!empty($methodItem['code'])){
+                    $code = @file_get_contents($this->exportPath . $methodItem['code']);
+                }
+
+                $m = $methodManager->addMethod($object , $methodItem['name'] , $methodItem['params'] , $code);
+                $m->setDescription($methodItem['description']);
+            }
 		}
 	}
 
@@ -408,4 +446,32 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 			}
 		}
 	}
+
+    /**
+     * Restore object instances
+     * @param Designer_Project $project
+     * @param array $instances
+     * @throw Exception
+     */
+    protected function importInstances(Designer_Project $project, array $instances)
+    {
+        foreach($instances as $k=>$v)
+        {
+            if(!$project->objectExists($v['id'])){
+               throw new Exception('Broken component tree. Undefined instance object '.$v['id']);
+            }
+            if(!$project->objectExists($v['object'])){
+                throw new Exception('Broken component tree. Undefined component object '.$v['object'].' as instance '.$v['id']);
+            }
+            /**
+             * @var Ext_Object_Instance $src
+             */
+            $src = $project->getObject($v['id']);
+
+            if(!$src->isInstance()){
+                throw new Exception('Broken component tree. Object '.$v['name'].' is not instance of Ext_Object_Instance');
+            }
+            $src->setObject($project->getObject($v['object']));
+        }
+    }
 }

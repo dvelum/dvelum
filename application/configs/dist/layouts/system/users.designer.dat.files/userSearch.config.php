@@ -7,7 +7,7 @@
   array (
     'config' => 
     array (
-      'store' => 'usersStore',
+      'store' => 'usersStoreInstance',
       'fieldNames' => '["login","name"]',
       'local' => false,
       'searchParam' => 'search',

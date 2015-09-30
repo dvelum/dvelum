@@ -77,4 +77,28 @@ class Ext_Component_Filter extends Ext_Object
 		return $object->__toString();
 	}
 
+	/**
+	 * Get object state for smart export
+	 */
+	public function getState()
+	{
+		$state = parent::getState();
+        $state['viewObject'] = [
+            'class' =>$this->getViewObject()->getClass(),
+            'state' => $this->getViewObject()->getState()
+        ];
+		return $state;
+	}
+	/**
+	 * Set object state
+	 * @param $state
+	 */
+	public function setState(array $state)
+	{
+		parent::setState($state);
+        $viewObject = Ext_Factory::object($state['viewObject']['class']);
+        $viewObject->setState($state['viewObject']['state']);
+		$this->setViewObject($viewObject);
+	}
+
 }

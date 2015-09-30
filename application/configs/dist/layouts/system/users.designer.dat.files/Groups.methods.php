@@ -1,13 +1,34 @@
 <?php return array (
-  'name' => 'removeGroup',
-  'code' => 'Groups.methods.removeGroup.js',
-  'description' => 'Remove users group',
-  'params' => 
+  0 => 
   array (
-    0 => 
+    'name' => 'initComponent',
+    'code' => 'Groups.methods.initComponent.js',
+    'description' => '',
+    'params' => 
     array (
-      'name' => 'group',
-      'type' => 'Ext.data.Record',
+    ),
+  ),
+  1 => 
+  array (
+    'name' => 'addGroup',
+    'code' => 'Groups.methods.addGroup.js',
+    'description' => 'Add users group',
+    'params' => 
+    array (
+    ),
+  ),
+  2 => 
+  array (
+    'name' => 'removeGroup',
+    'code' => 'Groups.methods.removeGroup.js',
+    'description' => 'Remove users group',
+    'params' => 
+    array (
+      0 => 
+      array (
+        'name' => 'group',
+        'type' => 'Ext.data.Record',
+      ),
     ),
   ),
 ); 
