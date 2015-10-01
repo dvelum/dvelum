@@ -146,8 +146,9 @@ return array(
     'mysqlDumpExecPath' => 'mysqldump',
     /*
      * the type of frontend router with two possible values:
-     * 'module' — using tree-like page structure  (‘Pages’ section of the administrative panel);
-     * 'path' — the router based on the file structure of client controllers.
+     * 'Router_Module' — using tree-like page structure  (‘Pages’ section of the administrative panel);
+     * 'Router_Path' — the router based on the file structure of client controllers.
+     * 'Router_Config' - using frontend modules configuration
      */
     'frontend_router' => 'Router_Module', // 'Router_Module','Router_Path','Router_Config'
     /*
@@ -155,7 +156,7 @@ return array(
     */
     'use_cache' => false,
     /*
-     * Hard caching time (without validation) for frondend , seconds
+     * Hard caching time (without validation) for frontend , seconds
      */
     'frontend_hardcache' => 30,
     'themes' => $docRoot . '/application/templates/public/',
