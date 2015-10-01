@@ -149,7 +149,7 @@ return array(
      * 'module' — using tree-like page structure  (‘Pages’ section of the administrative panel);
      * 'path' — the router based on the file structure of client controllers.
      */
-    'frontend_router' => 'Router_Path', // 'Router_Module','Router_Path','Router_Config'
+    'frontend_router' => 'Router_Module', // 'Router_Module','Router_Path','Router_Config'
     /*
     * Use memcached
     */
