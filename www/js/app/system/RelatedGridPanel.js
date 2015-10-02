@@ -71,6 +71,14 @@ Ext.define('app.relatedGridPanel',{
      * Data column store index
      */
     dataColumnIndex:'title',
+    /**
+     * Controller url
+     */
+    controllerUrl:null,
+    /**
+     * Store rootProperty
+     */
+    rootProperty:null,
 
 	constructor: function(config) {
 		config = Ext.apply({
@@ -100,8 +108,10 @@ Ext.define('app.relatedGridPanel',{
 				type: 'ajax',
 				reader: {
 					type: 'json',
-					idProperty: 'id'
+					idProperty: 'id',
+					rootProperty: this.rootProperty
 				},
+				url: this.controllerUrl,
 				extraParams:this.extraParams
 			},
 			autoLoad:false
