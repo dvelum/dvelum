@@ -466,11 +466,13 @@ class Ext_Grid extends Ext_Object
 	 */
 	public function getState()
 	{
-		$this->_columns->sortItems();
 		$columns = $this->_columns->getItems();
 		$colData = array();
 
-		if(!empty($columns)){
+		if(!empty($columns))
+        {
+            $columns = Utils::sortByField($columns , 'order');
+
 			foreach($columns as $k=>$v){
 				$colData[$v['id']] = array(
 					'id' =>$v['id'],

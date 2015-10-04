@@ -188,11 +188,8 @@ class Tree
 		$this->_childs[$id] = array();
 		asort($tmp);
 
-        $sort = 0;
 		foreach($tmp as $key => $order){
-            $this->_items[$key]['order'] = $sort;
 			$this->_childs[$id][$this->_items[$key]['id']] = & $this->_items[$key];
-            $sort++;
 		}
 	}
 
