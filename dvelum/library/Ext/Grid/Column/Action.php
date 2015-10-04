@@ -142,8 +142,9 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 	public function getState()
 	{
 		$state = parent::getState();
-
+        $this->_actions->sortItems();
 		$actions = $this->_actions->getItems();
+
 		$actionsData = array();
 
 		if(!empty($actions)){

@@ -196,7 +196,7 @@ class Designer_Project_Code
 		$objectEvents = $eventManager->getObjectEvents($id);
 		$object = $this->_project->getObject($id);
 
-		if(!empty($objectEvents))
+        if(!empty($objectEvents))
 		{
 			$eventsConfig = $object->getConfig()->getEvents()->__toArray();
 
@@ -270,19 +270,30 @@ class Designer_Project_Code
 		$eventManager = $this->_project->getEventManager();
 		$objectEvents = $eventManager->getObjectEvents($id);
 
+        $eventsConfig = $object->getConfig()->getEvents()->__toArray();
+
+        // set handlers
+        if(isset($objectEvents['handler'])){
+            $config = $objectEvents['handler'];
+            $params = '';
+
+            if(isset($eventsConfig['handler']))
+                $params = implode(',', array_keys($eventsConfig['handler']));
+
+            $object->addListener('handler' ,"function(".$params."){\n".Utils_String::addIndent($config['code'],2)."\n}");
+        }
+
 		if(!$object->isInstance() && !empty($objectEvents))
 		{
-			$eventsConfig = $object->getConfig()->getEvents()->__toArray();
-
 			foreach ($objectEvents as $event => $config)
 			{
 				$params = '';
 				if(isset($eventsConfig[$event]))
 					$params = implode(',', array_keys($eventsConfig[$event]));
 
-
 				if($event === 'handler')
-					$object->addListener($event ,"function(".$params."){\n".Utils_String::addIndent($config['code'],2)."\n}");
+					continue;
+					//$object->addListener($event ,"function(".$params."){\n".Utils_String::addIndent($config['code'],2)."\n}");
 				else
 					$object->addListener($event ,"{\n\t\t\tfn:function(".$params."){\n".Utils_String::addIndent($config['code'],2)."\n},\n\t\t\tscope:this\n\t\t}\n");
 			}
@@ -359,7 +370,7 @@ class Designer_Project_Code
 
                 if($event === 'handler')
                     continue;
-               //    $result.= "\n". $objectVar. '.on("click", function(){'."\n".Utils_String::addIndent($config['code'],2)."\n})";
+                   //$result.= "\n". $objectVar. '.on("click", function(){'."\n".Utils_String::addIndent($config['code'],2)."\n})";
                 else
                    $result.= "\n". $objectVar. '.on("'.$event.'" , function('.$params.'){'."\n".Utils_String::addIndent($config['code'],2)."\n});";
             }
@@ -443,7 +454,6 @@ class Designer_Project_Code
 		 	return;
 
 	 	$eventManager = $this->_project->getEventManager();
-
 
 	 	foreach($actions as $object)
 	 	{
@@ -641,7 +651,7 @@ class Designer_Project_Code
 		$docked = array();
 		$menu = array();
 
-		foreach($childs as $k => $item)
+        foreach($childs as $k => $item)
 		{
 			if($this->_project->hasChilds($item['id']))
 				$this->_compileExtendedSubItems($item['id'] , $mainContainer);
@@ -672,7 +682,7 @@ class Designer_Project_Code
 
 			$objectEvents = $eventManager->getObjectEvents($item['id']);
 
-			if(!empty($objectEvents))
+            if(!empty($objectEvents))
 			{
 				$eventsConfig = $item['data']->getConfig()->getEvents()->__toArray();
 

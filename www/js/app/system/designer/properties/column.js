@@ -90,12 +90,16 @@ Ext.define('designer.properties.GridColumn',{
 		Ext.windowManager.bringToFront(win);
 	},
 	showItemsWindow:function()
-	{			
-		Ext.create('designer.grid.column.ActionsWindow',{
+	{
+		var win = Ext.create('designer.grid.column.ActionsWindow',{
 			title:desLang.items,
 	    	objectName : this.objectName,
 	    	columnId: this.extraParams.id,
 	    	controllerUrl:this.controllerUrl
-	    }).show().toFront();
+	    });
+
+		win.show().toFront();
+		Ext.windowManager.register(win);
+		Ext.windowManager.bringToFront(win);
 	}
 });    

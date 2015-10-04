@@ -362,14 +362,14 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 		$treeData = require $this->exportPath . '__tree.php';
 		$this->importTree($project, $treeData);
 
+        $instances = require $this->exportPath . '__instances.php';
+        $this->importInstances($project, $instances);
+
 		$events = require $this->exportPath . '__events.php';
 		$this->importEvents($project, $events);
 
 		$methods = require $this->exportPath . '__methods.php';
 		$this->importMethods($project, $methods);
-
-        $instances = require $this->exportPath . '__instances.php';
-        $this->importInstances($project, $instances);
 
 		return $project;
 	}

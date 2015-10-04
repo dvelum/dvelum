@@ -3,7 +3,6 @@ return array(
 	'storage'=>'file',
 	'configs'=> 'layouts/',
 	'lang'=>'eng',
-	'connections'=> 'DesignerConnections.php',
 	'development'=>false,
 	'components'=>'./dvelum/library/Ext/Component',
 	'field_components'=>'./dvelum/library/Ext/Component/Field',

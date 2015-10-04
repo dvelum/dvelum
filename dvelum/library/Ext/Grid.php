@@ -466,6 +466,7 @@ class Ext_Grid extends Ext_Object
 	 */
 	public function getState()
 	{
+		$this->_columns->sortItems();
 		$columns = $this->_columns->getItems();
 		$colData = array();
 
@@ -477,7 +478,6 @@ class Ext_Grid extends Ext_Object
 					'class' => get_class($v['data']),
 					'extClass' => $v['data']->getClass(),
 					'order' => $v['order'],
-					'name'=> $v['data']->getName(),
 					'state' => $v['data']->getState()
 				);
 			}
@@ -503,7 +503,7 @@ class Ext_Grid extends Ext_Object
 		if(isset($state['columns']) && !empty($state['columns'])){
 			foreach($state['columns'] as $k=>$v){
 				$col = Ext_Factory::object($v['extClass']);
-				$col->setName($v['name']);
+				$col->setName($v['id']);
 				$col->setState($v['state']);
 				$this->_columns->addItem($v['id'],$v['parent'], $col, $v['order']);
 			}

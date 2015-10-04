@@ -36,7 +36,7 @@ class Ext_Grid_Column extends Ext_Object
 
 	public function getState()
 	{
-		$state = ['config' => $this->getConfig()->__toArray(true)];
+		$state = parent::getState();
 		if($this->renderer instanceof Ext_Helper_Grid_Column_Renderer){
 			$state['renderer'] = ['type'=> $this->renderer->getType(),'value'=>$this->renderer->getValue()];
 			$state['config']['renderer'] = '';
