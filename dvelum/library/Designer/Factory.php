@@ -190,8 +190,7 @@ class Designer_Factory
 
 					if($ext === '.js' || $ext === '.css')
 					{
-						$includes[] = $designerConfig->get('js_url') . $file;
-
+						$includes[] = $file;
 					}else
 					{
 						$projectFile = $designerConfig->get('configs') . $file;
