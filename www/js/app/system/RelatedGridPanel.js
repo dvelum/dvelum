@@ -234,7 +234,7 @@ Ext.define('app.relatedGridPanel',{
 		}
 
         if(this.deleteColumn){
-            this.columns.push(app.deleteColumn());
+            columns.push(app.deleteColumn());
         }
 
 		this.dataGrid = Ext.create('Ext.grid.Panel',{
