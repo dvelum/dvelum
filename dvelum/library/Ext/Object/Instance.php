@@ -77,7 +77,7 @@ class Ext_Object_Instance extends Ext_Object
      $listeners = $this->_config->listeners;
      $config = $this->_config->config;
 
-     if(empty($config) || $config = '{}'){
+     if(empty($config) || $config == '{}'){
         $config = '{}';
         $delim = '';
      }else{
