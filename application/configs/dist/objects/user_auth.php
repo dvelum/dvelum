@@ -57,7 +57,7 @@
       'db_default' => '{}',
       'db_type' => 'longtext',
       'is_search' => false,
-      'allow_html' => false,
+      'allow_html' => true,
     ),
   ),
   'indexes' => 

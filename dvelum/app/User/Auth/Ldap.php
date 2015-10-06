@@ -65,15 +65,12 @@ class User_Auth_Ldap extends User_Auth_Abstract
 		if(empty($authCfg))
 			return false;
 
-		if(!empty($authCfg[0]['config']))
-			$authCfg = json_decode($authCfg[0]['config']);
-		else
-			$authCfg = array();
+		$authCfg = Db_Object::factory('User_Auth',$authCfg[0]['id'])->get('config');
+		$authCfg = json_decode($authCfg,true);
 
-		if(isset($authCfg['searchFilter']))
-			$loginSearchFilter = $authCfg['searchFilter'];
-		else
-			$loginSearchFilter = $this->config->get('loginSearchFilter');
+		$loginSearchFilter = (isset($authCfg['loginSearchFilter']))
+			? $authCfg['loginSearchFilter']
+			: $this->config->get('loginSearchFilter');
 
 		foreach(array('%l','%d') as $attr)
 		{
