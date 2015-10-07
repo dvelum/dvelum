@@ -4,21 +4,21 @@
     'id' => '_Layout_',
     'parent' => false,
     'data' => '_Layout_.config.php',
-    'order' => -500,
+    'order' => 1,
   ),
   '_Component_' => 
   array (
     'id' => '_Component_',
     'parent' => false,
     'data' => '_Component_.config.php',
-    'order' => -1000,
+    'order' => 0,
   ),
   'Groups__docked' => 
   array (
     'id' => 'Groups__docked',
     'parent' => 'Groups',
     'data' => 'Groups__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'Groups_toolbar' => 
   array (
@@ -32,49 +32,49 @@
     'id' => 'Groups_addGroupBtn__menu',
     'parent' => 'Groups_addGroupBtn',
     'data' => 'Groups_addGroupBtn__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'Groups_addGroupBtn' => 
   array (
     'id' => 'Groups_addGroupBtn',
     'parent' => 'Groups_toolbar',
     'data' => 'Groups_addGroupBtn.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'Permissions__docked' => 
   array (
     'id' => 'Permissions__docked',
     'parent' => 'Permissions',
     'data' => 'Permissions__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'Permissions_toolbar' => 
   array (
     'id' => 'Permissions_toolbar',
     'parent' => 'Permissions__docked',
     'data' => 'Permissions_toolbar.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'Permissions_saveBtn__menu' => 
   array (
     'id' => 'Permissions_saveBtn__menu',
     'parent' => 'Permissions_saveBtn',
     'data' => 'Permissions_saveBtn__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'Permissions_saveBtn' => 
   array (
     'id' => 'Permissions_saveBtn',
     'parent' => 'Permissions_toolbar',
     'data' => 'Permissions_saveBtn.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'Users__docked' => 
   array (
     'id' => 'Users__docked',
     'parent' => 'Users',
     'data' => 'Users__docked.config.php',
-    'order' => 1,
+    'order' => 0,
   ),
   'usersPanel_tools' => 
   array (
@@ -228,14 +228,14 @@
     'id' => 'addUserBtn__menu',
     'parent' => 'addUserBtn',
     'data' => 'addUserBtn__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'editWindow__docked' => 
   array (
     'id' => 'editWindow__docked',
     'parent' => 'editWindow',
     'data' => 'editWindow__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'editWindow_form' => 
   array (
@@ -249,14 +249,14 @@
     'id' => 'editWindow_bottom_toolbar',
     'parent' => 'editWindow__docked',
     'data' => 'editWindow_bottom_toolbar.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'editWindow_footer_fill' => 
   array (
     'id' => 'editWindow_footer_fill',
     'parent' => 'editWindow_bottom_toolbar',
     'data' => 'editWindow_footer_fill.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'editWindow_footer_saveBtn' => 
   array (
@@ -347,7 +347,7 @@
     'id' => 'mainPanel__docked',
     'parent' => 'mainPanel',
     'data' => 'mainPanel__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'usersPanel_accountFilterLabel' => 
   array (

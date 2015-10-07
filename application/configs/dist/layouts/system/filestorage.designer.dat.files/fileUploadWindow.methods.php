@@ -1,8 +1,11 @@
 <?php return array (
-  'name' => 'onSaveData',
-  'code' => 'fileUploadWindow.methods.onSaveData.js',
-  'description' => 'Save data',
-  'params' => 
+  0 => 
   array (
+    'name' => 'onSaveData',
+    'code' => 'fileUploadWindow.methods.onSaveData.js',
+    'description' => 'Save data',
+    'params' => 
+    array (
+    ),
   ),
 ); 

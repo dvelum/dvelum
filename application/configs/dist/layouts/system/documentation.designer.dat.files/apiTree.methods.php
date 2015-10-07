@@ -1,8 +1,11 @@
 <?php return array (
-  'name' => 'initComponent',
-  'code' => 'apiTree.methods.initComponent.js',
-  'description' => '',
-  'params' => 
+  0 => 
   array (
+    'name' => 'initComponent',
+    'code' => 'apiTree.methods.initComponent.js',
+    'description' => '',
+    'params' => 
+    array (
+    ),
   ),
 ); 

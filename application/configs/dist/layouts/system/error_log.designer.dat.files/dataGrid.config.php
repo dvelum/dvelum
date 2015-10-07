@@ -29,33 +29,14 @@
     ),
     'columns' => 
     array (
-      'name' => 
-      array (
-        'id' => 'name',
-        'parent' => 0,
-        'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => 1,
-        'name' => 'name',
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'dataIndex' => 'name',
-            'text' => '[js:] appLang.SOURCE',
-            'itemId' => 'name',
-            'width' => 152,
-          ),
-        ),
-      ),
       'date' => 
       array (
         'id' => 'date',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Date',
+        'name' => 'date',
         'extClass' => 'Grid_Column_Date',
         'order' => 0,
-        'name' => 'date',
         'state' => 
         array (
           'config' => 
@@ -68,14 +49,33 @@
           ),
         ),
       ),
+      'name' => 
+      array (
+        'id' => 'name',
+        'parent' => 0,
+        'class' => 'Ext_Grid_Column',
+        'name' => 'name',
+        'extClass' => 'Grid_Column',
+        'order' => 1,
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'dataIndex' => 'name',
+            'text' => '[js:] appLang.SOURCE',
+            'itemId' => 'name',
+            'width' => 152,
+          ),
+        ),
+      ),
       'message' => 
       array (
         'id' => 'message',
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
+        'name' => 'message',
         'extClass' => 'Grid_Column',
         'order' => 2,
-        'name' => 'message',
         'state' => 
         array (
           'config' => 

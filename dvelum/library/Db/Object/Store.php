@@ -854,7 +854,7 @@ class Db_Object_Store
 	    /*
 	     * Clear object liks (links from object)
 	     */
-	    Model::factory($this->vonfig['linksObject'])->clearLinksFor($objectName , $ids);
+	    Model::factory($this->config['linksObject'])->clearLinksFor($objectName , $ids);
 
         $history = Model::factory($this->config['historyObject']);
         $userId = User::getInstance()->id;

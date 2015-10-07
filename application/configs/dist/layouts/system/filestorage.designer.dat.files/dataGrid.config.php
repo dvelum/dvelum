@@ -42,9 +42,9 @@
         'id' => 'date',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Date',
-        'extClass' => 'Grid_Column_Date',
-        'order' => false,
         'name' => 'date',
+        'extClass' => 'Grid_Column_Date',
+        'order' => 0,
         'state' => 
         array (
           'config' => 
@@ -56,14 +56,34 @@
           ),
         ),
       ),
+      'id' => 
+      array (
+        'id' => 'id',
+        'parent' => 0,
+        'class' => 'Ext_Grid_Column',
+        'name' => 'id',
+        'extClass' => 'Grid_Column',
+        'order' => 1,
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'align' => 'right',
+            'dataIndex' => 'id',
+            'text' => '[js:] appLang.FILE_ID',
+            'itemId' => 'id',
+            'width' => 69,
+          ),
+        ),
+      ),
       'name' => 
       array (
         'id' => 'name',
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => 1,
         'name' => 'name',
+        'extClass' => 'Grid_Column',
+        'order' => 2,
         'state' => 
         array (
           'config' => 
@@ -79,9 +99,9 @@
         'id' => 'size',
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => 2,
         'name' => NULL,
+        'extClass' => 'Grid_Column',
+        'order' => 3,
         'state' => 
         array (
           'config' => 
@@ -97,9 +117,9 @@
         'id' => 'user_name',
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => 3,
         'name' => 'user_name',
+        'extClass' => 'Grid_Column',
+        'order' => 4,
         'state' => 
         array (
           'config' => 
@@ -112,34 +132,14 @@
           ),
         ),
       ),
-      'id' => 
-      array (
-        'id' => 'id',
-        'parent' => 0,
-        'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => 0,
-        'name' => 'id',
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'align' => 'right',
-            'dataIndex' => 'id',
-            'text' => '[js:] appLang.FILE_ID',
-            'itemId' => 'id',
-            'width' => 69,
-          ),
-        ),
-      ),
       'action' => 
       array (
         'id' => 'action',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Action',
+        'name' => NULL,
         'extClass' => 'Grid_Column_Action',
         'order' => 5,
-        'name' => NULL,
         'state' => 
         array (
           'config' => 
@@ -149,16 +149,13 @@
             'itemId' => 'action',
             'width' => 64,
           ),
-          'state' => 
-          array (
-            '_isExtended' => false,
-          ),
           'actions' => 
           array (
             'dataGrid_action_download' => 
             array (
               'id' => 'dataGrid_action_download',
               'parent' => 0,
+              'name' => 'dataGrid_action_download',
               'class' => 'Ext_Grid_Column_Action_Button',
               'extClass' => 'Grid_Column_Action_Button',
               'order' => false,
@@ -176,6 +173,7 @@
             array (
               'id' => 'dataGrid_action_delete',
               'parent' => 0,
+              'name' => 'dataGrid_action_delete',
               'class' => 'Ext_Grid_Column_Action_Button',
               'extClass' => 'Grid_Column_Action_Button',
               'order' => 1,

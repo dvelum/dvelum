@@ -370,7 +370,7 @@ class Ext_Object
 			$this->getConfig()->importValues($state['config']);
 		}
 
-		if(isset($state['state']) && !empty($state['state'])){
+		if(isset($state['state']) && !empty($state['state']) && is_array($state['state'])){
 			foreach($state['state'] as $property => $value){
 				$this->{$property} = $value;
 			}

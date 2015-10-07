@@ -9,6 +9,7 @@
     array (
       'text' => '[js:] appLang.ADD_USER',
       'hidden' => true,
+      'isExtended' => false,
     ),
   ),
 ); 

@@ -277,6 +277,7 @@ class Ext_Model extends Ext_Object
 	 */
 	public function getState()
 	{
+		$state = parent::getState();
 		$fields = $this->_fields;
 		$fieldData = array();
 		if(!empty($fields)){
@@ -288,17 +289,13 @@ class Ext_Model extends Ext_Object
 				);
 			}
 		}
+		$state['state'] = [
+			'_validations'=> $this->_validations,
+			'_associations'=>$this->_associations
+		];
+		$state['fields'] = $fieldData;
 
-		$config = $this->getConfig()->__toArray(true);
-
-		return array(
-			'config' => $config,
-			'state' => array(
-				'_validations'=> $this->_validations,
-				'_associations'=>$this->_associations
-			),
-			'fields' =>  $fieldData
-		);
+		return $state;
 	}
 	/**
 	 * Set object state
@@ -306,9 +303,7 @@ class Ext_Model extends Ext_Object
 	 */
 	public function setState(array $state)
 	{
-		if(isset($state['config'])){
-			$this->getConfig()->importValues($state['config']);
-		}
+		parent::setState($state);
 
 		if(isset($state['fields']) && !empty($state['fields'])){
 			foreach($state['fields'] as $k=>$v){

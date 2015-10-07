@@ -3,7 +3,7 @@
   'runnamespace' => 'appDocRun',
   'files' => 
   array (
-    0 => 'app/system/docs/style.css',
+    0 => '/js/app/system/docs/style.css',
   ),
   'langs' => 
   array (

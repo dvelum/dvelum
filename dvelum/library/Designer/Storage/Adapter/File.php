@@ -59,6 +59,7 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 	 */
 	public function save($id , Designer_Project $obj)
 	{
+		$obj->resortItems();
 		$result = @file_put_contents($id , $this->_pack($obj));
 
 		if($result == false){

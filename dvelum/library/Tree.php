@@ -83,7 +83,7 @@ class Tree
 		if($this->itemExists($id) || strval($id) === '0')
 			return false;
 		
-		if(! $order && isset($this->_childs[$parent]))
+		if($order === false && isset($this->_childs[$parent]))
 			$order = sizeof($this->_childs[$parent]);
 		
 		$this->_items[$id] = array(
@@ -188,8 +188,11 @@ class Tree
 		$this->_childs[$id] = array();
 		asort($tmp);
 
+		$sort = 0;
 		foreach($tmp as $key => $order){
+			$this->_items[$key]['order'] = $sort;
 			$this->_childs[$id][$this->_items[$key]['id']] = & $this->_items[$key];
+			$sort++;
 		}
 	}
 

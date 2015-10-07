@@ -4,14 +4,14 @@
     'id' => '_Layout_',
     'parent' => false,
     'data' => '_Layout_.config.php',
-    'order' => -500,
+    'order' => 1,
   ),
   '_Component_' => 
   array (
     'id' => '_Component_',
     'parent' => false,
     'data' => '_Component_.config.php',
-    'order' => -1000,
+    'order' => 0,
   ),
   'dataStoreModel' => 
   array (
@@ -46,6 +46,6 @@
     'id' => 'dataGrid__docked',
     'parent' => 'dataGrid',
     'data' => 'dataGrid__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
 ); 

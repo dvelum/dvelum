@@ -4,14 +4,14 @@
     'id' => '_Layout_',
     'parent' => false,
     'data' => '_Layout_.config.php',
-    'order' => -500,
+    'order' => 1,
   ),
   '_Component_' => 
   array (
     'id' => '_Component_',
     'parent' => false,
     'data' => '_Component_.config.php',
-    'order' => -1000,
+    'order' => 0,
   ),
   'searchStore' => 
   array (
@@ -95,21 +95,21 @@
     'id' => 'searchStore_instance',
     'parent' => '_Layout_',
     'data' => 'searchStore_instance.config.php',
-    'order' => 6,
+    'order' => 2,
   ),
   'versionsStore_instance' => 
   array (
     'id' => 'versionsStore_instance',
     'parent' => '_Layout_',
     'data' => 'versionsStore_instance.config.php',
-    'order' => 4,
+    'order' => 1,
   ),
   'mainPanel' => 
   array (
     'id' => 'mainPanel',
     'parent' => '_Layout_',
     'data' => 'mainPanel.config.php',
-    'order' => 2,
+    'order' => 0,
   ),
   'apiTree__docked' => 
   array (
@@ -123,7 +123,7 @@
     'id' => 'center__docked',
     'parent' => 'center',
     'data' => 'center__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'editClassDesctiptionBtn' => 
   array (
@@ -207,21 +207,21 @@
     'id' => 'docPanelDescription',
     'parent' => 'docPanel_descriptionContainer',
     'data' => 'docPanelDescription.config.php',
-    'order' => 2,
+    'order' => 1,
   ),
   'docPanel_descriptionBlocks' => 
   array (
     'id' => 'docPanel_descriptionBlocks',
     'parent' => 'docPanel_descriptionContainer',
     'data' => 'docPanel_descriptionBlocks.config.php',
-    'order' => 3,
+    'order' => 2,
   ),
   'docPanel_hierarchy__docked' => 
   array (
     'id' => 'docPanel_hierarchy__docked',
     'parent' => 'docPanel_hierarchy',
     'data' => 'docPanel_hierarchy__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'docToolbar_fill' => 
   array (
@@ -242,7 +242,7 @@
     'id' => 'docToolbar_showBtn__menu',
     'parent' => 'docToolbar_showBtn',
     'data' => 'docToolbar_showBtn__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'showType_protected' => 
   array (
@@ -291,14 +291,14 @@
     'id' => 'editClassDesctiptionBtn__menu',
     'parent' => 'editClassDesctiptionBtn',
     'data' => 'editClassDesctiptionBtn__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'htmlEditor__docked' => 
   array (
     'id' => 'htmlEditor__docked',
     'parent' => 'htmlEditor',
     'data' => 'htmlEditor__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'htmlEditorText' => 
   array (
@@ -312,14 +312,14 @@
     'id' => 'htmlEditorCancel__menu',
     'parent' => 'htmlEditorCancel',
     'data' => 'htmlEditorCancel__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'htmlEditorSave__menu' => 
   array (
     'id' => 'htmlEditorSave__menu',
     'parent' => 'htmlEditorSave',
     'data' => 'htmlEditorSave__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'htmlEditorSave' => 
   array (
@@ -333,7 +333,7 @@
     'id' => 'htmlEditorFill',
     'parent' => 'htmlEditorToolbar',
     'data' => 'htmlEditorFill.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'htmlEditorCancel' => 
   array (
@@ -347,7 +347,7 @@
     'id' => 'htmlEditorToolbar',
     'parent' => 'htmlEditor__docked',
     'data' => 'htmlEditorToolbar.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'center' => 
   array (
@@ -396,7 +396,7 @@
     'id' => 'mainToolbarLabel',
     'parent' => 'mainToolbar',
     'data' => 'mainToolbarLabel.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'mainToolBarLangLabel' => 
   array (
@@ -438,7 +438,7 @@
     'id' => 'textEditor__docked',
     'parent' => 'textEditor',
     'data' => 'textEditor__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'textEditorText' => 
   array (
@@ -452,7 +452,7 @@
     'id' => 'textEditorCancelBtn__menu',
     'parent' => 'textEditorCancelBtn',
     'data' => 'textEditorCancelBtn__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'textEditorSaveBtn__menu' => 
   array (
@@ -487,6 +487,6 @@
     'id' => 'textEditorToolbar',
     'parent' => 'textEditor__docked',
     'data' => 'textEditorToolbar.config.php',
-    'order' => false,
+    'order' => 0,
   ),
 ); 

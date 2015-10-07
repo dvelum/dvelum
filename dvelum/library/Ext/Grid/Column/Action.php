@@ -142,8 +142,8 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 	public function getState()
 	{
 		$state = parent::getState();
-		$actions = $this->_actions->getItems();
 
+		$actions = $this->_actions->getItems();
 		$actionsData = array();
 
 		if(!empty($actions)){
@@ -152,6 +152,7 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 				$actionsData[$v['id']] = array(
 					'id' =>$v['id'],
 					'parent' => $v['parent'],
+                    'name'=> $v['data']->getName(),
 					'class' => get_class($v['data']),
 					'extClass' => $v['data']->getClass(),
 					'order' => $v['order'],
@@ -159,7 +160,6 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 				);
 			}
 		}
-
 		$state['actions'] = $actionsData;
 		return $state;
 	}
@@ -175,6 +175,7 @@ class Ext_Grid_Column_Action extends Ext_Grid_Column
 			foreach($state['actions'] as $k=>$v){
 				$action = Ext_Factory::object($v['extClass']);
 				$action->setState($v['state']);
+                $action->setName($v['name']);
 				$this->_actions->addItem($v['id'],$v['parent'] , $action, $v['order']);
 			}
 		}

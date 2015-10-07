@@ -42,9 +42,9 @@
         'id' => 'id',
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => false,
         'name' => 'id',
+        'extClass' => 'Grid_Column',
+        'order' => 0,
         'state' => 
         array (
           'config' => 
@@ -61,9 +61,9 @@
         'id' => 'title',
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
+        'name' => 'title',
         'extClass' => 'Grid_Column',
         'order' => 1,
-        'name' => 'title',
         'state' => 
         array (
           'config' => 
@@ -410,9 +410,9 @@
         'id' => 'sync',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Boolean',
+        'name' => NULL,
         'extClass' => 'Grid_Column_Boolean',
         'order' => 2,
-        'name' => NULL,
         'state' => 
         array (
           'config' => 
@@ -431,9 +431,9 @@
         'id' => 'actions',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Action',
+        'name' => NULL,
         'extClass' => 'Grid_Column_Action',
         'order' => 3,
-        'name' => NULL,
         'state' => 
         array (
           'config' => 
@@ -449,6 +449,7 @@
             array (
               'id' => 'dataGrid_action_delete',
               'parent' => 0,
+              'name' => 'dataGrid_action_delete',
               'class' => 'Ext_Grid_Column_Action_Button',
               'extClass' => 'Grid_Column_Action_Button',
               'order' => false,

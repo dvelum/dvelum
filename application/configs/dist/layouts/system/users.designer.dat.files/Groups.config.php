@@ -34,9 +34,9 @@
         'id' => 'title',
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => false,
         'name' => 'title',
+        'extClass' => 'Grid_Column',
+        'order' => 0,
         'state' => 
         array (
           'config' => 
@@ -53,9 +53,9 @@
         'id' => 'system',
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
+        'name' => 'system',
         'extClass' => 'Grid_Column',
         'order' => 1,
-        'name' => 'system',
         'state' => 
         array (
           'config' => 
@@ -74,9 +74,9 @@
         'id' => 'delete',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Action',
+        'name' => NULL,
         'extClass' => 'Grid_Column_Action',
         'order' => 2,
-        'name' => NULL,
         'state' => 
         array (
           'config' => 
@@ -91,6 +91,7 @@
             array (
               'id' => 'Groups_action_delete',
               'parent' => 0,
+              'name' => 'Groups_action_delete',
               'class' => 'Ext_Grid_Column_Action_Button',
               'extClass' => 'Grid_Column_Action_Button',
               'order' => false,

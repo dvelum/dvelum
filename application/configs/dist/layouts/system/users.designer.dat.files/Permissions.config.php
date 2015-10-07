@@ -41,14 +41,54 @@
     ),
     'columns' => 
     array (
+      'title' => 
+      array (
+        'id' => 'title',
+        'parent' => 0,
+        'class' => 'Ext_Grid_Column',
+        'name' => 'title',
+        'extClass' => 'Grid_Column',
+        'order' => 0,
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'dataIndex' => 'title',
+            'text' => '[js:] appLang.MODULE ',
+            'itemId' => 'title',
+            'width' => 189,
+          ),
+        ),
+      ),
+      'allcol' => 
+      array (
+        'id' => 'allcol',
+        'parent' => '0',
+        'class' => 'Ext_Grid_Column',
+        'name' => 'allcol',
+        'extClass' => 'Grid_Column',
+        'order' => 1,
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'align' => 'center',
+            'renderer' => 'Ext_Component_Renderer_System_User_Allchecked',
+            'scope' => 'me',
+            'text' => '[js:] appLang.ALL',
+            'itemId' => 'allcol',
+            'width' => 60,
+          ),
+        ),
+      ),
       'view' => 
       array (
         'id' => 'view',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Check',
+        'name' => NULL,
         'extClass' => 'Grid_Column_Check',
         'order' => 2,
-        'name' => NULL,
         'state' => 
         array (
           'config' => 
@@ -65,9 +105,9 @@
         'id' => 'edit',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Check',
+        'name' => NULL,
         'extClass' => 'Grid_Column_Check',
         'order' => 3,
-        'name' => NULL,
         'state' => 
         array (
           'config' => 
@@ -79,54 +119,14 @@
           ),
         ),
       ),
-      'delete' => 
-      array (
-        'id' => 'delete',
-        'parent' => 0,
-        'class' => 'Ext_Grid_Column_Check',
-        'extClass' => 'Grid_Column_Check',
-        'order' => 4,
-        'name' => NULL,
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'dataIndex' => 'delete',
-            'renderer' => 'Ext_Component_Renderer_System_Checkbox',
-            'text' => '[js:] appLang.DELETE',
-            'itemId' => 'delete',
-          ),
-        ),
-      ),
-      'allcol' => 
-      array (
-        'id' => 'allcol',
-        'parent' => '0',
-        'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => 1,
-        'name' => 'allcol',
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'align' => 'center',
-            'renderer' => 'Ext_Component_Renderer_System_User_Allchecked',
-            'scope' => 'me',
-            'text' => '[js:] appLang.ALL',
-            'itemId' => 'allcol',
-            'width' => 60,
-          ),
-        ),
-      ),
       'publish' => 
       array (
         'id' => 'publish',
         'parent' => 0,
         'class' => 'Ext_Grid_Column',
+        'name' => 'publish',
         'extClass' => 'Grid_Column',
         'order' => 4,
-        'name' => 'publish',
         'state' => 
         array (
           'config' => 
@@ -139,22 +139,22 @@
           ),
         ),
       ),
-      'title' => 
+      'delete' => 
       array (
-        'id' => 'title',
+        'id' => 'delete',
         'parent' => 0,
-        'class' => 'Ext_Grid_Column',
-        'extClass' => 'Grid_Column',
-        'order' => 0,
-        'name' => 'title',
+        'class' => 'Ext_Grid_Column_Check',
+        'name' => NULL,
+        'extClass' => 'Grid_Column_Check',
+        'order' => 5,
         'state' => 
         array (
           'config' => 
           array (
-            'dataIndex' => 'title',
-            'text' => '[js:] appLang.MODULE ',
-            'itemId' => 'title',
-            'width' => 189,
+            'dataIndex' => 'delete',
+            'renderer' => 'Ext_Component_Renderer_System_Checkbox',
+            'text' => '[js:] appLang.DELETE',
+            'itemId' => 'delete',
           ),
         ),
       ),

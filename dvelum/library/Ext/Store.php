@@ -196,6 +196,8 @@ class Ext_Store extends Ext_Object
 	 */
 	public function getState()
 	{
+		$state = parent::getState();
+
 		$fields = $this->_fields;
 		$fieldData = array();
 		if(!empty($fields)){
@@ -211,11 +213,11 @@ class Ext_Store extends Ext_Object
 		$config = $this->getConfig()->__toArray(true);
 		$proxy = '';
 		$reader = '';
+
 		if(isset($config['proxy']) && $config['proxy'] instanceof Ext_Object)
 		{
 			$proxyObject = $config['proxy'];
-			unset($config['proxy']);
-
+			unset($state['config']['proxy']);
 
 			if($proxyObject->isValidProperty('reader') && $proxyObject->reader instanceof Ext_Object){
 				$readerObject = $proxyObject->reader;
@@ -234,13 +236,12 @@ class Ext_Store extends Ext_Object
 			);
 		}
 
-		return array(
-			'config' => $config,
-			'state' => array(),
-			'fields' =>  $fieldData,
-			'proxy' => $proxy,
-			'reader'=> $reader
-		);
+        $state['state'] = [];
+        $state['fields'] = $fieldData;
+        $state['proxy'] = $proxy;
+        $state['reader'] = $reader;
+
+		return $state;
 	}
 
 	/**

@@ -4,98 +4,98 @@
     'id' => '_Component_',
     'parent' => false,
     'data' => '_Component_.config.php',
-    'order' => -1000,
+    'order' => 0,
   ),
   '_Layout_' => 
   array (
     'id' => '_Layout_',
     'parent' => false,
     'data' => '_Layout_.config.php',
-    'order' => -500,
+    'order' => 1,
   ),
   'localesStoreModel' => 
   array (
     'id' => 'localesStoreModel',
     'parent' => '_Component_',
     'data' => 'localesStoreModel.config.php',
-    'order' => -10,
+    'order' => 2,
   ),
   'langsStoreModel' => 
   array (
     'id' => 'langsStoreModel',
     'parent' => '_Component_',
     'data' => 'langsStoreModel.config.php',
-    'order' => -10,
+    'order' => 1,
   ),
   'addWindow' => 
   array (
     'id' => 'addWindow',
     'parent' => '_Component_',
     'data' => 'addWindow.config.php',
-    'order' => 4,
+    'order' => 7,
   ),
   'dataGrid' => 
   array (
     'id' => 'dataGrid',
     'parent' => '_Component_',
     'data' => 'dataGrid.config.php',
-    'order' => 0,
+    'order' => 3,
   ),
   'localizationStore' => 
   array (
     'id' => 'localizationStore',
     'parent' => '_Component_',
     'data' => 'localizationStore.config.php',
-    'order' => 3,
+    'order' => 6,
   ),
   'localizationStoreModel' => 
   array (
     'id' => 'localizationStoreModel',
     'parent' => '_Component_',
     'data' => 'localizationStoreModel.config.php',
-    'order' => -10,
+    'order' => 0,
   ),
   'localesStore' => 
   array (
     'id' => 'localesStore',
     'parent' => '_Component_',
     'data' => 'localesStore.config.php',
-    'order' => 2,
+    'order' => 5,
   ),
   'langsStore' => 
   array (
     'id' => 'langsStore',
     'parent' => '_Component_',
     'data' => 'langsStore.config.php',
-    'order' => 1,
+    'order' => 4,
   ),
   'localesStore_instance' => 
   array (
     'id' => 'localesStore_instance',
     'parent' => '_Layout_',
     'data' => 'localesStore_instance.config.php',
-    'order' => 2,
+    'order' => 0,
   ),
   'mainPanel' => 
   array (
     'id' => 'mainPanel',
     'parent' => '_Layout_',
     'data' => 'mainPanel.config.php',
-    'order' => 3,
+    'order' => 1,
   ),
   'addDictionaryBtn__menu' => 
   array (
     'id' => 'addDictionaryBtn__menu',
     'parent' => 'addDictionaryBtn',
     'data' => 'addDictionaryBtn__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'addWindow__docked' => 
   array (
     'id' => 'addWindow__docked',
     'parent' => 'addWindow',
     'data' => 'addWindow__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'dataForm' => 
   array (
@@ -109,7 +109,7 @@
     'id' => 'bottobBar',
     'parent' => 'addWindow__docked',
     'data' => 'bottobBar.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'editWindowFill' => 
   array (
@@ -144,7 +144,7 @@
     'id' => 'dataForm__docked',
     'parent' => 'dataForm',
     'data' => 'dataForm__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'valuesLabel' => 
   array (

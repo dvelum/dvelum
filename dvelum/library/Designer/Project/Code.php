@@ -198,7 +198,10 @@ class Designer_Project_Code
 
         if(!empty($objectEvents))
 		{
-			$eventsConfig = $object->getConfig()->getEvents()->__toArray();
+			if($object->isInstance())
+				$eventsConfig = $object->getObject()->getConfig()->getEvents()->__toArray();
+			else
+				$eventsConfig = $object->getConfig()->getEvents()->__toArray();
 
 			foreach ($objectEvents as $event => $config)
 			{
@@ -448,7 +451,7 @@ class Designer_Project_Code
 	 */
 	protected function _convertColumnActions(Ext_Grid_Column_Action $column)
 	{
-		 $actions = $column->getActions();
+		$actions = $column->getActions();
 
 		 if(empty($actions))
 		 	return;
@@ -460,6 +463,11 @@ class Designer_Project_Code
 	 		$eventsConfig = $object->getConfig()->getEvents()->__toArray();
 	 		$colEvents = $eventManager->getObjectEvents($object->getName());
 
+           /* echo var_dump($object->getName());
+            echo '<pre>';
+            print_r($colEvents);
+            die('here');
+*/
 	 		if(empty($colEvents))
 	 			continue;
 
@@ -471,7 +479,6 @@ class Designer_Project_Code
 	 			$params = '';
 				if(isset($eventsConfig[$event]))
 					$params = implode(',', array_keys($eventsConfig[$event]));
-
 
 				$object->addListener($event ,"function(".$params."){\n".Utils_String::addIndent($config['code'],2)."\n}");
 				$object->scope = 'this';

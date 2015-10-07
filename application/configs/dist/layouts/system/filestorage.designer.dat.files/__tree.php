@@ -4,14 +4,14 @@
     'id' => '_Layout_',
     'parent' => false,
     'data' => '_Layout_.config.php',
-    'order' => -500,
+    'order' => 1,
   ),
   '_Component_' => 
   array (
     'id' => '_Component_',
     'parent' => false,
     'data' => '_Component_.config.php',
-    'order' => -1000,
+    'order' => 0,
   ),
   'dataGrid' => 
   array (
@@ -32,7 +32,7 @@
     'id' => 'dataStoreModel',
     'parent' => '_Component_',
     'data' => 'dataStoreModel.config.php',
-    'order' => 3,
+    'order' => 2,
   ),
   'mainPanel' => 
   array (
@@ -53,21 +53,21 @@
     'id' => 'dataGrid__docked',
     'parent' => 'dataGrid',
     'data' => 'dataGrid__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'topToolbar' => 
   array (
     'id' => 'topToolbar',
     'parent' => 'dataGrid__docked',
     'data' => 'topToolbar.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'dateFilterReset__menu' => 
   array (
     'id' => 'dateFilterReset__menu',
     'parent' => 'dateFilterReset',
     'data' => 'dateFilterReset__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'fileUploadWindow_form' => 
   array (
@@ -81,14 +81,14 @@
     'id' => 'fileUploadWindow__docked',
     'parent' => 'fileUploadWindow',
     'data' => 'fileUploadWindow__docked.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'fileUploadWindow_bottom_toolbar' => 
   array (
     'id' => 'fileUploadWindow_bottom_toolbar',
     'parent' => 'fileUploadWindow__docked',
     'data' => 'fileUploadWindow_bottom_toolbar.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'fileUploadWindow_footer_cancelBtn' => 
   array (
@@ -102,7 +102,7 @@
     'id' => 'fileUploadWindow_footer_fill',
     'parent' => 'fileUploadWindow_bottom_toolbar',
     'data' => 'fileUploadWindow_footer_fill.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'fileUploadWindow_footer_saveBtn' => 
   array (
@@ -116,7 +116,7 @@
     'id' => 'fileUploadWindow_file',
     'parent' => 'fileUploadWindow_form',
     'data' => 'fileUploadWindow_file.config.php',
-    'order' => false,
+    'order' => 0,
   ),
   'uploadButton' => 
   array (
@@ -193,6 +193,6 @@
     'id' => 'uploadButton__menu',
     'parent' => 'uploadButton',
     'data' => 'uploadButton__menu.config.php',
-    'order' => false,
+    'order' => 0,
   ),
 ); 
