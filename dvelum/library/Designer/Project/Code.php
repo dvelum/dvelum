@@ -463,11 +463,6 @@ class Designer_Project_Code
 	 		$eventsConfig = $object->getConfig()->getEvents()->__toArray();
 	 		$colEvents = $eventManager->getObjectEvents($object->getName());
 
-           /* echo var_dump($object->getName());
-            echo '<pre>';
-            print_r($colEvents);
-            die('here');
-*/
 	 		if(empty($colEvents))
 	 			continue;
 
