@@ -550,7 +550,6 @@ Ext.define('designer.properties.Panel', {
                     this.dataGrid.setSource(response.data);
                     this.dataGrid.getStore().sort('name', 'ASC');
                    // this.dataGrid.doLayout();
-                    this.refreshEvents();
                     this.fireEvent('afterLoad', response);
                 } else {
                     this.dataGrid.setSource({});
