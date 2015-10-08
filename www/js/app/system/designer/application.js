@@ -343,6 +343,7 @@ Ext.define('designer.application',{
 				iconCls:'toolbarPanelIcon',
 				tooltip: desLang.add + ' ' + desLang.toolbar,
 				oClass:'',
+				handler: false,
 				menu:Ext.create('Ext.menu.Menu', {
 					style: {
 						overflow: 'visible'
@@ -390,6 +391,7 @@ Ext.define('designer.application',{
 				iconCls:'menuIcon',
 				tooltip: desLang.add + ' ' + desLang.menu,
 				oClass:'',
+				handler: false,
 				menu:Ext.create('Ext.menu.Menu', {
 					style: {
 						overflow: 'visible'
@@ -441,6 +443,7 @@ Ext.define('designer.application',{
 				text:desLang.form,
 				iconCls:'formIcon',
 				oClass:'',
+				handler: false,
 				menu:Ext.create('Ext.menu.Menu', {
 					style: {
 						overflow: 'visible'
@@ -546,6 +549,7 @@ Ext.define('designer.application',{
 				iconCls:'buttonIcon',
 				tooltip: desLang.add + ' ' + desLang.buttons,
 				oClass:'',
+				handler: false,
 				menu:Ext.create('Ext.menu.Menu', {
 					style: {
 						overflow: 'visible'
@@ -613,6 +617,7 @@ Ext.define('designer.application',{
 					iconCls:'panelIcon',
 					oClass:'',
 					showType:'loaded',
+					handler: false,
 					menu:Ext.create('Ext.menu.Menu', {
 						style: {
 							overflow: 'visible'
@@ -711,6 +716,7 @@ Ext.define('designer.application',{
 					showType:'loaded',
 					tooltip:desLang.componentTemplates,
 					scope:this,
+					handler: false,
 					menu: Ext.create('Ext.menu.Menu', {
 						style: {
 							overflow: 'visible'
