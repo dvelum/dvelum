@@ -174,7 +174,10 @@ class Backend_Modules_Controller extends Backend_Controller{
 		);
 
 		foreach($acceptedFields as $name => $type){
-			$data[$name] = Request::post($name , $type , null);
+            if($type === Filter::FILTER_BOOLEAN)
+			    $data[$name] = Request::post($name , $type , false);
+            else
+                $data[$name] = Request::post($name , $type , null);
 		}
 
 		if($id) {

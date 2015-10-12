@@ -213,7 +213,8 @@ Ext.define('app.crud.modules.EditBackendWindow',{
 
 			},
 			{ fieldLabel:appLang.ENABLED, name: 'active', xtype:'checkbox'},
-			{ fieldLabel:appLang.DEVELOPMENT, name: 'dev', xtype:'checkbox'}
+			{ fieldLabel:appLang.DEVELOPMENT, name: 'dev', xtype:'checkbox'},
+			{ fieldLabel:appLang.IN_MENU, name: 'in_menu', xtype:'checkbox'}
 		];
 		this.callParent();
 	}
@@ -517,7 +518,7 @@ Ext.define('app.crud.modules.backendView',{
 			extraParams:this.extraParams,
 			title:record.get('id'),
 			width:500,
-			height:340,
+			height:360,
 			canDelete:this.canDelete,
 			canEdit:this.canEdit,
 			resizable:false
