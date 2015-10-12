@@ -683,7 +683,7 @@ class Designer_Project
 			/*
 			 * Defined components without auto layout
 			 */
-			if($object->isExtendedComponent() && $object->isValidProperty('definedOnly') && $object->defineOnly) {
+			if($object->isExtendedComponent() /*&& $object->isValidProperty('definedOnly') && $object->defineOnly*/) {
 				$this->_tree->changeParent($cmpData['id'] , '_Component_');
 				continue;
 			}

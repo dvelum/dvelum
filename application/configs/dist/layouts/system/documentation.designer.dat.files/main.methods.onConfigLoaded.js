@@ -1,5 +1,6 @@
 this.childObjects.langSelector.getStore().loadData(this.sysConfiguration.languages);
 this.childObjects.langSelector.setValue(this.sysConfiguration.language);
+
 this.childObjects.versionSelector.getStore().loadData(this.sysConfiguration.versions);
 this.childObjects.versionSelector.setValue(this.sysConfiguration.version);
 

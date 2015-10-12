@@ -7,7 +7,7 @@
   array (
     'config' => 
     array (
-      'store' => 'versionsStore',
+      'store' => '[new:] versionsStore',
       'valueField' => 'id',
       'displayField' => 'title',
       'forceSelection' => true,

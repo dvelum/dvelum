@@ -196,7 +196,7 @@ class Sysdocs_Controller
             $preparedVersions[] = array('id'=>$v,'title'=>$v);
         }
 
-        $langs = Dictionary::getInstance('sysdocs_language')->getData();
+        $langs = Dictionary::factory('sysdocs_language')->getData();
         $langData = array();
 
         foreach ($langs as $k=>$v){
