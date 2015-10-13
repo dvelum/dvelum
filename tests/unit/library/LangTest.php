@@ -4,8 +4,8 @@ class LangTest extends PHPUnit_Framework_TestCase
 	public function testGet()
 	{
 		
-		$enDict = Config::factory(Config::File_Array, Registry::get('main','config')->get('lang_path').'en.php');	
-		$ruDict = Config::factory(Config::File_Array, Registry::get('main','config')->get('lang_path').'ru.php');
+		$enDict = Lang::storage()->get('en.php');
+		$ruDict = Lang::storage()->get('ru.php');
 		
 		Lang::addDictionary('en', $enDict);
 		Lang::addDictionary('ru', $ruDict);

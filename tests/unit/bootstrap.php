@@ -33,6 +33,7 @@ $storageConfig['file_array'] = array(
     'paths' => array(
         './application/configs/dist/',
         './application/configs/local/',
+        './tests/data/configs/',
         './tests/configs/',
     ),
     'write' =>  './tests/configs/',
@@ -53,6 +54,11 @@ $config->set('development' ,2);
  * Disable op caching for test mode
  */
 ini_set('opcache.enable', 0);
+
+/**
+ * Enable Zend Framework 1.x library support
+ */
+set_include_path(get_include_path() . PATH_SEPARATOR . $config->get('vendor_lib'));
 
 /*
  * Setting autoloader config

@@ -77,18 +77,18 @@ class ModelTest extends PHPUnit_Framework_TestCase
 	{
 		$pageModel =  Model::factory('Page');
 		$this->assertEquals(( $pageModel instanceof Model_Page ) , true);
-		$this->assertEquals($pageModel->getObjectName('page') , 'page');
+		$this->assertEquals($pageModel->getObjectName() , 'page');
 		
-		$apiKeys = Model::factory('apikeys');
+		$apiKeys = Model::factory('User');
 		$this->assertEquals(( $apiKeys instanceof Model) , true);
-		$this->assertEquals($apiKeys->getObjectName('apikeys') , 'apikeys');
+		$this->assertEquals($apiKeys->getObjectName() , 'user');
 	}
 	
 	public function testTable()
 	{
 		$dbCfg = Registry::get('db','config');
-		$apiKeys = Model::factory('apikeys');
-		$this->assertEquals($dbCfg['prefix'] . 'apikeys' , $apiKeys->table());
+		$apiKeys = Model::factory('User');
+		$this->assertEquals($dbCfg['prefix'] . 'user' , $apiKeys->table());
 	}
 	
 	public function testGetItem()

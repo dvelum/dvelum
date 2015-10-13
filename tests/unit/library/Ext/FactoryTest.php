@@ -115,7 +115,7 @@ class Ext_FactoryTest extends PHPUnit_Framework_TestCase
 		//$this->assertTrue(Ext_Factory::getEvents('Component_Field_System_Medialibhtml') instanceof Ext_Events_Component_Field_System_Medialibhtml);
 		//$this->assertTrue(Ext_Factory::getEvents('Component_Field_System_Dictionary') instanceof Ext_Events_Component_Field_System_Dictionary);
 		$this->assertTrue(Ext_Factory::getEvents('Component_Window_System_Crud') instanceof Ext_Events_Component_Window_System_Crud);
-		$this->assertTrue(Ext_Factory::getEvents('Component_Window_System_Crud_vc') instanceof Ext_Events_Component_Window_System_Crud_Vc);
+		$this->assertTrue(Ext_Factory::getEvents('Component_Window_System_Crud_Vc') instanceof Ext_Events_Component_Window_System_Crud_Vc);
 		
 	}
 	
