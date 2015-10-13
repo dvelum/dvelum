@@ -8,9 +8,9 @@ $wwwRoot = $this->get('wwwRoot');
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
 <BASE href="<?php echo Request::baseUrl();?>"/>
 <title>Log into administrative panel</title>
-<link href="<?php echo $wwwRoot ;?>templates/system/default/css/login.css" rel="stylesheet" type="text/css"/>
+<link href="<?php echo $wwwRoot ;?>css/system/login.css" rel="stylesheet" type="text/css"/>
 <!--[if IE]>
-	<link rel="stylesheet" href="<?php echo $wwwRoot ;?>templates/system/default/css/style_ieFix.css" type="text/css"/> 
+	<link rel="stylesheet" href="<?php echo $wwwRoot ;?>css/system/style_ieFix.css" type="text/css"/>
 <![endif]-->
 </head>
 
