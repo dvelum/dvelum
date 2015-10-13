@@ -165,6 +165,7 @@ Ext.define('designer.urlField',{
 				}
 			}
 		}).show();
-		win.manager.bringToFront(win);
+        Ext.windowManager.register(win);
+        Ext.WindowMgr.bringToFront(win);
 	}
 });
