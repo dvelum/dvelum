@@ -209,19 +209,19 @@ class Install_Controller {
                 'accessType'=>'required'
             ),
             array(
-                'path'=>$this->wwwPath . '/js/lang',
+                'path'=>$this->wwwPath . 'js/lang',
                 'accessType'=>'required'
             ),
             array(
-                'path'=>$this->wwwPath . '/js/cache',
+                'path'=>$this->wwwPath . 'js/cache',
                 'accessType'=>'required'
             ),
             array(
-                'path'=>$this->wwwPath . '/js/syscache',
+                'path'=>$this->wwwPath . 'js/syscache',
                 'accessType'=>'required'
             ),
             array(
-                'path'=>$this->wwwPath . '/media',
+                'path'=>$this->wwwPath . 'media',
                 'accessType'=>'required'
             ),
 
