@@ -58,9 +58,10 @@ abstract class Designer_Storage_Adapter_Abstract
 	 * Save Db_Query object
 	 * @param string $id
 	 * @param Db_Query $obj
+	 * @param boolean $export, default false
 	 * @return boolean
 	 */
-	abstract public function save($id , Designer_Project $obj);
+	abstract public function save($id , Designer_Project $obj , $export = false);
 
 	/**
 	 * Delete Designer_Project object

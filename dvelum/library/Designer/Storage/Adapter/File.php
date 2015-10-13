@@ -57,7 +57,7 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 	 * (non-PHPdoc)
 	 * @see Designer_Storage_Adapter_Abstract::save()
 	 */
-	public function save($id , Designer_Project $obj)
+	public function save($id , Designer_Project $obj, $export = false)
 	{
 		$obj->resortItems();
 		$result = @file_put_contents($id , $this->_pack($obj));
@@ -66,7 +66,11 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 			$this->_errors[] = 'write: ' . $id;
 			return false;
 		}
-		return $this->export($id , $obj);
+
+		if($export)
+			return $this->export($id , $obj);
+		else
+			return true;
 	}
 
 	/**
