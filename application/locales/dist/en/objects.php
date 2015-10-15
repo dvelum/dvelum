@@ -203,7 +203,7 @@
       'login' => 'User Login',
       'pass' => 'User Password',
       'enabled' => 'Is active?',
-      'admin' => 'Is administrator?',
+      'admin' => 'Back-office user?',
       'registration_date' => 'Registration date',
       'confirmation_code' => 'Confirmation code',
       'group_id' => 'User Group',
