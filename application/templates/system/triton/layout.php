@@ -73,7 +73,7 @@ $wwwRoot = Request::wwwRoot();
 	if($this->get('useCSRFToken'))
 		echo '<meta name="csrf-token" content="'.$token.'"/>';
 ?>
-<title><?php echo $this->get('page')->title;?>  .:: ADMIN PANEL ::.  </title>
+<title><?php echo $this->get('page')->title;?>  .:: BACK OFFICE PANEL ::.  </title>
 <link rel="shortcut icon" href="<?php echo $wwwRoot;?>i/favicon.png" />
 <?php
  echo $res->includeCss();

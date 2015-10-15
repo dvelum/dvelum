@@ -45,7 +45,7 @@ return array(
      */
     'uploads' => $wwwPath . '/media/',
     /*
-     * Admin panel URL
+     * Back-office panel URL
      * For safety reasons adminPath may be changed, however,
      * keep in mind that IDE builds full paths in the current version,
      * thus, they would have to be manually updated in the projects.
@@ -146,7 +146,7 @@ return array(
     'mysqlDumpExecPath' => 'mysqldump',
     /*
      * the type of frontend router with two possible values:
-     * 'Router_Module' — using tree-like page structure  (‘Pages’ section of the administrative panel);
+     * 'Router_Module' — using tree-like page structure  (‘Pages’ section of the back-office panel);
      * 'Router_Path' — the router based on the file structure of client controllers.
      * 'Router_Config' - using frontend modules configuration
      */
