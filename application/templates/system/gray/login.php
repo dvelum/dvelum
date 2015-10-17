@@ -2,6 +2,13 @@
 if(!defined('DVELUM'))exit;
 
 $wwwRoot = $this->get('wwwRoot');
+$curLang = Lang::lang()->getName();
+$lang = [
+    'en' => 'English',
+    'ru' => 'Русский'
+];
+
+
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -25,8 +32,15 @@ $wwwRoot = $this->get('wwwRoot');
 						<label for="lang">Language:</label>
 						<div class="loginInput">
 							<select name="ulang" class="validate[required]" id="lang" autocomplete="on">
-								<option value="en">English</option>
-								<option value="ru">Русский</option>
+                                <?php
+                                    foreach($lang as $name=>$title)
+                                    {
+                                        $selected = '';
+                                        if($name == $curLang)
+                                            $selected = 'selected="selected"';
+                                        echo '<option value="'.$name.'" '.$selected.'>'.$title.'</option>';
+                                    }
+                                ?>
 							</select>
 						</div>
 						<div class="clear"></div>
