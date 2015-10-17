@@ -109,12 +109,14 @@ class Backend_Filestorage_Controller extends Backend_Controller_Crud
     {
         $this->_checkCanEdit();
 
-        $files = Request::files();
-
+       $files = Request::files();
 
         if (!isset($files['file']) || empty($files['file']))
             Response::jsonError($this->_lang->get('FILL_FORM'));
 
+        /**
+         * @var Filestorage_Abstract $fileStorage
+         */
         $fileStorage = Model::factory('Filestorage')->getStorage();
 
         $files = $fileStorage->upload();

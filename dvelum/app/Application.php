@@ -175,15 +175,14 @@ class Application
             /*
              * Switch to Db_Object error log
              */
-            if($this->_config->get('erorr_log_object'))
+            if(!empty($this->_config->get('error_log_object')))
             {
-                $errorModel = Model::factory($this->_config->get('erorr_log_object'));
+                $errorModel = Model::factory($this->_config->get('error_log_object'));
                 $errorTable = $errorModel->table(true);
                 $errorDb = $errorModel->getDbConnection();
 
                 $logOrmDb = new Log_Db('db_object_error_log' , $errorDb , $errorTable);
                 $logModelDb = new Log_Db('model' , $errorDb , $errorTable);
-
                 Db_Object::setLog(new Log_Mixed($log, $logOrmDb));
                 Model::setDefaultLog(new Log_Mixed($log, $logModelDb));
                 $objectStore->setLog($logOrmDb);

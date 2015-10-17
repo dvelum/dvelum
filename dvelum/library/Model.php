@@ -889,7 +889,7 @@ class Model
      */
     static public function setDefaultLog(Log $log)
     {
-      self::$_defaults['setDefaultLog'] = $log;
+      self::$_defaults['errorLog'] = $log;
     }
 
     /**

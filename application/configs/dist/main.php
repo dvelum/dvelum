@@ -228,11 +228,6 @@ return array(
     'wwwroot' => $wwwRoot,
     'wwwpath' => $wwwPath,
     /*
-     * Log Db_Object errors
-     */
-    'db_object_error_log' => true,
-    'db_object_error_log_path' => $docRoot . '/data/logs/error/db_object.error.log',
-    /*
      * Get real rows count for innodb tables (COUNT(*))
      * Set it "false" for large data volumes
      */
@@ -266,13 +261,18 @@ return array(
     /*
      * Db_Object for error log 
      */
-    'erorr_log_object' => 'error_log',
+    'error_log_object' => 'error_log',
+    /*
+     * Log Db_Object errors
+     */
+    'db_object_error_log' => true,
+    'db_object_error_log_path' => $docRoot . '/data/logs/error/db_object.error.log',
     /*
      * Vendor library path
      */
     'vendor_lib'=> $docRoot . '/vendor/',
-	/*
-	 * Default Authentification provider. Or uncomment 'uprovider' select in login template.
-	 */
-	'default_auth_provider' => 'dvelum'
+    /*
+     * Default Authentication provider. Or uncomment 'uprovider' select in login template.
+     */
+    'default_auth_provider' => 'dvelum'
 );

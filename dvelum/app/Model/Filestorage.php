@@ -21,7 +21,11 @@ class Model_Filestorage extends Model
 		$storageCfg->set('user_id', User::getInstance()->id);
 
 		$fileStorage = Filestorage::factory($storageCfg->get('adapter'), $storageCfg);
-		$fileStorage->setLog($this->getLogsAdapter());
+
+		$log = $this->getLogsAdapter();
+
+		if($log)
+			$fileStorage->setLog($log);
 
 		return $fileStorage;
 	}
