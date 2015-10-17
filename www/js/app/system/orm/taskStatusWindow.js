@@ -1,10 +1,21 @@
+/**
+ * @event failure
+ * @param msg
+ *
+ * @event updateState
+ * @param data
+ *
+ * @event finished
+ * @param data
+ *
+ */
 Ext.define('app.crud.orm.taskStatusWindow',{
 
     extend:'Ext.Window',
     controllerUrl:null,
     extraParams:null,
-    width:300,
-    height:120,
+    width:450,
+    height:140,
     modal:true,
     closable:false,
     resizable:false,
@@ -35,30 +46,13 @@ Ext.define('app.crud.orm.taskStatusWindow',{
        });
 
        this.items = [
-                   this.processLabel ,
-                   this.progressBar
+           this.processLabel ,
+           this.progressBar
        ];
 
        this.fbar = [this.closeBtn];
        this.callParent();
 
-       this.addEvents([
-           /**
-            * @event failure
-            * @param msg
-            */
-          'failure',
-           /**
-            * @event updateState
-            * @param data
-            */
-           'updateState',
-           /**
-            * @event finished
-            * @param data
-            */
-           'finished'
-       ]);
        var me = this;
        setTimeout(function(){me.checkState();} , this.checkInterval);
    },

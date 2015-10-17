@@ -1039,6 +1039,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			if(btn != 'yes'){
 				return;
 			}
+
 			Ext.Ajax.request({
 				url: app.crud.orm.Actions.encryptData,
 				method: 'post',
@@ -1084,6 +1085,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			if(btn != 'yes'){
 				return;
 			}
+
 			Ext.Ajax.request({
 				url: app.crud.orm.Actions.decryptData,
 				method: 'post',
