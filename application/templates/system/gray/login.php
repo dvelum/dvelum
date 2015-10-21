@@ -7,18 +7,16 @@ $lang = [
     'en' => 'English',
     'ru' => 'Русский'
 ];
-
-
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
-<title>Log into administrative panel</title>
-<link href="<?php echo $wwwRoot;?>css/system/login.css" rel="stylesheet" type="text/css">
-<!--[if IE]>
-	<link rel="stylesheet" href="<?php echo $wwwRoot;?>css/system/style_ieFix.css" type="text/css"/>
-<![endif]-->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+	<title>Log into administrative panel</title>
+	<link href="<?php echo $wwwRoot;?>css/system/login.css" rel="stylesheet" type="text/css">
+	<!--[if IE]>
+		<link rel="stylesheet" href="<?php echo $wwwRoot;?>css/system/style_ieFix.css" type="text/css"/>
+	<![endif]-->
 </head>
 
 <body class="loginPage">

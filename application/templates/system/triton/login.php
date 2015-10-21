@@ -2,15 +2,11 @@
 if(!defined('DVELUM'))exit;
 
 $wwwRoot = $this->get('wwwRoot');
-
-$wwwRoot = $this->get('wwwRoot');
 $curLang = Lang::lang()->getName();
 $lang = [
 	'en' => 'English',
 	'ru' => 'Русский'
 ];
-
-
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
