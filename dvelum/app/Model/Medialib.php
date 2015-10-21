@@ -318,7 +318,7 @@ class Model_Medialib extends Model
   {
  		$obj = new Db_Object($this->_name, $id);
  		$obj->set('croped', 1);
-    $obj->save();
+        $obj->save();
   }
 
   /**
@@ -328,7 +328,7 @@ class Model_Medialib extends Model
   public function getConfig()
   {
     $cfg = Registry::get('main' , 'config');
-    return Config::storage()->get('media_library.php');
+    return Config::storage()->get('media_library.php' , true, false);
   }
 
   /**
