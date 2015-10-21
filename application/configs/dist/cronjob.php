@@ -5,7 +5,7 @@ return array(
         'time_limit'=> 300,
         // 5m
         'intercept_timeout'=>300,
-        'locks_dir'=> './temp/locks/',
+        'locks_dir'=> './data/locks/',
         'log_file' => './logs/cronjobs.log',
     	'user_id'=>1
     ),

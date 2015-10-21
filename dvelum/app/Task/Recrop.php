@@ -28,7 +28,7 @@ class Task_Recrop extends Bgtask_Abstract
 		$types = $this->_config['types'];
 		$nonCroped = $this->_config['notCroped'];
 		
-		$docRoot = Registry::get('main' , 'config')->get('docroot');
+		$wwwPath = Registry::get('main' , 'config')->get('wwwPath');
 		
 		$filter = array('type'=>'image');
 		
@@ -55,7 +55,8 @@ class Task_Recrop extends Bgtask_Abstract
              if($v['path'][0]!=='/')
                  $v['path'] = '/' . $v['path'];
              
-            $path = $docRoot . $v['path'];
+            $path = $wwwPath . $v['path'];
+
             if(!file_exists($path)){
             	$this->log('Skip  non existent file: ' . $path);
                 continue;

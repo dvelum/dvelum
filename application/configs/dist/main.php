@@ -5,6 +5,7 @@ $wwwRoot = '/';
 $language = 'en';
 return array(
     'docroot' => $docRoot,
+    'wwwPath' => $wwwPath,
     /*
      * Development mode
      * 0 - production
@@ -118,7 +119,6 @@ return array(
      * Local controllers path
      */
     'local_controllers' => './application/controllers/',
-
     /*
      * Frontend modules config file
      */
@@ -142,8 +142,6 @@ return array(
     'dictionary_folder' => 'dictionary/',
 
     'tmp' => $docRoot . '/temp/',
-    'mysqlExecPath' => 'mysql',
-    'mysqlDumpExecPath' => 'mysqldump',
     /*
      * the type of frontend router with two possible values:
      * 'Router_Module' — using tree-like page structure  (‘Pages’ section of the back-office panel);

@@ -7,7 +7,8 @@ Ext.define('app.crud.mediaconfig.Model', {
 		{name:'width' , type:'integer'},
 		{name:'height' , type:'integer'},
 		{name:'resize' , type:'string'}
-	]
+	],
+    idProperty:'code'
 });
 
 Ext.define('app.crud.mediaconfig.Main',{
@@ -66,8 +67,7 @@ Ext.define('app.crud.mediaconfig.Main',{
 				},
 				reader: {
 					type: 'json',
-					rootProperty: 'data',
-					idProperty: 'code'
+					rootProperty: 'data'
 				},
 				actionMethods : {
 					create : 'POST',
@@ -203,14 +203,22 @@ Ext.define('app.crud.mediaconfig.Main',{
 		this.dataStore.save();
 	},
 	addAction:function(){
-		var r = Ext.create('app.crud.mediaconfig.Model', {
-			code:'',
-			width:100,
-			height:100,
-			resize:'crop'
-		});
-		this.dataStore.insert(0, r);
-		this.cellEditing.startEditByPosition({row: 0, column: 0});
+        var rec =  Ext.create('app.crud.mediaconfig.Model', {
+            code:'size_' + this.dataStore.getCount(),
+            width:100,
+            height:100,
+            resize:'crop'
+        });
+
+        var edit = this.cellEditing;
+        edit.cancelEdit();
+
+        this.dataStore.insert(0, rec);
+
+        edit.startEditByPosition({
+            row: this.dataStore.indexOf(rec),
+            column: 0
+        });
 	},
 	recropAction:function(){
 		var imageSizes = {};
@@ -234,7 +242,7 @@ Ext.define('app.crud.mediaconfig.CropWindow', {
 
 	extend: 'Ext.window.Window',
 	dataForm:null,
-	sizeList:'',
+	sizeList:null,
 
 	constructor: function(config) {
 		config = Ext.apply({
@@ -255,12 +263,9 @@ Ext.define('app.crud.mediaconfig.CropWindow', {
 	initComponent:function(){
 		var groupItems = [];
 
-		for (index in  this.sizeList){
-			if(typeof i == 'function' || app.imageSize[index] == undefined){
-				continue;
-			}
-			groupItems.push({name:"size[]" , boxLabel:index +' ('+this.sizeList[index][0]+'x'+this.sizeList[index][1]+')' , inputValue:index });
-		}
+        Ext.Object.each(this.sizeList, function(key, value) {
+            groupItems.push({name:"size[]" , boxLabel:key +' ('+value[0]+'x'+value[1]+')' , inputValue:key });
+        });
 
 		this.dataForm = Ext.create('Ext.form.Panel',{
 			bodyPadding:5,
