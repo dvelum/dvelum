@@ -189,12 +189,20 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                     'published' => 0
                 );
             }else{
+                /**
+                 * @var Db_Object $dataObject
+                 */
                 $dataObject =  $objectsList[$id];
+                $published = true;
+
+                if($dataObject->getConfig()->isRevControl())
+                    $published = $dataObject->get('published');
+
                 $item = array(
                     'id' => $id,
                     'deleted' => 0,
                     'title' => $dataObject->getTitle(),
-                    'published' => $dataObject->get('published')
+                    'published' => $published
                 );
             }
             $result[] = $item;
