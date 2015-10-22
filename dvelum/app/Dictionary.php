@@ -172,4 +172,23 @@ class Dictionary
 		return json_encode($result);
 	}
 
+	/**
+	 * Get key for value
+	 * @param $value
+	 * @param $i case insensitive
+	 * @return mixed, false on error
+	 */
+	public function getKeyByValue($value, $i = false){
+		foreach($this->_data as $k=>$v){
+			if($i){
+				$v = strtolower($v);
+				$value = strtolower($value);
+			}
+			if($v === $value){
+				return $k;
+			}
+		}
+		return false;
+	}
+
 }
