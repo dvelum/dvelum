@@ -573,7 +573,7 @@ class Install_Controller {
                 'theme'=>'default',
                 'date_published'=>date('Y-m-d H:i:s'),
                 'in_site_map'=>true,
-                'default_blocks'=>true
+                'default_blocks'=>false
             ));
             if(!$page->save(true, false))
                 return false;
@@ -603,7 +603,7 @@ class Install_Controller {
                 'theme'=>'default',
                 'date_published'=>date('Y-m-d H:i:s'),
                 'in_site_map'=>false,
-                'default_blocks'=>true
+                'default_blocks'=>false
             ));
             if(!$page->save(true, false))
                 return false;
