@@ -135,11 +135,12 @@ class Designer_Storage
 	 * Save Designer_Project
 	 * @param string $id
 	 * @param Designer_Project $obj
+	 * @param boolean $export
 	 * @return boolean
 	 */
-	public function save($id , Designer_Project $obj)
+	public function save($id , Designer_Project $obj, $export = false)
 	{
-		if(!$this->_adapter->save($id , $obj))
+		if(!$this->_adapter->save($id , $obj, $export))
 			return false;
 			
 		if(self::$_cache) {

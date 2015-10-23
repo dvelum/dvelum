@@ -10,7 +10,7 @@
       'store' => 'usersStoreInstance',
       'columnLines' => true,
       'viewConfig' => '{enableTextSelection: true}',
-      'title' => '[js:] appLang.USERS +1',
+      'title' => '[js:] appLang.USERS',
       'isExtended' => true,
       'defineOnly' => true,
     ),
