@@ -608,6 +608,7 @@ Ext.define('app.contentWindow',{
 						handle.historyPanel.storeLoad();
 					}
 					handle.fireEvent('dataSaved');
+					handle.fireEvent('dataPublished');
 				}else{
 					Ext.MessageBox.alert(appLang.MESSAGE,response.msg);
 				}
