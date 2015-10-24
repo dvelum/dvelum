@@ -327,7 +327,6 @@ class Model_Medialib extends Model
    */
   public function getConfig()
   {
-    $cfg = Registry::get('main' , 'config');
     return Config::storage()->get('media_library.php' , true, false);
   }
 
