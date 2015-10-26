@@ -1,3 +1,13 @@
+Ext.define('designer.grid.filters.Model',{
+    extend:'Ext.data.Model',
+    fields: [
+        {name:'id' ,  type:'string'},
+        {name:'dataIndex',type:'string'},
+        {name:'type',type:'string'},
+        {name:'active' , type:'boolean'}
+    ],
+    isProperty:'id'
+});
 /**
  *
  * @event dataSaved
@@ -16,24 +26,18 @@ Ext.define('designer.grid.filters.Window',{
 		this.cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {clicksToEdit:1});
 
 		this.dataStore = Ext.create('Ext.data.Store',{
+            model:'designer.grid.filters.Model',
 			proxy: {
 				type: 'ajax',
 				url:app.createUrl([designer.controllerUrl ,'gridfilters','filterlist']),
 				reader: {
 					type: 'json',
-					idProperty: 'id',
 					rootProperty:'data'
 				},
 				extraParams:{
 					object:this.objectName
 				}
 			},
-			fields: [
-				{name:'id' ,  type:'string'},
-				{name:'dataIndex',type:'string'},
-				{name:'type',type:'string'},
-				{name:'active' , type:'boolean'}
-			],
 			autoLoad:true,
 			sorters: [{
 				property : 'dataIndex',
@@ -68,11 +72,6 @@ Ext.define('designer.grid.filters.Window',{
 				iconCls:'plusIcon',
 				scope:this,
 				handler:this.addFilter
-			},{
-				tooltip:desLang.importFiltersStore,
-				iconCls:'importDbIcon',
-				scope:this,
-				handler:this.importFiltersFromStore
 			}],
 			store:this.dataStore,
 			region:'center',
@@ -118,8 +117,8 @@ Ext.define('designer.grid.filters.Window',{
 						}),
 						listeners:{
 							scope:this,
-							select:function(combo, records){
-								this.itemPropertiesPanel.dataGrid.setProperty('dataIndex',records[0].get('name'));
+							select:function(combo, record){
+								this.itemPropertiesPanel.dataGrid.setProperty('dataIndex',record.get('name'));
 							}
 						}
 					}
@@ -143,14 +142,14 @@ Ext.define('designer.grid.filters.Window',{
 						],
 						listeners:{
 							scope:this,
-							select:function(combo, records, eOpts){
+							select:function(combo, record, eOpts){
 								var filterId = this.itemPropertiesPanel.getExtraParam('id');
 								Ext.Ajax.request({
 									url:app.createUrl([designer.controllerUrl ,'gridfilters','changefiltertype']),
 									method: 'post',
 									params:{
 										'object':this.objectName,
-										'type':records[0].get('field1'),
+										'type':record.get('field1'),
 										'filterid':filterId
 									},
 									scope:this,
@@ -160,7 +159,7 @@ Ext.define('designer.grid.filters.Window',{
 											this.itemPropertiesPanel.setExtraParams({'id':filterId});
 											this.itemPropertiesPanel.loadProperties();
 											this.itemPropertiesPanel.resetSerchField();
-
+                                            record.commit();
 										}else{
 											Ext.Msg.alert(appLang.MESSAGE, response.msg);
 											return false;

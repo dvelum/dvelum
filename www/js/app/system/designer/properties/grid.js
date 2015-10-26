@@ -140,7 +140,7 @@ Ext.define('designer.properties.Grid',{
 					fieldLabel:desLang.numberedRows,
 					xtype:'checkbox',
 					margin:'0 0 0 15'
-				},{
+				}/*,{
 					name:'filtersFeature',
 					iconCls:'filtersIcon',
 					text:desLang.filtersFeature,
@@ -148,7 +148,7 @@ Ext.define('designer.properties.Grid',{
 					margin:'0 0 0 15',
 					handler:this.showFiltersWindow,
 					scope:this
-				}
+				}*/
 
 			],
 			buttons:[
