@@ -37,7 +37,7 @@
       'icon' => 'crop',
       'thumbnail' => 'crop',
       'medium' => 'crop',
-      'large' => 'downsizing',
+      'large' => 'resize_fit',
     ),
   ),
   'audio' => 

@@ -21,11 +21,17 @@ class Upload_Image extends Upload_File
                 $replace= '-' . $name.$ext;
                 $newName=str_replace($ext, ($replace) , $data['path']);
 
-                if($this->_config['thumb_types'][$name] == 'crop')
-                	Image_Resize::resize($data['path'], $xy[0], $xy[1], $newName,true,true);
-                else
-                	Image_Resize::resize($data['path'], $xy[0], $xy[1], $newName,true,false);
-
+                switch($this->_config['thumb_types'][$name]){
+                    case 'crop' :
+                        Image_Resize::resize($data['path'], $xy[0], $xy[1], $newName,true,true);
+                        break;
+                    case 'resize_fit':
+                        Image_Resize::resize($data['path'], $xy[0], $xy[1], $newName,true, false);
+                        break;
+                    case 'resize':
+                        Image_Resize::resize($data['path'], $xy[0], $xy[1], $newName, false ,false);
+                        break;
+                }
                 if($name == 'icon')
                     $data['thumb'] = $newName;
             }

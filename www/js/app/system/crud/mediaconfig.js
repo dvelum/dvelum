@@ -108,7 +108,7 @@ Ext.define('app.crud.mediaconfig.Main',{
 				text:appLang.WIDTH,
 				dataIndex:'width',
 				align:'left',
-				width:50,
+				width:80,
 				editor:{
 					xtype:'numberfield'
 				},
@@ -116,7 +116,7 @@ Ext.define('app.crud.mediaconfig.Main',{
 			},{
 				text:appLang.HEIGHT,
 				dataIndex: 'height',
-				width:50,
+				width:80,
 				editor:{
 					xtype:'numberfield'
 				},
@@ -124,7 +124,7 @@ Ext.define('app.crud.mediaconfig.Main',{
 			},{
 				text:appLang.RESIZE,
 				dataIndex: 'resize',
-				width:80,
+				width:160,
 				align:'center',
 				editor:{
 					xtype:'combo',
@@ -140,7 +140,8 @@ Ext.define('app.crud.mediaconfig.Main',{
 						},
 						data:[
 							{id:'crop' , title: appLang.CROP},
-							{id:'downsizing' , title: appLang.DOWNSIZE}
+							{id:'resize' , title: appLang.RESIZE},
+							{id:'resize_fit' , title: appLang.RESIZE_FIT}
 						]
 					})
 				},
@@ -151,8 +152,10 @@ Ext.define('app.crud.mediaconfig.Main',{
 					{
 						case 'crop': return appLang.CROP;
 							break;
-						case 'downsizing': return appLang.DOWNSIZE;
+						case 'resize': return appLang.RESIZE;
 							break;
+                        case 'resize_fit': return appLang.RESIZE_FIT;
+                            break;
 					}
 					return '';
 				}
