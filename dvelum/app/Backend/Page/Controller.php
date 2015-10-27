@@ -223,7 +223,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         $theme = Request::post('theme', 'string', 'default');
  
     	try{
-    	    $config = Config::factory(Config::File_Array , $this->_configMain->get('themes') . $theme . '/layout_cfg.php');
+            $config = new Config_File_Array($this->_configMain->get('themes') . $theme . '/layout_cfg.php');
     	}catch (Exception $e){
     		Response::jsonError($this->_lang->WRONG_REQUEST);
     	}    
@@ -441,7 +441,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     	$list = $blocks->getList(false , array('page_id'=>null), array('id'=>'block_id','place'));
     	
     	try{
-    	    $config = Config::factory(Config::File_Array , $this->_configMain->get('themes') . 'default' . '/layout_cfg.php');
+            $config = new Config_File_Array($this->_configMain->get('themes') . 'default' . '/layout_cfg.php');
     	}catch (Exception $e){
     		Response::jsonError($this->_lang->WRONG_REQUEST);
     	}     	
