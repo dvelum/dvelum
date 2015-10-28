@@ -577,26 +577,30 @@ Ext.define('app.PermissionsStorage', {
 
 //======= Ovverides =============
 
-Ext.override(Ext.tree.TreePanel,{
-	getChecked: function( prop ){
-		var prop = prop || null;
-		var checked = [];
-		this.getView().getTreeStore().getRootNode().cascadeBy(function(node){
-			if( node.data.checked ){
-				if( prop && node.data[prop] ) checked.push(node.data[prop]);
-				else checked.push(node);
-			}
-		});
-		return checked;
-	}
-});
+(function() {
+	Ext.override(Ext.tree.TreePanel,{
+		getChecked: function( prop ){
+			var prop = prop || null;
+			var checked = [];
+			this.getView().getTreeStore().getRootNode().cascadeBy(function(node){
+				if( node.data.checked ){
+					if( prop && node.data[prop] ) checked.push(node.data[prop]);
+					else checked.push(node);
+				}
+			});
+			return checked;
+		}
+	});
+})();
 
-Ext.override(Ext.data.proxy.Server, {
-	constructor: function(config){
-		this.callOverridden([config]);
-		this.addListener("exception",  app.storeException , this);
-	}
-});
+(function() {
+	Ext.override(Ext.data.proxy.Server, {
+		constructor: function(config){
+			this.callOverridden([config]);
+			this.addListener("exception",  app.storeException , this);
+		}
+	});
+})();
 
 app.csrfToken = false;
 app.getCSRFToken = function()
@@ -644,6 +648,14 @@ Ext.Ajax.on('beforerequest', function(connection, options) {
 			//call the original hide function
 			this.callParent(arguments);
 		}
+	});
+})();
+/*
+ * Override default value of submitEmptyText ExtJS' Ext.form.action.Submit
+ */
+(function() {
+	Ext.override(Ext.form.action.Submit, {
+		submitEmptyText: false
 	});
 })();
 /*
