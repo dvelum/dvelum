@@ -419,12 +419,13 @@ class Db_Object_Config
     		return $this->_config['fields'];
 
     	$fields = $this->_config['fields'];
-    		unset($fields[$this->getPrimaryKey()]);
+    	unset($fields[$this->getPrimaryKey()]);
 
-
-        $fields = array_diff_key($fields, $this->_getVcFields());
-        $fields = array_diff_key($fields, $this->_getEncryptionFields());
-
+        foreach($fields as $k=>$field){
+            if(isset($field['system']) && $field['system']){
+                unset($fields[$k]);
+            }
+        }
     	return  $fields;
     }
 

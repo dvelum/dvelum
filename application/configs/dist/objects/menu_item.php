@@ -3,7 +3,7 @@
   'engine' => 'InnoDB',
   'rev_control' => false,
   'save_history' => true,
-  'link_title' => '',
+  'link_title' => 'title',
   'system' => true,
   'fields' => 
   array (
