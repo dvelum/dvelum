@@ -48,7 +48,7 @@ a.button::-moz-focus-inner
     border: 0;
     padding: 0;
 }
-html { height: 100%; background: transparent url(../../../../i/bg.gray.png) 0 0 repeat; }
+html { height: 100%; background: transparent url(../../i/bg.gray.png) 0 0 repeat; }
 .html { height: 100%;  }
 body { min-height: 100%; font-size: 12px; color: #595959; font-family: Arial, Helvetica, sans-serif; line-height: 20px; position: relative; }
 .wrapper { position: relative; margin: 0 3%; }
