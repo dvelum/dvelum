@@ -142,7 +142,7 @@
 							<fieldset>
 								<div class="formRow">
 									<label for="adminpath"><?php echo $this->dictionary->get('ADMINPATH'); ?>:</label>
-									<div class="installerInput"><input type="text" id="adminpath" class="validate[required]" name="adminpath" value="adminarea"/></div>
+									<div class="installerInput"><input type="text" id="adminpath" class="validate[required]" name="adminpath" value="backoffice"/></div>
 									<div class="clear"></div>
 								</div>
 								<div class="formRow">
