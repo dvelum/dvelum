@@ -9,8 +9,8 @@
 .app-combo-item{ font:normal 11px tahoma, arial, helvetica, sans-serif; padding:3px 10px 3px 10px; border:1px solid #fff; border-bottom:1px solid #eeeeee; white-space:normal; color:#555; }
 .app-disabled{background-color:#EFEEEC;color:#858483;}
 
-.x-form-field-wrap .x-form-clear-trigger{background-image: url(../../../../i/system/clear-trigger.gif);}
-.x-form-field-wrap .x-form-search-trigger{ background-image: url(../../../../i/system/search-trigger.gif);}
+.x-form-field-wrap .x-form-clear-trigger{background-image: url(../../i/system/clear-trigger.gif);}
+.x-form-field-wrap .x-form-search-trigger{ background-image: url(../../i/system/search-trigger.gif);}
 
 .renderLast{
   height:100%;
@@ -30,10 +30,10 @@
 }
 .buttonIcon{cursor:pointer;}
 .cellRed{background-color:#FFAFAF;height:100%;width:100%;}
-.upload-icon {background: url(../../../../../../../../i/system/image_add.png)  !important;}
+.upload-icon {background: url(../../i/system/image_add.png)  !important;}
 .upload_window .x-form-file-wrap .x-form-file-btn {position: relative;}
-.pagePublic{background-image: url(../../../../i/system/html.png) !important;}
-.pageHidden{background-image: url(../../../../i/system/html_g.png) !important;}
+.pagePublic{background-image: url(../../i/system/html.png) !important;}
+.pageHidden{background-image: url(../../i/system/html_g.png) !important;}
 .ormUl li{padding-left:10px;}
 .nonContainerBlock{background-color:#cccccc;}
 .publishedRender{
@@ -80,18 +80,18 @@
 .sysVersion img{float: left;}
 
 .sysMenuLogo{
-  /*background: url(../../../../i/system/logos.png) 5px -280px no-repeat;
+  /*background: url(../../i/system/logos.png) 5px -280px no-repeat;
   height:26px;
   */
 }
 .adminWestMenu #main,
-.adminWestMenu #system {background: url(../../../../i/bg.gray.png) 0 0 repeat;}
+.adminWestMenu #system {background: url(../../i/bg.gray.png) 0 0 repeat;}
 .adminWestMenu #main .x-panel-body-default-framed,
 .adminWestMenu #system .x-panel-body-default-framed {background: none;}
 
 
 .upload-icon {
-    background: url('../../../../js/lib/ext_ux/images/image_add.png') no-repeat 0 0 !important;
+    background: url('../../js/lib/ext_ux/images/image_add.png') no-repeat 0 0 !important;
 }
 
 .importSelected{
@@ -181,104 +181,104 @@
 }
 
 .buildIcon{
-     background-image: url('../../../../i/system/build.png');
+     background-image: url('../../i/system/build.png');
 }
 .refreshIcon{
-     background-image: url('../../../../i/system/designer/refresh.png');
+     background-image: url('../../i/system/designer/refresh.png');
 }
 .makeIcon{
-     background-image: url('../../../../i/system/make.png');
+     background-image: url('../../i/system/make.png');
 }
 .deleteIcon{
-     background-image: url('../../../../i/system/delete.png');
+     background-image: url('../../i/system/delete.png');
 }
 .plusIcon{
-     background-image: url('../../../../i/system/designer/plus.png');
+     background-image: url('../../i/system/designer/plus.png');
 }
 .editIcon{
-     background-image: url('../../../../i/system/edit.png');
+     background-image: url('../../i/system/edit.png');
 }
 .downIcon{
-     background-image: url('../../../../i/system/down.png');
+     background-image: url('../../i/system/down.png');
 }
 .upIcon{
-     background-image: url('../../../../i/system/up.png');
+     background-image: url('../../i/system/up.png');
 }
 .saveIcon{
-     background-image: url('../../../../i/system/designer/save.png');
+     background-image: url('../../i/system/designer/save.png');
 }
 .newdocIcon{
-     background-image: url('../../../../i/system/document-new.png');
+     background-image: url('../../i/system/document-new.png');
 }
 .treeIcon{
-     background-image: url('../../../../i/system/tree.png');
+     background-image: url('../../i/system/tree.png');
 }
 .urltriggerIcon{
-    background-image: url('../../../../i/system/designer/urltrigger.png');
+    background-image: url('../../i/system/designer/urltrigger.png');
 }
 .newpageIcon{
-    background-image: url('../../../../i/system/newpage.png');
+    background-image: url('../../i/system/newpage.png');
 }
 .subpageIcon{
-    background-image: url('../../../../i/system/subpage.png');
+    background-image: url('../../i/system/subpage.png');
 }
 .blockmapIcon{
-    background-image: url('../../../../i/system/blockmap.png');
+    background-image: url('../../i/system/blockmap.png');
 }
 .openIcon{
-    background-image: url('../../../../i/system/designer/open.png');
+    background-image: url('../../i/system/designer/open.png');
 }
 .newIcon{
-    background-image: url('../../../../i/system/designer/new.png');
+    background-image: url('../../i/system/designer/new.png');
 }
 .exitIcon{
-    background-image: url('../../../../i/system/designer/exit.png');
+    background-image: url('../../i/system/designer/exit.png');
 }
 .configureIcon{
-    background-image: url('../../../../i/system/designer/configure.png');
+    background-image: url('../../i/system/designer/configure.png');
 }
 .importDbIcon{
-    background-image: url('../../../../i/system/designer/import-db.png');
+    background-image: url('../../i/system/designer/import-db.png');
 }
 .unknownIcon{
-     background-image: url('../../../../i/unknown.png');
+     background-image: url('../../i/unknown.png');
 }
 .addImageIcon{
-     background-image: url('../../../../i/system/image_add.png');
+     background-image: url('../../i/system/image_add.png');
 }
 .fileIcon{
-    background-image: url('../../../../i/system/file.png');
+    background-image: url('../../i/system/file.png');
 }
 .editIcon2{
-    background-image: url('../../../../i/system/icon_edit.gif');
+    background-image: url('../../i/system/icon_edit.gif');
 }
 .gridIcon{
-    background-image: url('../../../../i/system/grid.png');
+    background-image: url('../../i/system/grid.png');
 }
 .findIcon{
-    background-image: url('../../../../i/system/find.png');
+    background-image: url('../../i/system/find.png');
 }
 .searchIcon{
-    background-image: url('../../../../i/system/search.png');
+    background-image: url('../../i/system/search.png');
 }
 .csvIcon{
-    background-image: url('../../../../i/system/designer/csv.png');
+    background-image: url('../../i/system/designer/csv.png');
 }
 .leftIcon{
-    background-image: url('../../../../i/system/left.png');
+    background-image: url('../../i/system/left.png');
 }
 .uploadIcon{
-	    background-image: url('../../../../i/system/upload.png');
+	    background-image: url('../../i/system/upload.png');
 }
 
 .urlTriggerIcon{
     width:25px;
     height:22px;
-    background: url('../../../../i/system/url_trigger.png') 0px 0px !important;
+    background: url('../../i/system/url_trigger.png') 0px 0px !important;
     background-repeat: no-repeat!important;
 }
 .urlTriggerIcon.x-form-trigger-over{
-    background: url('../../../../i/system/url_trigger.png') -26px 0px !important;
+    background: url('../../i/system/url_trigger.png') -26px 0px !important;
 }
 
 .d_objectLink_input{
@@ -376,12 +376,12 @@ div.module-target{
 
 .images-view .x-item-over{
     border:1px solid #dddddd;
-    background: #efefef url('../../../../i/system/designer/over.gif') repeat-x left top;
+    background: #efefef url('../../i/system/designer/over.gif') repeat-x left top;
     padding: 4px;
 }
 
 .images-view .x-item-selected{
-    background: #eff5fb url('../../../../i/system/designer/selected.gif') no-repeat right bottom;
+    background: #eff5fb url('../../i/system/designer/selected.gif') no-repeat right bottom;
     border:1px solid #99bbe8;
     padding: 4px;
 }
@@ -391,7 +391,7 @@ div.module-target{
 
 .images-view .loading-indicator {
     font-size:11px;
-    background-image:url('../../../../i/system/designer/loading.gif');
+    background-image:url('../../i/system/designer/loading.gif');
     background-repeat: no-repeat;
     background-position: left;
     padding-left:20px;
