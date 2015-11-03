@@ -51,7 +51,7 @@ return array(
      * keep in mind that IDE builds full paths in the current version,
      * thus, they would have to be manually updated in the projects.
      */
-    'adminPath' => 'adminarea',
+    'adminPath' => 'backoffice',
     /*
      * Templates directory
      */
