@@ -1,5 +1,5 @@
 <?php
-class Ext_Property_Component_Field_System_Objectlink extends Ext_Property_Form_Field_Field
+class Ext_Property_Component_Field_System_Objectlink extends Ext_Property_Form_Fieldcontainer
 {
 	public $objectName = self::String;
 	public $controllerUrl = self::String;
