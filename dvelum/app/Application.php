@@ -195,7 +195,7 @@ class Application
         /*
          * Prepare dictionaries
          */
-        Dictionary::setConfigPath($this->_config->get('dictionary'));
+        Dictionary::setConfigPath($this->_config->get('dictionary_folder').'/'.$this->_config->get('language').'/');
 
         $this->_init = true;
     }

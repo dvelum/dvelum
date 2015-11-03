@@ -141,6 +141,7 @@ abstract class Backend_Controller extends Controller
                 $this->_configMain->set('language' , $userLang);
                 Lang::addDictionaryLoader($userLang ,  $userLang . '.php' , Config::File_Array);
                 Lang::setDefaultDictionary($userLang);
+                Dictionary::setConfigPath($this->_configMain->get('dictionary_folder').'/'.$this->_configMain->get('language').'/');
             }
         }
 

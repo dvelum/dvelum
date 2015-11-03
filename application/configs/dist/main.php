@@ -133,10 +133,6 @@ return array(
      */
     'blocks' => $docRoot . '/dvelum/app/Block/',
     /*
-     * Dictionary configs directory depending on localization
-     */
-    'dictionary' => 'dictionary/' . $language . '/',
-    /*
      * Dictionary directory
      */
     'dictionary_folder' => 'dictionary/',
