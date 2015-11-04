@@ -330,6 +330,7 @@ class Modules_Generator
       $addButton = Ext_Factory::object('Button');
       $addButton->setName('addButton');
       $addButton->text = $lang->ADD_ITEM;
+      $addButton->icon = '[%wroot%]i/system/add_icon.png';
       $eventManager->setEvent('addButton', 'click', 'this.showEditWindow(false);');
 
       $project->addObject($filters->getName() , $addButton);
@@ -670,6 +671,7 @@ class Modules_Generator
       $addButton = Ext_Factory::object('Button');
       $addButton->setName('addButton');
       $addButton->text = $lang->ADD_ITEM;
+      $addButton->icon = '[%wroot%]i/system/add_icon.png';
 
       $eventManager->setEvent('addButton', 'click', 'this.showEditWindow(false);');
 
