@@ -59,6 +59,8 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
 	
 		$this->_project = $project;
 		$this->_object = $project->getObject($name);
+		if($this->_object->isInstance())
+			$this->_object = $this->_object->getObject();
 		$fields = array();
 		
 		$model = $this->_object->model;	
@@ -93,6 +95,8 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
 	    
 	    $this->_project = $project;
 	    $this->_object = $project->getObject($name);
+		if($this->_object->isInstance())
+			$this->_object = $this->_object->getObject();
 	    $fields = array();
 
 	    if($this->_object->isValidProperty('model') && strlen($this->_object->model) && $this->_project->objectExists($this->_object->model))
