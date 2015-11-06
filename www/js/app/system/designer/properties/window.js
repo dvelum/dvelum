@@ -11,6 +11,7 @@ Ext.define('designer.properties.Window',{
 		}
 		
 		this.tbar.push({
+        	 icon:app.wwwRoot + 'i/system/designer/window-open.png',
         	 text:desLang.showWindow,
         	 scope:this,
         	 handler:this.showWindow
