@@ -12,7 +12,7 @@ $lang = [
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
-	<title>Log into administrative panel</title>
+	<title>Log into BackOffice panel</title>
 	<link href="<?php echo $wwwRoot;?>css/system/login.css" rel="stylesheet" type="text/css">
 	<!--[if IE]>
 	<link rel="stylesheet" href="<?php echo $wwwRoot;?>css/system/style_ieFix.css" type="text/css"/>
@@ -23,7 +23,7 @@ $lang = [
 <div class="loginWrapper">
 	<div class="loginLogo"><img src="<?php echo $wwwRoot;?>i/logo.large.png" alt=""></div>
 	<div class="widget">
-		<div class="title"><h6>Admin Panel</h6></div>
+		<div class="title"><h6>BackOffice Panel</h6></div>
 		<form action="" id="validate" class="form" method="post">
 			<fieldset>
 				<div class="formRow half">
