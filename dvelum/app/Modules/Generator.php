@@ -330,6 +330,7 @@ class Modules_Generator
       $addButton = Ext_Factory::object('Button');
       $addButton->setName('addButton');
       $addButton->text = $lang->ADD_ITEM;
+      $addButton->icon = '[%wroot%]i/system/add_icon.png';
       $eventManager->setEvent('addButton', 'click', 'this.showEditWindow(false);');
 
       $project->addObject($filters->getName() , $addButton);
@@ -427,7 +428,7 @@ class Modules_Generator
        * Save designer project
        */
       $designerStorage = Designer_Factory::getStorage($this->designerConfig);
-      if(!$designerStorage->save($projectFile , $project)){
+      if(!$designerStorage->save($projectFile , $project , $this->designerConfig->get('vcs_support'))){
           @unlink($controllerFile);
           throw new Exception('Can`t create Designer project');
       }
@@ -670,6 +671,7 @@ class Modules_Generator
       $addButton = Ext_Factory::object('Button');
       $addButton->setName('addButton');
       $addButton->text = $lang->ADD_ITEM;
+      $addButton->icon = '[%wroot%]i/system/add_icon.png';
 
       $eventManager->setEvent('addButton', 'click', 'this.showEditWindow(false);');
 
@@ -771,7 +773,7 @@ class Modules_Generator
        */
        $project->setActionJs($this->_createActionJS($runNamespace, $classNamespace));
 
-      if(!$designerStorage->save($projectFile , $project))
+      if(!$designerStorage->save($projectFile , $project , $this->designerConfig->get('vcs_support')))
           throw new Exception('Can`t create Designer project');
 
       return true;

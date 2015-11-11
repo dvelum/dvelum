@@ -46,6 +46,9 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		try{
 			if($this->_config->get('vcs_support')){
 				$project = Designer_Factory::importProject($this->_config, $file);
+				// fallback to load project from .dat if import from exported .dat.files directory failed
+				if(!$project instanceof Designer_Project)
+					$project = Designer_Factory::loadProject($this->_config, $file);
 			}else{
 				$project = Designer_Factory::loadProject($this->_config, $file);
 			}

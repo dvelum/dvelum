@@ -58,7 +58,7 @@ class Modules_Manager
 	public function getModuleConfig($name)
 	{
 		$data = $this->_config->get($name);
-		$data['title'] = '';
+		$data['title'] = $name;
 
 		if(isset($this->_modulesLocale[$name]))
 			$data['title'] = $this->_modulesLocale[$name];

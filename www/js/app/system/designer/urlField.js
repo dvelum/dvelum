@@ -141,8 +141,9 @@ Ext.define('designer.urlField',{
 					hideOnReadOnly:true,
 					cls: 'urlTriggerIcon',
 					width:25,
-					handler: function() {
+					handler: function(field,trigger,e) {
 						me.showSelectWindow();
+						e.stopEvent();
 					},
 					scope:me
 				}
@@ -155,6 +156,7 @@ Ext.define('designer.urlField',{
 		var win = Ext.create('designer.urlWindow', {
 			width:600,
 			height:400,
+			modal:true,
 			onlyController:this.onlyController,
 			controllerUrl:this.controllerUrl,
 			listeners: {
@@ -165,7 +167,7 @@ Ext.define('designer.urlField',{
 				}
 			}
 		}).show();
-        Ext.windowManager.register(win);
-        Ext.WindowMgr.bringToFront(win);
+        Ext.WindowManager.register(win);
+        Ext.WindowManager.bringToFront(win);
 	}
 });
