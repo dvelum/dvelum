@@ -7,6 +7,7 @@ class Ext_Property_Component_Field_System_Objectlink extends Ext_Property_Form_F
 	public $allowBlank  = self::Boolean;
 	public $extraParams = self::Object;
 	public $readOnly = self::Boolean;
+	public $name = self::String;
 
 	static public $extend = 'app.objectLink.Field';
 	static public $xtype = 'objectlinkfield';
