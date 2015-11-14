@@ -124,6 +124,7 @@ class Application
         Resource::setDocRoot($this->_config->get('docroot'));
         Resource::setResourceRoot($this->_config->get('wwwroot'));
         Utils::setSalt($this->_config->get('salt'));
+        Trigger::setApplicationConfig($this->_config);
 
        /*
         * Init lang dictionary (Lazy Load)

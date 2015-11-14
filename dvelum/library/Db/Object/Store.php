@@ -83,11 +83,10 @@ class Db_Object_Store
     /**
      * Update Db object
      * @param Db_Object $object
-     * @param boolean $log - optional, log changes
      * @param boolean $transaction - optional, use transaction if available
      * @return boolean
      */
-    public function update(Db_Object $object , $log = true ,$transaction = true)
+    public function update(Db_Object $object , $transaction = true)
     {
         if($object->getConfig()->isReadOnly())
         {
@@ -162,20 +161,6 @@ class Db_Object_Store
 	     }
 
          /*
-          * Save history if required
-          * @todo удалить жесткую связанность
-          */
-	     if($log && $object->getConfig()->get('save_history'))
-	     {
-                Model::factory($this->config['historyObject'])->log(
-                	User::getInstance()->id ,
-                	$object->getId() ,
-                	Model_Historylog::Update ,
-                	$object->getTable()
-                );
-	     }
-
-         /*
           * Fire "AFTER_UPDATE" Event if event manager exists
           */
          if($this->_eventManager)
@@ -220,11 +205,10 @@ class Db_Object_Store
     /**
      * Unpublish Db_Objects
      * @param Db_Object $object
-     * @param boolean $log - optional, log changes
      * @param boolean $transaction - optional, default false
      * @return bool
      */
-    public function unpublish(Db_Object $object , $log , $transaction = true)
+    public function unpublish(Db_Object $object , $transaction = true)
     {
     	if($object->getConfig()->isReadOnly())
     	{
@@ -279,20 +263,6 @@ class Db_Object_Store
     		if($transact && $transaction)
     			$db->commit();
     	}
-
-    	/*
-    	 * Save history if required
-    	 * @todo удалить жесткую связанность
-    	 */
-    	if($log && $object->getConfig()->get('save_history'))
-    	{
-    		Model::factory($this->config['historyObject'])->log(
-	    		User::getInstance()->getId() ,
-	    		$object->getId() ,
-	    		Model_Historylog::Unpublish ,
-	    		$object->getTable()
-    		);
-    	}
     	/*
     	 * Fire "AFTER_UPDATE" Event if event manager exists
     	*/
@@ -305,11 +275,10 @@ class Db_Object_Store
    /**
     * Publish Db_Object
     * @param Db_Object $object
-    * @param boolean $log - optional, log changes
     * @param boolean $transaction - optional, default true
     * @return boolean
     */
-    public function publish(Db_Object $object  , $log , $transaction = true)
+    public function publish(Db_Object $object, $transaction = true)
     {
     	if($object->getConfig()->isReadOnly())
     	{
@@ -363,21 +332,6 @@ class Db_Object_Store
     		if($transact && $transaction)
     			$db->commit();
     	}
-
-       /*
-    	* Save history if required
-    	* @todo удалить жесткую связанность
-    	*/
-    	if($log && $object->getConfig()->get('save_history'))
-    	{
-    		Model::factory($this->config['historyObject'])->log(
-	    		User::getInstance()->getId() ,
-	    		$object->getId() ,
-	    		Model_Historylog::Publish ,
-	    		$object->getTable()
-    		);
-    	}
-
     	/*
     	 * Fire "AFTER_UPDATE" Event if event manager exists
     	 */
@@ -412,7 +366,7 @@ class Db_Object_Store
     }
 
     /**
-     * Remove object multy links
+     * Remove object multi links
      * @param Db_Object $object
      * @param string $objectField
      * @param string $targetObjectName
@@ -503,11 +457,10 @@ class Db_Object_Store
     /**
      * Insert Db object
      * @param Db_Object $object
-     * @param boolean $log - optional, log changes
      * @param boolean $transaction - optional , use transaction if available
      * @return integer -  inserted id
      */
-    public function insert(Db_Object $object , $log = true , $transaction = true)
+    public function insert(Db_Object $object , $transaction = true)
     {
         if($object->getConfig()->isReadOnly())
         {
@@ -541,19 +494,6 @@ class Db_Object_Store
         {
         	if($transact && $transaction)
         		$db->commit();
-        }
-
-        if($log &&  $object->getConfig()->get('save_history'))
-        {
-        	/**
-        	 * @todo   убрать жесткую связанность
-        	 */
-            Model::factory($this->config['historyObject'])->log(
-            	User::getInstance()->id ,
-            	$object->getId() ,
-            	Model_Historylog::Create ,
-            	$object->getTable()
-            );
         }
 
         if($this->_eventManager)
@@ -748,11 +688,10 @@ class Db_Object_Store
     /**
      * Delete Db object
      * @param Db_Object $object
-     * @param boolean $log - optional, log changes
      * @param boolean $transaction - optional , use transaction if available
      * @return boolean
      */
-    public function delete(Db_Object $object , $log = true ,$transaction = true)
+    public function delete(Db_Object $object , $transaction = true)
     {
 
         if($object->getConfig()->isReadOnly())
@@ -780,17 +719,6 @@ class Db_Object_Store
 
         if($db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId()))
         {
-        	/**
-        	 * @todo убрать жесткую связанность
-        	 */
-        	if($log && $object->getConfig()->hasHistory()){
-             	Model::factory($this->config['historyObject'])->log(
-             		User::getInstance()->id ,
-             		$object->getId() ,
-             		Model_Historylog::Delete ,
-             		$object->getTable()
-             	);
-        	}
         	$success= true;
         } else{
             $success = false;

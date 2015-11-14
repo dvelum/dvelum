@@ -641,6 +641,28 @@ class Db_Object_Config
     }
 
     /**
+     * Check if the object uses extended history log
+     * @return boolean
+     */
+    public function hasExtendedHistory()
+    {
+
+        if (
+            $this->_config->offsetExists('save_history')
+            &&
+            $this->_config->get('save_history')
+            &&
+            $this->_config->offsetExists('log_detalization')
+            &&
+            $this->_config->get('log_detalization') === 'extended'
+        ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
      * Check if object has db prefix
      * @return boolean
      */

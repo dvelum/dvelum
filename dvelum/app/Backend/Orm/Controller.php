@@ -447,6 +447,13 @@ class Backend_Orm_Controller extends Backend_Controller
     	$useAcl = Request::post('use_acl', 'boolean', false);
     	$acl =  Request::post('acl', 'string', false);
 
+        $detalization = Request::post('log_detalization' , 'string' , 'default');
+
+        if( $detalization!=='extended'){
+            $detalization = 'default';
+        }
+
+
         $parentObject = Request::post('parent_object' , 'string', '');
 
 
@@ -474,7 +481,6 @@ class Backend_Orm_Controller extends Backend_Controller
     	if(!empty($errors))
     		Response::jsonError($this->_lang->FILL_FORM , $errors);
 
-
     	if($useAcl)
     	  $data['acl'] = $acl;
     	else
@@ -491,6 +497,7 @@ class Backend_Orm_Controller extends Backend_Controller
     	$data['use_db_prefix'] = $usePrefix;
     	$data['slave_connection'] = $slaveConnection;
         $data['connection'] = $connection;
+        $data['log_detalization'] = $detalization;
 
     	$name = strtolower($name);
 

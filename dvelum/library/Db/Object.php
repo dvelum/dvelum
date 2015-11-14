@@ -163,9 +163,10 @@ class Db_Object
 
     /**
      * Get the object data, returns the associative array ‘field name’
+     * @param boolean $withUpdates, optional default true
      * @return array
      */
-    public function getData()
+    public function getData($withUpdates = true)
     {
       if($this->_acl)
           $this->_checkCanRead();
@@ -173,8 +174,9 @@ class Db_Object
         $data = $this->_data;
         $data[$this->_primaryKey] = $this->_id;
 
-        foreach ($this->_updates as $k=>$v)
-            $data[$k] = $v;
+        if($withUpdates)
+            foreach ($this->_updates as $k=>$v)
+                $data[$k] = $v;
 
         return $data;
     }
@@ -372,39 +374,39 @@ class Db_Object
         $propConf = $this->_config->getFieldConfig($name);
         $validator = $this->getConfig()->getValidator($name);
 
-       if($validator && !call_user_func_array(array($validator , 'validate') , array($value)))
-           throw new Exception('Invalid value for field '. $name);
+        if($validator && !call_user_func_array(array($validator , 'validate') , array($value)))
+            throw new Exception('Invalid value for field '. $name);
 
-       /*
-        * Validate value by fields type in config
-        */
-       if($this->_config->isMultiLink($name))
-       {
+        /*
+         * Validate value by fields type in config
+         */
+        if($this->_config->isMultiLink($name))
+        {
             if(is_array($value) && !empty($value[0])){
-                 if(!$this->_validateLink($name , $value))
-                     throw new Exception('Invalid property value');
-                  $value = $this->_collectLinksData($name , $value);
+                if(!$this->_validateLink($name , $value))
+                    throw new Exception('Invalid property value');
+                $value = $this->_collectLinksData($name , $value);
             } else {
                 $value = '';
             }
         }
         elseif ($this->_config->isDictionaryLink($name))
         {
-          if($this->_config->isRequired($name) && !strlen($value))
-            throw new Exception('Field '. $name.' cannot be empty');
+            if($this->_config->isRequired($name) && !strlen($value))
+                throw new Exception('Field '. $name.' cannot be empty');
 
-          if(strlen($value))
-          {
-            $fieldConfig = $this->_config->getFieldConfig($name);
-            $dictionary = Dictionary::factory($fieldConfig['link_config']['object']);
+            if(strlen($value))
+            {
+                $fieldConfig = $this->_config->getFieldConfig($name);
+                $dictionary = Dictionary::factory($fieldConfig['link_config']['object']);
 
-            if(!$dictionary->isValidKey($value))
-              throw new Exception('Invalid dictionary value ['.$name.']');
-          }
+                if(!$dictionary->isValidKey($value))
+                    throw new Exception('Invalid dictionary value ['.$name.']');
+            }
         }
         elseif ($this->_config->isLink($name))
         {
-        	if(is_object($value)){
+            if(is_object($value)){
                 if($value instanceof Db_Object)
                 {
                     if($this->_config->isObjectLink($name))
@@ -422,22 +424,22 @@ class Db_Object
             if(is_array($value))
                 throw new Exception('Invalid value for field '. $name);
 
-        	if($this->_config->isRequired($name) && !strlen($value))
-        		throw new Exception('Field '. $name.' cannot be empty');
+            if($this->_config->isRequired($name) && !strlen($value))
+                throw new Exception('Field '. $name.' cannot be empty');
 
-        	$value = intval($value);
+            $value = intval($value);
 
-        	if($value != 0 && !$this->_validateLink($name, $value))
-        		throw new Exception('Invalid value for field '. $name);
+            if($value != 0 && !$this->_validateLink($name, $value))
+                throw new Exception('Invalid value for field '. $name);
 
-        	if($value == 0)
-        	    $value = null;
+            if($value == 0)
+                $value = null;
 
         }
         // mysql strict mode patch
         elseif($this->_config->isBoolean($name))
         {
-        	$value = intval((boolean)$value);
+            $value = intval((boolean)$value);
         }
         elseif (is_null($value) && $this->_config->isNull($name))
         {
@@ -445,20 +447,28 @@ class Db_Object
         }
         else
         {
-        	$value = Db_Object_Property::filter($propConf, $value);
+            $value = Db_Object_Property::filter($propConf, $value);
         }
 
         if(isset($propConf['db_len']) && $propConf['db_len']){
             if(mb_strlen($value,'UTF-8') > $propConf['db_len'])
                 throw new Exception('The field value exceeds the allowable length ['.$name.']');
             if($propConf['db_type'] == 'bit' && (strlen($value) > $propConf['db_len'] || strlen($value) < $propConf['db_len']))
-				throw new Exception('Invalid length for bit value ['.$name.']');
+                throw new Exception('Invalid length for bit value ['.$name.']');
         }
 
-        if(isset($this->_data[$name] ) && $this->_data[$name] === $value){
-            if(isset($this->_updates[$name]))
+        if(isset($this->_data[$name]))
+        {
+            if($this->getConfig()->isBoolean($name) && intval($this->_data[$name]) === intval($value) )
+            {
                 unset($this->_updates[$name]);
-            return true;
+                return true;
+            }
+
+            if($this->_data[$name] === $value) {
+                unset($this->_updates[$name]);
+                return true;
+            }
         }
 
         $this->_updates[$name] = $value;
@@ -584,39 +594,38 @@ class Db_Object
 
    /**
     * Save changes
-    * @param boolean $log  - log changes
     * @param boolean $useTransaction — using a transaction when changing data is optional.
     * If data update in your code is carried out within an external transaction
     * set the value to  false,
     * otherwise, the first update will lead to saving the changes
     * @return boolean;
     */
-    public function save($log = true , $useTransaction = true)
+    public function save($useTransaction = true)
     {
         if($this->_acl){
             try{
-              $this->_checkCanEdit();
+                $this->_checkCanEdit();
             }catch (Exception $e){
-              $this->_errors[] = $e->getMessage();
+                $this->_errors[] = $e->getMessage();
 
-              if(self::$_log)
-                  self::$_log->log($e->getMessage());
-              return false;
+                if(self::$_log)
+                    self::$_log->log($e->getMessage());
+                return false;
             }
         }
 
-    	$store  = $this->_model->getStore();
-    	if(self::$_log)
-    		$store->setLog(self::$_log);
+        $store  = $this->_model->getStore();
+        if(self::$_log)
+            $store->setLog(self::$_log);
 
-    	if($this->_config->isReadOnly())
-    	{
-    	    $text = 'ORM :: cannot save readonly object '. $this->_config->getName();
-    	    $this->_errors[] = $text;
-    	    if(self::$_log)
-    	        self::$_log->log($text);
-    	    return false;
-    	}
+        if($this->_config->isReadOnly())
+        {
+            $text = 'ORM :: cannot save readonly object '. $this->_config->getName();
+            $this->_errors[] = $text;
+            if(self::$_log)
+                self::$_log->log($text);
+            return false;
+        }
 
         if($this->_config->hasEncrypted()){
             $ivField = $this->_config->getIvField();
@@ -626,33 +635,33 @@ class Db_Object
             }
         }
 
-    	$emptyFields = $this->_hasRequired();
-    	if($emptyFields!==true)
-    	{
-    	    $text = 'ORM :: Fields can not be empty. '.$this->getName().' ['.implode(',', $emptyFields).']';
-    	    $this->_errors[] = $text;
-    		if(self::$_log)
-    			self::$_log->log($text);
-    		return false;
-    	}
+        $emptyFields = $this->_hasRequired();
+        if($emptyFields!==true)
+        {
+            $text = 'ORM :: Fields can not be empty. '.$this->getName().' ['.implode(',', $emptyFields).']';
+            $this->_errors[] = $text;
+            if(self::$_log)
+                self::$_log->log($text);
+            return false;
+        }
 
-    	$values = $this->validateUniqueValues();
+        $values = $this->validateUniqueValues();
 
-    	if(!empty($values))
-    	{
-  	        foreach($values as $k => $v)
-  	        {
-  	            $text = 'The Field value should be unique '.$k . ':' . $v;
-  	            $this->_errors[] = $text;
-  	        }
+        if(!empty($values))
+        {
+            foreach($values as $k => $v)
+            {
+                $text = 'The Field value should be unique '.$k . ':' . $v;
+                $this->_errors[] = $text;
+            }
 
-    	    if(self::$_log)
-    	        self::$_log->log($this->getName() . ' ' . implode(', ' , $this->_errors));
+            if(self::$_log)
+                self::$_log->log($this->getName() . ' ' . implode(', ' , $this->_errors));
 
-    	    return false;
-    	}
+            return false;
+        }
 
-      try {
+        try {
             if(!$this->getId()){
 
                 if($this->_config->isRevControl()){
@@ -661,7 +670,7 @@ class Db_Object
                     $this->author_id = User::getInstance()->id;
                 }
 
-                $id = $store->insert($this , $log , $useTransaction);
+                $id = $store->insert($this , $useTransaction);
                 $this->setId($id);
                 $this->commitChanges();
                 return (integer) $id;
@@ -671,16 +680,16 @@ class Db_Object
                     $this->date_updated = date('Y-m-d H:i:s');
                     $this->editor_id = User::getInstance()->getId();
                 }
-                $id = (integer) $store->update($this , $log , $useTransaction);
+                $id = (integer) $store->update($this , $useTransaction);
                 $this->commitChanges();
                 return $id;
             }
-       }catch (Exception $e){
+        }catch (Exception $e){
             $this->_errors[] = $e->getMessage();
-        	if(self::$_log)
-        		self::$_log->log($e->getMessage());
+            if(self::$_log)
+                self::$_log->log($e->getMessage());
             return false;
-       }
+        }
     }
 
     /**
@@ -726,7 +735,7 @@ class Db_Object
 
     /**
      * Validate unique fields, object field groups
-	   * Returns errors array or returns false, is used for ExtJS forms
+	 * Returns errors array or returns false, is used for ExtJS forms
      * @property boolean $new
      * @return mixed false / array
      */

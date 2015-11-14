@@ -565,4 +565,8 @@
   'RELATIONSHIP_POLYMORPHIC' => 'Polymorphic Associations',
   'RELATIONSHIP_MANY_TO_MANY' => 'Many to many (associations table)',
   'TARGET' => 'Target',
+  'HISTORY_LOG_DETALIZATION' => 'Detalization',
+  'CHANGES' => 'Changes',
+  'BEFORE' => 'Before',
+  'AFTER' => 'After',
 ); 

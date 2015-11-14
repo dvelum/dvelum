@@ -235,6 +235,7 @@ abstract class Backend_Controller extends Controller
         }
 
         $acl = $obj->getAcl();
+
         if($acl && !$acl->canEdit($obj))
             Response::jsonError($this->_lang->CANT_MODIFY);
 
@@ -248,6 +249,9 @@ abstract class Backend_Controller extends Controller
 
         foreach($fields as $name)
         {
+            if($name == 'id')
+                continue;
+
             if($objectConfig->isRequired($name) &&  !isset($systemFields[$name]) &&  (!isset($posted[$name]) || !strlen($posted[$name])))
             {
               $errors[$name] = $this->_lang->CANT_BE_EMPTY;

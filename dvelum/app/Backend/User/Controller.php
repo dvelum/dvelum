@@ -206,34 +206,34 @@ class Backend_User_Controller extends Backend_Controller
    */
   public function usersaveAction()
   {
-    $this->_checkCanEdit();
-    
-    $pass = Request::post('pass' , 'string' , false);
-    
-    if($pass)
-      Request::updatePost('pass' , password_hash($pass , PASSWORD_DEFAULT));
-    
-    $object = $this->getPostedData($this->_module);
-    
-    /*
-     * New user
-     */
-    if(! $object->getId())
-    {
-      $date = date('Y-m-d H:i:s');
-      $ip = '127.0.0.1';
-      
-      $object->registration_date = $date;
-      $object->confirmation_date = $date;
-      $object->registration_ip = $ip;
-      $object->confirmed = true;
-      $object->last_ip = $ip;
-    }
-    
-    if(! $recId = $object->save())
-      Response::jsonError($this->_lang->get('CANT_EXEC'));
-    
-    Response::jsonSuccess();
+      $this->_checkCanEdit();
+
+      $pass = Request::post('pass' , 'string' , false);
+
+      if($pass)
+          Request::updatePost('pass' , password_hash($pass , PASSWORD_DEFAULT));
+
+      $object = $this->getPostedData($this->_module);
+
+      /*
+       * New user
+       */
+      if(! $object->getId())
+      {
+          $date = date('Y-m-d H:i:s');
+          $ip = '127.0.0.1';
+
+          $object->registration_date = $date;
+          $object->confirmation_date = $date;
+          $object->registration_ip = $ip;
+          $object->confirmed = true;
+          $object->last_ip = $ip;
+      }
+
+      if(! $recId = $object->save())
+          Response::jsonError($this->_lang->get('CANT_EXEC'));
+
+      Response::jsonSuccess();
   }
 
   /**

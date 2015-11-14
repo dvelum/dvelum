@@ -32,11 +32,11 @@ class Model_Historylog extends Model
      * @param integer $user_id
      * @param integer $record_id
      * @param integer $type
-     * @param string $table_name
+     * @param string $object
      * @throws Exception
      * @return boolean
      */
-    public function log($user_id, $record_id , $type , $table_name  )
+    public function log($user_id, $record_id , $type , $object)
     {
         if(!is_integer($type))
             throw new Exception('History::log Invalid type');
@@ -47,9 +47,9 @@ class Model_Historylog extends Model
                     'record_id' => intval($record_id),
                     'type' => intval($type),
                     'date' => date('Y-m-d H:i:s'),
-                    'table_name' =>$table_name
-                ));
-			return $obj->save(false , false);
+                    'object' =>$object
+            ));
+			return $obj->save(false);
     }
      /**
       * Get log for the  data item
@@ -99,4 +99,46 @@ class Model_Historylog extends Model
 			array($fieldAlias => 'u1.name')
 		);
 	}
+
+    /**
+     * Save object state
+     * @param integer $operation
+     * @param string $objectName
+     * @param integer $objectId
+     * @param integer $userId
+     * @param string $date
+     * @param string $before
+     * @param string $after
+     * @return integer | false
+     */
+    public function saveState($operation , $objectName , $objectId , $userId , $date, $before = null , $after = null)
+    {
+        // проверяем, существует ли такой тип объектов
+        if(!Db_Object_Config::configExists($objectName)){
+            $this->logError('Invalid object name "'.$objectName.'"');
+            return false;
+        }
+
+        try{
+            $o = new Db_Object('Historylog');
+            $o->setValues(array(
+                'type'=>$operation,
+                'object'=>$objectName,
+                'record_id'=>$objectId,
+                'user_id'=>$userId,
+                'date'=>$date,
+                'before'=>$before,
+                'after'=>$after
+            ));
+
+            $id = $o->save(false , false);
+            if(!$id)
+                throw new Exception('Cannot save object state ' . $objectName . '::' . $objectId);
+
+            return $id;
+        }catch (Exception $e){
+            $this->logError($e->getMessage());
+            return false;
+        }
+    }
 }

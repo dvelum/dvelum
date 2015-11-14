@@ -24,7 +24,7 @@ class Backend_History_Controller extends Backend_Controller
             Response::jsonSuccess(array());
         }
         
-        $filter['table_name'] = $o->getTable();
+        $filter['object'] = $o->getName();
         
         $history= Model::factory('Historylog');
         $data = $history->getListVc($pager , $filter, false, array('date','type','id'),'user_name');

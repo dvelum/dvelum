@@ -566,4 +566,8 @@
   'RELATIONSHIP_POLYMORPHIC' => 'Полиморфная связь',
   'RELATIONSHIP_MANY_TO_MANY' => 'Многие ко многим (таблица связей)',
   'TARGET' => 'Назначение',
+  'HISTORY_LOG_DETALIZATION' => 'Детализация',
+  'CHANGES' => 'Изменения',
+  'BEFORE' => 'До',
+  'AFTER' => 'После',
 ); 

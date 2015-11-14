@@ -457,13 +457,54 @@ Ext.define('app.crud.orm.ObjectWindow', {
 					render:{fn:this.initTooltip,scope:this}
 				}
 			},{
-				xtype:'checkbox',
-				name:'save_history',
-				fieldLabel:appLang.HISTORY_LOG,
-				value:0,
-				listeners:{
-					render:{fn:this.initTooltip,scope:this}
-				}
+				xtype:'fieldcontainer',
+                fieldLabel:appLang.HISTORY_LOG,
+                combineErrors: true,
+                msgTarget : 'side',
+                layout: 'hbox',
+				items:[
+					{
+						xtype:'checkbox',
+                        width:20,
+                        labelWidth:1,
+                        hideLabel:true,
+						name:'save_history',
+						listeners:{
+							render:{fn:this.initTooltip,scope:this},
+                            change:function(box, value){
+                                var relatedField =this.configForm.getForm().findField('log_detalization');
+                                if(value){
+                                    relatedField.show();
+                                }else{
+                                    relatedField.hide();
+                                }
+                            },
+                            scope:this
+						}
+					},
+                    {
+                        xtype:'combobox',
+                        forceSelection:true,
+                        name:'log_detalization',
+                        fieldLabel:appLang.HISTORY_LOG_DETALIZATION,
+                        displayField:'title',
+                        valueField:'id',
+                        queryMode:'local',
+                        forceSelection:true,
+                        labelWidth:70,
+                        allowBlank:false,
+                        hidden:true,
+                        value:'default',
+                        width:195,
+                        store:Ext.create('Ext.data.Store', {
+                            model:'app.comboStringModel',
+                            data:[
+                                {id:'default' , title:"Default"},
+                                {id:'extended' ,title:"Extended"}
+                            ]
+                        })
+                    }
+				]
 			}, {
 				xtype:'hiddenfield',
 				name:'parent_object'

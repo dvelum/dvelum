@@ -575,7 +575,7 @@ Ext.define('app.PermissionsStorage', {
 	}
 });
 
-//======= Ovverides =============
+//======= Overrides =============
 
 (function() {
 	Ext.override(Ext.tree.TreePanel,{

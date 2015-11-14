@@ -16,6 +16,7 @@ class Ext_Component_Field_System_Dictionary extends Ext_Component_Field
 		$this->_convertListeners();
 		$combo = Ext_Factory::object('Form_Field_Combobox');
 		$combo->setName($this->getName());
+
 		Ext_Factory::copyProperties($this, $combo);
 
 		if($this->isValidProperty('dictionary') && strlen($this->dictionary))
@@ -25,34 +26,30 @@ class Ext_Component_Field_System_Dictionary extends Ext_Component_Field
 			if($dM->isValidDictionary($this->dictionary))
 			{
 			    $allowBlank = false;
+
 			    if($this->_config->allowBlank && !$this->_config->showAll){
 			    	$allowBlank = true;
 			    }
 
-				if($this->_config->isValidProperty('showAll') && !empty($this->_config->showAllText)){
-			    	$allText = $this->_config->showAllText;
-			    }else{
-			        $allText = false;
-			    }
+				$data = Dictionary::factory($this->dictionary)->__toJs(false , $allowBlank);
 
-				$data = Dictionary::factory($this->dictionary)->__toJs($this->_config->showAll , $allowBlank , $allText);
+				if(($this->_config->isValidProperty('showReset') && $this->_config->showReset) || $this->_config->isValidProperty('showAll') && $this->_config->showAll)
+                {
+                    if($this->_config->isValidProperty('emptyText') && empty($this->_config->emptyText)){
+                        $this->_config->emptyText = '[js:]appLang.ALL';
+                    }
 
-
-                /*if($this->_config->isValidProperty('showAll') || $this->_config->isValidProperty('showReset')){
                     $combo->triggers = '{
                         clear: {
                             cls: "x-form-clear-trigger",
                             tooltip:appLang.RESET,
-                            handler:function(){
-                                this.setValue("");
-                            },
-                            scope:this
+                            handler:function(field){
+                                field.reset();
+                            }
                         }
                     }';
-                }
+				}
 
-                $data = Dictionary::Factory($this->dictionary)->__toJs();
-				*/
                 if(strlen($data))
 				{
 					$combo->store = 'Ext.create("Ext.data.Store",{
