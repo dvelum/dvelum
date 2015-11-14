@@ -569,4 +569,6 @@
   'CHANGES' => 'Changes',
   'BEFORE' => 'Before',
   'AFTER' => 'After',
+  'ONLY_OWN' => 'Only own records',
+  'CANT_ACCESS' => 'You do not have permission to access data of this record.',
 ); 

@@ -74,8 +74,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         $dataModel = Model::factory($this->_objectName);
 
-        $data = $dataModel->getListVc($pager , $filter , $query ,
-                $this->_listFields);
+        $data = $dataModel->getListVc($pager , $filter , $query , $this->_listFields);
 
         if(empty($data))
             Response::jsonSuccess(array() , array('count' => 0 ));

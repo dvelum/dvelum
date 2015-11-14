@@ -119,29 +119,28 @@
           ),
         ),
       ),
-      'publish' => 
+      'delete' => 
       array (
-        'id' => 'publish',
+        'id' => 'delete',
         'parent' => 0,
-        'class' => 'Ext_Grid_Column',
-        'name' => 'publish',
-        'extClass' => 'Grid_Column',
+        'class' => 'Ext_Grid_Column_Check',
+        'name' => NULL,
+        'extClass' => 'Grid_Column_Check',
         'order' => 4,
         'state' => 
         array (
           'config' => 
           array (
-            'align' => 'center',
-            'dataIndex' => 'publish',
-            'renderer' => 'Ext_Component_Renderer_System_User_Publish',
-            'text' => '[js:] appLang.TO_PUBLISH',
-            'itemId' => 'publish',
+            'dataIndex' => 'delete',
+            'renderer' => 'Ext_Component_Renderer_System_Checkbox',
+            'text' => '[js:] appLang.DELETE',
+            'itemId' => 'delete',
           ),
         ),
       ),
-      'delete' => 
+      'publish' => 
       array (
-        'id' => 'delete',
+        'id' => 'publish',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Check',
         'name' => NULL,
@@ -151,10 +150,42 @@
         array (
           'config' => 
           array (
-            'dataIndex' => 'delete',
-            'renderer' => 'Ext_Component_Renderer_System_Checkbox',
-            'text' => '[js:] appLang.DELETE',
-            'itemId' => 'delete',
+            'align' => 'center',
+            'dataIndex' => 'publish',
+            'renderer' => '',
+            'text' => '[js:] appLang.TO_PUBLISH',
+            'itemId' => 'publish',
+          ),
+          'renderer' => 
+          array (
+            'type' => 'adapter',
+            'value' => 'Ext_Component_Renderer_System_User_Publish',
+          ),
+        ),
+      ),
+      'only_own' => 
+      array (
+        'id' => 'only_own',
+        'parent' => 0,
+        'class' => 'Ext_Grid_Column_Check',
+        'name' => NULL,
+        'extClass' => 'Grid_Column_Check',
+        'order' => 6,
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'align' => 'center',
+            'dataIndex' => 'only_own',
+            'renderer' => '',
+            'text' => '[js:] appLang.ONLY_OWN',
+            'itemId' => 'only_own',
+            'width' => 117,
+          ),
+          'renderer' => 
+          array (
+            'type' => 'adapter',
+            'value' => 'Ext_Component_Renderer_System_User_Publish',
           ),
         ),
       ),

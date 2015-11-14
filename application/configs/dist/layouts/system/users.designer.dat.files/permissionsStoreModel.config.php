@@ -153,6 +153,19 @@
           ),
         ),
       ),
+      'only_own' => 
+      array (
+        'class' => 'Ext_Virtual',
+        'extClass' => 'Data_Field',
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'name' => 'only_own',
+            'type' => 'boolean',
+          ),
+        ),
+      ),
     ),
   ),
 ); 

@@ -569,4 +569,6 @@
   567 => 'CHANGES',
   568 => 'BEFORE',
   569 => 'AFTER',
+  570 => 'ONLY_OWN',
+  571 => 'CANT_ACCESS',
 ); 

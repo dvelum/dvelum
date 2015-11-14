@@ -12,6 +12,7 @@ switch (column) {
 
             if (record.get('rc')) {
                 record.set('publish', true);
+                record.set('only_own', true);
             }
         } else {
             record.set('view', false);
@@ -20,6 +21,7 @@ switch (column) {
 
             if (record.get('rc')) {
                 record.set('publish', false);
+                record.set('only_own', false);
             }
         }
         return false;
@@ -28,4 +30,8 @@ switch (column) {
         if (!record.get('rc'))
             return false;
         break;
+   case 'only_own':
+     	if (!record.get('rc'))
+            return false;
+    break;
 }

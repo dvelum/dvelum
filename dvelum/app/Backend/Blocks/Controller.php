@@ -23,7 +23,13 @@ class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc{
         	'params'
         );
 
-        $data = $dataModel->getListVc($pager , false, $query, $fields, 'user','updater');
+        $filters = false;
+
+        if($this->_user->onlyOwnRecords($this->_module)){
+            $filters['author_id'] = $this->_user->getId();
+        }
+
+        $data = $dataModel->getListVc($pager , $filters, $query, $fields, 'user','updater');
         
         if(empty($data))
             Response::jsonArray($result);
@@ -32,7 +38,7 @@ class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc{
         foreach ($data as $k=>$v)
             $ids[] = $v['id'];
            
-        $maxRevisions = $vc->getLastVersion('blocks',$ids);
+        $maxRevisions = $vc->getLastVersion('blocks', $ids);
         
         foreach ($data as $k=>&$v)
         {

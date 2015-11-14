@@ -107,7 +107,8 @@ class Backend_User_Controller extends Backend_Controller
             'view' => false ,
             'edit' => false , 
             'delete' => false , 
-            'publish' => false
+            'publish' => false,
+            'only_own'=>false
         );
       }
     }

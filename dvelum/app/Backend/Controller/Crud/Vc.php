@@ -35,6 +35,34 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
     }
 
     /**
+     * Check object owner
+     * @param Db_Object $object
+     */
+    protected function _checkOwner(Db_Object $object)
+    {
+        if(!$object->getConfig()->isRevControl()){
+            return;
+        }
+        if($object->author_id !== $this->_user->getId()){
+            Response::jsonError($this->_lang->CANT_ACCESS);
+        }
+    }
+    /**
+     * Check edit permissions
+     */
+    protected function _checkCanEdit()
+    {
+        parent::_checkCanEdit();
+    }
+    /**
+     * Check delete permissions
+     */
+    protected function _checkCanDelete()
+    {
+        parent::_checkCanDelete();
+
+    }
+    /**
      * Check for permissions to publish the object
      */
     protected function _checkCanPublish()
@@ -54,12 +82,15 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $query = Request::post('search' , 'string' , false);
         
         $filter = array_merge($filter , Request::extFilters());
+
+        if($this->_user->onlyOwnRecords($this->_module)){
+            $filter['author_id'] = $this->_user->getId();
+        }
         
         $dataModel = Model::factory($this->_objectName);
         $vc = Model::factory('vc');
 
-        $data = $dataModel->getListVc($pager , $filter , $query ,
-                $this->_listFields , 'user' , 'updater');
+        $data = $dataModel->getListVc($pager , $filter , $query , $this->_listFields , 'user' , 'updater');
 
         if(empty($data))
             Response::jsonSuccess(array() , array( 'count' => 0));
@@ -142,7 +173,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             }catch(Exception $e){
                 Response::jsonError($this->_lang->CANT_EXEC);
             }
-
+            $this->_checkOwner($obj);
             $data = $this->_loadData($obj , $version);
         }
         /*
@@ -157,6 +188,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     public function deleteAction()
     {
+        $this->_checkCanDelete();
         $id = Request::post('id' , 'integer' , false);
 
         try{
@@ -165,11 +197,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             Response::jsonError($this->_lang->WRONG_REQUEST);
         }
 
-        if(!$id)
-            Response::jsonError($this->_lang->WRONG_REQUEST);
-
-        if(!User::getInstance()->canDelete($this->_objectName))
-            Response::jsonError($this->_lang->CANT_DELETE);
+        $this->_checkOwner($object);
 
         if($this->_configMain->get('vc_clear_on_delete'))
             Model::factory('Vc')->removeItemVc($this->_objectName , $id);
@@ -199,6 +227,8 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC);
         }
+
+        $this->_checkOwner($object);
         
         $acl = $object->getAcl();
         if($acl && !$acl->canPublish($object))
@@ -227,6 +257,8 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC . '. ' .  $e->getMessage());
         }
+
+        $this->_checkOwner($object);
         
         $acl = $object->getAcl();
         if($acl && !$acl->canPublish($object))
@@ -303,6 +335,8 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $author = $object->get('author_id');
         if(empty($author)){
             $object->set('author_id' , $this->_user->getId());
+        }else{
+            $this->_checkOwner($object);
         }
 
         if(!$object->saveVersion())

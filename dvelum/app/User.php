@@ -358,6 +358,16 @@ class User
 	}
 
 	/**
+	 * Check if user can view only own records
+	 * @param $module
+	 * @return bool
+	 */
+	public function onlyOwnRecords($module)
+	{
+		return $this->_checkPermission($module , 'only_own');
+	}
+
+	/**
      * Check permission for module
      * @param string $module - module name
      * @param string $perm  - permission type

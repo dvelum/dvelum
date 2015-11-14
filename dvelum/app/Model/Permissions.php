@@ -1,7 +1,7 @@
 <?php
 class Model_Permissions extends Model
 {
- 	static protected $_fields = array('view','edit','delete','publish','module');
+ 	static protected $_fields = array('view','edit','delete','publish','module','only_own');
 
 	/**
      * Get modules permissions for user
@@ -165,7 +165,8 @@ class Model_Permissions extends Model
     							'view'=>(boolean)$values['view'],
     							'edit'=>(boolean)$values['edit'],
     							'delete'=>(boolean)$values['delete'],
-    							'publish'=>(boolean)$values['publish']
+    							'publish'=>(boolean)$values['publish'],
+								'only_own'=>(boolean)$values['only_own'],
     					));
     			}
     			else
@@ -176,6 +177,7 @@ class Model_Permissions extends Model
                     			'edit'=>(boolean)$values['edit'],
                     			'delete'=>(boolean)$values['delete'],
                     			'publish'=>(boolean)$values['publish'],
+								'only_own'=>(boolean)$values['only_own'],
                     			'module'=>$values['module'],
                     			'group_id'=>$groupId,
                     			'user_id'=>null

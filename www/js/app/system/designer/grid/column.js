@@ -243,7 +243,7 @@ Ext.define('designer.grid.column.Window',{
 									method: 'post',
 									params:{
 										'object':this.objectName,
-										'type':records[0].get('field1'),
+										'type':records.get('field1'),
 										'columnId':columnId
 									},
 									scope:this,
