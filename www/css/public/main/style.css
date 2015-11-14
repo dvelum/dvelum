@@ -24,7 +24,7 @@ blockquote b, blockquote .source{margin-top:20px; display:block; text-indent:0; 
 p{margin-bottom:1.5em; color:#5a5a5a;}
 pre, p, ul, ol{	margin-bottom:20px; }
 figcaption{ color:#ccc9c3; font-size:12px; text-align:center; }
-body{ background: #fff url(../../../../templates/public/main/images/page.white.bg.jpg) 0 0 repeat;  padding:0; font-family: Arial;font-size:100%!important;}
+body{ background: #fff url(../../../i/page.white.bg.jpg) 0 0 repeat;  padding:0; font-family: Arial;font-size:100%!important;}
 a {color: #3484B4;}
 /*--------------------------
 PAGE_WRAP
@@ -48,7 +48,7 @@ PAGE_WRAP
     width:100%;
     overflow:hidden;
     padding:0;
-    background: url(../../../../templates/public/main/images/page.black.bg.jpg) 0 0 repeat;
+    background: url(../../../i/page.black.bg.jpg) 0 0 repeat;
 }
 #header .nav .first {float: none;}
 
