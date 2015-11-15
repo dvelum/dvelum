@@ -166,8 +166,9 @@ Ext.define('designer.urlField',{
 					me.fireEvent('select' , url);
 				}
 			}
-		}).show();
-        Ext.WindowManager.register(win);
-        Ext.WindowManager.bringToFront(win);
+		});
+		Ext.defer(function () {
+			win.show().toFront();
+		}, 50);
 	}
 });

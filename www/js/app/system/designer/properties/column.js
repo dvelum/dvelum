@@ -85,9 +85,9 @@ Ext.define('designer.properties.GridColumn',{
 			columnId: this.extraParams.id,
 			controllerUrl:this.controllerUrl
 		});
-		win.show().toFront();
-		Ext.WindowManager.register(win);
-		Ext.WindowManager.bringToFront(win);
+        Ext.defer(function () {
+            win.show().toFront();
+        }, 50);
 	},
 	showItemsWindow:function()
 	{
@@ -97,9 +97,8 @@ Ext.define('designer.properties.GridColumn',{
 	    	columnId: this.extraParams.id,
 	    	controllerUrl:this.controllerUrl
 	    });
-
-		win.show().toFront();
-		Ext.WindowManager.register(win);
-		Ext.WindowManager.bringToFront(win);
+        Ext.defer(function () {
+            win.show().toFront();
+        }, 50);
 	}
 });    
