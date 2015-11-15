@@ -45,17 +45,29 @@ class Backend_Reports_Controller extends Backend_Controller
         $this->_resource->addInlineJs('
         	var canEdit = '.((boolean)$this->_user->canEdit($this->_module)).';
         	var canDelete = '.((boolean)$this->_user->canDelete($this->_module)).';
-        '); 
-     
-        $this->_resource->addCss('/js/lib/CodeMirror/lib/codemirror.css');
-		$this->_resource->addJs('/js/lib/CodeMirror/lib/codemirror.js'  , 1);
-		$this->_resource->addJs('/js/lib/CodeMirror/mode/mysql/mysql.js'  , 2);
-		$this->_resource->addCss('/js/lib/CodeMirror/theme/eclipse.css');	
-		$this->_resource->addJs('/js/lib/CodeMirror/lib/util/formatting.js'  , 2);
-		$this->_resource->addJs('/js/lib/CodeMirror/lib/util/searchcursor.js'  , 2);
-		$this->_resource->addJs('/js/lib/CodeMirror/lib/util/match-highlighter.js'  , 2);
-		$this->_resource->addJs('/js/lib/CodeMirror/lib/util/dialog.js'  , 2);
-		$this->_resource->addJs('/js/lib/CodeMirror/lib/util/search.js'  , 2);
+        ');
+
+		$this->_resource->addCss('/js/lib/CodeMirror/lib/codemirror.css');
+		$this->_resource->addCss('/js/lib/CodeMirror/addon/dialog/dialog.css');
+		$this->_resource->addCss('/js/lib/CodeMirror/addon/hint/show-hint.css');
+		$this->_resource->addCss('/js/lib/CodeMirror/theme/eclipse.css');
+
+		$codeMirrorFiles = [
+			'/js/lib/CodeMirror/lib/codemirror.js',
+			'/js/lib/CodeMirror/addon/hint/show-hint.js',
+			'/js/lib/CodeMirror/addon/hint/javascript-hint.js',
+			'/js/lib/CodeMirror/addon/dialog/dialog.js',
+			'/js/lib/CodeMirror/addon/search/search.js',
+			'/js/lib/CodeMirror/addon/search/searchcursor.js',
+			'/js/lib/CodeMirror/addon/search/matchesonscrollbar.js',
+			'/js/lib/CodeMirror/addon/search/match-highlighter.js',
+			'/js/lib/CodeMirror/addon/selection/active-line.js',
+			'/js/lib/CodeMirror/mode/sql/sql.js',
+		];
+
+		foreach($codeMirrorFiles as $file){
+			$res->addJs($file, 1);
+		}
 
 	    $res->addJs('/js/app/system/FilesystemWindow.js', 1);
 	    $res->addJs('/js/app/system/SqlEditor.js', 1);

@@ -8,7 +8,7 @@ Ext.define('designer.sqlEditor',{
 	editorId:null,
 	sourceCode:'',
 	readOnly:false,
-
+//addEvents
 	initComponent:function(){	
 		this.editorId = 'SqlEditorCmp_' + this.id;	
 		this.html='<textarea id="' + this.editorId + '" name="SqlEditorCmp" style="width:100%;height:100%"></textarea>';
@@ -22,32 +22,47 @@ Ext.define('designer.sqlEditor',{
 			return;
 		}
 		var me = this;
+
+		var keymap;
+		var hline;
+
+		if(this.extraKeys){
+			keymap = this.extraKeys;
+		}else{
+			keymap =  {
+				"Ctrl-Space": function(cm) {
+					CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+				},
+				"Ctrl-S": function(instance) {me.saveCode();},
+				"Ctrl-Z": function(instance) {me.undoAction();},
+				"Ctrl-Y": function(instance) {me.redoAction();},
+				"Shift-Ctrl-Z": function(instance) {me.redoAction();}
+			};
+		}
+
 		var editor = CodeMirror.fromTextArea(document.getElementById(this.editorId), {
-				mode: "text/x-mysql",
-				tabMode: "indent",
-			    lineNumbers: false,
-			    lineWrapping: true,
-		        matchBrackets: true,
-		        readOnly:this.readOnly,
-		        extraKeys: {
-		        	"Ctrl-Space": function(cm) {
-		        		CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
-		        	}
-		        },
-		        onCursorActivity: function() {
-		            editor.setLineClass(hlLine, null);
-		            hlLine = editor.setLineClass(editor.getCursor().line, "activeline");
-		            editor.matchHighlight("CodeMirror-matchhighlight");
-		        }
+			styleActiveLine: true,
+			lineNumbers: true,
+			lineWrapping: true,
+			matchBrackets: true,
+			readOnly:this.readOnly,
+			extraKeys: keymap,
+			highlightSelectionMatches: {showToken: /\w/},
+			onChange:function(){
+				me.onChange();
+			}
 		});
 		
 		editor.setValue(this.sourceCode);
 		
-		var hlLine = editor.setLineClass(0, "activeline");
-		
+
 		this.codeMirror = editor;
 		
 		this.on('resize',function(){
+            var me = this;
+            me.codeMirror.setSize('100%',me.getEl().getHeight()-62);
+            me.codeMirror.refresh();
+            /*
 			var fnc = function(){
 				 var scroller = editor.getScrollerElement();
 				 scroller.style.height = "100%";
@@ -55,6 +70,7 @@ Ext.define('designer.sqlEditor',{
 				 editor.refresh();
 			};
 			Ext.Function.defer(fnc, 1000);
+			*/
 		},this);
 	},
 	getSelectedRange:function() {

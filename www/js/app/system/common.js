@@ -496,20 +496,17 @@ app.checkChildNodes = function(node, isChecked){
 	});
 };
 
+/**
+ * @event load
+ * @params {app.PermissionsStorage} me
+ * @params {Object} permissions
+ */
 Ext.define('app.PermissionsStorage', {
 	extend:'Ext.Component',
 	permissionsLoaded:false,
 	permissions:null,
 	initComponent: function() {
 		this.callParent();
-		this.addEvents([
-		/**
-		 * @event load
-		 * @params {app.PermissionsStorage} me
-		 * @params {Object} permissions
-		 */
-			'load'
-		]);
 		this.loadData();
 	},
 	canView:function(module){
