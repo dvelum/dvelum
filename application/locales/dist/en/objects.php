@@ -192,6 +192,7 @@
                     'edit' => 'Can edit',
                     'delete' => 'Can Delete',
                     'publish' => 'Can publish',
+                    'only_own'=> 'Only own records',
                     'module' => 'Module',
                 ),
         ),

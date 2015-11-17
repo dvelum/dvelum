@@ -84,6 +84,15 @@
       'db_default' => '',
       'unique' => 'user_group_module',
     ),
+    'only_own' =>
+      array (
+          'required' => false,
+          'db_type' => 'boolean',
+          'db_len' => 1,
+          'db_isNull' => 0,
+          'db_default' => 0,
+          'db_unsigned' => true,
+      ),
   ),
   'indexes' => 
   array (
