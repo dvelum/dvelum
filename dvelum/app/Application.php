@@ -121,8 +121,8 @@ class Application
         ));
 
         Resource::setCachePaths($this->_config->get('jsCacheSysUrl') , $this->_config->get('jsCacheSysPath'));
-        Resource::setDocRoot($this->_config->get('docroot'));
         Resource::setResourceRoot($this->_config->get('wwwroot'));
+        Resource::setResourcePath($this->_config->get('wwwPath'));
         Utils::setSalt($this->_config->get('salt'));
         Trigger::setApplicationConfig($this->_config);
 

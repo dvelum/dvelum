@@ -26,8 +26,8 @@ class Resource
 	protected static $_instance;
 	protected static $_jsCacheUrl = null;
 	protected static $_jsCachePath = null;
-	protected static $_docRoot = null;
 	protected static $_wwwRoot = null;
+	protected static $_wwwPath = null;
 	/**
 	 * @var Cache_Interface
 	 */
@@ -73,14 +73,13 @@ class Resource
 	}
 
 	/**
-	 * Set document root path
+	 * Set resources directory root path
 	 * @param string  $path
 	 */
-	static public function setDocRoot($path)
+	static public function setResourcePath($path)
 	{
-		self::$_docRoot = $path;
+		self::$_wwwPath = $path;
 	}
-
 	/**
 	 * Set resources url path
 	 * @param string $path
@@ -293,7 +292,7 @@ class Resource
 			    $fileName = substr($fileName, 0 , $paramsPos);
 			}
 
-			$content = file_get_contents(self::$_docRoot . '/' . $fileName);
+			$content = file_get_contents(self::$_wwwPath . '/' . $fileName);
 
 			if($minify && ! $file['minified'])
 				$str .= Code_Js_Minify::minify($content);
@@ -331,7 +330,7 @@ class Resource
 		    {
 		      $file = substr($file, 0 , $paramsPos);
 		    }
-			$dataHash .= $file . ':' . filemtime(self::$_docRoot . '/' . $file);
+			$dataHash .= $file . ':' . filemtime(self::$_wwwPath . '/' . $file);
 		}
 		if(self::$_cache)
 			self::$_cache->save(md5($dataHash) , $listHash , array(
