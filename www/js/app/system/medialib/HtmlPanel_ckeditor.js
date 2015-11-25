@@ -43,8 +43,8 @@ Ext.define('app.medialib.HtmlPanel',{
 			    ],
 			    baseFloatZIndex:100000,
 			    contentsCss:[
-			      '/templates/public/main/css/style.css',
-			      '/templates/public/main/css/editor.css'
+			      app.wwwRoot+'css/public/main/style.css',
+			      app.wwwRoot+'css/public/main/editor.css'
 			    ],
 			    bodyClass:'content',
 			    bodyId:'content',

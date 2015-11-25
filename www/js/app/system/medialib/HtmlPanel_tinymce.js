@@ -47,7 +47,7 @@ Ext.define('app.medialib.HtmlPanel',{
 					forced_root_block : false,
 			        force_p_newlines : true,
 			        entity_encoding : "raw",
-			        content_css : "/templates/public/main/css/style.css,/templates/public/main/css/editor.css,"
+			        content_css : app.wwwRoot+"css/public/main/style.css,"+app.wwwRoot+"css/public/main/editor.css,"
 			}
 		});
 		
