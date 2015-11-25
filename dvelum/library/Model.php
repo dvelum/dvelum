@@ -106,6 +106,12 @@ class Model
     protected $_log = false;
 
     /**
+     * List of search fields
+     * @var array | false
+     */
+    protected $searchFields = null;
+
+    /**
      * Get DB table prefix
      * @return string
      */
@@ -809,22 +815,24 @@ class Model
      * Add Like where couse for query
      * @param Db_Select | Zend_Seb_Select $sql
      * @param string $query
+     * @param string $alias - table name alias, optional
      */
-    protected function _queryAddQuery($sql , $query)
+    protected function _queryAddQuery($sql , $query, $alias = false)
     {
-        $searchFields = $this->_objectConfig->getSearchFields();
+        if(!$alias){
+            $alias = $this->table();
+        }
+
+        $searchFields = $this->getSearchFields();
 
         if(empty($searchFields))
             return;
 
-        $first = true;
-
         $q = array();
-
 
         foreach($searchFields as $v)
         {
-            $q[] = $this->table() . "." . $v . " LIKE(". $this->_db->quote('%'.$query.'%').")";
+            $q[] = $alias . "." . $v . " LIKE(". $this->_db->quote('%'.$query.'%').")";
         }
 
         $sql->where('('. implode(' OR ', $q).')');
@@ -971,6 +979,34 @@ class Model
         }
         return true;
     }
+
+    protected function getSearchFields()
+    {
+        if(is_null($this->searchFieldsList)){
+            $this->searchFields = $this->_objectConfig->getSearchFields();
+        }
+        return $this->searchFields;
+    }
+
+    /**
+     * Set
+     * @param array $fields
+     * @return void
+     */
+    public function setSearchFields(array $fields)
+    {
+        $this->searchFields = $fields;
+    }
+
+    /**
+     * Reset search fields list (get from ORM)
+     * @return void
+     */
+    public function resetSearchFields()
+    {
+        $this->searchFields = null;
+    }
+
 
     /**
      * Clear runtime cache
