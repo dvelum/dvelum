@@ -43,7 +43,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         if(!$object->getConfig()->isRevControl()){
             return;
         }
-        if($object->author_id !== $this->_user->getId()){
+        if($this->_user->onlyOwnRecords($this->getModule()) && $object->author_id !== $this->_user->getId()){
             Response::jsonError($this->_lang->CANT_ACCESS);
         }
     }
