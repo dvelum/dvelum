@@ -30,7 +30,7 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
                 if(!empty($v['user_id']) && isset($users[$v['user_id']])){
                     $v['user_name'] = $users[$v['user_id']]->getTitle();
                 }
-                if(!empty($v['object'])){
+                if(!empty($v['object']) && Db_Object_Config::configExists($v['object'])){
                     $v['object_title'] = Db_Object_Config::getInstance($v['object'])->getTitle();
                 }
 			}unset($v);
