@@ -38,7 +38,7 @@ class Task_Recrop extends Bgtask_Abstract
 		$data = $mediaModel->getListVc(false ,$filter,false,array('path' , 'ext' , 'croped'));
 		
 		if(empty($data))
-			$this->_finish();
+			$this->finish();
 
         $conf = $mediaModel->getConfig()->__toArray();
         
