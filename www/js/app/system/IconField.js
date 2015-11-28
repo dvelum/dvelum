@@ -213,7 +213,7 @@ Ext.define('app.iconSelectorWindow',{
             },{
                 text:appLang.CANCEL,
                 scope:this,
-                handler:this.CLOSE
+                handler:this.close
             }
         ]
 

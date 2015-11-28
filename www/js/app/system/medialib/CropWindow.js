@@ -41,7 +41,9 @@ Ext.define('app.medialib.CropWindow',{
 	setType: function(type)
 	{
 		var imgPath = this.getImagePath(this.dataRec , type);
-		$('#oldImage').attr('src' , imgPath);
+        $('#oldImage').attr('src' , imgPath);
+        $('#oldContainer').css('width' , this.extList[type][0]+'px');
+        $('#oldContainer').css('height' , this.extList[type][1]+'px');
 		$('#cropContainer').css('width' , this.extList[type][0]+'px');
 		$('#cropContainer').css('height' , this.extList[type][1]+'px');
 
@@ -58,6 +60,8 @@ Ext.define('app.medialib.CropWindow',{
 			},
 			aspectRatio: (handle.extList[type][0] / handle.extList[type][1])
 		});
+
+        this.preview.updateLayout();
 	},
 	showPreview:function(cds , handle){
 
@@ -121,13 +125,16 @@ Ext.define('app.medialib.CropWindow',{
 
 		this.extList = app.mediaConfig.image.sizes;
 		var lastSize = '';
+        var firstSize ='';
 		for (i in this.extList )
 		{
 			if(typeof i == 'function'){
 				continue;
 			}
 
-
+            if(!firstSize.length){
+                firstSize = i;
+            }
 			cbItems.push({
 				title:i+ ' ('+this.extList[i][0]+'x'+this.extList[i][1]+')' ,
 				id:i
@@ -146,7 +153,7 @@ Ext.define('app.medialib.CropWindow',{
 			triggerAction:"all",
 			valueField:"id",
 			displayField:'title',
-			value:lastSize,
+			value:firstSize,
 			store:Ext.create('Ext.data.Store',{
 				model:'app.comboStringModel',
 				data:cbItems
@@ -167,6 +174,7 @@ Ext.define('app.medialib.CropWindow',{
 			region:'center',
 			bodyCls:'formBody',
 			title:appLang.PREVIEW,
+            autoScroll:true,
 			defaults:{
 				border:false,
 				bodyCls:'formBody'
