@@ -558,8 +558,8 @@ class Backend_Modules_Controller extends Backend_Controller{
 			$text  = basename($fpath);
 			$list[] = array(
 				'name'=>$text,
-				'url'=>str_replace($dirPath .'/', $this->_configMain->get('wwwroot'), $fpath),
-				'path'=>str_replace($dirPath .'/', '', $fpath),
+				'url'=>str_replace($dirPath , $this->_configMain->get('wwwroot'), $fpath),
+				'path'=>str_replace($dirPath, '', $fpath),
 			);
 		}
 		Response::jsonSuccess($list);

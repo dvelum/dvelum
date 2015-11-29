@@ -517,8 +517,8 @@ Ext.define('app.crud.modules.backendView',{
 			controllerUrl:this.controllerUrl,
 			extraParams:this.extraParams,
 			title:record.get('id'),
-			width:500,
-			height:360,
+			width:550,
+			height:400,
 			canDelete:this.canDelete,
 			canEdit:this.canEdit,
 			resizable:false
