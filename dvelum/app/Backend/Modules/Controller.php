@@ -545,7 +545,10 @@ class Backend_Modules_Controller extends Backend_Controller{
 		if(!is_dir($dirPath . $dir))
 			Response::jsonArray(array());
 
-		$files = File::scanFiles($dirPath . $dir, array('.jpg','.png','.gif','.jpeg') , false , File::Files_Only);
+        // windows & linux paths fix
+        $scanPath = str_replace('//','/', $dirPath . $dir);
+
+		$files = File::scanFiles($scanPath, array('.jpg','.png','.gif','.jpeg') , false , File::Files_Only);
 
 		if(empty($files))
 			Response::jsonArray(array());
