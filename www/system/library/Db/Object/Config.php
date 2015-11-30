@@ -416,14 +416,15 @@ class Db_Object_Config
     	if($includeSystem)
     		return $this->_config['fields'];
 
-    	$fields = $this->_config['fields'];
-    		unset($fields[$this->getPrimaryKey()]);
+        $fields = $this->_config['fields'];
+        unset($fields[$this->getPrimaryKey()]);
 
-
-        $fields = array_diff_key($fields, $this->_getVcFields());
-        $fields = array_diff_key($fields, $this->_getEncryptionFields());
-
-    	return  $fields;
+        foreach($fields as $k=>$field){
+            if(isset($field['system']) && $field['system']){
+                unset($fields[$k]);
+            }
+        }
+        return  $fields;
     }
 
     /**
