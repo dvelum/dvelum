@@ -485,7 +485,7 @@ class Install_Controller {
         if(!$this->_prepareRecords($pass, $email, $user))
             Response::jsonError($this->localization->get('CANT_WRITE_TO_DB'));
 
-        Response::jsonSuccess(array('link'=>Registry::get('main' , 'config')->get('adminPath')));
+        Response::jsonSuccess(array('link'=>$adminpath));
     }
 
     protected function _prepareRecords($adminPass , $adminEmail, $adminName)
