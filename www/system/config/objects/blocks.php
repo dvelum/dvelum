@@ -1,6 +1,6 @@
 <?php return array (
   'table' => 'blocks',
-  'engine' => 'MyISAM',
+  'engine' => 'InnoDB',
   'rev_control' => true,
   'link_title' => 'title',
   'save_history' => true,

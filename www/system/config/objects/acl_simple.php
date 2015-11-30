@@ -1,6 +1,6 @@
 <?php return array (
   'table' => 'acl_simple',
-  'engine' => 'MyISAM',
+  'engine' => 'InnoDB',
   'connection' => 'default',
   'rev_control' => false,
   'save_history' => true,

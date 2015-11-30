@@ -1,6 +1,6 @@
 <?php return array (
   'table' => 'permissions',
-  'engine' => 'MyISAM',
+  'engine' => 'InnoDB',
   'rev_control' => false,
   'link_title' => 'module',
   'save_history' => false,

@@ -1,6 +1,6 @@
 <?php return array (
   'table' => 'apikeys',
-  'engine' => 'MyISAM',
+  'engine' => 'InnoDB',
   'rev_control' => false,
   'save_history' => true,
   'link_title' => 'name',

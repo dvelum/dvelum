@@ -752,7 +752,7 @@ return array(
 		File::rmdirRecursive($this->_docRoot . 'install', true);
 		ob_end_clean();
 
-		Response::jsonSuccess(array('link'=>Registry::get('main' , 'config')->get('adminPath')));
+		Response::jsonSuccess(array('link'=>$adminpath));
 	}
 
 	protected function _prepareRecords($adminPass , $adminEmail, $adminName)
