@@ -148,8 +148,8 @@ class Backend_Orm_Connections_Manager
     {
         if(!$this->typeExists($devType))
             return false;
-        
-        return file_exists($this->_config[$devType]['dir'] . $id . '.php');
+
+        return Config::storage()->exists($this->_config[$devType]['dir'] . $id . '.php');
     }
     /**
      * Get connections config
