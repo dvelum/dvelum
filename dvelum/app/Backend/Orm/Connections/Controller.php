@@ -424,12 +424,12 @@ class Backend_Orm_Connections_Controller extends Backend_Controller
             Response::jsonError($this->_lang->DB_CANT_CONNECT_TABLE.' ' . $errors);           
         }else{
             $path = $this->_configMain->get('object_configs').$newObjectName.'.php';
-            
-            if(!Config_File_Array::create($path)){
+
+            if(!Config::storage()->create($path)){
                 Response::jsonError($this->_lang->CANT_WRITE_FS .' '. $path);
             }
-            
-            $cfg = Config::factory(Config::File_Array, $path);
+
+            $cfg = Config::storage()->get($path,true,true);
             $cfg->setData($config);
             if(!$cfg->save()){
                 Response::jsonError($this->_lang->CANT_WRITE_FS .' '. $path);
