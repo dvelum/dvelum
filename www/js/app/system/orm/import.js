@@ -97,7 +97,7 @@ Ext.define('app.orm.import.Window',{
     		  	select:function(field , records , options){
     		  		var store = this.dataGrid.getStore();
     		  		store.removeAll();
-    		  		store.proxy.setExtraParam('type' , records[0].get('id'));
+    		  		store.proxy.setExtraParam('type' , records.get('id'));
     		  		if(store.proxy.extraParams['connId']){
     		  			store.load();
     		  		}
@@ -135,7 +135,7 @@ Ext.define('app.orm.import.Window',{
     		  	select:function(field , records , options){
     		  		var store = this.dataGrid.getStore();
     		  		store.removeAll();
-    		  		store.proxy.extraParams['connId'] = records[0].get('id');
+    		  		store.proxy.extraParams['connId'] = records.get('id');
     		  		if(store.proxy.extraParams['type']){
     		  			store.load();
     		  		}
