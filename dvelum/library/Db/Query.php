@@ -220,7 +220,7 @@ class Db_Query
 				case 'IN' :
 				case 'NOT_IN' :
 					$table = Db_Object_Config::getInstance($condition->object)->getTable();
-					$sql->where($table . '.' . $condition->field . ' ' . $operator . ' (?)' , explode(',' , $condition->$value));
+					$sql->where($table . '.' . $condition->field . ' ' . $operator . ' (?)' , explode(',' , $condition->value));
 					break;
 				
 				case 'custom' :
