@@ -78,6 +78,9 @@
 }
 .sysVersion .num {font-size: 10px;}
 .sysVersion img{float: left;}
+.loginInfo {color: #555; float: right; font-size: 11px;}
+.loginInfo .logout {margin-left: 5px; margin-right: 5px; float: right; padding-top: 7px;}
+.loginInfo .name {color: #33b}
 
 .sysMenuLogo{
   /*background: url(../../i/system/logos.png) 5px -280px no-repeat;
