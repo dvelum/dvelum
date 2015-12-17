@@ -87,7 +87,7 @@ if(!defined('DVELUM'))exit;
 	 <span class="num"><?php echo $this->get('version');?></span>
 	 <div class="loginInfo"><?php echo Lang::lang()->get('YOU_LOGGED_AS');?>:
 	  <span class="name"><?php echo User::getInstance()->getInfo()['name'];?></span>
-	  <span class="logout"><a href="?logout=1">
+	  <span class="logout"><a href="<?php echo Request::url([$this->get('adminPath'),'']);?>?logout=1">
 	   <img src="<?php echo $wwwRoot;?>i/system/icons/logout.png" title="<?php echo Lang::lang()->get('LOGOUT');?>" height="16" width="16">
 	  </a></span>
 	 </div>
