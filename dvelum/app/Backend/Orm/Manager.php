@@ -264,23 +264,24 @@ class Backend_Orm_Manager
 		$assoc = Db_Object_Expert::getAssociatedStructures($oldName);
 		if(!empty($assoc))
 			foreach ($assoc as $config)
-				if(!is_writable($path.strtolower($config['object']).'.php'))
+				if(!is_writable(Config::storage()->getPath($path).strtolower($config['object']).'.php'))
 					return self::ERROR_FS_LOCALISATION;
 		
 	   /*
 		* Check fs write permissions for localisation files
 		*/
 		$localisations = $this->getLocalisations();
+		$langWritePath = Lang::storage()->getWrite();
 		foreach ($localisations as $file)
-			if(!is_writable($file))
-				return self::ERROR_FS;		
+			if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file))
+				return self::ERROR_FS_LOCALISATION;
 
 		$localisationKey = strtolower($oldName);
 		$newLocalisationKey = strtolower($newName);
 		
 		foreach ($localisations as $file)
 		{
-			$cfg = Config::factory(Config::File_Array, $file);
+			$cfg = Lang::storage()->get($file,true,true);
 			if($cfg->offsetExists($localisationKey))
 			{
 				$cfgArray = $cfg->get($localisationKey);
@@ -290,8 +291,8 @@ class Backend_Orm_Manager
 			}
 		}
 		
-		$newFileName = $path . $newName . '.php';
-		$oldFileName = $path . $oldName . '.php';
+		$newFileName = Config::storage()->getWrite(). $path . $newName . '.php';
+		$oldFileName = Config::storage()->getPath($path) . $oldName . '.php';
 
 		if(!@rename($oldFileName, $newFileName))
 			return self::ERROR_FS;
