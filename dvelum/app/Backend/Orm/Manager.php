@@ -222,17 +222,18 @@ class Backend_Orm_Manager
 	public function renameField(Db_Object_Config $cfg , $oldName , $newName)
 	{
 		$localisations = $this->getLocalisations();
-		foreach ($localisations as $file)       // $configs = File::scanFiles($cfgPath , array('.php'), false, File::Files_Only);
-			if(!is_writable($file))
+		$langWritePath = Lang::storage()->getWrite();
+		foreach ($localisations as $file)
+			if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file))
 				return self::ERROR_FS_LOCALISATION;
-		
+
 		if(!$cfg->renameField($oldName, $newName))
 			return self::ERROR_EXEC;
 		
 		$localisationKey = strtolower($cfg->getName());
 		foreach ($localisations as $file)
 		{
-			$cfg = Config::factory(Config::File_Array, $file);
+			$cfg = Lang::storage()->get($file,true,true);
 			if($cfg->offsetExists($localisationKey))
 			{
 				$cfgArray = $cfg->get($localisationKey);
