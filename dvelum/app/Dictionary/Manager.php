@@ -168,8 +168,9 @@ class Dictionary_Manager
 
 		foreach($dirs as $path){
 			$file = $path . '/' . $name . '.php';
-			if(!is_file($file) || !@unlink($file))
-				return false;
+			if(file_exists($file) && is_file($file))
+				if(!@unlink($file))
+					return false;
 		}
 
 		if(isset(self::$_validDictionary[$name]))
