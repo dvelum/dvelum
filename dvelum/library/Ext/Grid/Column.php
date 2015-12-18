@@ -41,17 +41,39 @@ class Ext_Grid_Column extends Ext_Object
 			$state['renderer'] = ['type'=> $this->renderer->getType(),'value'=>$this->renderer->getValue()];
 			$state['config']['renderer'] = '';
 		}
+
+		if(isset($this->editor) && $this->editor instanceof Ext_Object){
+			/**
+			 * @var Ext_Object $object;
+			 */
+			$object = $this->editor;
+			$state['editor'] = [];
+			$state['editor']['extClass']= $object->getClass();
+			$state['editor']['name'] = $object->getName();
+			$state['editor']['state'] = $object->getState();
+			$state['config']['editor']='';
+		}
+
 		return $state;
 	}
 
 	public function setState(array $state)
 	{
 		parent::setState($state);
+
 		if(isset($state['renderer']) && !empty($state['renderer'])){
 			$renderer = new Ext_Helper_Grid_Column_Renderer();
 			$renderer->setType($state['renderer']['type']);
 			$renderer->setValue($state['renderer']['value']);
 			$this->renderer = $renderer;
+		}
+
+		if(isset($state['editor']) && !empty($state['editor'])){
+
+			$editor = Ext_Factory::object($state['editor']['extClass']);
+			$editor->setName($state['editor']['name']);
+			$editor->setState($state['editor']['state']);
+			$this->editor = $editor;
 		}
 	}
 }
