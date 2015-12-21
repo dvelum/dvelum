@@ -69,8 +69,9 @@ class Ext_Grid extends Ext_Object
 	/**
 	 * Add column
 	 * @param string $id
-	 * @param Ext_Objejct $object
-	 * @param string $parent - paren object name
+	 * @param Ext_Object $object
+	 * @param string $parent, optional - paren object name
+	 * @return boolean
 	 */
 	public function addColumn($id, $object , $parent = 0 )
 	{
@@ -154,7 +155,7 @@ class Ext_Grid extends Ext_Object
 	 * Get columns data for TreePanel
 	 * @return array
 	 */
-	public function getColumsList()
+	public function getColumnsList()
 	{
 		return $this->_fillColumns($this->_columns);
 	}

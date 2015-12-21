@@ -5814,7 +5814,7 @@ The method should be overridden by a successor";;"26071ff4b6f5bd9fa3c07c2bd7e281
 "2261";"removeColumn";"0";"Remove column by id";;"edbd46bb83b35e99aeee9ac96688fc4e";"0";"0";"public";"5";;"cfb4e5a7dba35b30ec3334644e8d5199";"0";"0";"0";"28690"
 "2261";"updateColumn";"0";"Updates column";;"a04fb0ee9327fdec0774967f13759992";"0";"0";"public";"5";"boolean";"cfb4e5a7dba35b30ec3334644e8d5199";"0";"0";"0";"28691"
 "2261";"getColumn";"0";"Get column object by its ID";"Exception";"2c22a770425d120d293f4e16f5ab2cb6";"0";"0";"public";"5";"Ext_Grid_Column";"cfb4e5a7dba35b30ec3334644e8d5199";"0";"0";"0";"28692"
-"2261";"getColumsList";"0";"Get columns data for TreePanel";;"54e5d611b9f21c0feed2c7dca6ecd734";"0";"0";"public";"5";"array";"cfb4e5a7dba35b30ec3334644e8d5199";"0";"0";"0";"28693"
+"2261";"getColumnsList";"0";"Get columns data for TreePanel";;"54e5d611b9f21c0feed2c7dca6ecd734";"0";"0";"public";"5";"array";"cfb4e5a7dba35b30ec3334644e8d5199";"0";"0";"0";"28693"
 "2261";"getColumns";"0";"Get column list";;"0e30b6e43fa38a92f092f44692df1d84";"0";"0";"public";"5";"array (tree containers)";"cfb4e5a7dba35b30ec3334644e8d5199";"0";"0";"0";"28694"
 "2261";"getColumnsArray";"0";"Get column list as array (without tree architecture)";;"6847e9f80659bbf7aa7b14073b185f11";"0";"0";"public";"5";"array";"cfb4e5a7dba35b30ec3334644e8d5199";"0";"0";"0";"28695"
 "2261";"getColumnsConfig";"0";"Get columns JS config";;"2569d3ae0287427a62f0bf394958f318";"0";"0";"public";"5";"string";"cfb4e5a7dba35b30ec3334644e8d5199";"0";"0";"0";"28696"

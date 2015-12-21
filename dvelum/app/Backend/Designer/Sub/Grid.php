@@ -31,7 +31,7 @@ class Backend_Designer_Sub_Grid extends Backend_Designer_Sub
 	 */
 	public function columnlisttreeAction()
 	{
-		Response::jsonArray($this->_object->getColumsList());
+		Response::jsonArray($this->_object->getColumnsList());
 	}
 
 	/**

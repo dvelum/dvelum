@@ -32,7 +32,7 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 	 */
 	public function columnlistAction()
 	{
-		Response::jsonArray($this->_object->getColumsList());
+		Response::jsonArray($this->_object->getColumnsList());
 	}
 	/**
 	 * Get object properties

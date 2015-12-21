@@ -202,7 +202,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		/*
 		 * Skip parent for window , store and model
 		 */
-		$rootClasses = array('Window','Store','Data_Store','Data_Store_Tree','Model');
+		$rootClasses = array('Window','Model');
 		$isWindowComponent = strpos($class,'Component_Window_')!==false;
 
 		/*
