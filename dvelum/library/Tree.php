@@ -27,6 +27,7 @@ class Tree
 	 * Set elements sorting order by ID
 	 * @param mixed $id — element identifier
 	 * @param integer $order — sorting order
+	 * @return boolean
 	 */
 	public function setItemOrder($id , $order)
 	{
@@ -75,7 +76,7 @@ class Tree
 	 * @param mixed $id — unique identifier
 	 * @param mixed $parent — parent node identifier
 	 * @param mixed $data — node data
-	 * @param integer $order  - sorting order, not required
+	 * @param boolean|integer $order  - sorting order, not required
 	 * @return boolean —  successfully invoked
 	 */
 	public function addItem($id , $parent , $data , $order = false)

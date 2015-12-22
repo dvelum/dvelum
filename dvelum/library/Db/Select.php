@@ -555,7 +555,7 @@ class Db_Select
     {
         static $cache = array();
 
-        // perfomance patch
+        // performance patch
         if ($this->localCache) {
             $hash = md5(serialize(func_get_args()));
             if (isset($cache[$hash]))
