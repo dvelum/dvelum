@@ -174,16 +174,6 @@ class Db_Object_Config
     }
 
     /**
-     * Set Db table prfix
-     * @deprecated since 0.9.1
-     * @param string $prefix
-     */
-    static public function setDefaultDbTablePrefix($prefix)
-    {
-        self::$_defaultDbPrefix = $prefix;
-    }
-
-    /**
      * Get config files path
      * @return string
      */
@@ -209,10 +199,7 @@ class Db_Object_Config
      */
     public function getTable($withPrefix = true)
     {
-    	if($withPrefix)
-    		return Model::factory($this->_name)->table();
-    	else
-    		return $this->_config->get('table');
+        return $withPrefix ? Model::factory($this->_name)->table() : $this->_config->get('table');
     }
 
     /**
@@ -334,6 +321,7 @@ class Db_Object_Config
     /**
      * Get a configuration element by key (system method)
      * @param string $key
+     * @return mixed
      */
     public function get($key)
     {
@@ -353,7 +341,7 @@ class Db_Object_Config
 
     /**
      * Get a list of indices (from the configuration)
-     * @property boolean $includeSystem -optional default = true
+     * @param boolean $includeSystem -optional default = true
      * @return array
      */
     public function getIndexesConfig($includeSystem = true)
@@ -408,7 +396,7 @@ class Db_Object_Config
 
     /**
      * Get the configuration of all fields
-     * @property boolean $includeSystem -optional default = true
+     * @param boolean $includeSystem -optional default = true
      * @return array
      */
     public function getFieldsConfig($includeSystem = true)
@@ -436,7 +424,7 @@ class Db_Object_Config
     public function getSystemFieldsConfig()
     {
     	$this->_prepareTranslation();
-    	$pimaryKey = $this->getPrimaryKey();
+    	$primaryKey = $this->getPrimaryKey();
     	$fields = array();
 
     	if($this->isRevControl())
@@ -445,7 +433,7 @@ class Db_Object_Config
         if($this->hasEncrypted())
             $fields = array_merge($fields , $this->_getEncryptionFields());
 
-    	$fields[$pimaryKey] = $this->_config['fields'][$pimaryKey];
+    	$fields[$primaryKey] = $this->_config['fields'][$primaryKey];
 
     	return $fields;
     }
@@ -581,17 +569,6 @@ class Db_Object_Config
     }
 
     /**
-     * Get database table name prefix
-     * @return string
-     * @deprecated since 0.9.1
-     * @todo remove
-     */
-    public function getDbPrefix()
-    {
-        return Model::factory($this->_name)->getDbPrefix();
-    }
-
-    /**
      * Get a list of fields linking to external objects
      * @param array $linkTypes  - optional link type filter
      * @return array  field => link_config
@@ -615,7 +592,7 @@ class Db_Object_Config
     /**
      * Check whether the field should be unique
      * @param string $name
-     * @return boolen
+     * @return boolean
      */
     public function isUnique($name)
     {
@@ -944,7 +921,7 @@ class Db_Object_Config
      * @param string $field
      * @param array $config
      */
-    public function setFieldconfig($field , array $config)
+    public function setFieldConfig($field , array $config)
     {
     	$title = '';
     	if(isset($config['title']))
@@ -984,7 +961,7 @@ class Db_Object_Config
 
     /**
      * Rename field and rebuild the database table
-     * @param string $oldname
+     * @param string $oldName
      * @param string $newName
      * @return boolean
      */
@@ -1464,7 +1441,7 @@ class Db_Object_Config
 
         if(isset($cfg['type']) && $cfg['type']==='link'
             && isset($cfg['link_config']['link_type'])
-            && $cfg['link_config']['link_type'] == Self::LINK_OBJECT_LIST
+            && $cfg['link_config']['link_type'] == self::LINK_OBJECT_LIST
             && isset($cfg['link_config']['object'])
             && isset($cfg['link_config']['relations_type'])
             && $cfg['link_config']['relations_type'] == self::RELATION_MANY_TO_MANY

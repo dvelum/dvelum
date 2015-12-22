@@ -1043,7 +1043,7 @@ class Backend_Orm_Controller extends Backend_Controller
          */
         if($objectField!=$name && !empty($objectField))
         {
-        	$objectCfg->setFieldconfig($objectField, $newConfig);
+        	$objectCfg->setFieldConfig($objectField, $newConfig);
         	$renameResult = $manager->renameField($objectCfg , $objectField , $name);
 
         	switch ($renameResult)
@@ -1057,7 +1057,7 @@ class Backend_Orm_Controller extends Backend_Controller
         	}
 
         } else{
-        	$objectCfg->setFieldconfig($name, $newConfig);
+        	$objectCfg->setFieldConfig($name, $newConfig);
         	$objectCfg->fixConfig();
         }
          if($objectCfg->save()){

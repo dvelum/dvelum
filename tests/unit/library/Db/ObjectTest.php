@@ -197,7 +197,7 @@ class Db_ObjectTest extends PHPUnit_Framework_TestCase
 		$o->setInsertId($iId);
 		$userId = User::getInstance()->id;
 
-		$this->assertEquals($iId , $o->getInssertId());
+		$this->assertEquals($iId , $o->getInsertId());
 		$o->setValues(array(
 	      'code'=>$iId,
 	      'is_fixed'=>1,
