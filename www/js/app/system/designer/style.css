@@ -228,6 +228,9 @@
 .filtersIcon{
   background-image: url(../../../../i/system/designer/filters.png) !important;
 }
+.filterIcon{
+    background-image: url(../../../../i/system/designer/filters.png) !important;
+}
 
 .menuIcon{
    background-image:url(../../../../i/system/designer/menu.png) !important;

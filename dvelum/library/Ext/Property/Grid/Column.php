@@ -10,6 +10,7 @@ class Ext_Property_Grid_Column extends Ext_Property_Container
 	public $emptyCellText = self::String;
 	public $enableFocusableContainer = self::Boolean;
 	public $formatter = self::String;
+	public $filter = self::Object;
 	public $groupable = self::Boolean;
 	public $headerWrap = self::Boolean;
 	public $hideable = self::Boolean;

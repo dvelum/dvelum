@@ -1,22 +1,52 @@
 <?php
-
-/**
- * Events for grid columns
- */
-class Backend_Designer_Sub_Gridcolumnevents extends Backend_Designer_Sub_Column_Events
+class Backend_Designer_Sub_Gridcolumnfilterevents extends Backend_Designer_Sub_Column_Events
 {
     /**
-     * @var Designer_Project
+     * @var Ext_Grid_Filter
      */
-    protected $_project;
+    protected $_filter;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_checkFilter();
+    }
+
     /**
-     * @var Ext_Grid
+     * Check if column has filter
      */
-    protected $_object;
+    protected  function _checkFilter()
+    {
+        $name = Request::post('id', 'string', '');
+
+        $filter = $this->_column->filter;
+
+        if(empty($filter) || !$filter instanceof Ext_Grid_Filter)
+            Response::jsonError($this->_lang->WRONG_REQUEST .' invalid filter');
+
+        $this->_filter = $filter;
+    }
+
+    protected function _checkColumn()
+    {
+        $object = $this->_object;
+        $column = Request::post('column','string',false);
+
+        if($column === false || $object->getClass()!=='Grid' || !$object->columnExists($column))
+            Response::jsonError('Cant find column');
+
+        $columnObject = $object->getColumn($column);
+
+        $this->_column = $columnObject;
+    }
+
     /**
-     * @var Ext_Grid_Column_Action
+     * Generate event object name
      */
-    protected $_column;
+    protected function _getEventObject()
+    {
+        return $this->_object->getName().'.filter.'.$this->_filter->getName();
+    }
 
     /**
      * Get events for object
@@ -24,9 +54,10 @@ class Backend_Designer_Sub_Gridcolumnevents extends Backend_Designer_Sub_Column_
     public function objecteventsAction()
     {
         $eObject = $this->_getEventObject();
+
         $objectEvents = $this->_project->getEventManager()->getObjectEvents($eObject);
 
-        $events = $this->_column->getConfig()->getEvents();
+        $events = $this->_filter->getConfig()->getEvents();
 
         $result = array();
         $id =1;
@@ -46,20 +77,17 @@ class Backend_Designer_Sub_Gridcolumnevents extends Backend_Designer_Sub_Column_
             );
             $id++;
         }
-
         Response::jsonSuccess($result);
     }
 
     /**
-     * Get event code (JS code)
+     * Get action code for event
      */
     public function eventcodeAction()
     {
         $project = $this->_getProject();
         $event = $this->_getEvent();
-
         $eventManager = $project->getEventManager();
-
         $eObject = $this->_getEventObject();
 
         if($eventManager->eventExists($eObject, $event))
@@ -71,15 +99,7 @@ class Backend_Designer_Sub_Gridcolumnevents extends Backend_Designer_Sub_Column_
     }
 
     /**
-     * Generate event object name
-     */
-    protected function _getEventObject()
-    {
-        return $this->_object->getName().'.column.'.$this->_column->getName();
-    }
-
-    /**
-     * Update column event
+     * Save event handler
      */
     public function saveeventAction()
     {
@@ -87,8 +107,7 @@ class Backend_Designer_Sub_Gridcolumnevents extends Backend_Designer_Sub_Column_
 
         $event = $this->_getEvent();
         $code = Request::post('code', 'raw', '');
-        $events = $this->_column->getConfig()->getEvents();
-
+        $events = $this->_filter->getConfig()->getEvents();
         $eObject = $this->_getEventObject();
 
         $project->getEventManager()->setEvent($eObject, $event, $code , $events->$event);
@@ -97,14 +116,14 @@ class Backend_Designer_Sub_Gridcolumnevents extends Backend_Designer_Sub_Column_
     }
 
     /**
-     * Remove column event
+     * Remove event handler
      */
     public function removeeventAction()
     {
         $project = $this->_getProject();
         $event = $this->_getEvent();
         $eObject = $this->_getEventObject();
-        $eventManager = $project->getEventManager()->removeObjectEvent($eObject , $event);
+        $eventManager = $project->getEventManager()->removeObjectEvent($eObject, $event);
         $this->_storeProject();
         Response::jsonSuccess();
     }

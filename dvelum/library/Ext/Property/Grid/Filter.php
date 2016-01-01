@@ -6,6 +6,7 @@ abstract class Ext_Property_Grid_Filter extends Ext_Property
 	public $itemDefaults = self::Object;
 	public $menuDefaults = self::Object;
 	public $updateBuffer = self::Numeric;
+	public $listeners = self::Object;
 
     //dvelum proprety
 	public $type = self::String;

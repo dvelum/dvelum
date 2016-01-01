@@ -10,6 +10,8 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
 		$eventManager = $project->getEventManager();
 		$list = $eventManager->getEvents();
 
+
+      //echo '<pre>'; print_r($list);
 		$result = array();
 
 		foreach ($list as $o=>$e)
@@ -61,7 +63,8 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
 				}
 			}
 		}
-		Response::jsonSuccess($result);
+      //  print_r($result); die();
+        Response::jsonSuccess($result);
 	}
 	protected function _convertParams($config)
 	{

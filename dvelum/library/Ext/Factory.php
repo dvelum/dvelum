@@ -28,7 +28,7 @@ class Ext_Factory
 	 * @param string $class (Grid , Panel, Window , etc)
 	 * @return Ext_Object
 	 */
-	static public function object($class , array $config = array())
+	static public function object($class , array $config = [])
 	{	
 		$class = ucfirst($class);
 		

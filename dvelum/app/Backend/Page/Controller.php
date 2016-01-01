@@ -39,11 +39,13 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     public function listAction()
     {
         $pageModel = Model::factory('Page');
-        $filters = false;
+        $filters = [];
 
         if($this->_user->onlyOwnRecords($this->_module)){
             $filters['author_id'] = $this->_user->getId();
         }
+
+        $filters = array_merge($filters , Request::extFilters());
 
         $data = $pageModel->getListVc(
             array('sort'=>'order_no','dir'=>'ASC'),

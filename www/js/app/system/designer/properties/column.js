@@ -72,7 +72,18 @@ Ext.define('designer.properties.GridColumn',{
 					}
 				}),
 				renderer:function(v){return '...';}
-			}
+			},
+			'filter':{
+                editor: Ext.create('Ext.form.field.Text', {
+                    listeners: {
+                        focus: {
+                            fn: me.showFilterWindow,
+                            scope: me
+                        }
+                    }
+                }),
+                renderer:function(v){return '...';}
+            }
 		} , this.sourceConfig );
 		
 		this.callParent();		
@@ -100,5 +111,16 @@ Ext.define('designer.properties.GridColumn',{
         Ext.defer(function () {
             win.show().toFront();
         }, 50);
-	}
+	},
+    showFilterWindow:function(){
+        var win = Ext.create('designer.grid.column.FilterWindow',{
+            title:desLang.filter,
+            objectName : this.objectName,
+            columnId: this.extraParams.id,
+            controllerUrl:this.controllerUrl
+        });
+        Ext.defer(function () {
+            win.show().toFront();
+        }, 50);
+    }
 });    
