@@ -47,7 +47,7 @@ class Db_Object_ConfigTest extends PHPUnit_Framework_TestCase
 		$fldCfg = $cfg->getFieldConfig('page_title');
 		$cfg->removeField('page_title');
 		$this->assertFalse($cfg->fieldExists('page_title'));
-		$cfg->setFieldconfig('page_title', $fldCfg);
+		$cfg->setFieldСonfig('page_title', $fldCfg);
 		$this->assertTrue($cfg->fieldExists('page_title'));
 	}
 	

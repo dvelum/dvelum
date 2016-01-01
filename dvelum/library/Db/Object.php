@@ -969,10 +969,11 @@ class Db_Object
 
     /**
      * Publish VC object
-     * @param int $version - optional, default current version
-     * @param boolean $log  - log changes
+     * @param bool|int $version - optional, default current version
+     * @param boolean $log - log changes
      * @param boolean $useTransaction — using a transaction when changing data is optional.
-     * @return boolean
+     * @return bool
+     * @throws Exception
      */
     public function publish($version = false , $log = true , $useTransaction = true)
     {
@@ -1087,7 +1088,7 @@ class Db_Object
      */
     public function rejectChanges()
     {
-    	$this->_updates = array();
+    	$this->_updates = [];
     }
     /**
      * Save object as new version
@@ -1149,7 +1150,6 @@ class Db_Object
 			return false;
 		}
     }
-
     /**
      * Get Access control List
      * @return Db_Object_Acl | false
@@ -1170,14 +1170,14 @@ class Db_Object
      * Get insert ID
      * @return integer
      */
-    public function getInssertId()
+    public function getInsertId()
     {
     	return $this->_insertId;
     }
-
     /**
      * Check DB object class
      * @param $name
+     * @return boolean
      */
     public function isInstanceOf($name)
     {

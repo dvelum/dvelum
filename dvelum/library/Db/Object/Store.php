@@ -535,7 +535,7 @@ class Db_Object_Store
 
     protected function _insertOperation(Db_Object $object)
     {
-    	$insertId = $object->getInssertId();
+    	$insertId = $object->getInsertId();
 
     	if($insertId){
     		$updates = array_merge($object->getData() , $object->getUpdates());
