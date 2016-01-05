@@ -112,12 +112,11 @@ Ext.define('designer.grid.column.FilterWindow',{
                     this.getEl().unmask();
                     this.close();
                 }else{
-
                     if(!Ext.isEmpty(response.data.type)){
                         this.typeSelector.setRawValue(response.data.type);
+                        this.propertiesPanel.loadProperties();
+                        this.propertiesPanel.refreshEvents();
                     }
-                    this.propertiesPanel.loadProperties();
-                    this.propertiesPanel.refreshEvents();
                     this.getEl().unmask();
                 }
             },

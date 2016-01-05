@@ -54,6 +54,16 @@ class Ext_Grid_Column extends Ext_Object
 			$state['config']['editor']='';
 		}
 
+		if(!empty($this->filter) && $this->filter instanceof Ext_Grid_Filter){
+			$state['filter'] = [
+				'class' => get_class($this->filter),
+				'name' => $this->filter->getName(),
+				'extClass' => $this->filter->getClass(),
+				'state' => $this->filter->getState()
+			];
+            $state['config']['filter'] = '';
+		}
+
 		return $state;
 	}
 
@@ -69,11 +79,19 @@ class Ext_Grid_Column extends Ext_Object
 		}
 
 		if(isset($state['editor']) && !empty($state['editor'])){
-
 			$editor = Ext_Factory::object($state['editor']['extClass']);
 			$editor->setName($state['editor']['name']);
 			$editor->setState($state['editor']['state']);
 			$this->editor = $editor;
 		}
+
+        if(isset($state['filter']) && !empty($state['filter']))
+        {
+            $filter = Ext_Factory::object($state['filter']['extClass']);
+            $filter->setName($state['filter']['name']);
+            $filter->setState($state['filter']['state']);
+            $this->filter = $filter;
+        }
+
 	}
 }

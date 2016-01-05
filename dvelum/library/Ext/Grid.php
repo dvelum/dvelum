@@ -475,8 +475,9 @@ class Ext_Grid extends Ext_Object
         {
             $columns = Utils::sortByField($columns , 'order');
 
-			foreach($columns as $k=>$v){
-				$colData[$v['id']] = array(
+			foreach($columns as $k=>$v)
+			{
+				$colData[$v['id']] = [
 					'id' =>$v['id'],
 					'parent' => $v['parent'],
 					'class' => get_class($v['data']),
@@ -484,7 +485,7 @@ class Ext_Grid extends Ext_Object
 					'extClass' => $v['data']->getClass(),
 					'order' => $v['order'],
 					'state' => $v['data']->getState()
-				);
+				];
 			}
 		}
 
@@ -504,8 +505,10 @@ class Ext_Grid extends Ext_Object
 	{
 		parent::setState($state);
 
-		if(isset($state['columns']) && !empty($state['columns'])){
-			foreach($state['columns'] as $k=>$v){
+		if(isset($state['columns']) && !empty($state['columns']))
+        {
+			foreach($state['columns'] as $k=>$v)
+            {
 				$col = Ext_Factory::object($v['extClass']);
 				$col->setName($v['name']);
 				$col->setState($v['state']);
