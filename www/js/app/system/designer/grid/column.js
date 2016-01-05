@@ -6,6 +6,7 @@ Ext.define('designer.grid.column.Model',{
 		{name:'dataIndex',type:'string'},
 		{name:'type',type:'string'},
 		{name:'editor',type:'string'},
+        {name:'filter',type:'string'},
 		{name:'order',type:'integer'}
 	],
 	idProperty:'id'
@@ -15,8 +16,8 @@ Ext.define('designer.grid.column.Window',{
 	layout:'border',
 	dataStore:null,
 	dataGrid:null,
-	width:800,
-	height:600,
+	width:app.checkWidth(900),
+	height:app.checkHeight(650),
 	propertiesPanel:null,
 	objectName:null,
 	storeName:null,
@@ -43,8 +44,10 @@ Ext.define('designer.grid.column.Window',{
 				this.propertiesPanel.refreshEvents();
 				return;
 			}
-			this.propertiesPanel.setExtraParams({'id':sm.getSelection()[0].get('id')});
+            var colId =  sm.getSelection()[0].get('id');
+            this.propertiesPanel.setExtraParams({'id':colId,'columnId':colId});
 			this.propertiesPanel.loadProperties();
+            this.propertiesPanel.refreshEvents();
 		},this);
 
 		this.dataTree.getSelectionModel().on('selectionchange',function(sm){
@@ -63,8 +66,8 @@ Ext.define('designer.grid.column.Window',{
 
 		this.propertiesPanel =  Ext.create('designer.properties.GridColumn',{
 			controllerUrl: app.createUrl([designer.controllerUrl ,'gridcolumn','']),
+            eventsControllerUrl:app.createUrl([designer.controllerUrl ,'gridcolumnevents','']),
 			objectName:this.objectName,
-			width:380,
 			autoLoad:false,
 			listeners:{
 				dataSaved:{
@@ -75,7 +78,7 @@ Ext.define('designer.grid.column.Window',{
 			title:desLang.properties,
 			layout:'fit',
 			region:'east',
-			showEvents:false,
+			showEvents:true,
 			split:true,
 			width:250
 		});
@@ -149,6 +152,23 @@ Ext.define('designer.grid.column.Window',{
 				{
 					xtype:'actioncolumn',
 					width:30,
+                    align:'center',
+					items:[
+						{
+							iconCls:'filterIcon',
+							tooltip:desLang.configureFilter,
+							scope:this,
+							handler:function(grid, rowIndex, colIndex){
+                                var rec = grid.getStore().getAt(rowIndex);
+                                this.showFilterWindow(rec.get('id'));
+                            }
+						}
+					]
+				},
+				{
+					xtype:'actioncolumn',
+					width:30,
+                    align:'center',
 					items:[
 						{
 							iconCls:'fieldIcon',
@@ -161,7 +181,12 @@ Ext.define('designer.grid.column.Window',{
 					text:desLang.editor,
 					dataIndex:'editor',
 					width:100
-				},
+				},{
+                    align:'center',
+                    text:desLang.filter,
+                    dataIndex:'filter',
+                    width:60
+                },
 				{
 					dataIndex:'text' ,
 					text:desLang.header,
@@ -250,8 +275,9 @@ Ext.define('designer.grid.column.Window',{
 									success: function(response, request) {
 										response =  Ext.JSON.decode(response.responseText);
 										if(response.success){
-											this.propertiesPanel.setExtraParams({'id':columnId});
+											this.propertiesPanel.setExtraParams({'id':columnId,'columnId':columnId});
 											this.propertiesPanel.loadProperties();
+                                            this.propertiesPanel.refreshEvents();
 											this.propertiesPanel.resetSerchField();
 
 										}else{
@@ -522,5 +548,20 @@ Ext.define('designer.grid.column.Window',{
 			win.close();
 		},this);
 		win.show();
-	}
+	},
+    showFilterWindow:function(column){
+        var win = Ext.create('designer.grid.column.FilterWindow',{
+            title:desLang.filter,
+            objectName : this.objectName,
+            columnId: column,
+            controllerUrl:this.controllerUrl
+        });
+        win.on('filterChange',function(){
+            this.reload();
+        },this);
+
+        Ext.defer(function () {
+            win.show().toFront();
+        }, 50);
+    }
 });

@@ -374,104 +374,55 @@ class Request
    }
 
    /**
-    * Get data from Ext Grid Filters Feature
+    * Process Ext Filters
     * @param string $container
     * @param string $method
+    * @return array
     */
-    static public function extFilters($container = 'filterfeature' , $method = 'POST')
+    static public function extFilters($container = 'filter' , $method = 'POST')
     {
+        $result = [];
+
         if($method == 'POST'){
-            $filter = self::post($container, 'array', array());
+            $filter = self::post($container, 'raw', []);
         }else{
-            $filter = self::get($container, 'array', array());
+            $filter = self::get($container, 'raw', []);
         }
 
         if(empty($filter)){
-            return array();
+            return [];
         }
 
-        $result = array();
+        $filter = json_decode($filter , true);
 
+        $operators = [
+            'gt' => Db_Select_Filter::GT,
+            'lt' => Db_Select_Filter::LT,
+            'like' => Db_Select_Filter::LIKE,
+            '=' => Db_Select_Filter::EQ,
+            'eq'=> Db_Select_Filter::EQ,
+            'on' =>Db_Select_Filter::EQ,
+            'in' => Db_Select_Filter::IN,
+            'ne' => Db_Select_Filter::NOT
+        ];
 
         foreach ($filter as $data)
         {
-            $type = $data['data']['type'];
-            $value = $data['data']['value'];
-            $field = $data['field'];
+            $operator = $data['operator'];
+            $value = $data['value'];
+            $field = $data['property'];
 
-            switch($type)
-            {
-                case 'string' :
-                            $result[] = new Db_Select_Filter($field , '%'.$value.'%' , Db_Select_Filter::LIKE);
-                                break;
+            if(!isset($operators[$operator])){
+                continue;
+            }
 
-
-                case 'list' :
-                            if(is_array($value)){
-                                $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::IN);
-                                break;
-                            }
-
-                            if(strpos($value, ',')!==false){
-                                $list = explode(',' , $value);
-                                $result[] = new Db_Select_Filter($field , $list , Db_Select_Filter::IN);
-                                break;
-                            }
-
-                            $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::EQ);
-                            break;
-
-                case 'boolean' :
-                            $result[] = new Db_Select_Filter($field , Filter::filterValue(Filter::FILTER_BOOLEAN, $value), Db_Select_Filter::EQ);
-                                    break;
-
-                case 'numeric' :
-                            switch ($data['data']['comparison'])
-                            {
-                                case 'ne' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::NOT);
-                                    break;
-                                case 'eq' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::EQ);
-                                    break;
-                                case 'lt' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::LT);
-                                    break;
-                                case 'gt' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::GT);
-                                    break;
-                            }
-                            break;
-
-                case 'datetime':
-                            $value = date('Y-m-d H:i:s',strtotime($value));
-                            switch ($data['data']['comparison'])
-                            {
-                                case 'ne' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::NOT);
-                                    break;
-                                case 'eq' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::EQ);
-                                    break;
-                                case 'lt' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::LT);
-                                    break;
-                                case 'gt' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::GT);
-                                    break;
-                            }
-                            break;
-
-                case 'date' :
-
-                            $value = date('Y-m-d',strtotime($value));
-                            switch ($data['data']['comparison'])
-                            {
-                               case 'ne' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::NOT);
-                                    break;
-                               case 'eq' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::EQ);
-                                    break;
-                               case 'lt' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::LT);
-                                    break;
-                               case 'gt' : $result[] = new Db_Select_Filter($field , $value , Db_Select_Filter::GT);
-                                    break;
-                            }
-                            break;
+            if($operator == 'like'){
+                $result[] = new Db_Select_Filter($field , $value.'%' ,$operators[$operator]);
+            }else{
+                $result[] = new Db_Select_Filter($field , $value ,$operators[$operator]);
             }
         }
-     return $result;
+        return $result;
     }
 }
 

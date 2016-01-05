@@ -1,5 +1,5 @@
 <?php
-class Ext_Property_Grid_Filter_Numeric extends Ext_Property_Grid_Filter
+class Ext_Property_Grid_Filter_Number extends Ext_Property_Grid_Filter
 {
 	public $emptyText = self::String;
 	public $fields = self::Object;

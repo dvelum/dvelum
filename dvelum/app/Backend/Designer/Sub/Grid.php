@@ -53,8 +53,14 @@ class Backend_Designer_Sub_Grid extends Backend_Designer_Sub
 					$type = strtolower(str_replace('Grid_Column_', '', $className));
 
 				$editor = '';
-				if(is_a($object->editor, 'Ext_Object'))
+				if(is_a($object->editor, 'Ext_Object')){
 					$editor = $object->editor->getClass();
+				}
+
+				$filter = '';
+				if(!empty($object->filter) && $object->filter instanceof Ext_Grid_Filter) {
+					$filter = $object->filter->getType();
+				}
 
 				$result[] = array(
 					'id'=>$name,
@@ -62,6 +68,7 @@ class Backend_Designer_Sub_Grid extends Backend_Designer_Sub
 					'dataIndex'=>$object->dataIndex,
 					'type'=>$type,
 					'editor'=>$editor,
+					'filter'=>$filter,
 					'order'=>$data['order']
 				);
 			}

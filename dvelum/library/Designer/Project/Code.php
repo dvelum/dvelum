@@ -277,7 +277,6 @@ class Designer_Project_Code
          */
         if($object->getClass() === 'Grid'){
             $this->_applycolumnEvents($object);
-            $this->_applyFiltersEvents($object->getFiltersFeature());
         }
         return $this->_project->getObject($id)->getDefineJs($this->_project->namespace);
     }
@@ -330,7 +329,6 @@ class Designer_Project_Code
          */
         if($oClass === 'Grid'){
             $this->_applycolumnEvents($object);
-            $this->_applyFiltersEvents($object->getFiltersFeature());
         }
 
         $result = '';
@@ -405,7 +403,7 @@ class Designer_Project_Code
     }
 
     /**
-     * Add listeners for actioncolumn's
+     * Add listeners for column's
      * @param Ext_Grid $grid
      */
     protected function _applycolumnEvents(Ext_Grid $grid)
@@ -419,38 +417,54 @@ class Designer_Project_Code
 
         foreach ($columns as $k=>$v)
         {
+            $this->_convertColumnEvents($grid , $v['data']);
+
             if(is_object($v['data']->editor))
                 $this->_convertColumnEditorActions($v['data']);
+
+            if($v['data']->filter instanceof Ext_Grid_Filter)
+                $this->_convertFilterEvents($grid , $v['data']->filter);
 
             if($v['data']->getClass()==='Grid_Column_Action')
                 $this->_convertColumnActions($v['data']);
         }
     }
-    /**
-     * Add listeners for filters feature
-     * @param Ext_Grid_Filtersfeature $filter
-     */
-    protected function _applyFiltersEvents(Ext_Grid_Filtersfeature $filter)
-    {
-        $filters = $filter->getFilters();
 
-        if(empty($filters))
+    /**
+     * Add column events from EventManager
+     * @param Ext_Grid_Column $column
+     */
+    protected function _convertColumnEvents(Ext_Grid $grid, Ext_Grid_Column $column)
+    {
+        $eventManager = $this->_project->getEventManager();
+        $eventsConfig = $column->getConfig()->getEvents()->__toArray();
+        $columnEvents = $eventManager->getObjectEvents($grid->getName().'.column.'.$column->getName());
+
+        if(empty($columnEvents))
             return;
 
-        foreach ($filters as $k=>$v)
-            if($v instanceof Ext_Grid_Filter)
-                $this->_convertFilterEvents($v);
+        foreach ($columnEvents as $event =>$config)
+        {
+            if(!strlen($config['code']))
+                continue;
 
+            $params = '';
+            if(isset($eventsConfig[$event]))
+                $params = implode(',', array_keys($eventsConfig[$event]));
+
+            $column->addListener($event , "{".Utils_String::addIndent("\n\tfn:function(".$params."){\n".Utils_String::addIndent($config['code'],3)."\n\t},\n\tscope:this\n",2)."}");
+        }
     }
+
     /**
      * Apply filter events
      * @param Ext_Grid_Filter $filter
      */
-    protected function _convertFilterEvents(Ext_Grid_Filter $filter)
+    protected function _convertFilterEvents(Ext_Grid $grid, Ext_Grid_Filter $filter)
     {
         $eventManager = $this->_project->getEventManager();
         $eventsConfig = $filter->getConfig()->getEvents()->__toArray();
-        $filterEvents = $eventManager->getObjectEvents($filter->getName());
+        $filterEvents = $eventManager->getObjectEvents($grid->getName().'.filter.'.$filter->getName());
 
         if(empty($filterEvents))
             return;
@@ -737,7 +751,6 @@ class Designer_Project_Code
              */
             if($item['data']->getClass() === 'Grid'){
                 $this->_applycolumnEvents($item['data']);
-                $this->_applyFiltersEvents($item['data']->getFiltersFeature());
             }
         }
 

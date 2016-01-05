@@ -46,6 +46,7 @@ var desLang = {
 		columnsTree:'Column Tree',
 		collapseAll:'Collapse all',
 		configureEditor: 'Configure field editor',
+        configureFilter:'Configure field filter',
 		clicksToEdit:'Clicks to edit',
 		checkboxSelection:'Checkbox Selection',
 
@@ -88,6 +89,8 @@ var desLang = {
 		form:'Form',
 		formField:'Form field',
 		formPanel:'Form Panel',
+		filter:'Filter',
+        filterSaved:'Filter saved',
 		filters:'Filters',
 		field:'Field',
 		fields:'Fields',
@@ -177,6 +180,7 @@ var desLang = {
 		removeAction:'Remove action',
 		removeEditor:'Remove editor',
 		removeEvent:'Remove event',
+        removeFilter:'Remove filter',
 		rowExpander:'Row expander plugin',
 		relatedProjectItems:'Related project items',
 

@@ -347,11 +347,9 @@ class Ext_Grid extends Ext_Object
 			}
 		}
 		
-		$filtersFeature = $this->getFiltersFeature();
-		$filters = $filtersFeature->getFilters();
-		if(!empty($filters)){
-		  $features[] = $filtersFeature->__toString();
-		}
+		if($this->hasFilters()){
+            $plugins[] = "'gridfilters'";
+        }
 		
 		if(isset($this->_advancedPropertyValues['summary']) && $this->_advancedPropertyValues['summary'])
 		{
@@ -451,6 +449,7 @@ class Ext_Grid extends Ext_Object
 	}
 	/**
 	 * Get Filtesr feature
+     * @deprecated
 	 * @return Ext_Grid_Filtersfeature
 	 */
 	public function getFiltersFeature()
@@ -514,5 +513,21 @@ class Ext_Grid extends Ext_Object
 			}
 			$this->_columns->sortItems();
 		}
+	}
+
+	/**
+	 * Check if columns has filters
+	 * @return boolean
+	 */
+	public function hasFilters()
+	{
+		$columns = $this->_columns->getItems();
+		foreach($columns as $index=>$data){
+			$col = $data['data'];
+			if(!empty($col->filter) && $col->filter instanceof Ext_Grid_Filter){
+				return true;
+			}
+		}
+		return false;
 	}
 }

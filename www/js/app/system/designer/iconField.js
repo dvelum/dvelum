@@ -39,6 +39,8 @@ Ext.define('designer.iconField',{
 				}
 			}
 		});
-		win.show();
+		Ext.defer(function () {
+			win.show().toFront();
+		}, 50);
 	}
 });

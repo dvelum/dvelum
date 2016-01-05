@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Class Ext_Grid_Filtersfeature
+ * Deprecated class used for DVelum 0.9.x projects import
+ * @deprecated
+ */
 class Ext_Grid_Filtersfeature extends Ext_Object
 {
     protected $_filters = array();
