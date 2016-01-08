@@ -57,9 +57,14 @@ foreach($modules as $data)
 		'icon' => Request::wwwRoot() . 'i/system/icons/logout.png'
 	];
 }
+
 $res->addInlineJs('
 	app.menuData = '.json_encode($menuData).';
+	app.permissions = Ext.create("app.PermissionsStorage");
+	var rights = '.json_encode(User::getInstance()->getPermissions()).';
+	app.permissions.setData(rights);
 ');
+
 $wwwRoot = Request::wwwRoot();
 ?>
 <!DOCTYPE html>

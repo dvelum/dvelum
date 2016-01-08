@@ -51,10 +51,12 @@ class Designer_Factory
 	 * Init layout from designer project
 	 * @property string $projectFile - designer project related path
 	 * @property Config_Abstract $designerConfig
-	 * @property array $replaceTemplates, optional
+	 * @property array $replace, optional
+     * @property string | boolean $renderTo
+     * @property string | boolean $moduleId
 	 * @todo cache the code
 	 */
-	static public function runProject($projectFile , Config_Abstract $designerConfig , $replace = array(), $renderTo = false)
+	static public function runProject($projectFile , Config_Abstract $designerConfig , $replace = array(), $renderTo = false, $moduleId = false)
 	{
 		/**
 		 * @todo slow operation
@@ -118,8 +120,8 @@ class Designer_Factory
 		}
 
 		$initCode.='
-		              app.application.fireEvent("projectLoaded");
-	           });';
+		            app.application.fireEvent("projectLoaded", "'.$moduleId.'");
+	            });';
 
 		$resource = Resource::getInstance();
 
@@ -152,10 +154,11 @@ class Designer_Factory
      * @property string $projectFile - designer project related path
      * @property Config_Abstract $designerConfig
      * @property array $replaceTemplates, optional
-     * @propery string $renderTo
+     * @property string $renderTo
+     * @property string $moduleId
      * @todo cache the code
      */
-    static public function compileDesktopProject($projectFile , Config_Abstract $designerConfig , $replace, $renderTo)
+    static public function compileDesktopProject($projectFile , Config_Abstract $designerConfig , $replace, $renderTo, $moduleId)
     {
         $projectData = [
             'applicationClassesNamespace' =>false,
@@ -213,9 +216,9 @@ class Designer_Factory
             });';
         }
 
-//        $initCode.='
-//		             app.application.fireEvent("projectLoaded");
-//	    ';
+        $initCode.='
+            app.application.fireEvent("projectLoaded", "'.$moduleId.'");
+        ';
 
         if(!empty($includes))
         {
@@ -314,8 +317,6 @@ class Designer_Factory
 					file_put_contents($layoutCacheFile, Code_Js_Minify::minify($project->getCode($replace)));
 				}
 			}
-
-
 			$includes[] = '/'.str_replace($applicationConfig->get('jsCacheSysPath'), $applicationConfig->get('jsCacheSysUrl') , $layoutCacheFile);
 		}
 		return $includes;

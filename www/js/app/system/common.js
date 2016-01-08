@@ -5,7 +5,7 @@ Ext.manifest = { // the same content as "app.json"
 	}
 }
 
-Ext.Loader.setConfig({enabled: false});
+Ext.Loader.setConfig({enabled: false,disableCaching:false});
 Ext.ns('app');
 Ext.tip.QuickTipManager.init();
 Ext.data.DataReader.messageProperty = "msg";
@@ -521,13 +521,16 @@ app.checkChildNodes = function(node, isChecked){
  * @params {Object} permissions
  */
 Ext.define('app.PermissionsStorage', {
-	extend:'Ext.Component',
+    extend:'Ext.Base',
+    mixins:['Ext.mixin.Observable'],
 	permissionsLoaded:false,
 	permissions:null,
-	initComponent: function() {
-		this.callParent();
-		this.loadData();
-	},
+
+    constructor: function (config) {
+        // The `listeners` property is processed to add listeners and the config
+        // is applied to the object.
+        this.mixins.observable.constructor.call(this, config);
+    },
 	canView:function(module){
 		var perms = this.modulePermissions(module);
 		if(perms === false){
@@ -565,12 +568,19 @@ Ext.define('app.PermissionsStorage', {
 			success: function(response, request) {
 				response =  Ext.JSON.decode(response.responseText);
 				if(response.success){
-					me.permissionsLoaded = true;
-					me.permissions = response.data;
-					me.fireEvent('load' ,me , me.permissions);
+					me.setData(response.data);
 				}
 			}
 		});
+	},
+    /**
+     * Set user permissions
+     * @param data
+     */
+	setData:function(data){
+		this.permissionsLoaded = true;
+        this.permissions = data;
+        this.fireEvent('load' ,this , this.permissions);
 	},
 	/**
 	 * Get permissions for current user

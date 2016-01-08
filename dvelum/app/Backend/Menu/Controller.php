@@ -148,4 +148,21 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
     {
     	Response::jsonSuccess(Model::factory('menu_item')->exportsiteStructure());
     }
+
+
+    /**
+     * Get desktop module info
+     */
+    protected function desktopModuleInfo()
+    {
+        $projectData = [];
+        $projectData['includes']['js'][] =  '/js/app/system/Menu.js';
+        /*
+         * Module bootstrap
+         */
+        if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
+            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
+
+        return $projectData;
+    }
 }

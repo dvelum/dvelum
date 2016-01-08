@@ -121,9 +121,14 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		var applicationClassesNamespace = "'.$projectCfg['namespace'].'";
 		var applicationRunNamespace = "'.$projectCfg['runnamespace'].'";
 		var designerUrlPaths = ["'.implode('","', $basePaths).'"];
+
 		var canDelete = true;
 		var canPublish = true;
 		var canEdit = true;
+
+		app.permissions = Ext.create("app.PermissionsStorage");
+		var rights = '.json_encode(User::getInstance()->getPermissions()).';
+		app.permissions.setData(rights);
 
 		Ext.onReady(function(){
 		    app.application.mainUrl = app.createUrl(designerUrlPaths);

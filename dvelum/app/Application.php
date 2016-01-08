@@ -297,18 +297,15 @@ class Application
         $page = Page::getInstance();
         $page->setTemplatesPath(self::$_templates);
 
-        $user = User::getInstance();
-
         /*
          * Start routing
          */
         $router = new Backend_Router();
         $router->route();
-
         $controller = Request::getInstance()->getPart(1);
 
         /*
-         * Define frontent JS variables
+         * Define frontend JS variables
          */
         $res = Resource::getInstance();
         $res->addInlineJs('
@@ -335,7 +332,7 @@ class Application
             'version' => Config::storage()->get('versions.php')->get('core'),
             'lang' => $this->_config->get('language'),
             'modules' => $modulesManager->getList(),
-            'userModules' => $user->getAvailableModules(),
+            'userModules' => User::getInstance()->getAvailableModules(),
             'useCSRFToken' => $cfgBackend->get('use_csrf_token'),
             'theme' => $cfgBackend->get('theme')
         ));

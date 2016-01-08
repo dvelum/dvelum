@@ -42,22 +42,25 @@ class Designer_Manager
      * Render Designer project
      * @param string $projectFile - file path
      * @param string | boolean $renderTo - optional, default false (html tag id)
+     * @param string | boolean $moduleId
      */
-    public function renderProject($projectFile , $renderTo = false)
+    public function renderProject($projectFile , $renderTo = false, $moduleId = false)
     {
         $replaces = $this->getReplaceConfig();
-        Designer_Factory::runProject($projectFile , $this->_designerConfig , $replaces , $renderTo);
+        Designer_Factory::runProject($projectFile , $this->_designerConfig , $replaces , $renderTo, $moduleId);
     }
 
     /**
      * Compile designer project and return info (script paths, namespaces)
      * @param $projectFile
-     * @param bool|false $renderTo
+     * @param $renderTo
+     * @param $moduleId
+     * @return array
      */
-    public function compileDesktopProject($projectFile , $renderTo = false)
+    public function compileDesktopProject($projectFile , $renderTo, $moduleId)
     {
         $replaces = $this->getReplaceConfig();
-        return Designer_Factory::compileDesktopProject($projectFile , $this->_designerConfig , $replaces , $renderTo);
+        return Designer_Factory::compileDesktopProject($projectFile , $this->_designerConfig , $replaces , $renderTo, $moduleId);
     }
     /**
      * Get Designer projects tree list

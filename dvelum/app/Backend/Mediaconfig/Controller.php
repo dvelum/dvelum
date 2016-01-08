@@ -143,4 +143,20 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
         $tm->setLogger($logger);
         $tm->launch(Bgtask_Manager::LAUNCHER_JSON, 'Task_Recrop' , array('types'=>$sizeToCrop,'notCroped'=>$notCroped));
     }
+
+	/**
+	 * Get desktop module info
+	 */
+	protected function desktopModuleInfo()
+	{
+		$projectData = [];
+		$projectData['includes']['js'][] =  '/js/app/system/Mediaconfig.js';
+		/*
+         * Module bootstrap
+         */
+		if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
+			$projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
+
+		return $projectData;
+	}
 }

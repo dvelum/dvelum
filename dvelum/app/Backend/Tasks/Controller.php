@@ -114,5 +114,21 @@ class Backend_Tasks_Controller extends Backend_Controller
     		Response::jsonSuccess();
     	else 
     		Response::jsonError($this->_lang->CANT_EXEC);	
-    }    
+    }
+
+	/**
+	 * Get desktop module info
+	 */
+	protected function desktopModuleInfo()
+	{
+		$projectData = [];
+		$projectData['includes']['js'][] =  '/js/app/system/Tasks.js';
+		/*
+         * Module bootstrap
+         */
+		if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
+			$projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
+
+		return $projectData;
+	}
 }

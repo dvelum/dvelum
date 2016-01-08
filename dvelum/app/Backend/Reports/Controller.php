@@ -911,4 +911,45 @@ class Backend_Reports_Controller extends Backend_Controller
 		$data['id'] = $id;
 		Response::jsonSuccess($data);
 	}
+
+	/**
+	 * Get desktop module info
+	 */
+	protected function desktopModuleInfo()
+	{
+		$projectData = [];
+		$projectData['includes']['js'][] =  '/js/app/system/Reports.js';
+
+        $projectData['includes']['css'][] = '/js/lib/CodeMirror/lib/codemirror.css';
+        $projectData['includes']['css'][] = '/js/lib/CodeMirror/addon/dialog/dialog.css';
+        $projectData['includes']['css'][] = '/js/lib/CodeMirror/addon/hint/show-hint.css';
+        $projectData['includes']['css'][] = '/js/lib/CodeMirror/theme/eclipse.css';
+
+
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/lib/codemirror.js';
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/addon/hint/show-hint.js';
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/addon/hint/javascript-hint.js';
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/addon/dialog/dialog.js';
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/addon/search/search.js';
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/addon/search/searchcursor.js';
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/addon/search/matchesonscrollbar.js';
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/addon/search/match-highlighter.js';
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/addon/selection/active-line.js';
+        $projectData['includes']['js'][] = '/js/lib/CodeMirror/mode/sql/sql.js';
+
+        $projectData['includes']['js'][] = '/js/app/system/FilesystemWindow.js';
+        $projectData['includes']['js'][] = '/js/app/system/SqlEditor.js';
+        $projectData['includes']['js'][] = '/js/app/system/report/filter.js';
+        $projectData['includes']['js'][] = '/js/app/system/report/config.js';
+        $projectData['includes']['js'][] = '/js/app/system/report/results.js';;
+        $projectData['includes']['js'][] = '/js/app/system/report/record.js';
+
+		/*
+         * Module bootstrap
+         */
+		if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
+			$projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
+
+		return $projectData;
+	}
 }

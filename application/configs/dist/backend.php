@@ -1,6 +1,7 @@
 <?php
 return array(
-	'theme'=>'gray', // gray / triton
+	'theme'=>'gray', // gray / triton / desktop
+    'desktop_themes' => ['desktop'],
 	'system_controllers' => array(
 		'Backend_Index_Controller' ,
 		'Backend_Mediacategory_Controller',

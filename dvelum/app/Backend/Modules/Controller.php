@@ -585,4 +585,20 @@ class Backend_Modules_Controller extends Backend_Controller{
 		Utils_Fs::createClassMap($paths ,  $writePath . $this->_configMain['autoloader']['map']);
 		Response::jsonSuccess();
 	}
+
+	/**
+	 * Get desktop module info
+	 */
+	protected function desktopModuleInfo()
+	{
+		$projectData = [];
+		$projectData['includes']['js'][] =  '/js/app/system/Modules.js';
+		/*
+         * Module bootstrap
+         */
+		if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
+			$projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
+
+		return $projectData;
+	}
 }

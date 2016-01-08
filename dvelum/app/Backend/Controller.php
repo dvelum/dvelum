@@ -337,13 +337,13 @@ abstract class Backend_Controller extends Controller
     /**
      * Run designer project
      * @param string $project - path to project file
+     * @param string | boolean $renderTo
      */
     protected function _runDesignerProject($project , $renderTo = false)
     {
       $manager = new Designer_Manager($this->_configMain);
-      $manager->renderProject($project , $renderTo);
+      $manager->renderProject($project , $renderTo, $this->_module);
     }
-
 
     /**
      * Get desktop module info
@@ -353,17 +353,17 @@ abstract class Backend_Controller extends Controller
         $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($this->_module);
 
-        $info = [];
+        $projectData = [];
 
         if(strlen($moduleCfg['designer']))
         {
             $manager = new Designer_Manager($this->_configMain);
-            $projectData =  $manager->compileDesktopProject($moduleCfg['designer'],'app.__modules.' . $this->_module);
+            $projectData =  $manager->compileDesktopProject($moduleCfg['designer'],'app.__modules.'.$this->_module , $this->_module);
         }
         else
         {
-            if(file_exists($this->_configMain->get('jsPath').'app/system/crud/' . strtolower($this->_module) . '.js'))
-                $projectData['includes']['js'] = '/js/app/system/crud/' . strtolower($this->_module) .'.js';
+            if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
+                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
         }
         return $projectData;
     }

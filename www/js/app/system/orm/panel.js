@@ -560,56 +560,44 @@ Ext.define('app.crud.orm.Main',{
 	}
 });
 
-Ext.onReady(function(){
+app.crud.orm.ModuleUrl = app.createUrl([app.admin,'orm','']);
+app.crud.orm.Actions = {
+	addDictionary:		app.crud.orm.ModuleUrl  + 'adddictionary',
+	listDictionaries:	app.crud.orm.ModuleUrl  + 'listdictionaries',
+	updateDictionary:	app.crud.orm.ModuleUrl  + 'updatedictionary',
+	removeDictionary:	app.crud.orm.ModuleUrl  + 'removedictionary',
+	listObj: 			app.crud.orm.ModuleUrl  + 'list',
+	listObjFields: 		app.crud.orm.ModuleUrl  + 'fields',
+	listObjIndexes: 	app.crud.orm.ModuleUrl  + 'indexes',
+	listBackups: 		app.crud.orm.ModuleUrl  + 'listbackups',
+	listAcl:			app.crud.orm.ModuleUrl  + 'listacl',
+	loadObjCfg: 		app.crud.orm.ModuleUrl  + 'load',
+	loadObjField: 		app.crud.orm.ModuleUrl  + 'loadfield',
+	loadObjIndex: 		app.crud.orm.ModuleUrl  + 'loadindex',
+	makeBackUp: 		app.crud.orm.ModuleUrl  + 'makebackup',
+	removeBackUp:		app.crud.orm.ModuleUrl  + 'removebackup',
+	removeObject:		app.crud.orm.ModuleUrl  + 'removeobject',
+	restoreBackup: 		app.crud.orm.ModuleUrl  + 'restorebackup',
+	saveObjCfg: 		app.crud.orm.ModuleUrl  + 'save',
+	saveObjField: 		app.crud.orm.ModuleUrl  + 'savefield',
+	saveObjIndex:	 	app.crud.orm.ModuleUrl  + 'saveindex',
+	deleteIndex: 		app.crud.orm.ModuleUrl  + 'deleteindex',
+	deleteField:	 	app.crud.orm.ModuleUrl  + 'deletefield',
+	validateObject: 	app.crud.orm.ModuleUrl  + 'validate',
+	buildObject:		app.crud.orm.ModuleUrl  + 'build',
+	buildAllObjects:	app.crud.orm.ModuleUrl  + 'buildall',
+	builderLog:			app.createUrl([app.crud.orm.ModuleUrl + 'log','']),
+	dictionary:			app.createUrl([app.crud.orm.ModuleUrl + 'dictionary','']),
+	listValidators:		app.createUrl([app.crud.orm.ModuleUrl + 'listvalidators','']),
+	dataViewController: app.createUrl([app.crud.orm.ModuleUrl + 'dataview','']),
+	connectionsUrl:		app.createUrl([app.crud.orm.ModuleUrl + 'connections','']),
+	listConnections:	app.createUrl([app.crud.orm.ModuleUrl + 'connectionslist','']),
+	importUrl:			app.createUrl([app.crud.orm.ModuleUrl + 'import','']),
+	encryptData:		app.crud.orm.ModuleUrl  + 'encryptdata',
+	decryptData:		app.crud.orm.ModuleUrl  + 'decryptdata',
+	taskStat:			app.crud.orm.ModuleUrl  + 'taskstat'
+};
+app.crud.orm.dbConfigs = dbConfigsList;
+app.crud.orm.foreignKeys = useForeignKeys;
 
-	app.crud.orm.Actions = {
-		addDictionary:		app.root + 'adddictionary',
-		listDictionaries:	app.root + 'listdictionaries',
-		updateDictionary:	app.root + 'updatedictionary',
-		removeDictionary:	app.root + 'removedictionary',
-		listObj: 			app.root + 'list',
-		listObjFields: 		app.root + 'fields',
-		listObjIndexes: 	app.root + 'indexes',
-		listBackups: 		app.root + 'listbackups',
-		listAcl:			app.root + 'listacl',
-		loadObjCfg: 		app.root + 'load',
-		loadObjField: 		app.root + 'loadfield',
-		loadObjIndex: 		app.root + 'loadindex',
-		makeBackUp: 		app.root + 'makebackup',
-		removeBackUp:		app.root + 'removebackup',
-		removeObject:		app.root + 'removeobject',
-		restoreBackup: 		app.root + 'restorebackup',
-		saveObjCfg: 		app.root + 'save',
-		saveObjField: 		app.root + 'savefield',
-		saveObjIndex:	 	app.root + 'saveindex',
-		deleteIndex: 		app.root + 'deleteindex',
-		deleteField:	 	app.root + 'deletefield',
-		validateObject: 	app.root + 'validate',
-		buildObject:		app.root + 'build',
-		buildAllObjects:	app.root + 'buildall',
-		builderLog:			app.createUrl([app.root + 'log','']),
-		dictionary:			app.createUrl([app.root+'dictionary','']),
-		listValidators:		app.createUrl([app.root+'listvalidators','']),
-		dataViewController: app.createUrl([app.root+'dataview','']),
-		connectionsUrl:		app.createUrl([app.root+'connections','']),
-		listConnections:	app.createUrl([app.root+'connectionslist','']),
-		importUrl:			app.createUrl([app.root+'import','']),
-		encryptData:		app.root + 'encryptdata',
-		decryptData:		app.root + 'decryptdata',
-		taskStat:			app.root + 'taskstat'
-	};
-
-	app.crud.orm.dbConfigs = dbConfigsList;
-	app.crud.orm.canEdit = canEdit;
-	app.crud.orm.canDelete = canDelete;
-	app.crud.orm.canUseBackup = canUseBackup;
-	app.crud.orm.foreignKeys = useForeignKeys;
-
-	var dataPanel = Ext.create('app.crud.orm.Main',{
-		title:appLang.MODULE_ORM,
-		controllerUrl:app.root
-	});
-
-	app.content.add(dataPanel);
-});
 

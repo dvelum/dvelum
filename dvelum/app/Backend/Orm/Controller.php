@@ -1489,4 +1489,41 @@ class Backend_Orm_Controller extends Backend_Controller
            'op_finished' =>  $statusData['op_finished']
         ));
     }
+
+    /**
+     * Get desktop module info
+     */
+    protected function desktopModuleInfo()
+    {
+        $version = Config::storage()->get('versions.php')->get('orm');
+        $dbConfigs = array();
+
+        foreach ($this->_configMain->get('db_configs') as $k=>$v){
+            $dbConfigs[]= array('id'=>$k , 'title'=>$this->_lang->get($v['title']));
+        }
+
+        //tooltips
+        $lPath = $this->_configMain->get('language').'/orm.php';
+        Lang::addDictionaryLoader('orm_tooltips', $lPath, Config::File_Array);
+
+        $projectData['includes']['js'][] = $this->_resource->cacheJs('
+           var useForeignKeys = '.((integer) $this->_configMain['foreign_keys']).';
+           var dbConfigsList = '.json_encode($dbConfigs).';
+           var ormTooltips = '.Lang::lang('orm_tooltips')->getJson().';
+        ');
+
+        $projectData['includes']['js'][] = '/js/lib/uml/raphael.js';
+        $projectData['includes']['js'][] = '/js/lib/uml/joint.js';
+        $projectData['includes']['js'][] = '/js/lib/uml/joint.dia.js';
+        $projectData['includes']['js'][] = '/js/lib/uml/joint.dia.uml.js';
+        $projectData['includes']['js'][] = '/js/app/system/ORM.js?v='.$version;
+
+        /*
+         * Module bootstrap
+         */
+        if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
+            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
+
+        return $projectData;
+    }
 }

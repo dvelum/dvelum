@@ -8,6 +8,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
 
         $resource = Resource::getInstance();
         $resource->addJs('/js/app/system/BlocksPanel.js' , 3);
+        $resource->addJs('/js/app/system/Page.js' , 3);
 
         $moduleManager = new Modules_Manager_Frontend();
         $fModules = Config::factory(Config::File_Array, $this->_configMain->get('frontend_modules'));
@@ -496,5 +497,37 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         $blockManager = new Blockmanager();
         $blockManager->invalidateDefaultMap();
         Response::jsonSuccess();
+    }
+
+    /**
+     * Get desktop module info
+     */
+    protected function desktopModuleInfo()
+    {
+        $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
+        $moduleCfg = $modulesConfig->get($this->_module);
+
+        $projectData = [];
+        $projectData['includes']['js'][] =  '/js/app/system/BlocksPanel.js';
+        $projectData['includes']['js'][] = '/js/app/system/Page.js';
+
+        /*
+         * Get module codes
+         */
+        $moduleManager = new Modules_Manager_Frontend();
+        $fModules = Config::factory(Config::File_Array, $this->_configMain->get('frontend_modules'));
+        $funcList = [['id'=>'','title'=>'---']];
+        foreach ($moduleManager->getList() as $config){
+            $funcList[] = array('id'=>$config['code']  , 'title'=>$config['title']);
+        }
+        $projectData['includes']['js'][] = Resource::getInstance()->cacheJs('var aFuncCodes = '.json_encode($funcList).';');
+
+        /*
+         * Module bootstrap
+         */
+        if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
+            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
+
+        return $projectData;
     }
 }

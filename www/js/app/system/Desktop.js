@@ -6,6 +6,7 @@ Ext.define('app.cls.moduleLoader',{
     extend:'Ext.Base',
     mixins:['Ext.mixin.Observable'],
     modules:{},
+    loaded:[],
     loadModule:function(data){
         if(Ext.isEmpty(this.modules[data.id])){
             Ext.Ajax.request({
@@ -51,34 +52,68 @@ Ext.define('app.cls.moduleLoader',{
             scriptCount+= list.css.length;
         }
 
+        var me = this;
+
         Ext.each(list.css, function(item, index){
+            if(Ext.Array.contains(me.loaded , item)){
+                scriptCount --;
+                if(scriptCount==0){
+                    callback();
+                }
+                return;
+            }
             Ext.Loader.loadScript({
                 url:item,
                 onLoad:function(){
                     scriptCount --;
+                    me.loaded.push(item);
                     if(scriptCount==0){
                         callback();
                     }
                 }
             });
-        });
+        },me);
 
         Ext.each(list.js, function(item, index){
+            if(Ext.Array.contains(me.loaded , item)){
+                scriptCount --;
+                if(scriptCount==0){
+                    callback();
+                }
+                return;
+            }
             Ext.Loader.loadScript({
                 url:item,
                 onLoad:function(){
                     scriptCount --;
+                    me.loaded.push(item);
                     if(scriptCount==0){
                         callback();
                     }
                 }
             });
-        });
+        },me);
     },
     showModule:function(id , title){
-        var win = app.__modules[id];
-        win.setTitle(title);
-        win.show().toFront();
+        if(!Ext.isEmpty(app.__modules[id])) {
+            var win = app.__modules[id];
+           // win.setTitle(title);
+            win.show().toFront();
+        }else{
+            app.msg(appLang.ERROR,appLang.CANT_EXEC);
+        }
+    },
+    /**
+     * Get module permissions info
+     * @param module
+     * @returns {*}
+     */
+    getPermissions:function(module){
+        if(!Ext.isEmpty(this.modules[module]) && !Ext.isEmpty(this.modules[module].permissions)){
+            return this.modules[module].permissions;
+        }else{
+            return false;
+        }
     }
 });
 
@@ -123,7 +158,6 @@ Ext.define('app.cls.ModuleWindow',{
    height:app.checkHeight(750),
    closeAction:'hide',
    maximizable:true
-
 });
 
 Ext.application({

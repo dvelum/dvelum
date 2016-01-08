@@ -3,7 +3,10 @@ class Backend_Index_Controller extends Backend_Controller
 {  
     public function indexAction()
     {
-        if($this->_configBackend->get('theme') !=='desktop'){
+
+
+        $this->includeScripts();
+        if(!in_array($this->_configBackend->get('theme') , $this->_configBackend->get('desktop_themes') , true)){
             $this->_resource->addJs('js/app/system/crud/index.js', 4);
         }
     }
