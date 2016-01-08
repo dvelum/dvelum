@@ -147,6 +147,99 @@ class Designer_Factory
 		$resource->addInlineJs($initCode);
 	}
 
+    /**
+     * Init layout from designer project
+     * @property string $projectFile - designer project related path
+     * @property Config_Abstract $designerConfig
+     * @property array $replaceTemplates, optional
+     * @propery string $renderTo
+     * @todo cache the code
+     */
+    static public function compileDesktopProject($projectFile , Config_Abstract $designerConfig , $replace, $renderTo)
+    {
+        $projectData = [
+            'applicationClassesNamespace' =>false,
+            'applicationRunNamespace' => false,
+            'includes'=>[
+                'js'=>[],
+                'css'=>[]
+            ]
+        ];
+
+        if(!file_exists($projectFile))
+            throw new Exception('Invalid project file' . $projectFile);
+
+        /**
+         * @todo cache slow operation
+         */
+        $cachedKey = self::getProjectCacheKey($projectFile);
+
+        $project = Designer_Factory::loadProject($designerConfig, $projectFile);
+        $projectCfg = $project->getConfig();
+
+        Ext_Code::setRunNamespace($projectCfg['runnamespace']);
+
+        $includes = self::getProjectIncludes($cachedKey , $project , true , $replace);
+        $projectData['applicationClassesNamespace'] = $projectCfg['namespace'];
+        $projectData['applicationRunNamespace'] = $projectCfg['runnamespace'];
+
+
+        $names = $project->getRootPanels();
+        $initCode = '';
+
+       /* $initCode = '
+		    var applicationClassesNamespace = "'.$projectCfg['namespace'].'";
+			var applicationRunNamespace = "'.$projectCfg['runnamespace'].'";
+		';
+       */
+
+        $initCode.= '';
+
+        if(!empty($names))
+        {
+
+           $renderTo = str_replace('-', '_', $renderTo);
+
+            $items = [];
+
+            foreach ($names as $name)
+            {
+                $items[] = Ext_Code::appendRunNamespace($name);
+            }
+
+
+            $initCode.= $renderTo.' = Ext.create("app.cls.ModuleWindow",{
+              items:['.implode(',',$items).']
+            });';
+        }
+
+//        $initCode.='
+//		             app.application.fireEvent("projectLoaded");
+//	    ';
+
+        if(!empty($includes))
+        {
+            foreach ($includes as $file)
+            {
+                if(File::getExt($file) == '.css')
+                {
+                    if(strpos($file , '?') === false){
+                        $file = $file .'?'. $cachedKey;
+                    }
+                    $projectData['includes']['css'][]=$file;
+                }else{
+
+                    if(strpos($file , '?') === false){
+                        $file = $file .'?'. $cachedKey;
+                    }
+                    $projectData['includes']['js'][]=$file;
+                }
+            }
+        }
+        $projectData['includes']['js'][] = Resource::getInstance()->cacheJs($initCode , true);
+        return $projectData;
+    }
+
 	/**
 	 * Gel list of JS files to include
 	 * (load and render designer project)

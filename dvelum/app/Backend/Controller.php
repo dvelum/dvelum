@@ -335,13 +335,36 @@ abstract class Backend_Controller extends Controller
     }
 
     /**
-     * Run Layout project
-     *
+     * Run designer project
      * @param string $project - path to project file
      */
     protected function _runDesignerProject($project , $renderTo = false)
     {
       $manager = new Designer_Manager($this->_configMain);
       $manager->renderProject($project , $renderTo);
+    }
+
+
+    /**
+     * Get desktop module info
+     */
+    protected function desktopModuleInfo()
+    {
+        $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
+        $moduleCfg = $modulesConfig->get($this->_module);
+
+        $info = [];
+
+        if(strlen($moduleCfg['designer']))
+        {
+            $manager = new Designer_Manager($this->_configMain);
+            $projectData =  $manager->compileDesktopProject($moduleCfg['designer'],'app.__modules.' . $this->_module);
+        }
+        else
+        {
+            if(file_exists($this->_configMain->get('jsPath').'app/system/crud/' . strtolower($this->_module) . '.js'))
+                $projectData['includes']['js'] = '/js/app/system/crud/' . strtolower($this->_module) .'.js';
+        }
+        return $projectData;
     }
 }

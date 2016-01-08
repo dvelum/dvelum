@@ -11,6 +11,25 @@ Ext.tip.QuickTipManager.init();
 Ext.data.DataReader.messageProperty = "msg";
 Ext.state.Manager.setProvider(new Ext.state.LocalStorageProvider());
 
+app.msgCt = false;
+app.createBox = function(t, s){
+	return '<div class="msg"><h3>' + t + '</h3><p>' + s + '</p></div>';
+};
+/**
+ * Application notification message
+ * @param title
+ * @param text
+ */
+app.msg = function(title ,  text){
+	if(!app.msgCt){
+		app.msgCt = Ext.core.DomHelper.insertFirst(document.body, {id:'msg-div'}, true);
+	}
+	var s = Ext.String.format.apply(String, Array.prototype.slice.call(arguments, 1));
+	var m = Ext.core.DomHelper.append(app.msgCt, app.createBox(title, s), true);
+	m.hide();
+	m.slideIn('t').ghost("t", { delay: 3000, remove: true});
+};
+
 /**
  * Model for ComboBox data using the fields: id - int, title - string fields
  */

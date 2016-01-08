@@ -89,32 +89,32 @@ class Resource
 		self::$_wwwRoot = $path;
 	}
 
-    /**
-     * Add javascript file to the contentent
-     *
-     * @param string $file- file path relate to document root
-     * @param integer $order  - include order
-     * @param boolean $minified - file already minified
-     * @param string $tag - file ident
-     */
-    public function addJs($file, $order = false, $minified = false, $tag = false)
-    {
-        if ($file[0] === '/')
-            $file = substr($file, 1);
+	/**
+	 * Add javascript file to the contentent
+	 *
+	 * @param string $file- file path relate to document root
+	 * @param integer $order  - include order
+	 * @param boolean $minified - file already minified
+	 * @param string $tag - file ident
+	 */
+	public function addJs($file, $order = false, $minified = false, $tag = false)
+	{
+		if ($file[0] === '/')
+			$file = substr($file, 1);
 
-        $hash = md5($file);
+		$hash = md5($file);
 
-        if($order === false)
-            $order = sizeof($this->_jsFiles);
+		if($order === false)
+			$order = sizeof($this->_jsFiles);
 
-        if(!isset($this->_jsFiles[$hash]))
-            $this->_jsFiles[$hash] = array(
-                'file' => $file,
-                'order' => $order,
-                'tag' => $tag,
-                'minified' => $minified
-            );
-    }
+		if(!isset($this->_jsFiles[$hash]))
+			$this->_jsFiles[$hash] = array(
+					'file' => $file,
+					'order' => $order,
+					'tag' => $tag,
+					'minified' => $minified
+			);
+	}
 
 	/**
 	 * Add css file to the contentent
@@ -123,8 +123,8 @@ class Resource
 	 */
 	public function addCss($file , $order = false)
 	{
-	    if($file[0] === '/')
-	        $file = substr($file, 1);
+		if($file[0] === '/')
+			$file = substr($file, 1);
 
 		$hash = md5($file);
 		if($order === false)
@@ -153,8 +153,8 @@ class Resource
 	 */
 	public function addJsRawFile($file)
 	{
-	    if($file[0] === '/')
-	        $file = substr($file, 1);
+		if($file[0] === '/')
+			$file = substr($file, 1);
 
 		if(! in_array($file , $this->_rawFiles , true))
 			$this->_rawFiles[] = $file;
@@ -177,35 +177,35 @@ class Resource
 	{
 		$this->_rawCss .= $script;
 	}
-   /**
-    * Include JS resources by tag
-    * @param boolean $useMin
-    * @param boolean $compile
-    * @param string $tag
-    * @return string
-    */
+	/**
+	 * Include JS resources by tag
+	 * @param boolean $useMin
+	 * @param boolean $compile
+	 * @param string $tag
+	 * @return string
+	 */
 	public function includeJsByTag($useMin = false , $compile = false , $tag = false)
 	{
-	  $s = '';
-	  $fileList = $this->_jsFiles;
+		$s = '';
+		$fileList = $this->_jsFiles;
 
-	  foreach ($fileList as $k=>$v)
-	      if($v['tag']!=$tag)
-	        unset($fileList[$k]);
-	  /*
-	   * javascript files
-	   */
-	  if(!empty($fileList))
-	  {
-	      $fileList = Utils::sortByField($fileList, 'order');
-          if($compile)
-              $s .= '<script type="text/javascript" src="' .  self::$_wwwRoot . $this->_compileJsFiles($fileList , $useMin) . '"></script>' . "\n";
-          else
-              foreach($fileList as $file)
-              $s .= '<script type="text/javascript" src="' .  self::$_wwwRoot . $file['file'] . '"></script>' . "\n";
-	  }
+		foreach ($fileList as $k=>$v)
+			if($v['tag']!=$tag)
+				unset($fileList[$k]);
+		/*
+         * javascript files
+         */
+		if(!empty($fileList))
+		{
+			$fileList = Utils::sortByField($fileList, 'order');
+			if($compile)
+				$s .= '<script type="text/javascript" src="' .  self::$_wwwRoot . $this->_compileJsFiles($fileList , $useMin) . '"></script>' . "\n";
+			else
+				foreach($fileList as $file)
+					$s .= '<script type="text/javascript" src="' .  self::$_wwwRoot . $file['file'] . '"></script>' . "\n";
+		}
 
-	  return $s;
+		return $s;
 	}
 	/**
 	 * Returns javascript source tags. Include order: Files , Raw , Inline
@@ -215,11 +215,11 @@ class Resource
 	 */
 	public function includeJs($useMin = false , $compile = false , $tag = false)
 	{
-	   $fileList = $this->_jsFiles;
+		$fileList = $this->_jsFiles;
 
-	   foreach ($fileList as $k=>$v)
-	     if($v['tag']!=$tag)
-	       unset($fileList[$k]);
+		foreach ($fileList as $k=>$v)
+			if($v['tag']!=$tag)
+				unset($fileList[$k]);
 
 		$s = '';
 		/*
@@ -235,32 +235,42 @@ class Resource
 		 */
 		if(strlen($this->_rawJs))
 		{
-			$hash = md5($this->_rawJs);
-			$cacheFile = $hash . '.js';
-			$cacheFile = Utils::createCachePath(self::$_jsCachePath , $cacheFile);
-
-			if(!file_exists($cacheFile))
-			{
-				if($useMin)
-					$this->_rawJs = Code_Js_Minify::minify($this->_rawJs);
-
-				file_put_contents($cacheFile, $this->_rawJs);
-			}
-			$cachePath = str_replace(self::$_jsCachePath, self::$_wwwRoot . self::$_jsCacheUrl , $cacheFile);
-
-			$s .= '<script type="text/javascript" src="' . $cachePath . '"></script>' . "\n";
+			$s .= '<script type="text/javascript" src="' . $this->cacheJs($this->_rawJs) . '"></script>' . "\n";
 		}
 		/*
 		 * Inline javascript
 		 */
 		if(!empty($this->_inlineJs))
 		{
-		  // it's too expensive
+			// it's too expensive
 			//if($useMin)
 			//	$this->_inlineJs = Code_Js_Minify::minify($this->_inlineJs);
 			$s .= '<script type="text/javascript">' . "\n" . $this->_inlineJs . "\n" . ' </script>' . "\n";
 		}
 		return $s;
+	}
+
+	/**
+	 * Create cache file for JS code
+	 * @param string $code
+     * @param boolean $minify, optional default false
+     * @return string - file url
+	 */
+	public function cacheJs($code , $minify = false)
+	{
+        $hash = md5($code);
+        $cacheFile = $hash . '.js';
+        $cacheFile = Utils::createCachePath(self::$_jsCachePath , $cacheFile);
+
+        if(!file_exists($cacheFile))
+        {
+            if($minify)
+                $code = Code_Js_Minify::minify($code);
+
+            file_put_contents($cacheFile, $code);
+        }
+
+        return str_replace(self::$_jsCachePath, self::$_wwwRoot . self::$_jsCacheUrl , $cacheFile);
 	}
 
 	/**
@@ -289,7 +299,7 @@ class Resource
 			$paramsPos = strpos($fileName , '?' , true);
 
 			if($paramsPos!==false){
-			    $fileName = substr($fileName, 0 , $paramsPos);
+				$fileName = substr($fileName, 0 , $paramsPos);
 			}
 
 			$content = file_get_contents(self::$_wwwPath . '/' . $fileName);
@@ -325,11 +335,11 @@ class Resource
 		$dataHash = '';
 		foreach($array as $file)
 		{
-		    $paramsPos = strpos($file , '?' , true);
-		    if($paramsPos!==false)
-		    {
-		      $file = substr($file, 0 , $paramsPos);
-		    }
+			$paramsPos = strpos($file , '?' , true);
+			if($paramsPos!==false)
+			{
+				$file = substr($file, 0 , $paramsPos);
+			}
 			$dataHash .= $file . ':' . filemtime(self::$_wwwPath . '/' . $file);
 		}
 		if(self::$_cache)
@@ -340,17 +350,17 @@ class Resource
 		return md5($dataHash);
 	}
 
-    /**
-     * Get html code for css files include
-     * @return string
-     */
+	/**
+	 * Get html code for css files include
+	 * @return string
+	 */
 	public function includeCss()
 	{
 		$s = '';
 
 		if(!empty($this->_cssFiles))
 		{
-		    $this->_cssFiles = Utils::sortByField($this->_cssFiles, 'order');
+			$this->_cssFiles = Utils::sortByField($this->_cssFiles, 'order');
 
 			foreach($this->_cssFiles as $k => $v)
 				$s .= '<link rel="stylesheet" type="text/css" href="' . self::$_wwwRoot . $v['file'] . '" />' . "\n";

@@ -3,7 +3,9 @@ class Backend_Index_Controller extends Backend_Controller
 {  
     public function indexAction()
     {
-    	$this->_resource->addJs('js/app/system/crud/index.js', 4);
+        if($this->_configBackend->get('theme') !=='desktop'){
+            $this->_resource->addJs('js/app/system/crud/index.js', 4);
+        }
     }
 
     public function listAction()
@@ -41,5 +43,39 @@ class Backend_Index_Controller extends Backend_Controller
 
         }
         Response::jsonSuccess(array_merge($result,$devItems));
+    }
+
+    /**
+     * Get module info
+     */
+    public function moduleInfoAction()
+    {
+        $module = Request::post('id' , Filter::FILTER_STRING , false);
+
+        $manager = new Modules_Manager();
+        $moduleCfg = $manager->getModuleConfig($module);
+
+        $info = [];
+
+        if(!$module || !$this->_user->canView($module) || !$moduleCfg['active']){
+            Response::jsonError($this->_lang->get('CANT_VIEW'));
+        }
+
+        $controller = $moduleCfg['class'];
+
+        if(!class_exists($controller)){
+            Response::jsonError('Undefined controller');
+        }
+
+        $controller = new $controller();
+
+        if(method_exists($controller,'desktopModuleInfo')){
+            $info['layout'] = $controller->desktopModuleInfo();
+        }else{
+            $info['layout'] = false;
+        }
+
+        $info['permissions'] = $this->_user->getModulePermissions($module);
+        Response::jsonSuccess($info);
     }
 }

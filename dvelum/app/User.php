@@ -304,9 +304,24 @@ class User
 
             return $this->_permissions;
         }else{
-            return array();
+            return [];
         }
     }
+
+	/**
+	 * Get module permissions
+	 * @param $module
+	 * @return bool | []
+	 */
+	public function getModulePermissions($module)
+	{
+		$permissions = $this->getPermissions();
+		if(isset($permissions[$module])){
+			return $permissions[$module];
+		}else{
+			return false;
+		}
+	}
 	
 	/**
      * Load user permissions

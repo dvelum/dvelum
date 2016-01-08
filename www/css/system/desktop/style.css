@@ -1,0 +1,16 @@
+.menu-item-wrap{
+    float:left;
+    width: 150px;
+    height:100px;
+    border:1px solid #ccc;
+    padding:3px;
+    margin:5px;
+    cursor:pointer;
+    border-radius: 2px;
+}
+
+.menu-item-over{
+    border-color:transparent;
+    box-shadow:0 0 8px 2px #ccc;
+    transition:box-shadow 0.6s ease 0s, border-color 0.6s ease 0s;
+}

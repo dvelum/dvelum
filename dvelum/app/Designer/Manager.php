@@ -21,110 +21,121 @@
  */
 class Designer_Manager
 {
-  /**
-   * Application configuration
-   * @var Config_Abstract
-   */
-  protected $_appConfig;
-  /**
-   * Designer configuration
-   * @var Config_Abstract
-   */
-  protected $_designerConfig; 
-  
-  public function __construct(Config_Abstract $appConfig)
-  {
-     $this->_appConfig = $appConfig;
-     $this->_designerConfig = Config::storage()->get('designer.php');
-  }
-  
-  /**
-   * Render Designer project
-   * @param string $projectFile - file path
-   * @param string $renderTo - optional, default false (html tag id)
-   */
-  public function renderProject($projectFile , $renderTo = false)
-  {
-     $replaces = $this->getReplaceConfig();
-     Designer_Factory::runProject($projectFile , $this->_designerConfig , $replaces , $renderTo);
-  }
- /**
-  * Get Designer projects tree list
-  */
-  public function  getProjectsList($node = '')
-  {
-      $paths = Config::storage()->getPaths();
-      $cfgPath = $this->_designerConfig->get('configs');
+    /**
+     * Application configuration
+     * @var Config_Abstract
+     */
+    protected $_appConfig;
+    /**
+     * Designer configuration
+     * @var Config_Abstract
+     */
+    protected $_designerConfig;
 
-      $list = array();
-      $ret = array();
+    public function __construct(Config_Abstract $appConfig)
+    {
+        $this->_appConfig = $appConfig;
+        $this->_designerConfig = Config::storage()->get('designer.php');
+    }
 
-      // In accordance with configs merge priority
-      rsort($paths);
+    /**
+     * Render Designer project
+     * @param string $projectFile - file path
+     * @param string | boolean $renderTo - optional, default false (html tag id)
+     */
+    public function renderProject($projectFile , $renderTo = false)
+    {
+        $replaces = $this->getReplaceConfig();
+        Designer_Factory::runProject($projectFile , $this->_designerConfig , $replaces , $renderTo);
+    }
 
-      foreach($paths as $path)
-      {
-          $nodePath = str_replace('//', '/', $path.$cfgPath.$node);
+    /**
+     * Compile designer project and return info (script paths, namespaces)
+     * @param $projectFile
+     * @param bool|false $renderTo
+     */
+    public function compileDesktopProject($projectFile , $renderTo = false)
+    {
+        $replaces = $this->getReplaceConfig();
+        return Designer_Factory::compileDesktopProject($projectFile , $this->_designerConfig , $replaces , $renderTo);
+    }
+    /**
+     * Get Designer projects tree list
+     */
+    public function  getProjectsList($node = '')
+    {
+        $paths = Config::storage()->getPaths();
+        $cfgPath = $this->_designerConfig->get('configs');
 
-          if(!file_exists($nodePath))
-              continue;
+        $list = array();
+        $ret = array();
 
-          $items = File::scanFiles($nodePath , array('.dat'), false, File::Files_Dirs);
+        // In accordance with configs merge priority
+        rsort($paths);
 
-          if(!empty($items))
-          {
-              foreach ($items as $p)
-              {
-                  $baseName = basename($p);
+        foreach($paths as $path)
+        {
+            $nodePath = str_replace('//', '/', $path.$cfgPath.$node);
 
-                  if(!isset($list[$baseName])){
-                      $obj = new stdClass();
-                      $obj->id = str_replace($path.$cfgPath, '/', $p);
-                      $obj->path = str_replace($nodePath.$cfgPath, '/', $p);
-                      $obj->text = $baseName;
+            if(!file_exists($nodePath))
+                continue;
 
-                      if(is_dir($p))
-                      {
-                          $obj->expanded = false;
-                          $obj->leaf = false;
-                      }
-                      else
-                      {
-                          $obj->leaf = true;
-                      }
-                      $list[$baseName] = $obj;
-                  }
-              }
-          }
-      }
+            $items = File::scanFiles($nodePath , array('.dat'), false, File::Files_Dirs);
 
-      ksort($list);
-      foreach($list as $p)
-          $ret[] = $p;
+            if(!empty($items))
+            {
+                foreach ($items as $p)
+                {
+                    $baseName = basename($p);
 
-      return $ret;
-  }
-  
-  /**
-   * Get configuration of code templates (for replacing)
-   * @return array
-   */
-  public function getReplaceConfig()
-  {
-     $templates =  $this->_designerConfig->get('templates');
-     return array(
-        array(
-                        'tpl' => $templates['wwwroot'],
-                        'value' => $this->_appConfig->get('wwwroot')
-        ),
-        array(
-                        'tpl' => $templates['adminpath'],
-                        'value' => $this->_appConfig->get('adminPath')
-        ),
-        array(
-                        'tpl' => $templates['urldelimiter'],
-                        'value' => $this->_appConfig->get('urlDelimiter')
-        )
-     );
-  }
+                    if(!isset($list[$baseName])){
+                        $obj = new stdClass();
+                        $obj->id = str_replace($path.$cfgPath, '/', $p);
+                        $obj->path = str_replace($nodePath.$cfgPath, '/', $p);
+                        $obj->text = $baseName;
+
+                        if(is_dir($p))
+                        {
+                            $obj->expanded = false;
+                            $obj->leaf = false;
+                        }
+                        else
+                        {
+                            $obj->leaf = true;
+                        }
+                        $list[$baseName] = $obj;
+                    }
+                }
+            }
+        }
+
+        ksort($list);
+        foreach($list as $p)
+            $ret[] = $p;
+
+        return $ret;
+    }
+
+    /**
+     * Get configuration of code templates (for replacing)
+     * @return array
+     */
+    public function getReplaceConfig()
+    {
+        $templates =  $this->_designerConfig->get('templates');
+        return array(
+            array(
+                'tpl' => $templates['wwwroot'],
+                'value' => $this->_appConfig->get('wwwroot')
+            ),
+            array(
+                'tpl' => $templates['adminpath'],
+                'value' => $this->_appConfig->get('adminPath')
+            ),
+            array(
+                'tpl' => $templates['urldelimiter'],
+                'value' => $this->_appConfig->get('urlDelimiter')
+            )
+        );
+    }
 }
