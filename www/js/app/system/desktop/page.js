@@ -7,9 +7,9 @@ var permissions = app.loader.getPermissions('Page');
 if(permissions){
 
     app.__modules['Page'] = Ext.create('app.cls.ModuleWindow',{
+        title:appLang.MODULE_SITE_STRUCTURE,
         items:[
             Ext.create('app.crud.page.Panel',{
-                title:appLang.MODULE_SITE_STRUCTURE,
                 canEdit: permissions.edit,
                 canPublish: permissions.publish,
                 canDelete: permissions.delete,

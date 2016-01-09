@@ -24,7 +24,7 @@ Ext.define('app.cls.moduleLoader',{
 
                         if(!Ext.isEmpty(response.data.layout.includes)){
                             me.loadScripts(response.data.layout.includes,function(){
-                                me.showModule(data.id, data.title);
+                                me.showModule(data.id);
                             });
                         }
 
@@ -94,10 +94,12 @@ Ext.define('app.cls.moduleLoader',{
             });
         },me);
     },
-    showModule:function(id , title){
+    showModule:function(id){
         if(!Ext.isEmpty(app.__modules[id])) {
             var win = app.__modules[id];
-           // win.setTitle(title);
+            if(!Ext.isEmpty(this.modules[id].isDesigner)){
+                win.setTitle(this.modules[id].title);
+            }
             win.show().toFront();
         }else{
             app.msg(appLang.ERROR,appLang.CANT_EXEC);
@@ -128,6 +130,8 @@ Ext.define('app.cls.menuPanel',{
     trackOver: true,
     itemSelector: 'div.menu-item-wrap',
     overItemCls: 'menu-item-over',
+    width: '80%',
+    height: '90%',
     initComponent:function(){
         this.store =  Ext.create('Ext.data.Store', {
                 fields: [
@@ -179,7 +183,11 @@ Ext.application({
         app.viewport = Ext.create('Ext.container.Viewport', {
             cls:'formBody',
             layout: 'fit',
-            items:[app.menu]
+            items:[{
+                xtype:'container',
+                layout:'center',
+                items:app.menu
+            }]
         });
     }
 });

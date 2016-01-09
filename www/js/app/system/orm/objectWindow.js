@@ -25,7 +25,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			modal: false,
 			layout:'fit',
 			width: app.checkWidth(700),
-			height:app.checkHeight(530),
+			height:app.checkHeight(550),
 			closeAction: 'destroy'
 		}, config || {});
 

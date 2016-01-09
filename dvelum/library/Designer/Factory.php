@@ -186,17 +186,9 @@ class Designer_Factory
         $projectData['applicationClassesNamespace'] = $projectCfg['namespace'];
         $projectData['applicationRunNamespace'] = $projectCfg['runnamespace'];
 
-
         $names = $project->getRootPanels();
+
         $initCode = '';
-
-       /* $initCode = '
-		    var applicationClassesNamespace = "'.$projectCfg['namespace'].'";
-			var applicationRunNamespace = "'.$projectCfg['runnamespace'].'";
-		';
-       */
-
-        $initCode.= '';
 
         if(!empty($names))
         {
@@ -205,8 +197,18 @@ class Designer_Factory
 
             $items = [];
 
+            $c=0;
             foreach ($names as $name)
             {
+                // hide first panel title
+				if($c==0)
+                {
+                    $panel = $project->getObject($name);
+                    if($panel->isValidProperty('title') && !empty($panel->title)){
+                        $panel->title = '';
+                    }
+                    $c++;
+				}
                 $items[] = Ext_Code::appendRunNamespace($name);
             }
 

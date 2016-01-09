@@ -17,13 +17,13 @@ if(!defined('DVELUM'))exit;
 	else
 	    $res->addJs('/js/lib/ext6/build/ext-all.js', 2 , true , 'head');
 
-	$res->addJs('/js/lib/ext6/build/theme-gray/theme-gray.js', 3 , true , 'head');
+	$res->addJs('/js/lib/ext6/build/theme-crisp/theme-crisp.js', 3 , true , 'head');
 
 	$res->addJs('/js/lib/ext6/build/locale/locale-'.$this->get('lang').'.js', 4 , true , 'head');
 
 	$res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');
 
-    $res->addCss('/js/lib/ext6/build/theme-gray/resources/theme-gray-all.css' , 1);
+    $res->addCss('/js/lib/ext6/build/theme-crisp/resources/theme-crisp-all.css' , 1);
     $res->addCss('/css/system/style.css' , 2);
 	$res->addCss('/css/system/'.$theme.'/style.css' , 3);
 

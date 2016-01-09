@@ -7,10 +7,23 @@
     margin:5px;
     cursor:pointer;
     border-radius: 2px;
+    background-color: #FFF;
 }
 
 .menu-item-over{
     border-color:transparent;
     box-shadow:0 0 8px 2px #ccc;
     transition:box-shadow 0.6s ease 0s, border-color 0.6s ease 0s;
+}
+
+body{
+    background-color: #F0F0F0;
+}
+
+.formBody{
+    background-color: #F0F0F0;
+}
+
+.x-toolbar{
+    background-color: #F0F0F0;
 }

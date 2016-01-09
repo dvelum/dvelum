@@ -157,7 +157,6 @@ class Backend_Orm_Controller extends Backend_Controller
              $data[] = array(
                 'name'=>$objectName,
 			 	'table'=>$objectTable,
-             	//'title'=>$config['title'],
                 'engine'=>$config['engine'],
                 'vc'=>$config['rev_control'],
                 'fields'=>sizeof($config['fields']),
