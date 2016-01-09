@@ -22,6 +22,7 @@ class Backend_Tasks_Controller extends Backend_Controller
         	var canEdit = '.($this->_user->canEdit($this->_module)).';
         	var canDelete = '.($this->_user->canDelete($this->_module)).';
         ');
+		$this->_resource->addJs('/js/app/system/Tasks.js', 4);
         $this->_resource->addJs('/js/app/system/crud/'.strtolower($this->_module).'.js', 4);
     }
     

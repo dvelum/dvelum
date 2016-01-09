@@ -1,5 +1,16 @@
 <?php
-class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc{
+class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc
+{
+    /**
+     * (non-PHPdoc)
+     *
+     * @see Backend_Controller::indexAction()
+     */
+    public function indexAction()
+    {
+        $this->_resource->addJs('/js/app/system/Blocks.js' , true , 1);
+        parent::indexAction();
+    }
 
     public function listAction()
     {           	

@@ -4,7 +4,9 @@ class Backend_Cache_Controller extends Backend_Controller_Crud
 	public function indexAction()
 	{
 		parent::indexAction();
-		
+
+		$this->_resource->addJs('/js/app/system/Cache.js' , true , 1);
+
 		$this->_resource->addInlineJs('
 	        	var canEdit = '.($this->_user->canEdit($this->_module)).';
 	        	var canDelete = '.($this->_user->canDelete($this->_module)).';

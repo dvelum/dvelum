@@ -54,6 +54,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $res->addJs('/js/lib/uml/joint.js'  , 4);
         $res->addJs('/js/lib/uml/joint.dia.js'  , 5);
         $res->addJs('/js/lib/uml/joint.dia.uml.js'  , 6);
+        $res->addJs('/js/app/system/crud/orm.js', 7);
     }
 
 

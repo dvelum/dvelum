@@ -75,6 +75,7 @@ class Backend_Reports_Controller extends Backend_Controller
 	    $res->addJs('/js/app/system/report/config.js', 1);
 	    $res->addJs('/js/app/system/report/results.js', 1);
 	    $res->addJs('/js/app/system/report/record.js', 1);
+		$res->addJs('/js/app/system/Reports.js', 1);
 	    $res->addJs('/js/app/system/crud/reports.js', 2);
 	}
 	/**

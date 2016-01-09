@@ -4,7 +4,8 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
 
 	public function indexAction()
 	{
-        $this->_resource->addJs('/js/app/system/crud/'.strtolower($this->_module).'.js'  , 4);
+		$this->_resource->addJs('/js/app/system/Mediaconfig.js'  , 4);
+        $this->_resource->addJs('/js/app/system/crud/mediaconfig.js'  , 5);
 
          $this->_resource->addInlineJs('
         	var canEdit = '.((boolean)$this->_user->canEdit($this->_module)).';

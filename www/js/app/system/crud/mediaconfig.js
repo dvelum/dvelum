@@ -3,7 +3,8 @@ Ext.onReady(function(){
 	var dataPanel = Ext.create('app.crud.mediaconfig.Main',{
 		title:appLang.MODULE_MEDIACONFIG,
 		canEdit:canEdit,
-		canDelete:canDelete
+		canDelete:canDelete,
+		controllerUrl:app.root
 	});
 	app.content.add(dataPanel);
 });

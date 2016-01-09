@@ -60,6 +60,44 @@ Ext.define('app.crud.orm.Main',{
 	isSystemField:null,
 
 	initComponent:function(){
+
+        app.crud.orm.Actions = {
+            addDictionary:		this.controllerUrl  + 'adddictionary',
+            listDictionaries:	this.controllerUrl  + 'listdictionaries',
+            updateDictionary:	this.controllerUrl  + 'updatedictionary',
+            removeDictionary:	this.controllerUrl  + 'removedictionary',
+            listObj: 			this.controllerUrl  + 'list',
+            listObjFields: 		this.controllerUrl  + 'fields',
+            listObjIndexes: 	this.controllerUrl  + 'indexes',
+            listBackups: 		this.controllerUrl  + 'listbackups',
+            listAcl:			this.controllerUrl  + 'listacl',
+            loadObjCfg: 		this.controllerUrl  + 'load',
+            loadObjField: 		this.controllerUrl  + 'loadfield',
+            loadObjIndex: 		this.controllerUrl  + 'loadindex',
+            makeBackUp: 		this.controllerUrl  + 'makebackup',
+            removeBackUp:		this.controllerUrl  + 'removebackup',
+            removeObject:		this.controllerUrl  + 'removeobject',
+            restoreBackup: 		this.controllerUrl  + 'restorebackup',
+            saveObjCfg: 		this.controllerUrl  + 'save',
+            saveObjField: 		this.controllerUrl  + 'savefield',
+            saveObjIndex:	 	this.controllerUrl  + 'saveindex',
+            deleteIndex: 		this.controllerUrl  + 'deleteindex',
+            deleteField:	 	this.controllerUrl  + 'deletefield',
+            validateObject: 	this.controllerUrl  + 'validate',
+            buildObject:		this.controllerUrl  + 'build',
+            buildAllObjects:	this.controllerUrl  + 'buildall',
+            builderLog:			app.createUrl([this.controllerUrl + 'log','']),
+            dictionary:			app.createUrl([this.controllerUrl + 'dictionary','']),
+            listValidators:		app.createUrl([this.controllerUrl + 'listvalidators','']),
+            dataViewController: app.createUrl([this.controllerUrl + 'dataview','']),
+            connectionsUrl:		app.createUrl([this.controllerUrl + 'connections','']),
+            listConnections:	app.createUrl([this.controllerUrl + 'connectionslist','']),
+            importUrl:			app.createUrl([this.controllerUrl + 'import','']),
+            encryptData:		this.controllerUrl  + 'encryptdata',
+            decryptData:		this.controllerUrl  + 'decryptdata',
+            taskStat:			this.controllerUrl  + 'taskstat'
+        };
+
 		this.tbar = [];
 		this.dataStore = Ext.create('Ext.data.Store', {
 			model: 'app.crud.orm.ObjectsModel',
@@ -559,45 +597,5 @@ Ext.define('app.crud.orm.Main',{
 		}).show();
 	}
 });
-
-app.crud.orm.ModuleUrl = app.createUrl([app.admin,'orm','']);
-app.crud.orm.Actions = {
-	addDictionary:		app.crud.orm.ModuleUrl  + 'adddictionary',
-	listDictionaries:	app.crud.orm.ModuleUrl  + 'listdictionaries',
-	updateDictionary:	app.crud.orm.ModuleUrl  + 'updatedictionary',
-	removeDictionary:	app.crud.orm.ModuleUrl  + 'removedictionary',
-	listObj: 			app.crud.orm.ModuleUrl  + 'list',
-	listObjFields: 		app.crud.orm.ModuleUrl  + 'fields',
-	listObjIndexes: 	app.crud.orm.ModuleUrl  + 'indexes',
-	listBackups: 		app.crud.orm.ModuleUrl  + 'listbackups',
-	listAcl:			app.crud.orm.ModuleUrl  + 'listacl',
-	loadObjCfg: 		app.crud.orm.ModuleUrl  + 'load',
-	loadObjField: 		app.crud.orm.ModuleUrl  + 'loadfield',
-	loadObjIndex: 		app.crud.orm.ModuleUrl  + 'loadindex',
-	makeBackUp: 		app.crud.orm.ModuleUrl  + 'makebackup',
-	removeBackUp:		app.crud.orm.ModuleUrl  + 'removebackup',
-	removeObject:		app.crud.orm.ModuleUrl  + 'removeobject',
-	restoreBackup: 		app.crud.orm.ModuleUrl  + 'restorebackup',
-	saveObjCfg: 		app.crud.orm.ModuleUrl  + 'save',
-	saveObjField: 		app.crud.orm.ModuleUrl  + 'savefield',
-	saveObjIndex:	 	app.crud.orm.ModuleUrl  + 'saveindex',
-	deleteIndex: 		app.crud.orm.ModuleUrl  + 'deleteindex',
-	deleteField:	 	app.crud.orm.ModuleUrl  + 'deletefield',
-	validateObject: 	app.crud.orm.ModuleUrl  + 'validate',
-	buildObject:		app.crud.orm.ModuleUrl  + 'build',
-	buildAllObjects:	app.crud.orm.ModuleUrl  + 'buildall',
-	builderLog:			app.createUrl([app.crud.orm.ModuleUrl + 'log','']),
-	dictionary:			app.createUrl([app.crud.orm.ModuleUrl + 'dictionary','']),
-	listValidators:		app.createUrl([app.crud.orm.ModuleUrl + 'listvalidators','']),
-	dataViewController: app.createUrl([app.crud.orm.ModuleUrl + 'dataview','']),
-	connectionsUrl:		app.createUrl([app.crud.orm.ModuleUrl + 'connections','']),
-	listConnections:	app.createUrl([app.crud.orm.ModuleUrl + 'connectionslist','']),
-	importUrl:			app.createUrl([app.crud.orm.ModuleUrl + 'import','']),
-	encryptData:		app.crud.orm.ModuleUrl  + 'encryptdata',
-	decryptData:		app.crud.orm.ModuleUrl  + 'decryptdata',
-	taskStat:			app.crud.orm.ModuleUrl  + 'taskstat'
-};
-app.crud.orm.dbConfigs = dbConfigsList;
-app.crud.orm.foreignKeys = useForeignKeys;
 
 

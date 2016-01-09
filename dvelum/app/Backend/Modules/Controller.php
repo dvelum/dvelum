@@ -13,10 +13,14 @@ class Backend_Modules_Controller extends Backend_Controller{
 		 $res->addJs('/js/app/system/IconField.js'  , 1);
 		 $res->addJs('/js/app/system/HistoryPanel.js'  , 1);
 		 $res->addJs('/js/app/system/EditWindow.js'  , 1);
+
+		 $res->addJs('/js/app/system/Modules.js'  , 1);
+		 $res->addJs('/js/app/system/crud/modules.js'  , 2);
 	       $this->_resource->addInlineJs('
         	var canEdit = '.((integer)$this->_user->canEdit($this->_module)).';
         	var canDelete = '.((integer)$this->_user->canDelete($this->_module)).';
         ');
+		 parent::indexAction();
     }
     
     /**

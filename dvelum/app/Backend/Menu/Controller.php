@@ -19,9 +19,10 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
 
         $this->_resource->addJs('/js/app/system/SearchPanel.js', 0);          
         $this->_resource->addJs('/js/app/system/HistoryPanel.js', 0);
-        $this->_resource->addJs('/js/app/system/EditWindow.js' , 0);    
-        
-        $this->_resource->addJs('/js/app/system/crud/'.strtolower($this->_module).'.js', 4);         
+        $this->_resource->addJs('/js/app/system/EditWindow.js' , 0);
+
+         $this->_resource->addJs('/js/app/system/Menu.js' , 3);
+         $this->_resource->addJs('/js/app/system/crud/menu.js', 4);
     } 
     
 	/**

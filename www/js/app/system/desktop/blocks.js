@@ -5,7 +5,6 @@ if(permissions){
         title:appLang.BLOCKS,
 		items:[
 			Ext.create('app.crud.blocks.Main',{
-
 				canEdit: permissions.edit,
 				canDelete: permissions.delete,
                 canPublish: permissions.publish,
