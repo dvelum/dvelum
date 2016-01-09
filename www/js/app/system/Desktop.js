@@ -146,7 +146,7 @@ Ext.define('app.cls.menuPanel',{
         this.tpl= [
                 '<tpl for=".">',
                 '<div class="menu-item-wrap">',
-                    '<div class="thumb"><img src="{icon}" title="{title}" /><br><span>{title:htmlEncode}</span></div>',
+                    '<div class="thumb"><img src="{icon}" title="{title}" /></div><span>{title:htmlEncode}</span>',
                 '</div>',
                 '</tpl>'
         ];

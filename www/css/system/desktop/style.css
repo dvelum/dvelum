@@ -1,13 +1,14 @@
 .menu-item-wrap{
     float:left;
-    width: 150px;
-    height:100px;
+    width: 120px;
+    height:120px;
     border:1px solid #ccc;
-    padding:3px;
+    padding: 15px 5px 15px 5px;
     margin:5px;
     cursor:pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     background-color: #FFF;
+    text-align: center;
 }
 
 .menu-item-over{
