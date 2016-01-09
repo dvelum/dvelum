@@ -5,7 +5,11 @@ Ext.manifest = { // the same content as "app.json"
 	}
 }
 
-Ext.Loader.setConfig({enabled: false,disableCaching:false});
+Ext.Loader.setConfig({
+	enabled: false,
+    disableCaching:true
+});
+
 Ext.ns('app');
 Ext.tip.QuickTipManager.init();
 Ext.data.DataReader.messageProperty = "msg";
@@ -684,6 +688,15 @@ Ext.Ajax.on('beforerequest', function(connection, options) {
 		submitEmptyText: false
 	});
 })();
+/**
+ * Override store filter param
+ */
+(function() {
+    Ext.override(Ext.data.proxy.Ajax, {
+        filterParam: 'storefilter'
+    });
+})();
+
 /*
  * Adds support for CSRF protection token to ExtJS' Ext.form.Basic fileupload actions
  */

@@ -379,7 +379,7 @@ class Request
     * @param string $method
     * @return array
     */
-    static public function extFilters($container = 'filter' , $method = 'POST')
+    static public function extFilters($container = 'storefilter' , $method = 'POST')
     {
         $result = [];
 
@@ -389,11 +389,11 @@ class Request
             $filter = self::get($container, 'raw', []);
         }
 
-        if(empty($filter)){
+        if(empty($filter))
             return [];
-        }
 
-        $filter = json_decode($filter , true);
+        if(is_string($filter))
+            $filter = json_decode($filter , true);
 
         $operators = [
             'gt' => Db_Select_Filter::GT,

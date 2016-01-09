@@ -347,8 +347,11 @@ class Ext_Grid extends Ext_Object
 			}
 		}
 		
-		if($this->hasFilters()){
-            $plugins[] = "'gridfilters'";
+        if($this->hasFilters()){
+			$plugins[] = '{'."\n".
+					"\t".'ptype: "gridfilters",'. "\n".
+					"\t".'pluginId:"gridfilters"'."\n".
+			'}';
         }
 		
 		if(isset($this->_advancedPropertyValues['summary']) && $this->_advancedPropertyValues['summary'])
