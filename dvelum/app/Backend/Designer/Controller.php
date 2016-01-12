@@ -95,8 +95,8 @@ class Backend_Designer_Controller extends Backend_Controller
 		'/js/app/system/FilesystemWindow.js',
 		
 		'/js/app/system/orm/connections.js',
-		
-	
+
+
 		'/js/app/system/crud/designer.js',
 
 	);
@@ -111,8 +111,12 @@ class Backend_Designer_Controller extends Backend_Controller
 	
 	public function indexAction()
 	{
-		$backendConfig = Config::storage()->get('backend.php');
-		$backendConfig->set('theme' , $this->_config->get('theme'));
+        // change theme
+        $designerTheme = $this->_config->get('theme');
+        $this->_configBackend->set('theme' , $designerTheme);
+        $page = Page::getInstance();
+        $page->setTemplatesPath($this->_configMain->get('templates'). 'system/' . $designerTheme. '/');
+
 
 		$this->_resource->addJs('/js/lib/jquery.js'  , 1);
 		Model::factory('Medialib')->includeScripts();

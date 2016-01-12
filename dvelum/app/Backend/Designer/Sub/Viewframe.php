@@ -9,6 +9,14 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		}
 
 		$designerConfig = Config::storage()->get('designer.php');
+        $backendConfig = Config::storage()->get('backend.php');
+
+        // change theme
+		$designerTheme = $designerConfig->get('application_theme');
+        $backendConfig->set('theme' , $designerTheme);
+		$page = Page::getInstance();
+		$page->setTemplatesPath($this->_configMain->get('templates'). 'system/' . $designerTheme. '/');
+
 
 		$res = Resource::getInstance();
 		$res->addJs('/js/lib/jquery.js'  , 0);

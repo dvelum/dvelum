@@ -11,6 +11,10 @@
     text-align: center;
 }
 
+.menu-item-wrap img{
+    padding: 0 0 5px 0;
+}
+
 .menu-item-over{
     border-color:transparent;
     box-shadow:0 0 8px 2px #ccc;

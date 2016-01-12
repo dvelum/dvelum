@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * The class is used for collecting the properties of 
- * the page being displayed. The “Singleton” pattern 
- * being implemented, it may be called just once from 
+ * The class is used for collecting the properties of
+ * the page being displayed. The “Singleton” pattern
+ * being implemented, it may be called just once from
  * anywhere within the application.
  *
  */
@@ -27,8 +27,8 @@ class Page
 {
 	protected static $_instance;
 	/**
-     * @var Externals_Expert
-     */
+	 * @var Externals_Expert
+	 */
 	protected $_externalsExpert = false;
 	public $title = '';
 	public $html_title = '';
@@ -38,9 +38,9 @@ class Page
 	public $meta_keywords = '';
 	public $theme = 'default';
 	protected $_ogData = array(
-			'image' => '' , 
-			'title' => '' , 
-			'description' => '' , 
+			'image' => '' ,
+			'title' => '' ,
+			'description' => '' ,
 			'url' => ''
 	);
 
@@ -53,85 +53,94 @@ class Page
 	}
 
 	/**
-     * Get Object Instance (Singleton)
-     * @return Page
-     */
+	 * Get Object Instance (Singleton)
+	 * @return Page
+	 */
 	static public function getInstance()
 	{
 		if(!isset(self::$_instance))
 			self::$_instance = new self();
-		
+
 		return self::$_instance;
 	}
 
 	/**
-     * Define Open Graph property
-     * @param string $key
-     * @param string $value
-     */
+	 * Define Open Graph property
+	 * @param string $key
+	 * @param string $value
+	 */
 	public function setOgProperty($key , $value)
 	{
 		$this->_ogData[$key] = $value;
 	}
 
 	/**
-     * Define Externals expert adapter
-     * @param Externals_Expert $expert
-     */
+	 * Define Externals expert adapter
+	 * @param Externals_Expert $expert
+	 */
 	public function setExternalsExpert(Externals_Expert $expert)
 	{
 		$this->_externalsExpert = $expert;
 	}
 
 	/**
-     * Generate meta tags with Open Graph metadata
-     * @return string
-     */
+	 * Generate meta tags with Open Graph metadata
+	 * @return string
+	 */
 	public function getOgMeta()
 	{
 		$s = '';
 		foreach($this->_ogData as $key => $value)
 			if(strlen($value))
 				$s .= '<meta property="og:' . $key . '" content="' . $value . '"/>';
-		
+
 		return $s;
 	}
 
 	/**
-     * Set templates directory
-     * @param string $path
-     */
+	 * Set templates directory
+	 * @param string $path
+	 */
 	public function setTemplatesPath($path)
 	{
 		$this->_templatesPath = $path;
 	}
 
 	/**
-     * Get path to the folder with current theme templates
-     * @return string
-     */
+	 * Get templates directory
+	 * @return string
+	 */
+	public function getTemplatesPath()
+	{
+		return $this->_templatesPath;
+	}
+
+	/**
+	 * Get path to the folder with current theme templates
+	 * @return string
+	 */
 	public function getThemePath()
 	{
-	   /*
-    	* Check for external themes
-    	*/
+		/*
+         * Check for external themes
+         */
 		if($this->_externalsExpert)
 		{
 			$themes = $this->_externalsExpert->getThemes();
 			if(isset($themes[$this->theme]))
 				return $themes[$this->theme];
 		}
-		
+
 		return $this->_templatesPath . $this->theme . '/';
 	}
 
 	/**
-     * Get template path
+	 * Get template path
 	 * The template is to searched for in the theme folder.
 	 * Otherwise, the system will attempt to load it from the template root folder
-     * @param string $template  - filename
-     * @return string
-     */
+	 * @param string $template  - filename
+	 * @return string
+	 */
 	public function getTemplatePath($template)
 	{
 		/*
@@ -143,10 +152,10 @@ class Page
 			if(isset($templates[$template]))
 				return $templates[$template];
 		}
-		
+
 		if(file_exists($this->getThemePath() . $template))
 			return $this->getThemePath() . $template;
-		
+
 		return $this->_templatesPath . $template;
 	}
 }

@@ -19,5 +19,8 @@ return array(
 		'urldelimiter' => '[%-%]'
 	),
 	'theme'=>'gray',
-	'vcs_support' => false
+	'vcs_support' => false,
+	'theme'=>'gray',
+	'application_theme' => 'gray',
+
 );

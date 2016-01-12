@@ -1,6 +1,4 @@
 <?php
-if(!defined('DVELUM'))exit;
-
 	header('Content-Type: text/html; charset=utf-8');
 
 	$theme = $this->get('theme');

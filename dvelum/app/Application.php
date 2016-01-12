@@ -336,7 +336,8 @@ class Application
             'useCSRFToken' => $cfgBackend->get('use_csrf_token'),
             'theme' => $cfgBackend->get('theme')
         ));
-        Response::put($template->render(self::$_templates . 'layout.php'));
+
+        Response::put($template->render($page->getTemplatesPath() . 'layout.php'));
     }
 
     /**

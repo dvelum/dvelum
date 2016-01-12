@@ -174,8 +174,13 @@ Ext.application({
         app.menu = Ext.create('app.cls.menuPanel',{
             menuData:app.menuData,
             listeners:{
-                select:function(view, record, index, eOpts){
-                    app.loader.loadModule(record.getData());
+                itemclick:function(view, record, index, eOpts){
+                    console.log(record.getData());
+                    if(!record.get('isLink')){
+                        app.loader.loadModule(record.getData());
+                    }else{
+                        window.location = record.get('url');
+                    }
                 }
             }
         });

@@ -1,7 +1,5 @@
 <?php
-if(!defined('DVELUM'))exit;
-
-	header('Content-Type: text/html; charset=utf-8');
+    header('Content-Type: text/html; charset=utf-8');
 
 	$theme = $this->get('theme');
 
@@ -41,18 +39,26 @@ if(!defined('DVELUM'))exit;
 		if(!$data['active'] || !$data['in_menu'] || !isset($this->userModules[$data['id']])){
 			continue;
 		}
+
+		$isLink = false;
+		if($data['id'] == 'Designer'){
+			$isLink = true;
+		}
+
 		$menuData[] = [
 			'id' => $data['id'],
 			'dev' => $data['dev'],
 			'url' =>  Request::url(array($this->get('adminPath'),$data['id'])),
 			'title'=> $data['title'],
-			'icon'=> Request::wwwRoot().$data['icon']
+			'icon'=> Request::wwwRoot().$data['icon'],
+            'isLink' =>$isLink
 		];
 	}
 	$menuData[] = [
 		'id' => 'logout',
 		'dev' => false,
 		'url' =>  Request::url([$this->get('adminPath'),'']) . '?logout=1',
+		'isLink'=>true,
 		'title'=>Lang::lang()->get('LOGOUT'),
 		'icon' => Request::wwwRoot() . 'i/system/icons/logout.png'
 	];
