@@ -175,7 +175,6 @@ Ext.application({
             menuData:app.menuData,
             listeners:{
                 itemclick:function(view, record, index, eOpts){
-                    console.log(record.getData());
                     if(!record.get('isLink')){
                         app.loader.loadModule(record.getData());
                     }else{
