@@ -483,7 +483,7 @@ Ext.define('app.contentWindow',{
 				handle.previewBtn.show();
 				handle.publishBtn.show();
 
-                if(handle.autoPublish){
+                if(handle.canPublish && handle.autoPublish){
                     handle.publish();
                 }else{
                     handle.fireEvent('dataSaved');
