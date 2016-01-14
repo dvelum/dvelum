@@ -125,6 +125,10 @@ Ext.define('app.contentWindow',{
 	 * @property {Object}
 	 */
 	extraParams:null,
+    /**
+     * Auto publish changes
+     */
+	autoPublish:false,
 
 	constructor: function(config) {
 
@@ -478,7 +482,12 @@ Ext.define('app.contentWindow',{
 				}
 				handle.previewBtn.show();
 				handle.publishBtn.show();
-				handle.fireEvent('dataSaved');
+
+                if(handle.autoPublish){
+                    handle.publish();
+                }else{
+                    handle.fireEvent('dataSaved');
+                }
 			},
 			failure: app.formFailure
 		});
