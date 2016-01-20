@@ -219,7 +219,9 @@ class Designer_Factory
         }
 
         $initCode.='
-            app.application.fireEvent("projectLoaded", "'.$moduleId.'");
+            Ext.onReady(function(){
+                app.application.fireEvent("projectLoaded", "'.$moduleId.'");
+            });
         ';
 
         if(!empty($includes))
