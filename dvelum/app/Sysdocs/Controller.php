@@ -58,6 +58,7 @@ class Sysdocs_Controller
 
     public function __construct($mainConfig , $paramsIndex = 0, $container = false)
     {
+
         $this->container = $container;
         $this->configMain = Registry::get('main' , 'config');
         $this->fileModel = Model::factory('Sysdocs_File');
@@ -85,6 +86,10 @@ class Sysdocs_Controller
         $vList = $this->docConfig->get('versions');
 
         $this->versionIndex = $vList[$this->version];
+
+        // change theme
+        $page = Page::getInstance();
+        $page->setTemplatesPath($this->configMain->get('templates'). 'system/gray/');
     }
     /**
      * Set edit permissions

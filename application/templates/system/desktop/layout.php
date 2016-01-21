@@ -41,7 +41,7 @@
 		}
 
 		$isLink = false;
-		if($data['id'] == 'Designer'){
+		if($data['id'] == 'Designer' || $data['id'] == 'Docs'){
 			$isLink = true;
 		}
 
