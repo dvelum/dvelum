@@ -1,8 +1,8 @@
 <?php
 return array(
-    'gen_version'=>6,
+    'gen_version'=>7,
 	'versions'=>array(
-       '1.0.0'=>5
+       '1.0.0'=>6
     ),
     'default_languge'=> 'ru',
     'default_version' => '1.0.0',
