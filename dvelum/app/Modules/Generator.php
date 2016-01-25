@@ -422,7 +422,7 @@ class Modules_Generator
      /*
       * Create ActionJS code
       */
-      $project->setActionJs($this->_createActionJS($runNamespace, $classNamespace , true));
+      $project->setActionJs($this->_createActionJS($object, $runNamespace, $classNamespace , true));
 
       /*
        * Save designer project
@@ -771,7 +771,7 @@ class Modules_Generator
       /*
        * Create ActionJS code
        */
-       $project->setActionJs($this->_createActionJS($runNamespace, $classNamespace));
+       $project->setActionJs($this->_createActionJS($object, $runNamespace, $classNamespace));
 
       if(!$designerStorage->save($projectFile , $project , $this->designerConfig->get('vcs_support')))
           throw new Exception('Can`t create Designer project');
@@ -781,6 +781,7 @@ class Modules_Generator
 
   /**
    * Create actionJs code for designer project
+   * @param string $object
    * @param string $runNamespace
    * @param string $classNamespace
    * @param string $fileName
@@ -788,7 +789,7 @@ class Modules_Generator
    * @param boolean $vc - use version control
    * @throws Exception
    */
-  protected function _createActionJS($runNamespace , $classNamespace , $vc = false)
+  protected function _createActionJS($object, $runNamespace , $classNamespace , $vc = false)
   {
       $actionJs = '
         /*
@@ -800,16 +801,18 @@ class Modules_Generator
          */
          Ext.onReady(function(){
                 // Init permissions
-                app.application.on("projectLoaded",function(){
-                    if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
-                      '.$runNamespace.'.dataGrid.setCanEdit(canEdit);
-                      '.$runNamespace.'.dataGrid.setCanDelete(canDelete);';
+                app.application.on("projectLoaded",function(module){
+                    if(Ext.isEmpty(module) || module === "'.$object.'"){
+                        if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
+                          '.$runNamespace.'.dataGrid.setCanEdit(app.permissions.canEdit("'.$object.'"));
+                          '.$runNamespace.'.dataGrid.setCanDelete(app.permissions.canDelete("'.$object.'"));';
 
           if($vc)
             $actionJs.= '
-                    '.$runNamespace.'.dataGrid.setCanPublish(canPublish);';
+                    '.$runNamespace.'.dataGrid.setCanPublish(app.permissions.canPublish("'.$object.'"));';
 
          $actionJs.= '
+                        }
                     }
                 });
           });';
