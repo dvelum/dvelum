@@ -47,7 +47,7 @@ class Db_Object_ConfigTest extends PHPUnit_Framework_TestCase
 		$fldCfg = $cfg->getFieldConfig('page_title');
 		$cfg->removeField('page_title');
 		$this->assertFalse($cfg->fieldExists('page_title'));
-		$cfg->setFieldСonfig('page_title', $fldCfg);
+		$cfg->setFieldConfig('page_title', $fldCfg);
 		$this->assertTrue($cfg->fieldExists('page_title'));
 	}
 	
@@ -106,13 +106,6 @@ class Db_Object_ConfigTest extends PHPUnit_Framework_TestCase
 	{
 	  $cfg = Db_Object_Config::getInstance('page');
 	  $this->assertEquals($cfg->getLinkTitle() , 'menu_title');
-	}
-	
-	public function testGetDbPrefix()
-	{
-	  $cfg = Db_Object_Config::getInstance('page');
-	  $dbCfg = Config::factory(Config::File_Array, Registry::get('main', 'config')->get('configs').'db/test/default.php');
-	  $this->assertEquals($cfg->getDbPrefix() , $dbCfg->get('prefix'));
 	}
 	
 	public function testIsFloat()
