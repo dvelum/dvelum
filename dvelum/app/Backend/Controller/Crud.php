@@ -438,7 +438,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                         $o = $objects[$item['id']];
                         $item['title'] = $o->getTitle();
                         if($rc)
-                            $item['published'] = $data['published'];
+                            $item['published'] = $o->get('published');
                     }else{
                         $item['title'] = $item['id'];
                     }
