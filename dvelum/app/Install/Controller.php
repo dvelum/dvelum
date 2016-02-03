@@ -170,16 +170,6 @@ class Install_Controller {
                 'msg'=>false
             ),
             array(
-                'name'=>'curl',
-                'accessType'=>'allowed',
-                'msg'=>$this->localization->get('DEPLOY_WARNING')
-            ),
-            array(
-                'name'=>'zip',
-                'accessType'=>'allowed',
-                'msg'=>$this->localization->get('WARNING')
-            ),
-            array(
                 'name' => 'mcrypt',
                 'accessType'=>'allowed',
                 'msg'=>$this->localization->get('WARNING')
