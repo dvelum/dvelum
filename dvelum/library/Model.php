@@ -439,7 +439,7 @@ class Model
     	         $sql->where($this->_db->quoteIdentifier($k) . ' IN(?)' , $v);
     	     elseif (is_bool($v))
     	         $sql->where($this->_db->quoteIdentifier($k) . ' = '. intval($v));
-    	     elseif(strlen($v))
+    	     elseif((is_string($v) && strlen($v)) || is_numeric($v))
     	         $sql->where($this->_db->quoteIdentifier($k) . ' =?' , $v);
     	     elseif (is_null($v))
     	         $sql->where($this->_db->quoteIdentifier($k) . ' IS NULL');
