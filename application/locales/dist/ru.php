@@ -546,7 +546,7 @@
   'ADD_SUB_DICTIONARY' => 'Добавить вложенный словарь',
   'ENTER_DICTIONARY_NAME' => 'Введите имя словаря',
   'ERROR_LOG' => 'Лог ошибок',
-  'SOURCE' => 'Имсточник',
+  'SOURCE' => 'Источник',
   'FILESTORAGE' => 'Файловое хранилище',
   'FILE_ID' => 'ID  Файла',
   'DOWNLOAD' => 'Скачать',
