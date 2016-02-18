@@ -120,6 +120,27 @@ class Designer_Manager
     }
 
     /**
+     * Find working copy of project file
+     * @param $relativeProjectPath
+     * @return string | boolean
+     */
+    public function findWorkingCopy($relativeProjectPath)
+    {
+        $paths = Config::storage()->getPaths();
+        // In accordance with configs merge priority
+        rsort($paths);
+
+        foreach($paths as $path)
+        {
+            $nodePath = str_replace('//', '/', $path.$relativeProjectPath);
+
+            if(file_exists($nodePath))
+                return $nodePath;
+        }
+        return false;
+    }
+
+    /**
      * Get configuration of code templates (for replacing)
      * @return array
      */

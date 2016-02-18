@@ -261,6 +261,7 @@ class Designer_Factory
 	{
 		$applicationConfig = Registry::get('main' , 'config');
 		$designerConfig = Config::storage()->get('designer.php');
+        $manager = new Designer_Manager($applicationConfig);
 
 		$projectConfig = $project->getConfig();
 
@@ -293,7 +294,7 @@ class Designer_Factory
 						$includes[] = $file;
 					}else
 					{
-						$projectFile = $designerConfig->get('configs') . $file;
+						$projectFile = $manager->findWorkingCopy($designerConfig->get('configs') . $file);
 						$subProject = Designer_Factory::loadProject($designerConfig,  $projectFile);
 						$projectKey = self::getProjectCacheKey($projectFile);
 						$files = self::getProjectIncludes($projectKey , $subProject , true , $replace , $debug);

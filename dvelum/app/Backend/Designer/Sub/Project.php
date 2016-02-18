@@ -474,43 +474,9 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 
 	public function projectlistAction()
 	{
-		$path = Request::post('node', 'string', '');
-		$path = str_replace('.','', $path);
-
-		$dirPath = $this->_config->get('configs');
-
-		if(!is_dir($dirPath))
-			Response::jsonArray(array());
-
-		$files = File::scanFiles($dirPath . $path, array('.dat') , false , File::Files_Dirs);
-
-		if(empty($files))
-			Response::jsonArray(array());
-
-		$list = array();
-
-		foreach($files as $k=>$fpath)
-		{
-			$text  = basename($fpath);
-			if($text ==='.svn')
-				continue;
-
-			$obj = new stdClass();
-			$obj->id =str_replace($dirPath, '', $fpath);
-			$obj->text = $text;
-
-			if(is_dir($fpath))
-			{
-				$obj->expanded = false;
-				$obj->leaf = false;
-			}
-			else
-			{
-				$obj->leaf = true;
-			}
-			$list[] = $obj;
-		}
-		Response::jsonArray($list);
+		$node = Request::post('node', 'string', '');
+		$manager = new Designer_Manager($this->_configMain);
+		Response::jsonArray($manager->getProjectsList($node));
 	}
 	/**
 	 * Get list of project components that can be instantiated
