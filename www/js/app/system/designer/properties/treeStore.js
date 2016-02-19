@@ -6,10 +6,8 @@ Ext.define('designer.properties.TreeStore',{
 	
 	initComponent:function()
 	{
-		var returnDots = function(v){return '...';};	
-		this.customRenderers.root = returnDots;
-		
-		
+		var returnDots = function(v){return '...';};
+
 		this.sourceConfig = Ext.apply({
 			'root':{
 				editor:Ext.create('Ext.form.field.Text',{
@@ -19,7 +17,8 @@ Ext.define('designer.properties.TreeStore',{
 							scope:this
 						}
 					}
-				})
+				}),
+				renderer:returnDots
 			}
 		},this.sourceConfig);
 			
