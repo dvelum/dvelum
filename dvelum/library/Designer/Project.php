@@ -663,6 +663,7 @@ class Designer_Project
 		$this->initContainers();
 		$items = $this->_tree->getChilds(0);
 		$stores = $this->getStores();
+        $grids = $this->getGrids();
 
 		foreach($stores as $id=>$object)
 		{
@@ -704,9 +705,21 @@ class Designer_Project
 
 			$this->_tree->changeParent($cmpData['id'] , Designer_Project::LAYOUT_ROOT);
 		}
+
 		foreach($stores as $id => $object) {
 			// create models
 			$modelName = $object->getName() . 'Model';
+
+            if(is_object($object->proxy) && is_object($object->proxy->reader)){
+                $reader = $object->proxy->reader;
+                if(isset($reader->root) && !empty($reader->root)){
+                    if(empty($reader->rootProperty)){
+                        $reader->rootProperty = $reader->root;
+                    }
+                    $reader->root = '';
+                }
+            }
+
 
 			if(!$this->objectExists($modelName)) {
 				/**
