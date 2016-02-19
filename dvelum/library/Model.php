@@ -982,7 +982,7 @@ class Model
 
     protected function getSearchFields()
     {
-        if(is_null($this->searchFieldsList)){
+        if(is_null($this->searchFields)){
             $this->searchFields = $this->_objectConfig->getSearchFields();
         }
         return $this->searchFields;
