@@ -24,6 +24,7 @@ Ext.define('app.crud.tasks.Main',{
     layout:'fit',
 
     canEdit:false,
+    controllerUrl:'',
 
     dataStore:null,
     dataGrid:null,
@@ -33,7 +34,7 @@ Ext.define('app.crud.tasks.Main',{
             model: 'app.crud.tasks.Model',
             proxy: {
                 type: 'ajax',
-                url:app.root +  'list',
+                url:this.controllerUrl +  'list',
                 reader: {
                     type: 'json',
                     rootProperty: 'data',
@@ -211,7 +212,7 @@ Ext.define('app.crud.tasks.Main',{
     reloadInfo:function(){
         var me = this;
         Ext.Ajax.request({
-            url: app.root + 'list',
+            url: this.controllerUrl + 'list',
             method: 'post',
             success: function(response, request) {
                 response =  Ext.JSON.decode(response.responseText);
@@ -228,7 +229,7 @@ Ext.define('app.crud.tasks.Main',{
         var pid = record.get('id');
         grid.getEl().mask(appLang.SAVING);
         Ext.Ajax.request({
-            url: app.root + 'kill',
+            url: this.controllerUrl + 'kill',
             params:{'pid':pid},
             method: 'post',
             success: function(response, opts) {
@@ -252,7 +253,7 @@ Ext.define('app.crud.tasks.Main',{
         var me = this;
         me.dataGrid.getEl().mask(appLang.SAVING);
         Ext.Ajax.request({
-            url: app.root + 'pause',
+            url: this.controllerUrl + 'pause',
             params:{'pid':pid},
             method: 'post',
             success: function(response, opts) {
@@ -275,7 +276,7 @@ Ext.define('app.crud.tasks.Main',{
         var me = this;
         me.dataGrid.getEl().mask(appLang.SAVING);
         Ext.Ajax.request({
-            url: app.root + 'resume',
+            url: this.controllerUrl + 'resume',
             params:{'pid':pid},
             method: 'post',
             success: function(response, opts) {
@@ -294,7 +295,7 @@ Ext.define('app.crud.tasks.Main',{
         var me = this;
         me.dataGrid.getEl().mask(appLang.SAVING);
         Ext.Ajax.request({
-            url: app.root + 'stop',
+            url: this.controllerUrl + 'stop',
             params:{'pid':pid},
             method: 'post',
             success: function(response, opts) {

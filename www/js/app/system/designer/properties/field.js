@@ -78,6 +78,7 @@ Ext.define('designer.properties.FieldTypeWindow',{
 					  selectOnTab: true,
 					  fieldLabel:desLang.adapter,
 					  labelWidth:80,
+					  matchFieldWidth: false,
 					  forceSelection:true,
 					  valueField:'id',
 					  displayField:'title',

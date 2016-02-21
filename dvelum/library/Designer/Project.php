@@ -663,7 +663,7 @@ class Designer_Project
 		$this->initContainers();
 		$items = $this->_tree->getChilds(0);
 		$stores = $this->getStores();
-        $grids = $this->getGrids();
+		$grids = $this->getGrids();
 
 		foreach($stores as $id=>$object)
 		{
