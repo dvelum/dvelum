@@ -89,32 +89,33 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 	public function renderersAction()
 	{
 		$data = array();
-		$autoloaderPaths = $this->_configMain['autoloader'];
-		$autoloaderPaths = $autoloaderPaths['paths'];
-		$files = File::scanFiles($this->_config->get('components').'/Renderer',array('.php'),true,File::Files_Only);
+		$autoloaderPaths = $this->_configMain['autoloader']['paths'];
+		$files = array();
+		$classes = array();
+
 		$data[] = array('id'=>'' , 'title'=>$this->_lang->NO);
 
-		/**
-		 * This is hard fix for windows
-		 */
-		if(DIRECTORY_SEPARATOR == '\\')
+		foreach($autoloaderPaths as $path)
 		{
-			foreach ($files as &$v)
+			$scanPath = $path. '/'. $this->_config->get('components') . '/Renderer';
+			if(is_dir($scanPath))
 			{
-				$v = str_replace('\\', '/', $v);
-				$v = str_replace('//', '/', $v);
+				$files = array_merge($files, File::scanFiles($scanPath, array('.php'), true, File::Files_Only));
+				if(!empty($files))
+				{
+					foreach ($files as $item)
+					{
+						$class = Utils::classFromPath(str_replace($autoloaderPaths, '', $item));
+						if(!in_array($class,$classes))
+						{
+							$data[] = array('id' => $class, 'title' => str_replace($scanPath.'/', '', substr($item, 0, -4)));
+							array_push($classes,$class);
+						}
+					}
+				}
 			}
-			unset($v);
 		}
 
-		if(!empty($files))
-		{
-			foreach ($files as $item)
-			{
-				$class = Utils::classFromPath(str_replace($autoloaderPaths, '', $item));
-				$data[] = array('id'=>$class , 'title'=>str_replace($this->_config->get('components').'/Renderer/', '', substr($item,0,-4)));
-			}
-		}
 		Response::jsonArray($data);
 	}
 

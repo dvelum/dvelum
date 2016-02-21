@@ -137,16 +137,28 @@ class Backend_Designer_Sub_Properties extends Backend_Designer_Sub
 	public function listadaptersAction()
 	{
 		$data = array();
-		$autoloaderPaths =  $this->_configMain['autoloader'];
-		$autoloaderPaths = $autoloaderPaths['paths'];
-		$files = File::scanFiles($this->_config->get('components').'/Field',array('.php'),true,File::Files_Only);
+		$autoloaderPaths = $this->_configMain['autoloader']['paths'];
+		$files = array();
+		$classes = array();
 
-		if(!empty($files))
+		foreach($autoloaderPaths as $path)
 		{
-			foreach ($files as $item)
+			$scanPath = $path. '/'. $this->_config->get('field_components');
+			if(is_dir($scanPath))
 			{
-				$class = Utils::classFromPath(str_replace($autoloaderPaths, '', $item));
-				$data[] = array('id'=>$class , 'title'=>str_replace($this->_config->get('components').'/', '', substr($item,0,-4)));
+				$files = array_merge($files, File::scanFiles($scanPath, array('.php'), true, File::Files_Only));
+				if(!empty($files))
+				{
+					foreach ($files as $item)
+					{
+						$class = Utils::classFromPath(str_replace($autoloaderPaths, '', $item));
+						if(!in_array($class,$classes))
+						{
+							$data[] = array('id' => $class, 'title' => str_replace($scanPath.'/', '', substr($item, 0, -4)));
+							array_push($classes,$class);
+						}
+					}
+				}
 			}
 		}
 		Response::jsonArray($data);
