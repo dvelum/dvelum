@@ -231,11 +231,11 @@ class Ext_Store extends Ext_Object
 			}
 
             if($proxyObject->isValidProperty('writer') && $proxyObject->writer instanceof Ext_Object){
-                $readerObject = $proxyObject->writer;
-                $reader = array(
-                    'class' => get_class($readerObject),
-                    'extClass' => $readerObject->getClass(),
-                    'state'=> $readerObject->getState()
+                $writerObject = $proxyObject->writer;
+                $writer = array(
+                    'class' => get_class($writerObject),
+                    'extClass' => $writerObject->getClass(),
+                    'state'=> $writerObject->getState()
                 );
                 $proxyObject->writer = false;
             }
