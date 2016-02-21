@@ -52,8 +52,8 @@ class Backend_Reports_Controller extends Backend_Controller
 		$this->_resource->addCss('/js/lib/CodeMirror/addon/hint/show-hint.css');
 		$this->_resource->addCss('/js/lib/CodeMirror/theme/eclipse.css');
 
+		$res->addJs('/js/lib/CodeMirror/lib/codemirror.js', 0);
 		$codeMirrorFiles = [
-			'/js/lib/CodeMirror/lib/codemirror.js',
 			'/js/lib/CodeMirror/addon/hint/show-hint.js',
 			'/js/lib/CodeMirror/addon/hint/javascript-hint.js',
 			'/js/lib/CodeMirror/addon/dialog/dialog.js',
