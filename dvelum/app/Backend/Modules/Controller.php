@@ -594,7 +594,9 @@ class Backend_Modules_Controller extends Backend_Controller{
 	protected function desktopModuleInfo()
 	{
 		$projectData = [];
-		$projectData['includes']['js'][] =  '/js/app/system/Modules.js';
+		$projectData['includes']['js'][] = '/js/app/system/Modules.js';
+		$projectData['includes']['js'][] = '/js/app/system/FilesystemWindow.js';
+		$projectData['includes']['js'][] = '/js/app/system/IconField.js';
 		/*
          * Module bootstrap
          */
