@@ -1,6 +1,6 @@
 <?php
 /**
- * Db_Object strucrure config
+ * Db_Object structure config
  * @package Db
  * @subpackage Db_Object
  * @author Kirill A Egorov kirill.a.egorov@gmail.com
