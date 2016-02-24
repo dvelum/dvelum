@@ -473,6 +473,7 @@ class Db_Object_Config
     /**
      * Check if field is ManyToMany relation
      * @param $field
+     * @return boolean
      */
     public function isManyToManyLink($field)
     {
@@ -481,6 +482,7 @@ class Db_Object_Config
         if(isset($cfg['type']) && $cfg['type']==='link'
             && is_array($cfg['link_config'])
             && $cfg['link_config']['link_type'] === self::LINK_OBJECT_LIST
+            && isset($cfg['link_config']['relations_type'])
             && $cfg['link_config']['relations_type'] === self::RELATION_MANY_TO_MANY
         ){
             return true;
