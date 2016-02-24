@@ -194,7 +194,7 @@ class Db_Query
 		if(empty($conditions))
 			return;
 		
-		$dictionary = Dictionary::getInstance('sqloperator');
+		$dictionary = Dictionary::factory('sqloperator');
 		
 		foreach($conditions as $condition)
 		{
@@ -207,19 +207,19 @@ class Db_Query
 				
 				case 'IS_NULL' :
 				case 'IS_NOT_NULL' :
-					$table = Db_Object_Config::getInstance($condition->object)->getTable();
+					$table = Model::factory($condition->object)->table();
 					$sql->where($table . '.' . $condition->field . ' ' . $operator);
 					break;
 				
 				case 'BETWEEN' :
 				case 'NOT_BETWEEN' :
-					$table = Db_Object_Config::getInstance($condition->object)->getTable();
+					$table = Model::factory($condition->object)->table();
 					$sql->where($table . '.' . $condition->field . ' ' . $operator . ' \'' . addslashes($condition->value) . '\' AND \'' . addslashes($condition->value2) . '\'  ');
 					break;
 				
 				case 'IN' :
 				case 'NOT_IN' :
-					$table = Db_Object_Config::getInstance($condition->object)->getTable();
+					$table = Model::factory($condition->object)->table();
 					$sql->where($table . '.' . $condition->field . ' ' . $operator . ' (?)' , explode(',' , $condition->value));
 					break;
 				
@@ -228,7 +228,7 @@ class Db_Query
 					break;
 				
 				default :
-					$table = Db_Object_Config::getInstance($condition->object)->getTable();
+					$table = Model::factory($condition->object)->table();
 					$sql->where($table . '.' . $condition->field . ' ' . $operator . ' ?' , $condition->value);
 			}
 		}
@@ -273,7 +273,7 @@ class Db_Query
 		}
 	}
 
-	protected function _addSqlPart(Db_Query_Part $part , $sql , Db_Query_Part $parenPart , $countOnly = false)
+	protected function _addSqlPart(Db_Query_Part $part , $sql , Db_Query_Part $parentPart , $countOnly = false)
 	{
 		if($countOnly){
 			$fields = array();
@@ -284,8 +284,8 @@ class Db_Query
 		}
 		
 		
-		$parentTable = Db_Object_Config::getInstance($parenPart->getObject())->getTable();
-		$curTable = Db_Object_Config::getInstance($part->getObject())->getTable();
+		$parentTable = Model::factory($parentPart->getObject())->table();
+		$curTable = Model::factory($part->getObject())->table();
 		
 		$condition = '`' . $parentTable . '`.`' . $part->parentField . '` = `' . $curTable . '`.`'.$part->childField.'`';
 		

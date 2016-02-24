@@ -58,6 +58,7 @@ class Db_Select_Filter
 						$condition = implode(' OR ', $conditions);
 					else
 						$condition = implode(' AND ', $conditions);
+					$condition = '('.$condition.')';
 					$sql->where($condition);
 					break;
 				}
