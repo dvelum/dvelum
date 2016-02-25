@@ -52,8 +52,8 @@ class Designer_Factory
 	 * @property string $projectFile - designer project related path
 	 * @property Config_Abstract $designerConfig
 	 * @property array $replace, optional
-     * @property string | boolean $renderTo
-     * @property string | boolean $moduleId
+	 * @property string | boolean $renderTo
+	 * @property string | boolean $moduleId
 	 * @todo cache the code
 	 */
 	static public function runProject($projectFile , Config_Abstract $designerConfig , $replace = array(), $renderTo = false, $moduleId = false)
@@ -79,7 +79,7 @@ class Designer_Factory
 		$names = $project->getRootPanels();
 
 		$initCode = '
-		    var applicationClassesNamespace = "'.$projectCfg['namespace'].'";
+			var applicationClassesNamespace = "'.$projectCfg['namespace'].'";
 			var applicationRunNamespace = "'.$projectCfg['runnamespace'].'";
 		';
 
@@ -94,7 +94,7 @@ class Designer_Factory
 					layout:"fit",
 					renderTo:"'.$renderTo.'"
 				});
-      		   ';
+			   ';
 			}
 
 			foreach ($names as $name)
@@ -114,14 +114,14 @@ class Designer_Factory
 			if($renderTo)
 			{
 				$initCode.='
-			      	app.content.doComponentLayout();
+					app.content.doComponentLayout();
 				';
 			}
 		}
 
 		$initCode.='
-		            app.application.fireEvent("projectLoaded", "'.$moduleId.'");
-	            });';
+					app.application.fireEvent("projectLoaded", "'.$moduleId.'");
+				});';
 
 		$resource = Resource::getInstance();
 
@@ -129,123 +129,126 @@ class Designer_Factory
 		{
 			foreach ($projectData['includes'] as $file)
 			{
-			    if(File::getExt($file) == '.css')
-			    {
-			        if(strpos($file , '?') === false){
-			        	$file = $file .'?'. $cachedKey;
-			        }
+				if(File::getExt($file) == '.css')
+				{
+					if(strpos($file , '?') === false){
+						$file = $file .'?'. $cachedKey;
+					}
 
-			        $resource->addCss($file , false);
-			    }else{
+					$resource->addCss($file , false);
+				}else{
 
-			        if(strpos($file , '?') === false){
-			        	$file = $file .'?'. $cachedKey;
-			        }
+					if(strpos($file , '?') === false){
+						$file = $file .'?'. $cachedKey;
+					}
 
-				    $resource->addJs($file , false, false);
-			    }
+					$resource->addJs($file , false, false);
+				}
 			}
 		}
 		$resource->addInlineJs($initCode);
 	}
 
-    /**
-     * Init layout from designer project
-     * @property string $projectFile - designer project related path
-     * @property Config_Abstract $designerConfig
-     * @property array $replaceTemplates, optional
-     * @property string $renderTo
-     * @property string $moduleId
-     * @todo cache the code
-     */
-    static public function compileDesktopProject($projectFile , Config_Abstract $designerConfig , $replace, $renderTo, $moduleId)
-    {
-        $projectData = [
-            'applicationClassesNamespace' =>false,
-            'applicationRunNamespace' => false,
-            'includes'=>[
-                'js'=>[],
-                'css'=>[]
-            ]
-        ];
+	/**
+	 * Init layout from designer project
+	 * @property string $projectFile - designer project related path
+	 * @property Config_Abstract $designerConfig
+	 * @property array $replaceTemplates, optional
+	 * @property string $renderTo
+	 * @property string $moduleId
+	 * @todo cache the code
+	 */
+	static public function compileDesktopProject($projectFile , Config_Abstract $designerConfig , $replace, $renderTo, $moduleId)
+	{
+		$projectData = [
+			'applicationClassesNamespace' =>false,
+			'applicationRunNamespace' => false,
+			'includes'=>[
+				'js'=>[],
+				'css'=>[]
+			]
+		];
 
-        if(!file_exists($projectFile))
-            throw new Exception('Invalid project file' . $projectFile);
+		if(!file_exists($projectFile))
+			throw new Exception('Invalid project file' . $projectFile);
 
-        /**
-         * @todo cache slow operation
-         */
-        $cachedKey = self::getProjectCacheKey($projectFile);
+		/**
+		 * @todo cache slow operation
+		 */
+		$cachedKey = self::getProjectCacheKey($projectFile);
 
-        $project = Designer_Factory::loadProject($designerConfig, $projectFile);
-        $projectCfg = $project->getConfig();
+		$project = Designer_Factory::loadProject($designerConfig, $projectFile);
+		$projectCfg = $project->getConfig();
 
-        Ext_Code::setRunNamespace($projectCfg['runnamespace']);
+		Ext_Code::setRunNamespace($projectCfg['runnamespace']);
 
-        $includes = self::getProjectIncludes($cachedKey , $project , true , $replace);
-        $projectData['applicationClassesNamespace'] = $projectCfg['namespace'];
-        $projectData['applicationRunNamespace'] = $projectCfg['runnamespace'];
+		$includes = self::getProjectIncludes($cachedKey , $project , true , $replace);
+		$projectData['applicationClassesNamespace'] = $projectCfg['namespace'];
+		$projectData['applicationRunNamespace'] = $projectCfg['runnamespace'];
 
-        $names = $project->getRootPanels();
+		$names = $project->getRootPanels();
 
-        $initCode = '';
+		$initCode = '';
 
-        if(!empty($names))
-        {
+		if(!empty($names))
+		{
 
-           $renderTo = str_replace('-', '_', $renderTo);
+		   $renderTo = str_replace('-', '_', $renderTo);
 
-            $items = [];
+			$items = [];
 
-            $c=0;
-            foreach ($names as $name)
-            {
-                // hide first panel title
+			$c=0;
+			foreach ($names as $name)
+			{
+				// hide first panel title
 				if($c==0)
-                {
-                    $panel = $project->getObject($name);
-                    if($panel->isValidProperty('title') && !empty($panel->title)){
-                        $panel->title = '';
-                    }
-                    $c++;
+				{
+					$panel = $project->getObject($name);
+					if($panel->isValidProperty('title') && !empty($panel->title)){
+						$panel->title = '';
+					}
+					$c++;
 				}
-                $items[] = Ext_Code::appendRunNamespace($name);
-            }
+				$items[] = Ext_Code::appendRunNamespace($name);
+			}
 
+			$options = [];
+			$moduleCfg = Config::storage()->get('desktop_module_options.php');
+			if($moduleCfg->offsetExists($moduleId) && is_array($moduleCfg->get($moduleId)))
+				$options = $moduleCfg->get($moduleId);
 
-            $initCode.= $renderTo.' = Ext.create("app.cls.ModuleWindow",{
-              items:['.implode(',',$items).']
-            });';
-        }
+			$initCode.= $renderTo.' = Ext.create("app.cls.ModuleWindow", Ext.apply({items: ['
+				.implode(',',$items).']},'.json_encode($options).'));';
+		}
 
-        $initCode.='
-            Ext.onReady(function(){
-                app.application.fireEvent("projectLoaded", "'.$moduleId.'");
-            });
-        ';
+		$initCode.='
+			Ext.onReady(function(){
+				app.application.fireEvent("projectLoaded", "'.$moduleId.'");
+			});
+		';
 
-        if(!empty($includes))
-        {
-            foreach ($includes as $file)
-            {
-                if(File::getExt($file) == '.css')
-                {
-                    if(strpos($file , '?') === false){
-                        $file = $file .'?'. $cachedKey;
-                    }
-                    $projectData['includes']['css'][]=$file;
-                }else{
+		if(!empty($includes))
+		{
+			foreach ($includes as $file)
+			{
+				if(File::getExt($file) == '.css')
+				{
+					if(strpos($file , '?') === false){
+						$file = $file .'?'. $cachedKey;
+					}
+					$projectData['includes']['css'][]=$file;
+				}else{
 
-                    if(strpos($file , '?') === false){
-                        $file = $file .'?'. $cachedKey;
-                    }
-                    $projectData['includes']['js'][]=$file;
-                }
-            }
-        }
-        $projectData['includes']['js'][] = Resource::getInstance()->cacheJs($initCode , true);
-        return $projectData;
-    }
+					if(strpos($file , '?') === false){
+						$file = $file .'?'. $cachedKey;
+					}
+					$projectData['includes']['js'][]=$file;
+				}
+			}
+		}
+		$projectData['includes']['js'][] = Resource::getInstance()->cacheJs($initCode , true);
+		return $projectData;
+	}
 
 	/**
 	 * Gel list of JS files to include
@@ -261,7 +264,7 @@ class Designer_Factory
 	{
 		$applicationConfig = Registry::get('main' , 'config');
 		$designerConfig = Config::storage()->get('designer.php');
-        $manager = new Designer_Manager($applicationConfig);
+		$manager = new Designer_Manager($applicationConfig);
 
 		$projectConfig = $project->getConfig();
 
@@ -276,10 +279,10 @@ class Designer_Factory
 
 		  foreach ($projectConfig['langs'] as $k=>$file)
 		  {
-		     $file =  $language.'/'.$file.'.js';
-		     if(file_exists($lansPath.$file)){
-		       $includes[] = $langsUrl . $file . '?' . filemtime($lansPath.$file);
-		     }
+			 $file =  $language.'/'.$file.'.js';
+			 if(file_exists($lansPath.$file)){
+			   $includes[] = $langsUrl . $file . '?' . filemtime($lansPath.$file);
+			 }
 		  }
 		}
 
@@ -287,7 +290,7 @@ class Designer_Factory
 		{
 				foreach ($projectConfig['files'] as $file)
 				{
-				    $ext = File::getExt($file);
+					$ext = File::getExt($file);
 
 					if($ext === '.js' || $ext === '.css')
 					{
@@ -349,14 +352,14 @@ class Designer_Factory
 	{
 	  if(!empty($replaces))
 	  {
-	      $k = array();
-	      $v = array();
-	      foreach ($replaces as $item)
-	      {
-	          $k[] = $item['tpl'];
-	          $v[] = $item['value'];
-	      }
-	      return str_replace($k , $v , $code);
+		  $k = array();
+		  $v = array();
+		  foreach ($replaces as $item)
+		  {
+			  $k[] = $item['tpl'];
+			  $v[] = $item['value'];
+		  }
+		  return str_replace($k , $v , $code);
 	  }
 		return $code;
 	}
