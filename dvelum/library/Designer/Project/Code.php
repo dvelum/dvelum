@@ -190,7 +190,9 @@ class Designer_Project_Code
         if($parent !== 0)
         {
             $parentObject = $this->_project->getItemData($parent);
-            if($parent instanceof Ext_Object){
+
+            if($parentObject instanceof Ext_Object)
+            {
                 if(!empty($items) && $parentObject->isValidProperty('items'))
                     $parentObject->items = Utils_String::addIndent("[\n" . Utils_String::addIndent(implode(",\n" , $items)) . "\n]\n");
 
