@@ -368,4 +368,86 @@ abstract class Backend_Controller extends Controller
         }
         return $projectData;
     }
+
+    /**
+     * Add related objects info into getList results
+     * @param Db_Object_Config $cfg
+     * @param array & $data rows from  Model::getList result
+     */
+    protected function addLinkedListInfo(Db_Object_Config $cfg, array  & $data)
+    {
+        $rowIds = Utils::fetchCol($cfg->getPrimaryKey() , $data);
+        $rowObjects = Db_Object::factory($cfg->getName() , $rowIds);
+        $linkLists = $cfg->getLinks(array(Db_Object_Config::LINK_OBJECT_LIST));
+
+        if(empty($linkLists))
+            return;
+
+        $listedObjects = [];
+
+        foreach($rowObjects as $object)
+        {
+            foreach ($linkLists as $obj=>$fCfg)
+            {
+                if(!isset($listedObjects[$obj])){
+                    $listedObjects[$obj] = [];
+                }
+
+                foreach ($fCfg as $name=>$type)
+                {
+                    $oVal = $object->get($name);
+                    if(!empty($oVal)){
+                        $listedObjects[$obj] = array_merge($listedObjects[$obj], array_values($oVal));
+                    }
+                }
+            }
+        }
+
+        foreach($listedObjects as $object => $ids){
+            $listedObjects[$object] = Db_Object::factory($object,array_unique($ids));
+        }
+
+        foreach ($data as &$row)
+        {
+            if(!isset($rowObjects[$row[$cfg->getPrimaryKey()]]))
+                continue;
+
+            foreach ($linkLists as $obj => $fCfg)
+            {
+                foreach ($fCfg as $name => $type)
+                {
+                    $list = [];
+                    $rowObject = $rowObjects[$row[$cfg->getPrimaryKey()]];
+                    $valueList = $rowObject->get($name);
+
+                    if(!empty($valueList))
+                    {
+                        foreach($valueList as $oId)
+                        {
+                            if(isset($listedObjects[$obj][$oId])){
+                                $list[] = $this->linkedListInfoRenderer($rowObject, $name, $listedObjects[$obj][$oId]);
+                            }else{
+                                $list[] = '[' . $oId . '] (deleted)';
+                            }
+                        }
+                    }
+
+                    $row[$name] = implode(', ', $list);
+
+                }
+            }
+        }unset($row);
+    }
+
+    /**
+     * String representation of related object for addLinkedListInfo method
+     * @param Db_Object $rowObject
+     * @param string $field
+     * @param Db_Object $relatedObject
+     * @return string
+     */
+    protected function linkedListInfoRenderer(Db_Object $rowObject, $field, Db_Object $relatedObject)
+    {
+        return $relatedObject->getTitle();
+    }
 }

@@ -118,7 +118,7 @@ class Db_Object
         {
             foreach($links as $object => $fields)
             {
-                foreach($fields as $field)
+                foreach($fields as $field=>$linkType)
                 {
                     if($this->_config->isManyToManyLink($field)){
                         $relationsObject = $this->_config->getRelationsObject($field);
@@ -148,6 +148,7 @@ class Db_Object
                 }
             }
         }
+
         $this->_setRawData($data);
     }
 
@@ -418,9 +419,9 @@ class Db_Object
             if(is_array($value) && !empty($value[0])){
                 if(!$this->_validateLink($name , $value))
                     throw new Exception('Invalid property value');
-                $value = $this->_collectLinksData($name , $value);
+
             } else {
-                $value = '';
+                $value = [];
             }
         }
         elseif ($this->_config->isDictionaryLink($name))
@@ -505,40 +506,7 @@ class Db_Object
         }
 
         $this->_updates[$name] = $value;
-
         return true;
-    }
-
-    protected function _collectLinksData($field , $ids)
-    {
-        $ids = array_map('intval', $ids);
-        $linkedObjectConfig = Db_Object_Config::getInstance($this->getLinkedObject($field));
-        $linkedObjectName =  $linkedObjectConfig->getName();
-        $pKey = $linkedObjectConfig->getPrimaryKey();
-        /*
-         * Init object model
-         */
-        $model = Model::factory($linkedObjectName);
-        /*
-         * Find title field for link
-         */
-        $title = $pKey;
-        $lt = $linkedObjectConfig->getLinkTitle();
-        if($lt)
-            $title = $lt;
-
-        $objects = Db_Object::factory($linkedObjectName, $ids);
-
-        $result = array();
-        foreach ($ids as $v)
-        {
-            if(!isset($objects[$v]))
-                throw new Exception('Invalid link');
-
-            $o = $objects[$v];
-            $result[$v] = array('id'=>$v , 'title'=>$o->getTitle());
-        }
-        return $result;
     }
 
     /**
@@ -757,13 +725,10 @@ class Db_Object
      */
     public function serializeLinks($data)
     {
-        foreach ($data as $k=>&$v)
+        foreach ($data as $k=>$v)
         {
-            if($this->_config->isMultiLink($k) && !empty($v)) {
-                // DVelum 0.9.x
-                /* $v = serialize($v);*/
-                // DVelum 1.x no need in serialized data
-                $v = '';
+            if($this->_config->isMultiLink($k)) {
+                unset($data[$k]);
             }
         }
         return $data;
@@ -902,7 +867,7 @@ class Db_Object
         {
             foreach($links as $object => $fields)
             {
-                foreach($fields as $field)
+                foreach($fields as $field=>$linkType)
                 {
                     if($config->isManyToManyLink($field)){
                         $relationsObject = $config->getRelationsObject($field);

@@ -178,12 +178,13 @@ class Db_Object_Store
             if($object->getConfig()->hasEncrypted())
                 $updates = $this->encryptData($object , $updates);
 
-            $updates = $object->serializeLinks($updates);
+            $this->_updateLinks($object);
 
+            $updates = $object->serializeLinks($updates);
+            
             if(!empty($updates))
                 $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
 
-            $this->_updateLinks($object);
             /*
              * Fire "AFTER_UPDATE_BEFORE_COMMIT" Event if event manager exists
              */
@@ -416,13 +417,12 @@ class Db_Object_Store
     protected function _createLinks(Db_Object $object, $objectField , $targetObjectName , array $links)
     {
         $order = 0;
-        $links = array_keys($links);
-
         $data = [];
 
         if($object->getConfig()->isManyToManyLink($objectField))
         {
             $linksObjModel = Model::factory($object->getConfig()->getRelationsObject($objectField));
+
             foreach ($links as $k=>$v)
             {
                 $data[] = array(

@@ -1452,4 +1452,14 @@ class Db_Object_Config
         }
         return false;
     }
+
+    /**
+     * Check if field is virtual (no database representation)
+     * @param $field
+     * @return bool
+     */
+    public function isVirtual($field)
+    {
+        return $this->isMultiLink($field);
+    }
 }
