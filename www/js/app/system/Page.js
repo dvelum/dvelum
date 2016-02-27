@@ -723,7 +723,7 @@ Ext.define('app.crud.page.Panel',{
                 return false;
             }
             Ext.Ajax.request({
-                url: this.controllerUrl + 'delete',
+                url: me.controllerUrl + 'delete',
                 method: 'post',
                 params:{
                     'id':record.get('id')
