@@ -43,6 +43,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         if(!$object->getConfig()->isRevControl()){
             return;
         }
+
         if($this->_user->onlyOwnRecords($this->getModule()) && $object->author_id !== $this->_user->getId()){
             Response::jsonError($this->_lang->CANT_ACCESS);
         }
@@ -123,32 +124,35 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         if(!$version)
             $version = $vc->getLastVersion($this->_objectName , $id);
 
-        if(!$version){
+        if($version)
+        {
+            try {
+                $object->loadVersion($version);
+            } catch (Exception $e) {
+                Model::factory($object->getName())->logError('Cannot load version ' . $version . ' for ' . $object->getName() . ':' . $object->getId());
+                Response::jsonError($this->_lang->get('CANT_LOAD'));
+            }
+
+            $data = $object->getData();
+
+            if (empty($data)) {
+                Response::jsonError($this->_lang->get('CANT_LOAD'));
+            }
+
+            $data['id'] = $id;
+            $data['version'] = $version;
+            $data['published'] = $object->get('published');
+            $data['staging_url'] = static::getStagingUrl($object);
+
+        }else{
             $data = $object->getData();
             $data['id'] = $object->getId();
-            Response::jsonSuccess($data);
         }
 
-        try{
-            $object->loadVersion($version);
-        }catch (Exception $e){
-            Model::factory($object->getName())->logError('Cannot load version '.$version.' for '.$object->getName().':'.$object->getId());
-            Response::jsonError($this->_lang->get('CANT_LOAD'));
-        }
-
-        $data = $object->getData();
-
-        if(empty($data))
-            Response::jsonError($this->_lang->get('CANT_LOAD'));
-
-        $data['id'] = $id;
-        $data['version'] = $version;
-        $data['published'] = $object->get('published');
-        $data['staging_url'] = static::getStagingUrl($object);
         /*
          * Prepare Object List properties
          */
-        $linkedObjects = $object->getConfig()->getLinks(array('multy'));
+        $linkedObjects = $object->getConfig()->getLinks([Db_Object_Config::LINK_OBJECT_LIST]);
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
                 $data[$field] = $this->_collectLinksData($field, $object , $linkObject);

@@ -1118,9 +1118,6 @@ class Db_Object
         {
             if($this->fieldExists($k))
             {
-                if($this->_config->isMultiLink($k) && ! empty($v))
-                    $v = array_keys($v);
-
                 try{
 
                     if($this->_config->isEncrypted($k)){

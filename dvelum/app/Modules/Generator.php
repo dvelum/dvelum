@@ -109,6 +109,12 @@ class Modules_Generator
           false
       ));
 
+      foreach($linksToShow as $k=>$v){
+          if($objectConfig->isSystem($v)){
+              unset($linksToShow[$v]);
+          }
+      }
+
       $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc{' . "\n" .
       '	 protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n" .
       '	 protected $_listLinks = ["' . implode('","' , $linksToShow) . '"];' . "\n" .
@@ -506,6 +512,12 @@ class Modules_Generator
           ],
           false
       ));
+
+      foreach($linksToShow as $k=>$v){
+          if($objectConfig->isSystem($v)){
+              unset($linksToShow[$v]);
+          }
+      }
 
       $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud{' . "\n" .
       ' protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n" .

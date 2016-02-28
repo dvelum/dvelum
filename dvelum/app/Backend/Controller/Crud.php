@@ -42,6 +42,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
     /**
      * List of ORM object link fields displayed with related values in the main list (listAction)
      * (dictionary, object link, object list) key - result field, value - object field
+     * object field will be used as result field for numeric keys
      * @var array
      */
     protected $_listLinks = [];
@@ -385,14 +386,22 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * Add related objects info into getList results
      * @param Db_Object_Config $cfg
      * @param array $fieldsToShow  list of link fields to process ( key - result field, value - object field)
+     * object field will be used as result field for numeric keys
      * @param array & $data rows from  Model::getList result
      * @param string $pKey - name of Primary Key field in $data
      * @throws Exception
      */
     protected function addLinkedInfo(Db_Object_Config $cfg, array $fieldsToShow, array  & $data, $pKey)
     {
-        $fields = array_values($fieldsToShow);
-        $fieldsToKeys = array_flip($fieldsToShow);
+        $fieldsToKeys = [];
+        foreach($fieldsToShow as $key=>$val){
+            if(is_numeric($key)){
+                $fieldsToKeys[$val] = $val;
+            }else{
+                $fieldsToKeys[$val] = $key;
+            }
+        }
+
         $links = $cfg->getLinks(
             [
                 Db_Object_Config::LINK_OBJECT,
@@ -410,7 +419,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         foreach ($links as $field=>$config)
         {
-            if(!in_array($field, $fields, true)){
+            if(!isset($fieldsToKeys[$field])){
                 unset($links[$field]);
             }
         }
@@ -472,7 +481,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                     }
 
                     if(!is_array($value))
-                        $valueList = [$value];
+                        $value = [$value];
 
                     foreach($value as $oId)
                     {
