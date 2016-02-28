@@ -303,7 +303,7 @@ Ext.define('designer.eventsEditorWindow',{
 		 		this.loadedConfig = response.data;
 		 		
 		 		if(!Ext.isEmpty(response.data.is_local) && response.data.is_local){
-					this.editor = Ext.create('designer.codeEditor',{
+					me.editor = Ext.create('designer.codeEditor',{
 				       	readOnly:false,
 				       	showSaveBtn:false,
 						flex:1,
@@ -315,9 +315,9 @@ Ext.define('designer.eventsEditorWindow',{
 				        		CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
 				        	},
 				        	"Ctrl-S": function(cm) {me.saveEvent();},
-				        	"Ctrl-Z": function(cm) {cm.undoAction();},
-				        	"Ctrl-Y": function(cm) {cm.redoAction();},
-				        	"Shift-Ctrl-Z": function(cm) {cm.redoAction();}
+				        	"Ctrl-Z": function(cm) {me.editor.undoAction();},
+				        	"Ctrl-Y": function(cm) {me.editor.redoAction();},
+				        	"Shift-Ctrl-Z": function(cm) {me.editor.redoAction();}
 				        }
 				     });
 					
@@ -327,7 +327,7 @@ Ext.define('designer.eventsEditorWindow',{
 
 					this.add(this.dataForm);
 		 		}else{
-					this.editor = Ext.create('designer.codeEditor',{
+					me.editor = Ext.create('designer.codeEditor',{
 				       	readOnly:false,
 				       	showSaveBtn:false,
 						flex:1,
@@ -339,13 +339,13 @@ Ext.define('designer.eventsEditorWindow',{
 				        		CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
 				        	},
 				        	"Ctrl-S": function(cm) {me.saveEvent();},
-				        	"Ctrl-Z": function(cm) {cm.undoAction();},
-				        	"Ctrl-Y": function(cm) {cm.redoAction();},
-				        	"Shift-Ctrl-Z": function(cm) {cm.redoAction();}
+				        	"Ctrl-Z": function(cm) {me.editor.undoAction();},
+				        	"Ctrl-Y": function(cm) {me.editor.redoAction();},
+				        	"Shift-Ctrl-Z": function(cm) {me.editor.redoAction();}
 				        }
 				     });
 		 		}
-		 		this.add(this.editor);
+		 		this.add(me.editor);
 		 		this.saveButton.enable();
 		    },
 		    failure:function() {

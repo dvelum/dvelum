@@ -100,11 +100,9 @@ Ext.define('designer.codeEditor',{
 			matchBrackets: true,
 			readOnly:this.readOnly,
 			extraKeys: keymap,
-			highlightSelectionMatches: {showToken: /\w/},
-			onChange:function(){
-				me.onChange();
-			}
+			highlightSelectionMatches: {showToken: /\w/}
 		});
+		editor.on('change',function(){me.onChange();});
 
 		editor.setValue(this.sourceCode);
 
