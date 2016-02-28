@@ -32,13 +32,19 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * List of ORM objects accepted via linkedlistAction and otitleAction
      * @var array
      */
-    protected $_canViewObjects = array();
+    protected $_canViewObjects = [];
     /**
      * List of ORM object field names displayed in the main list (listAction)
      * They may be assigned a value,
      * as well as an array
      */
     protected $_listFields = '*';
+    /**
+     * List of ORM object link fields displayed with related values in the main list (listAction)
+     * (dictionary, object link, object list) key - result field, value - object field
+     * @var array
+     */
+    protected $_listLinks = [];
 
     public function __construct()
     {
@@ -78,6 +84,11 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         if(empty($data))
             Response::jsonSuccess(array() , array('count' => 0 ));
+
+        if(!empty($this->_listLinks)){
+            $objectConfig = Db_Object_Config::getInstance($this->_objectName);
+            $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
+        }
 
         Response::jsonSuccess($data , array('count' => $dataModel->getCount($filter , $query)));
     }
@@ -367,5 +378,124 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
             Response::jsonError($this->_lang->get('CANT_EXEC'));
         }
+    }
+
+
+    /**
+     * Add related objects info into getList results
+     * @param Db_Object_Config $cfg
+     * @param array $fieldsToShow  list of link fields to process ( key - result field, value - object field)
+     * @param array & $data rows from  Model::getList result
+     * @param string $pKey - name of Primary Key field in $data
+     * @throws Exception
+     */
+    protected function addLinkedInfo(Db_Object_Config $cfg, array $fieldsToShow, array  & $data, $pKey)
+    {
+        $fields = array_values($fieldsToShow);
+        $links = $cfg->getLinks(
+            [
+                Db_Object_Config::LINK_OBJECT,
+                Db_Object_Config::LINK_OBJECT_LIST,
+                Db_Object_Config::LINK_DICTIONARY
+            ],
+            false
+        );
+
+        foreach($fieldsToShow as $resultField => $objectField)
+        {
+            if(!isset($links[$objectField]))
+                throw new Exception($objectField.' is not Link');
+        }
+
+        foreach ($links as $field=>$config)
+        {
+            if(!in_array($field, $fields, true)){
+                unset($links[$field]);
+            }
+        }
+
+        $rowIds = Utils::fetchCol($pKey , $data);
+        $rowObjects = Db_Object::factory($cfg->getName() , $rowIds);
+        $listedObjects = [];
+
+        foreach($rowObjects as $object)
+        {
+            foreach ($links as $field=>$config)
+            {
+                if($config['link_type'] === Db_Object_Config::LINK_DICTIONARY){
+                    continue;
+                }
+
+                if(!isset($listedObjects[$config['object']])){
+                    $listedObjects[$config['object']] = [];
+                }
+
+                $oVal = $object->get($field);
+
+                if(!empty($oVal))
+                {
+                    if(!is_array($oVal)){
+                        $oVal = [$oVal];
+                    }
+                    $listedObjects[$config['object']] = array_merge($listedObjects[$config['object']], array_values($oVal));
+                }
+            }
+        }
+
+        foreach($listedObjects as $object => $ids){
+            $listedObjects[$object] = Db_Object::factory($object, array_unique($ids));
+        }
+
+        foreach ($data as &$row)
+        {
+            if(!isset($rowObjects[$row[$pKey]]))
+                continue;
+
+            foreach ($links as $field => $config)
+            {
+                $list = [];
+                $rowObject = $rowObjects[$row[$pKey]];
+                $value = $rowObject->get($field);
+
+                $row[$field] = '';
+
+                if(!empty($value))
+                {
+                    if($config['link_type'] === Db_Object_Config::LINK_DICTIONARY)
+                    {
+                        $dictionary = Dictionary::factory($config['object']);
+                        if($dictionary->isValidKey($value)){
+                            $row[$field] = $dictionary->getValue($value);
+                        }
+                        continue;
+                    }
+
+                    if(!is_array($value))
+                        $valueList = [$value];
+
+                    foreach($value as $oId)
+                    {
+                        if(isset($listedObjects[$config['object']][$oId])){
+                            $list[] = $this->linkedInfoObjectRenderer($rowObject, $field, $listedObjects[$config['object']][$oId]);
+                        }else{
+                            $list[] = '[' . $oId . '] ('.$this->_lang->get('DELETED').')';
+                        }
+                    }
+                }
+                $row[$field] = implode(', ', $list);
+            }
+        }unset($row);
+    }
+
+    /**
+     * String representation of related object for addLinkedInfo method
+     * @param Db_Object $rowObject
+     * @param string $field
+     * @param Db_Object $relatedObject
+     * @return string
+     */
+    protected function linkedInfoObjectRenderer(Db_Object $rowObject, $field, Db_Object $relatedObject)
+    {
+        return $relatedObject->getTitle();
     }
 }

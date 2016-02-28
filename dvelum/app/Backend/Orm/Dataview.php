@@ -1,5 +1,5 @@
 <?php
-class Backend_Orm_Dataview extends Backend_Controller
+class Backend_Orm_Dataview extends Backend_Controller_Crud
 {
 	public function getModule(){
 		return 'Orm';
@@ -159,75 +159,18 @@ class Backend_Orm_Dataview extends Backend_Controller
 		if($count)
 		{
 			$data = $model->getList($params , false , $fields , false , $query);
-			if(!empty($objectLinks))
-			{
-				$objectIds = array();
-				foreach ($data as $row)
-				{
-					foreach ($objectLinks as $obj=>$fields)
-					{
-						if(!isset($objectIds[$obj]))
-							$objectIds[$obj] = array();
 
-						foreach ($fields as $fName=>$lType)
-							$objectIds[$obj][] = $row[$fName];
+            $fieldsToShow = array_keys($cfg->getLinks(
+                [
+                    Db_Object_Config::LINK_OBJECT,
+                    Db_Object_Config::LINK_OBJECT_LIST,
+                    Db_Object_Config::LINK_DICTIONARY
+                ],
+                false
+            ));
 
-					}
-				}
-
-				foreach ($objectIds as $oName=>&$idsList)
-				{
-					if(empty($idsList))
-						continue;
-
-					array_unique($idsList);
-					$oCfg = Db_Object_Config::getInstance($oName);
-					$linkedObjects = Db_Object::factory($oName , $idsList);
-
-					$titleList = array();
-					if(!empty($linkedObjects))
-						foreach($linkedObjects as $id=>$item)
-							$titleList[$id] = array('id'=>$id , 'title' =>$item->getTitle());
-
-					$idsList = $titleList;
-				}
-			}
-
-            if(!empty($linkLists))
-            {
-                $this->addLinkedListInfo($cfg, $data);
-            }
-
-
-			if(!empty($dictionaries) || !empty($objectLinks))
-			{
-				foreach ($data as &$row)
-				{
-					if(!empty($dictionaries))
-					{
-						foreach ($dictionaries as $col=>$dictName)
-						{
-							$dictionary = Dictionary::factory($dictName);
-							if($dictionary->isValidKey($row[$col]))
-								$row[$col] = '['.$row[$col].'] '.$dictionary->getValue($row[$col]);
-							else
-								$row[$col] = '['.$row[$col].']';
-						}
-					}
-
-					if(!empty($objectLinks))
-					{
-						foreach ($objectLinks as $object=>$fields)
-						{
-							foreach ($fields as $name=>$type)
-							{
-								if(isset($objectIds[$object][$row[$name]]))
-									$row[$name] = '['.$objectIds[$object][$row[$name]]['id'].'] '.$objectIds[$object][$row[$name]]['title'];
-							}
-						}
-					}
-				}
-			}
+            if(!empty($fieldsToShow))
+                $this->addLinkedInfo($cfg, $fieldsToShow, $data, $cfg->getPrimaryKey());
 		}
 
 		Response::jsonSuccess($data , array('count'=>$count));

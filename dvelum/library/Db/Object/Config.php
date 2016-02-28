@@ -573,9 +573,10 @@ class Db_Object_Config
     /**
      * Get a list of fields linking to external objects
      * @param array $linkTypes  - optional link type filter
-     * @return array  field => link_config
+     * @param boolean $groupByObject - group field by linked object, default true
+     * @return array  [objectName=>[field => link_type]] | [field =>["object"=>objectName,"link_type"=>link_type]]
      */
-    public function getLinks($linkTypes = array(Db_Object_Config::LINK_OBJECT,Db_Object_Config::LINK_OBJECT_LIST))
+    public function getLinks($linkTypes = array(Db_Object_Config::LINK_OBJECT,Db_Object_Config::LINK_OBJECT_LIST), $groupByObject = true)
     {
     	$data = array();
     	$fields = $this->getFieldsConfig(true);
@@ -585,7 +586,10 @@ class Db_Object_Config
     		 	&& in_array($cfg['link_config']['link_type'], $linkTypes , true)
     		    && isset($cfg['link_config']['object'])
     		){
-    		   $data[$cfg['link_config']['object']][$name] = $cfg['link_config']['link_type'];
+                if($groupByObject)
+    		        $data[$cfg['link_config']['object']][$name] = $cfg['link_config']['link_type'];
+                else
+                    $data[$name] = ['object'=>$cfg['link_config']['object'],'link_type'=>$cfg['link_config']['link_type']];
     		}
     	}
     	return $data;
