@@ -392,6 +392,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
     protected function addLinkedInfo(Db_Object_Config $cfg, array $fieldsToShow, array  & $data, $pKey)
     {
         $fields = array_values($fieldsToShow);
+        $fieldsToKeys = array_flip($fieldsToShow);
         $links = $cfg->getLinks(
             [
                 Db_Object_Config::LINK_OBJECT,
@@ -465,7 +466,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                     {
                         $dictionary = Dictionary::factory($config['object']);
                         if($dictionary->isValidKey($value)){
-                            $row[$field] = $dictionary->getValue($value);
+                            $row[$fieldsToKeys[$field]] = $dictionary->getValue($value);
                         }
                         continue;
                     }
@@ -482,7 +483,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                         }
                     }
                 }
-                $row[$field] = implode(', ', $list);
+                $row[$fieldsToKeys[$field]] = implode(', ', $list);
             }
         }unset($row);
     }
