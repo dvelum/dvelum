@@ -1,5 +1,5 @@
 <?php
-class Backend_Orm_Dataview extends Backend_Controller
+class Backend_Orm_Dataview extends Backend_Controller_Crud
 {
 	public function getModule(){
 		return 'Orm';
@@ -95,6 +95,10 @@ class Backend_Orm_Dataview extends Backend_Controller
 				  $col->text='<img data-qtip="'.$this->_lang->SEARCH.'" src="'.$this->_configMain->get('wwwroot').'i/system/search.png" height="10"/> ' .$col->text;
 			}
 
+            if($cfg->isMultiLink($name)){
+                $col->sortable = false;
+            }
+
 			if(isset($itemCfg['system']) && $itemCfg['system'])
 				$systemcolumns[]= $col;
 			else
@@ -129,7 +133,7 @@ class Backend_Orm_Dataview extends Backend_Controller
 		$fields = array();
 		$dictionaries = array();
 		$objectLinks = $cfg->getLinks(array(Db_Object_Config::LINK_OBJECT));
-		$multylinks = $cfg->getLinks(array(Db_Object_Config::LINK_OBJECT_LIST));
+		$linkLists = $cfg->getLinks(array(Db_Object_Config::LINK_OBJECT_LIST));
 
 		foreach ($fieldsCfg as $name=>$fCfg)
 		{
@@ -142,7 +146,7 @@ class Backend_Orm_Dataview extends Backend_Controller
 			{
 				$fields[$name] = '"[ text ]"';
 			}
-			else
+			elseif(!$cfg->isVirtual($name))
 			{
 				$fields[] = $name;
 			}
@@ -155,105 +159,22 @@ class Backend_Orm_Dataview extends Backend_Controller
 		if($count)
 		{
 			$data = $model->getList($params , false , $fields , false , $query);
-			if(!empty($objectLinks))
-			{
-				$objectIds = array();
-				foreach ($data as $row)
-				{
-					foreach ($objectLinks as $obj=>$fields)
-					{
-						if(!isset($objectIds[$obj]))
-							$objectIds[$obj] = array();
 
-						foreach ($fields as $fName=>$lType)
-							$objectIds[$obj][] = $row[$fName];
+            $fieldsToShow = array_keys($cfg->getLinks(
+                [
+                    Db_Object_Config::LINK_OBJECT,
+                    Db_Object_Config::LINK_OBJECT_LIST,
+                    Db_Object_Config::LINK_DICTIONARY
+                ],
+                false
+            ));
 
-					}
-				}
-
-				foreach ($objectIds as $oName=>&$idsList)
-				{
-					if(empty($idsList))
-						continue;
-
-					array_unique($idsList);
-					$oCfg = Db_Object_Config::getInstance($oName);
-					$linkedObjects = Db_Object::factory($oName , $idsList);
-
-					$titleList = array();
-					if(!empty($linkedObjects))
-						foreach($linkedObjects as $id=>$item)
-							$titleList[$id] = array('id'=>$id , 'title' =>$item->getTitle());
-
-					$idsList = $titleList;
-				}
-			}
-
-			if(!empty($dictionaries) || !empty($objectLinks) || !empty($multylinks))
-			{
-				foreach ($data as &$row)
-				{
-					if(!empty($dictionaries))
-					{
-						foreach ($dictionaries as $col=>$dictName)
-						{
-							$dictionary = Dictionary::getInstance($dictName);
-							if($dictionary->isValidKey($row[$col]))
-								$row[$col] = '['.$row[$col].'] '.$dictionary->getValue($row[$col]);
-							else
-								$row[$col] = '['.$row[$col].']';
-						}
-					}
-
-					if(!empty($objectLinks))
-					{
-						foreach ($objectLinks as $object=>$fields)
-						{
-							foreach ($fields as $name=>$type)
-							{
-								if(isset($objectIds[$object][$row[$name]]))
-									$row[$name] = '['.$objectIds[$object][$row[$name]]['id'].'] '.$objectIds[$object][$row[$name]]['title'];
-							}
-						}
-					}
-
-					if(!empty($multylinks))
-					{
-						foreach ($multylinks as $obj=>$fCfg)
-						{
-							foreach ($fCfg as $name=>$type)
-							{
-								$list = array();
-								$rec = $row[$name];
-								if(strlen($rec))
-								{
-									$rec = @unserialize($rec);
-									if(!empty($rec))
-									{
-										$ids = Utils::fetchCol('id' , $rec);
-										if(!empty($ids)){
-											$objectsList = Db_Object::factory($cfg->getLinkedObject($name) , $ids);
-										}
-										foreach ($rec as $item){
-											if(isset($objectsList[$item['id']])){
-												$list[]='['.$item['id'].'] '.$objectsList[$item['id']]->getTitle();
-											}else{
-												$list[]='['.$item['id'].'] '.$item['title'].' (deleted)';
-											}
-										}
-									}
-								}
-								$row[$name] = implode(', ', $list);
-							}
-						}
-					}
-				}
-			}
+            if(!empty($fieldsToShow))
+                $this->addLinkedInfo($cfg, $fieldsToShow, $data, $cfg->getPrimaryKey());
 		}
 
 		Response::jsonSuccess($data , array('count'=>$count));
 	}
-
 
 	public function editorconfigAction()
 	{

@@ -32,13 +32,20 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * List of ORM objects accepted via linkedlistAction and otitleAction
      * @var array
      */
-    protected $_canViewObjects = array();
+    protected $_canViewObjects = [];
     /**
      * List of ORM object field names displayed in the main list (listAction)
      * They may be assigned a value,
      * as well as an array
      */
     protected $_listFields = '*';
+    /**
+     * List of ORM object link fields displayed with related values in the main list (listAction)
+     * (dictionary, object link, object list) key - result field, value - object field
+     * object field will be used as result field for numeric keys
+     * @var array
+     */
+    protected $_listLinks = [];
 
     public function __construct()
     {
@@ -79,6 +86,11 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         if(empty($data))
             Response::jsonSuccess(array() , array('count' => 0 ));
 
+        if(!empty($this->_listLinks)){
+            $objectConfig = Db_Object_Config::getInstance($this->_objectName);
+            $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
+        }
+
         Response::jsonSuccess($data , array('count' => $dataModel->getCount($filter , $query)));
     }
 
@@ -97,7 +109,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         try{
             $obj = new Db_Object($this->_objectName , $id);
         }catch(Exception $e){
-            Response::jsonError($this->_lang->CANT_EXEC);
+            Response::jsonError($this->_lang->get('CANT_EXEC'));
         }
 
         $data = $obj->getData();
@@ -105,7 +117,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         /*
          * Prepare object list properties
          */
-        $linkedObjects = $obj->getConfig()->getLinks(array('multy'));
+        $linkedObjects = $obj->getConfig()->getLinks([Db_Object_Config::LINK_OBJECT_LIST]);
 
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
@@ -133,140 +145,29 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      */
     protected function _collectLinksData($fieldName, Db_Object $object , $targetObjectName)
     {
-        if($object->getConfig()->isRevControl()){
-           $result = $this->_collectVcLinks($fieldName , $object, $targetObjectName);
-        }else{
-           $result = $this->_collectLinks($fieldName , $object, $targetObjectName);
-        }
-        return $result;
-    }
-
-    /**
-     * Collect data for "Object List" field under Data Version Control
-     * @param $fieldName
-     * @param Db_Object $object
-     * @param $targetObjectName
-     * @return array
-     */
-    protected function _collectVcLinks($fieldName , Db_Object $object , $targetObjectName)
-    {
-        $result = [];
-        $data = $object->getData();
-        $data = $data[$fieldName];
-
-        if(empty($data))
-            return array();
-
-        $ids = Utils::fetchCol('id' , $data);
-        $data = Utils::rekey('id' , $data);
-
-        $objectConfig = Db_Object_Config::getInstance($targetObjectName);
-        $model = Model::factory(ucfirst($targetObjectName));
-
-        try{
-            $objectsList = Db_Object::factory(ucfirst($targetObjectName) , $ids);
-        }catch (Exception $e){
-            $objectsList =  array();
-        }
-        /*
-         * Find out deleted records
-         */
-        if(empty($objectsList)){
-            $deleted = $ids;
-        }else{
-            $deleted = array_diff($ids , array_keys($objectsList));
-        }
-
-        $result = array();
-        foreach($ids as $id)
-        {
-            if(in_array($id , $deleted)){
-                $item = array(
-                    'id' => $id,
-                    'deleted' => 1,
-                    'title' => $data[$id]['title'],
-                    'published' => 0
-                );
-            }else{
-                /**
-                 * @var Db_Object $dataObject
-                 */
-                $dataObject =  $objectsList[$id];
-                $published = true;
-
-                if($dataObject->getConfig()->isRevControl())
-                    $published = $dataObject->get('published');
-
-                $item = array(
-                    'id' => $id,
-                    'deleted' => 0,
-                    'title' => $dataObject->getTitle(),
-                    'published' => $published
-                );
-            }
-            $result[] = $item;
-        }
-        return $result;
-    }
-
-    /**
-     * Collect data for "Object List" field
-     * @param $fieldName
-     * @param Db_Object $object
-     * @param $targetObjectName
-     * @return array
-     */
-    protected function _collectLinks($fieldName , Db_Object $object , $targetObjectName)
-    {
         $result = [];
         $srcObjectConfig = $object->getConfig();
 
-        if($srcObjectConfig->isManyToManyLink($fieldName))
-        {
-            $linksObject = $srcObjectConfig->getRelationsObject($fieldName);
-            $model = Model::factory($linksObject);
-            $data = $model->getList(
-                ['sort'=>'order_no','dir'=>'ASC'],
-                ['source_id' => $object->getId()],
-                [
-                    'id' => 'target_id'
-                ]
-            );
-        }else{
-            $linksObject = $this->_configMain->get('orm_links_object');
-            $model = Model::factory($linksObject);
-            $data = $model->getList(
-                ['sort'=>'order','dir'=>'ASC'],
-                [
-                    'src' => $object->getName(),
-                    'src_id' => $object->getId(),
-                    'src_field' =>$fieldName,
-                    'target' => $targetObjectName
-                ],
-                [
-                    'id' => 'target_id'
-                ]
-            );
-        }
+        $data = $object->get($fieldName);
 
         if(!empty($data))
         {
-            $list = Db_Object::factory($targetObjectName , Utils::fetchCol('id',$data));
+            $list = Db_Object::factory($targetObjectName , $data);
             $isVc = Db_Object_Config::getInstance($targetObjectName)->isRevControl();
-            foreach($data as $value){
-                if(isset($list[$value['id']])){
+            foreach($data as $id){
+                if(isset($list[$id])){
                     $result[] = [
-                        'id' => $value['id'],
+                        'id' => $id,
                         'deleted' => 0,
-                        'title' => $list[$value['id']]->getTitle(),
-                        'published' => $isVc?$list[$value['id']]->get('published'):1
+                        'title' => $list[$id]->getTitle(),
+                        'published' => $isVc?$list[$id]->get('published'):1
                     ];
 
                 }else{
                     $result[] = [
-                        'id' => $value['id'],
+                        'id' => $id,
                         'deleted' => 1,
-                        'title' => $value['id'],
+                        'title' => $id,
                         'published' => 0
                     ];
                 }
@@ -478,5 +379,133 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
             Response::jsonError($this->_lang->get('CANT_EXEC'));
         }
+    }
+
+
+    /**
+     * Add related objects info into getList results
+     * @param Db_Object_Config $cfg
+     * @param array $fieldsToShow  list of link fields to process ( key - result field, value - object field)
+     * object field will be used as result field for numeric keys
+     * @param array & $data rows from  Model::getList result
+     * @param string $pKey - name of Primary Key field in $data
+     * @throws Exception
+     */
+    protected function addLinkedInfo(Db_Object_Config $cfg, array $fieldsToShow, array  & $data, $pKey)
+    {
+        $fieldsToKeys = [];
+        foreach($fieldsToShow as $key=>$val){
+            if(is_numeric($key)){
+                $fieldsToKeys[$val] = $val;
+            }else{
+                $fieldsToKeys[$val] = $key;
+            }
+        }
+
+        $links = $cfg->getLinks(
+            [
+                Db_Object_Config::LINK_OBJECT,
+                Db_Object_Config::LINK_OBJECT_LIST,
+                Db_Object_Config::LINK_DICTIONARY
+            ],
+            false
+        );
+
+        foreach($fieldsToShow as $resultField => $objectField)
+        {
+            if(!isset($links[$objectField]))
+                throw new Exception($objectField.' is not Link');
+        }
+
+        foreach ($links as $field=>$config)
+        {
+            if(!isset($fieldsToKeys[$field])){
+                unset($links[$field]);
+            }
+        }
+
+        $rowIds = Utils::fetchCol($pKey , $data);
+        $rowObjects = Db_Object::factory($cfg->getName() , $rowIds);
+        $listedObjects = [];
+
+        foreach($rowObjects as $object)
+        {
+            foreach ($links as $field=>$config)
+            {
+                if($config['link_type'] === Db_Object_Config::LINK_DICTIONARY){
+                    continue;
+                }
+
+                if(!isset($listedObjects[$config['object']])){
+                    $listedObjects[$config['object']] = [];
+                }
+
+                $oVal = $object->get($field);
+
+                if(!empty($oVal))
+                {
+                    if(!is_array($oVal)){
+                        $oVal = [$oVal];
+                    }
+                    $listedObjects[$config['object']] = array_merge($listedObjects[$config['object']], array_values($oVal));
+                }
+            }
+        }
+
+        foreach($listedObjects as $object => $ids){
+            $listedObjects[$object] = Db_Object::factory($object, array_unique($ids));
+        }
+
+        foreach ($data as &$row)
+        {
+            if(!isset($rowObjects[$row[$pKey]]))
+                continue;
+
+            foreach ($links as $field => $config)
+            {
+                $list = [];
+                $rowObject = $rowObjects[$row[$pKey]];
+                $value = $rowObject->get($field);
+
+                $row[$field] = '';
+
+                if(!empty($value))
+                {
+                    if($config['link_type'] === Db_Object_Config::LINK_DICTIONARY)
+                    {
+                        $dictionary = Dictionary::factory($config['object']);
+                        if($dictionary->isValidKey($value)){
+                            $row[$fieldsToKeys[$field]] = $dictionary->getValue($value);
+                        }
+                        continue;
+                    }
+
+                    if(!is_array($value))
+                        $value = [$value];
+
+                    foreach($value as $oId)
+                    {
+                        if(isset($listedObjects[$config['object']][$oId])){
+                            $list[] = $this->linkedInfoObjectRenderer($rowObject, $field, $listedObjects[$config['object']][$oId]);
+                        }else{
+                            $list[] = '[' . $oId . '] ('.$this->_lang->get('DELETED').')';
+                        }
+                    }
+                }
+                $row[$fieldsToKeys[$field]] = implode(', ', $list);
+            }
+        }unset($row);
+    }
+
+    /**
+     * String representation of related object for addLinkedInfo method
+     * @param Db_Object $rowObject
+     * @param string $field
+     * @param Db_Object $relatedObject
+     * @return string
+     */
+    protected function linkedInfoObjectRenderer(Db_Object $rowObject, $field, Db_Object $relatedObject)
+    {
+        return $relatedObject->getTitle();
     }
 }

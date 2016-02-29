@@ -73,7 +73,7 @@ class Modules_Generator
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
+          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) && !$objectConfig->isLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -100,11 +100,26 @@ class Modules_Generator
 
       array_unshift($objectFields , $objectConfig->getPrimaryKey());
 
-      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name .
-      '_Controller extends Backend_Controller_Crud_Vc{' . "\n" .
-      '	protected $_listFields = array("' . implode('","' , $dataFields) . '");' . "\n" .
-      '  protected $_canViewObjects = array("' . implode('","' , $linkedObjects) . '");' . "\n" .
-      '}	';
+      $linksToShow = array_keys($objectConfig->getLinks(
+          [
+              Db_Object_Config::LINK_OBJECT,
+              Db_Object_Config::LINK_OBJECT_LIST,
+              Db_Object_Config::LINK_DICTIONARY
+          ],
+          false
+      ));
+
+      foreach($linksToShow as $k=>$v){
+          if($objectConfig->isSystem($v)){
+              unset($linksToShow[$v]);
+          }
+      }
+
+      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc{' . "\n" .
+      '	 protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n" .
+      '	 protected $_listLinks = ["' . implode('","' , $linksToShow) . '"];' . "\n" .
+      '  protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];' . "\n" .
+      '}';
 
       /*
        * Create controller
@@ -464,7 +479,7 @@ class Modules_Generator
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
+          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) && !$objectConfig->isLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -489,10 +504,25 @@ class Modules_Generator
 
       array_unshift($objectFields , $primaryKey);
 
-      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name .
-      '_Controller extends Backend_Controller_Crud{' . "\n" .
-      '	protected $_listFields = array("' . implode('","' , $dataFields) . '");' . "\n" .
-      ' protected $_canViewObjects = array("' . implode('","' , $linkedObjects) . '");' . "\n" .
+      $linksToShow = array_keys($objectConfig->getLinks(
+          [
+              Db_Object_Config::LINK_OBJECT,
+              Db_Object_Config::LINK_OBJECT_LIST,
+              Db_Object_Config::LINK_DICTIONARY
+          ],
+          false
+      ));
+
+      foreach($linksToShow as $k=>$v){
+          if($objectConfig->isSystem($v)){
+              unset($linksToShow[$v]);
+          }
+      }
+
+      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud{' . "\n" .
+      ' protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n" .
+      ' protected $_listLinks = ["' . implode('","' , $linksToShow) . '"];' . "\n" .
+      ' protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];' . "\n" .
       '} ';
 
       /*

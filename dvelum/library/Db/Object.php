@@ -24,11 +24,11 @@
  */
 class Db_Object
 {
-   /**
-	* Error log adapter
-	* @var Log
-	*/
-	static protected $_log = false;
+    /**
+     * Error log adapter
+     * @var Log
+     */
+    static protected $_log = false;
 
     protected $_name;
     /**
@@ -92,12 +92,12 @@ class Db_Object
         $this->_acl = $this->_config->getAcl();
 
         if($this->_id){
-           $this->_checkCanRead();
-           $this->_loadData();
+            $this->_checkCanRead();
+            $this->_loadData();
         }else{
-           if($this->_acl && !static::$_disableAclCheck) {
-               $this->_checkCanCreate();
-           }
+            if($this->_acl && !static::$_disableAclCheck) {
+                $this->_checkCanCreate();
+            }
         }
     }
 
@@ -107,12 +107,49 @@ class Db_Object
      */
     protected function _loadData()
     {
-       $data =  $this->_model->getItem($this->_id);
+        $data =  $this->_model->getItem($this->_id);
 
-       if(empty($data))
+        if(empty($data))
             throw new Exception('Cannot find object '.$this->_name.':'.$this->_id);
 
-       $this->_setRawData($data);
+        $links = $this->_config->getLinks([Db_Object_Config::LINK_OBJECT_LIST]);
+
+        if(!empty($links))
+        {
+            foreach($links as $object => $fields)
+            {
+                foreach($fields as $field=>$linkType)
+                {
+                    if($this->_config->isManyToManyLink($field)){
+                        $relationsObject = $this->_config->getRelationsObject($field);
+                        $relationsData = Model::factory($relationsObject)->getList(
+                            ['sort'=>'order_no', 'dir' =>'ASC'],
+                            ['source_id'=>$this->_id],
+                            ['target_id']
+                        );
+                    }else{
+                        $linkedObject = $this->_config->getLinkedObject($field);
+                        $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
+                        $linksModel = Model::factory($linksObject);
+                        $relationsData = $linksModel->getList(
+                            ['sort'=>'order','dir'=>'ASC'],
+                            [
+                                'src' => $this->_name,
+                                'src_id' => $this->_id,
+                                'src_field' =>$field,
+                                'target' => $linkedObject
+                            ],
+                            ['target_id']
+                        );
+                    }
+                    if(!empty($relationsData)){
+                        $data[$field] = Utils::fetchCol('target_id',$relationsData);
+                    }
+                }
+            }
+        }
+
+        $this->_setRawData($data);
     }
 
     /**
@@ -132,9 +169,6 @@ class Db_Object
 
         foreach($data as $field => &$value)
         {
-            if($this->_config->isMultiLink($field) && strlen($value))
-                $value = unserialize($value);
-
             if($this->getConfig()->isBoolean($field)){
                 if($value)
                     $value = true;
@@ -168,8 +202,8 @@ class Db_Object
      */
     public function getData($withUpdates = true)
     {
-      if($this->_acl)
-          $this->_checkCanRead();
+        if($this->_acl)
+            $this->_checkCanRead();
 
         $data = $this->_data;
         $data[$this->_primaryKey] = $this->_id;
@@ -204,17 +238,17 @@ class Db_Object
      */
     public function getTable()
     {
-    	return $this->_model->table();
+        return $this->_model->table();
     }
 
     /**
      * Check if there are object property changes
-	   * not saved in the database
+     * not saved in the database
      * @return boolean
      */
     public function hasUpdates()
     {
-         return !empty($this->_updates);
+        return !empty($this->_updates);
     }
     /**
      * Get ORM configuration object (data structure helper)
@@ -232,7 +266,7 @@ class Db_Object
     public function getUpdates()
     {
         if($this->_acl)
-          $this->_checkCanRead();
+            $this->_checkCanRead();
 
         return $this->_updates;
     }
@@ -258,8 +292,8 @@ class Db_Object
         if(empty($this->_updates))
             return;
 
-         foreach ($this->_updates as $k=>$v)
-             $this->_data[$k] = $v;
+        foreach ($this->_updates as $k=>$v)
+            $this->_data[$k] = $v;
 
         $this->_updates = array();
     }
@@ -276,7 +310,7 @@ class Db_Object
 
     /**
      * Get the related object name for the field
-	   * (available if the object field is a link to another object)
+     * (available if the object field is a link to another object)
      * @param string $field - field name
      * @return string
      */
@@ -302,12 +336,12 @@ class Db_Object
         {
             case 'object':
             case 'multy':
-                   return self::objectExists($propConf['link_config']['object'], $value);
+                return self::objectExists($propConf['link_config']['object'], $value);
                 break;
             case 'dictionary':
-            	$dictionary = Dictionary::getInstance($propConf['link_config']['object']);
-            	return $dictionary->isValidKey($value);
-            	break;
+                $dictionary = Dictionary::getInstance($propConf['link_config']['object']);
+                return $dictionary->isValidKey($value);
+                break;
         }
         return false;
     }
@@ -320,8 +354,8 @@ class Db_Object
      */
     static public function objectExists($name , $ids)
     {
-    	if(!Db_Object_Config::configExists($name))
-    		return false;
+        if(!Db_Object_Config::configExists($name))
+            return false;
 
         try {
             $cfg = Db_Object_Config::getInstance($name);
@@ -342,7 +376,7 @@ class Db_Object
 
         foreach ($ids as $v)
             if(!in_array(intval($v) , $data , true))
-                 return false;
+                return false;
         return true;
     }
 
@@ -385,9 +419,9 @@ class Db_Object
             if(is_array($value) && !empty($value[0])){
                 if(!$this->_validateLink($name , $value))
                     throw new Exception('Invalid property value');
-                $value = $this->_collectLinksData($name , $value);
+
             } else {
-                $value = '';
+                $value = [];
             }
         }
         elseif ($this->_config->isDictionaryLink($name))
@@ -472,40 +506,7 @@ class Db_Object
         }
 
         $this->_updates[$name] = $value;
-
         return true;
-    }
-
-    protected function _collectLinksData($field , $ids)
-    {
-        $ids = array_map('intval', $ids);
-        $linkedObjectConfig = Db_Object_Config::getInstance($this->getLinkedObject($field));
-        $linkedObjectName =  $linkedObjectConfig->getName();
-        $pKey = $linkedObjectConfig->getPrimaryKey();
-        /*
-         * Init object model
-         */
-        $model = Model::factory($linkedObjectName);
-        /*
-         * Find title field for link
-         */
-        $title = $pKey;
-        $lt = $linkedObjectConfig->getLinkTitle();
-        if($lt)
-            $title = $lt;
-
-        $objects = Db_Object::factory($linkedObjectName, $ids);
-
-        $result = array();
-        foreach ($ids as $v)
-        {
-            if(!isset($objects[$v]))
-                throw new Exception('Invalid link');
-
-            $o = $objects[$v];
-            $result[$v] = array('id'=>$v , 'title'=>$o->getTitle());
-        }
-        return $result;
     }
 
     /**
@@ -516,21 +517,21 @@ class Db_Object
      */
     public function __set($key , $value)
     {
-    	if($key===$this->_primaryKey)
-    		$this->setId($value);
-    	else
-        	$this->set($key, $value);
+        if($key===$this->_primaryKey)
+            $this->setId($value);
+        else
+            $this->set($key, $value);
     }
 
     public function __isset($key)
     {
-      if($key === $this->_primaryKey)
-        return isset($this->_id);
+        if($key === $this->_primaryKey)
+            return isset($this->_id);
 
-      if(!isset($this->_data[$key]) && !isset($this->_updates[$key]))
-        return false;
+        if(!isset($this->_data[$key]) && !isset($this->_updates[$key]))
+            return false;
 
-      return true;
+        return true;
     }
     /**
      * @param string $key
@@ -539,15 +540,15 @@ class Db_Object
      */
     public function __get($key)
     {
-    	if($key===$this->_primaryKey)
-    		return $this->getId();
+        if($key===$this->_primaryKey)
+            return $this->getId();
 
-    	return $this->get($key);
+        return $this->get($key);
     }
 
     /**
      * Get the object field value
- 	 * If field value was updated method returns new value
+     * If field value was updated method returns new value
      * otherwise returns old value
      * @param string $name - field name
      * @throws Exception
@@ -555,24 +556,24 @@ class Db_Object
      */
     public function get($name)
     {
-         if($this->_acl)
+        if($this->_acl)
             $this->_checkCanRead();
 
-         if($name === $this->_primaryKey)
+        if($name === $this->_primaryKey)
             return $this->getId();
 
-         if(!$this->fieldExists($name))
+        if(!$this->fieldExists($name))
             throw new Exception('Invalid property requested ['.$name.']');
 
-         $value = null;
+        $value = null;
 
-         if(isset($this->_data[$name]))
-              $value = $this->_data[$name];
+        if(isset($this->_data[$name]))
+            $value = $this->_data[$name];
 
-         if(isset($this->_updates[$name]))
-              $value = $this->_updates[$name];
+        if(isset($this->_updates[$name]))
+            $value = $this->_updates[$name];
 
-         return $value;
+        return $value;
     }
 
     /**
@@ -584,22 +585,22 @@ class Db_Object
      */
     public function getOld($name)
     {
-      if($this->_acl)
-          $this->_checkCanRead();
+        if($this->_acl)
+            $this->_checkCanRead();
 
-      if(!$this->fieldExists($name))
-          throw new Exception('Invalid property requested ['.$name.']');
-      return $this->_data[$name];
+        if(!$this->fieldExists($name))
+            throw new Exception('Invalid property requested ['.$name.']');
+        return $this->_data[$name];
     }
 
-   /**
-    * Save changes
-    * @param boolean $useTransaction — using a transaction when changing data is optional.
-    * If data update in your code is carried out within an external transaction
-    * set the value to  false,
-    * otherwise, the first update will lead to saving the changes
-    * @return boolean;
-    */
+    /**
+     * Save changes
+     * @param boolean $useTransaction — using a transaction when changing data is optional.
+     * If data update in your code is carried out within an external transaction
+     * set the value to  false,
+     * otherwise, the first update will lead to saving the changes
+     * @return boolean;
+     */
     public function save($useTransaction = true)
     {
         if($this->_acl){
@@ -694,24 +695,24 @@ class Db_Object
 
     /**
      * Deleting an object
-	 * @param boolean $useTransaction — using a transaction when changing data is optional.
-	 * If data update in your code is carried out within an external transaction
-	 * set the value to  false,
-	 * otherwise, the first update will lead to saving the changes
-	 * @return boolean - success
+     * @param boolean $useTransaction — using a transaction when changing data is optional.
+     * If data update in your code is carried out within an external transaction
+     * set the value to  false,
+     * otherwise, the first update will lead to saving the changes
+     * @return boolean - success
      */
     public function delete($useTransaction = true)
     {
         if($this->_acl){
-          try{
-              $this->_checkCanDelete();
-          }catch (Exception $e){
-              $this->_errors[] = $e->getMessage();
+            try{
+                $this->_checkCanDelete();
+            }catch (Exception $e){
+                $this->_errors[] = $e->getMessage();
 
-              if(self::$_log)
-                  self::$_log->log($e->getMessage());
-              return false;
-          }
+                if(self::$_log)
+                    self::$_log->log($e->getMessage());
+                return false;
+            }
         }
         $store  = $this->_model->getStore();
         return $store->delete($this, $useTransaction);
@@ -724,10 +725,10 @@ class Db_Object
      */
     public function serializeLinks($data)
     {
-        $isRev = $this->_config->isRevControl();
-        foreach ($data as $k=>&$v){
-            if($this->_config->isMultiLink($k) && !empty($v)) {
-                $isRev? $v = serialize($v): $v = '';
+        foreach ($data as $k=>$v)
+        {
+            if($this->_config->isMultiLink($k)) {
+                unset($data[$k]);
             }
         }
         return $data;
@@ -735,7 +736,7 @@ class Db_Object
 
     /**
      * Validate unique fields, object field groups
-	 * Returns errors array or returns false, is used for ExtJS forms
+     * Returns errors array or returns false, is used for ExtJS forms
      * @property boolean $new
      * @return mixed false / array
      */
@@ -749,7 +750,7 @@ class Db_Object
                 continue;
 
             if(!$this->_config->isUnique($k))
-            	continue;
+                continue;
 
             $value  = $this->get($k);
             if(is_array($value))
@@ -762,14 +763,14 @@ class Db_Object
                     if(!isset($uniqGroups[$val]))
                         $uniqGroups[$val] = array();
 
-                 	$uniqGroups[$val][$k] = $value;
+                    $uniqGroups[$val][$k] = $value;
                 }
             }
             else
             {
-            	$v['unique'] = strval($v['unique']);
+                $v['unique'] = strval($v['unique']);
 
-            	if(!isset($uniqGroups[$v['unique']]))
+                if(!isset($uniqGroups[$v['unique']]))
                     $uniqGroups[$v['unique']] = array();
 
                 $uniqGroups[$v['unique']][$k] = $value;
@@ -783,28 +784,28 @@ class Db_Object
 
         foreach ($uniqGroups as $group)
         {
-             $sql = $db->select()
-                        ->from($this->_model->table() , array('count'=>'COUNT(*)'));
+            $sql = $db->select()
+                ->from($this->_model->table() , array('count'=>'COUNT(*)'));
 
-             if($this->getId())
-                 $sql->where(' '.$db->quoteIdentifier($this->_primaryKey).' != ?', $this->getId());
+            if($this->getId())
+                $sql->where(' '.$db->quoteIdentifier($this->_primaryKey).' != ?', $this->getId());
 
-             foreach ($group as $k=>$v){
-                 if($k===$this->_primaryKey)
-             	 	  continue;
-                 $sql->where($db->quoteIdentifier($k) . ' =?' , $v);
-             }
+            foreach ($group as $k=>$v){
+                if($k===$this->_primaryKey)
+                    continue;
+                $sql->where($db->quoteIdentifier($k) . ' =?' , $v);
+            }
 
-             $count = $db->fetchOne($sql);
+            $count = $db->fetchOne($sql);
 
-             if($count > 0){
-                 foreach ($group as $k=>&$v){
-                     $v = Lang::lang()->get('SB_UNIQUE');
-                 }unset($v);
-                 return $group;
-             }
-         }
-         return false;
+            if($count > 0){
+                foreach ($group as $k=>&$v){
+                    $v = Lang::lang()->get('SB_UNIQUE');
+                }unset($v);
+                return $group;
+            }
+        }
+        return false;
     }
 
     /**
@@ -823,7 +824,7 @@ class Db_Object
     {
         $title = $this->_config->getLinkTitle();
         if(strpos($title , '{')!==false){
-         $fields = $this->_config->getFieldsConfig(true);
+            $fields = $this->_config->getFieldsConfig(true);
             foreach($fields as $name => $cfg){
                 $title = str_replace('{'.$name.'}' , (string) $this->get($name) , $title );
             }
@@ -845,23 +846,78 @@ class Db_Object
      */
     static public function factory($name , $id = false)
     {
-       if(!is_array($id))
-          return new Db_Object($name , $id);
+        if(!is_array($id))
+            return new Db_Object($name , $id);
 
-       $list = array();
-       $model = Model::factory($name);
-       $data = $model->getItems($id);
+        $list = array();
+        $model = Model::factory($name);
+        $data = $model->getItems($id);
 
-       static::$_disableAclCheck = true;
-       foreach ($data as $item)
-       {
-          $o = new Db_Object($name);
-          $o->setId($item[$o->_primaryKey]);
-          $o->_setRawData($item);
-          $list[$item[$o->_primaryKey]] = $o;
-       }
-       static::$_disableAclCheck = false;
-       return $list;
+        static::$_disableAclCheck = true;
+
+        $config = Db_Object_Config::getInstance($name);
+
+        /*
+         * Load links info
+         */
+        $links = $config->getLinks([Db_Object_Config::LINK_OBJECT_LIST]);
+        $linksData = [];
+
+        if(!empty($links))
+        {
+            foreach($links as $object => $fields)
+            {
+                foreach($fields as $field=>$linkType)
+                {
+                    if($config->isManyToManyLink($field)){
+                        $relationsObject = $config->getRelationsObject($field);
+                        $relationsData = Model::factory($relationsObject)->getList(
+                            ['sort'=>'order_no', 'dir' =>'ASC'],
+                            ['source_id'=>$id],
+                            ['target_id','source_id']
+                        );
+                    }else{
+                        $linkedObject = $config->getLinkedObject($field);
+                        $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
+                        $linksModel = Model::factory($linksObject);
+                        $relationsData = $linksModel->getList(
+                            ['sort'=>'order','dir'=>'ASC'],
+                            [
+                                'src' => $name,
+                                'src_id' => $id,
+                                'src_field' => $field,
+                                'target' => $linkedObject
+                            ],
+                            ['target_id','source_id'=>'src_id']
+                        );
+                    }
+                    if(!empty($relationsData)){
+                        $linksData[$field] = Utils::groupByKey('source_id',$relationsData);
+                    }
+                }
+            }
+        }
+
+        foreach ($data as $item)
+        {
+            $o = new Db_Object($name);
+            /*
+             * Apply links info
+             */
+            if(!empty($linksData)){
+                foreach($linksData as $field => $source){
+                    if(isset($source[$item[$o->_primaryKey]])){
+                        $item[$field] = Utils::fetchCol('target_id' , $source[$item[$o->_primaryKey]]);
+                    }
+                }
+            }
+
+            $o->setId($item[$o->_primaryKey]);
+            $o->_setRawData($item);
+            $list[$item[$o->_primaryKey]] = $o;
+        }
+        static::$_disableAclCheck = false;
+        return $list;
     }
 
     /**
@@ -873,10 +929,10 @@ class Db_Object
         self::$_log = $log;
     }
 
-   /**
-    * Check for required fields
-    * @return boolean|array
-    */
+    /**
+     * Check for required fields
+     * @return boolean|array
+     */
     protected function _hasRequired()
     {
         $emptyFields = array();
@@ -884,17 +940,17 @@ class Db_Object
 
         foreach ($fields as $name)
         {
-          if(!$this->_config->isRequired($name))
-              continue;
+            if(!$this->_config->isRequired($name))
+                continue;
 
-          $val = $this->get($name);
-          if(!strlen((string)$val))
-              $emptyFields[]= $name;
-		}
+            $val = $this->get($name);
+            if(!strlen((string)$val))
+                $emptyFields[]= $name;
+        }
 
-		if(empty($emptyFields))
+        if(empty($emptyFields))
             return true;
-		else
+        else
             return $emptyFields;
     }
     /**
@@ -903,19 +959,19 @@ class Db_Object
      */
     public function getErrors()
     {
-      return $this->_errors;
+        return $this->_errors;
     }
 
     protected function _checkCanRead()
     {
-      if($this->_acl && !$this->_acl->canRead($this))
-          throw new Exception('You do not have permission to view data in this object ['.$this->getName().':'.$this->getId().'].');
+        if($this->_acl && !$this->_acl->canRead($this))
+            throw new Exception('You do not have permission to view data in this object ['.$this->getName().':'.$this->getId().'].');
     }
 
     protected function _checkCanEdit()
     {
-      if($this->_acl && !$this->_acl->canEdit($this))
-          throw new Exception('You do not have permission to edit data in this object ['.$this->getName().':'.$this->getId().'].');
+        if($this->_acl && !$this->_acl->canEdit($this))
+            throw new Exception('You do not have permission to edit data in this object ['.$this->getName().':'.$this->getId().'].');
     }
 
     protected function _checkCanDelete()
@@ -932,8 +988,8 @@ class Db_Object
 
     protected function _checkCanPublish()
     {
-    	if($this->_acl && !$this->_acl->canPublish($this))
-    		throw new Exception('You do not have permission to publish object ['.$this->getName().'].');
+        if($this->_acl && !$this->_acl->canPublish($this))
+            throw new Exception('You do not have permission to publish object ['.$this->getName().'].');
     }
     /**
      * Unpublish VC object
@@ -943,28 +999,28 @@ class Db_Object
      */
     public function unpublish($log = true , $useTransaction = true)
     {
-    	if($this->_acl){
+        if($this->_acl){
             try{
-              $this->_checkCanPublish();
+                $this->_checkCanPublish();
             }catch (Exception $e){
-              $this->_errors[] = $e->getMessage();
+                $this->_errors[] = $e->getMessage();
 
-              if(self::$_log)
-                  self::$_log->log($e->getMessage());
-              return false;
+                if(self::$_log)
+                    self::$_log->log($e->getMessage());
+                return false;
             }
         }
 
-    	$store  = $this->_model->getStore();
-    	if(self::$_log)
-    		$store->setLog(self::$_log);
+        $store  = $this->_model->getStore();
+        if(self::$_log)
+            $store->setLog(self::$_log);
 
-    	$this->published_version = 0;
-    	$this->published = false;
+        $this->published_version = 0;
+        $this->published = false;
         $this->date_updated = date('Y-m-d H:i:s');
         $this->editor_id = User::getInstance()->getId();
 
-    	return $store->unpublish($this , $log , $useTransaction);
+        return $store->unpublish($this , $log , $useTransaction);
     }
 
     /**
@@ -977,47 +1033,47 @@ class Db_Object
      */
     public function publish($version = false , $log = true , $useTransaction = true)
     {
-    	if($this->_acl){
-    		try{
-    			$this->_checkCanPublish();
-    		}catch (Exception $e){
-    			$this->_errors[] = $e->getMessage();
+        if($this->_acl){
+            try{
+                $this->_checkCanPublish();
+            }catch (Exception $e){
+                $this->_errors[] = $e->getMessage();
 
-    			if(self::$_log)
-    				self::$_log->log($e->getMessage());
-    			return false;
-    		}
-    	}
+                if(self::$_log)
+                    self::$_log->log($e->getMessage());
+                return false;
+            }
+        }
 
-    	$store  = $this->_model->getStore();
+        $store  = $this->_model->getStore();
 
-    	if(self::$_log)
-    		$store->setLog(self::$_log);
+        if(self::$_log)
+            $store->setLog(self::$_log);
 
-    	if($version && $version !== $this->getVersion())
-    	{
-    		try{
-    			$this->loadVersion($version);
-    		}
-    		catch (Exception $e)
-    		{
-    			$this->_errors[] = $e->getMessage();
+        if($version && $version !== $this->getVersion())
+        {
+            try{
+                $this->loadVersion($version);
+            }
+            catch (Exception $e)
+            {
+                $this->_errors[] = $e->getMessage();
 
-    			if(self::$_log)
-    				self::$_log->log($e->getMessage());
-    			return false;
-    		}
-    	}
+                if(self::$_log)
+                    self::$_log->log($e->getMessage());
+                return false;
+            }
+        }
 
-    	$this->published = true;
+        $this->published = true;
         $this->date_updated = date('Y-m-d H:i:s');
         $this->editor_id = User::getInstance()->getId();
 
-    	if(empty($this->date_published))
-    		$this->set('date_published' , date('Y-m-d H:i:s'));
+        if(empty($this->date_published))
+            $this->set('date_published' , date('Y-m-d H:i:s'));
 
-    	$this->published_version = $this->getVersion();
-    	return $store->publish($this , $log , $useTransaction);
+        $this->published_version = $this->getVersion();
+        return $store->publish($this , $log , $useTransaction);
     }
     /**
      * Get loaded version
@@ -1025,7 +1081,7 @@ class Db_Object
      */
     public function getVersion()
     {
-    	return $this->_version;
+        return $this->_version;
     }
     /**
      * Load version
@@ -1035,20 +1091,20 @@ class Db_Object
      */
     public function loadVersion($vers)
     {
-    	$this->rejectChanges();
-    	$versionObject  = $this->_model->getStore()->getVersionObjectName();
+        $this->rejectChanges();
+        $versionObject  = $this->_model->getStore()->getVersionObjectName();
 
-    	$vc = Model::factory($versionObject);
+        $vc = Model::factory($versionObject);
 
-    	$data = $vc->getData($this->getName() , $this->getId() , $vers);
+        $data = $vc->getData($this->getName() , $this->getId() , $vers);
 
-    	$pKey = $this->_config->getPrimaryKey();
+        $pKey = $this->_config->getPrimaryKey();
 
-    	if(isset($data[$pKey]))
-    		unset($data[$pKey]);
+        if(isset($data[$pKey]))
+            unset($data[$pKey]);
 
-    	if(empty($data))
-    		throw new Exception('Cannot load version for ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers);
+        if(empty($data))
+            throw new Exception('Cannot load version for ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers);
 
         $iv = false;
         $ivField = false;
@@ -1058,14 +1114,11 @@ class Db_Object
                 $iv = base64_decode($data[$ivField]);
         }
 
-    	foreach($data as $k => $v)
-    	{
-    		if($this->fieldExists($k))
-    		{
-    			if($this->_config->isMultiLink($k) && ! empty($v))
-    				$v = array_keys($v);
-
-    			try{
+        foreach($data as $k => $v)
+        {
+            if($this->fieldExists($k))
+            {
+                try{
 
                     if($this->_config->isEncrypted($k)){
                         if(!empty($iv)){
@@ -1076,19 +1129,19 @@ class Db_Object
                     if($k!== $this->_config->getPrimaryKey() && $k!== 'author_id')
                         $this->set($k , $v);
 
-    			}catch(Exception $e){
-    			   throw new Exception('Cannot load version data ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers.'. This version contains incompatible data. ' . $e->getMessage());
-    			}
-    		}
-    	}
-    	$this->_version = $vers;
+                }catch(Exception $e){
+                    throw new Exception('Cannot load version data ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers.'. This version contains incompatible data. ' . $e->getMessage());
+                }
+            }
+        }
+        $this->_version = $vers;
     }
     /**
      * Reject changes
      */
     public function rejectChanges()
     {
-    	$this->_updates = [];
+        $this->_updates = [];
     }
     /**
      * Save object as new version
@@ -1098,9 +1151,9 @@ class Db_Object
      */
     public function saveVersion($log = true , $useTransaction = true)
     {
-    	if(!$this->_config->isRevControl()){
-    		return $this->save($log ,$useTransaction);
-    	}
+        if(!$this->_config->isRevControl()){
+            return $this->save($log ,$useTransaction);
+        }
 
         if($this->_config->hasEncrypted()){
             $ivField = $this->_config->getIvField();
@@ -1110,45 +1163,45 @@ class Db_Object
             }
         }
 
-    	if($this->_acl)
-    	{
-    		try{
-    			$this->_checkCanEdit();
-    		}catch (Exception $e){
-    			$this->_errors[] = $e->getMessage();
+        if($this->_acl)
+        {
+            try{
+                $this->_checkCanEdit();
+            }catch (Exception $e){
+                $this->_errors[] = $e->getMessage();
 
-    			if(self::$_log)
-    				self::$_log->log($e->getMessage());
-    			return false;
-    		}
-    	}
+                if(self::$_log)
+                    self::$_log->log($e->getMessage());
+                return false;
+            }
+        }
 
-    	if(!$this->getId())
-    	{
-    		$this->published = false;
-    		$this->author_id = User::getInstance()->getId();
+        if(!$this->getId())
+        {
+            $this->published = false;
+            $this->author_id = User::getInstance()->getId();
 
-    		if(!$this->save(true , $useTransaction))
-    			return false;
-    	}
+            if(!$this->save(true , $useTransaction))
+                return false;
+        }
 
         $this->date_updated = date('Y-m-d H:i:s');
         $this->editor_id = User::getInstance()->getId();
 
-    	$store  = $this->_model->getStore();
+        $store  = $this->_model->getStore();
 
-    	if(self::$_log)
-    		$store->setLog(self::$_log);
+        if(self::$_log)
+            $store->setLog(self::$_log);
 
-		$vers = $store->addVersion($this , $log , $useTransaction);
+        $vers = $store->addVersion($this , $log , $useTransaction);
 
-		if($vers){
-			$this->_version = $vers;
+        if($vers){
+            $this->_version = $vers;
             $this->commitChanges();
-			return true;
-		}else{
-			return false;
-		}
+            return true;
+        }else{
+            return false;
+        }
     }
     /**
      * Get Access control List
@@ -1164,7 +1217,7 @@ class Db_Object
      */
     public function setInsertId($id)
     {
-    	$this->_insertId = $id;
+        $this->_insertId = $id;
     }
     /**
      * Get insert ID
@@ -1172,7 +1225,7 @@ class Db_Object
      */
     public function getInsertId()
     {
-    	return $this->_insertId;
+        return $this->_insertId;
     }
     /**
      * Check DB object class

@@ -108,7 +108,7 @@
   'DEFAULT_BLOCK_MAP' => 'Default block map',
   'DELETE' => 'Delete',
   'DELETE_FIELD' => 'Delete field',
-  'DELETED' => 'Instance was deleted',
+  'DELETED' => 'Deleted',
   'DELETE_ITEM' => 'Delete item',
   'DELETE_INDEX' => 'Delete index',
   'DELETE_BACKUP' => 'Delete backup',
