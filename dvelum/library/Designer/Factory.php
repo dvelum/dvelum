@@ -229,6 +229,7 @@ class Designer_Factory
 
 		if(!empty($includes))
 		{
+			$wwwRoot = Request::wwwRoot();
 			foreach ($includes as $file)
 			{
 				if(File::getExt($file) == '.css')
@@ -236,13 +237,13 @@ class Designer_Factory
 					if(strpos($file , '?') === false){
 						$file = $file .'?'. $cachedKey;
 					}
-					$projectData['includes']['css'][]=$file;
+					$projectData['includes']['css'][]= str_replace('//','/',$wwwRoot.$file);
 				}else{
 
 					if(strpos($file , '?') === false){
 						$file = $file .'?'. $cachedKey;
 					}
-					$projectData['includes']['js'][]=$file;
+					$projectData['includes']['js'][]= str_replace('//','/',$wwwRoot.$file);
 				}
 			}
 		}
