@@ -20,7 +20,6 @@ class Backend_Designer_Controller extends Backend_Controller
 		'/js/lib/CodeMirror/addon/dialog/dialog.js',
 		'/js/lib/CodeMirror/addon/search/search.js',
 		'/js/lib/CodeMirror/addon/search/searchcursor.js',
-		'/js/lib/CodeMirror/addon/search/matchesonscrollbar.js',
 		'/js/lib/CodeMirror/addon/search/match-highlighter.js',
 		'/js/lib/CodeMirror/addon/selection/active-line.js',
 
