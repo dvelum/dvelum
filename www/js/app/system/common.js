@@ -716,7 +716,19 @@ Ext.Ajax.on('beforerequest', function(connection, options) {
 	});
 })();
 
-
+(function() {
+	Ext.override(Ext.panel.Table, {
+		applyScrollable: function(scrollable) {
+			if (this.view) {
+				this.view.setScrollable(scrollable);
+			} else {
+				this.viewConfig = this.viewConfig || {};
+				this.viewConfig.scrollable = scrollable;
+			}
+			return null;
+		}
+	});
+})();
 /*
  * Tooltips cut fix fo FF/Mac 4.2.x
  *
