@@ -111,6 +111,7 @@
           'config' => 
           array (
             'dataIndex' => 'group_title',
+            'sortable' => false,
             'text' => '[js:] appLang.GROUP',
             'width' => 158,
           ),
