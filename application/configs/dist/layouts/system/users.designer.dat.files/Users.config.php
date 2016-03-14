@@ -168,7 +168,7 @@
             'dataIndex' => 'admin',
             'renderer' => 'Ext_Component_Renderer_System_Checkbox',
             'text' => '[js:] appLang.ADMIN',
-            'width' => 86,
+            'width' => 99,
           ),
         ),
       ),

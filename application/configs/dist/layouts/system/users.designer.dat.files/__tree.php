@@ -104,19 +104,19 @@
     'data' => 'Permissions.config.php',
     'order' => 2,
   ),
-  'groupsStore' => 
-  array (
-    'id' => 'groupsStore',
-    'parent' => '_Component_',
-    'data' => 'groupsStore.config.php',
-    'order' => 8,
-  ),
   'mainPanel' => 
   array (
     'id' => 'mainPanel',
     'parent' => '_Component_',
     'data' => 'mainPanel.config.php',
     'order' => 14,
+  ),
+  'groupsStore' => 
+  array (
+    'id' => 'groupsStore',
+    'parent' => '_Component_',
+    'data' => 'groupsStore.config.php',
+    'order' => 8,
   ),
   'editWindow' => 
   array (
@@ -272,12 +272,12 @@
     'data' => 'editWindow_footer_cancelBtn.config.php',
     'order' => 2,
   ),
-  'editWindow_login' => 
+  'editWindow_email' => 
   array (
-    'id' => 'editWindow_login',
+    'id' => 'editWindow_email',
     'parent' => 'editWindow_form',
-    'data' => 'editWindow_login.config.php',
-    'order' => 4,
+    'data' => 'editWindow_email.config.php',
+    'order' => 5,
   ),
   'editWindow_name' => 
   array (
@@ -286,26 +286,12 @@
     'data' => 'editWindow_name.config.php',
     'order' => 3,
   ),
-  'editWindow_group_id' => 
-  array (
-    'id' => 'editWindow_group_id',
-    'parent' => 'editWindow_form',
-    'data' => 'editWindow_group_id.config.php',
-    'order' => 2,
-  ),
   'editWindow_admin' => 
   array (
     'id' => 'editWindow_admin',
     'parent' => 'editWindow_form',
     'data' => 'editWindow_admin.config.php',
     'order' => 1,
-  ),
-  'editWindow_email' => 
-  array (
-    'id' => 'editWindow_email',
-    'parent' => 'editWindow_form',
-    'data' => 'editWindow_email.config.php',
-    'order' => 5,
   ),
   'editWindow_id' => 
   array (
@@ -314,26 +300,19 @@
     'data' => 'editWindow_id.config.php',
     'order' => 0,
   ),
-  'editWindow_password_confirm' => 
+  'editWindow_login' => 
   array (
-    'id' => 'editWindow_password_confirm',
+    'id' => 'editWindow_login',
     'parent' => 'editWindow_form',
-    'data' => 'editWindow_password_confirm.config.php',
-    'order' => 9,
+    'data' => 'editWindow_login.config.php',
+    'order' => 4,
   ),
-  'editWindow_password' => 
+  'editWindow_group_id' => 
   array (
-    'id' => 'editWindow_password',
+    'id' => 'editWindow_group_id',
     'parent' => 'editWindow_form',
-    'data' => 'editWindow_password.config.php',
-    'order' => 8,
-  ),
-  'editWindow_setpass' => 
-  array (
-    'id' => 'editWindow_setpass',
-    'parent' => 'editWindow_form',
-    'data' => 'editWindow_setpass.config.php',
-    'order' => 7,
+    'data' => 'editWindow_group_id.config.php',
+    'order' => 2,
   ),
   'editWindow_enabled' => 
   array (
@@ -342,33 +321,33 @@
     'data' => 'editWindow_enabled.config.php',
     'order' => 6,
   ),
+  'editWindow_password' => 
+  array (
+    'id' => 'editWindow_password',
+    'parent' => 'editWindow_form',
+    'data' => 'editWindow_password.config.php',
+    'order' => 8,
+  ),
+  'editWindow_password_confirm' => 
+  array (
+    'id' => 'editWindow_password_confirm',
+    'parent' => 'editWindow_form',
+    'data' => 'editWindow_password_confirm.config.php',
+    'order' => 9,
+  ),
+  'editWindow_setpass' => 
+  array (
+    'id' => 'editWindow_setpass',
+    'parent' => 'editWindow_form',
+    'data' => 'editWindow_setpass.config.php',
+    'order' => 7,
+  ),
   'mainPanel__docked' => 
   array (
     'id' => 'mainPanel__docked',
     'parent' => 'mainPanel',
     'data' => 'mainPanel__docked.config.php',
     'order' => 0,
-  ),
-  'usersPanel_accountFilterLabel' => 
-  array (
-    'id' => 'usersPanel_accountFilterLabel',
-    'parent' => 'usersPanel_tools',
-    'data' => 'usersPanel_accountFilterLabel.config.php',
-    'order' => 2,
-  ),
-  'usersPanel_sep1' => 
-  array (
-    'id' => 'usersPanel_sep1',
-    'parent' => 'usersPanel_tools',
-    'data' => 'usersPanel_sep1.config.php',
-    'order' => 1,
-  ),
-  'usersPanel_sep2' => 
-  array (
-    'id' => 'usersPanel_sep2',
-    'parent' => 'usersPanel_tools',
-    'data' => 'usersPanel_sep2.config.php',
-    'order' => 4,
   ),
   'addUserBtn' => 
   array (
@@ -377,19 +356,33 @@
     'data' => 'addUserBtn.config.php',
     'order' => 0,
   ),
-  'usersPanel_fill' => 
+  'usersPanel_sep1' => 
   array (
-    'id' => 'usersPanel_fill',
+    'id' => 'usersPanel_sep1',
     'parent' => 'usersPanel_tools',
-    'data' => 'usersPanel_fill.config.php',
+    'data' => 'usersPanel_sep1.config.php',
+    'order' => 1,
+  ),
+  'usersPanel_groupLabel' => 
+  array (
+    'id' => 'usersPanel_groupLabel',
+    'parent' => 'usersPanel_tools',
+    'data' => 'usersPanel_groupLabel.config.php',
     'order' => 7,
   ),
-  'usersPanel_accountFilter' => 
+  'usersPanel_groupFilter' => 
   array (
-    'id' => 'usersPanel_accountFilter',
+    'id' => 'usersPanel_groupFilter',
     'parent' => 'usersPanel_tools',
-    'data' => 'usersPanel_accountFilter.config.php',
-    'order' => 3,
+    'data' => 'usersPanel_groupFilter.config.php',
+    'order' => 8,
+  ),
+  'usersPanel_accountFilterLabel' => 
+  array (
+    'id' => 'usersPanel_accountFilterLabel',
+    'parent' => 'usersPanel_tools',
+    'data' => 'usersPanel_accountFilterLabel.config.php',
+    'order' => 2,
   ),
   'usersPanel_statusFilter' => 
   array (
@@ -398,12 +391,26 @@
     'data' => 'usersPanel_statusFilter.config.php',
     'order' => 6,
   ),
+  'usersPanel_accountFilter' => 
+  array (
+    'id' => 'usersPanel_accountFilter',
+    'parent' => 'usersPanel_tools',
+    'data' => 'usersPanel_accountFilter.config.php',
+    'order' => 3,
+  ),
+  'usersPanel_fill' => 
+  array (
+    'id' => 'usersPanel_fill',
+    'parent' => 'usersPanel_tools',
+    'data' => 'usersPanel_fill.config.php',
+    'order' => 9,
+  ),
   'userSearch' => 
   array (
     'id' => 'userSearch',
     'parent' => 'usersPanel_tools',
     'data' => 'userSearch.config.php',
-    'order' => 8,
+    'order' => 10,
   ),
   'usersPanel_statusFilterLabel' => 
   array (
@@ -411,5 +418,12 @@
     'parent' => 'usersPanel_tools',
     'data' => 'usersPanel_statusFilterLabel.config.php',
     'order' => 5,
+  ),
+  'usersPanel_sep2' => 
+  array (
+    'id' => 'usersPanel_sep2',
+    'parent' => 'usersPanel_tools',
+    'data' => 'usersPanel_sep2.config.php',
+    'order' => 4,
   ),
 ); 

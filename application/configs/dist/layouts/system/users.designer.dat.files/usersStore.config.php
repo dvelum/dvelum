@@ -9,6 +9,7 @@
     array (
       'autoLoad' => true,
       'model' => 'usersStoreModel',
+      'remoteSort' => true,
       'isExtended' => true,
     ),
     'state' => 
@@ -50,5 +51,6 @@
         ),
       ),
     ),
+    'writer' => '',
   ),
 ); 
