@@ -43,6 +43,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * List of ORM object link fields displayed with related values in the main list (listAction)
      * (dictionary, object link, object list) key - result field, value - object field
      * object field will be used as result field for numeric keys
+     * Requires primary key in result set
      * @var array
      */
     protected $_listLinks = [];
@@ -88,6 +89,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         if(!empty($this->_listLinks)){
             $objectConfig = Db_Object_Config::getInstance($this->_objectName);
+            if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
+                throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
+            }
             $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
         }
 
