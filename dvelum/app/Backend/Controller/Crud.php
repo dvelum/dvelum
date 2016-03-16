@@ -471,8 +471,6 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                 $rowObject = $rowObjects[$row[$pKey]];
                 $value = $rowObject->get($field);
 
-                $row[$field] = '';
-
                 if(!empty($value))
                 {
                     if($config['link_type'] === Db_Object_Config::LINK_DICTIONARY)
