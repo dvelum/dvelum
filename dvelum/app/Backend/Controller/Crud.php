@@ -65,13 +65,16 @@ abstract class Backend_Controller_Crud extends Backend_Controller
     }
 
     /**
-     * Get list of items. Returns JSON  reply with
-     * ORM object field data;
+     * Get list of items. Returns JSON reply with
+     * ORM object field data or return array with data and count;
      * Filtering, pagination and search are available
      * Sends JSON reply in the result
-     * and closes the application.
+     * and closes the application (by default).
+     * Return array('data'=>$data,'count'=>$count) when $returnData is true
+     * @param boolean $returnData - return data from method instead of sending JSON reply
+     * @return void | array
      */
-    public function listAction()
+    public function listAction($returnData = false)
     {
         $pager = Request::post('pager' , 'array' , array());
         $filter = Request::post('filter' , 'array' , array());
@@ -91,6 +94,8 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
         }
 
+        if($returnData)
+            return array('data' => $data, 'count' => $dataModel->getCount($filter , $query));
         Response::jsonSuccess($data , array('count' => $dataModel->getCount($filter , $query)));
     }
 
@@ -146,7 +151,6 @@ abstract class Backend_Controller_Crud extends Backend_Controller
     protected function _collectLinksData($fieldName, Db_Object $object , $targetObjectName)
     {
         $result = [];
-        $srcObjectConfig = $object->getConfig();
 
         $data = $object->get($fieldName);
 
