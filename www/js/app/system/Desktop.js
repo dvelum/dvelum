@@ -128,6 +128,7 @@ Ext.define('app.cls.desktopMenu',{
     extend:'Ext.view.View',
     menuData:false,
     multiSelect: false,
+    padding: '20 0 0 0',
     trackOver: true,
     itemSelector: 'div.menu-item-wrap',
     overItemCls: 'menu-item-over',
@@ -273,7 +274,6 @@ Ext.application({
             border:false,
             layout:'anchor',
             scrollable:true,
-            margin: '20 0 0 0',
             items: [{
                 xtype: 'container',
                 layout: 'center',
