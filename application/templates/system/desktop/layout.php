@@ -68,6 +68,10 @@
 		app.permissions = Ext.create("app.PermissionsStorage");
 		var rights = '.json_encode(User::getInstance()->getPermissions()).';
 		app.permissions.setData(rights);
+		app.version = "'.$this->get('version').'"
+		app.user = {
+			name: "'.User::getInstance()->getInfo()['name'].'"
+		}
 	');
 
 	$wwwRoot = Request::wwwRoot();
