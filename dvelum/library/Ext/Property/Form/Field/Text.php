@@ -33,6 +33,7 @@ class Ext_Property_Form_Field_Text extends Ext_Property_Form_Field_Field
 	public $validator = self::Object;
 	public $vtype = self::String;
 	public $vtypeText = self::String;
+	public $value = self::String;
 
 	static public $extend = 'Ext.form.field.Text';
 	static public $xtype = 'textfield';

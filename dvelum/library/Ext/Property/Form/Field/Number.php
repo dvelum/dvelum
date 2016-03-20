@@ -15,6 +15,7 @@ class Ext_Property_Form_Field_Number extends Ext_Property_Form_Field_Spinner
 	public $negativeText = self::String;
 	public $step = self::Number;
 	public $submitLocaleSeparator = self::Boolean;
+	public $value = self::Number;
 
 	static public $extend = 'Ext.form.field.Number';
 	static public $xtype = 'numberfield';

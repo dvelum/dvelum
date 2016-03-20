@@ -7,7 +7,7 @@ class Ext_Property_Form_Field_Htmleditor extends Ext_Property_Form_Fieldcontaine
 	public $submitValue  = self::Boolean;
 	public $validateOnChange  = self::Boolean;
 	public $validation  = self::Boolean;
-	public $value  = self::Object;
+	public $value = self::String;
 	public $valuePublishEvent = self::Object;
 	// own properties
 	public $afterIFrameTpl = self::Object;
