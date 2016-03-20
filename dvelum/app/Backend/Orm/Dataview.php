@@ -271,11 +271,11 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 
 					if($objectConfig->isText($field) && $objectConfig->isHtml($field))
 					{
-						$tabs[] = $newField->__toString();
+						$tabs[] = $newField->__toConfigString();
 					}
 					else
 					{
-						$data[] = $newField->__toString();
+						$data[] = $newField->__toConfigString();
 					}
 				}
 			}
