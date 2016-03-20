@@ -339,14 +339,6 @@ class Ext_Object
 	}
 
 	/**
-	 * @return string
-	 */
-	public function __toConfigString()
-	{
-		$this->_convertListeners();
-		return $this->_config->__toConfigString();
-	}
-	/**
 	 * Add child element
 	 * @param string $name
 	 * @param Ext_Object $object

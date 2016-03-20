@@ -17,5 +17,5 @@ class Ext_Property_Model extends Ext_Property
 	public $versionProperty = self::String;
 	
 	static public $extend = 'Ext.data.Model';
-	static public $xtype = 'model';
+	static public $xtype = '';
 }

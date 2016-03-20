@@ -228,26 +228,23 @@ class Ext_Config
 	
 	/**
 	 * Get properties as array of prepared strings
-	 * @param boolean $addXType - optional default false
 	 * @return array
 	 */
-	public function asStringList($addXType = false)
+	public function asStringList()
 	{
 		$properties = $this->_properties->getList();
-		$result = array();
+		$result = [];
 
-        if($addXType)
-        {
-            $xtype = $this->_properties->getXtype();
-            if(strlen($xtype))
-                $result[] = 'xtype:"'.$this->_properties->getXtype().'"';
-        }
+		$xtype = $this->_properties->getXtype();
+		$ftype = $this->_properties->getFtype();
 
-        $ftype = $this->_properties->getFtype();
+        if(strlen($xtype))
+            $result[] = 'xtype:"'.$this->_properties->getXtype().'"';
+
+
 		if(strlen($ftype))
 			$result[] = 'ftype:"'.$this->_properties->getFtype().'"'; 
-		
-		
+
 		if(empty($properties))
 			return array();
 			
@@ -329,11 +326,6 @@ class Ext_Config
 	public function __toString()
 	{	
 		return "{\n".Utils_String::addIndent(implode(",\n", $this->asStringList()))."\n}";
-	}
-
-	public function __toConfigString()
-	{
-		return "{\n".Utils_String::addIndent(implode(",\n", $this->asStringList(true)))."\n}";
 	}
 	
 	/**
