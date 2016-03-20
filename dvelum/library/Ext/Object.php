@@ -10,14 +10,23 @@
  */
 class Ext_Object
 {
+    /**
+     * @var Ext_Config $_config
+     */
 	protected $_config;
+    /**
+     * @var string $_name
+     */
 	protected $_name;
+    /**
+     * @var bool $_isExtended
+     */
 	protected $_isExtended = false;
 
-	protected $_elements = array();
-	protected $_listeners = array();
-	protected $_methods = array();
-	protected $_localEvents = array();
+	protected $_elements = [];
+	protected $_listeners = [];
+	protected $_methods = [];
+	protected $_localEvents = [];
 
 	public function __construct(){
 		$this->_loadConfig();
@@ -150,7 +159,7 @@ class Ext_Object
 
 	/**
 	 * Get JS code for components description (Objects used as Classes)
-	 * @param string $namespace
+	 * @param string | boolean $namespace
 	 * @return string
 	 */
 	public function getDefineJs($namespace = false)

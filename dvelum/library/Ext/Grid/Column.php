@@ -31,7 +31,7 @@ class Ext_Grid_Column extends Ext_Object
 				$this->_config->summaryRenderer = '';
 			}
 		}
-		return $this->_config->__toString();
+		return $this->_config->__toConfigString();
 	}
 
 	public function getState()
