@@ -826,7 +826,11 @@ class Db_Object
         if(strpos($title , '{')!==false){
             $fields = $this->_config->getFieldsConfig(true);
             foreach($fields as $name => $cfg){
-                $title = str_replace('{'.$name.'}' , (string) $this->get($name) , $title );
+                $value =  $this->get($name);
+                if(is_array($value)){
+                    $value = implode(', ', $value);
+                }
+                $title = str_replace('{'.$name.'}' , (string) $value , $title );
             }
         }else{
             if($this->fieldExists($title)){
