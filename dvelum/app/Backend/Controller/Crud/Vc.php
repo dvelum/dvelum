@@ -72,29 +72,28 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             Response::jsonError($this->_lang->CANT_PUBLISH);
     }
 
-   /**
-    * (non-PHPdoc)
-    * @see Backend_Controller_Crud::listAction()
-    */
-    public function listAction()
+    /**
+     * (non-PHPdoc)
+     * @see Backend_Controller_Crud::_getList()
+     */
+    protected function _getList()
     {
         $pager = Request::post('pager' , 'array' , array());
         $filter = Request::post('filter' , 'array' , array());
         $query = Request::post('search' , 'string' , false);
-        
         $filter = array_merge($filter , Request::extFilters());
 
         if($this->_user->onlyOwnRecords($this->_module)){
             $filter['author_id'] = $this->_user->getId();
         }
-        
+
         $dataModel = Model::factory($this->_objectName);
         $vc = Model::factory('vc');
 
         $data = $dataModel->getListVc($pager , $filter , $query , $this->_listFields , 'user' , 'updater');
 
         if(empty($data))
-            Response::jsonSuccess(array() , array( 'count' => 0));
+            return [];
 
         $ids = Utils::fetchCol('id' , $data);
 
@@ -106,13 +105,12 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             else
                 $v['last_version'] = 0;
 
-        Response::jsonSuccess($data , array('count' => $dataModel->getCount($filter , $query)));
+        return ['data'=> $data, 'count'=> $dataModel->getCount($filter , $query)];
     }
 
     /**
      * Get the object data ready to be sent
      * @param Db_Object $object
-     * @param integer $id
      * @param integer $version
      * @return array
      */

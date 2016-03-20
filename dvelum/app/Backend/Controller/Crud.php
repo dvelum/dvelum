@@ -71,16 +71,29 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * Filtering, pagination and search are available
      * Sends JSON reply in the result
      * and closes the application (by default).
-     * Return array('data'=>$data,'count'=>$count) when $returnData is true
-     * @param boolean $returnData - return data from method instead of sending JSON reply
-     * @return void | array
+     * @throws Exception
+     * @return void
      */
-    public function listAction($returnData = false)
+    public function listAction()
     {
-        $pager = Request::post('pager' , 'array' , array());
-        $filter = Request::post('filter' , 'array' , array());
-        $query = Request::post('search' , 'string' , false);
+        $result = $this->_getList();
+        if(empty($result)){
+            Response::jsonSuccess([]);
+        }else{
+            Response::jsonArray($result);
+        }
+    }
 
+    /**
+     * Prepare data for listAction
+     * @return array
+     * @throws Exception
+     */
+    protected function _getList()
+    {
+        $pager = Request::post('pager' , 'array' , []);
+        $filter = Request::post('filter' , 'array' , []);
+        $query = Request::post('search' , 'string' , false);
         $filter = array_merge($filter , Request::extFilters());
 
         $dataModel = Model::factory($this->_objectName);
@@ -88,7 +101,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $data = $dataModel->getListVc($pager , $filter , $query , $this->_listFields);
 
         if(empty($data))
-            Response::jsonSuccess(array() , array('count' => 0 ));
+            return [];
 
         if(!empty($this->_listLinks)){
             $objectConfig = Db_Object_Config::getInstance($this->_objectName);
@@ -97,10 +110,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             }
             $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
         }
-
-        if($returnData)
-            return array('data' => $data, 'count' => $dataModel->getCount($filter , $query));
-        Response::jsonSuccess($data , array('count' => $dataModel->getCount($filter , $query)));
+        return ['data' =>$data , 'count'=> $dataModel->getCount($filter , $query)];
     }
 
     /**
