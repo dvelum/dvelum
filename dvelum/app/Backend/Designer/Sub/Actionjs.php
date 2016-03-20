@@ -15,7 +15,7 @@ class Backend_Designer_Sub_Actionjs extends Backend_Designer_Sub
 	public function saveAction()
 	{
 		$code = Request::post('code', 'raw', false);
-		
+
 		if($code === false)
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 			
