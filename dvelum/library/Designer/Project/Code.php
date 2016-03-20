@@ -127,24 +127,28 @@ class Designer_Project_Code
          */
         if($parent === 0)
         {
-            if($this->_project->itemExist('_Component_') && $this->_project->hasChilds('_Component_'))
+            if($this->_project->itemExist(Designer_Project::COMPONENT_ROOT) && $this->_project->hasChilds(Designer_Project::COMPONENT_ROOT))
             {
-                foreach($this->_project->getChilds('_Component_') as $itemData)
+                foreach($this->_project->getChilds(Designer_Project::COMPONENT_ROOT) as $itemData)
                 {
                     $item = $itemData['data'];
                     $item->extendedComponent(true);
-                    $result = $this->_compileExtendedItem($itemData['id'] , '_Component_');
+                    $result = $this->_compileExtendedItem($itemData['id'], Designer_Project::COMPONENT_ROOT);
                     $definesCode.= $result['defines'];
                 }
             }
-            $parent = '_Layout_';
+            $parent = Designer_Project::LAYOUT_ROOT;
         }
 
         if($this->_project->hasChilds($parent))
         {
             $childs = $this->_project->getChilds($parent);
 
-            foreach($childs as $k => $item)
+            if($parent == Designer_Project::LAYOUT_ROOT && !empty($childs)){
+                $childs = $this->sortByRenderPriority($childs);
+            }
+
+            foreach($childs as $item)
             {
                 if($item['data'] instanceof Designer_Project_Container)
                     continue;
@@ -208,6 +212,38 @@ class Designer_Project_Code
             'defines' => $definesCode ,
             'layout' => $layoutCode
         );
+    }
+
+    /**
+     * Sort tree items list by renderer priority
+     * @param array $items
+     * @return array
+     */
+    protected function sortByRenderPriority(array $items)
+    {
+        $models = [];
+        $stores = [];
+        $other = [];
+
+        foreach($items as $k=>$item)
+        {
+            $obj = $item['data'];
+
+            if($obj instanceof Ext_Object) {
+
+                if($obj instanceof Ext_Model){
+                    $models[$k] = $item;
+                }elseif($obj instanceof Ext_Store){
+                    $stores[$k] = $item;
+                }else{
+                    $other[$k] = $item;
+                }
+
+            }else{
+                $other[$k] = $item;
+            }
+        }
+        return array_merge($models, $stores, $other);
     }
 
     /**
