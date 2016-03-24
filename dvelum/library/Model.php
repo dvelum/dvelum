@@ -934,9 +934,10 @@ class Model
      * Insert multiple rows (not safe but fast)
      * @param array $data
      * @param integer $chunkSize
+	 * @param boolean $ignore - optional default false
      * @return boolean
      */
-    public function multiInsert($data , $chunkSize = 300)
+    public function multiInsert($data , $chunkSize = 300, $ignore = false)
     {
         if(empty($data))
             return true;
@@ -968,7 +969,13 @@ class Model
         		$row = implode(',', $row);
         	}unset($row);
 
-        	$sql = 'INSERT INTO '.$this->table().' ('.$keys.') '."\n".' VALUES '."\n".'('.implode(')'."\n".',(', array_values($rowset)).') '."\n".'';
+			$sql = 'INSERT ';
+
+			if($ignore){
+				$sql.= 'IGNORE ';
+			}
+
+        	$sql.= 'INTO '.$this->table().' ('.$keys.') '."\n".' VALUES '."\n".'('.implode(')'."\n".',(', array_values($rowset)).') '."\n".'';
 
         	try{
         	   $this->_db->query($sql);
