@@ -385,7 +385,7 @@ class Install_Controller {
 
             }
             if(!empty($rows)){
-                if(!$model->multiInsert($rows , $chunkSize)){
+                if(!$model->multiInsert($rows , $chunkSize, true)){
                     Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR'));
                 }
             }
