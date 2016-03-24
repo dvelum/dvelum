@@ -377,7 +377,7 @@ class Install_Controller {
                 if(count($rows) < $chunkSize){
                     $rows[] = array_combine($fields , $row);
                 }else{
-                    if(!$model->multiInsert($rows , $chunkSize, true)){
+                    if(!$model->multiInsert($rows , $chunkSize)){
                         Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR'));
                     }
                     $rows = [];
@@ -385,7 +385,7 @@ class Install_Controller {
 
             }
             if(!empty($rows)){
-                if(!$model->multiInsert($rows , $chunkSize, true)){
+                if(!$model->multiInsert($rows , $chunkSize)){
                     Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR'));
                 }
             }
