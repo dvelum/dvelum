@@ -73,7 +73,7 @@ class Modules_Generator
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) && !$objectConfig->isLink($key))
+          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -297,6 +297,14 @@ class Modules_Generator
                     break;
           }
 
+          if($objectConfig->isDictionaryLink($fieldConfig->name)){
+              $dictionary = $objectConfig->getLinkedDictionary($fieldConfig->name);
+              $rendererHelper = new Ext_Helper_Grid_Column_Renderer();
+              $rendererHelper->setType(Ext_Helper_Grid_Column_Renderer::TYPE_DICTIONARY);
+              $rendererHelper->setValue($dictionary);
+              $column->renderer = $rendererHelper;
+          }
+
           $dataGrid->addColumn($column->getName() , $column , $parent = 0);
       }
 
@@ -479,7 +487,7 @@ class Modules_Generator
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) && !$objectConfig->isLink($key))
+          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -650,6 +658,14 @@ class Modules_Generator
               $column->dataIndex = $fieldConfig->name;
               $column->setName($fieldConfig->name);
               $column->itemId = $column->getName();
+
+              if($objectConfig->isDictionaryLink($fieldConfig->name)){
+                  $dictionary = $objectConfig->getLinkedDictionary($fieldConfig->name);
+                  $rendererHelper = new Ext_Helper_Grid_Column_Renderer();
+                  $rendererHelper->setType(Ext_Helper_Grid_Column_Renderer::TYPE_DICTIONARY);
+                  $rendererHelper->setValue($dictionary);
+                  $column->renderer = $rendererHelper;
+              }
 
               $dataGrid->addColumn($column->getName() , $column , $parent = 0);
           }
