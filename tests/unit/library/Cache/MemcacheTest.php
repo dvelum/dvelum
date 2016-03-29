@@ -1,23 +1,27 @@
 <?php
-class Cache_MemcachedTest extends PHPUnit_Framework_TestCase
+class Cache_MemcacheTest extends PHPUnit_Framework_TestCase
 {
-	protected function _connect()
-    {
-		$cfg = 	[
-				'compression' => 1,
-				'normalizeKeys'=>1,
-				'defaultLifeTime'=> 604800, // 7 days
-				'keyPrefix'=>'dv_sys',
-				'persistent_key' => 'some_key', // or false
-				'servers'=>[
-						[
-								'host' => 'localhost',
-								'port' => 11211,
-								'weight' => 1,
-						]
-				]
-		];
-		return new Cache_Memcached($cfg);
+	protected function _connect(){
+		$cfg = 	array(
+
+								'compression' => 1 , 
+								'normalizeKeys' => 0 , 
+								'defaultLifeTime' => 604800 ,  // 7 days
+								'keyPrefix' => 'dv_sys' , 
+								'servers' => array(
+										array(
+												'host' => 'localhost' , 
+												'port' => 11211 , 
+												'persistent' => true , 
+												'weight' => 1 , 
+												'timeout' => 5 , 
+												'retry_interval' => 15 , 
+												'status' => true
+										)
+								)	
+		);		
+		return new Cache_Memcache($cfg);
+		
 	}
 	
 	public function testSave()
