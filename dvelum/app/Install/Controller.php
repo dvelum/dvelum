@@ -122,10 +122,23 @@ class Install_Controller {
         return $data;
     }
 
-    protected function _checkExtention($extention, $required, $msg = false){
-        $data = array();
-        $data['title'] = $this->localization->get('LIBRARY_CHECK') . ' ' . $extention;
-        if (in_array($extention, $this->phpExt, true)) {
+    protected function _checkExtension($extension, $required, $msg = false)
+    {
+        if(!is_array($extension)){
+            $extension = [$extension];
+        }
+
+        $data['title'] = $this->localization->get('LIBRARY_CHECK') . ' ' . implode(' / ',$extension);
+        $exists = false;
+
+        foreach($extension as $item)
+        {
+            if(in_array($item, $this->phpExt, true)){
+                $exists = true;
+            }
+        }
+
+        if ($exists) {
             $data['success'] = true;
         } else {
             $data['success'] = !$required;
@@ -148,38 +161,38 @@ class Install_Controller {
         } else
             $data['items'][0]['success'] = true;
 
-        $extentions = array(
-            array(
-                'name'=>'memcache',
-                'accessType'=>'allowed',
-                'msg'=>$this->localization->get('PERFORMANCE_WARNING')
-            ),
-            array(
+        $extensions = [
+            [
                 'name'=>'mysqli',
                 'accessType'=>'required',
                 'msg'=>false
-            ),
-            array(
+            ],
+            [
+                'name'=>['memcache','memcached'],
+                'accessType'=>'allowed',
+                'msg'=>$this->localization->get('PERFORMANCE_WARNING')
+            ],
+            [
                 'name'=>'gd',
                 'accessType'=>'required',
                 'msg'=>false
-            ),
-            array(
+            ],
+            [
                 'name'=>'mbstring',
                 'accessType'=>'required',
                 'msg'=>false
-            ),
-            array(
+            ],
+            [
                 'name' => 'mcrypt',
                 'accessType'=>'allowed',
                 'msg'=>$this->localization->get('WARNING')
-            ),
-            array(
+            ],
+            [
                 'name'=>'json',
                 'accessType'=>'required',
                 'msg'=>false
-            )
-        );
+            ]
+        ];
 
         $writablePaths = array(
             array(
@@ -217,13 +230,13 @@ class Install_Controller {
 
         );
 
-        foreach ($extentions as $v){
+        foreach ($extensions as $v){
             switch ($v['accessType']){
                 case 'required':
-                    $data['items'][] = $this->_checkExtention($v['name'], true, $v['msg']);
+                    $data['items'][] = $this->_checkExtension($v['name'], true, $v['msg']);
                     break;
                 case 'allowed':
-                    $data['items'][] = $this->_checkExtention($v['name'], false, $v['msg']);
+                    $data['items'][] = $this->_checkExtension($v['name'], false, $v['msg']);
                     break;
             }
         }
