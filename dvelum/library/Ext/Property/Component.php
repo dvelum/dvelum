@@ -67,7 +67,7 @@ class Ext_Property_Component extends Ext_Property
 	public $resizeHandles = self::String;
 	public $rtl = self::Boolean;
 	public $saveDelay = self::Number;
-	public $scrollable = self::String;
+	public $scrollable = self::Boolean;
 	public $session = self::Object;
 	public $shadow = self::String;
 	public $shadowOffset = self::Number;
