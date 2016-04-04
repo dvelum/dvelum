@@ -28,6 +28,7 @@ Ext.define('app.crud.tasks.Main',{
 
     dataStore:null,
     dataGrid:null,
+    refreshInterval:2,
 
     initComponent:function(){
         this.dataStore =  Ext.create('Ext.data.Store', {
@@ -260,7 +261,7 @@ Ext.define('app.crud.tasks.Main',{
                 response =  Ext.JSON.decode(response.responseText);
                 setTimeout(function(){
                     me.dataGrid.getEl().unmask();
-                },refreshInterval);
+                },me.refreshInterval);
             },
             failure:function(response, opts){
                 me.dataGrid.getEl().unmask();
@@ -283,7 +284,7 @@ Ext.define('app.crud.tasks.Main',{
                 response =  Ext.JSON.decode(response.responseText);
                 setTimeout(function(){
                     me.dataGrid.getEl().unmask();
-                },refreshInterval);
+                },me.refreshInterval);
             },
             failure:function(response, opts){
                 me.dataGrid.getEl().unmask();
@@ -302,7 +303,7 @@ Ext.define('app.crud.tasks.Main',{
                 response =  Ext.JSON.decode(response.responseText);
                 setTimeout(function(){
                     me.dataGrid.getEl().unmask();
-                },refreshInterval);
+                },me.refreshInterval);
             },
             failure:function(response, opts){
                 me.dataGrid.getEl().unmask();

@@ -6,7 +6,7 @@ return array(
         // 5m
         'intercept_timeout'=>300,
         'locks_dir'=> './data/locks/',
-        'log_file' => './logs/cronjobs.log',
+        'log_file' => './data/logs/cronjobs.log',
     	'user_id'=>1
     ),
     //============= Tasks =============
