@@ -19,9 +19,9 @@ class Task_Test extends Bgtask_Abstract
 	 */
 	public function run()
 	{	
-        $this->setTotalCount(1000);
+        $this->setTotalCount(100);
         
-        for($i=0;$i<1000;$i++){
+        for($i=0;$i<100;$i++){
         	sleep(1);
         	$this->incrementCompleted();
             $this->updateState();
