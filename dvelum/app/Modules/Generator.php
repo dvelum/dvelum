@@ -104,7 +104,7 @@ class Modules_Generator
           [
               Db_Object_Config::LINK_OBJECT,
               Db_Object_Config::LINK_OBJECT_LIST,
-              Db_Object_Config::LINK_DICTIONARY
+             // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
           ],
           false
       ));
@@ -116,8 +116,15 @@ class Modules_Generator
       }
 
       $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc{' . "\n" .
-      '	 protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n" .
-      '	 protected $_listLinks = ["' . implode('","' , $linksToShow) . '"];' . "\n" .
+      '	 protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n" ;
+
+      if(!empty($linksToShow)) {
+          $controllerContent .= '	 protected $_listLinks = ["' . implode('","', $linksToShow) . '"];' . "\n";
+      }else{
+          $controllerContent.= '	 protected $_listLinks = [];' . "\n" ;
+      }
+
+      $controllerContent.=
       '  protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];' . "\n" .
       '}';
 
@@ -516,7 +523,7 @@ class Modules_Generator
           [
               Db_Object_Config::LINK_OBJECT,
               Db_Object_Config::LINK_OBJECT_LIST,
-              Db_Object_Config::LINK_DICTIONARY
+             // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
           ],
           false
       ));
@@ -528,8 +535,16 @@ class Modules_Generator
       }
 
       $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud{' . "\n" .
-      ' protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n" .
-      ' protected $_listLinks = ["' . implode('","' , $linksToShow) . '"];' . "\n" .
+      ' protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n";
+
+
+      if(!empty($linksToShow)){
+          $controllerContent.= ' protected $_listLinks = ["' . implode('","' , $linksToShow) . '"];' . "\n";
+      }else{
+          $controllerContent.= ' protected $_listLinks = [];' . "\n";
+      }
+
+      $controllerContent.=
       ' protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];' . "\n" .
       '} ';
 
