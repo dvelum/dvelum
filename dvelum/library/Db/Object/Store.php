@@ -663,22 +663,8 @@ class Db_Object_Store
     	}
 
     	/*
-    	 * Save history if required
-    	 * @todo удалить жесткую связанность
-    	 */
-    	if($log && $object->getConfig()->get('save_history'))
-    	{
-    		Model::factory($this->config['historyObject'])->log(
-	    		User::getInstance()->getId() ,
-	    		$object->getId() ,
-	    		Model_Historylog::NewVersion ,
-	    		$object->getTable()
-    		);
-    	}
-
-    	/*
     	 * Fire "AFTER_ADD_VERSION" Event if event manager exists
-    	*/
+    	 */
     	if($this->_eventManager)
     		$this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_ADD_VERSION, $object);
 

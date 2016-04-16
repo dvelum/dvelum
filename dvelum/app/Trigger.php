@@ -177,17 +177,36 @@ class Trigger
 
     public function  onAfterUnpublish(Db_Object $object)
     {
+        if(!$object->getConfig()->hasHistory()) {
+            return;
+        }
+
         $config = $object->getConfig();
         $logObject = static::$applicationConfig->get('orm_history_object');
 
-        if($object->getConfig()->hasHistory())
-        {
-            Model::factory($logObject)->log(
-                User::getInstance()->id,
-                $object->getId() ,
-                Model_Historylog::Unpublish,
-                $object->getName()
-            );
+        Model::factory($logObject)->log(
+            User::getInstance()->getId(),
+            $object->getId() ,
+            Model_Historylog::Unpublish,
+            $object->getName()
+        );
+    }
+
+    public function onAfterAddVersion(Db_Object $object)
+    {
+        if(!$object->getConfig()->hasHistory()) {
+            return;
         }
+
+        $config = $object->getConfig();
+        $logObject = static::$applicationConfig->get('orm_history_object');
+
+        Model::factory($logObject)->log(
+            User::getInstance()->getId() ,
+            $object->getId() ,
+            Model_Historylog::NewVersion ,
+            $object->getName()
+        );
+
     }
 }
