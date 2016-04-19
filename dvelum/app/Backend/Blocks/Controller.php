@@ -71,19 +71,27 @@ class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc
  	/**
      * List defined Blocks
      */
-    public function classlistAction()
+    public function classListAction()
     {	
     	$blocksPath = $this->_configMain['blocks'];
-    	$classesPath = $this->_configMain['application_path'];
-    	$files = File::scanFiles($blocksPath , array('.php'), true , File::Files_Only);
-    	
-    	foreach ($files as $k=>$file)
-    	{
-    		$class = Utils::classFromPath(str_replace($classesPath, '',$file));
-    		if($class != 'Block_Abstract')
-    			$data[] = array('id'=>$class,'title'=>$class);
-    	}
-    	Response::jsonSuccess($data);
+        $filePath = $this->_configMain->get('autoloader');
+        $filePath = $filePath['paths'];
+
+        $classes = [];
+        foreach($filePath as $path)
+        {
+            if(is_dir($path.'/'.$blocksPath))
+            {
+                $files = File::scanFiles($path.'/'.$blocksPath , array('.php'), true , File::Files_Only);
+                foreach ($files as $k=>$file)
+                {
+                    $class = Utils::classFromPath(str_replace($path, '',$file));
+                    if($class != 'Block_Abstract')
+                        $classes[$class] = ['id'=>$class,'title'=>$class];
+                }
+            }
+        }
+    	Response::jsonSuccess(array_values($classes));
     }
     
     /**

@@ -124,14 +124,9 @@ return array(
      */
     'frontend_modules' => 'modules_frontend.php',
     /*
-     * Application path
-     * @todo remove
-     */
-    'application_path' => $docRoot . '/dvelum/app/',
-    /*
      * Blocks path
      */
-    'blocks' => $docRoot . '/dvelum/app/Block/',
+    'blocks' => 'Block/',
     /*
      * Dictionary directory
      */
