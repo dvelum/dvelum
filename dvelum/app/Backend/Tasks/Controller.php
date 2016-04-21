@@ -56,8 +56,9 @@ class Backend_Tasks_Controller extends Backend_Controller
     }
      
     public function testAction()
-    {   	
-    	Application::getDbConnection()->getProfiler()->setEnabled(false);	
+    {
+		$db = Model::getDefaultDbManager()->getDbConnection('default');
+		$db->getProfiler()->setEnabled(false);
         $this->_tManager->launch(Bgtask_Manager::LAUNCHER_JSON, 'Task_Test' , array());
     }
     

@@ -33,7 +33,7 @@ class Backend_Designer_Sub
 	{
 		$this->_configMain = Registry::get('main' , 'config');
 		$this->_lang = Lang::lang();
-		$this->_db = Application::getDbConnection();
+		$this->_db = Model::getDefaultDbManager()->getDbConnection('default');
 		$this->_config = Config::storage()->get('designer.php');
 		$this->_session = Store_Session::getInstance('Designer');
 		$this->_storage = Designer_Storage::getInstance($this->_config->get('storage') , $this->_config);
