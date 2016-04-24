@@ -179,4 +179,14 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/users.png',
         ),
+    'Extrenals' =>
+        array (
+            'dev' => true,
+            'active' => true,
+            'class' => 'Backend_Extrenals_Controller',
+            'designer' => './application/configs/dist/layouts/system/externals.designer.dat',
+            'in_menu' => true,
+            'icon' => 'i/system/icons/default.png',
+            'id' => 'Extrenals',
+        ),
 ); 
