@@ -572,4 +572,5 @@
   'ONLY_OWN' => 'Only own records',
   'CANT_ACCESS' => 'You do not have permission to access data of this record.',
   'YOU_LOGGED_AS' => 'You logged as',
+  'REINSTALL' => 'Reinstall',
 );

@@ -572,4 +572,5 @@
   570 => 'ONLY_OWN',
   571 => 'CANT_ACCESS',
   572 => 'YOU_LOGGED_AS',
+  573 => 'REINSTALL'
 ); 
