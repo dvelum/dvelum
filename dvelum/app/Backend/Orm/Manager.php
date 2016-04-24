@@ -96,7 +96,11 @@ class Backend_Orm_Manager
 		$paths = Lang::storage()->getPaths();
 		$dirs = [];
 
-		foreach($paths as $path){
+		foreach($paths as $path)
+		{
+			if(!is_dir($path)){
+				continue;
+			}
 			$data =  File::scanFiles($path,false,false,File::Dirs_Only);
 			foreach($data as $k=>&$v){
 				if(!file_exists($v . '/objects.php')){

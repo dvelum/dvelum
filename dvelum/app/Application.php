@@ -198,6 +198,22 @@ class Application
          */
         Dictionary::setConfigPath($this->_config->get('dictionary_folder') . $this->_config->get('language').'/');
 
+        /**
+         * Init additional external modules
+         * defined in external_modules option
+         * of main configuration file
+         */
+        $externals = Config::storage()->get('external_modules.php');
+
+        if($externals->getCount()){
+            Externals_Manager::setConfig([
+                'appConfig'=>$this->_config,
+                'autoloader' =>$this->_autoloader
+            ]);
+            $manager = Externals_Manager::factory();
+            $manager->loadModules();
+        }
+
         $this->_init = true;
     }
 
@@ -224,7 +240,6 @@ class Application
 
     /**
      * Initialize Database connection
-     * @param array | Config_Abstract $dbConfig
      * @return Db_Manager_Interface
      */
     protected function _initDb()

@@ -277,28 +277,28 @@ class Modules_Generator
           {
                 case $primaryKey:
                     $column->renderer = 'Ext_Component_Renderer_System_Version';
-                    $column->text = $lang->VERSIONS_HEADER;
+                    $column->text = '[js:] appLang.VERSIONS_HEADER';
                     $column->align = 'center';
                     $column->width = 147;
                     break;
 
                 case 'published':
                     $column->renderer = 'Ext_Component_Renderer_System_Publish';
-                    $column->text = $lang->STATUS;
+                    $column->text = '[js:] appLang.STATUS';
                     $column->align = 'center';
                     $column->width = 50;
                     break;
 
                 case 'date_created':
                     $column->renderer = 'Ext_Component_Renderer_System_Creator';
-                    $column->text = $lang->CREATED_BY;
+                    $column->text = '[js:] appLang.CREATED_BY';
                     $column->align = 'center';
                     $column->width = 142;
                     break;
 
                 case 'date_updated':
                     $column->renderer = 'Ext_Component_Renderer_System_Updater';
-                    $column->text = $lang->UPDATED_BY;
+                    $column->text = '[js:] appLang.UPDATED_BY';
                     $column->align = 'center';
                     $column->width = 146;
                     break;

@@ -13,160 +13,165 @@
  */
 /**
  * PSR0 Autoloader class
- * 
+ *
  * @author Kirill Egorov
  */
 class Autoloader
 {
-  protected $_debug = false;
-  protected $_debugData = array();
-  protected $_classMap = array();
-  protected $_paths = array();
+    protected $_debug = false;
+    protected $_debugData = array();
+    protected $_classMap = array();
+    protected $_paths = array();
 
-  /**
-   * Set autoloader config
-   * 
-   * @param array $config
-   *          Example:
-   *          array(
-   *          // Debug mode
-   *          'debug' => boolean
-   *          // Paths for autoloading
-   *          'paths'=> array(...),
-   *          // Class map
-   *          'map' => array(...)
-   *          );
-   */
-  public function __construct(array $config)
-  {
-    if(isset($config['paths']))
-     $this->_paths = array_values($config['paths']);
-    
-    if(isset($config['map']) && ! empty($config['map']))
-      $this->_classMap = $config['map'];
-    
-    if(isset($config['debug']) && $config['debug'])
-      $this->_debug = true;
-      
-    /*
-     * Registering Autoloader
+    /**
+     * Set autoloader config
+     *
+     * @param array $config
+     *          Example:
+     *          array(
+     *          // Debug mode
+     *          'debug' => boolean
+     *          // Paths for autoloading
+     *          'paths'=> array(...),
+     *          // Class map
+     *          'map' => array(...)
+     *          );
      */
-    spl_autoload_register(array(
-        $this , 
-        'load'
-    ));
-  }
-
-  /**
-   * Reload configuration options
-   * @param array $config
-   */
-  public function setConfig(array $config)
-  {
-    if(isset($config['paths']))
-      $this->_paths = array_values($config['paths']);
-
-    if(isset($config['map']))
-      $this->_classMap = $config['map'];
-
-    if(isset($config['debug']))
-      $this->_debug = $config['debug'];
-  }
-
-  /**
-   * Register library path
-   * 
-   * @param string $path          
-   * @return void
-   */
-  public function registerPath($path)
-  {
-    $this->_paths[] = $path;
-  }
-
-  /**
-   * Register library paths
-   * 
-   * @param array $paths          
-   */
-  public function registerPaths(array $paths)
-  {
-    if(empty($paths))
-      return;
-    
-    foreach($paths as $path)
-      $this->registerPath($path);
-  }
-
-  /**
-   * Load class
-   * 
-   * @param string $class          
-   * @return boolean
-   */
-  public function load($class)
-  {
-    $class = str_replace('\\' , '_' , $class);
-    
-    if(!empty($this->_classMap) && isset($this->_classMap[$class]))
+    public function __construct(array $config)
     {
-      /*
-       * Try to load from map
-       */
-      require_once $this->_classMap[$class];
-      if($this->_debug)
-        $this->_debugData[] = $class;
-      
-      return true;
+        if(isset($config['paths']))
+            $this->_paths = array_values($config['paths']);
+
+        if(isset($config['map']) && ! empty($config['map']))
+            $this->_classMap = $config['map'];
+
+        if(isset($config['debug']) && $config['debug'])
+            $this->_debug = true;
+
+        /*
+         * Registering Autoloader
+         */
+        spl_autoload_register(array(
+            $this ,
+            'load'
+        ));
     }
-    /*
-     * Search for class file
+
+    /**
+     * Reload configuration options
+     * @param array $config
      */
-    $file = str_replace('_' , DIRECTORY_SEPARATOR , $class). '.php';
-
-    foreach($this->_paths as $path)
+    public function setConfig(array $config)
     {
-      if(file_exists($path . DIRECTORY_SEPARATOR . $file))
-      {
-        require_once $path . DIRECTORY_SEPARATOR . $file;
-        if($this->_debug)
-          $this->_debugData[] = $class;
-        return true;
-      }
+        if(isset($config['paths']))
+            $this->_paths = array_values($config['paths']);
+
+        if(isset($config['map']))
+            $this->_classMap = $config['map'];
+
+        if(isset($config['debug']))
+            $this->_debug = $config['debug'];
     }
-    return false;
-  }
 
-  /**
-   * Load class map
-   * 
-   * @property array $path
-   * @return array
-   */
-  public function setMap(array $data)
-  {
-    $this->_classMap = $data;
-  }
+    /**
+     * Register library path
+     *
+     * @param string $path
+     * @param boolean $prepend, optional false  - priority
+     * @return void
+     */
+    public function registerPath($path, $prepend = false)
+    {
+        if($prepend){
+            array_unshift($this->_paths, $path);
+        }else{
+            $this->_paths[] = $path;
+        }
+    }
 
-  /**
-   * Add class map
-   * 
-   * @param array $data          
-   */
-  public function addMap(array $data)
-  {
-    foreach($data as $k => $v)
-      $this->_classMap[$k] = $v;
-  }
+    /**
+     * Register library paths
+     *
+     * @param array $paths
+     */
+    public function registerPaths(array $paths)
+    {
+        if(empty($paths))
+            return;
 
-  /**
-   * Debug function.
-   * Shows loaded class files
-   * 
-   * @return array
-   */
-  public function getLoadedClasses()
-  {
-    return $this->_debugData;
-  }
+        foreach($paths as $path)
+            $this->registerPath($path);
+    }
+
+    /**
+     * Load class
+     *
+     * @param string $class
+     * @return boolean
+     */
+    public function load($class)
+    {
+        $class = str_replace('\\' , '_' , $class);
+
+        if(!empty($this->_classMap) && isset($this->_classMap[$class]))
+        {
+            /*
+             * Try to load from map
+             */
+            require_once $this->_classMap[$class];
+            if($this->_debug)
+                $this->_debugData[] = $class;
+
+            return true;
+        }
+        /*
+         * Search for class file
+         */
+        $file = str_replace('_' , DIRECTORY_SEPARATOR , $class). '.php';
+
+        foreach($this->_paths as $path)
+        {
+            if(file_exists($path . DIRECTORY_SEPARATOR . $file))
+            {
+                require_once $path . DIRECTORY_SEPARATOR . $file;
+                if($this->_debug)
+                    $this->_debugData[] = $class;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Load class map
+     *
+     * @property array $path
+     * @return array
+     */
+    public function setMap(array $data)
+    {
+        $this->_classMap = $data;
+    }
+
+    /**
+     * Add class map
+     *
+     * @param array $data
+     */
+    public function addMap(array $data)
+    {
+        foreach($data as $k => $v)
+            $this->_classMap[$k] = $v;
+    }
+
+    /**
+     * Debug function.
+     * Shows loaded class files
+     *
+     * @return array
+     */
+    public function getLoadedClasses()
+    {
+        return $this->_debugData;
+    }
 }

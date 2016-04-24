@@ -63,6 +63,7 @@ class Lang
 		
 		self::$_defaultDictionary = $name;	
 	}
+
 	/**
 	 * Get default dictionary (lang)
 	 * @return string
@@ -139,6 +140,7 @@ class Lang
 	{
 		return $this->get($key);
 	}
+
 	/**
 	 * Convert the localization dictionary to JSON
 	 * @return string
@@ -148,6 +150,7 @@ class Lang
 		$this->_loadDictionary($this->_dictionaryName);
 		return json_encode($this->_dictionary->__toArray());
 	}
+
 	/**
 	 * Convert the localization dictionary to JavaScript object
 	 * @return string
@@ -161,6 +164,7 @@ class Lang
 		
 		return str_replace("\n","",'{' . implode(',' , $items) . '}');
 	}
+
 	/**
 	 * Get link to localization dictionary by localization name or
 	 * get default dictionary
@@ -181,23 +185,25 @@ class Lang
 
 	/**
 	 * Get configuration storage
-	 * @param boolean $force, optional - reload storage
-	 */
-	static public function storage($force = false)
+	 * @return Config_Storage
+     */
+	static public function storage()
 	{
 		static $store = false;
 
-		if(!$store || $force){
+		if(!$store){
 			$store = new Config_Storage(static::$_storageConfig);
 		}
 
 		return $store;
 	}
+
 	/**
 	 * Inject storage options
 	 * @param array $options
 	 */
-	static public function setStorageOptions(array $options){
+	static public function setStorageOptions(array $options)
+    {
 		self::$_storageConfig = $options;
 	}
 }

@@ -95,6 +95,7 @@ class Config_Storage
     /**
      * Create new config file
      * @param $localPath
+     * @return boolean
      */
     public function create($localPath)
     {
@@ -104,6 +105,7 @@ class Config_Storage
     /**
      * Find path for config file (no merge)
      * @param $localPath
+     * @return mixed
      */
     public function getPath($localPath)
     {
@@ -124,10 +126,11 @@ class Config_Storage
      * @param bool $path - optional, default false
      * @param bool $recursive - optional, default false
      * @throws Exception
+     * @return array
      */
     public function getList($path = false, $recursive = false)
     {
-        $files = array();
+        $files = [];
         foreach($this->config['file_array']['paths'] as $item)
         {
             if($path)
@@ -167,6 +170,16 @@ class Config_Storage
 	{
 		return $this->config['file_array']['paths'];
 	}
+
+    /**
+     * Add config path
+     * @param string $path
+     * @return void
+     */
+    public function addPath($path)
+    {
+        $this->config['file_array']['paths'][] = $path;
+    }
 
 	/**
 	 * Get write path

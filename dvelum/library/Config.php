@@ -173,14 +173,13 @@ class Config
 
     /**
      * Get configuration storage
-     * @param boolean $force, optional - reload storage
      * @return Config_Storage
      */
-    static public function storage($force = false)
+    static public function storage()
     {
         static $store = false;
 
-        if(!$store || $force){
+        if(!$store){
             $store = new Config_Storage(static::$_storageConfig);
         }
         return $store;

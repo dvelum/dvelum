@@ -119,7 +119,7 @@ class Modules_Manager
 	 */
 	public function getList()
 	{
-		$data = $this->_config->__toArray();
+		$data = $this->_config->__toArray();;
 		foreach ($data as $module=>&$cfg)
 		{
 			if($this->_distConfig->offsetExists($module)){
@@ -236,36 +236,67 @@ class Modules_Manager
 
 		$data = array();
 
-		foreach($paths as $path){
-			if(!is_dir($path.'/'.$dir)){
-				continue;
-			}
-			$folders = File::scanFiles($path.'/'.$dir,false,true,File::Dirs_Only);
+		foreach($paths as $path)
+        {
+            if(basename($path) === 'modules')
+            {
+                $folders = File::scanFiles($path, false, true, File::Dirs_Only);
 
-			if(empty($folders))
-			 	continue;
+                if(empty($folders))
+                    continue;
 
-			foreach ($folders as $item)
-			{
-				$name = basename($item);
+                foreach($folders as $item)
+                {
+                    if(!is_dir($item.'/'.$dir)){
+                        continue;
+                    }
+                    $this->findControllers($item.'/'.$dir, $systemControllers, $data , ucfirst(basename($item)).'_'.$dir.'_');
+                }
+            }else{
+                if(!is_dir($path.'/'.$dir)){
+                    continue;
+                }
+                $this->findControllers($path.'/'.$dir,$systemControllers, $data, $dir.'_');
+            }
 
-				if(file_exists($item.'/Controller.php'))
-				{
-					$name = str_replace($path.'/', '', $item.'/Controller.php');
-					$name = Utils::classFromPath($name);
-
-					/*
-					 * Skip system controller
-					 */
-					if(in_array($name, $systemControllers , true))
-						continue;
-
-					$data[$name] = array('id'=>$name,'title'=>$name);
-				}
-			}
 		}
 		return array_values($data);
 	}
+
+    /**
+     * Find controller files
+     * @param $path
+     * @param & array $result
+     */
+    public function findControllers($path, $skipList, & $result, $classPrefix = '')
+    {
+        $folders = File::scanFiles($path, false, true, File::Dirs_Only);
+
+        if(empty($folders))
+            return;
+
+        foreach ($folders as $item)
+        {
+            $name = basename($item);
+
+            if(file_exists($item.'/Controller.php'))
+            {
+                $name = str_replace($path.'/', '', $item.'/Controller.php');
+                $name = $classPrefix . Utils::classFromPath($name);
+
+                /*
+                 * Skip system controller
+                 */
+                if(in_array($name, $skipList , true))
+                    continue;
+
+                $result[$name] = array('id'=>$name,'title'=>$name);
+            }
+
+            $this->findControllers($item, $skipList, $result, $classPrefix);
+        }
+    }
+
 
 	/**
 	 * Get list of controllers without modules
