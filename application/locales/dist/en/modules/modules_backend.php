@@ -17,5 +17,6 @@
   'Modules' => 'Modules',
   'Page' => 'Pages',
   'Reports' => 'Reports',
-  'User' =>  'Users'
+  'User' =>  'Users',
+  'Externals' => 'External Modules'
 ); 

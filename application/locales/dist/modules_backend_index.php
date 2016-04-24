@@ -17,5 +17,6 @@ return array(
     'Tasks',
     'Localization' ,
     'Error_Log' ,
-    'Filestorage'
+    'Filestorage',
+    'Externals'
 );
