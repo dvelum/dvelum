@@ -123,6 +123,8 @@ Ext.define('designer.properties.Store',{
 	proxyHandler:function(){
 		var win = Ext.create('designer.store.proxyWindow',{
 			objectName:this.objectName,
+			maximizable:true,
+			modal:true,
 			controllerUrl:app.createUrl([designer.controllerUrl ,'storesubproperty',''])
 		});
 		win.on('dataChanged',function(){
