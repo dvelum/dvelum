@@ -51,15 +51,14 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 require DVELUM_ROOT . '/dvelum/library/Autoloader.php';
 $autoloader = new Autoloader($bootCfg['autoloader']);
 
-Config::setStorageOptions($bootCfg['config_storage']);
+$configStorage = Config::storage();
+$configStorage->setConfig($bootCfg['config_storage']);
 
 //==== Loading system ===========
 /*
  * Reload storage options from local system
  */
-Config::setStorageOptions(
-    Config::storage()->get('config_storage.php')->__toArray()
-);
+$configStorage->setConfig(Config::storage()->get('config_storage.php')->__toArray());
 /*
  * Connecting main configuration file
  */
@@ -70,7 +69,7 @@ $config = Config::storage()->get('main.php');
  */
 if($config->get('development')){
     ini_set('opcache.enable', 0);
-    Config::setStorageOptions(['debug' => true]);
+    $configStorage->setConfig(['debug' => true]);
 }
 /*
  * Setting autoloader config

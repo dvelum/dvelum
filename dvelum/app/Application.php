@@ -110,7 +110,8 @@ class Application
         /*
          * Set localization storage options
          */
-        Lang::setStorageOptions(
+        $langStorage = Lang::storage();
+        $langStorage->setConfig(
             Config::storage()->get('lang_storage.php')->__toArray()
         );
 

@@ -5,22 +5,17 @@ class Config_Storage
      * Runtime cache of configuration files
      * @var array
      */
-    static protected $runtimeCache = array();
+    static protected $runtimeCache = [];
     /**
      * Storage configuration options
      * @var array
      */
-    protected $config;
+    protected $config = [];
     /**
      * Debugger log
      * @var array
      */
     protected $debugInfo = array();
-
-    public function __construct(array $config)
-    {
-        $this->config = $config;
-    }
 
     /**
      * Get config by local path
@@ -206,5 +201,15 @@ class Config_Storage
     public function getDebugInfo()
     {
         return $this->debugInfo;
+    }
+
+    /**
+     * Set configuration options
+     */
+    public function setConfig(array $options)
+    {
+        foreach($options as $k=>$v){
+            $this->config[$k] = $v;
+        }
     }
 }

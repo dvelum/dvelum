@@ -36,12 +36,6 @@ class Config
     protected static $_cache = false;
 
     /**
-     * Configuration options for Config_Storage
-     * @var array
-     */
-    protected static $_storageConfig = array();
-
-    /**
      * Set cache adapter
      *
      * @param Cache_Interface $core
@@ -180,19 +174,8 @@ class Config
         static $store = false;
 
         if(!$store){
-            $store = new Config_Storage(static::$_storageConfig);
+            $store = new Config_Storage();
         }
         return $store;
-    }
-
-    /**
-     * Inject storage options
-     * @param array $options
-     */
-    static public function setStorageOptions(array $options){
-        foreach ($options as $k=>$v) {
-            self::$_storageConfig[$k] = $v;
-        }
-        static::storage(true);
     }
 }
