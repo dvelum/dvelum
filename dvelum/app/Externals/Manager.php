@@ -8,13 +8,15 @@ class Externals_Manager
     protected $appConfig;
 
     /**
-     * @var Config_Abstract
+     * @var Config_File_Array
      */
     protected $config;
     /**
      * @var Autoloader
      */
     protected $autoloader;
+
+    protected $errors = [];
 
     static protected $defaultConfig = [];
 
@@ -158,7 +160,7 @@ class Externals_Manager
     /**
      * Check if module exists
      * @param $id
-     * @return bool
+     * @return boolean
      */
     public function moduleExists($id)
     {
@@ -168,6 +170,7 @@ class Externals_Manager
     /**
      * Install module, copy resources
      * @param $id
+     * @return boolean
      */
     public function install($id)
     {
@@ -177,9 +180,37 @@ class Externals_Manager
     /**
      * Unistall module remove resources
      * @param $id
+     * @return boolean
      */
     public function unistall($id)
     {
 
+    }
+
+    /**
+     * Set enabled status
+     * @param $id
+     * @param bool $flag
+     * @return boolean
+     */
+    public function setEnabled($id, $flag = true)
+    {
+        $modConf = $this->config->get('id');
+        $modConf['enabled'] = $flag;
+        $this->config->set($id , $modConf);
+        if(!$this->config->save()){
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$this->config->getWritePath();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Get errors list
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
     }
 }
