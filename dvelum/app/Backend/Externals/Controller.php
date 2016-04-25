@@ -1,5 +1,5 @@
 <?php
-class Backend_Extrenals_Controller extends Backend_Controller
+class Backend_Externals_Controller extends Backend_Controller
 {
     /**
      * @var Externals_Manager
@@ -9,6 +9,17 @@ class Backend_Extrenals_Controller extends Backend_Controller
     public function __construct()
     {
         parent::__construct();
+
+        $externalsCfg = $this->_configMain->get('externals');
+        if(!$externalsCfg['enabled']){
+            if(Request::isAjax()){
+                Response::jsonError($this->_lang->get('MODULE_DISABLED'));
+            }else{
+                Response::put($this->_lang->get('MODULE_DISABLED'));
+                exit();
+            }
+        }
+
         $this->externalsManager =  Externals_Manager::factory();
     }
 

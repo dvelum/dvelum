@@ -44,7 +44,7 @@ return array(
     /*
      * File uploads path
      */
-    'uploads' => $wwwPath . '/media/',
+    'uploads' => $wwwPath . 'media/',
     /*
      * Back-office panel URL
      * For safety reasons adminPath may be changed, however,
@@ -163,7 +163,7 @@ return array(
         /*
         * Use class maps
         */
-        'useMap' => true,
+        'useMap' => false,
         // Use class map (Reduce IO load during autoload)
         // Class map file path (string / false)
         'map' => 'classmap.php',
@@ -263,5 +263,13 @@ return array(
     /*
      * Default Authentication provider. Or uncomment 'uprovider' select in login template.
      */
-    'default_auth_provider' => 'dvelum'
+    'default_auth_provider' => 'dvelum',
+    /*
+     * External modules configuration
+     */
+    'externals' =>[
+        'enabled' => true,
+        'resources_path' => $wwwPath . 'resources/',
+        'resources_root' => $wwwRoot . 'resources/'
+    ]
 );

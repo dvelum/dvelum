@@ -199,11 +199,22 @@ class Application
          */
         Dictionary::setConfigPath($this->_config->get('dictionary_folder') . $this->_config->get('language').'/');
 
-        /**
-         * Init additional external modules
-         * defined in external_modules option
-         * of main configuration file
-         */
+        // init external modules
+        $externalsCfg = $this->_config->get('externals');
+        if($externalsCfg['enabled']){
+            $this->_initExternals();
+        }
+
+        $this->_init = true;
+    }
+
+    /**
+     * Init additional external modules
+     * defined in external_modules option
+     * of main configuration file
+     */
+    protected function _initExternals()
+    {
         $externals = Config::storage()->get('external_modules.php');
 
         if($externals->getCount()){
@@ -211,11 +222,8 @@ class Application
                 'appConfig'=>$this->_config,
                 'autoloader' =>$this->_autoloader
             ]);
-            $manager = Externals_Manager::factory();
-            $manager->loadModules();
+            Externals_Manager::factory()->loadModules();
         }
-
-        $this->_init = true;
     }
 
     /**

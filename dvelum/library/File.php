@@ -18,7 +18,7 @@
  */
 /**
  * A class that contains methods for working with filesystem
- * @author Kirill A Egorov 2011 
+ * @author Kirill A Egorov 2011
  * @license GPLv3
  */
 class File
@@ -51,7 +51,7 @@ class File
 	}
 
 	/**
-	 * Add path separator to the end of string 
+	 * Add path separator to the end of string
 	 * @param string $path
 	 * @return string
 	 */
@@ -60,7 +60,7 @@ class File
 		$length = strlen($path);
 		if(!$length || $path[$length - 1] !== DIRECTORY_SEPARATOR)
 			$path .= DIRECTORY_SEPARATOR;
-		
+
 		return $path;
 	}
 
@@ -79,7 +79,7 @@ class File
 		$files = array();
 		$collectDirs = false;
 		$collectFiles = false;
-		
+
 		switch($type)
 		{
 			case self::Files_Only :
@@ -116,14 +116,14 @@ class File
 		{
 			$add = false;
 			$isDir = $object->isDir();
-			
+
 			if(($isDir && $collectDirs) || (!$isDir && $collectFiles))
 				$add = true;
-			
+
 			if(! empty($filter))
 				if(! $isDir && ! in_array(self::getExt($name) , $filter , true))
 					$add = false;
-			
+
 			if($add){
 				if($changeSep){
 					$name = str_replace(DIRECTORY_SEPARATOR , $changeSep ,$name);
@@ -146,20 +146,20 @@ class File
 	static public function zipFiles($fileName , $files , $localRoot = '')
 	{
 		$zip = new ZipArchive();
-		
+
 		if(substr($fileName, -4)!=='.zip')
-			$fileName.='.zip'; 
-		
+			$fileName.='.zip';
+
 		/**
 		 * ZIPARCHIVE::CREATE (integer)
 		 * Create the archive if it does not exist.
 		 */
 		if($zip->open($fileName , ZIPARCHIVE::CREATE) !== true)
 			return false;
-			
+
 		if(is_string($files))
 			$files = array($files);
-		
+
 		if(!empty($files))
 			foreach($files as $file)
 			{
@@ -167,7 +167,7 @@ class File
 					$zip->addEmptyDir($file);
 					continue;
 				}
-				
+
 				if ($localRoot !== '')
 					$zip->addFile($file , str_replace($localRoot , '' , $file));
 				else
@@ -177,27 +177,27 @@ class File
 	}
 
 	/**
-	 * Extract all files 
+	 * Extract all files
 	 * @param string $source
 	 * @param string $destination
-	 * @param array | string $fileEntries - optional - The entries to extract. 
+	 * @param array | string $fileEntries - optional - The entries to extract.
 	 * It accepts either a single entry name or an array of names.
 	 * @return bool
 	 */
 	static public function unzipFiles($source , $destination , $fileEntries = false)
 	{
 		$zip = new ZipArchive();
-		
+
 		if($zip->open($source) !== true)
 			return false;
-		
+
 		if(! empty($fileEntries))
 			if (!$zip->extractTo($destination , $fileEntries))
 				return false;
-		else
-			if(!$zip->extractTo($destination))
-				return false;
-		
+			else
+				if(!$zip->extractTo($destination))
+					return false;
+
 		return $zip->close();
 	}
 	/**
@@ -208,21 +208,21 @@ class File
 	static public function getZipItemsList($source)
 	{
 		$zip = new ZipArchive();
-		
+
 		if($zip->open($source) !== true)
 			return false;
-			
+
 		$zipSize = $zip->numFiles - 1;
-		
+
 		$itemsList = array();
-		
+
 		while ($zipSize >= 0){
 			$itemsList[] = $zip->getNameIndex($zipSize);
 			--$zipSize;
 		}
 		return  $itemsList;
 	}
-		
+
 	/**
 	 * Recursively remove files and dirs from given $pathname
 	 * @param string $pathname
@@ -230,33 +230,70 @@ class File
 	 * @return boolean
 	 */
 	static public function rmdirRecursive($pathname , $removeParentDir = false)
-	{	  
+	{
 		$filesDirs = File::scanFiles($pathname , false , true , File::Files_Dirs , RecursiveIteratorIterator::CHILD_FIRST);
 
 		foreach($filesDirs as $v)
 		{
-		  if(is_dir($v))
-		  {
-		    if(!rmdir($v))
-		      return false;
-		  }
-		  elseif (is_file($v) || is_link($v))
-		  {
-		    if(!unlink($v))
-		      return false;
-		  }
-		  else
-		  {
-		    return false;
-		  }
+			if(is_dir($v))
+			{
+				if(!rmdir($v))
+					return false;
+			}
+			elseif (is_file($v) || is_link($v))
+			{
+				if(!unlink($v))
+					return false;
+			}
+			else
+			{
+				return false;
+			}
 		}
-		
+
 		if($removeParentDir)
-		  if(!rmdir($pathname))
-		    return false;
-	
+			if(!rmdir($pathname))
+				return false;
+
 		return true;
 	}
+
+    /**
+     * Copy directory contents
+     * @param $source
+     * @param $dest
+     * @return bool
+     */
+    static public function copyDir($source, $dest)
+    {
+        if(!is_dir($dest)){
+            if(!@mkdir($dest, 0755, true)){
+                return false;
+            }
+        }
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(
+                $source,
+                \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ( $iterator as $item) {
+            if ($item->isDir()) {
+               $subDir =  $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
+               if(!is_dir($subDir) && !@mkdir($subDir, 0755)){
+                   return false;
+               }
+            } else {
+                if(!@copy($item, $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName())){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 	/**
 	 * Copies files and dirs to $destPath
 	 * @param string $destPath
@@ -267,37 +304,37 @@ class File
 	static public function copyFiles($destPath , $files , $localRoot = '')
 	{
 		if(!file_exists($destPath))
-    		if(!mkdir($destPath, 0775))
-    			return false;
-    			
+			if(!mkdir($destPath, 0775))
+				return false;
+
 		if(is_string($files))
 			$files = array($files);
 
 		if(empty($files))
-		  	return false;
-		  
+			return false;
+
 		foreach ($files as $path)
 		{
-    		$dest = $destPath . str_replace($localRoot , '' , $path);
-    		if(is_dir($path))
-    		{
-    			if(!file_exists($dest))
-    				if(!mkdir($dest, 0775, true))
-    					return false;
-    		}
-    		else
-    		{
-	    		$dir = dirname($dest);
-    			if(!file_exists($dir))
-	    			if(!mkdir($dir, 0775, true))
-	    				return false;
-    			if(!copy($path, $dest))
-    				return false;
-    		}
-    	}
+			$dest = $destPath . str_replace($localRoot , '' , $path);
+			if(is_dir($path))
+			{
+				if(!file_exists($dest))
+					if(!mkdir($dest, 0775, true))
+						return false;
+			}
+			else
+			{
+				$dir = dirname($dest);
+				if(!file_exists($dir))
+					if(!mkdir($dir, 0775, true))
+						return false;
+				if(!copy($path, $dest))
+					return false;
+			}
+		}
 		return true;
 	}
-	
+
 	/**
 	 * Find the last existing dir by $path
 	 * @param string $path
@@ -307,48 +344,48 @@ class File
 	{
 		if(is_file($path))
 			return dirname($path);
-			
+
 		if(is_dir($path))
 			return $path;
-			
-    	$pathArr = explode('/', $path);
+
+		$pathArr = explode('/', $path);
 		for ($i = sizeof($pathArr) - 1; $i > 0; $i--)
 		{
 			unset($pathArr[$i]);
-			
+
 			$cur = implode('/', $pathArr);
-			
+
 			if(is_dir($cur))
 				return $cur;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Checks writing permissions for files.
-	 * Returns array with paths (wich is not writable) or true on success 
+	 * Returns array with paths (wich is not writable) or true on success
 	 * @param array $files
 	 * @return mixed
 	 */
 	static public function checkWritePermission(array $files)
-    {
-    	$cantWrite = array();
-    	foreach ($files as $path)
-    	{
-    		if(is_file($path))
-    		{
-    			if(!is_writable($path))
-    				$cantWrite[] = $path;
-    			continue;
-    		}
-    		
-    		if(!is_writable(File::getExistingDirByPath($path)))
-	    		$cantWrite[] = $path;
-    	}
-    	
-    	if(empty($cantWrite))
-    		return true;
-    	else
-    		return $cantWrite;
-    }
+	{
+		$cantWrite = array();
+		foreach ($files as $path)
+		{
+			if(is_file($path))
+			{
+				if(!is_writable($path))
+					$cantWrite[] = $path;
+				continue;
+			}
+
+			if(!is_writable(File::getExistingDirByPath($path)))
+				$cantWrite[] = $path;
+		}
+
+		if(empty($cantWrite))
+			return true;
+		else
+			return $cantWrite;
+	}
 }

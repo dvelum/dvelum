@@ -179,14 +179,14 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/users.png',
         ),
-    'Extrenals' =>
+    'Externals' =>
         array (
             'dev' => true,
             'active' => true,
-            'class' => 'Backend_Extrenals_Controller',
+            'class' => 'Backend_Externals_Controller',
             'designer' => './application/configs/dist/layouts/system/externals.designer.dat',
             'in_menu' => true,
             'icon' => 'i/system/icons/external_modules.png',
-            'id' => 'Extrenals',
+            'id' => 'Externals',
         ),
 ); 

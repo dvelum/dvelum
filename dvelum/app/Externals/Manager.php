@@ -174,15 +174,40 @@ class Externals_Manager
      */
     public function install($id)
     {
+        $externalsCfg = $this->appConfig->get('externals');
 
+        $modInfo = $this->getModule($id);
+
+        if(!empty($modInfo['resources']))
+        {
+            $resources = str_replace(['./','//'], [$modInfo['path'],''], $modInfo['resources'].'/');
+
+            if(is_dir($resources)){
+                if(!File::copyDir($resources, $externalsCfg['resources_path'].$id)){
+                    $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$externalsCfg['resources_path'].$id;
+                    return false;
+                }
+            }
+        }
+
+        $modConf = $this->config->get($id);
+        $modConf['installed'] = true;
+        $this->config->set($id , $modConf);
+
+        if(!$this->config->save()){
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$this->config->getWritePath();
+            return false;
+        }
+
+        return true;
     }
 
     /**
-     * Unistall module remove resources
+     * Uninstall module remove resources
      * @param $id
      * @return boolean
      */
-    public function unistall($id)
+    public function uninstall($id)
     {
 
     }
@@ -195,9 +220,10 @@ class Externals_Manager
      */
     public function setEnabled($id, $flag = true)
     {
-        $modConf = $this->config->get('id');
+        $modConf = $this->config->get($id);
         $modConf['enabled'] = $flag;
         $this->config->set($id , $modConf);
+
         if(!$this->config->save()){
             $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$this->config->getWritePath();
             return false;
