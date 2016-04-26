@@ -342,10 +342,9 @@ class Resource
 			}
 			$dataHash .= $file . ':' . filemtime(self::$_wwwPath . '/' . $file);
 		}
+
 		if(self::$_cache)
-			self::$_cache->save(md5($dataHash) , $listHash , array(
-					'jsFilesHash'
-			) , null);
+			self::$_cache->save(md5($dataHash), $listHash);
 
 		return md5($dataHash);
 	}
