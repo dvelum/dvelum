@@ -9,7 +9,6 @@ class Backend_Externals_Controller extends Backend_Controller
     public function __construct()
     {
         parent::__construct();
-
         $externalsCfg = $this->_configMain->get('externals');
         if(!$externalsCfg['enabled']){
             if(Request::isAjax()){
@@ -30,6 +29,8 @@ class Backend_Externals_Controller extends Backend_Controller
     {
         $result = [];
 
+        $this->externalsManager->scan();
+
         if($this->externalsManager->hasModules()){
             $result = $this->externalsManager->getModules();
         }
@@ -46,6 +47,8 @@ class Backend_Externals_Controller extends Backend_Controller
      */
     public function reinstallAction()
     {
+        $this->_checkCanEdit();
+
         $id = Request::post('id', Filter::FILTER_STRING, false);
 
         if(!$this->externalsManager->moduleExists($id)){
@@ -60,11 +63,29 @@ class Backend_Externals_Controller extends Backend_Controller
         Response::jsonSuccess();
     }
 
+    public function postInstallAction()
+    {
+        $this->_checkCanEdit();
+
+        $id = Request::post('id', Filter::FILTER_STRING, false);
+
+        if(!$this->externalsManager->moduleExists($id)){
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        if(!$this->externalsManager->postInstall($id , true)) {
+            $errors = $this->externalsManager->getErrors();
+            Response::jsonError($this->_lang->get('CANT_EXEC').' '.implode(', ', $errors));
+        }
+    }
+
     /**
      * Enable external module
      */
     public function enableAction()
     {
+        $this->_checkCanEdit();
+
         $id = Request::post('id', Filter::FILTER_STRING, false);
 
         if(!$this->externalsManager->moduleExists($id)){
@@ -84,6 +105,8 @@ class Backend_Externals_Controller extends Backend_Controller
      */
     public function disableAction()
     {
+        $this->_checkCanEdit();
+
         $id = Request::post('id', Filter::FILTER_STRING, false);
 
         if(!$this->externalsManager->moduleExists($id)){
@@ -98,10 +121,12 @@ class Backend_Externals_Controller extends Backend_Controller
     }
 
     /**
-     * Unistall external module
+     * Uninstall external module
      */
     public function deleteAction()
     {
+        $this->_checkCanDelete();
+
         $id = Request::post('id', Filter::FILTER_STRING, false);
 
         if(!$this->externalsManager->uninstall($id)){
@@ -110,4 +135,22 @@ class Backend_Externals_Controller extends Backend_Controller
         }
         Response::jsonSuccess();
     }
+
+    /**
+     * Rebuild class map
+     */
+    public function buildMapAction()
+    {
+        $this->_checkCanEdit();
+
+        $mapBuilder = new Classmap($this->_configMain);
+        $mapBuilder->update();
+
+        if(!$mapBuilder->save()){
+            Response::jsonError($this->_lang->get('CANT_EXEC').' Build Map');
+        }
+
+        Response::jsonSuccess();
+    }
+
 }

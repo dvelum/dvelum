@@ -269,6 +269,7 @@ return array(
      */
     'externals' =>[
         'enabled' => true,
+        'path' => './modules',
         'resources_path' => $wwwPath . 'resources/',
         'resources_root' => $wwwRoot . 'resources/'
     ]

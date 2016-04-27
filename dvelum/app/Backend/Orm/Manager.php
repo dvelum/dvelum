@@ -69,7 +69,7 @@ class Backend_Orm_Manager
 		$builder = new Db_Object_Builder($name);
 		
 		if($deleteTable && !$cfg->isLocked() && !$cfg->isReadOnly()){
-		  if(!$builder->remove($name)){
+		  if(!$builder->remove()){
 			return self::ERROR_DB;
 		  }
 		}

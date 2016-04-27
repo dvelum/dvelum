@@ -217,11 +217,12 @@ class Application
     {
         $externals = Config::storage()->get('external_modules.php');
 
+        Externals_Manager::setConfig([
+            'appConfig'=>$this->_config,
+            'autoloader' =>$this->_autoloader
+        ]);
+
         if($externals->getCount()){
-            Externals_Manager::setConfig([
-                'appConfig'=>$this->_config,
-                'autoloader' =>$this->_autoloader
-            ]);
             Externals_Manager::factory()->loadModules();
         }
     }

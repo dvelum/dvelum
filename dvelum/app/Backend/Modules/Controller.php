@@ -577,7 +577,11 @@ class Backend_Modules_Controller extends Backend_Controller{
 	 */
 	public function rebuildMapAction()
 	{
-        $this->createClassMap();
+        $this->_checkCanEdit();
+
+        if(!$this->createClassMap()){
+            Response::jsonError();
+        }
 		Response::jsonSuccess();
 	}
 
@@ -588,7 +592,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 	{
         $mapBuilder = new Classmap($this->_configMain);
         $mapBuilder->update();
-        $mapBuilder->save();
+        return $mapBuilder->save();
 	}
 
 	/**
