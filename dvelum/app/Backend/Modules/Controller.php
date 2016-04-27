@@ -489,6 +489,8 @@ class Backend_Modules_Controller extends Backend_Controller{
 			if(!empty($err))
 				Response::jsonError($this->_lang->get('CANT_WRITE_FS') . "\n<br>".implode(",\n<br>", $err));
 		}
+
+		$this->createClassMap();
 		Response::jsonSuccess();
 	}
 
@@ -575,17 +577,18 @@ class Backend_Modules_Controller extends Backend_Controller{
 	 */
 	public function rebuildMapAction()
 	{
-		$this->_checkCanEdit();
-
-		$paths = $this->_configMain['autoloader']['paths'];
-
-		foreach ($paths as &$item)
-			$item.='/';
-
-		$writePath = Config::storage()->getWrite();
-
-		Utils_Fs::createClassMap($paths ,  $writePath . $this->_configMain['autoloader']['map']);
+        $this->createClassMap();
 		Response::jsonSuccess();
+	}
+
+    /**
+     *
+     */
+	public function createClassMap()
+	{
+        $mapBuilder = new Classmap($this->_configMain);
+        $mapBuilder->update();
+        $mapBuilder->save();
 	}
 
 	/**

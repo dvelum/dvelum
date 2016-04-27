@@ -72,6 +72,7 @@ class File
 	 * @param string $type - optional File::Dirs_Only | File::Files_Dirs | File::Files_Only (default File::Files_Dirs)
 	 * @param string $mode - optional RecursiveIteratorIterator::SELF_FIRST | RecursiveIteratorIterator::CHILD_FIRST (default RecursiveIteratorIterator::SELF_FIRST)
 	 * @throws Exception
+	 * @return array
 	 */
 	static public function scanFiles($path , $filter = array() , $recursive = true , $type = File::Files_Dirs , $mode = RecursiveIteratorIterator::SELF_FIRST)
 	{
