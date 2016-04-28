@@ -63,6 +63,9 @@ class Backend_Externals_Controller extends Backend_Controller
         Response::jsonSuccess();
     }
 
+    /**
+     * Launch module installer
+     */
     public function postInstallAction()
     {
         $this->_checkCanEdit();
@@ -77,6 +80,7 @@ class Backend_Externals_Controller extends Backend_Controller
             $errors = $this->externalsManager->getErrors();
             Response::jsonError($this->_lang->get('CANT_EXEC').' '.implode(', ', $errors));
         }
+        Response::jsonSuccess();
     }
 
     /**

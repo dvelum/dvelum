@@ -37,13 +37,15 @@ class Classmap
         foreach($paths as $v)
         {
             $v = File::fillEndSep($v);
-            $this->findClasses($v,$v);
+            if(is_dir($v)){
+                $this->findClasses($v,$v);
+            }
         }
         ksort($this->map);
     }
 
     /**
-     * Filnd PHP Classes
+     * Find PHP Classes
      * @param $path
      * @param $exceptPath
      * @throws Exception

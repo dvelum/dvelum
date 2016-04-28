@@ -119,7 +119,7 @@ class Externals_Manager
                 continue;
             }
 
-            $path = $config['path'];
+            $path = File::fillEndSep($config['path']);
             $modCfg = require $path.'/config.php';
 
             if(!empty($modCfg['autoloader'])){
@@ -229,10 +229,10 @@ class Externals_Manager
         $externalsCfg = $this->appConfig->get('externals');
 
         $modInfo = $this->getModule($id);
-
+        $path = File::fillEndSep($modInfo['path']);
         if(!empty($modInfo['resources']))
         {
-            $resources = str_replace(['./','//'], [$modInfo['path'],''], $modInfo['resources'].'/');
+            $resources = str_replace(['./','//'], [$path,''], $modInfo['resources'].'/');
 
             if(is_dir($resources)){
                 if(!File::copyDir($resources, $externalsCfg['resources_path'].$id)){
@@ -244,6 +244,8 @@ class Externals_Manager
 
         $modConf = $this->config->get($id);
         $modConf['installed'] = true;
+        $modConf['enabled'] = true;
+
         $this->config->set($id , $modConf);
 
         if(!$this->config->save()){
@@ -301,7 +303,7 @@ class Externals_Manager
                 $this->errors[] = 'Class ' .  $class . ' is not implements Externals_Installer interface';
             }
 
-            if(!$installer->run()){
+            if(!$installer->run($this->appConfig)){
                 $errors = $installer->getErrors();
                 if(!empty($errors) && is_array($errors)){
                     $this->errors[] = implode(', ', $errors);
@@ -321,7 +323,7 @@ class Externals_Manager
     public function uninstall($id)
     {
         $externalsCfg = $this->appConfig->get('externals');
-        $modConf = $this->config->get($id);
+        $modConf = $this->getModule($id);
 
         // Remove config record
         $this->config->remove($id);
@@ -329,10 +331,12 @@ class Externals_Manager
             $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$this->config->getWritePath();
             return false;
         }
+
         // Remove resources
         if(!empty($modConf['resources']))
         {
             $installedResources = $externalsCfg['resources_path'].$id;
+
             if(is_dir($installedResources)){
                 if(!File::rmdirRecursive($installedResources, true)){
                     $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$installedResources;

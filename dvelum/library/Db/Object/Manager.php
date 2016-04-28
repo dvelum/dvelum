@@ -22,6 +22,7 @@ class Db_Object_Manager
     	{
 			self::$_objects = array();
 			$paths = Config::storage()->getPaths();
+
 			$list = array();
 
 			$cfgPath = Db_Object_Config::getConfigPath();
