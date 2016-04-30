@@ -1,5 +1,4 @@
 <?php
-if(!defined('DVELUM'))exit;
 $page = $this->get('page');
 $resource = Resource::getInstance();
 $wwwRoot = Request::wwwRoot();

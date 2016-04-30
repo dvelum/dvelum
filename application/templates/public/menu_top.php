@@ -1,6 +1,4 @@
 <?php
-if(! defined('DVELUM'))
-  exit();
 
 $createNode = function ($tree , $parent , Page $page , Tree $pagesTree) use(&$createNode)
 {

@@ -1,5 +1,4 @@
-<?php 
-if(!defined('DVELUM'))exit;
+<?php
 
 $data = $this->get('data');
 ?>

@@ -1,4 +1,3 @@
-<?php if(!defined('DVELUM'))exit;?>
 <div class="block_wrap">
 				<footer>
 					<div class="block_wrap">

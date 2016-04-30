@@ -1,6 +1,4 @@
-<?php 
-if(!defined('DVELUM'))exit;
-
+<?php
 $page = $this->get('page');
 $resource = Resource::getInstance();
 $resource->addCss('/css/public/main/reset.css' ,0);

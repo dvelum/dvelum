@@ -1,5 +1,4 @@
-<?php 
-if(!defined('DVELUM'))exit;
+<?php
 if(isset($this->msg))
 	$message = '<p>'.$this->msg.'</p>';
 else 

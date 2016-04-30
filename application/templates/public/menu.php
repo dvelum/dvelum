@@ -1,5 +1,5 @@
 <?php 
-if(!defined('DVELUM'))exit;
+
 
 $createMenuNode = function (Tree $tree , $parent , Page $page  , Tree $pagesTree) use (&$createMenuNode)
 {

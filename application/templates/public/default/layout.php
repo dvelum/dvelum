@@ -1,6 +1,4 @@
 <?php
-if(!defined('DVELUM'))exit;
-
 $page = Page::getInstance();
 $template = new Template();
 $template->set('page', $page);

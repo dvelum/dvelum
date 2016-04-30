@@ -1,6 +1,4 @@
 <?php
-if(!defined('DVELUM'))
-  exit();
 
 $createFooterNode = function (Tree $tree , $parent , Page $page , Tree $pagesTree) use(&$createFooterNode)
 {
