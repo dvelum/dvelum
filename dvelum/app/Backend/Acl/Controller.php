@@ -1,10 +1,8 @@
 <?php
 class Backend_Acl_Controller extends Backend_Controller
 {
-
     /**
      * (non-PHPdoc)
-     *
      * @see Backend_Controller::indexAction()
      */
     public function indexAction()
@@ -28,7 +26,6 @@ class Backend_Acl_Controller extends Backend_Controller
         ));
         Response::jsonSuccess($data);
     }
-
     /**
      * List permissions action
      */
@@ -85,7 +82,6 @@ class Backend_Acl_Controller extends Backend_Controller
         unset($v);
         Response::jsonSuccess(array_values($data));
     }
-
     /**
      * Save permissions action
      */
@@ -105,7 +101,6 @@ class Backend_Acl_Controller extends Backend_Controller
         else
             Response::jsonError($this->_lang->CANT_EXEC);
     }
-
     /**
      * Get desktop module info
      */

@@ -104,6 +104,9 @@ class Backend_Medialib_Controller extends Backend_Controller
         Response::jsonSuccess($data);
     }
 
+    /**
+     * Crop image
+     */
     public function cropAction()
     {
         $this->_checkCanEdit();

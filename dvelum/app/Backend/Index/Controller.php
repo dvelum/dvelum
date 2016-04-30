@@ -1,16 +1,20 @@
 <?php
+/**
+ * Default backoffice controller
+ */
 class Backend_Index_Controller extends Backend_Controller
-{  
+{
     public function indexAction()
     {
-
-
         $this->includeScripts();
         if(!in_array($this->_configBackend->get('theme') , $this->_configBackend->get('desktop_themes') , true)){
             $this->_resource->addJs('js/app/system/crud/index.js', 4);
         }
     }
 
+    /**
+     * Get modules list
+     */
     public function listAction()
     {
         $modulesManager = new Modules_Manager();

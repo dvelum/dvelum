@@ -38,12 +38,15 @@ class File
 	 * Set directory separator for output data
 	 * @param mixed $sep string or false
 	 */
-	static public function setDirectorySeparator($sep){
+	static public function setDirectorySeparator($sep)
+	{
 		self::$directorySeparator = $sep;
 	}
+
 	/**
 	 * Get file extension
 	 * @param string $name
+	 * @return string
 	 */
 	static public function getExt($name)
 	{
@@ -69,8 +72,8 @@ class File
 	 * @param string $path
 	 * @param array $filter - optional  aray of file extensions to search for
 	 * @param boolean $recursive - optional	use recursion (default true)
-	 * @param string $type - optional File::Dirs_Only | File::Files_Dirs | File::Files_Only (default File::Files_Dirs)
-	 * @param string $mode - optional RecursiveIteratorIterator::SELF_FIRST | RecursiveIteratorIterator::CHILD_FIRST (default RecursiveIteratorIterator::SELF_FIRST)
+	 * @param integer $type - optional File::Dirs_Only | File::Files_Dirs | File::Files_Only (default File::Files_Dirs)
+	 * @param integer $mode - optional RecursiveIteratorIterator::SELF_FIRST | RecursiveIteratorIterator::CHILD_FIRST (default RecursiveIteratorIterator::SELF_FIRST)
 	 * @throws Exception
 	 * @return array
 	 */
@@ -181,8 +184,7 @@ class File
 	 * Extract all files
 	 * @param string $source
 	 * @param string $destination
-	 * @param array | string $fileEntries - optional - The entries to extract.
-	 * It accepts either a single entry name or an array of names.
+	 * @param array|string|boolean $fileEntries - optional - The entries to extract. It accepts either a single entry name or an array of names.
 	 * @return bool
 	 */
 	static public function unzipFiles($source , $destination , $fileEntries = false)
@@ -201,6 +203,7 @@ class File
 
 		return $zip->close();
 	}
+
 	/**
 	 * Get Archive items list
 	 * @param string $source
@@ -261,8 +264,8 @@ class File
 
     /**
      * Copy directory contents
-     * @param $source
-     * @param $dest
+     * @param string $source
+     * @param string $dest
      * @return bool
      */
     static public function copyDir($source, $dest)

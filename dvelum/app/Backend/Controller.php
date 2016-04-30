@@ -74,7 +74,6 @@ abstract class Backend_Controller extends Controller
         }
         $this->checkAuth();
     }
-
     /**
      * Include required JavaScript files defined in the configuration file
      */
@@ -86,19 +85,18 @@ abstract class Backend_Controller extends Controller
 
         if($cfg->getCount())
         {
-           $js = $cfg->get('js');
-           if(!empty($js))
-            foreach($js as $file => $config)
-                $this->_resource->addJs($file , $config['order'] , $config['minified']);
+            $js = $cfg->get('js');
+            if(!empty($js))
+                foreach($js as $file => $config)
+                    $this->_resource->addJs($file , $config['order'] , $config['minified']);
 
-           $css = $cfg->get('css');
-           if(!empty($css))
-              foreach($css as $file => $config)
-                $this->_resource->addCss($file , $config['order']);
+            $css = $cfg->get('css');
+            if(!empty($css))
+                foreach($css as $file => $config)
+                    $this->_resource->addCss($file , $config['order']);
         }
 
     }
-
     /**
      * Send JSON error message
      *
@@ -111,7 +109,6 @@ abstract class Backend_Controller extends Controller
         else
             Response::redirect(Request::url(array($this->_configMain->get('adminPath'))));
     }
-
     /**
      * Get module name of the current class
      *
@@ -122,7 +119,6 @@ abstract class Backend_Controller extends Controller
         $manager = new Modules_Manager();
         return $manager->getControllerModule(get_called_class());
     }
-
     /**
      * Check user permissions and authentication
      */
@@ -157,10 +153,10 @@ abstract class Backend_Controller extends Controller
         if($this->_configBackend->get('use_csrf_token') && Request::hasPost()){
             $csrf = new Security_Csrf();
             $csrf->setOptions(
-                    array(
-                            'lifetime' => $this->_configBackend->get('use_csrf_token_lifetime'),
-                            'cleanupLimit' => $this->_configBackend->get('use_csrf_token_garbage_limit')
-                    ));
+                array(
+                    'lifetime' => $this->_configBackend->get('use_csrf_token_lifetime'),
+                    'cleanupLimit' => $this->_configBackend->get('use_csrf_token_garbage_limit')
+                ));
 
             if(!$csrf->checkHeader() && !$csrf->checkPost())
                 $this->_errorResponse($this->_lang->MSG_NEED_CSRF_TOKEN);
@@ -191,13 +187,13 @@ abstract class Backend_Controller extends Controller
          */
         if($moduleCfg['active'] == false)
             $this->_errorResponse($this->_lang->CANT_VIEW);
-            /*
+
+        /*
          * Redirect for dev module at prouction
          */
         if($moduleCfg['dev'] && ! $this->_configMain['development'])
             $this->_errorResponse($this->_lang->CANT_VIEW);
     }
-
     /**
      * Show login form
      */
@@ -208,7 +204,6 @@ abstract class Backend_Controller extends Controller
         Response::put($template->render($this->_configMain->get('templates').'system/' . $this->_configBackend->get('theme') . '/login.php'));
         Application::close();
     }
-
     /**
      * Get posted data and put it into Db_Object
      * (in case of failure, JSON error message is sent)
@@ -254,8 +249,8 @@ abstract class Backend_Controller extends Controller
 
             if($objectConfig->isRequired($name) &&  !isset($systemFields[$name]) &&  (!isset($posted[$name]) || !strlen($posted[$name])))
             {
-              $errors[$name] = $this->_lang->CANT_BE_EMPTY;
-              continue;
+                $errors[$name] = $this->_lang->CANT_BE_EMPTY;
+                continue;
             }
 
             if($objectConfig->isBoolean($name) && !isset($posted[$name]))
@@ -266,10 +261,10 @@ abstract class Backend_Controller extends Controller
 
 
             if(!array_key_exists($name , $posted))
-              continue;
+                continue;
 
-             if(!$id && ( (is_string($posted[$name]) && !strlen((string)$posted[$name])) || (is_array($posted[$name]) && empty($posted[$name])) ) && $objectConfig->hasDefault($name))
-              continue;
+            if(!$id && ( (is_string($posted[$name]) && !strlen((string)$posted[$name])) || (is_array($posted[$name]) && empty($posted[$name])) ) && $objectConfig->hasDefault($name))
+                continue;
 
             try{
                 $obj->set($name , $posted[$name]);
@@ -291,7 +286,6 @@ abstract class Backend_Controller extends Controller
 
         return $obj;
     }
-
     /**
      * Check edit permissions
      */
@@ -300,7 +294,6 @@ abstract class Backend_Controller extends Controller
         if(!User::getInstance()->canEdit($this->_module))
             Response::jsonError($this->_lang->CANT_MODIFY);
     }
-
     /**
      * Check delete permissions
      */
@@ -309,7 +302,6 @@ abstract class Backend_Controller extends Controller
         if(!User::getInstance()->canDelete($this->_module))
             Response::jsonError($this->_lang->CANT_DELETE);
     }
-
     /**
      * Default action
      */
@@ -318,9 +310,9 @@ abstract class Backend_Controller extends Controller
         $this->includeScripts();
 
         $this->_resource->addInlineJs('
-	        	var canEdit = ' . intval($this->_user->canEdit($this->_module)) . ';
-	        	var canDelete = ' . intval($this->_user->canDelete($this->_module)) . ';
-	      ');
+	        var canEdit = ' . intval($this->_user->canEdit($this->_module)) . ';
+	        var canDelete = ' . intval($this->_user->canDelete($this->_module)) . ';
+	    ');
 
         $this->includeScripts();
 
@@ -333,7 +325,6 @@ abstract class Backend_Controller extends Controller
             if(file_exists($this->_configMain->get('jsPath').'app/system/crud/' . strtolower($this->_module) . '.js'))
                 $this->_resource->addJs('/js/app/system/crud/' . strtolower($this->_module) .'.js' , 4);
     }
-
     /**
      * Run designer project
      * @param string $project - path to project file
@@ -341,10 +332,9 @@ abstract class Backend_Controller extends Controller
      */
     protected function _runDesignerProject($project , $renderTo = false)
     {
-      $manager = new Designer_Manager($this->_configMain);
-      $manager->renderProject($project , $renderTo, $this->_module);
+        $manager = new Designer_Manager($this->_configMain);
+        $manager->renderProject($project , $renderTo, $this->_module);
     }
-
     /**
      * Get desktop module info
      */

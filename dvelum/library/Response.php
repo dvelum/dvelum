@@ -24,8 +24,8 @@ class Response
 {
 	/**
 	 * Error response for Extjs frontend
-	 * @param string $msg
-	 * @param array $errors
+	 * @param string|boolean $msg
+	 * @param array|boolean $errors
 	 */
 	static public function jsonError($msg = false , $errors = false)
 	{
@@ -55,7 +55,7 @@ class Response
 		exit();
 	}
 	/**
-	 * Response with data for Extjs frontend
+	 * Response with data for ExtJS frontend
 	 * @param array $data
 	 */
 	static public function jsonArray(array $data)

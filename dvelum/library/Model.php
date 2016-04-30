@@ -299,8 +299,8 @@ class Model
     /**
      * Get record by id
      * @param integer $id
-     * @param array $fields — optional — the list of fields to retrieve
-     * @return array / false
+     * @param array|string $fields — optional — the list of fields to retrieve
+     * @return array|false
      */
     final public function getItem($id , $fields = '*')
     {

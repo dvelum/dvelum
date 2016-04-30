@@ -220,7 +220,7 @@ class Tree
 		$item = $this->getItem($id);
 		$childs = $this->getChilds($id);
 		
-		if(! empty($childs))
+		if(!empty($childs))
 			foreach($childs as $k => &$v)
 				$this->_remove($v['id']);
 		
@@ -273,7 +273,7 @@ class Tree
 	/**
 	 * Delete node
 	 * @param mixed $id
-	 * @return void
+	 * @return boolean
 	 */
 	public function removeItem($id)
 	{

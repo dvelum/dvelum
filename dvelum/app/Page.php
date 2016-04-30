@@ -25,137 +25,133 @@
  */
 class Page
 {
-	protected static $_instance;
-	/**
-	 * @var Externals_Expert
-	 */
-	protected $_externalsExpert = false;
-	public $title = '';
-	public $html_title = '';
-	public $code = 'index';
-	public $id = 0;
-	public $meta_description = '';
-	public $meta_keywords = '';
-	public $theme = 'default';
-	protected $_ogData = array(
-			'image' => '' ,
-			'title' => '' ,
-			'description' => '' ,
-			'url' => ''
-	);
+    protected static $_instance;
+    /**
+     * @var Externals_Expert
+     */
+    protected $_externalsExpert = false;
+    public $title = '';
+    public $html_title = '';
+    public $code = 'index';
+    public $id = 0;
+    public $meta_description = '';
+    public $meta_keywords = '';
+    public $theme = 'default';
+    protected $_ogData = array(
+        'image' => '' ,
+        'title' => '' ,
+        'description' => '' ,
+        'url' => ''
+    );
 
-	protected function __construct()
-	{
-	}
+    protected function __construct(){}
 
-	protected function __clone()
-	{
-	}
+    protected function __clone(){}
 
-	/**
-	 * Get Object Instance (Singleton)
-	 * @return Page
-	 */
-	static public function getInstance()
-	{
-		if(!isset(self::$_instance))
-			self::$_instance = new self();
+    /**
+     * Get Object Instance (Singleton)
+     * @return Page
+     */
+    static public function getInstance()
+    {
+        if(!isset(self::$_instance))
+            self::$_instance = new self();
 
-		return self::$_instance;
-	}
+        return self::$_instance;
+    }
 
-	/**
-	 * Define Open Graph property
-	 * @param string $key
-	 * @param string $value
-	 */
-	public function setOgProperty($key , $value)
-	{
-		$this->_ogData[$key] = $value;
-	}
+    /**
+     * Define Open Graph property
+     * @param string $key
+     * @param string $value
+     */
+    public function setOgProperty($key , $value)
+    {
+        $this->_ogData[$key] = $value;
+    }
 
-	/**
-	 * Define Externals expert adapter
-	 * @param Externals_Expert $expert
-	 */
-	public function setExternalsExpert(Externals_Expert $expert)
-	{
-		$this->_externalsExpert = $expert;
-	}
+    /**
+     * Define Externals expert adapter
+     * @param Externals_Expert $expert
+     */
+    public function setExternalsExpert(Externals_Expert $expert)
+    {
+        $this->_externalsExpert = $expert;
+    }
 
-	/**
-	 * Generate meta tags with Open Graph metadata
-	 * @return string
-	 */
-	public function getOgMeta()
-	{
-		$s = '';
-		foreach($this->_ogData as $key => $value)
-			if(strlen($value))
-				$s .= '<meta property="og:' . $key . '" content="' . $value . '"/>';
+    /**
+     * Generate meta tags with Open Graph metadata
+     * @return string
+     */
+    public function getOgMeta()
+    {
+        $s = '';
+        foreach($this->_ogData as $key => $value)
+            if(strlen($value))
+                $s .= '<meta property="og:' . $key . '" content="' . $value . '"/>';
 
-		return $s;
-	}
+        return $s;
+    }
 
-	/**
-	 * Set templates directory
-	 * @param string $path
-	 */
-	public function setTemplatesPath($path)
-	{
-		$this->_templatesPath = $path;
-	}
+    /**
+     * Set templates directory
+     * @param string $path
+     */
+    public function setTemplatesPath($path)
+    {
+        $this->_templatesPath = $path;
+    }
 
-	/**
-	 * Get templates directory
-	 * @return string
-	 */
-	public function getTemplatesPath()
-	{
-		return $this->_templatesPath;
-	}
+    /**
+     * Get templates directory
+     * @return string
+     */
+    public function getTemplatesPath()
+    {
+        return $this->_templatesPath;
+    }
 
-	/**
-	 * Get path to the folder with current theme templates
-	 * @return string
-	 */
-	public function getThemePath()
-	{
-		/*
+    /**
+     * Get path to the folder with current theme templates
+     * @return string
+     */
+    public function getThemePath()
+    {
+        /*
          * Check for external themes
          */
-		if($this->_externalsExpert)
-		{
-			$themes = $this->_externalsExpert->getThemes();
-			if(isset($themes[$this->theme]))
-				return $themes[$this->theme];
-		}
+        if($this->_externalsExpert)
+        {
+            $themes = $this->_externalsExpert->getThemes();
+            if(isset($themes[$this->theme]))
+                return $themes[$this->theme];
+        }
 
-		return $this->_templatesPath . $this->theme . '/';
-	}
+        return $this->_templatesPath . $this->theme . '/';
+    }
 
-	/**
-	 * Get template path
-	 * The template is to searched for in the theme folder.
-	 * Otherwise, the system will attempt to load it from the template root folder
-	 * @param string $template  - filename
-	 * @return string
-	 */
-	public function getTemplatePath($template)
-	{
-		/*
-    	 * Check for external templates
-    	 */
-		if($this->_externalsExpert)
-		{
-			$templates = $this->_externalsExpert->getTemplates();
-			if(isset($templates[$template]))
-				return $templates[$template];
-		}
+    /**
+     * Get template path
+     * The template is to searched for in the theme folder.
+     * Otherwise, the system will attempt to load it from the template root folder
+     * @param string $template  - filename
+     * @return string
+     */
+    public function getTemplatePath($template)
+    {
+        /*
+         * Check for external templates
+         */
+        if($this->_externalsExpert)
+        {
+            $templates = $this->_externalsExpert->getTemplates();
+            if(isset($templates[$template]))
+                return $templates[$template];
+        }
 
-		if(file_exists($this->getThemePath() . $template))
-			return $this->getThemePath() . $template;
+        if(file_exists($this->getThemePath() . $template))
+            return $this->getThemePath() . $template;
 
-		return $this->_templatesPath . $template;
-	}
+        return $this->_templatesPath . $template;
+    }
 }

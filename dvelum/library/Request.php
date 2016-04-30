@@ -171,13 +171,14 @@ class Request
      * The method creates a string based on the defined parameter delimiter and
      * the parameter values array
      * @param array $paths — request parameters array
+     * @param boolean $useExtension - add extension
      * @return string — add postfix file extension
      */
-    static public function url(array $paths , $useExstension = true)
+    static public function url(array $paths , $useExtension = true)
     {
         $str = static::$config['wwwRoot'] . implode(static::$config['delimiter'] , $paths);
 
-        if($useExstension) {
+        if($useExtension) {
             $str .= static::$config['extension'];
         }
 

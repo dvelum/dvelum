@@ -1,7 +1,6 @@
 <?php
 class Backend_Page_Controller extends Backend_Controller_Crud_Vc
 {
-
     public function indexAction()
     {
         parent::indexAction();
@@ -28,7 +27,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     /**
      * Get list of pages as a data tree config
      */
-    public function treelistAction()
+    public function treeListAction()
     {
         $pagesModel = Model::factory('Page');
         Response::jsonArray($pagesModel->getTreeList( array( 'id','parent_id','published','code')));
@@ -85,7 +84,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     /**
      * Get blocks
      */
-    public function blocklistAction()
+    public function blockListAction()
     {
         $blocksModel = Model::factory('Blocks');
         $data = $blocksModel->getListVc(false,false,false,array('id','title','is_system','published'));
@@ -99,7 +98,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     /**
      * Check if page code is unique
      */
-    public function checkcodeAction()
+    public function checkCodeAction()
     {
         $id = Request::post('id', 'int', 0);
         $code = Request::post('code','string',false);
@@ -117,7 +116,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     /**
      * Change page sorting order
      */
-    public function sortpagesAction()
+    public function sortPagesAction()
     {
         $this->_checkCanEdit();
 
@@ -227,7 +226,10 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         return $data;
     }
 
-    public function blockconfigAction()
+    /**
+     *  Get blocks map
+     */
+    public function blockConfigAction()
     {
         $theme = Request::post('theme', 'string', 'default');
 
@@ -253,7 +255,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     }
 
     /**
-     * Prepear data for linked field component
+     * Prepare data for linked field component
      * @param array $data
      * @return array
      */
@@ -271,13 +273,15 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         if($usedRC)
             $fields[] = 'published';
 
-        $odata = $model->getItems($ids , $fields);
+        $oData = $model->getItems($ids , $fields);
+
         if(!empty($data))
-            $odata = Utils::rekey('id', $odata);
+            $oData = Utils::rekey('id', $oData);
+
         /*
          * Find out deleted records
          */
-        $deleted = array_diff($ids, array_keys($odata));
+        $deleted = array_diff($ids, array_keys($oData));
 
         $result = array();
         foreach ($ids as $id)
@@ -290,9 +294,9 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
                 if($usedRC)
                     $item['published'] = 0;
             } else{
-                $item = array('id'=>$id , 'deleted'=>0 , 'title'=>$odata[$id]['title'],'published'=>1,'is_system'=>$odata[$id]['is_system']);
+                $item = array('id'=>$id , 'deleted'=>0 , 'title'=>$oData[$id]['title'],'published'=>1,'is_system'=>$oData[$id]['is_system']);
                 if($usedRC){
-                    $item['published'] = $odata[$id]['published'];
+                    $item['published'] = $oData[$id]['published'];
                 }
             }
             $result[] = $item;
@@ -300,6 +304,9 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         return $result;
     }
 
+    /**
+     * Publish page
+     */
     public function publishAction()
     {
         $id = Request::post('id','integer', false);
@@ -426,7 +433,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     /**
      * Get themes list
      */
-    public function themeslistAction()
+    public function themesListAction()
     {
         $themes = File::scanFiles($this->_configMain->get('themes'),false,false, File::Dirs_Only);
         $result = array();
@@ -444,7 +451,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     /**
      * Get list of default blocks
      */
-    public function defaultblocksAction()
+    public function defaultBlocksAction()
     {
         $blocks = Model::factory('Blockmapping');
         $list = $blocks->getList(false , array('page_id'=>null), array('id'=>'block_id','place'));
@@ -474,9 +481,9 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     }
 
     /**
-     * Save default blockmap
+     * Save default blocks map
      */
-    public function defaultblockssaveAction()
+    public function defaultBlocksSaveAction()
     {
         $this->_checkCanEdit();
 

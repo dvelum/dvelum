@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Default Trigger
+ * Handle Db_Object Events
+ */
 class Trigger
 {
 	/**
@@ -31,21 +36,11 @@ class Trigger
 		return $objectModel->getCacheKey(array('item',$object->getId()));
 	}
 
-	public function onBeforeAdd(Db_Object $object)
-	{
+	public function onBeforeAdd(Db_Object $object){}
 
-	}
+	public function onBeforeUpdate(Db_Object $object){}
 
-	public function onBeforeUpdate(Db_Object $object)
-	{
-
-	}
-
-	public function onBeforeDelete(Db_Object $object)
-	{
-
-	}
-
+	public function onBeforeDelete(Db_Object $object){}
 
 	public function onAfterAdd(Db_Object $object)
 	{

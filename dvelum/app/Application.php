@@ -180,7 +180,7 @@ class Application
             if(!empty($this->_config->get('error_log_object')))
             {
                 $errorModel = Model::factory($this->_config->get('error_log_object'));
-                $errorTable = $errorModel->table(true);
+                $errorTable = $errorModel->table();
                 $errorDb = $errorModel->getDbConnection();
 
                 $logOrmDb = new Log_Db('db_object_error_log' , $errorDb , $errorTable);

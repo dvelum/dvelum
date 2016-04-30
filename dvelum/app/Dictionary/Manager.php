@@ -1,310 +1,312 @@
 <?php
+
 class Dictionary_Manager
 {
-	const CACHE_KEY_LIST = 'Dictionary_Manager_list';
-	const CACHE_KEY_DATA_HASH = 'Dictionary_Manager_dataHash';
+    const CACHE_KEY_LIST = 'Dictionary_Manager_list';
+    const CACHE_KEY_DATA_HASH = 'Dictionary_Manager_dataHash';
 
-	/**
-	 * Base path
-	 * @var string
-	 */
-	protected $_baseDir ='';
+    /**
+     * Base path
+     * @var string
+     */
+    protected $_baseDir ='';
 
-	/**
-	 * Path to localized dictionary
-	 * @var string
-	 */
-	protected $_path ='';
-	/**
-	 * @var Cache_Interface
-	 */
-	protected $_cache = false;
-	/**
-	 * @var string
-	 */
-	protected $_language = '';
-	
-	static protected $_list = null;
-	
-	/**
-	 * Valid dictionary local cache
-	 * @var array
-	 */
-	static protected $_validDictionary = array();
+    /**
+     * Path to localized dictionary
+     * @var string
+     */
+    protected $_path ='';
+    /**
+     * @var Cache_Interface
+     */
+    protected $_cache = false;
+    /**
+     * @var string
+     */
+    protected $_language = '';
 
-	/**
-	 * @param Config_Abstract $appConfig
-	 * @param mixed  Cache_Interface | false $cache
-	 * @throws Exception
-	 */
-	protected function __construct(Config_Abstract $appConfig , $cache = false)
-	{
-		$this->_appConfig =  $appConfig;
-		$this->_language = $appConfig->get('language');
-		$this->_path = Config::storage()->getWrite();
-		$this->_baseDir = $appConfig->get('dictionary_folder');
-		$this->_cache = $cache;
+    static protected $_list = null;
 
-		if($this->_cache && $list = $this->_cache->load(self::CACHE_KEY_LIST))
-			self::$_list = $list;
-	}
-	
-	/**
-	 * Get list of dictionaries
-	 * return array
-	 */
-	public function getList()
-	{
-		if(!is_null(self::$_list))
-			return array_keys(self::$_list);
+    /**
+     * Valid dictionary local cache
+     * @var array
+     */
+    static protected $_validDictionary = array();
 
-		$paths = Config::storage()->getPaths();
+    /**
+     * @param Config_Abstract $appConfig
+     * @param mixed  Cache_Interface | false $cache
+     * @throws Exception
+     */
+    protected function __construct(Config_Abstract $appConfig , $cache = false)
+    {
+        $this->_appConfig =  $appConfig;
+        $this->_language = $appConfig->get('language');
+        $this->_path = Config::storage()->getWrite();
+        $this->_baseDir = $appConfig->get('dictionary_folder');
+        $this->_cache = $cache;
 
-		$list = array();
+        if($this->_cache && $list = $this->_cache->load(self::CACHE_KEY_LIST))
+            self::$_list = $list;
+    }
 
-		foreach($paths as $path)
-		{
-			if(!file_exists($path . $this->_baseDir . 'index/'))
-				continue;
+    /**
+     * Get list of dictionaries
+     * return array
+     */
+    public function getList()
+    {
+        if(!is_null(self::$_list))
+            return array_keys(self::$_list);
 
-			$files = File::scanFiles($path.$this->_baseDir . 'index/', array('.php'), false, File::Files_Only);
+        $paths = Config::storage()->getPaths();
 
-			if(!empty($files)){
-				foreach($files as $path){
-					$name = substr(basename($path),0,-4);
-					$list[$name] = $path;
-				}
-			}
-		}
+        $list = array();
 
-		self::$_list = $list;
-		
-		if($this->_cache)
-			$this->_cache->save($list, self::CACHE_KEY_LIST);
-			
-		return array_keys($list);
-	}
-	/**
-	 * Create dictionary
-	 * @param string $name
-	 * @param string $language, optional
-	 * @return boolean
-	 */
-	public function create($name , $language = false)
-	{
-		if($language == false){
-			$language = $this->_language;
-		}
+        foreach($paths as $path)
+        {
+            if(!file_exists($path . $this->_baseDir . 'index/'))
+                continue;
 
-		$indexFile = $this->_path . $this->_baseDir . 'index/' . $name . '.php';
-		$dictionaryFile =  $this->_path . $this->_baseDir . $language . '/' .  $name . '.php';
+            $files = File::scanFiles($path.$this->_baseDir . 'index/', array('.php'), false, File::Files_Only);
 
-		if(!file_exists($dictionaryFile) && Config_File_Array::create($dictionaryFile))
-		{
-			if(!file_exists($indexFile) && !Config_File_Array::create($indexFile)){
-				return false;
-			}
+            if(!empty($files)){
+                foreach($files as $path){
+                    $name = substr(basename($path),0,-4);
+                    $list[$name] = $path;
+                }
+            }
+        }
 
-			self::$_validDictionary[$name]=true;
-			$this->resetCache();
-			return true;
-		}
-		return false;		
-	}
-	/**
-	 * Rename dictionary
-	 * @param string $oldName
-	 * @param string $newName
-	 * @return boolean
-	 */
-	public function rename($oldName, $newName) 
-	{
-		$dirs = File::scanFiles($this->_path. $this->_baseDir, false, false, File::Dirs_Only);
+        self::$_list = $list;
 
-		foreach($dirs as $path){
-			if(file_exists($path . '/' . $oldName . '.php')){
-				if(!@rename($path . '/' . $oldName . '.php', $path . '/' . $newName.'.php')){
-					return false;
-				}
-			}
-		}
-				
-		if(isset(self::$_validDictionary[$oldName]))
-			unset(self::$_validDictionary[$oldName]);
-			
-		self::$_validDictionary[$newName]=true;
-		
-		$this->resetCache();
-					
-		return true;	
-	}
-	/**
-	 * Check if dictionary exists
-	 * @param string $name
-	 * @return boolean
-	 */
-	public function isValidDictionary($name)
-	{						
-		/*
-		 * Check local cache
-		 */	
-		if(isset(self::$_validDictionary[$name]))
-			return true;
+        if($this->_cache)
+            $this->_cache->save($list, self::CACHE_KEY_LIST);
 
-		if(Config::storage()->exists($this->_baseDir . 'index/' . $name . '.php')) {
-			self::$_validDictionary[$name] = true;
-			return true;
-		}
-		return false;
-	}
-	/**
-	 * Remove dictionary
-	 * @param string $name
-	 * @return boolean
-	 */
-	public function remove($name)
-	{
-		$dirs = File::scanFiles($this->_path. $this->_baseDir, false, false, File::Dirs_Only);
+        return array_keys($list);
+    }
+    /**
+     * Create dictionary
+     * @param string $name
+     * @param string $language, optional
+     * @return boolean
+     */
+    public function create($name , $language = false)
+    {
+        if($language == false){
+            $language = $this->_language;
+        }
 
-		foreach($dirs as $path){
-			$file = $path . '/' . $name . '.php';
-			if(file_exists($file) && is_file($file))
-				if(!@unlink($file))
-					return false;
-		}
+        $indexFile = $this->_path . $this->_baseDir . 'index/' . $name . '.php';
+        $dictionaryFile =  $this->_path . $this->_baseDir . $language . '/' .  $name . '.php';
 
-		if(isset(self::$_validDictionary[$name]))
-			unset(self::$_validDictionary[$name]);
-			
-		$this->resetCache();
-			
-		return true;
-	}
-	/**
-	 * Reset cache
-	 */
-	public function resetCache()
-	{
-		if(!$this->_cache)
-			return;
-		
-		$this->_cache->remove(self::CACHE_KEY_LIST);
-		$this->_cache->remove(self::CACHE_KEY_DATA_HASH);
-	}
-	/**
-	 * Get data hash (all dictionaries data)
-	 * Enter description here ...
-	 */
-	public function getDataHash()
-	{
-		if($this->_cache && $hash = $this->_cache->load(self::CACHE_KEY_DATA_HASH))
-			return $hash;
-			
-		$s='';
-		$list = $this->getList();
-		
-		if(!empty($list))	
-			foreach ($list as $name)	
-				$s.= $name.':'.Dictionary::factory($name)->__toJs();
-					
-		$s = md5($s);
-		
-		if($this->_cache)
-			$this->_cache->save($s, self::CACHE_KEY_DATA_HASH);
+        if(!file_exists($dictionaryFile) && Config_File_Array::create($dictionaryFile))
+        {
+            if(!file_exists($indexFile) && !Config_File_Array::create($indexFile)){
+                return false;
+            }
 
-		return $s;
-	}
+            self::$_validDictionary[$name]=true;
+            $this->resetCache();
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Rename dictionary
+     * @param string $oldName
+     * @param string $newName
+     * @return boolean
+     */
+    public function rename($oldName, $newName)
+    {
+        $dirs = File::scanFiles($this->_path. $this->_baseDir, false, false, File::Dirs_Only);
 
-	/**
-	 * Get Dictionary manager
-	 * @return Dictionary_Manager
-	 */
-	static public function factory()
-	{
-		static $manager = false;
+        foreach($dirs as $path){
+            if(file_exists($path . '/' . $oldName . '.php')){
+                if(!@rename($path . '/' . $oldName . '.php', $path . '/' . $newName.'.php')){
+                    return false;
+                }
+            }
+        }
 
-		if(!$manager){
-			$cfg = Registry::get('main' , 'config');
-			$cacheManager = new Cache_Manager();
-			$cache = $cacheManager->get('data');
-			$manager = new static($cfg , $cache);
-		}
+        if(isset(self::$_validDictionary[$oldName]))
+            unset(self::$_validDictionary[$oldName]);
 
-		return $manager;
-	}
+        self::$_validDictionary[$newName]=true;
+
+        $this->resetCache();
+
+        return true;
+    }
+    /**
+     * Check if dictionary exists
+     * @param string $name
+     * @return boolean
+     */
+    public function isValidDictionary($name)
+    {
+        /*
+         * Check local cache
+         */
+        if(isset(self::$_validDictionary[$name]))
+            return true;
+
+        if(Config::storage()->exists($this->_baseDir . 'index/' . $name . '.php')) {
+            self::$_validDictionary[$name] = true;
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Remove dictionary
+     * @param string $name
+     * @return boolean
+     */
+    public function remove($name)
+    {
+        $dirs = File::scanFiles($this->_path. $this->_baseDir, false, false, File::Dirs_Only);
+
+        foreach($dirs as $path){
+            $file = $path . '/' . $name . '.php';
+            if(file_exists($file) && is_file($file))
+                if(!@unlink($file))
+                    return false;
+        }
+
+        if(isset(self::$_validDictionary[$name]))
+            unset(self::$_validDictionary[$name]);
+
+        $this->resetCache();
+
+        return true;
+    }
+    /**
+     * Reset cache
+     */
+    public function resetCache()
+    {
+        if(!$this->_cache)
+            return;
+
+        $this->_cache->remove(self::CACHE_KEY_LIST);
+        $this->_cache->remove(self::CACHE_KEY_DATA_HASH);
+    }
+    /**
+     * Get data hash (all dictionaries data)
+     * Enter description here ...
+     */
+    public function getDataHash()
+    {
+        if($this->_cache && $hash = $this->_cache->load(self::CACHE_KEY_DATA_HASH))
+            return $hash;
+
+        $s='';
+        $list = $this->getList();
+
+        if(!empty($list))
+            foreach ($list as $name)
+                $s.= $name.':'.Dictionary::factory($name)->__toJs();
+
+        $s = md5($s);
+
+        if($this->_cache)
+            $this->_cache->save($s, self::CACHE_KEY_DATA_HASH);
+
+        return $s;
+    }
+
+    /**
+     * Get Dictionary manager
+     * @return Dictionary_Manager
+     */
+    static public function factory()
+    {
+        static $manager = false;
+
+        if(!$manager){
+            $cfg = Registry::get('main' , 'config');
+            $cacheManager = new Cache_Manager();
+            $cache = $cacheManager->get('data');
+            $manager = new static($cfg , $cache);
+        }
+
+        return $manager;
+    }
 
 
-	/**
-	 * Save changes
-	 * @param string $name
-	 * @return boolean
-	 */
-	public function saveChanges($name)
-	{
-		$dict = Dictionary::factory($name);
-		if(!$dict->save())
-			return false;
+    /**
+     * Save changes
+     * @param string $name
+     * @return boolean
+     */
+    public function saveChanges($name)
+    {
+        $dict = Dictionary::factory($name);
+        if(!$dict->save())
+            return false;
 
-		$this->resetCache();
-		$this->rebuildIndex($name);
-		$this->mergeLocales($name,$this->_language);
-		return true;
-	}
+        $this->resetCache();
+        $this->rebuildIndex($name);
+        $this->mergeLocales($name,$this->_language);
+        return true;
+    }
 
-	/**
-	 * Rebuild dictionary index
-	 * @param string $name
-	 * @return boolean
-	 */
-	public function rebuildIndex($name)
-	{
-		$dict = Dictionary::factory($name);
-		$index = Config::storage()->get($this->_baseDir . 'index/' . $name . '.php', false, false);
+    /**
+     * Rebuild dictionary index
+     * @param string $name
+     * @return boolean
+     */
+    public function rebuildIndex($name)
+    {
+        $dict = Dictionary::factory($name);
+        $index = Config::storage()->get($this->_baseDir . 'index/' . $name . '.php', false, false);
 
-		$index->removeAll();
-		$index->setData(array_keys($dict->getData()));
-		$index->save();
+        $index->removeAll();
+        $index->setData(array_keys($dict->getData()));
+        $index->save();
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Sync localized versions of dictionaries using base dictionary as a reference list of records
-	 * @param string $name
-	 * @param string $baseLocale
-	 * @return boolean
-	 */
-	public function mergeLocales($name, $baseLocale)
-	{
-		$baseDict = Config::storage()->get($this->_baseDir . $baseLocale . '/' . $name . '.php', false, false);
+    /**
+     * Sync localized versions of dictionaries using base dictionary as a reference list of records
+     * @param string $name
+     * @param string $baseLocale
+     * @return boolean
+     */
+    public function mergeLocales($name, $baseLocale)
+    {
+        $baseDict = Config::storage()->get($this->_baseDir . $baseLocale . '/' . $name . '.php', false, false);
 
-		$locManager = new Backend_Localization_Manager($this->_appConfig);
+        $locManager = new Backend_Localization_Manager($this->_appConfig);
 
-		foreach($locManager->getLangs(true) as $locale)
-		{
-			if($locale == $baseLocale)
-				continue;
+        foreach($locManager->getLangs(true) as $locale)
+        {
+            if($locale == $baseLocale)
+                continue;
 
-			$dict = Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false);
-			if($dict === false){
-				if(!$this->create($name , $locale) || ! $dict=Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false)){
-					return false;
-				}
-			}
-			// Add new records from base dictionary and remove redundant records from current
-			$mergedData = array_merge(
-				// get elements from current dictionary with keys common for arrays
-				array_intersect_key($dict->__toArray(), $baseDict->__toArray()),
-				// get new records for current dictionary
-				array_diff_key($baseDict->__toArray(), $dict->__toArray())
-			);
+            $dict = Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false);
+            if($dict === false){
+                if(!$this->create($name , $locale) || ! $dict=Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false)){
+                    return false;
+                }
+            }
 
-			$dict->removeAll();
-			$dict->setData($mergedData);
+            // Add new records from base dictionary and remove redundant records from current
+            $mergedData = array_merge(
+            // get elements from current dictionary with keys common for arrays
+                array_intersect_key($dict->__toArray(), $baseDict->__toArray()),
+                // get new records for current dictionary
+                array_diff_key($baseDict->__toArray(), $dict->__toArray())
+            );
 
-			$dict->save();
-		}
+            $dict->removeAll();
+            $dict->setData($mergedData);
 
-		return true;
-	}
+            $dict->save();
+        }
+
+        return true;
+    }
 }
