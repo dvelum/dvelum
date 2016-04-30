@@ -210,7 +210,7 @@ return array(
     /*
      * Use foreign keys
      */
-    'foreign_keys' => true,
+    'foreign_keys' => false,
     /*
      * www root
      */
@@ -271,6 +271,7 @@ return array(
         'enabled' => true,
         'path' => './modules',
         'resources_path' => $wwwPath . 'resources/',
-        'resources_root' => $wwwRoot . 'resources/'
+        'resources_root' => $wwwRoot . 'resources/',
+        'server' => 'https://modules.dvelum.net/api/modules/'
     ]
 );
