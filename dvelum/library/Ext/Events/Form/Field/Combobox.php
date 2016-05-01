@@ -15,7 +15,7 @@ class Ext_Events_Form_Field_Combobox extends Ext_Events_Form_Field_Picker
 	public $beforeselect;
 	public $select = array(
 		 'combo'=>'Ext.form.field.ComboBox',
-		 'records'=>'Array',
+		 'records'=>'Ext.data.Model',
 		 'eOpts'=>'Object'
 	);
 	public function _initConfig()

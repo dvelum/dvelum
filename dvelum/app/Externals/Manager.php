@@ -8,6 +8,11 @@ class Externals_Manager
     protected $appConfig;
 
     /**
+     * @var array
+     */
+    protected $externalsConfig;
+
+    /**
      * @var Config_File_Array
      */
     protected $config;
@@ -43,6 +48,7 @@ class Externals_Manager
         $this->config = Config::storage()->get('external_modules.php');
         $this->autoloader = $autoloader;
         $this->appConfig = $config;
+        $this->externalsConfig = $this->appConfig->get('externals');
     }
 
     /**
@@ -226,8 +232,6 @@ class Externals_Manager
      */
     public function install($id)
     {
-        $externalsCfg = $this->appConfig->get('externals');
-
         $modInfo = $this->getModule($id);
         $path = File::fillEndSep($modInfo['path']);
         if(!empty($modInfo['resources']))
@@ -235,8 +239,8 @@ class Externals_Manager
             $resources = str_replace(['./','//'], [$path,''], $modInfo['resources'].'/');
 
             if(is_dir($resources)){
-                if(!File::copyDir($resources, $externalsCfg['resources_path'].$id)){
-                    $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$externalsCfg['resources_path'].$id;
+                if(!File::copyDir($resources, $this->externalsConfig['resources_path'].$id)){
+                    $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$this->externalsConfig['resources_path'].$id;
                     return false;
                 }
             }
@@ -322,7 +326,6 @@ class Externals_Manager
      */
     public function uninstall($id)
     {
-        $externalsCfg = $this->appConfig->get('externals');
         $modConf = $this->getModule($id);
 
         // Remove config record
@@ -335,7 +338,7 @@ class Externals_Manager
         // Remove resources
         if(!empty($modConf['resources']))
         {
-            $installedResources = $externalsCfg['resources_path'].$id;
+            $installedResources = $this->externalsConfig['resources_path'].$id;
 
             if(is_dir($installedResources)){
                 if(!File::rmdirRecursive($installedResources, true)){
@@ -345,7 +348,7 @@ class Externals_Manager
             }
         }
         // Remove Db_Object tables
-        if(!empty($modConf['objects']))
+        if(!empty($modConf['objects']) && $modConf['enabled'])
         {
             foreach($modConf['objects'] as $object)
             {
@@ -404,5 +407,14 @@ class Externals_Manager
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    /**
+     * Get list of software repositories
+     * @return array
+     */
+    public function getRepoList()
+    {
+        return $this->externalsConfig['repo'];
     }
 }

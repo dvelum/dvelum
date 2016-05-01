@@ -16,60 +16,60 @@
  */
 abstract class Controller
 {
-  /**
-   * Link to Page object
-   * 
-   * @var Page
-   */
-  protected $_page;
+    /**
+     * Link to Page object
+     *
+     * @var Page
+     */
+    protected $_page;
 
-  /**
-   * Link to Resource object
-   * 
-   * @var Resource
-   */
-  protected $_resource;
-  
-  /**
-   * Localization dictionary
-   * 
-   * @var Lang
-   */
-  protected $_lang;
-  
-  /**
-   * Link to router
-   * 
-   * @var Router
-   */
-  protected $_router;
-  
-  /**
-   * Application config
-   * @var Config_Abstract
-   */
-  protected $_configMain;
+    /**
+     * Link to Resource object
+     *
+     * @var Resource
+     */
+    protected $_resource;
 
-  public function __construct()
-  {
-    $this->_page = Page::getInstance();
-    $this->_resource = Resource::getInstance();
-    $this->_lang = Lang::lang();
-    $this->_configMain = Registry::get('main' , 'config');
-  }
+    /**
+     * Localization dictionary
+     *
+     * @var Lang
+     */
+    protected $_lang;
 
-  /**
-   * Set link to router
-   * @param Router $router          
-   */
-  public function setRouter(Router $router)
-  {
-    $this->_router = $router;
-  }
+    /**
+     * Link to router
+     *
+     * @var Router
+     */
+    protected $_router;
 
-  /**
-   * Default action
-   * (Is to be set in child classes)
-   */
-  abstract function indexAction();
+    /**
+     * Application config
+     * @var Config_Abstract
+     */
+    protected $_configMain;
+
+    public function __construct()
+    {
+        $this->_page = Page::getInstance();
+        $this->_resource = Resource::getInstance();
+        $this->_lang = Lang::lang();
+        $this->_configMain = Registry::get('main' , 'config');
+    }
+
+    /**
+     * Set link to router
+     * @param Router_Interface $router
+     */
+    public function setRouter(Router_Interface $router)
+    {
+        $this->_router = $router;
+    }
+
+    /**
+     * Default action
+     * (Is to be set in child classes)
+     */
+    abstract function indexAction();
 }

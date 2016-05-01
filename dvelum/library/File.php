@@ -194,12 +194,15 @@ class File
 		if($zip->open($source) !== true)
 			return false;
 
-		if(! empty($fileEntries))
-			if (!$zip->extractTo($destination , $fileEntries))
+		if(!empty($fileEntries)) {
+			if (!$zip->extractTo($destination, $fileEntries)) {
 				return false;
-			else
-				if(!$zip->extractTo($destination))
-					return false;
+			}
+		}else {
+			if (!$zip->extractTo($destination)) {
+				return false;
+			}
+		}
 
 		return $zip->close();
 	}

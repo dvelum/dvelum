@@ -272,6 +272,12 @@ return array(
         'path' => './modules',
         'resources_path' => $wwwPath . 'resources/',
         'resources_root' => $wwwRoot . 'resources/',
-        'server' => 'https://modules.dvelum.net/api/modules/'
+        'repo' => [
+            [
+                'id' => 'dvelum_official',
+                'title' => 'DVelum official',
+                'url' => 'https://addons.dvelum.net/api/modules/'
+            ]
+        ]
     ]
 );
