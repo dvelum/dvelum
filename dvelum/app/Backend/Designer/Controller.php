@@ -114,7 +114,7 @@ class Backend_Designer_Controller extends Backend_Controller
         $designerTheme = $this->_config->get('theme');
         $this->_configBackend->set('theme' , $designerTheme);
         $page = Page::getInstance();
-        $page->setTemplatesPath($this->_configMain->get('templates'). 'system/' . $designerTheme. '/');
+        $page->setTemplatesPath('system/' . $designerTheme. '/');
 
 
 		$this->_resource->addJs('/js/lib/jquery.js'  , 1);

@@ -117,41 +117,6 @@ class Page
      */
     public function getThemePath()
     {
-        /*
-         * Check for external themes
-         */
-        if($this->_externalsExpert)
-        {
-            $themes = $this->_externalsExpert->getThemes();
-            if(isset($themes[$this->theme]))
-                return $themes[$this->theme];
-        }
-
         return $this->_templatesPath . $this->theme . '/';
-    }
-
-    /**
-     * Get template path
-     * The template is to searched for in the theme folder.
-     * Otherwise, the system will attempt to load it from the template root folder
-     * @param string $template  - filename
-     * @return string
-     */
-    public function getTemplatePath($template)
-    {
-        /*
-         * Check for external templates
-         */
-        if($this->_externalsExpert)
-        {
-            $templates = $this->_externalsExpert->getTemplates();
-            if(isset($templates[$template]))
-                return $templates[$template];
-        }
-
-        if(file_exists($this->getThemePath() . $template))
-            return $this->getThemePath() . $template;
-
-        return $this->_templatesPath . $template;
     }
 }

@@ -205,6 +205,7 @@ class Config_Storage
 
     /**
      * Set configuration options
+     * @param array $options
      */
     public function setConfig(array $options)
     {

@@ -15,7 +15,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$designerTheme = $designerConfig->get('application_theme');
         $backendConfig->set('theme' , $designerTheme);
 		$page = Page::getInstance();
-		$page->setTemplatesPath($this->_configMain->get('templates'). 'system/' . $designerTheme. '/');
+		$page->setTemplatesPath('system/' . $designerTheme. '/');
 
 
 		$res = Resource::getInstance();

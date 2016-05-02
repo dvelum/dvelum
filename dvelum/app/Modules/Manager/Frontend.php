@@ -71,8 +71,15 @@ class Modules_Manager_Frontend extends Modules_Manager
     public function getList()
     {
         $list = parent::getList();
-        if(!empty($list)){
-            foreach($list as $k=>&$v){
+        if(!empty($list))
+        {
+            foreach($list as $k=>&$v)
+            {
+                if($this->_curConfig && $this->_curConfig->offsetExists($k)){
+                    $cfg['dist'] = false;
+                }else{
+                    $cfg['dist'] = true;
+                }
                 $v['id'] = $v['code'];
             }
         }

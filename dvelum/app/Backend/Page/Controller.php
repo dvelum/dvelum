@@ -182,15 +182,21 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     {
         $data = parent::_loadData($object, $version);
 
-        $theme = 'default';
+        $templateStorage = Template::storage();
+        $templatePath = $templateStorage->get($this->_configMain->get('themes') . $object->get('theme') . '/layout_cfg.php');
 
-        if(file_exists($this->_configMain->get('themes') . $object->get('theme') . '/layout_cfg.php'))
-            $theme = $object->get('theme');
+        if(empty($templatePath)){
+            $templatePath = $templateStorage->get($this->_configMain->get('themes') . 'default/layout_cfg.php');
+        }
+
+        if(empty($templatePath)){
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
 
         try{
-            $config = new Config_File_Array($this->_configMain->get('themes') . $theme . '/layout_cfg.php');
+            $config = new Config_File_Array($templatePath);
         }catch (Exception $e){
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }
 
         $conf = $config->__toArray();
@@ -234,9 +240,15 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         $theme = Request::post('theme', 'string', 'default');
 
         try{
-            $config = new Config_File_Array($this->_configMain->get('themes') . $theme . '/layout_cfg.php');
+            $templateStorage = Template::storage();
+            $templatePath = $templateStorage->get($this->_configMain->get('themes') . $theme . '/layout_cfg.php');
+
+            if(empty($templatePath))
+                throw new Exception('Undefined theme');
+
+            $config = new Config_File_Array($templatePath);
         }catch (Exception $e){
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }
 
         $conf = $config->__toArray();
@@ -435,8 +447,29 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
      */
     public function themesListAction()
     {
-        $themes = File::scanFiles($this->_configMain->get('themes'),false,false, File::Dirs_Only);
-        $result = array();
+        $templateStorage = Template::storage();
+        $paths = $templateStorage->getPaths();
+
+        $themes = [];
+        $themesDir = $this->_configMain->get('themes');
+        foreach($paths as $path)
+        {
+            if(is_dir($path.$themesDir)){
+                $themesList = File::scanFiles($path.$themesDir,false,false, File::Dirs_Only);
+                if(!empty($themesList)){
+                    foreach($themesList as $themePath){
+                        $themeName = basename($themePath);
+                        $themes[$themeName] = true;
+                    }
+                }
+            }
+        }
+
+        if(!empty($themes)){
+            $themes = array_keys($themes);
+        }
+
+        $result = [];
         if(!empty($themes))
         {
             foreach ($themes as $name){
@@ -456,8 +489,15 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         $blocks = Model::factory('Blockmapping');
         $list = $blocks->getList(false , array('page_id'=>null), array('id'=>'block_id','place'));
 
+        $templateStorage = Template::storage();
+        $filePath = $templateStorage->get($this->_configMain->get('themes') . 'default' . '/layout_cfg.php');
+
+        if(empty($filePath)){
+            Response::jsonError($this->_lang->WRONG_REQUEST);
+        }
+
         try{
-            $config = new Config_File_Array($this->_configMain->get('themes') . 'default' . '/layout_cfg.php');
+            $config = new Config_File_Array($filePath);
         }catch (Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
         }

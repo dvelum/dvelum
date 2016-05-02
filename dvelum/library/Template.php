@@ -23,170 +23,199 @@
  */
 class Template
 {
-	/**
-	 * Template data (local variables)
-	 * @var array
-	 */
-	private $_data = array();
-	
-	/**
-	 * Default cache interface
-	 * @var Cache_Interface
-	 */
-	protected static $_defaultCache = false;
-	/**
-	 * Check modification time for template file. Invalidate cache
-	 * @var boolean
-	 */
-	protected static $_checkMTime = false;
-	/**
-	 * @var Cache_Interface
-	 */
-	protected $_cache = false;
-	/**
-	 * @var boolean
-	 */
-	protected $_useCache = true;
+    /**
+     * Template data (local variables)
+     * @var array
+     */
+    private $_data = array();
 
-	/**
-	 * Set the template cache manager (system method)
-	 * @param Cache_Interface $manager
-	 */
-	static public function setCache(Cache_Interface $manager)
-	{
-		self::$_defaultCache = $manager;
-	}
-	
-	/**
-	 * Set _checkMTime flag
-	 * @param boolean $flag
-	 */
-	static public function checkMtime($flag)
-	{
-	  self::$_checkMTime = $flag;
-	}
+    /**
+     * Default cache interface
+     * @var Cache_Interface
+     */
+    protected static $_defaultCache = false;
+    /**
+     * Check modification time for template file. Invalidate cache
+     * @var boolean
+     */
+    protected static $_checkMTime = false;
+    /**
+     * @var Cache_Interface
+     */
+    protected $_cache = false;
+    /**
+     * @var boolean
+     */
+    protected $_useCache = true;
 
-	public function __construct()
-	{
-	  $this->_cache = self::$_defaultCache;
-	}
-	/**
-	 * Template Render
-	 * @param string $path — the path to the template file
-	 * @return string
-	 */
-	public function render($path)
-	{
-		$hash = '';
-		if($this->_cache && $this->_useCache)
-		{
-			$hash = md5('tpl_' . $path . '_' . serialize($this->_data));
-			$html = $this->_cache->load($hash);
-			
-			if($html !== false)
-				return $html;
-		}
+    /**
+     * @var Template_Storage
+     */
+    protected $_storage;
 
-		ob_start();
-		include $path;
-		$result = ob_get_clean();
-		
-		if($this->_cache && $this->_useCache)
-			$this->_cache->save($result , $hash);
-			
-		return $result;
-	}
-	
-	/**
-	 * Set property
-	 * @param string $name
-	 * @param mixed $value
-	 */
-	public function set($name , $value)
-	{
-		$this->_data[$name] = $value;
-	}
-	
-	/**
-	 * Set multiple properties
-	 * @param array $data
-	 */
-	public function setProperties(array $data)
-	{
-		foreach ($data as $name=>$value)
-			$this->_data[$name] = $value;
-	}
-	
-	/**
-	 * Get property
-	 * @param string $name
-	 * @return mixed
-	 */
-	public function get($name)
-	{
-		if(!isset($this->_data[$name]))
-			return null;
-		return $this->_data[$name];
-	}	
-	
-	public function __set($name , $value)
-	{
-		$this->set($name, $value);
-	}
+    /**
+     * Set the template cache manager (system method)
+     * @param Cache_Interface $manager
+     */
+    static public function setCache(Cache_Interface $manager)
+    {
+        self::$_defaultCache = $manager;
+    }
 
-	public function __isset($name)
-	{
-		return isset($this->_data[$name]);
-	}
+    /**
+     * Set _checkMTime flag
+     * @param boolean $flag
+     */
+    static public function checkMtime($flag)
+    {
+        self::$_checkMTime = $flag;
+    }
 
-	public function __get($name)
-	{
-		return $this->get($name);
-	}
+    public function __construct()
+    {
+        $this->_cache = self::$_defaultCache;
+        $this->_storage = self::storage();
 
-	public function __unset($name)
-	{
-		unset($this->_data[$name]);
-	}
+    }
+    /**
+     * Template Render
+     * @param string $path — the path to the template file
+     * @return string
+     */
+    public function render($path)
+    {
 
-	/**
-	 * Empty template data
-	 */
-	public function clear()
-	{
-		$this->_data = array();
-	}
+        $hash = '';
+        if($this->_cache && $this->_useCache)
+        {
+            $hash = md5('tpl_' . $path . '_' . serialize($this->_data));
+            $html = $this->_cache->load($hash);
 
-	/**
-	 * Disable caching
-	 */
-	public function disableCache()
-	{
-		$this->_useCache = false;
-	}
+            if($html !== false)
+                return $html;
+        }
 
-	/**
-	 * Enable caching
-	 */
-	public function enableCache()
-	{
-		$this->_useCache = true;
-	}
-	/**
-	 * Get template data
-	 * @return array
-	 */
-	public function getData()
-	{
-		return $this->_data;
-	}
-	/**
-	 * Redefine template data using an associative key-value array,
-	 * old and new data merge
-	 * @param array $data
-	 */
-	public function setData(array $data)
-	{
-		$this->_data = $data;
-	}
+        $realPath = $this->_storage->get($path);
+
+        if(!$realPath){
+            return '';
+        }
+
+        ob_start();
+        include $realPath;
+        $result = ob_get_clean();
+
+        if($this->_cache && $this->_useCache)
+            $this->_cache->save($result , $hash);
+
+        return $result;
+    }
+
+    /**
+     * Set property
+     * @param string $name
+     * @param mixed $value
+     */
+    public function set($name , $value)
+    {
+        $this->_data[$name] = $value;
+    }
+
+    /**
+     * Set multiple properties
+     * @param array $data
+     */
+    public function setProperties(array $data)
+    {
+        foreach ($data as $name=>$value)
+            $this->_data[$name] = $value;
+    }
+
+    /**
+     * Get property
+     * @param string $name
+     * @return mixed
+     */
+    public function get($name)
+    {
+        if(!isset($this->_data[$name]))
+            return null;
+        return $this->_data[$name];
+    }
+
+    public function __set($name , $value)
+    {
+        $this->set($name, $value);
+    }
+
+    public function __isset($name)
+    {
+        return isset($this->_data[$name]);
+    }
+
+    public function __get($name)
+    {
+        return $this->get($name);
+    }
+
+    public function __unset($name)
+    {
+        unset($this->_data[$name]);
+    }
+
+    /**
+     * Empty template data
+     */
+    public function clear()
+    {
+        $this->_data = array();
+    }
+
+    /**
+     * Disable caching
+     */
+    public function disableCache()
+    {
+        $this->_useCache = false;
+    }
+
+    /**
+     * Enable caching
+     */
+    public function enableCache()
+    {
+        $this->_useCache = true;
+    }
+    /**
+     * Get template data
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->_data;
+    }
+    /**
+     * Redefine template data using an associative key-value array,
+     * old and new data merge
+     * @param array $data
+     */
+    public function setData(array $data)
+    {
+        $this->_data = $data;
+    }
+
+    /**
+     * Get Templates storage
+     * @return Template_Storage
+     */
+    static public function storage()
+    {
+        static $store = false;
+
+        if(!$store){
+            $store = new Template_Storage();
+        }
+
+        return $store;
+    }
 }

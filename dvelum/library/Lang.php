@@ -18,12 +18,6 @@
  */
 class Lang
 {
-	/**
-	 * Configuration options for Config_Storage
-	 * @var array
-	 */
-	protected static $_storageConfig = array();
-
 	protected $_dictionary = false;
 	protected $_dictionaryName = '';
 	
@@ -33,7 +27,7 @@ class Lang
 	
 	
 	/**
-	 * @param Config_Abstract $dictionary
+	 * @param string $name
 	 */
 	protected function __construct($name)
 	{
@@ -192,18 +186,9 @@ class Lang
 		static $store = false;
 
 		if(!$store){
-			$store = new Config_Storage(static::$_storageConfig);
+			$store = new Config_Storage();
 		}
 
 		return $store;
-	}
-
-	/**
-	 * Inject storage options
-	 * @param array $options
-	 */
-	static public function setStorageOptions(array $options)
-    {
-		self::$_storageConfig = $options;
 	}
 }

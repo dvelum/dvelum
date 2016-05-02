@@ -89,7 +89,7 @@ class Sysdocs_Controller
 
         // change theme
         $page = Page::getInstance();
-        $page->setTemplatesPath($this->configMain->get('templates'). 'system/gray/');
+        $page->setTemplatesPath('system/gray/');
     }
     /**
      * Set edit permissions

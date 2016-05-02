@@ -1,1 +1,1 @@
-var modules_frontendLang = {api:"API Контроллер [системное]",console:"Фоновые задачи"};
+var modules_frontendLang = {api:"API Контроллер [системное]",console:"Фоновые задачи",dvelum_articles:"Статьи",dvelum_articles_item:"Страница статьи"};

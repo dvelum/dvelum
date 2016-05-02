@@ -6,6 +6,7 @@ class Modules_Manager
 {
 	protected $_config;
 	protected $_distConfig;
+    protected $_curConfig = false;
 	protected $_mainconfigKey = 'backend_modules';
 	/**
 	 * @var Config_Abstract
@@ -19,16 +20,32 @@ class Modules_Manager
 	static protected $_classRoutes = false;
 
 	public function __construct()
-	{
-		$this->_appConfig = Registry::get('main' , 'config');
-		$configPath =  $this->_appConfig->get($this->_mainconfigKey);
-		$this->_config = Config::storage()->get($configPath , false , true);
+    {
+        $this->_appConfig = Registry::get('main', 'config');
+        $configPath = $this->_appConfig->get($this->_mainconfigKey);
+        $this->_config = Config::storage()->get($configPath, false, true);
 
-		$this->_distConfig = new Config_File_Array(Config::storage()->getApplyTo() . $configPath);
+        $this->_distConfig = new Config_File_Array(Config::storage()->getApplyTo() . $configPath);
+
+        if(file_exists(Config::storage()->getWrite() . $configPath)){
+            $this->_curConfig = new Config_File_Array(Config::storage()->getWrite() . $configPath);
+        }
 
 		$locale = Lang::lang()->getName();
 		$this->_modulesLocale = Lang::storage()->get($locale.'/modules/'.basename($configPath));
 	}
+
+    /**
+     * Get Modules menu localization
+     * @param $lang
+     * @return Config_Abstract|false
+     * @throws Exception
+     */
+    public function getLocale($lang)
+    {
+        $configPath = $this->_appConfig->get($this->_mainconfigKey);
+        return Lang::storage()->get($lang.'/modules/'.basename($configPath));
+    }
 
 	/**
 	 * Get registered modules
@@ -101,7 +118,7 @@ class Modules_Manager
 	public function getControllerModule($controller)
 	{
 		if(!self::$_classRoutes){
-		    $config = $this->_config->__toArray();
+			$config = $this->_config->__toArray();
 
 			foreach ($config as $module=>$cfg)
 				self::$_classRoutes[$cfg['class']] = $module;
@@ -119,13 +136,13 @@ class Modules_Manager
 	 */
 	public function getList()
 	{
-		$data = $this->_config->__toArray();;
+		$data = $this->_config->__toArray();
 		foreach ($data as $module=>&$cfg)
 		{
-			if($this->_distConfig->offsetExists($module)){
-				$cfg['dist'] = true;
-			}else{
+			if($this->_curConfig && $this->_curConfig->offsetExists($module)){
 				$cfg['dist'] = false;
+			}else{
+				$cfg['dist'] = true;
 			}
 
 			if(!isset($cfg['in_menu']))
@@ -144,6 +161,7 @@ class Modules_Manager
 	/**
 	 * Remove module
 	 * @param string $name
+	 * @return boolean
 	 */
 	public function removeModule($name)
 	{
@@ -163,6 +181,7 @@ class Modules_Manager
 	 * Add module
 	 * @param string $name
 	 * @param array $config
+	 * @return boolean
 	 */
 	public function addModule($name , array $config)
 	{
@@ -184,7 +203,8 @@ class Modules_Manager
 			$this->_config->remove($name);
 		}
 
-		if(isset($data['title'])){
+		if(isset($data['title']))
+		{
 			$this->_modulesLocale->set($data['id'] , $data['title']);
 			if(!$this->_modulesLocale->save()){
 				return false;
@@ -218,7 +238,7 @@ class Modules_Manager
 	 */
 	public function getConfig()
 	{
-	  return $this->_config;
+		return $this->_config;
 	}
 
 	/**
@@ -237,65 +257,65 @@ class Modules_Manager
 		$data = array();
 
 		foreach($paths as $path)
-        {
-            if(basename($path) === 'modules')
-            {
-                $folders = File::scanFiles($path, false, true, File::Dirs_Only);
+		{
+			if(basename($path) === 'modules')
+			{
+				$folders = File::scanFiles($path, false, true, File::Dirs_Only);
 
-                if(empty($folders))
-                    continue;
+				if(empty($folders))
+					continue;
 
-                foreach($folders as $item)
-                {
-                    if(!is_dir($item.'/'.$dir)){
-                        continue;
-                    }
-                    $this->findControllers($item.'/'.$dir, $systemControllers, $data , ucfirst(basename($item)).'_'.$dir.'_');
-                }
-            }else{
-                if(!is_dir($path.'/'.$dir)){
-                    continue;
-                }
-                $this->findControllers($path.'/'.$dir,$systemControllers, $data, $dir.'_');
-            }
+				foreach($folders as $item)
+				{
+					if(!is_dir($item.'/'.$dir)){
+						continue;
+					}
+					$this->findControllers($item.'/'.$dir, $systemControllers, $data , ucfirst(basename($item)).'_'.$dir.'_');
+				}
+			}else{
+				if(!is_dir($path.'/'.$dir)){
+					continue;
+				}
+				$this->findControllers($path.'/'.$dir,$systemControllers, $data, $dir.'_');
+			}
 
 		}
 		return array_values($data);
 	}
 
-    /**
-     * Find controller files
-     * @param $path
-     * @param & array $result
-     */
-    public function findControllers($path, $skipList, & $result, $classPrefix = '')
-    {
-        $folders = File::scanFiles($path, false, true, File::Dirs_Only);
+	/**
+	 * Find controller files
+	 * @param $path
+	 * @param & array $result
+	 */
+	public function findControllers($path, $skipList, & $result, $classPrefix = '')
+	{
+		$folders = File::scanFiles($path, false, true, File::Dirs_Only);
 
-        if(empty($folders))
-            return;
+		if(empty($folders))
+			return;
 
-        foreach ($folders as $item)
-        {
-            $name = basename($item);
+		foreach ($folders as $item)
+		{
+			$name = basename($item);
 
-            if(file_exists($item.'/Controller.php'))
-            {
-                $name = str_replace($path.'/', '', $item.'/Controller.php');
-                $name = $classPrefix . Utils::classFromPath($name);
+			if(file_exists($item.'/Controller.php'))
+			{
+				$name = str_replace($path.'/', '', $item.'/Controller.php');
+				$name = $classPrefix . Utils::classFromPath($name);
 
-                /*
+				/*
                  * Skip system controller
                  */
-                if(in_array($name, $skipList , true))
-                    continue;
+				if(in_array($name, $skipList , true))
+					continue;
 
-                $result[$name] = array('id'=>$name,'title'=>$name);
-            }
+				$result[$name] = array('id'=>$name,'title'=>$name);
+			}
 
-            $this->findControllers($item, $skipList, $result, $classPrefix);
-        }
-    }
+			$this->findControllers($item, $skipList, $result, $classPrefix);
+		}
+	}
 
 
 	/**

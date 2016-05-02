@@ -108,11 +108,19 @@ class Application
         Filter::setDelimiter($this->_config->get('urlDelimiter'));
 
         /*
-         * Set localization storage options
+         * Init localization storage options
          */
         $langStorage = Lang::storage();
         $langStorage->setConfig(
             Config::storage()->get('lang_storage.php')->__toArray()
+        );
+
+        /*
+         * Init templates storage
+         */
+        $templateStorage = Template::storage();
+        $templateStorage->setConfig(
+            Config::storage()->get('template_storage.php')->__toArray()
         );
 
         Request::setConfig(array(
@@ -318,7 +326,7 @@ class Application
 
         Registry::set('backend' , $cfgBackend , 'config');
 
-        self::$_templates = $this->_config->get('templates') . 'system/' . $cfgBackend->get('theme') . '/';
+        self::$_templates = 'system/' . $cfgBackend->get('theme') . '/';
         $page = Page::getInstance();
         $page->setTemplatesPath(self::$_templates);
 
@@ -378,7 +386,7 @@ class Application
             self::close();
         }
 
-        self::$_templates = $this->_config->get('templates') . 'public/';
+        self::$_templates =  'public/';
         $page = Page::getInstance();
         $page->setTemplatesPath(self::$_templates);
         /*

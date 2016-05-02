@@ -105,7 +105,7 @@ class Router_Module extends Router
             'resource' => Resource::getInstance(),
             'pagesTree' => Model::factory('Page')->getTree()
         ));
-        Response::put($template->render($page->getTemplatePath('layout.php')));
+        Response::put($template->render($page->getThemePath().'layout.php'));
     }
 
     /**

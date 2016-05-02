@@ -148,7 +148,7 @@ return array(
      * Hard caching time (without validation) for frontend , seconds
      */
     'frontend_hardcache' => 30,
-    'themes' => $docRoot . '/application/templates/public/',
+    'themes' => 'public/',
     // Autoloader config
     'autoloader' => array(
         // Paths for autoloading

@@ -5,7 +5,8 @@ Ext.define('app.crud.modules.FrontendModel',{
     fields: [
         {name:'class',type:'string'},
         {name:'code', type:'string'},
-        {name:'title', type:'string'}
+        {name:'title', type:'string'},
+        {name:'dist', type:'boolean'}
     ],
     idProperty:'code'
 });

@@ -304,17 +304,19 @@ class Externals_Manager
             $installer = new $class;
 
             if(!$installer instanceof Externals_Installer){
-                $this->errors[] = 'Class ' .  $class . ' is not implements Externals_Installer interface';
+                $this->errors[] = 'Class ' .  $class . ' is not instance of Externals_Installer';
             }
 
-            if(!$installer->run($this->appConfig)){
+            $modConfig = new Config_Simple($modConf['id'].'_config');
+            $modConfig->setData($modConf);
+
+            if(!$installer->install($this->appConfig, $modConfig)){
                 $errors = $installer->getErrors();
                 if(!empty($errors) && is_array($errors)){
                     $this->errors[] = implode(', ', $errors);
                     return false;
                 }
             }
-
         }
         return true;
     }
@@ -362,6 +364,33 @@ class Externals_Manager
                     }
                 }catch (Exception $e){
                     $this->errors[] = $e->getMessage();
+                }
+            }
+        }
+
+        if(isset($modConf['post-install']) && $modConf['enabled'])
+        {
+            $class = $modConf['post-install'];
+
+            if(!class_exists($class)){
+                $this->errors[] = $class . ' class not found';
+                return false;
+            }
+
+            $installer = new $class;
+
+            if(!$installer instanceof Externals_Installer){
+                $this->errors[] = 'Class ' .  $class . ' is not instance of Externals_Installer';
+            }
+
+            $modConfig = new Config_Simple($modConf['id'].'_config');
+            $modConfig->setData($modConf);
+
+            if(!$installer->uninstall($this->appConfig, $modConfig)){
+                $errors = $installer->getErrors();
+                if(!empty($errors) && is_array($errors)){
+                    $this->errors[] = implode(', ', $errors);
+                    return false;
                 }
             }
         }
