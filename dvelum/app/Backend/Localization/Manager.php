@@ -480,4 +480,38 @@ class Backend_Localization_Manager
                 throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$filePath);
         }
     }
+
+    /**
+     * Create JS lang files
+     * @throw Exception
+     */
+    public function compileLangFiles()
+    {
+        $jsPath = $this->_appConfig->get('js_lang_path');;
+        $langs = $this->getLangs(false);
+
+        foreach ($langs as $lang)
+        {
+            $name = $lang;
+            $dictionary = Lang::storage()->get( $lang .'.php');
+            Lang::addDictionary($name, $dictionary);
+
+            $filePath = $jsPath . $lang .'.js';
+
+            $dir = dirname($lang);
+            if(!empty($dir) && $dir!=='.' && !is_dir($jsPath.'/'.$dir))
+            {
+                mkdir($jsPath.'/'.$dir , 0755 , true);
+            }
+
+            if(strpos($name , '/')===false){
+                $varName = 'appLang';
+            }else{
+                $varName = basename($name).'Lang';
+            }
+
+            if(!@file_put_contents($filePath, 'var '.$varName.' = '.Lang::lang($name)->getJsObject().';'))
+               throw new Exception($this->_lang->get('CANT_WRITE_FS') . ' ' . $filePath);
+        }
+    }
 }

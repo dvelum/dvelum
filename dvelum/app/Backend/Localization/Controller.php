@@ -164,34 +164,12 @@ class Backend_Localization_Controller extends Backend_Controller_Crud
     {
         $this->_checkCanEdit();
 
-        $jsPath = $this->_configMain->get('js_lang_path');
-
-        $lManager = new Backend_Localization_Manager($this->_configMain);
-        $langs = $lManager->getLangs(false);
-
-        foreach ($langs as $lang)
-        {
-            $name = $lang;
-            $dictionary = Lang::storage()->get( $lang .'.php');
-            Lang::addDictionary($name, $dictionary);
-
-            $filePath = $jsPath . $lang .'.js';
-
-            $dir = dirname($lang);
-            if(!empty($dir) && $dir!=='.' && !is_dir($jsPath.'/'.$dir))
-            {
-                mkdir($jsPath.'/'.$dir , 0755 , true);
-            }
-
-            if(strpos($name , '/')===false){
-                $varName = 'appLang';
-            }else{
-                $varName = basename($name).'Lang';
-            }
-
-            if(!@file_put_contents($filePath, 'var '.$varName.' = '.Lang::lang($name)->getJsObject().';'))
-                Response::jsonError($this->_lang->get('CANT_WRITE_FS') . ' ' . $filePath);
+        $langManager = new Backend_Localization_Manager($this->_configMain);
+        try{
+            $langManager->compileLangFiles();
+            Response::jsonSuccess();
+        }catch (Exception $e){
+            Response::jsonError($e->getMessage());
         }
-        Response::jsonSuccess();
     }
 }

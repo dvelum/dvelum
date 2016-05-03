@@ -322,6 +322,21 @@ class Externals_Manager
                 }
             }
         }
+        // build JS lang
+        $langManager = new Backend_Localization_Manager($this->appConfig);
+        try{
+            $langManager->compileLangFiles();
+        }catch (Exception $e){
+            $this->errors[] = $e->getMessage();
+            return false;
+        }
+        // Add permissions
+        $userInfo = User::getInstance()->getInfo();
+        $permissionsModel = Model::factory('Permissions');
+        if(!$permissionsModel->setGroupPermissions($userInfo['group_id'], $id , 1 , 1 , 1 , 1)){
+            return false;
+        }
+
         return true;
     }
 
