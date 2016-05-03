@@ -29,56 +29,56 @@ class Filestorage_Simple extends Filestorage_Abstract
      */
     public function upload()
     {
-    	$path = $this->generateFilePath();
+        $path = $this->generateFilePath();
 
-    	if(!is_dir($path) && !@mkdir($path, 0755, true)){
-           $this->logError('Cannot write FS ' . $path , self::ERROR_CANT_WRITE_FS);
-           return false;
-    	}
+        if(!is_dir($path) && !@mkdir($path, 0755, true)){
+            $this->logError('Cannot write FS ' . $path , self::ERROR_CANT_WRITE_FS);
+            return false;
+        }
 
-    	$fileList = Request::files();
-    	$files = array();
+        $fileList = Request::files();
+        $files = array();
 
-    	foreach ($fileList as $item => $cfg)
-    	{
-    		if(is_array($cfg) && !isset($cfg['name']))
-    		{
-    			foreach ($cfg as $item){
-    				$item['old_name'] = $item['name'];
-    				if($this->_config->get('rename')){
-    					$item['name'] = time() . uniqid('-') .File::getExt($item['name']);
-    				}
-    				$files[]= $item;
-    			}
+        foreach ($fileList as $item => $cfg)
+        {
+            if(is_array($cfg) && !isset($cfg['name']))
+            {
+                foreach ($cfg as $item){
+                    $item['old_name'] = $item['name'];
+                    if($this->_config->get('rename')){
+                        $item['name'] = time() . uniqid('-') .File::getExt($item['name']);
+                    }
+                    $files[]= $item;
+                }
 
-    		}else{
-    			$cfg['old_name'] = $cfg['name'];
-    			if($this->_config->get('rename')){
-    				$cfg['name'] = time() . uniqid('-') .File::getExt($cfg['name']);
-    			}
-    			$files[]= $cfg;
-    		}
-    	}
+            }else{
+                $cfg['old_name'] = $cfg['name'];
+                if($this->_config->get('rename')){
+                    $cfg['name'] = time() . uniqid('-') .File::getExt($cfg['name']);
+                }
+                $files[]= $cfg;
+            }
+        }
 
-    	if(empty($files))
+        if(empty($files))
             return array();
 
-    	$uploadAdapter = $this->_config->get('uploader');
+        $uploadAdapter = $this->_config->get('uploader');
         $uploaderConfig = $this->_config->get('uploader_config');
 
-    	$uploader = new $uploadAdapter($uploaderConfig);
+        $uploader = new $uploadAdapter($uploaderConfig);
 
-    	$uploaded = $uploader->start($files, $path);
+        $uploaded = $uploader->start($files, $path);
 
-    	if(empty($uploaded))
-    		return array();
+        if(empty($uploaded))
+            return array();
 
-    	foreach ($uploaded as $k=>&$v){
-    	    $v['path'] = str_replace($this->_config->get('filepath') , '' , $v['path']);
-    	    $v['id'] = $v['path'];
-    	}unset($v);
+        foreach ($uploaded as $k=>&$v){
+            $v['path'] = str_replace($this->_config->get('filepath') , '' , $v['path']);
+            $v['id'] = $v['path'];
+        }unset($v);
 
-    	return $uploaded;
+        return $uploaded;
     }
     /**
      * Generate file path
@@ -86,7 +86,7 @@ class Filestorage_Simple extends Filestorage_Abstract
      */
     protected function generateFilePath()
     {
-       return $this->_config->get('filepath'). '/' . date('Y') . '/' . date('m') . '/' . date('d') ;
+        return $this->_config->get('filepath'). '/' . date('Y') . '/' . date('m') . '/' . date('d') ;
     }
     /**
      * (non-PHPdoc)
@@ -96,19 +96,19 @@ class Filestorage_Simple extends Filestorage_Abstract
     {
         $fullPath = $this->_config->get('filepath') . $fileId;
 
-    	if(!file_exists($fullPath))
-    	    return true;
+        if(!file_exists($fullPath))
+            return true;
 
-    	return unlink($fullPath);
+        return unlink($fullPath);
     }
-   /**
+    /**
      * (non-PHPdoc)
      * @see Filestorage_Abstract::add()
      */
     public function add($filePath , $useName = false)
     {
         if(!file_exists($filePath))
-        	return false;
+            return false;
 
         $path = $this->generateFilePath();
 
@@ -125,7 +125,7 @@ class Filestorage_Simple extends Filestorage_Abstract
         $oldName = basename($filePath);
 
         if($useName !== false){
-        	$oldName = $useName;
+            $oldName = $useName;
         }
 
         if($this->_config->get('rename')){
@@ -133,25 +133,24 @@ class Filestorage_Simple extends Filestorage_Abstract
         }
 
         $files = array(
-        	 'file' => array(
-                        'name' => $fileName,
-        	            'old_name'=> $oldName,
-                        'type' => '',
-                        'tmp_name' => $filePath,
-                        'error' => 0,
-                        'size' => filesize($filePath)
-                    )
+            'file' => array(
+                'name' => $fileName,
+                'old_name'=> $oldName,
+                'type' => '',
+                'tmp_name' => $filePath,
+                'error' => 0,
+                'size' => filesize($filePath)
+            )
         );
 
         $uploaded = $uploader->start($files, $path , false);
 
         if(empty($uploaded))
-        	return array();
+            return false;
 
-        foreach ($uploaded as $k=>&$v){
-        	$v['path'] = str_replace($this->_config->get('filepath') , '' , $v['path']);
-        	$v['id'] = $v['path'];
-        }unset($v);
+        $uploaded = $uploaded[0];
+        $uploaded['path'] = str_replace($this->_config->get('filepath') , '' , $uploaded['path']);
+        $uploaded['id'] = $uploaded['path'];
 
         return $uploaded;
     }

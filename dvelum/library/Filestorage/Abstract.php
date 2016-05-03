@@ -57,7 +57,7 @@ abstract class Filestorage_Abstract
      * @param string $filePath
      * @param sting $useName, optional set specific file name
      * @throws Exception
-     * @return integer id | boolean false
+     * @return array | boolean false - file info
      */
     abstract public function add($filePath , $useName);
 

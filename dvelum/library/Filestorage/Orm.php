@@ -38,15 +38,15 @@ class Filestorage_Orm extends Filestorage_Simple
 
     public function __construct(Config_Abstract $config)
     {
-    	parent::__construct($config);
+        parent::__construct($config);
 
-    	if(!$this->_config->offsetExists('object'))
-    	   throw new Exception('Filestorage_Orm undefined Orm object');
+        if(!$this->_config->offsetExists('object'))
+            throw new Exception('Filestorage_Orm undefined Orm object');
 
-	    $this->_object = $this->_config->get('object');
+        $this->_object = $this->_config->get('object');
 
-	    if(!$this->_config->offsetExists('check_orm_structure') || $this->_config->get('check_orm_structure'))
-	       $this->checkOrmStructure();
+        if(!$this->_config->offsetExists('check_orm_structure') || $this->_config->get('check_orm_structure'))
+            $this->checkOrmStructure();
     }
 
     /**
@@ -56,14 +56,14 @@ class Filestorage_Orm extends Filestorage_Simple
     public function checkOrmStructure()
     {
         if(!Db_Object_Config::configExists($this->_object))
-        	throw new Exception('Filestorage_Orm undefined Orm object');
+            throw new Exception('Filestorage_Orm undefined Orm object');
 
         $cfg = Db_Object_Config::getInstance($this->_object);
         $fields = $cfg->getFieldsConfig(true);
 
         foreach ($this->_objectFields as $name)
-        	if(!isset($fields[$name]))
-        	    throw new Exception('Filestorage_Orm invalid orm structure, field ' . $name . ' not found');
+            if(!isset($fields[$name]))
+                throw new Exception('Filestorage_Orm invalid orm structure, field ' . $name . ' not found');
     }
     /**
      * (non-PHPdoc)
@@ -71,36 +71,36 @@ class Filestorage_Orm extends Filestorage_Simple
      */
     public function upload()
     {
-    	$data = parent::upload();
+        $data = parent::upload();
 
-    	if(empty($data))
-    	   return array();
+        if(empty($data))
+            return array();
 
-    	foreach ($data as $k=>&$v)
-    	{
-    	    try{
-        	    $o = new Db_Object($this->_object);
-        	    $o->setValues(
-        	        array(
+        foreach ($data as $k=>&$v)
+        {
+            try{
+                $o = new Db_Object($this->_object);
+                $o->setValues(
+                    array(
                         'path' => $v['path'],
-            	        'date' => date('Y-m-d H:i:s'),
-            	        'ext' => $v['ext'],
-            	        'size' =>  number_format(($v['size']/1024/1024) , 3),
-            	        'user_id' => $this->_config->get('user_id'),
-        	            'name'=>$v['old_name']
+                        'date' => date('Y-m-d H:i:s'),
+                        'ext' => $v['ext'],
+                        'size' =>  number_format(($v['size']/1024/1024) , 3),
+                        'user_id' => $this->_config->get('user_id'),
+                        'name'=>$v['old_name']
 
-        	        )
-        	    );
-        	    if(!$o->save())
-        	        throw new Exception('Cannot save object');
+                    )
+                );
+                if(!$o->save())
+                    throw new Exception('Cannot save object');
 
-        	    $v['id'] = $o->getId();
+                $v['id'] = $o->getId();
 
-    	    }catch (Exception $e){
-    	    	Model::factory($this->_object)->logError('Filestorage_Orm: ' . $e->getMessage());
-    	    }
-    	}unset($v);
-    	return $data;
+            }catch (Exception $e){
+                Model::factory($this->_object)->logError('Filestorage_Orm: ' . $e->getMessage());
+            }
+        }unset($v);
+        return $data;
     }
     /**
      * (non-PHPdoc)
@@ -108,7 +108,7 @@ class Filestorage_Orm extends Filestorage_Simple
      */
     protected function generateFilePath()
     {
-    	return $this->_config->get('filepath') . '/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $this->_config->get('user_id').'/';
+        return $this->_config->get('filepath') . '/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $this->_config->get('user_id').'/';
     }
 
     /**
@@ -118,20 +118,20 @@ class Filestorage_Orm extends Filestorage_Simple
     public function remove($fileId)
     {
         if(!Db_Object::objectExists($this->_object, $fileId))
-           return true;
+            return true;
 
         try{
-    		$o = new Db_Object($this->_object ,  $fileId);
-		}catch (Exception $e){
-		    return false;
-    	}
+            $o = new Db_Object($this->_object ,  $fileId);
+        }catch (Exception $e){
+            return false;
+        }
 
-    	$path = $o->path;
+        $path = $o->path;
 
-    	if(!$o->delete())
-    		return false;
+        if(!$o->delete())
+            return false;
 
-    	return parent::remove($path);
+        return parent::remove($path);
     }
     /**
      * (non-PHPdoc)
@@ -139,35 +139,32 @@ class Filestorage_Orm extends Filestorage_Simple
      */
     public function add($filePath , $useName = false)
     {
-    	$data = parent::add($filePath , $useName);
+        $data = parent::add($filePath , $useName);
 
-    	if(empty($data))
-    	   return array();
+        if(empty($data))
+            return false;
 
-    	foreach ($data as $k=>&$v)
-    	{
-    	    try{
-        	    $o = new Db_Object($this->_object);
-        	    $o->setValues(
-        	        array(
-                        'path' => $v['path'],
-            	        'date' => date('Y-m-d H:i:s'),
-            	        'ext' => $v['ext'],
-            	        'size' =>  number_format(($v['size']/1024/1024) , 3),
-            	        'user_id' => $this->_config->get('user_id'),
-        	            'name' => $v['old_name']
-        	        )
-        	    );
-        	    if(!$o->save())
-        	        throw new Exception('Cannot save object');
+        try{
+            $o = new Db_Object($this->_object);
+            $o->setValues(
+                array(
+                    'path' => $data['path'],
+                    'date' => date('Y-m-d H:i:s'),
+                    'ext' => $data['ext'],
+                    'size' =>  number_format(($data['size']/1024/1024) , 3),
+                    'user_id' => $this->_config->get('user_id'),
+                    'name' => $data['old_name']
+                )
+            );
+            if(!$o->save())
+                throw new Exception('Cannot save object');
 
-        	    $v['id'] = $o->getId();
+            $data['id'] = $o->getId();
 
-    	    }catch (Exception $e){
-    	        echo $e->getMessage();
-    	    	Model::factory($this->_object)->logError('Filestorage_Orm: ' . $e->getMessage());
-    	    }
-    	}unset($v);
-    	return $data;
+        }catch (Exception $e){
+            echo $e->getMessage();
+            Model::factory($this->_object)->logError('Filestorage_Orm: ' . $e->getMessage());
+        }
+        return $data;
     }
 }

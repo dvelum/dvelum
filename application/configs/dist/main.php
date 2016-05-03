@@ -131,8 +131,10 @@ return array(
      * Dictionary directory
      */
     'dictionary_folder' => 'dictionary/',
-
-    'tmp' => $docRoot . '/temp/',
+    /*
+     * Temporary files directory
+     */
+    'tmp' => './temp/',
     /*
      * the type of frontend router with two possible values:
      * 'Router_Module' — using tree-like page structure  (‘Pages’ section of the back-office panel);

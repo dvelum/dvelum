@@ -149,10 +149,15 @@ class File
 	 */
 	static public function zipFiles($fileName , $files , $localRoot = '')
 	{
-		$zip = new ZipArchive();
-
 		if(substr($fileName, -4)!=='.zip')
 			$fileName.='.zip';
+
+		// delete existing file
+		if(file_exists($fileName)){
+			unlink($fileName);
+		}
+
+		$zip = new ZipArchive();
 
 		/**
 		 * ZIPARCHIVE::CREATE (integer)
@@ -165,18 +170,25 @@ class File
 			$files = array($files);
 
 		if(!empty($files))
-			foreach($files as $file)
+		{
+			foreach ($files as $file)
 			{
-				if(is_dir($file)){
-					$zip->addEmptyDir($file);
+				if (is_dir($file)){
+					if($localRoot!==''){
+						$zip->addEmptyDir(str_replace($localRoot, '', $file));
+					}else{
+						$zip->addEmptyDir($file);
+					}
 					continue;
 				}
 
-				if ($localRoot !== '')
-					$zip->addFile($file , str_replace($localRoot , '' , $file));
-				else
+				if ($localRoot !== '') {
+					$zip->addFile($file, str_replace($localRoot, '', $file));
+				} else {
 					$zip->addFile($file);
+				}
 			}
+		}
 		return $zip->close();
 	}
 
