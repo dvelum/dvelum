@@ -201,7 +201,7 @@ abstract class Backend_Controller extends Controller
     {
         $template = new Template();
         $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
-        Response::put($template->render($this->_configMain->get('templates').'system/' . $this->_configBackend->get('theme') . '/login.php'));
+        Response::put($template->render('system/'.$this->_configBackend->get('theme') . '/login.php'));
         Application::close();
     }
     /**

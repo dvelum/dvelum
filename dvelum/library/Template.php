@@ -84,7 +84,6 @@ class Template
      */
     public function render($path)
     {
-
         $hash = '';
         if($this->_cache && $this->_useCache)
         {

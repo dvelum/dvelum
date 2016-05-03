@@ -106,7 +106,7 @@ class Install_Controller {
         else
             $this->template->license = file_get_contents('./data/gpl-3.0_en.txt');
 
-        echo $this->template->render('./application/templates/install/install.php');
+        echo $this->template->render('install/install.php');
     }
 
     protected function _checkWritable($path, $required, $msg){

@@ -271,7 +271,7 @@ class Application
                 $tpl = new Template();
                 $tpl->set('error_msg', 'MySQL : '.$e->getMessage());
                 $tpl->set('development', $dev);
-                echo $tpl->render($templatesPath . 'public/error.php');
+                echo $tpl->render('public/error.php');
                 exit();
             }
         };
@@ -382,7 +382,7 @@ class Application
         if($this->_config->get('maintenance')){
             $tpl = new Template();
             $tpl->set('msg' , Lang::lang()->get('MAINTENANCE'));
-            echo $tpl->render( $this->_config->get('templates') . 'public/error.php');
+            echo $tpl->render('public/error.php');
             self::close();
         }
 

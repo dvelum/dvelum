@@ -82,7 +82,7 @@ abstract class Frontend_Controller_Authorised extends Frontend_Controller
     $template = new Template();
     $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
     $template->resource = Resource::getInstance();
-    Response::put($template->render('./templates/public/backoffice_login.php'));
+    Response::put($template->render('public/backoffice_login.php'));
     Application::close();
   }
 }
