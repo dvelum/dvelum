@@ -59,6 +59,10 @@ class Externals_Manager
         $externalsCfg = $this->appConfig->get('externals');
         $path = $externalsCfg['path'];
 
+        if(!is_dir($path)){
+            return true;
+        }
+
         $vendors =  File::scanFiles($path, false, false, File::Dirs_Only);
 
         $hasNew = false;
