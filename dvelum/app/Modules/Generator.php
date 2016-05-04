@@ -845,9 +845,8 @@ class Modules_Generator
    * @param string $object
    * @param string $runNamespace
    * @param string $classNamespace
-   * @param string $fileName
-   * @param string $jsObjectName
    * @param boolean $vc - use version control
+   * @return string
    * @throws Exception
    */
   protected function _createActionJS($object, $runNamespace , $classNamespace , $vc = false)
@@ -858,21 +857,22 @@ class Modules_Generator
          * To obtain info about current user access rights
          * you can use global scope JS vars canEdit , canDelete , canPublish
          * To access project elements, please use the namespace you defined in the config
-         * For example: '.$runNamespace.'.Panel or Ext.create("'.$classNamespace.'.editWindow", {});
+         * For example: ' . $runNamespace . '.Panel or Ext.create("' . $classNamespace . '.editWindow", {});
          */
          Ext.onReady(function(){
                 // Init permissions
                 app.application.on("projectLoaded",function(module){
-                    if(Ext.isEmpty(module) || module === "'.$object.'"){
-                        if(!Ext.isEmpty('.$runNamespace.'.dataGrid)){
-                          '.$runNamespace.'.dataGrid.setCanEdit(app.permissions.canEdit("'.$object.'"));
-                          '.$runNamespace.'.dataGrid.setCanDelete(app.permissions.canDelete("'.$object.'"));';
+                    if(Ext.isEmpty(module) || module === "' . $object . '"){
+                        if(!Ext.isEmpty(' . $runNamespace . '.dataGrid)){
+                          ' . $runNamespace . '.dataGrid.setCanEdit(app.permissions.canEdit("' . $object . '"));
+                          ' . $runNamespace . '.dataGrid.setCanDelete(app.permissions.canDelete("' . $object . '"));';
 
-          if($vc)
-            $actionJs.= '
-                    '.$runNamespace.'.dataGrid.setCanPublish(app.permissions.canPublish("'.$object.'"));';
-
-         $actionJs.= '
+                        if ($vc) {
+                            $actionJs .= '
+                            ' . $runNamespace . '.dataGrid.setCanPublish(app.permissions.canPublish("' . $object . '"));';
+                        }
+                        $actionJs.= '
+                           ' . $runNamespace.'.dataGrid.getView().refresh();
                         }
                     }
                 });
