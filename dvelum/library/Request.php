@@ -425,5 +425,22 @@ class Request
         }
         return $result;
     }
+
+    /**
+     * Check HTTP_SCHEME for https
+     * @return bool
+     */
+    static public function isHttps()
+    {
+        static $scheme = false;
+        if($scheme === false){
+            $scheme = isset($_SERVER['HTTP_SCHEME']) ? $_SERVER['HTTP_SCHEME'] : (((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || 443 == $_SERVER['SERVER_PORT']) ? 'https' : 'http');
+        }
+        if($scheme ==='https'){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
 
