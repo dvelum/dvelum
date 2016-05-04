@@ -100,11 +100,21 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $maxRevisions = $vc->getLastVersion($this->_objectName , $ids);
 
         foreach($data as $k => &$v)
-            if(isset($maxRevisions[$v['id']]))
+        {
+            if(isset($maxRevisions[$v['id']])){
                 $v['last_version'] = $maxRevisions[$v['id']];
-            else
+            }else{
                 $v['last_version'] = 0;
+            }
+        }
 
+        if(!empty($this->_listLinks)){
+            $objectConfig = Db_Object_Config::getInstance($this->_objectName);
+            if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
+                throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
+            }
+            $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
+        }
         return ['data'=> $data, 'count'=> $dataModel->getCount($filter , $query)];
     }
 
