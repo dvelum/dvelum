@@ -383,7 +383,14 @@ Ext.define('designer.application',{
 							iconCls:'toolbarTextitemIcon',
 							oClass:'Toolbar_Textitem',
 							showType:'loaded'
-						}
+						},
+                        {
+                            text:desLang.pagingToolbar,
+                            iconCls:'pagingIcon',
+                            tooltip: desLang.add + ' ' + desLang.pagingToolbar,
+                            oClass:'Toolbar_Paging',
+                            showType:'loaded'
+                        }
 					]
 				})
 			},{
@@ -589,7 +596,13 @@ Ext.define('designer.application',{
 					iconCls:'imageIcon',
 					tooltip: desLang.add + ' ' + desLang.image,
 					oClass:'image'
-				},'-',
+				},{
+                    text:desLang.view,
+                    iconCls:'viewViewIcon',
+                    tooltip: desLang.add + ' ' + desLang.view,
+                    oClass:'view'
+                },
+                '-',
 				{
 					text:desLang.window,
 					iconCls:'windowIcon',

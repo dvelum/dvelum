@@ -241,6 +241,9 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
             'Menu_Colorpicker' =>'colorPickerIcon',
             'Menu_Checkitem' =>'checkboxIcon',
 
+            'View'=>'viewViewIcon',
+            'Toolbar_Paging'=> 'pagingIcon'
+
         );
 
         if(Designer_Project::isWindowComponent($objClass))

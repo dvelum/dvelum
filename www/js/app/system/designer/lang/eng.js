@@ -156,6 +156,7 @@ var desLang = {
 		objectsListPanel:'Objects list Panel',
 
 		paging:'Paging',
+        pagingToolbar:'Paging Toolbar',
 		panel:'Panel',
 		panels:'Panels',
 		password:'Password',
@@ -231,6 +232,7 @@ var desLang = {
 		validation:'Validation',
 		validators:'Validators',
 		viewMode:'View mode',
+		view:'View',
 
 		window:'Window',
 		windowSizeChanged:'Window size changed',

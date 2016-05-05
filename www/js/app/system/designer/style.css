@@ -231,7 +231,6 @@
 .filterIcon{
     background-image: url(../../../../i/system/designer/filters.png) !important;
 }
-
 .menuIcon{
    background-image:url(../../../../i/system/designer/menu.png) !important;
 }
@@ -244,9 +243,14 @@
 .colorPickerIcon{
    background-image:url(../../../../i/system/designer/picker.png) !important;
 }
-
+.viewViewIcon{
+    background-image:url(../../../../i/system/designer/view_view.png) !important;
+}
 .containerIcon{
    background-image:url(../../../../i/system/designer/container.png) !important;
+}
+.pagingIcon{
+    background-image:url(../../../../i/system/designer/pagination.png) !important;
 }
 
 .urlTrigger{
