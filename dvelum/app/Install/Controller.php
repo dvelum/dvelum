@@ -52,9 +52,11 @@ class Install_Controller {
         /*
          * Set localization storage options
          */
-        Lang::setStorageOptions(
-            Config::storage()->get('lang_storage.php')->__toArray()
-        );
+        Lang::storage()->setConfig(Config::storage()->get('lang_storage.php')->__toArray());
+        /*
+         * Set template storage options
+         */
+        Template::storage()->setConfig(Config::storage()->get('template_storage.php')->__toArray());
     }
 
     public function setAutoloader(Autoloader $autoloader)
@@ -575,7 +577,7 @@ class Install_Controller {
                 'blocks'=>'',
                 'theme'=>'default',
                 'date_published'=>date('Y-m-d H:i:s'),
-                'in_site_map'=>true,
+                'in_site_map'=>false,
                 'default_blocks'=>false
             ));
             if(!$page->save(true, false))
