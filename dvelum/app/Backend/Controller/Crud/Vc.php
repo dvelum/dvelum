@@ -97,17 +97,6 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
         $ids = Utils::fetchCol('id' , $data);
 
-        $maxRevisions = $vc->getLastVersion($this->_objectName , $ids);
-
-        foreach($data as $k => &$v)
-        {
-            if(isset($maxRevisions[$v['id']])){
-                $v['last_version'] = $maxRevisions[$v['id']];
-            }else{
-                $v['last_version'] = 0;
-            }
-        }
-
         if(!empty($this->_listLinks)){
             $objectConfig = Db_Object_Config::getInstance($this->_objectName);
             if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
@@ -273,6 +262,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $this->_checkOwner($object);
         
         $acl = $object->getAcl();
+
         if($acl && !$acl->canPublish($object))
            Response::jsonError($this->_lang->CANT_PUBLISH);
 

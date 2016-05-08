@@ -1130,7 +1130,7 @@ class Db_Object
                         }
                     }
 
-                    if($k!== $this->_config->getPrimaryKey() && $k!== 'author_id')
+                    if($k!== $this->_config->getPrimaryKey() && !$this->_config->isVcField($k))
                         $this->set($k , $v);
 
                 }catch(Exception $e){

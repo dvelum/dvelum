@@ -652,6 +652,7 @@ class Db_Object_Store
 
             $oldObject->set('date_updated' , $object->get('date_updated'));
             $oldObject->set('editor_id' , $object->get('editor_id'));
+            $oldObject->set('last_version', $versNum);
 
             if(!$oldObject->save(false , $useTransaction))
                 throw new Exception('Cannot save object');

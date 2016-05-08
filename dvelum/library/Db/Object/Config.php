@@ -1466,4 +1466,15 @@ class Db_Object_Config
     {
         return $this->isMultiLink($field);
     }
+
+    /**
+     * Check if field is system field of version control
+     * @param string $field - field name
+     * @return boolean
+     */
+    public function isVcField($field)
+    {
+        $vcFields = $this->_getVcFields();
+        return isset($vcFields[$field]);
+    }
 }
