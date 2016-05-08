@@ -242,7 +242,7 @@ class Backend_Medialib_Controller extends Backend_Controller
                 'type'=>$item['type'],
                 'icon'=>$icon,
                 'title'=>$item['title'],
-                'size' => Utils::formatFileSize($item['size'])
+                'size' => $item['size'].' Mb'
             )
         );
     }
