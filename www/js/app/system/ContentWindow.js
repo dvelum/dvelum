@@ -428,7 +428,10 @@ Ext.define('app.contentWindow',{
 			},this);
 		}
 
-		this.on('show', function(){app.checkSize(this);}, this);
+		this.on('show', function(){
+            app.checkSize(this); Ext.ZIndexManager.bringToFront(this)
+        }, this);
+
 	},
 	/**
 	 * Submit form (save record)

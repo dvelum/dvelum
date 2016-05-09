@@ -81,4 +81,13 @@ class Response
 		header("Location: $location");
 		exit();
 	}
+
+    /**
+     * Send 404 Response code
+     */
+	static public function notFound()
+	{
+		header("HTTP/1.0 404 Not Found");
+		exit();
+	}
 }

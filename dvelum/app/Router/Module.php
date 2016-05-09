@@ -64,6 +64,7 @@ class Router_Module extends Router
         if(strlen($page->func_code))
         {
             $fModules = Config::factory(Config::File_Array , $this->_appConfig->get('frontend_modules'));
+
             if($fModules->offsetExists($page->func_code))
             {
                 $controllerConfig = $fModules->get($page->func_code);

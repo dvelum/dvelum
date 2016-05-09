@@ -146,6 +146,10 @@ class Externals_Manager
                 $configPaths[] = str_replace(['./','//'], [$path,''], $modCfg['configs'].'/');
             }
 
+            if(!empty($modCfg['templates'])){
+                $configPaths[] = str_replace(['./','//'], [$path,''], $modCfg['templates'].'/');
+            }
+
         }
         // Add autoloader paths
         if(!empty($autoLoadPaths)){
@@ -161,19 +165,22 @@ class Externals_Manager
         // Add Config paths
         if(!empty($configPaths)){
             $storage = Config::storage();
-            $storePaths = $storage->getPaths();
             foreach($configPaths as $path){
                 $storage->addPath($path);
             }
         }
-
         // Add localization paths
         if(!empty($langPaths)){
             $langStorage = Lang::storage();
-            $storePaths = $langStorage->getPaths();
-            $storePaths = $langStorage->getPaths();
             foreach($langPaths as $path){
                 $langStorage->addPath($path);
+            }
+        }
+        // Add Templates paths
+        if(!empty($configPaths)){
+            $templateStorage = Template::storage();
+            foreach($configPaths as $path){
+                $templateStorage->addPath($path);
             }
         }
     }

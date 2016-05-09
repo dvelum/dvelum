@@ -427,7 +427,10 @@ Ext.define('app.editWindow',{
 				this.loadData(this.dataItemId);
 			},this);
 		}
-		this.on('show',function(){app.checkSize(this);});
+
+		this.on('show', function(){
+			app.checkSize(this); Ext.ZIndexManager.bringToFront(this)
+		}, this);
 
 	},
 	/**

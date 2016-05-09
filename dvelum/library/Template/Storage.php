@@ -63,4 +63,14 @@ class Template_Storage
     {
         return $this->config['paths'];
     }
+
+    /**
+     * Add templates path
+     * @param string $path
+     * @return void
+     */
+    public function addPath($path)
+    {
+        $this->config['paths'][] = $path;
+    }
 }
