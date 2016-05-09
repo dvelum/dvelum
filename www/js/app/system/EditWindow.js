@@ -429,7 +429,10 @@ Ext.define('app.editWindow',{
 		}
 
 		this.on('show', function(){
-			app.checkSize(this); Ext.ZIndexManager.bringToFront(this)
+			app.checkSize(this);
+			if(!Ext.isEmpty(Ext.ZIndexManager.bringToFront)){
+				Ext.ZIndexManager.bringToFront(this);
+			}
 		}, this);
 
 	},
