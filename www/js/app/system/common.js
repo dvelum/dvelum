@@ -408,7 +408,7 @@ app.storeException = function(proxy, response, operation, eOpts){
 };
 
 /**
- * Mmethod creating url-address considering backend routing
+ * Method creating url-address considering backend routing
  * features and taking an array of address elements as an argument
  * @param {Array} paths
  * @returns string
@@ -712,11 +712,6 @@ app.html5Notify = function(params){
 Ext.Ajax.on('beforerequest', function(connection, options) {
 	app.applyCSRFToken(options);
 });
-/**
- * Application windows group
- * @type {Ext.WindowGroup}
- */
-app.windowManager = Ext.create('Ext.WindowGroup');
 /*
  * Adds support for CSRF protection token to ExtJS' Ext.form.Basic actions
  */

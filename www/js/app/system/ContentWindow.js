@@ -430,8 +430,8 @@ Ext.define('app.contentWindow',{
 
 		this.on('show', function(){
             app.checkSize(this);
-            app.windowManager.register(this);
-            app.windowManager.bringToFront(this);
+            Ext.WindowMgr.register(this);
+            Ext.WindowMgr.bringToFront(this);
         }, this);
 
 
