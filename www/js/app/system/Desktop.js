@@ -14,7 +14,7 @@ Ext.define('app.cls.moduleLoader',{
                 method: 'post',
                 scope:this,
                 params:{
-                  id:data.id
+                    id:data.id
                 },
                 success: function(response, request) {
                     response =  Ext.JSON.decode(response.responseText);
@@ -102,6 +102,9 @@ Ext.define('app.cls.moduleLoader',{
             }
             app.desktop.add(win);
             win.show().toFront();
+            win.on({'activate':{
+                fn: app.desktop.updateActive
+            }});
         }else{
             app.msg(appLang.ERROR,appLang.CANT_EXEC);
         }
@@ -135,36 +138,36 @@ Ext.define('app.cls.desktopMenu',{
     width: '80%',
     height: '90%',
     initComponent:function(){
-        this.store =  Ext.create('Ext.data.Store', {
-                fields: [
-                    {name:'id'},
-                    {name: 'title'},
-                    {name: 'url'},
-                    {name: 'icon'}
-                ],
-                data:this.menuData
-            });
+        this.store =  Ext.create('Ext.data.Store',{
+            fields: [
+                {name:'id'},
+                {name: 'title'},
+                {name: 'url'},
+                {name: 'icon'}
+            ],
+            data:this.menuData
+        });
 
         this.tpl= [
-                '<tpl for=".">',
-                '<div class="menu-item-wrap">',
-                    '<div class="thumb"><img src="{icon}" title="{title}" alt="{title}"/></div><span>{title:htmlEncode}</span>',
-                '</div>',
-                '</tpl>'
+            '<tpl for=".">',
+            '<div class="menu-item-wrap">',
+            '<div class="thumb"><img src="{icon}" title="{title}" alt="{title}"/></div><span>{title:htmlEncode}</span>',
+            '</div>',
+            '</tpl>'
         ];
         this.callParent();
     }
 });
 
 Ext.define('app.cls.ModuleWindow',{
-   extend:'Ext.Window',
-   layout:'fit',
-   modal:false,
-   width:app.checkWidth(1000),
-   height:app.checkHeight(750),
-   closeAction:'hide',
-   constrainHeader: true,
-   maximizable:true
+    extend:'Ext.Window',
+    layout:'fit',
+    modal:false,
+    width:app.checkWidth(1000),
+    height:app.checkHeight(750),
+    closeAction:'hide',
+    constrainHeader: true,
+    maximizable:true
 });
 
 Ext.define('app.cls.startMenu',{
@@ -212,27 +215,27 @@ Ext.define('app.cls.desktopHeader',{
         this.callParent();
         this.fillPanel();
     },
-    fillPanel: function() {
-        var tbar = Ext.create('Ext.toolbar.Toolbar', {
+    fillPanel: function(){
+        var tbar = Ext.create('Ext.toolbar.Toolbar',{
             width: '100%',
             frame: false,
             border: false,
             margin: 0,
             padding: 0
         });
-        var startBtn = Ext.create('Ext.button.Button', {
+        var startBtn = Ext.create('Ext.button.Button',{
             height: 26,
             width: 100,
             menu: this.startMenu,
             tooltip: appLang.MODULES,
             html: '<img src="' + app.wwwRoot + 'i/logo-btn.png">'
         });
-        var sysVer = Ext.create('Ext.Component', {
+        var sysVer = Ext.create('Ext.Component',{
             autoEl: 'div',
             cls: 'sysVersion',
             html: '<span class="num">' + app.version + '</span>'
         });
-        var loginInfo = Ext.create('Ext.Component', {
+        var loginInfo = Ext.create('Ext.Component',{
             xtype: 'component',
             autoEl: 'div',
             cls: 'sysVersion',
@@ -250,11 +253,35 @@ Ext.define('app.cls.desktopHeader',{
     }
 });
 
+Ext.define('app.cls.desktop',{
+    extend: 'Ext.Panel',
+    frame:false,
+    border:false,
+    layout:'anchor',
+    scrollable:true,
+    items: [],
+    desktopItems: [],
+    collapsible:false,
+    flex : 1,
+    bodyCls: 'formBody',
+    activeWin: null,
+    initComponent: function(){
+        this.items = [{
+            xtype: 'container',
+            layout: 'center',
+            items: this.desktopItems
+        }];
+        this.callParent()
+    },
+    updateActive: function(win){
+        win.el.focus();
+    }
+});
+
 Ext.application({
     name: 'DVelum',
     launch: function() {
         app.application = this;
-
         app.loader = Ext.create('app.cls.moduleLoader',{});
 
         app.desktopMenu = Ext.create('app.cls.desktopMenu',{
@@ -269,19 +296,9 @@ Ext.application({
                 }
             }
         });
-        app.desktop =  Ext.create('Ext.Panel',{
-            frame:false,
-            border:false,
-            layout:'anchor',
-            scrollable:true,
-            items: [{
-                xtype: 'container',
-                layout: 'center',
-                items: app.desktopMenu
-            }],
-            collapsible:false,
-            flex : 1,
-            bodyCls: 'formBody'
+
+        app.desktop =  Ext.create('app.cls.desktop',{
+            desktopItems: app.desktopMenu
         });
 
         app.startMenu = Ext.create('app.cls.startMenu',{
@@ -292,7 +309,7 @@ Ext.application({
             startMenu: app.startMenu
         });
 
-        app.viewport = Ext.create('Ext.container.Viewport', {
+        app.viewport = Ext.create('Ext.container.Viewport',{
             cls:'formBody',
             layout: {
                 type: 'vbox',
