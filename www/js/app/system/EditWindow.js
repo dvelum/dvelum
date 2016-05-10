@@ -39,7 +39,6 @@ Ext.define('app.editWindow',{
 	/**
 	 * @property boolean contentTabs
 	 */
-	contentTabs:null,
 	linkedComponents:null,
 	/**
 	 * @property boolean canEdit
@@ -49,8 +48,6 @@ Ext.define('app.editWindow',{
 	 * @property boolean canDelete
 	 */
 	canDelete:false,
-
-	contentTabs:null,
 
 	fieldDefaults:null,
 
@@ -175,7 +172,7 @@ Ext.define('app.editWindow',{
 	},
 	/**
 	 * Load form data
-	 * @param integer itemId - record id
+	 * @param {integer} itemId - record id
 	 */
 	loadData: function(itemId)
 	{
@@ -280,7 +277,6 @@ Ext.define('app.editWindow',{
 			defaults:{
 				border:false,
 				frame:true,
-				border:false,
 				layout:'anchor',
 				bodyPadding:'3px',
 				fieldDefaults: {
@@ -444,8 +440,8 @@ Ext.define('app.editWindow',{
 	},
 	/**
 	 * Set request param
-	 * @param string name
-	 * @param string value
+	 * @param {string} name
+	 * @param {string} value
 	 * @return void
 	 */
 	setExtraParam:function(name , value){
