@@ -197,7 +197,6 @@ Ext.define('app.contentWindow',{
 			defaults:{
 				border:false,
 				frame:true,
-				border:false,
 				layout:'anchor',
 				bodyPadding:'3px',
 				fieldDefaults: {
@@ -349,7 +348,6 @@ Ext.define('app.contentWindow',{
 			defaults:{
 				border:false,
 				frame:true,
-				border:false,
 				layout:'anchor',
 				bodyPadding:'3px',
 				bodyCls:'formBody',
@@ -523,8 +521,8 @@ Ext.define('app.contentWindow',{
 	},
 	/**
 	 * Load form data
-	 * @param integer itemId - record id
-	 * @param integer revision - record version
+	 * @param {integer} itemId - record id
+	 * @param {integer} revision - record version
 	 */
 	loadData: function(itemId , revision)
 	{
@@ -671,8 +669,8 @@ Ext.define('app.contentWindow',{
 	},
 	/**
 	 * Set request param
-	 * @param string name
-	 * @param string value
+	 * @param {string} name
+	 * @param {string} value
 	 * @return void
 	 */
 	setExtraParam:function(name , value){
