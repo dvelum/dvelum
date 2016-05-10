@@ -428,12 +428,11 @@ Ext.define('app.editWindow',{
 			},this);
 		}
 
-		this.on('show', function(){
-			app.checkSize(this);
-			if(!Ext.isEmpty(Ext.ZIndexManager.bringToFront)){
-				Ext.ZIndexManager.bringToFront(this);
-			}
-		}, this);
+        this.on('show', function(){
+            app.checkSize(this);
+            app.windowManager.register(this);
+            app.windowManager.bringToFront(this);
+        }, this);
 
 	},
 	/**

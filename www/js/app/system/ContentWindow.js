@@ -430,10 +430,10 @@ Ext.define('app.contentWindow',{
 
 		this.on('show', function(){
             app.checkSize(this);
-			if(!Ext.isEmpty(Ext.ZIndexManager.bringToFront)){
-				Ext.ZIndexManager.bringToFront(this);
-			}
+            app.windowManager.register(this);
+            app.windowManager.bringToFront(this);
         }, this);
+
 
 	},
 	/**

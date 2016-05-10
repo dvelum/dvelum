@@ -712,6 +712,11 @@ app.html5Notify = function(params){
 Ext.Ajax.on('beforerequest', function(connection, options) {
 	app.applyCSRFToken(options);
 });
+/**
+ * Application windows group
+ * @type {Ext.WindowGroup}
+ */
+app.windowManager = Ext.create('Ext.WindowGroup');
 /*
  * Adds support for CSRF protection token to ExtJS' Ext.form.Basic actions
  */
