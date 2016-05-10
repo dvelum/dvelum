@@ -84,7 +84,7 @@ class Backend_Medialib_Controller extends Backend_Controller
 
         foreach ($uploaded as $k=>&$v)
         {
-            $path = str_replace($docRoot , '' , $v['path']);
+            $path = str_replace($docRoot , '/' , $v['path']);
 
             $id =  $mediaModel->addItem($v['title'] , $path , $v['size'] , $v['type'] ,$v['ext']  , $uploadCategory);
 
