@@ -104,7 +104,7 @@ app.comboBoxRenderer = function(combo) {
  * method verifying the component’s height value and returning the maximum
  * available size if the component size does not fit the window
  * (to be used for window only)
- * @param integer size
+ * @param {integer} size
  * @return integer
  */
 app.checkHeight = function(size){
@@ -118,7 +118,7 @@ app.checkHeight = function(size){
 };
 /**
  * The same as app.checkHeight , but for verifying the width
- * @param integer size
+ * @param {integer} size
  * @return integer
  */
 app.checkWidth = function(size){
@@ -134,7 +134,7 @@ app.checkWidth = function(size){
  * Verifies size and coordinates of the Ext.Window and reduces
  * the size/ changes coordinates of the window if it goes beyond
  * the visible area
- * @param Ext.Window window
+ * @param {Ext.Window} window
  */
 app.checkSize = function(window){
 	var width = window.getWidth();
@@ -389,13 +389,12 @@ app.progressRenderer = function(value, metaData, record, rowIndex, colIndex, sto
 };
 /**
  * Exception handler when trying to upload data to store
- * @param {Ext.data.proxy.Proxy}
+ * @param {Ext.data.proxy.Proxy} proxy
  * @param {Object} response - The response from the AJAX request
  * @param {Ext.data.Operation} operation - The operation that triggered request
  * @param {Object} eOpts - The options object passed to Ext.util.Observable.addListener.
  */
 app.storeException = function(proxy, response, operation, eOpts){
-
 	if(response.responseText === null){
 		Ext.Msg.alert(appLang.MESSAGE, appLang.INVALID_RESPONSE);
 	}
@@ -448,7 +447,7 @@ Ext.apply(Ext.form.field.VTypes, {
  * all or modified data is available for collecting,
  * which is defined by the second parameter
  * @param {Ext.data.Store} store - data store to collect from
- * @param boolean onlyChanged - true to collect only new and changed data. Default to false.
+ * @param {boolean} onlyChanged - true to collect only new and changed data. Default to false.
  * @returns {Array}
  */
 app.collectStoreData = function(store, onlyChanged){
@@ -660,6 +659,51 @@ app.applyCSRFToken = function(options){
  */
 app.isString = function(value){
 	return (typeof(value) == 'string');
+};
+
+/**
+ * Html5 Notifycation API
+ * @param {Object} params - notify params
+ * params:
+ * title: string default '' - notify window title
+ * msg: string default '' - notify body
+ * icon: string default app.wwwRoot + 'i/notify.png' - notify window icon
+ * autoClose: integer default 0 (disable autoClose) - timeout before auto close notify (seconds)
+ * @returns {Object|Boolean} - notifycation object or false on error
+ */
+app.html5Notify = function(params){
+	var notify = {
+		title: '',
+		msg: '',
+		icon: app.wwwRoot + 'i/notify.png',
+        autoClose: 0
+	};
+    Ext.applyIf(params || {} ,notify);
+    var permitted = false;
+    if(!("Notification" in window)){
+        console.log("This browser does not support desktop notification");
+    }else if(Notification.permission === "granted"){
+        permitted = true;
+    }else if (Notification.permission !== 'denied'){
+        Notification.requestPermission(function(permission){
+            if(permission === "granted"){
+                permitted = true;
+            }
+        });
+    }
+
+    if(permitted){
+        var notifycation = new Notification(notify.title,{
+            body: notify.msg,
+            icon: notify.icon,
+            lang: 'ru'
+        });
+        if(notify.autoClose){
+            setTimeout(function(){notifycation.close()}, notify.autoClose * 1000);
+        }
+        return notifycation;
+    }
+    return false;
 };
 
 /*
