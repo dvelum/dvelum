@@ -138,7 +138,7 @@ class Ext_Config
 			}
 		}
 	}
-	
+
 	public function __isset($key)
 	{
 		return isset($this->_data[$key]);
@@ -190,7 +190,7 @@ class Ext_Config
 			}
 
 			/*
-			 * Perfomance patch
+			 * Performance patch
 			 * 1 time __toString call
 			 */
 			$stringVal = (string) $val;	
