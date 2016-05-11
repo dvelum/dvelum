@@ -103,7 +103,12 @@ class Db_Query_Part
 			throw new Exception('Trying to get unregistered property _' . $name);
 	}
 
-	public function getObject()
+	public function __isset($name)
+    {
+        return isset($this->{'_' . $name});
+    }
+
+    public function getObject()
 	{
 		return $this->_object;
 	}

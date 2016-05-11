@@ -135,7 +135,14 @@ class Lang
 		return $this->get($key);
 	}
 
-	/**
+    public function __isset($key)
+    {
+        $this->_loadDictionary($this->_dictionaryName);
+
+        return $this->_dictionary->offsetExists($key);
+    }
+
+    /**
 	 * Convert the localization dictionary to JSON
 	 * @return string
 	 */

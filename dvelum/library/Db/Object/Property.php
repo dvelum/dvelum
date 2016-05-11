@@ -102,6 +102,11 @@ class Db_Object_Property
             throw new Exception('Invalid property name "' . $key . '"');
     }
 
+    public function __isset($key)
+    {
+        return isset($this->_data[$key]);
+    }
+
     /**
      * Get SQL part
      * @return string

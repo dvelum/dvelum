@@ -311,6 +311,11 @@ class Designer_Project
 		return $this->_config[$name];
 	}
 
+	public function __isset($name)
+	{
+		return isset($this->_config[$name]);
+	}
+
 	public function __set($name , $value)
 	{
 		$this->_config[$name] = $value;

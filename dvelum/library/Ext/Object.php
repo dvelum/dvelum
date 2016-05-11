@@ -97,7 +97,7 @@ class Ext_Object
 
 	public function __get($name)
 	{
-		return $this->_config->$name;
+		return $this->_config->{$name};
 	}
 
 	public function __set($name , $value)
@@ -150,7 +150,7 @@ class Ext_Object
 	/**
 	 * Check if property is valid
 	 * @param string $name
-	 * @return bolean
+	 * @return boolean
 	 */
 	public function isValidProperty($name)
 	{
@@ -350,7 +350,7 @@ class Ext_Object
 
 	public function __isset($key)
 	{
-		return isset($this->_config->$key);
+		return isset($this->_config->{$key});
 	}
 	/**
 	 * Check if object is instance
