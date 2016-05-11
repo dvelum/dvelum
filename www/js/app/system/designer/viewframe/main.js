@@ -2,7 +2,7 @@ Ext.ns('app');
 app.viewFrame = null;
 
 /**
- * @event launch'
+ * @event launch
  * @event projectLoaded
  */
 Ext.application({
@@ -23,36 +23,34 @@ Ext.application({
 			renderTo : Ext.getBody()
 		});
 
-		app.externalCommandReceiver = Ext.create(
-			'Ext.form.field.Text', {
-				inputId : 'externalCommandReciver',
-				value : '',
-				hidden : true,
-				listeners : {
-					change : {
-						fn : this.onComandRecieved,
-						scope : this
-					}
-				},
-				renderTo : Ext.getBody()
-			});
+        if (window.addEventListener) {
+            window.addEventListener("message", app.application.onCommand);
+        } else {
+            // IE8
+            window.attachEvent("onmessage", app.application.onCommand);
+        }
+
 		this.callParent();
 		this.fireEvent('launch');
 	},
 
-	onComandRecieved:function(field , value){
+	onCommand:function(event){
 
-		if(!value.length){
-			return;
-		}
+        var message = event.data;
 
-		message = Ext.JSON.decode(value);
+        if (event.origin != window.location.origin) {
+            return;
+        }
+
 		if(message.command && message.params){
-			this.runCommand(message.command , message.params);
+            app.application.runCommand(message.command , message.params);
 		}
-		app.externalCommandReceiver.setValue('');
 	},
-
+    /**
+     * Run command from designer
+     * @param {String} command
+     * @param {Object} params
+     */
 	runCommand:function(command , params)
 	{
 		switch(command){
@@ -68,9 +66,9 @@ Ext.application({
 	/**
 	 * Window size changed
 	 * @param {Ext.Window} window
-	 * @param integer width
-	 * @param integer height
-	 * @param {object} opts
+	 * @param {Number} width
+	 * @param {Number} height
+	 * @param {Object} opts
 	 */
 	onWindowResize:function(window , width , height , opts)
 	{
@@ -99,10 +97,10 @@ Ext.application({
 	},
 	/**
 	 * On grid column resize
-	 * @param string objectName
+	 * @param {String} objectName
 	 * @param {Ext.grid.header.Container} ct
 	 * @param {Ext.grid.column.Column} column
-	 * @param integer width
+	 * @param {Number} width
 	 * @param {Object} eOpts
 	 */
 	onGridColumnResize:function(objectName, ct, column, width, eOpts)
@@ -135,11 +133,11 @@ Ext.application({
 	},
 	/**
 	 * On Grid column move
-	 * @param string objectName
+	 * @param {String} object
 	 * @param {Ext.grid.header.Container} ct
 	 * @param {Ext.grid.column.Column} column
-	 * @param integer fromIdx
-	 * @param integer toIdx
+	 * @param {Number} fromIdx
+	 * @param {Number} toIdx
 	 * @param {object} eOpts
 	 */
 	onGridColumnMove:function(object , ct, column, fromIdx, toIdx, eOpts)
@@ -170,14 +168,9 @@ Ext.application({
 	},
 	/**
 	 * Send command for layout frame
-	 * @param {object} command -  {comand:'somestring','params':'mixed'}
+	 * @param {object} command -  {command:'some string','params':'mixed'}
 	 */
 	sendCommand:function(command){
-		var frame = window.parent;
-		var reciever = frame.document.getElementById('externalCommandReciver');
-		reciever.value = Ext.JSON.encode(command);
-		var o = document.createEvent('HTMLEvents');
-		o.initEvent( 'change', false, false );
-		reciever.dispatchEvent(o);
+        window.parent.postMessage(command, window.location.origin);
 	}
 });

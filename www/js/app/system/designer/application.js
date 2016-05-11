@@ -73,35 +73,31 @@ Ext.define('designer.application',{
 	},
 
 	initCommandReceiver:function(){
-		this.externalCommandReceiver = Ext.create('Ext.form.field.Text',{
-			inputId :'externalCommandReciver',
-			value:'',
-			hidden:true,
-			listeners:{
-				change:{
-					fn:this.onComandRecieved,
-					scope:this
-				}
-			},
-			renderTo:Ext.getBody()
-		});
-	},
+        var me = this;
+        if (window.addEventListener) {
+            window.addEventListener("message", function(event){me.onCommand(event)});
+        } else {
+            // IE8
+            window.attachEvent("onmessage", function(event){me.onCommand(event)});
+        }
+    },
 
-	onComandRecieved:function(field , value){
+    onCommand:function(event){
 
-		if(!value.length){
-			return;
-		}
-		message = Ext.JSON.decode(value);
-		if(message.command && message.params){
-			this.runCommand(message.command , message.params);
-		}
-		this.externalCommandReceiver.setValue('');
+        var message = event.data;
+
+        if (event.origin != window.location.origin) {
+            return;
+        }
+
+        if(message.command && message.params){
+            this.runCommand(message.command , message.params);
+        }
 	},
 	/**
 	 * Run external command
-	 * @param string command
-	 * @param mixed params
+	 * @param {string} command
+	 * @param {mixed} params
 	 */
 	runCommand:function(command , params)
 	{
@@ -1298,7 +1294,7 @@ Ext.define('designer.application',{
 			application:me,
 			listeners:{
 				'dataSaved':{
-					fn:function(field , value){
+					fn:function(field){
 						me.refreshCodeframe();
 						if(!Ext.isEmpty(field)){
 							if(field == 'isExtended'){
@@ -1351,6 +1347,7 @@ Ext.define('designer.application',{
 	},
 	/**
 	 * Refresh view
+     * @param {boolean} force
 	 */
 	refreshCodeframe:function(force){
 		var forceLayout = force || false;
@@ -1404,15 +1401,11 @@ Ext.define('designer.application',{
 	},
 	/**
 	 * Send command for layout frame
-	 * @param {object} command -  {comand:'somestring','params':'mixed'}
+	 * @param {object} command -  {command:someString,'params':'mixed'}
 	 */
 	sendCommand:function(command){
-		//var frame = document.getElementById('viewFrame');
-		var reciever = this.activeFrame.dom.contentDocument.getElementById('externalCommandReciver');
-		reciever.value = Ext.JSON.encode(command);
-		var o = document.createEvent('HTMLEvents');
-		o.initEvent('change', false, false );
-		reciever.dispatchEvent(o);
+		var view = this.activeFrame.dom.contentWindow;
+        view.postMessage(command, window.location.origin);
 	},
 	/**
 	 * Show window with list of related project items
@@ -1425,6 +1418,7 @@ Ext.define('designer.application',{
 	},
 	/**
 	 * Switch view type
+     * @param {Number} index
 	 */
 	switchView:function(index){
 		switch(index){
