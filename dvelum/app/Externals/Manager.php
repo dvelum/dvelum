@@ -290,7 +290,10 @@ class Externals_Manager
                     if(!$objectCfg->isLocked() && !$objectCfg->isReadOnly()){
                         $builder = new Db_Object_Builder($object);
                         if(!$builder->build()){
-                            $this->errors[] = $builder->getErrors();
+                            $errors = $builder->getErrors();
+                            if(!empty($errors) && is_array($errors)){
+                                $this->errors[] = implode(', ', $errors);
+                            }
                         }
                     }
                 }catch (Exception $e){
