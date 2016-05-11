@@ -678,7 +678,7 @@ app.html5Notify = function(params){
 		icon: app.wwwRoot + 'i/notify.png',
         autoClose: 0
 	};
-    Ext.applyIf(params || {} ,notify);
+    Ext.apply(notify, params || {});
     var permitted = false;
     if(!("Notification" in window)){
         console.log("This browser does not support desktop notification");
