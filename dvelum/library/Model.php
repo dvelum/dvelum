@@ -117,7 +117,7 @@ class Model
      */
     public function getDbPrefix()
     {
-    	return $this->_dbPrefix;
+        return $this->_dbPrefix;
     }
 
     protected static $_instances = array();
@@ -145,30 +145,30 @@ class Model
      */
     protected function __construct($objectName)
     {
-    	$this->_store = static::$_defaults['dbObjectStore'];
-    	$this->_name = strtolower($objectName);
-    	$this->_cacheTime = static::$_defaults['hardCacheTime'];
-    	$this->_cache = static::$_defaults['dataCache'];
+        $this->_store = static::$_defaults['dbObjectStore'];
+        $this->_name = strtolower($objectName);
+        $this->_cacheTime = static::$_defaults['hardCacheTime'];
+        $this->_cache = static::$_defaults['dataCache'];
         $this->_dbManager = static::$_defaults['defaultDbManager'];
 
-    	try{
-    	    $this->_objectConfig = Db_Object_Config::getInstance($this->_name);
-    	}catch (Exception $e){
-    	    throw new Exception('Object '. $objectName.' is not exists');
-    	}
+        try{
+            $this->_objectConfig = Db_Object_Config::getInstance($this->_name);
+        }catch (Exception $e){
+            throw new Exception('Object '. $objectName.' is not exists');
+        }
 
-    	$conName = $this->_objectConfig->get('connection');
-    	$this->_db = $this->_dbManager->getDbConnection($conName);
-    	$this->_dbSlave = $this->_dbManager->getDbConnection($this->_objectConfig->get('slave_connection'));
+        $conName = $this->_objectConfig->get('connection');
+        $this->_db = $this->_dbManager->getDbConnection($conName);
+        $this->_dbSlave = $this->_dbManager->getDbConnection($this->_objectConfig->get('slave_connection'));
 
-    	if($this->_objectConfig->hasDbPrefix())
-    	    $this->_dbPrefix = $this->_dbManager->getDbConfig($conName)->get('prefix');
-    	else
-    	    $this->_dbPrefix = '';
+        if($this->_objectConfig->hasDbPrefix())
+            $this->_dbPrefix = $this->_dbManager->getDbConfig($conName)->get('prefix');
+        else
+            $this->_dbPrefix = '';
 
-    	$this->_table = $this->_objectConfig->get('table');
+        $this->_table = $this->_objectConfig->get('table');
 
-    	if(static::$_defaults['errorLog'])
+        if(static::$_defaults['errorLog'])
             $this->_log = static::$_defaults['errorLog'];
     }
 
@@ -178,7 +178,7 @@ class Model
      */
     protected function _getObjectsStore()
     {
-    	return $this->_store;
+        return $this->_store;
     }
 
     /**
@@ -186,7 +186,7 @@ class Model
      */
     public function setDbConnection(Zend_Db_Adapter_Abstract $db)
     {
-    	$this->_db = $db;
+        $this->_db = $db;
     }
 
     /**
@@ -195,7 +195,7 @@ class Model
      */
     public function setObjectsStore(Db_Object_Store $store)
     {
-    	$this->_store = $store;
+        $this->_store = $store;
     }
 
     /**
@@ -204,7 +204,7 @@ class Model
      */
     public function setHardCacheTitme($time)
     {
-    	$this->_cacheTime = $time;
+        $this->_cacheTime = $time;
     }
 
     /**
@@ -213,7 +213,7 @@ class Model
      */
     public function getDbConnection()
     {
-    	return $this->_db;
+        return $this->_db;
     }
 
     /**
@@ -222,7 +222,7 @@ class Model
      */
     public function getSlaveDbConnection()
     {
-    	return $this->_dbSlave;
+        return $this->_dbSlave;
     }
 
     /**
@@ -231,7 +231,7 @@ class Model
      */
     public function getDbManager()
     {
-    	return $this->_dbManager;
+        return $this->_dbManager;
     }
 
     /**
@@ -240,7 +240,7 @@ class Model
      */
     public function getStore()
     {
-    	return $this->_store;
+        return $this->_store;
     }
 
     /**
@@ -274,7 +274,7 @@ class Model
      */
     public function getObjectName()
     {
-    	return $this->_name;
+        return $this->_name;
     }
 
     /**
@@ -284,7 +284,7 @@ class Model
      */
     public function getCacheKey(array $params)
     {
-    	return md5($this->getObjectName().'-'.implode('-', $params));
+        return md5($this->getObjectName().'-'.implode('-', $params));
     }
 
     /**
@@ -304,9 +304,9 @@ class Model
      */
     final public function getItem($id , $fields = '*')
     {
-    	$sql = $this->_dbSlave->select()->from($this->table() , $fields);
-    	$sql->where($this->_dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' = '.intval($id));
-    	return $this->_dbSlave->fetchRow($sql);
+        $sql = $this->_dbSlave->select()->from($this->table() , $fields);
+        $sql->where($this->_dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' = '.intval($id));
+        return $this->_dbSlave->fetchRow($sql);
     }
 
     /**
@@ -316,21 +316,21 @@ class Model
      */
     public function getCachedItem($id)
     {
-    	if(!$this->_cache)
-    		return $this->getItem($id);
+        if(!$this->_cache)
+            return $this->getItem($id);
 
-    	$cacheKey = $this->getCacheKey(array('item',$id));
-    	$data = $this->_cache->load($cacheKey);
+        $cacheKey = $this->getCacheKey(array('item',$id));
+        $data = $this->_cache->load($cacheKey);
 
-    	if($data!==false)
-    		return $data;
+        if($data!==false)
+            return $data;
 
-    	$data = $this->getItem($id);
+        $data = $this->getItem($id);
 
-    	if($this->_cache)
-    		$this->_cache->save($data ,$cacheKey);
+        if($this->_cache)
+            $this->_cache->save($data ,$cacheKey);
 
-    	return $data;
+        return $data;
     }
 
     /**
@@ -341,21 +341,21 @@ class Model
      */
     public function getCachedItemByField($field , $value)
     {
-    	$cacheKey = $this->getCacheKey(array('item', $field, $value));
-    	$data = false;
+        $cacheKey = $this->getCacheKey(array('item', $field, $value));
+        $data = false;
 
-    	if($this->_cache)
-    		$data = $this->_cache->load($cacheKey);
+        if($this->_cache)
+            $data = $this->_cache->load($cacheKey);
 
-    	if($data!==false)
-    		return $data;
+        if($data!==false)
+            return $data;
 
-    	$data = $this->getItemByUniqueField($field, $value);
+        $data = $this->getItemByUniqueField($field, $value);
 
-    	if($this->_cache && $data)
-    		$this->_cache->save($data ,$cacheKey);
+        if($this->_cache && $data)
+            $this->_cache->save($data ,$cacheKey);
 
-    	return $data;
+        return $data;
     }
 
     /**
@@ -369,14 +369,14 @@ class Model
      */
     public function getItemByUniqueField($fieldName , $value , $fields = '*')
     {
-    	if(!$this->_objectConfig->isUnique($fieldName)){
-    	  $eText = 'getItemByUniqueField field "'.$fieldName.'" ['.$this->_objectConfig->getName().'] should be unique';
-    	  $this->logError($eText);
-    		throw new Exception($eText);
-    	}
-    	$sql = $this->_dbSlave->select()->from($this->table() , $fields);
-    	$sql->where($this->_dbSlave->quoteIdentifier($fieldName).' = ?' , $value);
-    	return $this->_dbSlave->fetchRow($sql);
+        if(!$this->_objectConfig->isUnique($fieldName)){
+          $eText = 'getItemByUniqueField field "'.$fieldName.'" ['.$this->_objectConfig->getName().'] should be unique';
+          $this->logError($eText);
+            throw new Exception($eText);
+        }
+        $sql = $this->_dbSlave->select()->from($this->table() , $fields);
+        $sql->where($this->_dbSlave->quoteIdentifier($fieldName).' = ?' , $value);
+        return $this->_dbSlave->fetchRow($sql);
     }
 
     /**
@@ -399,16 +399,16 @@ class Model
 
         if($data === false)
         {
-        	$sql = $this->_dbSlave->select()
-        				 ->from($this->table() , $fields)
-        				 ->where($this->_dbSlave->quoteIdentifier($this->getPrimaryKey()) .' IN('.self::listIntegers($ids).')');
-        	$data = $this->_dbSlave->fetchAll($sql);
+            $sql = $this->_dbSlave->select()
+                         ->from($this->table() , $fields)
+                         ->where($this->_dbSlave->quoteIdentifier($this->getPrimaryKey()) .' IN('.self::listIntegers($ids).')');
+            $data = $this->_dbSlave->fetchAll($sql);
 
-        	if(!$data)
-        	    $data = array();
+            if(!$data)
+                $data = array();
 
-        	if($useCache && $this->_cache)
-        	    $this->_cache->save($data , $cacheKey , $this->_cacheTime);
+            if($useCache && $this->_cache)
+                $this->_cache->save($data , $cacheKey , $this->_cacheTime);
 
         }
         return $data;
@@ -422,29 +422,29 @@ class Model
      */
     public function queryAddFilters($sql , $filters)
     {
-    	if(!is_array($filters) || empty($filters))
-    		return;
+        if(!is_array($filters) || empty($filters))
+            return;
 
-    	foreach($filters as $k => $v)
-    	{
+        foreach($filters as $k => $v)
+        {
 
-    	   if($v instanceof  Db_Select_Filter)
-    	   {
-    	     $v->applyTo($this->_db, $sql);
-    	   }
-    	   else
-    	   {
+           if($v instanceof  Db_Select_Filter)
+           {
+             $v->applyTo($this->_db, $sql);
+           }
+           else
+           {
 
-    	     if(is_array($v) && !empty($v))
-    	         $sql->where($this->_db->quoteIdentifier($k) . ' IN(?)' , $v);
-    	     elseif (is_bool($v))
-    	         $sql->where($this->_db->quoteIdentifier($k) . ' = '. intval($v));
-    	     elseif((is_string($v) && strlen($v)) || is_numeric($v))
-    	         $sql->where($this->_db->quoteIdentifier($k) . ' =?' , $v);
-    	     elseif (is_null($v))
-    	         $sql->where($this->_db->quoteIdentifier($k) . ' IS NULL');
-    	   }
-    	}
+             if(is_array($v) && !empty($v))
+                 $sql->where($this->_db->quoteIdentifier($k) . ' IN(?)' , $v);
+             elseif (is_bool($v))
+                 $sql->where($this->_db->quoteIdentifier($k) . ' = '. intval($v));
+             elseif((is_string($v) && strlen($v)) || is_numeric($v))
+                 $sql->where($this->_db->quoteIdentifier($k) . ' =?' , $v);
+             elseif (is_null($v))
+                 $sql->where($this->_db->quoteIdentifier($k) . ' IS NULL');
+           }
+        }
     }
 
     /**
@@ -456,11 +456,11 @@ class Model
      */
     protected function _queryAddAuthor($sql , $fieldAlias)
     {
-    	$sql->joinLeft(
-    		array('u1' =>  Model::factory('User')->table()) ,
-    		'author_id = u1.id' ,
-    		array($fieldAlias => 'u1.name')
-    	);
+        $sql->joinLeft(
+            array('u1' =>  Model::factory('User')->table()) ,
+            'author_id = u1.id' ,
+            array($fieldAlias => 'u1.name')
+        );
     }
 
     /**
@@ -472,11 +472,11 @@ class Model
      */
     protected function _queryAddEditor($sql , $fieldAlias)
     {
-    	$sql->joinLeft(
-    		array('u2' =>  Model::factory('User')->table()) ,
-    		'editor_id = u2.id' ,
-    		array($fieldAlias => 'u2.name')
-    	);
+        $sql->joinLeft(
+            array('u2' =>  Model::factory('User')->table()) ,
+            'editor_id = u2.id' ,
+            array($fieldAlias => 'u2.name')
+        );
     }
 
     /**
@@ -489,30 +489,30 @@ class Model
     static public function queryAddPagerParams($sql , $params)
     {
         if(isset($params['limit']) && !isset($params['start'])){
-    		$sql->limit(intval($params['limit']));
+            $sql->limit(intval($params['limit']));
         }elseif(isset($params['start']) && isset($params['limit'])){
-    		$sql->limit(intval($params['limit']) , intval($params['start']));
+            $sql->limit(intval($params['limit']) , intval($params['start']));
         }
 
-    	if(!empty($params['sort']) && ! empty($params['dir'])){
+        if(!empty($params['sort']) && ! empty($params['dir'])){
 
-    	    if(is_array($params['sort']) && !is_array($params['dir'])){
-    	      $sort = array();
+            if(is_array($params['sort']) && !is_array($params['dir'])){
+              $sort = array();
 
-    	      foreach ($params['sort'] as $key=>$field){
-    	        if(!is_integer($key)){
-    	          $order = trim(strtolower($field));
-    	          if($order == 'asc' || $order == 'desc')
-    	              $sort[$key] = $order;
-    	        }else{
-    	           $sort[$field] = $params['dir'];
-    	        }
-    	      }
-    	      $sql->order($sort);
-    	    }else{
-    		  $sql->order(array($params['sort'] => $params['dir']));
-    	    }
-    	}
+              foreach ($params['sort'] as $key=>$field){
+                if(!is_integer($key)){
+                  $order = trim(strtolower($field));
+                  if($order == 'asc' || $order == 'desc')
+                      $sort[$key] = $order;
+                }else{
+                   $sort[$field] = $params['dir'];
+                }
+              }
+              $sql->order($sort);
+            }else{
+              $sql->order(array($params['sort'] => $params['dir']));
+            }
+        }
     }
 
     /**
@@ -524,7 +524,7 @@ class Model
      */
     static public function listIntegers(array $ids)
     {
-    	return implode(',' , array_map('intval' , array_unique($ids)));
+        return implode(',' , array_map('intval' , array_unique($ids)));
     }
 
     /**
@@ -538,37 +538,37 @@ class Model
      */
     public function getCount($filters = false , $query = false , $useCache = false)
     {
-    	$cParams = '';
-    	$data = false;
-    	if($useCache && $this->_cache)
-    	{
-    		if($filters)
-    			$cParams.= serialize($filters);
+        $cParams = '';
+        $data = false;
+        if($useCache && $this->_cache)
+        {
+            if($filters)
+                $cParams.= serialize($filters);
 
-    		if($query)
-    			$cParams.= $query;
+            if($query)
+                $cParams.= $query;
 
-    		$cacheKey = $this->getCacheKey(array('count', $cParams));
-    		$data = $this->_cache->load($cacheKey);
-    	}
+            $cacheKey = $this->getCacheKey(array('count', $cParams));
+            $data = $this->_cache->load($cacheKey);
+        }
 
-    	if($data === false)
-    	{
-    		$sql = $this->_dbSlave->select();
-    		$sql->from($this->table() , array('count' => 'COUNT(*)'));
+        if($data === false)
+        {
+            $sql = $this->_dbSlave->select();
+            $sql->from($this->table() , array('count' => 'COUNT(*)'));
 
-    		$this->queryAddFilters($sql , $filters);
+            $this->queryAddFilters($sql , $filters);
 
-    		if($query && strlen($query))
-    			$this->_queryAddQuery($sql , $query);
+            if($query && strlen($query))
+                $this->_queryAddQuery($sql , $query);
 
-    		$data = $this->_dbSlave->fetchOne($sql);
+            $data = $this->_dbSlave->fetchOne($sql);
 
-    		if($useCache && $this->_cache)
-    			$this->_cache->save($data , $cacheKey ,  self::$_defaults['hardCacheTime']);
+            if($useCache && $this->_cache)
+                $this->_cache->save($data , $cacheKey ,  self::$_defaults['hardCacheTime']);
 
-    	}
-    	return $data;
+        }
+        return $data;
     }
 
     /**
@@ -594,10 +594,10 @@ class Model
       if(is_array($filters) && !empty($filters))
         $filters = $this->_cleanFilters($filters);
 
-    	if($this->_dbSlave === Model::factory('User')->getSlaveDbConnection())
-    		return $this->_getListVcLocal($params , $filters , $query , $fields , $author, $lastEditor, $joins);
-    	else
-    		return $this->_getListVcRemote($params , $filters , $query , $fields , $author, $lastEditor, $joins);
+        if($this->_dbSlave === Model::factory('User')->getSlaveDbConnection())
+            return $this->_getListVcLocal($params , $filters , $query , $fields , $author, $lastEditor, $joins);
+        else
+            return $this->_getListVcRemote($params , $filters , $query , $fields , $author, $lastEditor, $joins);
     }
 
     /**
@@ -623,99 +623,99 @@ class Model
 
     protected function _getListVcLocal($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
     {
-    	$sql = $this->_dbSlave->select()->from($this->table(), $fields);
+        $sql = $this->_dbSlave->select()->from($this->table(), $fields);
 
-    	if($filters)
-    		$this->queryAddFilters($sql , $filters);
+        if($filters)
+            $this->queryAddFilters($sql , $filters);
 
-    	if($author)
-    		$this->_queryAddAuthor($sql , $author);
+        if($author)
+            $this->_queryAddAuthor($sql , $author);
 
-    	if($lastEditor)
-    		$this->_queryAddEditor($sql , $lastEditor);
+        if($lastEditor)
+            $this->_queryAddEditor($sql , $lastEditor);
 
-    	if($query && strlen($query))
-    		$this->_queryAddQuery($sql , $query);
+        if($query && strlen($query))
+            $this->_queryAddQuery($sql , $query);
 
-    	if($params)
-    		static::queryAddPagerParams($sql , $params);
+        if($params)
+            static::queryAddPagerParams($sql , $params);
 
-    	if(is_array($joins) && !empty($joins))
-    		$this->_queryAddJoins($sql, $joins);
+        if(is_array($joins) && !empty($joins))
+            $this->_queryAddJoins($sql, $joins);
 
-    	return $this->_dbSlave->fetchAll($sql);
+        return $this->_dbSlave->fetchAll($sql);
     }
 
     protected function _getListVcRemote($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
     {
-    	if($fields!=='*')
-    	{
-    		if($author)
-    			if(!in_array('author_id', $fields,true))
-    				$fields[] = 'author_id';
+        if($fields!=='*')
+        {
+            if($author)
+                if(!in_array('author_id', $fields,true))
+                    $fields[] = 'author_id';
 
-    		if($lastEditor)
-    			if(!in_array('editor_id', $fields,true))
-    				$fields[] = 'editor_id';
-    	}
+            if($lastEditor)
+                if(!in_array('editor_id', $fields,true))
+                    $fields[] = 'editor_id';
+        }
 
-    	$sql = $this->_dbSlave->select()->from($this->table(), $fields);
+        $sql = $this->_dbSlave->select()->from($this->table(), $fields);
 
-    	if($filters)
-    		$this->queryAddFilters($sql , $filters);
+        if($filters)
+            $this->queryAddFilters($sql , $filters);
 
-    	if($query && strlen($query))
-    		$this->_queryAddQuery($sql , $query);
+        if($query && strlen($query))
+            $this->_queryAddQuery($sql , $query);
 
-    	if($params)
-    		static::queryAddPagerParams($sql , $params);
+        if($params)
+            static::queryAddPagerParams($sql , $params);
 
-    	if(is_array($joins) && !empty($joins))
-    		$this->_queryAddJoins($sql, $joins);
+        if(is_array($joins) && !empty($joins))
+            $this->_queryAddJoins($sql, $joins);
 
-    	$data = $this->_dbSlave->fetchAll($sql);
+        $data = $this->_dbSlave->fetchAll($sql);
 
-    	if(!$author && !$lastEditor)
-    		return $data;
+        if(!$author && !$lastEditor)
+            return $data;
 
-    	$ids = array();
+        $ids = array();
 
-    	foreach ($data as $row)
-    	{
-    		if($author)
-    			$ids[] = $row['author_id'];
+        foreach ($data as $row)
+        {
+            if($author)
+                $ids[] = $row['author_id'];
 
-    		if($lastEditor)
-    			$ids[] = $row['editor_id'];
-    	}
+            if($lastEditor)
+                $ids[] = $row['editor_id'];
+        }
 
-    	if(!empty($ids))
-    	{
-    		array_unique($ids);
-    		$usersData = Model::factory('User')->getList(false,array('id'=>$ids),array('id','name'));
-    		if(!empty($usersData))
-    			$usersData = Utils::rekey('id', $usersData);
-    	}
+        if(!empty($ids))
+        {
+            array_unique($ids);
+            $usersData = Model::factory('User')->getList(false,array('id'=>$ids),array('id','name'));
+            if(!empty($usersData))
+                $usersData = Utils::rekey('id', $usersData);
+        }
 
-    	foreach ($data as $key=>&$row)
-    	{
-    		if($author)
-    		{
-    			if(isset($usersData[$row['author_id']]))
-    				$row[$author] = $usersData[$row['author_id']]['name'];
-    			else
-    				$row[$author] = '';
-    		}
+        foreach ($data as $key=>&$row)
+        {
+            if($author)
+            {
+                if(isset($usersData[$row['author_id']]))
+                    $row[$author] = $usersData[$row['author_id']]['name'];
+                else
+                    $row[$author] = '';
+            }
 
-    		if($lastEditor)
-    		{
-    			if(isset($usersData[$row['editor_id']]))
-    				$row[$lastEditor] = $usersData[$row['editor_id']]['name'];
-    			else
-    				$row[$lastEditor] = '';
-    		}
-    	}
-    	return $data;
+            if($lastEditor)
+            {
+                if(isset($usersData[$row['editor_id']]))
+                    $row[$lastEditor] = $usersData[$row['editor_id']]['name'];
+                else
+                    $row[$lastEditor] = '';
+            }
+        }
+        return $data;
     }
 
     /**
@@ -730,36 +730,62 @@ class Model
      */
     public function getList($params = false, $filters = false , $fields = '*' , $useCache = false , $query = false)
     {
-    	$data = false;
+        $data = false;
 
-    	if($useCache && $this->_cache)
-    	{
-    		$cacheKey = $this->getCacheKey(array('list', serialize(func_get_args())));
-    		$data = $this->_cache->load($cacheKey);
-    	}
+        if($useCache && $this->_cache)
+        {
+            $cacheKey = $this->getCacheKey(array('list', serialize(func_get_args())));
+            $data = $this->_cache->load($cacheKey);
+        }
 
-    	if($data === false)
-    	{
-    		$sql = $this->_dbSlave->select()->from($this->table() , $fields);
+        if($data === false)
+        {
+            $sql = $this->_dbSlave->select()->from($this->table() , $fields);
 
-    		if(is_array($filters) && !empty($filters))
-    		  $this->queryAddFilters($sql ,$this->_cleanFilters($filters));
+            if(is_array($filters) && !empty($filters))
+              $this->queryAddFilters($sql ,$this->_cleanFilters($filters));
 
-    		if($params)
-    			static::queryAddPagerParams($sql , $params);
+            if($params)
+                static::queryAddPagerParams($sql , $params);
 
-    		if($query && strlen($query))
-    			$this->_queryAddQuery($sql , $query);
+            if($query && strlen($query))
+                $this->_queryAddQuery($sql , $query);
 
-    		$data = $this->_dbSlave->fetchAll($sql);
+            $data = $this->_dbSlave->fetchAll($sql);
 
-    		if(!$data)
-    			$data = array();
+            if(!$data)
+                $data = array();
 
-    		if($useCache && $this->_cache)
-    			$this->_cache->save($data , $cacheKey , $this->_cacheTime);
-    	}
-    	return $data;
+            if($useCache && $this->_cache)
+                $this->_cache->save($data , $cacheKey , $this->_cacheTime);
+        }
+        return $data;
+    }
+
+    /**
+     * Get object title
+     * @param Db_Object $object - object for getting title
+     * @return mixed|string - object title
+     * @throws Exception
+     */
+    public function getTitle(Db_Object $object)
+    {
+        $title = $this->_objectConfig->getLinkTitle();
+        if(strpos($title , '{')!==false){
+            $fields = $this->_objectConfig->getFieldsConfig(true);
+            foreach($fields as $name => $cfg){
+                $value =  $object->get($name);
+                if(is_array($value)){
+                    $value = implode(', ', $value);
+                }
+                $title = str_replace('{'.$name.'}' , (string) $value , $title );
+            }
+        }else{
+            if($object->fieldExists($title)){
+                $title = $object->get($title);
+            }
+        }
+        return $title;
     }
 
     /**
@@ -769,11 +795,11 @@ class Model
      */
     public function remove($recordId , $log = true)
     {
-    	$object = new Db_Object($this->_name , $recordId);
-    	if(self::_getObjectsStore()->delete($object , $log))
-    		return true;
-    	else
-    		return false;
+        $object = new Db_Object($this->_name , $recordId);
+        if(self::_getObjectsStore()->delete($object , $log))
+            return true;
+        else
+            return false;
     }
 
     /**
@@ -791,24 +817,24 @@ class Model
      */
     protected function _queryAddJoins($sql , array $joins)
     {
-    	foreach($joins as $config)
-    	{
-    		switch($config['joinType'])
-    		{
-    			case 'joinLeft' :
-    			case 'left':
-    				$sql->joinLeft($config['table'] , $config['condition']  , $config['fields']);
-    				break;
-    			case 'joinRight' :
-    			case 'right':
-    				$sql->joinRight($config['table'] , $config['condition'] , $config['fields']);
-    				break;
-    			case 'joinInner':
-    			case 'inner':
-    				$sql->joinInner($config['table'] , $config['condition'] , $config['fields']);
-    				break;
-    		}
-    	}
+        foreach($joins as $config)
+        {
+            switch($config['joinType'])
+            {
+                case 'joinLeft' :
+                case 'left':
+                    $sql->joinLeft($config['table'] , $config['condition']  , $config['fields']);
+                    break;
+                case 'joinRight' :
+                case 'right':
+                    $sql->joinRight($config['table'] , $config['condition'] , $config['fields']);
+                    break;
+                case 'joinInner':
+                case 'inner':
+                    $sql->joinInner($config['table'] , $config['condition'] , $config['fields']);
+                    break;
+            }
+        }
     }
 
     /**
@@ -849,12 +875,12 @@ class Model
      */
     public function checkUnique($recordId , $fieldName , $fieldValue)
     {
-    	return !(boolean) $this->_dbSlave->fetchOne(
-    			$this->_dbSlave->select()
-    					  ->from($this->table() , array('count' => 'COUNT(*)'))
-    					  ->where($this->_dbSlave->quoteIdentifier($this->getPrimaryKey()) .' != ?' , $recordId)
-    					  ->where($this->_dbSlave->quoteIdentifier($fieldName) . ' =?' , $fieldValue)
-    	);
+        return !(boolean) $this->_dbSlave->fetchOne(
+                $this->_dbSlave->select()
+                          ->from($this->table() , array('count' => 'COUNT(*)'))
+                          ->where($this->_dbSlave->quoteIdentifier($this->getPrimaryKey()) .' != ?' , $recordId)
+                          ->where($this->_dbSlave->quoteIdentifier($fieldName) . ' =?' , $fieldValue)
+        );
     }
     /**
      * Get primary key name
@@ -915,7 +941,7 @@ class Model
      */
     public function getLogsAdapter()
     {
-    	return $this->_log;
+        return $this->_log;
     }
 
     /**
@@ -934,7 +960,7 @@ class Model
      * Insert multiple rows (not safe but fast)
      * @param array $data
      * @param integer $chunkSize
-	 * @param boolean $ignore - optional default false
+     * @param boolean $ignore - optional default false
      * @return boolean
      */
     public function multiInsert($data , $chunkSize = 300, $ignore = false)
@@ -954,35 +980,35 @@ class Model
 
         foreach ($chunks as $rowset)
         {
-        	foreach ($rowset as &$row)
-        	{
-        		foreach ($row as &$colValue)
-        		{
-        		    if(is_bool($colValue)){
-        		    	$colValue = intval($colValue);
-        		    }elseif (is_null($colValue)){
-        		        $colValue = 'NULL';
-        		    }else{
-        			    $colValue = $this->_db->quote($colValue);
-        		    }
-        		}unset($colValue);
-        		$row = implode(',', $row);
-        	}unset($row);
+            foreach ($rowset as &$row)
+            {
+                foreach ($row as &$colValue)
+                {
+                    if(is_bool($colValue)){
+                        $colValue = intval($colValue);
+                    }elseif (is_null($colValue)){
+                        $colValue = 'NULL';
+                    }else{
+                        $colValue = $this->_db->quote($colValue);
+                    }
+                }unset($colValue);
+                $row = implode(',', $row);
+            }unset($row);
 
-			$sql = 'INSERT ';
+            $sql = 'INSERT ';
 
-			if($ignore){
-				$sql.= 'IGNORE ';
-			}
+            if($ignore){
+                $sql.= 'IGNORE ';
+            }
 
-        	$sql.= 'INTO '.$this->table().' ('.$keys.') '."\n".' VALUES '."\n".'('.implode(')'."\n".',(', array_values($rowset)).') '."\n".'';
+            $sql.= 'INTO '.$this->table().' ('.$keys.') '."\n".' VALUES '."\n".'('.implode(')'."\n".',(', array_values($rowset)).') '."\n".'';
 
-        	try{
-        	   $this->_db->query($sql);
-        	} catch (Exception $e){
-        		$this->logError('multiInsert: '.$e->getMessage());
-        		return false;
-        	}
+            try{
+               $this->_db->query($sql);
+            } catch (Exception $e){
+                $this->logError('multiInsert: '.$e->getMessage());
+                return false;
+            }
         }
         return true;
     }
