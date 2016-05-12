@@ -53,9 +53,10 @@ class Model_User extends Model
 	 */
     public function checkLogin()
     {
+        $mainCfg = Config::storage()->get('main.php');
         $user = Request::post(self::AUTH_LOGIN, 'login', false);
         $pass = Request::post(self::AUTH_PASSWORD , 'string' , false);
-        $provider = Request::post(self::AUTH_PROVIDER , 'string' , Config::storage()->get('main.php')->get('default_auth_provider'));
+        $provider = Request::post(self::AUTH_PROVIDER , 'string' , $mainCfg->get('default_auth_provider'));
         $language = Request::post(self::AUTH_LANG, 'string' , '');
 
         if($user === false || $pass=== false)
@@ -64,6 +65,12 @@ class Model_User extends Model
         // slow check
         sleep(1);
         $result = $this->login($user, $pass , $provider);
+
+        // Trying fallback provider if it set
+        if(!$result && !empty($mainCfg['fallback_auth_provider'])){
+            $provider = $mainCfg->get('fallback_auth_provider');
+            $result = $this->login($user, $pass , $provider);
+        }
 
         if($result) {
             $user = User::getInstance();

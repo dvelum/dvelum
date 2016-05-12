@@ -267,6 +267,10 @@ return array(
      */
     'default_auth_provider' => 'dvelum',
     /*
+     * Fallback Authentification provider. If empty or not set - fallback disabled.
+     */
+    'fallback_auth_provider' => '',
+    /*
      * External modules configuration
      */
     'externals' =>[
