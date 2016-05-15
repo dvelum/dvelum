@@ -43,6 +43,17 @@ $blockManager = $this->get('blockManager');
         ?>
 
         <div class="content-wrap">
+
+
+            <div id="content" class="content">
+                <?php
+                    if(empty($page->func_code)){
+                       echo '<h1>'.$page->page_title.'</h1>';
+                    }
+                ?>
+                <div class="text"><?php echo $page->text;?></div>
+            </div>
+
             <?php
             echo $this->renderTemplate(
                 'public/default/sidebar.php',
@@ -51,15 +62,6 @@ $blockManager = $this->get('blockManager');
                 ]
             );
             ?>
-
-            <div id="content" class="content">
-                <?php
-                    if(empty($page->func_code)){
-                       echo '<h3>'.$page->page_title.'</h3>';
-                    }
-                ?>
-               <?php echo $page->text;?>
-            </div>
 
         </div>
         <?php

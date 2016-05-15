@@ -1,5 +1,5 @@
 body{
-    background: #fff url(../../../i/page.white.bg.jpg) 0 0 repeat;
+    background-color:#E6E6E6;
     font-family: "Graphik Web","Helvetica Neue",Helvetica,Arial,sans-serif;
     margin: 0;
     padding: 0;
@@ -22,17 +22,19 @@ body{
 
 }
 
-.page .content{
-    padding:0px 10px 20px 15px;
-    margin-right: 320px;
-}
-
 .content-wrap{
-    display: inline-block;
+    display: table;
     height:100%;
     padding-top: 60px;
     width: 100%;
 }
+.page .content{
+    padding:0px 10px 20px 15px;
+    display: table-cell;
+    max-width: 960px;
+}
+
+
 
 .header_wrap{
     width:100%;
@@ -65,11 +67,13 @@ body{
 
 /* Sidebar */
 .sidebar{
-    float:right;
+
     width:310px;
     border-left: 1px solid #ccc9c3;
     padding:5px;
     min-height: calc(100vh - 250px);
+    display: table-cell;
+    vertical-align: top;
 }
 
 
@@ -136,8 +140,12 @@ body{
     color:#3b93c0;
 }
 
-
 .footer .menu li .header{
     font-weight: bold;
+}
+
+
+@media screen and (max-width:768px){
+    .sidebar{display: table-footer-group;}
 }
 
