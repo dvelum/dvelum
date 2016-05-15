@@ -45,6 +45,15 @@ $blockManager = $this->get('blockManager');
         <div class="content-wrap">
 
 
+            <?php
+            echo $this->renderTemplate(
+                'public/default/sidebar.php',
+                [
+                    'blocks' => $blockManager->getBlocksHtml('right-blocks')
+                ]
+            );
+            ?>
+
             <div id="content" class="content">
                 <?php
                     if(empty($page->func_code)){
@@ -54,14 +63,6 @@ $blockManager = $this->get('blockManager');
                 <div class="text"><?php echo $page->text;?></div>
             </div>
 
-            <?php
-            echo $this->renderTemplate(
-                'public/default/sidebar.php',
-                [
-                    'blocks' => $blockManager->getBlocksHtml('right-blocks')
-                ]
-            );
-            ?>
 
         </div>
         <?php
