@@ -2,7 +2,7 @@
 return array(
 	'columns'=>2,
 	'items'=>array(
-		'topblocks'=>array(
+		'top-blocks'=>array(
 			'colspan'=>2,
 			'isElContainer'=>true,
             'width'=>600,
@@ -14,12 +14,12 @@ return array(
 		    'width'=>400,
             'height'=>200
 		),
-		'rightblocks'=>array(
+		'right-blocks'=>array(
 			'isElContainer'=>true,
 		    'width'=>200,
             'height'=>200
 		),
-		'bottomblocks'=>array(
+		'bottom-blocks'=>array(
 			'colspan'=>2,
 			'isElContainer'=>true,
 		    'width'=>600,

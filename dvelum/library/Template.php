@@ -185,6 +185,7 @@ class Template
     {
         $this->_useCache = true;
     }
+
     /**
      * Get template data
      * @return array
@@ -193,6 +194,7 @@ class Template
     {
         return $this->_data;
     }
+
     /**
      * Redefine template data using an associative key-value array,
      * old and new data merge
@@ -216,5 +218,23 @@ class Template
         }
 
         return $store;
+    }
+
+    /**
+     * Render sub template
+     * @param string $templatePath
+     * @param array $data
+     * @param bool|true $useCache
+     * @return string
+     */
+    public function renderTemplate($templatePath, array $data, $useCache = true)
+    {
+        $tpl = new self();
+        $tpl->setData($data);
+
+        if(!$useCache)
+            $tpl->disableCache();
+
+        return $tpl->render($templatePath);
     }
 }

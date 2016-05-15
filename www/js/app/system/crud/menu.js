@@ -1,15 +1,9 @@
 Ext.onReady(function(){
-
-	app.crud.menu.pagesStore.load({
-		url:app.root + 'pagelist'
-	});
-
 	var dataPanel = Ext.create('app.crud.menu.Panel',{
 		title:appLang.MODULE_MENU,
 		controllerUrl:app.root,
-		canEdit:canEdit,
-		canDelete:canDelete
+		canEdit:app.permissions.canEdit("Menu"),
+		canDelete:app.permissions.canDelete("Menu")
 	});
-
 	app.content.add(dataPanel);
 });

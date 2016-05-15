@@ -2,4 +2,5 @@
   'resource',
   'url',
   'page',
+  'nolink'
 ); 

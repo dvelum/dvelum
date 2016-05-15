@@ -1,25 +1,5 @@
 Ext.ns('app.crud.menu');
 
-app.crud.menu.pagesStore  = Ext.create('Ext.data.Store',{
-    model:'app.comboModel',
-    proxy: {
-        type: 'ajax',
-        url:'',
-        reader: {
-            type: 'json',
-            rootProperty: 'data',
-            idProperty: 'id'
-        },
-        simpleSortMode: true
-    },
-    remoteSort: false,
-    autoLoad: false,
-    sorters: [{
-        property : 'title',
-        direction: 'DESC'
-    }]
-});
-
 Ext.define('app.crud.menu.LinkModel',{
     extend:'Ext.data.Model',
     fields:[
@@ -32,13 +12,11 @@ Ext.define('app.crud.menu.LinkModel',{
     ]
 });
 
-
 Ext.define('app.crud.menu.EditorPanel',{
     extend:'Ext.tree.Panel',
     menuId:0,
     fieldName:'data',
     controllerUrl:'',
-    deleteButn:false,
 
     constructor:function(config){
         config = Ext.apply({
@@ -210,7 +188,7 @@ Ext.define('app.crud.menu.EditorPanel',{
     },
     addItemPriv:function(sub){
         var sub = sub || false;
-        var win = Ext.create('app.crud.menu.ItemWindow',{});
+        var win = Ext.create('app.crud.menu.ItemWindow',{controllerUrl:this.controllerUrl});
 
         win.on('itemSelected',function(pageId , title , published , link_type , url , resource_id ){
             var sm = this.getSelectionModel();
@@ -357,6 +335,7 @@ Ext.define('app.crud.menu.ItemWindow',{
     nodeId:0,
     layout:'fit',
     modal:true,
+    controllerUrl:'',
 
     initComponent:function()
     {
@@ -410,7 +389,25 @@ Ext.define('app.crud.menu.ItemWindow',{
                     triggerAction: 'all',
                     anchor:'100%',
                     queryMode: 'local',
-                    store: app.crud.menu.pagesStore,
+                    store: Ext.create('Ext.data.Store',{
+                        model:'app.comboModel',
+                        proxy: {
+                            type: 'ajax',
+                            url:this.controllerUrl + 'pagelist',
+                            reader: {
+                                type: 'json',
+                                rootProperty: 'data',
+                                idProperty: 'id'
+                            },
+                            simpleSortMode: true
+                        },
+                        remoteSort: false,
+                        autoLoad: false,
+                        sorters: [{
+                            property : 'title',
+                            direction: 'DESC'
+                        }]
+                    }),
                     valueField: 'id',
                     displayField: 'title',
                     allowBlank:true,
@@ -476,15 +473,23 @@ Ext.define('app.crud.menu.ItemWindow',{
         var pageField = form.findField('page_id');
 
         switch(type){
-            case 'resource':pageField.hide();
+            case 'resource':
+                pageField.hide();
                 resField.show();
                 urlField.hide();
                 break;
-            case 'page' :	pageField.show();
+            case 'page' :
+                pageField.show();
                 resField.hide();
                 urlField.hide();
                 break;
-            default: 		pageField.hide();
+            case 'nolink':
+                resField.hide();
+                urlField.hide();
+                pageField.hide();
+                break;
+            default:
+                pageField.hide();
                 resField.hide();
                 urlField.show();
         }
@@ -515,44 +520,42 @@ Ext.define('app.crud.menu.EditWindow',{
 
     initComponent:function(){
 
-        this.width = 850;
-
-        var listItemsPanel = Ext.create('app.crud.menu.EditorPanel',{
+        this.listItemsPanel = Ext.create('app.crud.menu.EditorPanel',{
             title:appLang.ITEMS,
             controllerUrl:this.controllerUrl
         });
 
-        var gPanel = Ext.create('Ext.Panel',{
-            frame : false,
-            title : appLang.GENERAL,
-            anchor : "100%",
-            border : "",
-            bodyPadding : 3,
-            bodyCls : "formBody",
-            fieldDefaults : {
-                labelAlign : 'right',
-                anchor : '100%'
-            },
-            defaults:{
-                labelWidth:60
-            },
-            layout : "anchor",
-            items:[
-                {
-                    xtype:'textfield',
-                    name:'code',
-                    fieldLabel:appLang.CODE,
-                    vtype:'alphanum'
+        this.items = [
+            Ext.create('Ext.Panel',{
+                frame : false,
+                title : appLang.GENERAL,
+                bodyPadding : 3,
+                bodyCls : "formBody",
+                fieldDefaults : {
+                    labelAlign : 'right',
+                    anchor : '100%'
                 },
-                {
-                    xtype:'textfield',
-                    name:'title',
-                    fieldLabel:appLang.TITLE
-                }]
-        });
-        this.items = [gPanel,listItemsPanel];
+                defaults:{
+                    labelWidth:60
+                },
+                layout : "anchor",
+                items:[
+                    {
+                        xtype:'textfield',
+                        name:'code',
+                        fieldLabel:appLang.CODE,
+                        vtype:'alphanum'
+                    },
+                    {
+                        xtype:'textfield',
+                        name:'title',
+                        fieldLabel:appLang.TITLE
+                    }]
+            }),
+            this.listItemsPanel
+        ];
         this.callParent();
-        this.registerLink(listItemsPanel);
+        this.registerLink(this.listItemsPanel);
     }
 });
 
@@ -638,14 +641,15 @@ Ext.define('app.crud.menu.Panel',{
     showEdit:function(id){
         var win = Ext.create('app.crud.menu.EditWindow', {
             title:appLang.EDIT_ITEM,
-            width:600,
+            width:500,
             height:400,
             dataItemId:id,
             canDelete:this.canDelete,
             canEdit:this.canEdit,
             development:this.development,
             controllerUrl:this.controllerUrl,
-            objectName:'menu'
+            objectName:'menu',
+            hideEastPanel:true
         });
 
         win.on('dataSaved' , function(){
