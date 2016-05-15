@@ -80,7 +80,9 @@ Ext.define('app.medialib.ItemField', {
 	setValue:function(value){
 		this.setRawValue(value);
 	},
-	
+	getValue:function(){
+		return this.rawValue;
+	},
 	/**
 	 * Load item info
 	 */

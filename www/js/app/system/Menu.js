@@ -323,7 +323,7 @@ Ext.define('app.crud.menu.EditorPanel',{
 Ext.define('app.crud.menu.ItemWindow',{
     extend:'Ext.Window',
     resizable:false,
-    width:350,
+    width:450,
     height:400,
     title:appLang.EDIT_ITEM,
     valueTitle:'',
@@ -422,10 +422,8 @@ Ext.define('app.crud.menu.ItemWindow',{
                     xtype:'medialibitemfield',
                     resourceType:'all',
                     name:'resource_id',
-                    // linkName:'resource_id',
                     hidden:true,
-                    fieldLabel:appLang.RESOURCE,
-                    value:'url'
+                    fieldLabel:appLang.RESOURCE
                 },
                 {
                     xtype:'checkbox',
@@ -503,6 +501,7 @@ Ext.define('app.crud.menu.ItemWindow',{
         var link_type = form.findField('link_type').getValue();
         var url = form.findField('url').getValue();
         var resource_id = form.findField('resource_id').getValue();
+
         if(!pageTitle.length){
             return;
         }

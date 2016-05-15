@@ -189,7 +189,6 @@ class Model_Medialib extends Model
         $resource->addJs('/js/app/system/SearchPanel.js',1);
         $resource->addJs('/js/lib/ext_ux/AjaxFileUpload.js',1);
         $resource->addJs('/js/app/system/ImageField.js',1);
-        $resource->addJs('/js/app/system/MedialinkField.js'  , 1);
         $resource->addJs('/js/app/system/Medialib.js?v='.$version, 2);
         $resource->addJs('/js/lib/jquery.Jcrop.min.js', 2,true);
 
