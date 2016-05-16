@@ -1,9 +1,9 @@
-body{
+html,body{
     background-color:#E6E6E6;
     font-family: "Graphik Web","Helvetica Neue",Helvetica,Arial,sans-serif;
     margin: 0;
     padding: 0;
-    text-rendering: optimizelegibility;
+    height: 100%;
 }
 
 .page_wrap{
@@ -14,42 +14,44 @@ body{
 }
 
 .page{
-    width:100%;
     max-width: 1280px;
     min-width: 300px;
     text-align: left;
     display: inline-block;
     background-color: #fff;
     min-height: calc(100vh - 250px);
-
 }
 
 .layout-wrap{
     height:100%;
     padding-top: 60px;
     width: 100%;
-    display: inline-block;
 }
 
 .content-wrap{
-    min-width: 200px;
-    max-width: 940px;
+    width:100%;
+    border: 1px solid #ccc;
+    background-color: #00aaaa;
+}
+
+.content-wrap.left{
+    margin-left:338px;
+    max-width: 960px;
+}
+
+.content-wrap.right{
+    margin-right:340px;
+    max-width: 960px;
+}
+
+.content-wrap.left.right{
+    max-width: 600px;
 }
 
 .content-wrap .content{
     width:100%;
-    min-width: 300px;
-    padding:0px 15px 20px 15px;
-    background-color: #00a8c6;
 }
 
-.content-wrap.left{
-    margin-left:340px;
-}
-
-.content-wrap.right{
-    margin-right:370px;
-}
 
 
 .header_wrap{
@@ -85,18 +87,14 @@ body{
 .sidebar{
     width:320px;
     min-width: 320px;
-    padding:5px;
-    min-height: calc(100vh - 250px);
-    height:100%;
+    padding:0 5px 5px 5px;
 }
 
 .sidebar.left{
-    border-right: 1px solid #ccc9c3;
     float: left;
 }
 
 .sidebar.right{
-    border-left: 1px solid #ccc9c3;
     float: right;
 }
 
@@ -158,7 +156,6 @@ body{
 .footer .menu  a.active{
     list-style: none;
     width: 100%;
-    color:#fff;
     text-decoration: none;
     color:#3b93c0;
 }
@@ -183,13 +180,29 @@ body{
     background-color: #fff;
 }
 
-.blockItem .blockTitle{
-
+.blockContent ul, .blockContent ol{
+    padding-left:15px;
 }
 
+.blockItem .blockTitle{
+    font-size: 16px;
+    font-weight: bold;
+    height:24px;
+    padding: 0px 5px 0px 5px;
+}
 
-@media screen and (max-width:920px){
+/* Media Queries */
+@media screen and (max-width:1110px){
+    /* 2 sides*/
+    .content-wrap.left.right{
+        margin-left: 0px;
+    }
+    .sidebar.right.side-lr{
 
+    }
+    /* only left side */
+
+    /* only right side */
 }
 
 @media screen and (max-width:620px){

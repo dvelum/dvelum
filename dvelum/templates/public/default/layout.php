@@ -13,11 +13,14 @@ $blockManager = $this->get('blockManager');
 $layoutCls = '';
 $layoutSideLeft = $blockManager->hasBlocks('left-blocks');
 $layoutSideRight = $blockManager->hasBlocks('right-blocks');
+$sideCls = 'side-';
 if($layoutSideLeft){
     $layoutCls.=' left';
+    $sideCls.= 'l';
 }
 if($layoutSideRight){
     $layoutCls.=' right';
+    $sideCls.= 'r';
 }
 
 ?>
@@ -58,37 +61,37 @@ if($layoutSideRight){
 
         <div class="layout-wrap">
 
-            <?php
-            if($layoutSideLeft){
-                echo $this->renderTemplate(
-                    'public/default/side_left.php',
-                    [
-                        'blocks' => $blockManager->getBlocksHtml('left-blocks')
-                    ]
-                );
-            }
-            if($layoutSideRight){
-                echo $this->renderTemplate(
-                    'public/default/side_right.php',
-                    [
-                        'blocks' => $blockManager->getBlocksHtml('right-blocks')
-                    ]
-                );
-            }
-            ?>
-
             <div class="content-wrap  <?php echo $layoutCls?>">
-                <div id="content" class="content">
+                <section id="content" class=" content">
                     <?php
                     if(empty($page->func_code)){
                         echo '<h1>'.$page->page_title.'</h1>';
                     }
                     ?>
                     <div class="text"><?php echo $page->text;?></div>
-                </div>
+                </section>
             </div>
+            <?php
+            if($layoutSideLeft){
+                echo $this->renderTemplate(
+                    'public/default/side_left.php',
+                    [
+                        'blocks' => $blockManager->getBlocksHtml('left-blocks'),
+                        'sideCls' => $sideCls
+                    ]
+                );
+            }
 
-
+            if($layoutSideRight){
+                echo $this->renderTemplate(
+                    'public/default/side_right.php',
+                    [
+                        'blocks' => $blockManager->getBlocksHtml('right-blocks'),
+                        'sideCls' => $sideCls
+                    ]
+                );
+            }
+            ?>
         </div>
         <?php
         echo $this->renderTemplate(
