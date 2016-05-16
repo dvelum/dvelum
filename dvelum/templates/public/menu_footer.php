@@ -29,7 +29,7 @@ $createFooterNode = function (Tree $tree , $parent , Page $page , Tree $pagesTre
             $class.='active';
 
         if($v['data']['link_url'] !== false){
-            $s .= '<a  href="' . $v['data']['link_url'] . '" class="'.$class.'"">' . $v['data']['title'] . '</a>';
+            $s .= '<a  href="' . $v['data']['link_url'] . '" class="'.$class.'">' . $v['data']['title'] . '</a>';
         }else{
             $s .=  '<span class="item">' . $v['data']['title'] . '</span>';
         }

@@ -49,7 +49,7 @@ if($layoutSideRight){
 <body>
 <div class="page_wrap">
     <div class="page">
-        <?php
+<?php
           $t = new Template();
             echo $this->renderTemplate(
                 'public/default/header.php',
@@ -61,16 +61,17 @@ if($layoutSideRight){
 
         <div class="layout-wrap">
 
-            <div class="content-wrap  <?php echo $layoutCls?>">
+            <div class="content-wrap  <?php echo $layoutCls.' '.$sideCls?>">
                 <section id="content" class=" content">
                     <?php
                     if(empty($page->func_code)){
-                        echo '<h1>'.$page->page_title.'</h1>';
+                        echo '<header><h1>'.$page->page_title.'</h1></header>';
                     }
                     ?>
                     <div class="text"><?php echo $page->text;?></div>
                 </section>
             </div>
+
             <?php
             if($layoutSideLeft){
                 echo $this->renderTemplate(
@@ -92,7 +93,9 @@ if($layoutSideRight){
                 );
             }
             ?>
+
         </div>
+        <div class="clear"></div>
         <?php
         echo $this->renderTemplate(
             'public/default/footer.php',

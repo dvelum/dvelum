@@ -4,44 +4,49 @@ html,body{
     margin: 0;
     padding: 0;
     height: 100%;
+    position: relative;
+    min-height: 100%;
+    height: 100%
 }
 
 .page_wrap{
     width:100%;
     text-align: center;
     height:100%;
-
 }
 
 .page{
     max-width: 1280px;
     min-width: 300px;
     text-align: left;
-    display: inline-block;
+    display:inline-block;
     background-color: #fff;
-    min-height: calc(100vh - 250px);
+    height:100%;
 }
 
 .layout-wrap{
-    height:100%;
     padding-top: 60px;
+    min-width: 300px;
     width: 100%;
+    position: relative;
+    display: block;
+    min-height: calc(100vh - 240px);
 }
 
 .content-wrap{
-    width:100%;
     border: 1px solid #ccc;
     background-color: #00aaaa;
+    height:100%;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 .content-wrap.left{
-    margin-left:338px;
-    max-width: 960px;
+    margin-left:320px;
 }
 
 .content-wrap.right{
-    margin-right:340px;
-    max-width: 960px;
+    margin-right:320px;
 }
 
 .content-wrap.left.right{
@@ -50,6 +55,7 @@ html,body{
 
 .content-wrap .content{
     width:100%;
+    height:100%;
 }
 
 
@@ -82,22 +88,27 @@ html,body{
 .nav.top li a.active{color:#3b93c0;}
 
 
-
 /* Sidebar */
 .sidebar{
     width:320px;
     min-width: 320px;
     padding:0 5px 5px 5px;
+    box-sizing: border-box;
+    position: absolute;
+    top:50px;
+    bottom:0px;
+    height:100%;
 }
 
 .sidebar.left{
     float: left;
+    left:0px;
 }
 
 .sidebar.right{
     float: right;
+    right:0px;
 }
-
 
 .sep{
     height:1px;
@@ -111,7 +122,6 @@ html,body{
 /* Footer  */
 .footer{
     clear: both;
-    position: relative;
     height: 140px;
     padding:20px;
     background: url(../../../i/page.black.bg.jpg) 0 0 repeat;
@@ -165,7 +175,13 @@ html,body{
 }
 
 
-
+.clear{
+    height:1px;
+    margin:0;
+    overflow:hidden;
+    clear:both;
+    padding:0;
+}
 
 
 /* Blocks */
@@ -195,16 +211,42 @@ html,body{
 @media screen and (max-width:1110px){
     /* 2 sides*/
     .content-wrap.left.right{
-        margin-left: 0px;
+        margin: 5px;
+        min-width: calc(100vw - 34px);
+    }
+    .sidebar.left.side-lr{
+        padding: 5px;
+        position: relative;
+        float:left;
+        top: 0;
+        width:50%;
+
     }
     .sidebar.right.side-lr{
-
+        padding: 5px;
+        position: relative;
+        float:left;
+        top: 0;
+        width:50%;
     }
     /* only left side */
 
     /* only right side */
 }
 
-@media screen and (max-width:620px){
+@media screen and (max-width:640px){
+    /* 2 sides*/
+    .content-wrap.left.right{
 
+    }
+    .sidebar.left.side-lr{
+        float:none;
+        padding: 0px 5px 0 5px;
+        width: 100%
+    }
+    .sidebar.right.side-lr{
+        float:none;
+        padding: 0px 5px 0 5px;
+        width: 100%
+    }
 }
