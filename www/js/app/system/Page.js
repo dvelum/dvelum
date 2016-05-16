@@ -98,7 +98,13 @@ Ext.define('app.crud.page.Window',{
                     fieldLabel:appLang.USE_DEFAULT_BLOCKS_MAP,
                     name:"default_blocks",
                     xtype:"checkbox",
-                    inputValue:1
+                    inputValue:1,
+                    listeners:{
+                        change:{
+                            fn:this.defaultBlocksCheck,
+                            scope:this
+                        }
+                    }
                 },{
                     fieldLabel:appLang.IN_SITE_MAP,
                     name:"in_site_map",
@@ -184,6 +190,18 @@ Ext.define('app.crud.page.Window',{
             }
             me.updateLayout();
         }, me);
+    },
+    /**
+     * Use default block Map check
+     * @param field
+     * @param value
+     */
+    defaultBlocksCheck:function(field, value){
+        if(value){
+            this.blocksPanel.disable();
+        }else{
+            this.blocksPanel.enable();
+        }
     },
     /**
      * Check if page code is unique
