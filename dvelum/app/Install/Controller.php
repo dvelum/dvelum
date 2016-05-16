@@ -583,36 +583,6 @@ class Install_Controller {
             if(!$page->save(true, false))
                 return false;
 
-            //404 Page
-            $page = new Db_Object('Page');
-            $page->setValues(array(
-                'code'=>'404',
-                'is_fixed'=>1,
-                'html_title'=>'Error 404. Page not found',
-                'menu_title'=>'404',
-                'page_title'=>'We cannot find the page you are looking for.',
-                'meta_keywords'=>'',
-                'meta_description'=>'',
-                'parent_id'=>null,
-                'text' =>'We cannot find the page you are looking for.',
-                'func_code'=>'',
-                'order_no' => 2,
-                'show_blocks'=>true,
-                'published'=>true,
-                'published_version'=>0,
-                'editor_id'=>$userId,
-                'date_created'=>date('Y-m-d H:i:s'),
-                'date_updated'=>date('Y-m-d H:i:s'),
-                'author_id'=>$userId,
-                'blocks'=>'',
-                'theme'=>'default',
-                'date_published'=>date('Y-m-d H:i:s'),
-                'in_site_map'=>false,
-                'default_blocks'=>false
-            ));
-            if(!$page->save(true, false))
-                return false;
-
             return true;
 
         } catch (Exception $e){
