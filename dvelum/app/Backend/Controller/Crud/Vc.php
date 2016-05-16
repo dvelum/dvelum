@@ -293,7 +293,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $stagingUrl = $frontendRouter->findUrl(strtolower($object->getName()));
 
         if(! strlen($stagingUrl))
-            return Request::url(array('404'));
+            return Request::url(array('/'));
 
         return Request::url(array($stagingUrl,'item',$object->getId()));
     }
