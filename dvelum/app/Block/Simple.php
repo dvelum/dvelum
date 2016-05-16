@@ -15,6 +15,6 @@ class Block_Simple extends Block
 	{
 		$tpl = new Template();
 		$tpl->set('data' , $this->_config);
-		return $tpl->render(Application::getTemplatesPath() . $this->_template);
+		return $tpl->render('public/'. $this->_template);
 	}
 }

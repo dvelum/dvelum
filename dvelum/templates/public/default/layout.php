@@ -5,7 +5,21 @@ $resource->addCss('/css/public/main/reset.css' ,0);
 $resource->addCss('/css/public/main/style.css' ,100);
 $wwwRoot = Request::wwwRoot();
 
+/**
+ * @var BlockManager $blockManager
+ */
 $blockManager = $this->get('blockManager');
+
+$layoutCls = '';
+$layoutSideLeft = $blockManager->hasBlocks('left-blocks');
+$layoutSideRight = $blockManager->hasBlocks('right-blocks');
+if($layoutSideLeft){
+    $layoutCls.=' left';
+}
+if($layoutSideRight){
+    $layoutCls.=' right';
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -42,25 +56,36 @@ $blockManager = $this->get('blockManager');
             );
         ?>
 
-        <div class="content-wrap">
-
+        <div class="layout-wrap">
 
             <?php
-            echo $this->renderTemplate(
-                'public/default/sidebar.php',
-                [
-                    'blocks' => $blockManager->getBlocksHtml('right-blocks')
-                ]
-            );
+            if($layoutSideLeft){
+                echo $this->renderTemplate(
+                    'public/default/side_left.php',
+                    [
+                        'blocks' => $blockManager->getBlocksHtml('left-blocks')
+                    ]
+                );
+            }
+            if($layoutSideRight){
+                echo $this->renderTemplate(
+                    'public/default/side_right.php',
+                    [
+                        'blocks' => $blockManager->getBlocksHtml('right-blocks')
+                    ]
+                );
+            }
             ?>
 
-            <div id="content" class="content">
-                <?php
+            <div class="content-wrap  <?php echo $layoutCls?>">
+                <div id="content" class="content">
+                    <?php
                     if(empty($page->func_code)){
-                       echo '<h1>'.$page->page_title.'</h1>';
+                        echo '<h1>'.$page->page_title.'</h1>';
                     }
-                ?>
-                <div class="text"><?php echo $page->text;?></div>
+                    ?>
+                    <div class="text"><?php echo $page->text;?></div>
+                </div>
             </div>
 
 

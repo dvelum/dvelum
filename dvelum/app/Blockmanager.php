@@ -285,6 +285,20 @@ class Blockmanager
 	}
 
 	/**
+	 * Check the designated blocks
+	 * @param string $placeCode
+	 * @return bool
+	 */
+	public function hasBlocks($placeCode)
+	{
+		if(isset($this->_map[$placeCode]) && is_array($this->_map[$placeCode])){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	/**
 	 * Get cache key for the blocks located on the page
      * A system method
 	 * @param integer $id

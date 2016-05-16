@@ -1,17 +1,22 @@
 <?php
 return array(
-	'columns'=>2,
+	'columns'=>3,
 	'items'=>array(
 		'top-blocks'=>array(
-			'colspan'=>2,
+			'colspan'=>3,
 			'isElContainer'=>true,
             'width'=>600,
             'height'=>80,
 			'html'=>''
 		),
+        'left-blocks'=>array(
+            'isElContainer'=>true,
+            'width'=>200,
+            'height'=>200
+        ),
 		'content'=>array(
 			'isElContainer'=>false,
-		    'width'=>400,
+		    'width'=>200,
             'height'=>200
 		),
 		'right-blocks'=>array(
@@ -20,7 +25,7 @@ return array(
             'height'=>200
 		),
 		'bottom-blocks'=>array(
-			'colspan'=>2,
+			'colspan'=>3,
 			'isElContainer'=>true,
 		    'width'=>600,
             'height'=>80,

@@ -10,6 +10,7 @@ body{
     width:100%;
     text-align: center;
     height:100%;
+
 }
 
 .page{
@@ -23,19 +24,32 @@ body{
 
 }
 
-.content-wrap{
-    display: table;
+.layout-wrap{
     height:100%;
     padding-top: 60px;
     width: 100%;
-}
-.page .content{
-    padding:0px 10px 20px 15px;
-    max-width: 960px;
-    height:100%;
-    margin-right: 320px;
+    display: inline-block;
 }
 
+.content-wrap{
+    min-width: 200px;
+    max-width: 940px;
+}
+
+.content-wrap .content{
+    width:100%;
+    min-width: 300px;
+    padding:0px 15px 20px 15px;
+    background-color: #00a8c6;
+}
+
+.content-wrap.left{
+    margin-left:340px;
+}
+
+.content-wrap.right{
+    margin-right:370px;
+}
 
 
 .header_wrap{
@@ -69,11 +83,21 @@ body{
 
 /* Sidebar */
 .sidebar{
-    width:310px;
-    border-left: 1px solid #ccc9c3;
+    width:320px;
+    min-width: 320px;
     padding:5px;
     min-height: calc(100vh - 250px);
-    float:right;
+    height:100%;
+}
+
+.sidebar.left{
+    border-right: 1px solid #ccc9c3;
+    float: left;
+}
+
+.sidebar.right{
+    border-left: 1px solid #ccc9c3;
+    float: right;
 }
 
 
@@ -82,7 +106,6 @@ body{
     border-bottom: 1px solid #ccc;
     margin:4px 0px 4px 0px;
 }
-
 
 
 
@@ -145,7 +168,30 @@ body{
 }
 
 
-@media screen and (max-width:768px){
-    .sidebar{display: table-footer-group;}
+
+
+
+/* Blocks */
+
+.blockItem{
+    background-color:#E6E6E6 ;
+    padding:5px;
 }
 
+.blockItem .blockContent{
+    padding:5px;
+    background-color: #fff;
+}
+
+.blockItem .blockTitle{
+
+}
+
+
+@media screen and (max-width:920px){
+
+}
+
+@media screen and (max-width:620px){
+
+}
