@@ -60,17 +60,18 @@ if($layoutSideRight){
         ?>
 
         <div class="layout-wrap">
-
-            <div class="content-wrap  <?php echo $layoutCls.' '.$sideCls?>">
-                <section id="content" class=" content">
-                    <?php
-                    if(empty($page->func_code)){
-                        echo '<header><h1>'.$page->page_title.'</h1></header>';
-                    }
-                    ?>
-                    <div class="text"><?php echo $page->text;?></div>
-                </section>
-            </div>
+            <div class="layout">
+                <div class="content-wrap  <?php echo $layoutCls.' '.$sideCls?>">
+                    <section id="content" class=" content">
+                        <?php
+                        if(empty($page->func_code)){
+                            echo '<header><h1>'.$page->page_title.'</h1></header>';
+                        }
+                        ?>
+                        <div class="text"><?php echo $page->text;?></div>
+                    </section>
+                    <div class="clear"></div>
+                </div>
 
             <?php
             if($layoutSideLeft){
@@ -93,9 +94,8 @@ if($layoutSideRight){
                 );
             }
             ?>
-
+            </div>
         </div>
-        <div class="clear"></div>
         <?php
         echo $this->renderTemplate(
             'public/default/footer.php',

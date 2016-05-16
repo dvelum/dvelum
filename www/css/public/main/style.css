@@ -9,36 +9,47 @@ html,body{
     height: 100%
 }
 
+h1{
+    font-size: 22px;
+    font-weight: bold;
+}
+
 .page_wrap{
     width:100%;
     text-align: center;
     height:100%;
+
 }
 
 .page{
     max-width: 1280px;
     min-width: 300px;
+    width:100%;
     text-align: left;
     display:inline-block;
-    background-color: #fff;
     height:100%;
 }
 
 .layout-wrap{
-    padding-top: 60px;
+    padding-top: 50px;
     min-width: 300px;
     width: 100%;
     position: relative;
     display: block;
-    min-height: calc(100vh - 240px);
+    overflow: visible;
+    background-color: #fff;
+    min-height: calc(100vh - 210px);
+}
+.layout{
+    background-color: #fff;
+    padding-bottom: 10px;
 }
 
 .content-wrap{
-    border: 1px solid #ccc;
-    background-color: #00aaaa;
     height:100%;
-    padding: 10px;
+    padding: 0px 10px 10px 10px;
     margin-bottom: 10px;
+    display:block;
 }
 
 .content-wrap.left{
@@ -50,7 +61,7 @@ html,body{
 }
 
 .content-wrap.left.right{
-    max-width: 600px;
+
 }
 
 .content-wrap .content{
@@ -74,13 +85,7 @@ html,body{
     text-align: center;
 }
 
-.header{
-    width:100%;
-    text-align: left;
-    display: inline-block;
-    max-width: 1280px;
-    min-width: 300px;
-}
+.header{width:100%;  text-align: left;  display: inline-block;  max-width: 1280px;  min-width: 300px;}
 
 /* Top navigation */
 .nav.top li{list-style: none; line-height: 20px; float: left; padding: 0 0 0 10px;}
@@ -97,7 +102,7 @@ html,body{
     position: absolute;
     top:50px;
     bottom:0px;
-    height:100%;
+    background-color: #fff;
 }
 
 .sidebar.left{
@@ -122,7 +127,6 @@ html,body{
 /* Footer  */
 .footer{
     clear: both;
-    height: 140px;
     padding:20px;
     background: url(../../../i/page.black.bg.jpg) 0 0 repeat;
     color:#fff;
@@ -187,13 +191,11 @@ html,body{
 /* Blocks */
 
 .blockItem{
-    background-color:#E6E6E6 ;
     padding:5px;
 }
 
 .blockItem .blockContent{
     padding:5px;
-    background-color: #fff;
 }
 
 .blockContent ul, .blockContent ol{
@@ -205,6 +207,7 @@ html,body{
     font-weight: bold;
     height:24px;
     padding: 0px 5px 0px 5px;
+    border-bottom: 1px solid #ccc;
 }
 
 /* Media Queries */
@@ -229,16 +232,34 @@ html,body{
         top: 0;
         width:50%;
     }
-    /* only left side */
-
-    /* only right side */
+}
+@media screen and (max-width:959px){
+    /* Left side*/
+    .content-wrap.side-l{
+        margin: 5px;
+    }
+    .sidebar.left.side-l{
+        padding: 5px;
+        position: relative;
+        float:left;
+        top: 0;
+        width:100%;
+    }
+    /* Right side*/
+    .content-wrap.side-r{
+        margin: 5px;
+    }
+    .sidebar.side-r{
+        padding: 5px;
+        position: relative;
+        float:left;
+        top: 0;
+        width:100%;
+    }
 }
 
 @media screen and (max-width:640px){
     /* 2 sides*/
-    .content-wrap.left.right{
-
-    }
     .sidebar.left.side-lr{
         float:none;
         padding: 0px 5px 0 5px;

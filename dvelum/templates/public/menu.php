@@ -55,7 +55,6 @@ if(is_array($menuData) && !empty($menuData))
 ?>
 	</div>
 </div>
-<div class="sep"></div>
 
 
 

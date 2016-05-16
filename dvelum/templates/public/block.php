@@ -8,4 +8,3 @@ $data = $this->get('data');
 			<?php echo $data['text'];	?>
 	</div>
 </div>
-<div class="sep"></div>
