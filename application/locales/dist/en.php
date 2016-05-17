@@ -530,8 +530,6 @@
   'WRONG_REQUEST' => 'Invalid request.',
   'WIDTH' => 'Width',
   'SKIP_OPERATION' => 'Skip operation',
-  'en' => 'test_r',
-  'TEST_R' => 'test_r',
   'SET_DEFAULT' => 'Set default',
   'REFRESH' => 'Refresh',
   'DB_USE_ACL' => 'Use ACL',

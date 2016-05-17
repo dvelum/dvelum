@@ -106,7 +106,7 @@ Ext.define('app.crud.blocks.Window',{
                 xtype:"checkbox",
                 inputValue:1
             },{
-                fieldLabel:appLang.IS_SYSTEM,
+                fieldLabel:appLang.ATTACHED_FN,
                 name:'is_system',
                 xtype:'checkbox',
                 inputValue:1,
@@ -307,8 +307,8 @@ Ext.define('app.crud.blocks.Main',{
                     renderer:app.versionRenderer
                 },{
                     dataIndex:'is_system',
-                    text:appLang.IS_SYSTEM,
-                    width:60,
+                    text:appLang.ATTACHED_FN,
+                    width:140,
                     align:'center',
                     renderer:app.checkboxRenderer
                 },{

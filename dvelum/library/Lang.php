@@ -84,7 +84,7 @@ class Lang
 	 * @param mixed $src - dictionary source
 	 * @param integer $type - Config constant
 	 */
-	static public function addDictionaryLoader($name , $src , $type)
+	static public function addDictionaryLoader($name , $src , $type = Config::File_Array)
 	{
 		self::$_loaders[$name] = array('src'=> $src , 'type' =>$type);
 	}
@@ -103,7 +103,6 @@ class Lang
 		
 		if(isset(self::$_loaders[$name]))
 		{
-
 			switch(self::$_loaders[$name]['type']){
 				case Config::File_Array :
 					self::$_dictionaries[$name] = static::storage()->get(self::$_loaders[$name]['src'] , true , true);
@@ -111,7 +110,6 @@ class Lang
 					break;
 			}
 		}
-
 	}
 	
 	/**

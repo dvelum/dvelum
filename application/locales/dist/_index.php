@@ -530,8 +530,6 @@
   528 => 'WRONG_REQUEST',
   529 => 'WIDTH',
   530 => 'SKIP_OPERATION',
-  531 => 'en',
-  532 => 'TEST_R',
   533 => 'SET_DEFAULT',
   534 => 'REFRESH',
   535 => 'DB_USE_ACL',
@@ -573,5 +571,6 @@
   571 => 'CANT_ACCESS',
   572 => 'YOU_LOGGED_AS',
   573 => 'REINSTALL',
-  574 => 'LAST_VERSION'
+  574 => 'LAST_VERSION',
+  575 => 'STATIC_HTML',
 ); 
