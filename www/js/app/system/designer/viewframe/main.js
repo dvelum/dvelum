@@ -14,8 +14,7 @@ Ext.application({
 
 	},
 
-	launch:function()
-	{
+	launch:function() {
 		app.application = this;
 		app.viewFrame = Ext.create('Ext.container.Viewport', {
 			layout : 'fit',
@@ -24,10 +23,10 @@ Ext.application({
 		});
 
         if (window.addEventListener) {
-            window.addEventListener("message", app.application.onCommand);
+            window.addEventListener("message", function(event){app.application.onCommand(event);});
         } else {
             // IE8
-            window.attachEvent("onmessage", app.application.onCommand);
+            window.attachEvent("message", function(event){app.application.onCommand(event);});
         }
 
 		this.callParent();
@@ -35,7 +34,6 @@ Ext.application({
 	},
 
 	onCommand:function(event){
-
         var message = event.data;
 
         if (event.origin != window.location.origin) {
