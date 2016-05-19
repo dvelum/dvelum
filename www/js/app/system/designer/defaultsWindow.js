@@ -111,7 +111,15 @@ Ext.define('designer.defaultsWindow',{
 				if(Ext.isNumeric(item.get('value'))){
 					result[item.get('key')] = parseFloat(item.get('value'));
 				}else{
-					result[item.get('key')] = item.get('value');					
+					var val = item.get('value');
+					switch(val){
+						case 'true': val = true;
+							break;
+						case 'false': val = false;
+							break;
+						case 'null': val = null;
+					}
+					result[item.get('key')] = val;
 				}
 			}
 		});
