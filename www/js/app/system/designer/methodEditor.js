@@ -194,6 +194,7 @@ Ext.define('designer.methodEditorWindow',{
 	modal:false,
 	width:500,
 	height:600,
+	y:20,
 	layout:{
 		type: 'vbox',
 		align : 'stretch',

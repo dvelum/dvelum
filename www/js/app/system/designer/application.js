@@ -1270,7 +1270,7 @@ Ext.define('designer.application',{
 					panelClass = 'designer.properties.MediaItem';
 					break;
 				default    :
-					if (objectClass.indexOf('Field_', 0) != -1) {
+					if (objectClass.indexOf('Field_', 0) != -1 || objectClass == 'Form_Checkboxgroup') {
 						panelClass = 'designer.properties.Field';
 					} else {
 						panelClass = 'designer.properties.Panel';
