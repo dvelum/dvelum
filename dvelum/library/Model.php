@@ -58,7 +58,8 @@ class Model
     protected $_cacheTime;
 
     /**
-    * @var Current Cache_Interface
+     * Current Cache_Interface
+     * @var Cache_Interface
     */
     protected $_cache;
 
@@ -227,7 +228,7 @@ class Model
 
     /**
      * Get current db manager
-     * @return Db_Manager_Interfacee
+     * @return Db_Manager_Interface
      */
     public function getDbManager()
     {
@@ -335,8 +336,8 @@ class Model
 
     /**
      * Get the object data by the unique field using cache
-     * @param string field - field name
-     * @param string value - field value
+     * @param string $field - field name
+     * @param string $value - field value
      * @return array
      */
     public function getCachedItemByField($field , $value)
@@ -416,7 +417,7 @@ class Model
 
     /**
      * Add filters (where) to the query
-     * @param Db_Select | Zend_Seb_Select $sql
+     * @param Db_Select | Zend_Db_Select $sql
      * @param array $filters  the key - the field name, value
      * @return void
      */
@@ -450,7 +451,7 @@ class Model
     /**
      * Add author selection join to the query.
      * Used with rev_control objects
-     * @param Db_Select | Zend_Seb_Select $sql
+     * @param Db_Select | Zend_Db_Select $sql
      * @param string $fieldAlias
      * @return void
      */
@@ -466,7 +467,7 @@ class Model
     /**
      * Add editor selection join to the query.
      * Used with rev_control objects
-     * @param Db_Select | Zend_Seb_Select $sql
+     * @param Db_Select | Zend_Db_Select $sql
      * @param string $fieldAlias
      * @return void
      */
@@ -482,7 +483,7 @@ class Model
     /**
      * Add pagination parameters to a query
      * Used in CRUD-controllers for list pagination and sorting
-     * @param Db_Select | Zend_Seb_Select $sql
+     * @param Db_Select | Zend_Db_Select $sql
      * @param array $params — possible keys: start,limit,sort,dir
      * @return void
      */
@@ -578,7 +579,7 @@ class Model
      * @param string $query — optional string for search
      * @param mixed $fields — optional list of fields
      * @param string $author - optional key for storing entry author id
-     * @param strong $lastEditor  - optional key  for storing the last editor’s ID
+     * @param string $lastEditor  - optional key  for storing the last editor’s ID
      * @param array $joins - optional, inclusion config for Zend_Select:
      * array(
      *          array(
@@ -804,7 +805,7 @@ class Model
 
     /**
      * Add joins to the query
-     * @param Db_Select | Zend_Seb_Select $sql
+     * @param Db_Select | Zend_Db_Select $sql
      * @param array $joins   - config for ZendDb join method:
      * array(
      * 		array(
@@ -839,7 +840,7 @@ class Model
 
     /**
      * Add Like where couse for query
-     * @param Db_Select | Zend_Seb_Select $sql
+     * @param Db_Select | Zend_Db_Select $sql
      * @param string $query
      * @param string $alias - table name alias, optional
      */
