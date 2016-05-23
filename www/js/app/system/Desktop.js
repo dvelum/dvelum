@@ -97,8 +97,8 @@ Ext.define('app.cls.moduleLoader',{
     showModule:function(id){
         if(!Ext.isEmpty(app.__modules[id])) {
             var win = app.__modules[id];
-            if(!Ext.isEmpty(this.modules[id].isDesigner)){
-                win.setTitle(this.modules[id].title);
+            if(!Ext.isEmpty(this.modules[id].layout.isDesigner)){
+                win.setTitle(this.modules[id].layout.title);
             }
             app.desktop.add(win);
             win.show().toFront();
