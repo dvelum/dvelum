@@ -96,7 +96,7 @@ Ext.define('app.crud.reports.Main',{
             this.tbar.push(this.buttonCreate,this.buttonConfig);
         }
 
-        this.reportResult = Ext.create('app.report.Results',{});
+        this.reportResult = Ext.create('app.report.Results',{controllerUrl:this.controllerUrl});
         this.items = [this.reportResult];
         this.callParent(arguments);
     },
