@@ -721,15 +721,25 @@ class Model
 
     /**
      * Get a list of records
-     * @param array $params - optional parameters array('start'=>0,'limit'=>10,'sort'=>'fieldname','dir'=>'DESC')
-     * @param array $filters - optional filters (where) the key - the field name, value
-     * @param array $fields - optional  list of fields to retrieve
+     * @param array|boolean $params - optional parameters array('start'=>0,'limit'=>10,'sort'=>'fieldname','dir'=>'DESC')
+     * @param array|boolean $filters - optional filters (where) the key - the field name, value
+     * @param array|string $fields - optional  list of fields to retrieve
      * @param boolean $useCache - use hard cache
-     * @param string $query - optional string for search (since 0.9)
+     * @param string|boolean $query - optional string for search (since 0.9)
      * it is necessary to remember that hard cache gets invalidated only at the end of its life cycle (configs / main.php),
      * is used in case update triggers can’t be applied
+     * @param array|boolean $joins - optional, inclusion config for Zend_Select:
+     * array(
+     *          array(
+     *                'joinType'=> joinLeft/left, joinRight/right, joinInner/inner
+     *                'table' => array / string
+     *                'fields => array / string
+     *                'condition'=> string
+     *          )...
+     * )
+     * @return array
      */
-    public function getList($params = false, $filters = false , $fields = '*' , $useCache = false , $query = false)
+    public function getList($params = false, $filters = false , $fields = '*' , $useCache = false , $query = false, $joins = false)
     {
         $data = false;
 
@@ -751,6 +761,9 @@ class Model
 
             if($query && strlen($query))
                 $this->_queryAddQuery($sql , $query);
+
+            if(is_array($joins) && !empty($joins))
+                $this->_queryAddJoins($sql, $joins);
 
             $data = $this->_dbSlave->fetchAll($sql);
 
