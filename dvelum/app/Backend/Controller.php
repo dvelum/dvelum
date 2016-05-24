@@ -350,6 +350,9 @@ abstract class Backend_Controller extends Controller
             $manager = new Designer_Manager($this->_configMain);
             $projectData =  $manager->compileDesktopProject($moduleCfg['designer'],'app.__modules.'.$this->_module , $this->_module);
             $projectData['isDesigner'] = true;
+            $modulesManager = new Modules_Manager();
+            $modulesList = $modulesManager->getList();
+            $projectData['title'] = (isset($modulesList[$this->_module])) ? $modulesList[$this->_module]['title'] : '';
         }
         else
         {
