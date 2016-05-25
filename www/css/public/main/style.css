@@ -43,6 +43,7 @@ h1{
 .layout{
     background-color: #fff;
     padding-bottom: 10px;
+    width: 100%;
 }
 
 .content-wrap{
@@ -186,8 +187,42 @@ h1{
     clear:both;
     padding:0;
 }
+/* Page navigation */
+.pager{margin:15px 0;clear:both;}
+.pager a{text-decoration:none;}
+.pager .pager_item, .pager .pager_item_selected{display:inline;background:#333;color:#fff;padding:3px 8px;margin:0 4px;vertical-align:middle;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;-webkit-box-shadow:0 0 2px #999;-moz-box-shadow:0 0 2px #999;box-shadow:0 0 2px #999;}
+.pager .pager_item:hover{-webkit-box-shadow:0 0 4px #3484B4;-moz-box-shadow:0 0 4px #3484B4;box-shadow:0 0 4px #3484B4;color:#3484B4;opacity:0.8;}
+.pager .pager_item_selected{background:none;border:1px solid #333;color:#333;}
+.pager{text-align:center;}
 
-
+#scrollUp{float:right;padding:0px 2px 2px 2px;background:#fff;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;margin-top:10px;margin-right:2px;display:none;cursor:pointer;color:#000;text-shadow:0 0 1px #000;font-size:19px;line-height:19px;width:20px;z-index:10000;border:1px solid #000;text-align:center;vertical-align:middle;}
+#scrollUp:hover{background-color:#ffffff;background-image:linear-gradient(#fff , #B6F1FF);-webkit-box-shadow:0 0 2px #ccc;-moz-box-shadow:0 0 2px #ccc;box-shadow:0 0 2px #ccc;}
+#mobileMenuBtn{
+    float:right;
+    padding:0px 2px 2px 2px;
+    background:#fff;
+    border-radius:4px;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    margin-top:3px;
+    margin-right:2px;
+    display:none;
+    cursor:pointer;
+    width:20px;
+    height:19px;
+    z-index:10000;
+    border:1px solid #000;
+    display:none;
+    background-position: center;
+    background-image: url('../../../i/menu.png');
+    background-repeat: no-repeat;
+}
+#mobileMenuBtn:hover{
+    background-image: url('../../../i/menu.png'),linear-gradient(#fff , #B6F1FF);
+    -webkit-box-shadow:0 0 2px #ccc;
+    -moz-box-shadow:0 0 2px #ccc;
+    box-shadow:0 0 2px #ccc;
+}
 /* Blocks */
 
 .blockItem{
@@ -209,6 +244,7 @@ h1{
     padding: 0px 5px 0px 5px;
     border-bottom: 1px solid #ccc;
 }
+
 
 /* Media Queries */
 @media screen and (max-width:1110px){
@@ -270,4 +306,12 @@ h1{
         padding: 0px 5px 0 5px;
         width: 100%
     }
+}
+
+@media screen and (max-width:386px){
+    #topBlocks{display:none;}
+    .header_wrap {box-shadow:none;background:none;}
+    .header{height: 30px; background-color: #0a001f}
+    #mobileMenuBtn{display:block; }
+    #scrollUp{margin-top:3px}
 }
