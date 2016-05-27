@@ -3,6 +3,7 @@ $page = $this->get('page');
 $resource = Resource::getInstance();
 $resource->addCss('/css/public/main/reset.css' ,0);
 $resource->addCss('/css/public/main/style.css' ,100);
+$resource->addJs('/js/app/frontend/common.js',10);
 $wwwRoot = Request::wwwRoot();
 
 /**

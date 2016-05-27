@@ -309,9 +309,30 @@ h1{
 }
 
 @media screen and (max-width:386px){
-    #topBlocks{display:none;}
-    .header_wrap {box-shadow:none;background:none;}
-    .header{height: 30px; background-color: #0a001f}
+    #topBlocks{
+        display:none;
+    }
+    .header_wrap {
+        box-shadow:none;
+        background: #0a001f;
+        position: fixed;
+        top:0px;
+        left:0px;
+        width:100%;
+        overflow: visible;
+        height:30px;
+    }
+    .header ul{
+        background: #0a001f;
+        width:100%;
+        float:left;
+        padding:10px;
+    }
+    .nav.top li{
+        line-height: 16px;
+        height: 30px;
+        float: none;
+    }
     #mobileMenuBtn{display:block; }
     #scrollUp{margin-top:3px}
 }

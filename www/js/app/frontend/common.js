@@ -33,6 +33,18 @@ document.addEventListener("DOMContentLoaded", function() {
     scrollUp.addEventListener('click', function(){
         smoothScrollTo(0, 500);
     });
+    var menuBtn =  document.getElementById("mobileMenuBtn");
+     menuBtn.addEventListener('click', function(){
+        var topBlocks = document.getElementById("topBlocks");
+        if(!topBlocks){
+             return;
+        }
+        if(topBlocks.style.display !== 'block'){
+            topBlocks.style.display = 'block';
+        }else{
+            topBlocks.style.display = 'none';
+        }
+    });
     window.addEventListener('scroll',function() {
         var scrolled = window.pageYOffset || document.documentElement.scrollTop;
 
