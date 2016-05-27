@@ -227,7 +227,7 @@ class Template
      * @param bool|true $useCache
      * @return string
      */
-    public function renderTemplate($templatePath, array $data, $useCache = true)
+    public function renderTemplate($templatePath, array $data = [], $useCache = true)
     {
         $tpl = new self();
         $tpl->setData($data);

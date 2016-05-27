@@ -16,8 +16,8 @@ class Upload
 
 	/**
 	 * Auto create dirs for upload
-	 *
 	 * @param string $path
+	 * @return boolean
 	 */
 	static public function createDirs($root , $path)
 	{
@@ -35,15 +35,14 @@ class Upload
 	}
 
 	/**
-	 * Identify filetype
-	 *
+	 * Identify file type
 	 * @param string $extension
 	 * @return mixed string / false
 	 */
-	protected function _identifyType($exstension)
+	protected function _identifyType($extension)
 	{
 		foreach($this->_config as $k => $v)
-			if(in_array($exstension , $v['extensions']))
+			if(in_array($extension , $v['extensions'], true))
 				return $k;
 
 		return false;
