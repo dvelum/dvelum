@@ -14,7 +14,8 @@ Ext.define('designer.model.associationsModel', {
 		{name:'field',type:'string'},
 		{name:'model',type:'string'},
 		{name:'type',type:'string'}
-    ]
+	],
+	idProperty:'field'
 });
 
 Ext.define('designer.model.validationsModel', {
@@ -22,7 +23,8 @@ Ext.define('designer.model.validationsModel', {
     fields: [
     	{name:'field',type:'string'},
     	{name:'type',type:'string'}
-    ]
+    ],
+	idProperty:'field'
 });
 
 /**

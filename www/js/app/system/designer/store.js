@@ -376,7 +376,7 @@ Ext.define('designer.store.fieldsWindow',{
 			autoLoad:true,
 			proxy:{
 				type:'ajax',
-				url:app.createUrl([designer.controllerUrl ,'store','listfields']),
+				url:app.createUrl([designer.controllerUrl ,'store','storeFields']),
 				extraParams:{
 					object:this.objectName
 				},
