@@ -1,0 +1,6 @@
+/* Sidebar management*/
+@media screen and (max-width:799px){
+    .sidebar.right{
+        display: table-row;
+    }
+}

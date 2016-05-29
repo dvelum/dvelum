@@ -12,16 +12,15 @@ $wwwRoot = Request::wwwRoot();
 $blockManager = $this->get('blockManager');
 
 $layoutCls = '';
-$layoutSideLeft = $blockManager->hasBlocks('left-blocks');
-$layoutSideRight = $blockManager->hasBlocks('right-blocks');
-$sideCls = 'side-';
-if($layoutSideLeft){
-    $layoutCls.=' left';
-    $sideCls.= 'l';
-}
-if($layoutSideRight){
-    $layoutCls.=' right';
-    $sideCls.= 'r';
+$hasSideLeft = $blockManager->hasBlocks('left-blocks');
+$hasSideRight = $blockManager->hasBlocks('right-blocks');
+
+if($hasSideLeft && !$hasSideRight){
+    $resource->addCss('/css/public/main/side-left.css' ,101);
+}elseif(!$hasSideLeft && $hasSideRight){
+    $resource->addCss('/css/public/main/side-right.css' ,101);
+}elseif($hasSideLeft && $hasSideRight){
+    $resource->addCss('/css/public/main/side-left-right.css' ,101);
 }
 
 ?>
@@ -48,7 +47,7 @@ if($layoutSideRight){
     <?php  echo $this->get('resource')->includeJsByTag(true , false, 'head'); ?>
 </head>
 <body>
-<div class="page_wrap">
+
     <div class="page">
 <?php
           $t = new Template();
@@ -62,7 +61,19 @@ if($layoutSideRight){
 
         <div class="layout-wrap">
             <div class="layout">
-                <div class="content-wrap  <?php echo $layoutCls.' '.$sideCls?>">
+
+                <?php
+                if($hasSideLeft){
+                    echo $this->renderTemplate(
+                        'public/default/side_left.php',
+                        [
+                            'blocks' => $blockManager->getBlocksHtml('left-blocks')
+                        ]
+                    );
+                }
+                ?>
+
+                <div class="content-wrap">
                     <section id="content" class=" content">
                         <?php
                         if(empty($page->func_code)){
@@ -71,43 +82,32 @@ if($layoutSideRight){
                         ?>
                         <div class="text"><?php echo $page->text;?></div>
                     </section>
-                    <div class="clear"></div>
                 </div>
 
-            <?php
-            if($layoutSideLeft){
-                echo $this->renderTemplate(
-                    'public/default/side_left.php',
-                    [
-                        'blocks' => $blockManager->getBlocksHtml('left-blocks'),
-                        'sideCls' => $sideCls
-                    ]
-                );
-            }
-
-            if($layoutSideRight){
-                echo $this->renderTemplate(
-                    'public/default/side_right.php',
-                    [
-                        'blocks' => $blockManager->getBlocksHtml('right-blocks'),
-                        'sideCls' => $sideCls
-                    ]
-                );
-            }
-            ?>
+                <?php
+                if($hasSideRight){
+                    echo $this->renderTemplate(
+                        'public/default/side_right.php',
+                        [
+                            'blocks' => $blockManager->getBlocksHtml('right-blocks')
+                        ]
+                    );
+                }
+                ?>
             </div>
         </div>
-        <?php
-        echo $this->renderTemplate(
-            'public/default/footer.php',
-            [
-                'blocks' => $blockManager->getBlocksHtml('bottom-blocks')
-            ]
-        );
-        ?>
-    </div><!--end:page-->
-</div><!--end:page_wrap-->
+        <div class="footer-wrap">
 
+            <?php
+            echo $this->renderTemplate(
+                'public/default/footer.php',
+                [
+                    'blocks' => $blockManager->getBlocksHtml('bottom-blocks')
+                ]
+            );
+            ?>
+        </div>
+    </div><!--end:page-->
 <?php echo $this->get('resource')->includeJs(true , true); ?>
 </body>
 </html>

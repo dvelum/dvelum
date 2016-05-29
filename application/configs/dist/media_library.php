@@ -28,8 +28,8 @@
                         ),
                     'large' =>
                         array (
-                            0 => 640,
-                            1 => 325,
+                            0 => 800,
+                            1 => 400,
                         ),
                 ),
             'thumb_types' =>
@@ -37,7 +37,7 @@
                     'icon' => 'crop',
                     'thumbnail' => 'crop',
                     'medium' => 'crop',
-                    'large' => 'resize_fit',
+                    'large' => 'crop',
                 ),
         ),
     'audio' =>

@@ -1,3 +1,3 @@
-<div class="sidebar right <?php echo $this->get('sideCls');?>">
+<div class="sidebar right">
     <?php echo $this->get('blocks');?>
 </div>
