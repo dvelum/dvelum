@@ -59,7 +59,6 @@ if($hasSideLeft && !$hasSideRight){
             );
         ?>
 
-        <div class="layout-wrap">
             <div class="layout">
 
                 <?php
@@ -95,19 +94,15 @@ if($hasSideLeft && !$hasSideRight){
                 }
                 ?>
             </div>
-        </div>
-        <div class="footer-wrap">
-
-            <?php
-            echo $this->renderTemplate(
-                'public/default/footer.php',
-                [
-                    'blocks' => $blockManager->getBlocksHtml('bottom-blocks')
-                ]
-            );
-            ?>
-        </div>
     </div><!--end:page-->
+    <?php
+    echo $this->renderTemplate(
+        'public/default/footer.php',
+        [
+            'blocks' => $blockManager->getBlocksHtml('bottom-blocks')
+        ]
+    );
+    ?>
 <?php echo $this->get('resource')->includeJs(true , true); ?>
 </body>
 </html>
