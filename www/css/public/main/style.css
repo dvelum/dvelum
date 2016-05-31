@@ -22,7 +22,7 @@ h1{font-size: 22px;  font-weight: bold;}
     margin: auto;
     padding-top:44px;
     flex: 1 0 auto;
-
+    width: 100%;
 }
 
 .layout{
