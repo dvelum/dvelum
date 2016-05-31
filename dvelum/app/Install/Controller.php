@@ -495,17 +495,22 @@ class Install_Controller {
 
     protected function _prepareRecords($adminPass , $adminEmail, $adminName)
     {
+        $objectToClean = [
+            'User',
+            'Group',
+            'Permissions',
+            'Page',
+            'Blocks',
+            'Menu',
+            'Menu_Item'
+        ];
+
         try
         {
-            $toCleanModels = array(
-                Model::factory('User'),
-                Model::factory('Group'),
-                Model::factory('Permissions'),
-                Model::factory('Page')
-            );
-
-            foreach ($toCleanModels as $model)
+            foreach ($objectToClean as $object){
+                $model = Model::factory($object);
                 $model->getDbConnection()->delete($model->table());
+            }
 
             // Add group
             $group = new Db_Object('Group');
@@ -570,22 +575,184 @@ class Install_Controller {
                 'show_blocks'=>true,
                 'published'=>true,
                 'published_version'=>0,
-                'editor_id'=>$userId,
                 'date_created'=>date('Y-m-d H:i:s'),
                 'date_updated'=>date('Y-m-d H:i:s'),
-                'author_id'=>$userId,
                 'blocks'=>'',
                 'theme'=>'default',
                 'date_published'=>date('Y-m-d H:i:s'),
                 'in_site_map'=>false,
-                'default_blocks'=>false
+                'default_blocks'=>true
             ));
-            if(!$page->save(true, false))
+
+            if(!$page->saveVersion() || !$page->publish())
                 return false;
+
+
+            // add menu
+
+            $topMenu = Db_Object::factory('Menu');
+            $topMenu->setValues([
+                'code' =>'headerMenu',
+                'title' => 'Header Menu'
+            ]);
+
+            if(!$topMenu->save())
+                return false;
+
+            $topMenuItem = Db_Object::factory('Menu_Item');
+            $topMenuItem->setValues([
+                'page_id'=>$page->getId(),
+                'title'=>'Index',
+                'menu_id'=>$topMenu->getId(),
+                'order'=>0,
+                'parent_id'=>null,
+                'tree_id'=>1,
+                'link_type'=>'page',
+                'published'=>1
+            ]);
+
+            if(!$topMenuItem->save())
+                return false;
+
+
+            $bottomMenu = Db_Object::factory('Menu');
+            $bottomMenu->setValues([
+                'code' =>'footerMenu',
+                'title' => 'Footer Menu'
+            ]);
+            if(!$bottomMenu->save())
+                return false;
+
+            $bottomMenuItem = Db_Object::factory('Menu_Item');
+            $bottomMenuItem->setValues([
+                'page_id'=>$page->getId(),
+                'title'=>'Index',
+                'menu_id'=>$bottomMenu->getId(),
+                'order'=>0,
+                'parent_id'=>null,
+                'tree_id'=>1,
+                'link_type'=>'page',
+                'published'=>1
+            ]);
+            if(!$bottomMenuItem->save())
+                return false;
+
+
+            $leftMenu = Db_Object::factory('Menu');
+            $leftMenu->setValues([
+                'code' =>'menu',
+                'title' => 'Menu'
+            ]);
+            if(!$leftMenu->save())
+                return false;
+
+            $leftMenuItem = Db_Object::factory('Menu_Item');
+            $leftMenuItem->setValues([
+                'page_id'=>$page->getId(),
+                'title'=>'Index',
+                'menu_id'=>$leftMenu->getId(),
+                'order'=>0,
+                'parent_id'=>null,
+                'tree_id'=>1,
+                'link_type'=>'page',
+                'published'=>1
+            ]);
+            if(!$leftMenuItem->save())
+                return false;
+
+
+            // add blocks
+            $topMenuBlock = Db_Object::factory('Blocks');
+            $topMenuBlock->setValues([
+                'title' => 'Header Menu',
+                'published' =>1,
+                'show_title'=>false,
+                'published_version'=>0,
+                'is_system'=>1,
+                'sys_name'=>'Block_Menu_Top',
+                'is_menu' =>1,
+                'menu_id'=>$topMenu->getId(),
+                'last_version'=>0
+            ]);
+            if(!$topMenuBlock->saveVersion() || !$topMenuBlock->publish())
+                return false;
+
+
+            $bottomMenuBlock = Db_Object::factory('Blocks');
+            $bottomMenuBlock->setValues([
+                'title' => 'Footer Menu',
+                'published' =>1,
+                'show_title'=>false,
+                'published_version'=>0,
+                'is_system'=>1,
+                'sys_name'=>'Block_Menu_Footer',
+                'is_menu' =>1,
+                'menu_id'=>$bottomMenu->getId(),
+                'last_version'=>0
+            ]);
+            if(!$bottomMenuBlock->saveVersion() || !$bottomMenuBlock->publish())
+                return false;
+
+            $menuBlock = Db_Object::factory('Blocks');
+            $menuBlock->setValues([
+                'title' => 'Menu',
+                'published' =>1,
+                'show_title'=>true,
+                'published_version'=>0,
+                'is_system'=>1,
+                'sys_name'=>'Block_Menu',
+                'is_menu' =>1,
+                'menu_id'=>$leftMenu->getId(),
+                'last_version'=>0
+            ]);
+            if(!$menuBlock->saveVersion() || !$menuBlock->publish())
+                return false;
+
+            $testBlock = Db_Object::factory('Blocks');
+            $testBlock->setValues([
+                'title' => 'Test Block',
+                'published' =>1,
+                'show_title'=>true,
+                'published_version'=>0,
+                'text'=>'
+                    <ul>
+                        <li>Articles</li>
+                        <li>Pages</li>
+                        <li>Blocks</li>
+                        <li>Users</li>
+                    </ul>
+                ',
+                'is_system'=>false,
+                'is_menu' =>false,
+                'last_version'=>0
+            ]);
+            if(!$testBlock->saveVersion() || !$testBlock->publish())
+                return false;
+
+            $blockMapping = Model::factory('Blockmapping');
+            $blockMapping->clearMap(0);
+            $blockMap = [
+                'top-blocks' => [
+                    ['id'=>$topMenuBlock->getId()]
+                ],
+                'bottom-blocks' => [
+                    ['id'=>$bottomMenuBlock->getId()]
+                ],
+                'left-blocks' => [
+                    ['id'=>$menuBlock->getId()]
+                ],
+                'right-blocks' => [
+                    ['id'=>$testBlock->getId()]
+                ]
+            ];
+
+            foreach ($blockMap as $place=>$items)
+                $blockMapping->addBlocks(0 , $place , Utils::fetchCol('id', $items));
 
             return true;
 
         } catch (Exception $e){
+            Response::jsonError($e->getMessage());
             return false;
         }
     }
