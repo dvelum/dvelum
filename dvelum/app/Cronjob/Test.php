@@ -18,7 +18,7 @@ class Cronjob_Test extends Cronjob_Abstract
 
 		    echo $i."\n";
 		    // ... do something
-
+			$this->_stat['count'] = $i;
             $this->_stat['time'] = number_format((microtime(true)-$time) , 5).'s.';
             $this->checkTimeLimit();
 		}

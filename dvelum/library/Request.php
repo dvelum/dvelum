@@ -153,7 +153,7 @@ class Request
    /**
     * Get request part by index
     * The query string is divided into parts by the delimiter defined by the
-    * method Request::setDelimentr are indexed with  0
+    * method Request::setDelimiter are indexed with  0
     * @param integer $index — index of the part
     * @return mixed string / false
     */
@@ -164,6 +164,18 @@ class Request
        } else {
            return false;
        }
+    }
+
+    /**
+     * Get request parts
+     * The query string is divided into parts by the delimiter defined by the
+     * method Request::setDelimiter are indexed with  0
+     * @param integer $offset, optional default 0 - index to start from
+     * @return array
+     */
+    public function getPathParts($offset = 0)
+    {
+        return array_slice($this->_path, $offset);
     }
 
     /**

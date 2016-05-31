@@ -10,15 +10,13 @@ return array(
     	'user_id'=>1
     ),
     //============= Tasks =============
-    'clearmemory' =>array(
-      'adapter' => 'Cronjob_Clearmemory'
-    ),
-    'sometask'=>array(
+    'testTask'=>array(
       'property_1' => 10,
       'property_2' => 100,
       'adapter' => 'Task_Cronjob_Test'
     ),
-    'somejob'=>array(
+    //============ Jobs ===============
+    'testJob'=>array(
 	   'adapter' => 'Cronjob_Test'
     )
 );

@@ -21,6 +21,11 @@ class Frontend_Console_Controller extends Frontend_Controller
 	 * @var array
 	 */
 	protected $_cronConfig;
+	/**
+	 * Action routes
+	 * @var array $_actions
+	 */
+	protected $_actions;
 
 	public function __construct()
 	{
@@ -32,6 +37,13 @@ class Frontend_Console_Controller extends Frontend_Controller
 		parent::__construct();
 
 		$this->_configs = Config::storage()->get('cronjob.php');
+
+        // Prepare action routes
+		$actions = Config::storage()->get('console.php');
+		foreach($actions as $k=>$v){
+			$this->_actions[strtolower($k)] = $v;
+		}
+
 		$this->_cronConfig = $this->_configs->get('config');
 
 		if($this->_cronConfig['log_file'])
@@ -66,13 +78,17 @@ class Frontend_Console_Controller extends Frontend_Controller
 	}
 
    /**
-    * Launch background task
+    * Launch background task using file lock
+    * console command ./console.php /console/task/[task name]/[time limit]/[thread]
     * @param string $name
+    * @param array $params
     */
-    protected function _launchTask($name)
+    protected function _launchTask($name, $params)
     {
-        $thread = Request::getInstance()->getPart(3);
-        $timeLimit = intval(Request::getInstance()->getPart(2));
+        $thread = 0;
+
+        if(isset($params[1]))
+            $thread = $params[1];
 
         if($thread)
             $threadName = $name . $thread;
@@ -81,13 +97,13 @@ class Frontend_Console_Controller extends Frontend_Controller
 
         $appCfg = $this->_configs->get($name);
         $appCfg['thread'] = $thread;
+        $appCfg['params'] = $params;
 
         $adapter = $appCfg['adapter'];
 
-
-        if($timeLimit){
-            $this->_cronConfig['time_limit'] = $timeLimit;
-            $this->_cronConfig['intercept_limit'] = $timeLimit;
+        if(isset($params[0])){
+            $this->_cronConfig['time_limit'] = intval($params[0]);
+            $this->_cronConfig['intercept_limit'] = intval($params[0]);
         }
 
         $lock = new Cron_Lock($this->_cronConfig);
@@ -104,31 +120,36 @@ class Frontend_Console_Controller extends Frontend_Controller
 
         $tManager = Bgtask_Manager::getInstance();
         $tManager->setStorage($bgStorage);
+
         if($this->_log)
             $tManager->setLogger($this->_log);
+
         $tManager->launch(Bgtask_Manager::LAUNCHER_SILENT, $adapter, $appCfg);
 
         $lock->finish();
     }
 
     /**
-     * Launch job  using file lock
-     * console command ./console.php /console/[task]/[time limit]/[thread]
+     * Launch job using file lock
+     * console command ./console.php /console/job/[job name]/[time limit]/[thread]
      * @param string $name
+     * @param array $params - job params
      * @param string $method
      */
-    protected function _launchJob($name, $method = 'run')
+    protected function _launchJob($name, array $params, $method = 'run')
     {
     	$appCfg = $this->_configs->get($name);
-    	$time = Request::getInstance()->getPart(2);
-    	$thread = intval(Request::getInstance()->getPart(3));
 
-    	$appCfg['thread'] = $thread;
+        $appCfg['params'] = $params;
+    	$appCfg['thread'] = 0;
 
-    	if ($time) {
-    		$this->_cronConfig['time_limit'] = $time;
-    		$this->_cronConfig['intercept_timeout'] = $time;
+    	if (isset($params[0])) {
+    		$this->_cronConfig['time_limit'] =  intval($params[0]);
+    		$this->_cronConfig['intercept_timeout'] =  intval($params[0]);
     	}
+
+        if(isset($params[1]))
+            $appCfg['thread'] = $params[1];
 
     	$lock = new Cron_Lock($this->_cronConfig);
 
@@ -157,71 +178,55 @@ class Frontend_Console_Controller extends Frontend_Controller
 
     public function indexAction()
     {
-        Response::redirect('/');
-		Application::close();
-    }
-    /**
-     * Remove obsolete Bgtask data
-     */
-    public function clearmemoryAction()
-    {
-    	$this->_launchTask('clearmemory');
-    }
+        $request = Request::getInstance();
+		$action = strtolower($request->getPart(1));
 
-	/**
-	 * Generate new version fo documentation
-	 */
-    public function gendocAction()
-    {
-        if(!$this->_configMain->get('development')){
-        	echo 'Use development mode';
+		if(!empty($action) && isset($this->_actions[$action]))
+        {
+            $adapterCls = $this->_actions[$action];
+            if(!class_exists($adapterCls)){
+                trigger_error('Undefined Action Adapter ' . $adapterCls);
+            }
+            $adapter = new $adapterCls;
+            if(!$adapter instanceof Console_Action){
+                trigger_error($adapterCls.' is not instance of Console_Action');
+            }
+            $params = $request->getPathParts(2);
+            $adapter->init($this->_configMain, $params);
+        }else{
+            echo 'Undefined Action';
         }
-
-		ini_set('memory_limit' , '256M');
-
-		$part = intval(Request::getInstance()->getPart(2));
-
-        $sysdocsCfg = Config::storage()->get('sysdocs.php');
-        $sysdocs = new Sysdocs_Generator($sysdocsCfg);
-		$sysdocs->setAutoloaderPaths($this->_configMain->get('autoloader')['paths']);
-
-		if($part === 'locale'){
-			$sysdocs->migrateLocale();
-		}else{
-			$sysdocs->run();
-		}
-
-		Application::close();
+        Application::close();
     }
 
-	/**
-	 * Rebuild ORM objects
-	 */
-	public function ormMigrateAction()
-	{
-		$dbObjectManager = new Db_Object_Manager();
-		foreach($dbObjectManager->getRegisteredObjects() as $object)
-		{
-			echo 'build ' . $object . ' : ';
-			$builder = new Db_Object_Builder($object);
-			if($builder->build()){
-				echo 'OK';
-			}else{
-				echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
-			}
-			echo "\n";
-		}
-		Application::close();
-	}
+    public function taskAction()
+    {
+        $request = Request::getInstance();
+        $action = $request->getPart(2);
 
-    // Demo actions
-	public function sometaskAction()
-	{
-		$this->_launchTask('sometask');
-	}
+        if($this->_configs->offsetExists($action)){
+            $params = $request->getPathParts(3);
+            $this->_launchTask($action, $params);
+        }else{
+            echo 'Undefined Task';
+        }
+        Application::close();
+    }
 
-	public function somejobAction()
-	{
-		$this->_launchJob('somejob');
-	}
+    /**
+     * Launch Cron Job
+     */
+    public function jobAction()
+    {
+        $request = Request::getInstance();
+        $action = $request->getPart(2);
+
+        if($this->_configs->offsetExists($action)){
+            $params = $request->getPathParts(3);
+            $this->_launchJob($action, $params , 'run');
+        }else{
+            echo 'Undefined Job';
+        }
+        Application::close();
+    }
 }
