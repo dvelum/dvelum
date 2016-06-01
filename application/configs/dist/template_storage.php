@@ -4,7 +4,7 @@
  */
 return array(
     'paths' => array(
-        './dvelum/templates/',
         './application/templates/',
+        './dvelum/templates/',
     )
 );
