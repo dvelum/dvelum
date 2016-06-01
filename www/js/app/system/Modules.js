@@ -87,7 +87,7 @@ Ext.define('app.crud.modules.interfaceField',{
                 scope: me,
                 fileSelected:{
                     fn:function(value , record){
-                        me.setValue(record.get('path'));
+                        me.setValue(record.get('id'));
                         me.fireEvent('completeEdit', me.getValue() , me);
                     },
                     scope:this

@@ -126,13 +126,14 @@ class Designer_Manager
      */
     public function findWorkingCopy($relativeProjectPath)
     {
+        $configPath = $this->_designerConfig->get('configs');
         $paths = Config::storage()->getPaths();
         // In accordance with configs merge priority
         rsort($paths);
 
         foreach($paths as $path)
         {
-            $nodePath = str_replace('//', '/', $path.$relativeProjectPath);
+            $nodePath = str_replace('//', '/', $path . $configPath . $relativeProjectPath);
 
             if(file_exists($nodePath))
                 return $nodePath;

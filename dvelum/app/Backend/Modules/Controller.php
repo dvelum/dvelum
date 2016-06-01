@@ -272,6 +272,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 
 		$designerConfig = Config::storage()->get('designer.php');
 
+		$projectRelativePath = '/' . strtolower($object) . '.designer.dat';
 		$projectFile = Config::storage()->getWrite() . $designerConfig->get('configs') . strtolower($object) . '.designer.dat';
 		
 		if(file_exists($projectFile))
@@ -318,7 +319,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 			'active'=>true,
 			'dev'=>false,
 			'title'=>$objectConfig->getTitle(),
-			'designer'=> $projectFile,
+			'designer'=> $projectRelativePath,
 			'icon'=>'i/system/icons/default.png',
 			'in_menu'=>true
 		));

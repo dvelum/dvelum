@@ -388,7 +388,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
                 if(File::getExt($file) === '.js' || File::getExt($file) === '.css')
                     continue;
 
-                $projectFile = $manager->findWorkingCopy($this->_config->get('configs') . $file);
+                $projectFile = $manager->findWorkingCopy($file);
                 $subProject = Designer_Factory::loadProject($this->_config,  $projectFile);
                 $list[] = array('project' =>$subProject , 'file'=>$file);
                 $this->getRelatedProjects($subProject, $list);

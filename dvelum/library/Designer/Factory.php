@@ -303,7 +303,7 @@ class Designer_Factory
                         $includes[] = $file;
                     }else
                     {
-                        $projectFile = $manager->findWorkingCopy($designerConfig->get('configs') . $file);
+                        $projectFile = $manager->findWorkingCopy($file);
                         $subProject = Designer_Factory::loadProject($designerConfig,  $projectFile);
                         $projectKey = self::getProjectCacheKey($projectFile);
                         $files = self::getProjectIncludes($projectKey , $subProject , true , $replace , $debug);

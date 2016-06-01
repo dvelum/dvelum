@@ -333,7 +333,8 @@ abstract class Backend_Controller extends Controller
     protected function _runDesignerProject($project , $renderTo = false)
     {
         $manager = new Designer_Manager($this->_configMain);
-        $manager->renderProject($project , $renderTo, $this->_module);
+        $project = $manager->findWorkingCopy($project);
+        $manager->renderProject($project, $renderTo, $this->_module);
     }
     /**
      * Get desktop module info
@@ -348,7 +349,8 @@ abstract class Backend_Controller extends Controller
         if(strlen($moduleCfg['designer']))
         {
             $manager = new Designer_Manager($this->_configMain);
-            $projectData =  $manager->compileDesktopProject($moduleCfg['designer'],'app.__modules.'.$this->_module , $this->_module);
+            $project = $manager->findWorkingCopy($moduleCfg['designer']);
+            $projectData =  $manager->compileDesktopProject($project, 'app.__modules.'.$this->_module , $this->_module);
             $projectData['isDesigner'] = true;
             $modulesManager = new Modules_Manager();
             $modulesList = $modulesManager->getList();
