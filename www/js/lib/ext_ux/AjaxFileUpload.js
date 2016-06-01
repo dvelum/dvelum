@@ -17,7 +17,7 @@ Ext.define('Ext.ux.form.AjaxFileUploadField', {
     extend:'Ext.form.field.File',
     alias:'widget.ajaxfileuploadfield',
     buttomOnly:true,
-
+    name:'myFile',
     fileQueue:false,
     defaultIcon:'',
     url:'',
@@ -184,7 +184,7 @@ Ext.define('Ext.ux.form.AjaxFileUploadField', {
             xhr.open("POST", me.url, true);
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             var formData = new FormData();
-            formData.append('myFile', file);
+            formData.append(me.name, file);
             xhr.send(formData);
             return;
         }
@@ -200,7 +200,7 @@ Ext.define('Ext.ux.form.AjaxFileUploadField', {
             xhr.setRequestHeader("Cache-Control", "no-cache");
             // Request body
             var body = "--" + boundary + "\r\n";
-            body += "Content-Disposition: form-data; name='myFile'; filename='" + unescape( encodeURIComponent(file.name)) + "'\r\n";
+            body += "Content-Disposition: form-data; name='" + me.name + "'; filename='" + unescape( encodeURIComponent(file.name)) + "'\r\n";
             body += "Content-Type: application/octet-stream\r\n\r\n";
             body += reader.result + "\r\n";
             body += "--" + boundary + "--";

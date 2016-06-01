@@ -8,7 +8,7 @@
     'config' => 
     array (
       'bodyCls' => 'formBody',
-      'bodyPadding' => 5,
+      'bodyPadding' => 5.0,
       'fieldDefaults' => '{anchor:"100%",labelWidth:150}',
       'autoScroll' => true,
     ),

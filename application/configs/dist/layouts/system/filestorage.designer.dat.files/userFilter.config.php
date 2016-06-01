@@ -21,7 +21,7 @@
         array (
           'objectName' => 'user',
           'controllerUrl' => '[%wroot%][%admp%][%-%]filestorage[%-%]',
-          'minWidth' => 250,
+          'minWidth' => 250.0,
         ),
       ),
     ),

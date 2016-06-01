@@ -8,7 +8,7 @@
     'config' => 
     array (
       'text' => '[js:]appLang.CANCEL',
-      'minWidth' => 80,
+      'minWidth' => 80.0,
     ),
   ),
 ); 

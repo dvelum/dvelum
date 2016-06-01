@@ -11,7 +11,7 @@
       'scale' => 'large',
       'text' => '[js:] appLang.FILE_UPLOAD',
       'disabled' => false,
-      'height' => 36,
+      'height' => 36.0,
       'hidden' => true,
     ),
   ),

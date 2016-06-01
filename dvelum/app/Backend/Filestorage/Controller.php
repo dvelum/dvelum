@@ -7,6 +7,12 @@ class Backend_Filestorage_Controller extends Backend_Controller_Crud
 	protected $_listFields = array("path","date","ext","size","user_id","name","id");
     protected $_canViewObjects = array('user');
 
+    public function indexAction()
+    {
+        $certStorage = Model::factory('Filestorage')->getStorage();
+        $this->_resource->addInlineJs('app.filestorageConfig = '.json_encode($certStorage->getConfig()->get('uploader_config')).';');
+        parent::indexAction();
+    }
 	/**
      * Get list of items. Returns JSON  reply with
      * ORM object field data;

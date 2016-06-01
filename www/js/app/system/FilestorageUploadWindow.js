@@ -57,6 +57,10 @@ Ext.define('app.filestorage.UploadWindow', {
     uploaderConfig: null,
 
     uploadedRecords: null,
+    /**
+     * field name
+     */
+    fieldName:'file',
     layout: 'border',
 
     constructor: function (config) {
@@ -157,6 +161,7 @@ Ext.define('app.filestorage.UploadWindow', {
             buttonText: appLang.MULTIPLE_FILE_UPLOAD,
             buttonOnly: true,
             defaultIcon: app.wwwRoot + 'i/unknown.png',
+            name:this.fieldName,
             url: this.uploadUrl,
             buttonConfig: {
                 iconCls: 'upload-icon'
@@ -260,8 +265,6 @@ Ext.define('app.filestorage.UploadWindow', {
 
         this.items = [this.multipleUpload, this.multipleUploadedGrid];
         this.callParent();
-
-        this.addEvents('filesUploaded');
     },
     onMFilesImageLoaded: function (index, icon) {
         var store = this.multipleUploadedGrid.getStore();

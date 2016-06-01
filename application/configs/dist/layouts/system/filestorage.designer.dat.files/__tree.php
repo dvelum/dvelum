@@ -69,19 +69,19 @@
     'data' => 'dateFilterReset__menu.config.php',
     'order' => 0,
   ),
-  'fileUploadWindow_form' => 
-  array (
-    'id' => 'fileUploadWindow_form',
-    'parent' => 'fileUploadWindow',
-    'data' => 'fileUploadWindow_form.config.php',
-    'order' => 1,
-  ),
   'fileUploadWindow__docked' => 
   array (
     'id' => 'fileUploadWindow__docked',
     'parent' => 'fileUploadWindow',
     'data' => 'fileUploadWindow__docked.config.php',
     'order' => 0,
+  ),
+  'fileUploadWindow_form' => 
+  array (
+    'id' => 'fileUploadWindow_form',
+    'parent' => 'fileUploadWindow',
+    'data' => 'fileUploadWindow_form.config.php',
+    'order' => 1,
   ),
   'fileUploadWindow_bottom_toolbar' => 
   array (
@@ -97,13 +97,6 @@
     'data' => 'fileUploadWindow_footer_cancelBtn.config.php',
     'order' => 2,
   ),
-  'fileUploadWindow_footer_fill' => 
-  array (
-    'id' => 'fileUploadWindow_footer_fill',
-    'parent' => 'fileUploadWindow_bottom_toolbar',
-    'data' => 'fileUploadWindow_footer_fill.config.php',
-    'order' => 0,
-  ),
   'fileUploadWindow_footer_saveBtn' => 
   array (
     'id' => 'fileUploadWindow_footer_saveBtn',
@@ -111,12 +104,26 @@
     'data' => 'fileUploadWindow_footer_saveBtn.config.php',
     'order' => 1,
   ),
+  'fileUploadWindow_footer_fill' => 
+  array (
+    'id' => 'fileUploadWindow_footer_fill',
+    'parent' => 'fileUploadWindow_bottom_toolbar',
+    'data' => 'fileUploadWindow_footer_fill.config.php',
+    'order' => 0,
+  ),
   'fileUploadWindow_file' => 
   array (
     'id' => 'fileUploadWindow_file',
     'parent' => 'fileUploadWindow_form',
     'data' => 'fileUploadWindow_file.config.php',
     'order' => 0,
+  ),
+  'topToolbar_fill' => 
+  array (
+    'id' => 'topToolbar_fill',
+    'parent' => 'topToolbar',
+    'data' => 'topToolbar_fill.config.php',
+    'order' => 8,
   ),
   'uploadButton' => 
   array (
@@ -132,12 +139,19 @@
     'data' => 'searchField.config.php',
     'order' => 9,
   ),
-  'topToolbar_fill' => 
+  'sep2' => 
   array (
-    'id' => 'topToolbar_fill',
+    'id' => 'sep2',
     'parent' => 'topToolbar',
-    'data' => 'topToolbar_fill.config.php',
-    'order' => 8,
+    'data' => 'sep2.config.php',
+    'order' => 4,
+  ),
+  'dateFilterReset' => 
+  array (
+    'id' => 'dateFilterReset',
+    'parent' => 'topToolbar',
+    'data' => 'dateFilterReset.config.php',
+    'order' => 7,
   ),
   'dateFilter' => 
   array (
@@ -146,33 +160,12 @@
     'data' => 'dateFilter.config.php',
     'order' => 6,
   ),
-  'sep1' => 
-  array (
-    'id' => 'sep1',
-    'parent' => 'topToolbar',
-    'data' => 'sep1.config.php',
-    'order' => 1,
-  ),
   'dateFilterLabel' => 
   array (
     'id' => 'dateFilterLabel',
     'parent' => 'topToolbar',
     'data' => 'dateFilterLabel.config.php',
     'order' => 5,
-  ),
-  'sep2' => 
-  array (
-    'id' => 'sep2',
-    'parent' => 'topToolbar',
-    'data' => 'sep2.config.php',
-    'order' => 4,
-  ),
-  'userFilterLabel' => 
-  array (
-    'id' => 'userFilterLabel',
-    'parent' => 'topToolbar',
-    'data' => 'userFilterLabel.config.php',
-    'order' => 2,
   ),
   'userFilter' => 
   array (
@@ -181,12 +174,19 @@
     'data' => 'userFilter.config.php',
     'order' => 3,
   ),
-  'dateFilterReset' => 
+  'userFilterLabel' => 
   array (
-    'id' => 'dateFilterReset',
+    'id' => 'userFilterLabel',
     'parent' => 'topToolbar',
-    'data' => 'dateFilterReset.config.php',
-    'order' => 7,
+    'data' => 'userFilterLabel.config.php',
+    'order' => 2,
+  ),
+  'sep1' => 
+  array (
+    'id' => 'sep1',
+    'parent' => 'topToolbar',
+    'data' => 'sep1.config.php',
+    'order' => 1,
   ),
   'uploadButton__menu' => 
   array (

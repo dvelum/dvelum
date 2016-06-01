@@ -37,25 +37,6 @@
     ),
     'columns' => 
     array (
-      'date' => 
-      array (
-        'id' => 'date',
-        'parent' => 0,
-        'class' => 'Ext_Grid_Column_Date',
-        'name' => 'date',
-        'extClass' => 'Grid_Column_Date',
-        'order' => 0,
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'format' => 'd.m.Y H:i',
-            'align' => 'center',
-            'dataIndex' => 'date',
-            'text' => '[js:] appLang.UPLOAD_DATE',
-          ),
-        ),
-      ),
       'id' => 
       array (
         'id' => 'id',
@@ -63,7 +44,7 @@
         'class' => 'Ext_Grid_Column',
         'name' => 'id',
         'extClass' => 'Grid_Column',
-        'order' => 1,
+        'order' => 0,
         'state' => 
         array (
           'config' => 
@@ -72,7 +53,26 @@
             'dataIndex' => 'id',
             'text' => '[js:] appLang.FILE_ID',
             'itemId' => 'id',
-            'width' => 69,
+            'width' => 69.0,
+          ),
+        ),
+      ),
+      'date' => 
+      array (
+        'id' => 'date',
+        'parent' => 0,
+        'class' => 'Ext_Grid_Column_Date',
+        'name' => 'date',
+        'extClass' => 'Grid_Column_Date',
+        'order' => 1,
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'format' => 'd.m.Y H:i',
+            'align' => 'center',
+            'dataIndex' => 'date',
+            'text' => '[js:] appLang.UPLOAD_DATE',
           ),
         ),
       ),
@@ -90,7 +90,7 @@
           array (
             'dataIndex' => 'name',
             'text' => '[js:] appLang.FILE_NAME',
-            'width' => 297,
+            'width' => 297.0,
           ),
         ),
       ),
@@ -128,7 +128,7 @@
             'sortable' => false,
             'text' => '[js:] appLang.UPLOADED_BY',
             'itemId' => 'user_name',
-            'width' => 168,
+            'width' => 168.0,
           ),
         ),
       ),
@@ -147,7 +147,7 @@
             'align' => 'center',
             'text' => '[js:] appLang.ACTIONS',
             'itemId' => 'action',
-            'width' => 64,
+            'width' => 64.0,
           ),
           'actions' => 
           array (
