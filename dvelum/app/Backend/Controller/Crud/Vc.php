@@ -173,6 +173,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             try{
                 $obj = new Db_Object($this->_objectName , $id);
             }catch(Exception $e){
+                Model::factory($this->_objectName)->logError($e->getMessage());
                 return [];
             }
             $this->_checkOwner($obj);
