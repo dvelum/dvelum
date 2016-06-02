@@ -194,7 +194,7 @@ Ext.define('Ext.ux.form.AjaxFileUploadField', {
             xhr.open("POST", me.url);
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 
-            var boundary = "-xxxx-boundary-xxxx-";
+            var boundary = "____boundary_____";
             // Request Headers
             xhr.setRequestHeader("Content-Type", "multipart/form-data, boundary="+boundary);
             xhr.setRequestHeader("Cache-Control", "no-cache");
