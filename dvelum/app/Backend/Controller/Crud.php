@@ -120,15 +120,30 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      */
     public function loaddataAction()
     {
+        $result = $this->_getData();
+        if(empty($result))
+            Response::jsonError($this->_lang->get('CANT_EXEC'));
+        else
+            Response::jsonSuccess($result);
+    }
+
+    /**
+     * Prepare data for loaddataAction
+     * @return array
+     * @throws Exception
+     */
+    protected function _getData()
+    {
         $id = Request::post('id' , 'integer' , false);
 
-        if(! $id)
-            Response::jsonSuccess(array());
+        if(!$id)
+            return [];
 
         try{
             $obj = new Db_Object($this->_objectName , $id);
         }catch(Exception $e){
-            Response::jsonError($this->_lang->get('CANT_EXEC'));
+            Model::factory($this->_objectName)->logError($e->getMessage());
+            return [];
         }
 
         $data = $obj->getData();
@@ -144,10 +159,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             }
         }
         $data['id'] = $obj->getId();
-        /*
-         * Send response
-         */
-        Response::jsonSuccess($data);
+        return $data;
     }
 
     /**

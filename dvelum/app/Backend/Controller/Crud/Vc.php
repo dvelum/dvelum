@@ -158,11 +158,12 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         return $data;
     }
 
-   /**
-    * (non-PHPdoc)
-    * @see Backend_Controller_Crud::loaddataAction()
-    */
-    public function loaddataAction()
+    /**
+     * Prepare data for loaddataAction
+     * @return array
+     * @throws Exception
+     */
+    protected function _getData()
     {
         $id = Request::post('id' , 'integer' , false);
         $version = Request::post('version' , 'integer' , 0);
@@ -172,17 +173,29 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             try{
                 $obj = new Db_Object($this->_objectName , $id);
             }catch(Exception $e){
-                Response::jsonError($this->_lang->CANT_EXEC);
+                Model::factory($this->_objectName)->logError($e->getMessage());
+                return [];
             }
             $this->_checkOwner($obj);
             $data = $this->_loadData($obj , $version);
         }
-        /*
-         * Send response
-         */
-        Response::jsonSuccess($data);
+        return $data;
     }
 
+    /**
+     * Get ORM object data
+     * Sends a JSON reply in the result and
+     * closes the application
+     */
+    public function loaddataAction()
+    {
+        $result = $this->_getData();
+        if(empty($result))
+            Response::jsonError($this->_lang->get('CANT_EXEC'));
+        else
+            Response::jsonSuccess($result);
+    }
+    
     /**
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::deleteAction()
