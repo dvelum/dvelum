@@ -402,47 +402,28 @@ class Ext_Grid extends Ext_Object
 		
 		return $this->_config->__toString();
 	}
-	
+
 	/**
-	 * Move column
-	 * @param string $column
-	 * @param integer $from
-	 * @param integer $to
+	 * Sort Columns
+	 * @param array $data (column indexes)
 	 */
-	public function moveColumn($column , $from , $to)
-	{
-		if(!$this->columnExists($column))
-			return;
-			
-		$this->changeParent($column, 0);
-		$columns = $this->_columns->getChilds(0);	
+	public function updateColumnsSortingOrder(array $data)
+    {
+		$columns = $this->_columns->getItems();
+        $count = count($columns);
 
-		$order = 0;
-		
-		if($to > (sizeof($columns) -1))
-		    $to = (sizeof($columns) -1);
-		
-		
-		foreach ($columns as $item)
-		{			
-			$colName = $item['data']->getName();
+        // reset sorting orders
+        foreach($columns as $id=>$item){
+            $this->_columns->setItemOrder($id, $count);
+        }
 
-			if($order == $to){
-				$this->setItemOrder($column, $order);
-				$order++;
-				continue;
-			}
-			
-			if($colName !== $column)
-				$this->setItemOrder($colName , $order);
-					
-			$order++;	
-		}
-		$this->reindexColumns();
-		$data = $this->_columns->getChilds(0);
-		
+        foreach($data as $orderNo=>$colId) {
+            if($this->_columns->itemExists($colId)){
+                $this->_columns->setItemOrder($colId, $orderNo);
+            }
+        }
+        $this->_columns->sortItems();
 	}
-	
 	/**
 	 * Reindex columns (apply sort order)
 	 */

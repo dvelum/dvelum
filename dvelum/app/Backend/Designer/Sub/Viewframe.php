@@ -64,7 +64,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 				$cols = $object->getColumns();
 				if(!empty($cols))
 					foreach($cols as $column)
-						$column['data']->itemId = $column['id'];
+						$column['data']->projectColId = $column['id'];
 
 				$object->addListener('columnresize','{
 							 fn:function( ct, column, width,eOpts){

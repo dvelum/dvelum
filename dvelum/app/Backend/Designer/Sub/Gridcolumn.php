@@ -165,21 +165,24 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 	public function moveAction()
 	{
 		$object = Request::post('object', 'string', false);
-		$column = Request::post('column', 'string', false);
-		$from = Request::post('from', 'integer', false);
-		$to = Request::post('to', 'integer', false);
+		$order = Request::post('order', 'raw', '');
 
 		$project = $this->_getProject();
 
-		if($object===false || !$project->objectExists($object) || $column===false || $from===false || $to===false)
+		if($object===false || !$project->objectExists($object) || empty($order))
+			Response::jsonError($this->_lang->WRONG_REQUEST);
+
+		$order = json_decode($order);
+
+		if(!is_array($order))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
 		$object = $project->getObject($object);
 
-		if($object->getClass()!=='Grid' || !$object->columnExists($column))
+		if($object->getClass()!=='Grid')
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
-		$object->moveColumn($column , $from , $to);
+		$object->updateColumnsSortingOrder($order);
 
 		$this->_storeProject();
 
