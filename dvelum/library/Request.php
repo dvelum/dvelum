@@ -414,14 +414,17 @@ class Request
             'like' => Db_Select_Filter::LIKE,
             '=' => Db_Select_Filter::EQ,
             'eq'=> Db_Select_Filter::EQ,
-            'on' =>Db_Select_Filter::EQ,
+            'on' => Db_Select_Filter::EQ,
             'in' => Db_Select_Filter::IN,
             'ne' => Db_Select_Filter::NOT
         ];
 
         foreach ($filter as $data)
         {
-            $operator = $data['operator'];
+            if(!empty($data['operator']))
+                $operator = $data['operator'];
+            else
+                $operator = Db_Select_Filter::EQ;
             $value = $data['value'];
             $field = $data['property'];
 
