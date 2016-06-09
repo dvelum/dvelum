@@ -27,13 +27,6 @@
     'data' => 'changesStore.config.php',
     'order' => 1,
   ),
-  'objectsStore' => 
-  array (
-    'id' => 'objectsStore',
-    'parent' => '_Layout_',
-    'data' => 'objectsStore.config.php',
-    'order' => 2,
-  ),
   'mainPanelInstance' => 
   array (
     'id' => 'mainPanelInstance',
@@ -47,6 +40,13 @@
     'parent' => '_Layout_',
     'data' => 'dataStore.config.php',
     'order' => 0,
+  ),
+  'objectsStore' => 
+  array (
+    'id' => 'objectsStore',
+    'parent' => '_Layout_',
+    'data' => 'objectsStore.config.php',
+    'order' => 2,
   ),
   'changesGrid__docked' => 
   array (
@@ -90,26 +90,12 @@
     'data' => 'dataGrid.config.php',
     'order' => 1,
   ),
-  'userFilter' => 
+  'dateFilterLabel' => 
   array (
-    'id' => 'userFilter',
+    'id' => 'dateFilterLabel',
     'parent' => 'tools',
-    'data' => 'userFilter.config.php',
-    'order' => 3,
-  ),
-  'operationFilter' => 
-  array (
-    'id' => 'operationFilter',
-    'parent' => 'tools',
-    'data' => 'operationFilter.config.php',
-    'order' => 5,
-  ),
-  'objectFilter' => 
-  array (
-    'id' => 'objectFilter',
-    'parent' => 'tools',
-    'data' => 'objectFilter.config.php',
-    'order' => 7,
+    'data' => 'dateFilterLabel.config.php',
+    'order' => 0,
   ),
   'objectFilterLabel' => 
   array (
@@ -117,13 +103,6 @@
     'parent' => 'tools',
     'data' => 'objectFilterLabel.config.php',
     'order' => 6,
-  ),
-  'dateFilterLabel' => 
-  array (
-    'id' => 'dateFilterLabel',
-    'parent' => 'tools',
-    'data' => 'dateFilterLabel.config.php',
-    'order' => 0,
   ),
   'userFilterLabel' => 
   array (
@@ -145,5 +124,26 @@
     'parent' => 'tools',
     'data' => 'dateFilter.config.php',
     'order' => 1,
+  ),
+  'objectFilter' => 
+  array (
+    'id' => 'objectFilter',
+    'parent' => 'tools',
+    'data' => 'objectFilter.config.php',
+    'order' => 7,
+  ),
+  'userFilter' => 
+  array (
+    'id' => 'userFilter',
+    'parent' => 'tools',
+    'data' => 'userFilter.config.php',
+    'order' => 3,
+  ),
+  'operationFilter' => 
+  array (
+    'id' => 'operationFilter',
+    'parent' => 'tools',
+    'data' => 'operationFilter.config.php',
+    'order' => 5,
   ),
 ); 

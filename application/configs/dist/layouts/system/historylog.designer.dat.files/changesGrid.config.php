@@ -11,7 +11,7 @@
       'columnLines' => true,
       'viewConfig' => '{enableTextSelection:true}',
       'title' => '[js:] appLang.CHANGES',
-      'flex' => 1,
+      'flex' => 1.0,
       'isExtended' => false,
     ),
     'state' => 
@@ -43,7 +43,7 @@
           array (
             'dataIndex' => 'id',
             'text' => '[js:] appLang.FIELD',
-            'width' => 157,
+            'width' => 157.0,
           ),
         ),
       ),
@@ -61,7 +61,7 @@
           array (
             'dataIndex' => 'before',
             'text' => '[js:] appLang.BEFORE',
-            'width' => 354,
+            'width' => 354.0,
           ),
         ),
       ),
@@ -79,7 +79,7 @@
           array (
             'dataIndex' => 'after',
             'text' => '[js:] appLang.AFTER',
-            'width' => 369,
+            'width' => 369.0,
           ),
         ),
       ),

@@ -43,7 +43,7 @@
           array (
             'dataIndex' => 'title',
             'text' => '[js:] appLang.NAME',
-            'flex' => 1,
+            'flex' => 1.0,
             'itemId' => 'title',
           ),
         ),
@@ -65,7 +65,7 @@
             'renderer' => 'Ext_Component_Renderer_System_Checkbox',
             'text' => '[js:] appLang.SYSTEM',
             'itemId' => 'system',
-            'width' => 60,
+            'width' => 60.0,
           ),
         ),
       ),
@@ -83,7 +83,7 @@
           array (
             'align' => 'center',
             'itemId' => 'delete',
-            'width' => 30,
+            'width' => 30.0,
           ),
           'actions' => 
           array (

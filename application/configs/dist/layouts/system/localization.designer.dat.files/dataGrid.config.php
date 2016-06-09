@@ -52,7 +52,7 @@
             'dataIndex' => 'key',
             'text' => '[js:] appLang.KEY',
             'itemId' => 'id',
-            'width' => 228,
+            'width' => 228.0,
           ),
         ),
       ),
@@ -72,9 +72,9 @@
             'editor' => '',
             'renderer' => 'Ext_Component_Renderer_System_Multiline',
             'text' => '[js:] appLang.VALUE',
-            'flex' => 1,
+            'flex' => 1.0,
             'itemId' => 'title',
-            'width' => 1003,
+            'width' => 1003.0,
           ),
           'editor' => 
           array (
@@ -84,7 +84,7 @@
             array (
               'config' => 
               array (
-                'height' => 100,
+                'height' => 100.0,
               ),
             ),
           ),
@@ -107,7 +107,7 @@
             'renderer' => 'Ext_Component_Renderer_System_Checkbox',
             'text' => '[js:] appLang.SYNCHRONIZED',
             'itemId' => 'sync',
-            'width' => 94,
+            'width' => 94.0,
           ),
         ),
       ),
@@ -126,7 +126,7 @@
             'align' => 'center',
             'dataIndex' => 'id',
             'itemId' => 'actions',
-            'width' => 40,
+            'width' => 40.0,
           ),
           'actions' => 
           array (

@@ -11,7 +11,7 @@
       'columnLines' => true,
       'viewConfig' => '{enableTextSelection:true}',
       'title' => '[js:]appLang.HISTORY_LOG',
-      'flex' => 1,
+      'flex' => 1.0,
       'isExtended' => false,
     ),
     'state' => 
@@ -54,7 +54,7 @@
             'align' => 'center',
             'dataIndex' => 'date',
             'text' => '[js:] appLang.DATE',
-            'width' => 122,
+            'width' => 122.0,
           ),
         ),
       ),
@@ -72,7 +72,7 @@
           array (
             'dataIndex' => 'object_title',
             'text' => '[js:] appLang.OBJECT',
-            'width' => 112,
+            'width' => 112.0,
           ),
         ),
       ),
@@ -92,7 +92,7 @@
             'dataIndex' => 'record_id',
             'text' => '[js:] appLang.RECORD_ID',
             'itemId' => 'recordid',
-            'width' => 60,
+            'width' => 60.0,
           ),
         ),
       ),
@@ -112,7 +112,7 @@
             'dataIndex' => 'type',
             'renderer' => '',
             'text' => '[js:] appLang.ACTION',
-            'width' => 85,
+            'width' => 85.0,
           ),
           'renderer' => 
           array (
@@ -136,7 +136,7 @@
             'dataIndex' => 'user_name',
             'text' => '[js:] appLang.USER',
             'itemId' => 'user',
-            'width' => 135,
+            'width' => 135.0,
           ),
         ),
       ),

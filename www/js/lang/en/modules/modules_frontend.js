@@ -1,1 +1,1 @@
-var modules_frontendLang = {api:"API Controller [System]",console:"Cronjobs",dvelum_articles:"Articles",dvelum_articles_item:"Article page"};
+var modules_frontendLang = {console:"Cronjobs"};

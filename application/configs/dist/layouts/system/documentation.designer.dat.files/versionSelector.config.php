@@ -13,7 +13,7 @@
       'forceSelection' => true,
       'queryMode' => 'local',
       'name' => 'versionSelector',
-      'width' => 70,
+      'width' => 70.0,
     ),
   ),
 ); 

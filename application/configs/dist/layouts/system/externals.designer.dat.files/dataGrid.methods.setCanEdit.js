@@ -1,0 +1,1 @@
+this.canEdit = canEdit;

@@ -16,10 +16,10 @@
       'typeAhead' => false,
       'hideTrigger' => true,
       'name' => 'search',
-      'width' => 350,
+      'width' => 350.0,
       'fieldLabel' => '[js:] appLang.SEARCH',
       'labelAlign' => 'right',
-      'labelWidth' => 100,
+      'labelWidth' => 100.0,
     ),
   ),
 ); 

@@ -56,7 +56,7 @@
             'dataIndex' => 'title',
             'text' => '[js:] appLang.MODULE ',
             'itemId' => 'title',
-            'width' => 189,
+            'width' => 189.0,
           ),
         ),
       ),
@@ -77,7 +77,7 @@
             'scope' => 'me',
             'text' => '[js:] appLang.ALL',
             'itemId' => 'allcol',
-            'width' => 60,
+            'width' => 60.0,
           ),
         ),
       ),
@@ -180,7 +180,7 @@
             'renderer' => '',
             'text' => '[js:] appLang.ONLY_OWN',
             'itemId' => 'only_own',
-            'width' => 117,
+            'width' => 117.0,
           ),
           'renderer' => 
           array (

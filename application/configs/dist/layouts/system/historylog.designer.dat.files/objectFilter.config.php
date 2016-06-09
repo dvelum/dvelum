@@ -26,7 +26,7 @@
           'forceSelection' => true,
           'emptyText' => '[js:] appLang.ALL',
           'triggers' => '{ 	reset:{ 		hideOnReadOnly:true, 		cls: \'x-form-clear-trigger\', 		tooltip:appLang.RESET, 		handler: function(field,trigger,e) { 			field.reset(); 			e.stopEvent(); 		}, 	} }',
-          'minWidth' => 250,
+          'minWidth' => 250.0,
         ),
       ),
     ),

@@ -8,8 +8,8 @@
     'config' => 
     array (
       'layout' => 'fit',
-      'height' => 387,
-      'width' => 455,
+      'height' => 387.0,
+      'width' => 455.0,
       'isExtended' => true,
     ),
   ),

@@ -8,7 +8,7 @@
     'config' => 
     array (
       'text' => '[js:] appLang.SAVE',
-      'minWidth' => 70,
+      'minWidth' => 70.0,
     ),
   ),
 ); 

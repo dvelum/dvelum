@@ -9,9 +9,9 @@
     array (
       'title' => '[js:] appLang.ADD_RECORD',
       'layout' => 'fit',
-      'height' => 300,
+      'height' => 300.0,
       'modal' => true,
-      'width' => 300,
+      'width' => 300.0,
       'isExtended' => true,
     ),
   ),

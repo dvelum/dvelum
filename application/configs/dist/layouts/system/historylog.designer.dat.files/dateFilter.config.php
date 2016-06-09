@@ -22,7 +22,7 @@
         array (
           'format' => 'd.m.Y',
           'submitFormat' => 'Y-m-d',
-          'width' => 90,
+          'width' => 90.0,
         ),
       ),
     ),

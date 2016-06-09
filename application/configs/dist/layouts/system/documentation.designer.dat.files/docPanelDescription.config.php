@@ -8,7 +8,7 @@
     'config' => 
     array (
       'cls' => 'docs-description',
-      'flex' => 1,
+      'flex' => 1.0,
       'padding' => '10',
     ),
   ),

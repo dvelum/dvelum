@@ -52,7 +52,7 @@
           array (
             'align' => 'center',
             'itemId' => 'preaction',
-            'width' => 40,
+            'width' => 40.0,
           ),
           'actions' => 
           array (
@@ -94,7 +94,7 @@
             'align' => 'left',
             'dataIndex' => 'name',
             'text' => '[js:] appLang.NAME',
-            'flex' => 1,
+            'flex' => 1.0,
           ),
         ),
       ),
@@ -113,7 +113,7 @@
             'dataIndex' => 'group_title',
             'sortable' => false,
             'text' => '[js:] appLang.GROUP',
-            'width' => 158,
+            'width' => 158.0,
           ),
         ),
       ),
@@ -131,7 +131,7 @@
           array (
             'dataIndex' => 'login',
             'text' => '[js:] appLang.LOGIN',
-            'width' => 133,
+            'width' => 133.0,
           ),
         ),
       ),
@@ -149,7 +149,7 @@
           array (
             'dataIndex' => 'email',
             'text' => '[js:] appLang.EMAIL',
-            'width' => 129,
+            'width' => 129.0,
           ),
         ),
       ),
@@ -169,7 +169,7 @@
             'dataIndex' => 'admin',
             'renderer' => 'Ext_Component_Renderer_System_Checkbox',
             'text' => '[js:] appLang.ADMIN',
-            'width' => 99,
+            'width' => 99.0,
           ),
         ),
       ),
@@ -189,7 +189,7 @@
             'dataIndex' => 'enabled',
             'renderer' => 'Ext_Component_Renderer_System_Checkbox',
             'text' => '[js:] appLang.ENABLED',
-            'width' => 79,
+            'width' => 79.0,
           ),
         ),
       ),
@@ -207,7 +207,7 @@
           array (
             'align' => 'center',
             'itemId' => 'postaction',
-            'width' => 40,
+            'width' => 40.0,
           ),
           'actions' => 
           array (

@@ -8,7 +8,7 @@
     'config' => 
     array (
       'layout' => 'anchor',
-      'width' => 400,
+      'width' => 400.0,
     ),
   ),
 ); 

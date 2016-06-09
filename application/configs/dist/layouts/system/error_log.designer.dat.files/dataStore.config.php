@@ -9,7 +9,7 @@
     array (
       'autoLoad' => true,
       'model' => 'dataStoreModel',
-      'pageSize' => 50,
+      'pageSize' => 50.0,
       'remoteSort' => true,
       'sorters' => '[{"property":"date","direction":"DESC"}]',
       'isExtended' => true,

@@ -9,7 +9,7 @@
     array (
       'deferredRender' => false,
       'region' => 'west',
-      'width' => 300,
+      'width' => 300.0,
       'isExtended' => false,
     ),
   ),

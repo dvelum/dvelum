@@ -16,7 +16,7 @@
       'queryMode' => 'local',
       'triggerAction' => 'all',
       'name' => 'langSelector',
-      'width' => 120,
+      'width' => 120.0,
     ),
   ),
 ); 

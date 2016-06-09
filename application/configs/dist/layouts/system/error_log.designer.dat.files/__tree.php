@@ -1,11 +1,4 @@
 <?php return array (
-  '_Layout_' => 
-  array (
-    'id' => '_Layout_',
-    'parent' => false,
-    'data' => '_Layout_.config.php',
-    'order' => 1,
-  ),
   '_Component_' => 
   array (
     'id' => '_Component_',
@@ -13,12 +6,19 @@
     'data' => '_Component_.config.php',
     'order' => 0,
   ),
-  'dataStoreModel' => 
+  '_Layout_' => 
   array (
-    'id' => 'dataStoreModel',
-    'parent' => '_Component_',
-    'data' => 'dataStoreModel.config.php',
+    'id' => '_Layout_',
+    'parent' => false,
+    'data' => '_Layout_.config.php',
     'order' => 1,
+  ),
+  'dataStore' => 
+  array (
+    'id' => 'dataStore',
+    'parent' => '_Component_',
+    'data' => 'dataStore.config.php',
+    'order' => 0,
   ),
   'dataGrid' => 
   array (
@@ -27,12 +27,12 @@
     'data' => 'dataGrid.config.php',
     'order' => 2,
   ),
-  'dataStore' => 
+  'dataStoreModel' => 
   array (
-    'id' => 'dataStore',
+    'id' => 'dataStoreModel',
     'parent' => '_Component_',
-    'data' => 'dataStore.config.php',
-    'order' => 0,
+    'data' => 'dataStoreModel.config.php',
+    'order' => 1,
   ),
   'mainPanel' => 
   array (

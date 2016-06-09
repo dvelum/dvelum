@@ -14,7 +14,7 @@
       'queryMode' => 'local',
       'emptyText' => '[js:] appLang.LOCALIZATION_DICTIONARY',
       'name' => 'langSelectorCombo',
-      'width' => 250,
+      'width' => 250.0,
     ),
   ),
 ); 

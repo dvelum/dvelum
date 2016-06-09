@@ -57,4 +57,6 @@
   55 => 'WRITE_PERMISSIONS',
   56 => 'WARNING_ABOUT_RIGHTS',
   57 => 'WWWROOT',
+  58 => 'TOP_MENU',
+  59 => 'BOTTOM_MENU',
 ); 
