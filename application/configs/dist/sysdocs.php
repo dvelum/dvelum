@@ -13,7 +13,8 @@ return array(
     'skip'=>array(
         './application/configs',
         './application/locales',
-        './application/templates'
+        './application/templates',
+        './dvelum/templates'
     ),
     'hid_generator' => array(
         'adapter' => 'Sysdocs_Historyid',

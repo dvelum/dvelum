@@ -91,6 +91,8 @@ class Backend_Externals_Controller extends Backend_Controller
     {
         $this->_checkCanEdit();
 
+        $this->externalsManager->scan();
+
         $id = Request::post('id', Filter::FILTER_STRING, false);
 
         if(!$this->externalsManager->moduleExists($id)){
