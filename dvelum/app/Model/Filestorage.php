@@ -2,7 +2,7 @@
 class Model_Filestorage extends Model
 {
 	/**
-	 * Инициализировать файлохранилище
+	 * Get file storage
 	 * @return Filestorage_Abstract
 	 */
 	public function getStorage()
