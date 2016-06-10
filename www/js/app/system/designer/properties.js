@@ -276,21 +276,6 @@ Ext.define('designer.properties.Panel', {
                     return '...';
                 }
             },
-            'viewConfig': {
-                editor: Ext.create('Ext.form.field.Text', {
-                    listeners: {
-                        focus: {
-                            fn: function () {
-                                me.showDefaultsWindow('viewConfig');
-                            },
-                            scope: me
-                        }
-                    }
-                }),
-                renderer:function(){
-                    return '...';
-                }
-            },
             'extraParams': {
                 editor: Ext.create('Ext.form.field.Text', {
                     listeners: {
