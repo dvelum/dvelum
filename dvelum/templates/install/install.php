@@ -161,11 +161,6 @@
 									<div class="clear"></div>
 								</div>
 								<div class="formRow">
-									<label for="adm_email"><?php echo $this->dictionary->get('ADM_EMAIL'); ?>:</label>
-									<div class="installerInput"><input type="text" id="email" class="validate[required]" name="adm_email" /></div>
-									<div class="clear"></div>
-								</div>
-								<div class="formRow">
 									<label for="timezone"><?php echo $this->dictionary->get('TIMEZONE'); ?>:</label>
 									<select name="timezone">
 										<?php foreach (timezone_identifiers_list() as $v){
