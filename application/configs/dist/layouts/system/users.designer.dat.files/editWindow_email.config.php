@@ -7,7 +7,7 @@
   array (
     'config' => 
     array (
-      'allowBlank' => false,
+      'allowBlank' => true,
       'enableKeyEvents' => true,
       'vtype' => 'email',
       'name' => 'email',

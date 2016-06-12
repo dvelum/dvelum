@@ -16,12 +16,13 @@
       'db_default' => '',
       'is_search' => true,
     ),
-    'email' => 
+    'email' =>
     array (
       'type' => '',
       'unique' => 'email',
-      'db_isNull' => false,
-      'required' => true,
+      'db_isNull' => true,
+      'required' => false,
+      'validator' => '',
       'db_type' => 'varchar',
       'db_default' => '',
       'db_len' => 255,

@@ -414,7 +414,6 @@ class Install_Controller {
         $passConfirm = Request::post('pass_confirm', 'str', '');
         $lang = Request::post('lang', 'string', 'en');
         $timezone = Request::post('timezone', 'string', '');
-        $email = Request::post('adm_email', 'string', '');
         $adminpath = strtolower(Request::post('adminpath', 'string', ''));
         $user = Request::post('user',  'str', '');
 
@@ -429,9 +428,6 @@ class Install_Controller {
         $timezones = timezone_identifiers_list();
         if(empty($timezone) || !in_array($timezone, $timezones, true))
             $errors[] = $this->localization->get('TIMEZOME_REQUIRED');
-
-        if(!Validator_Email::validate($email))
-            $errors[] = $this->localization->get('INVALID_EMAIL');
 
         if(!Validator_Alphanum::validate($adminpath)  || is_dir('./dvelum/app/Backend/'.ucfirst($adminpath)))
             $errors[] = $this->localization->get('INVALID_ADMINPATH');
@@ -487,13 +483,13 @@ class Install_Controller {
         $app->setAutoloader($this->autoloader);
         $app->init();
 
-        if(!$this->_prepareRecords($pass, $email, $user))
+        if(!$this->_prepareRecords($pass, $user))
             Response::jsonError($this->localization->get('CANT_WRITE_TO_DB'));
 
         Response::jsonSuccess(array('link'=>$adminpath));
     }
 
-    protected function _prepareRecords($adminPass , $adminEmail, $adminName)
+    protected function _prepareRecords($adminPass, $adminName)
     {
         $objectToClean = [
             'User',
@@ -526,7 +522,6 @@ class Install_Controller {
 
             $user->setValues(array(
                     'name' =>'Admin',
-                    'email' => $adminEmail,
                     'login' => $adminName,
                     'pass' => password_hash($adminPass , PASSWORD_DEFAULT),
                     'enabled' => true,
