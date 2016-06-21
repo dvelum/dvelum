@@ -1,1 +1,0 @@
-var usersLang = {users:"Users",groups:"Groups",addUser:"Add user",status:"Status",deleteUser:"Delete user",admin:"Admin",groupName:"Group"};

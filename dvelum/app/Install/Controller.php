@@ -483,10 +483,21 @@ class Install_Controller {
         $app->setAutoloader($this->autoloader);
         $app->init();
 
+        $this->_compileLangs($mainConfig);
+
         if(!$this->_prepareRecords($pass, $user))
             Response::jsonError($this->localization->get('CANT_WRITE_TO_DB'));
 
         Response::jsonSuccess(array('link'=>$adminpath));
+    }
+
+    protected function _compileLangs($mainConfig){
+        $langManager = new Backend_Localization_Manager($mainConfig);
+        try{
+            $langManager->compileLangFiles();
+        }catch (Exception $e){
+            Response::jsonError($e->getMessage());
+        }
     }
 
     protected function _prepareRecords($adminPass, $adminName)
