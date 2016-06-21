@@ -1,1 +1,0 @@
-var modules_frontendLang = {console:"Cronjobs"};
