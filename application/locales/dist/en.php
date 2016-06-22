@@ -34,6 +34,8 @@
   'ATTACHED_FN' => 'Attached functionality',
   'ACCOUNT_TYPE' => 'Account Type',
   'AUTOFORMAT_SELECTION' => 'Autoformat selection',
+  'AUTH' => 'Authentication',
+  'AUTH_TYPE' => 'Auth type',
   'AUTHOR' => 'Author',
   'BACKEND_MODULES' => 'Backend modules',
   'BACKUP_RESTORE' => 'Backup restore',
