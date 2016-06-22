@@ -76,6 +76,7 @@
   'Backend_Reports_Controller' => './dvelum/app/Backend/Reports/Controller.php',
   'Backend_Router' => './dvelum/app/Backend/Router.php',
   'Backend_Tasks_Controller' => './dvelum/app/Backend/Tasks/Controller.php',
+  'Backend_User_Auth_Controller' => './dvelum/app/Backend/User/Auth/Controller.php',
   'Backend_User_Controller' => './dvelum/app/Backend/User/Controller.php',
   'Backend_Vcs_Controller' => './dvelum/app/Backend/Vcs/Controller.php',
   'Bgtask_Abstract' => './dvelum/library/Bgtask/Abstract.php',

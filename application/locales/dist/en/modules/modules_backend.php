@@ -18,5 +18,6 @@
   'Page' => 'Pages',
   'Reports' => 'Reports',
   'User' =>  'Users',
-  'Externals' => 'External Modules'
+  'Externals' => 'External Modules',
+  'User_Auth' => 'Auth settings',
 ); 
