@@ -271,7 +271,7 @@
     background-image: url('../../i/system/left.png');
 }
 .uploadIcon{
-	    background-image: url('../../i/system/upload.png');
+        background-image: url('../../i/system/upload.png');
 }
 
 .urlTriggerIcon{
@@ -285,17 +285,17 @@
 }
 
 .d_objectLink_input{
-	border:1px solid #ccc;
-	margin:0 2px 0 2px;
-	paddingl:0px 2px 0px 2px;
-	background-color:#F1F1F1;
+    border:1px solid #ccc;
+    margin:0 2px 0 2px;
+    padding:0px 2px 0px 2px;
+    background-color:#F1F1F1;
     height:22px;
 }
 
 .d_objectLink_input .x-form-display-field{
-	padding:2px;
-	margin:1px;
-	cursor:pointer;
+    padding:2px;
+    margin:1px;
+    cursor:pointer;
 }
 
 .module-wrap{
@@ -323,15 +323,20 @@
 }
 
 .module-wrap div.title{
-     font-weight: bold;
-     font-size: 13px;
-     /*  text-align: center;*/
+    font-weight: bold;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
  }
 
 .module-wrap span.controller{
     font-size: 11px;
     font-style: italic;
-    /*  text-align: center;*/
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .module-wrap div.icon{
