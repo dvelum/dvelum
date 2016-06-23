@@ -189,4 +189,14 @@
             'icon' => 'i/system/icons/external_modules.png',
             'id' => 'Externals',
         ),
-); 
+    'User_Auth' =>
+        array (
+            'dev' => false,
+            'active' => true,
+            'class' => 'Backend_User_Auth_Controller',
+            'designer' => '/system/user_auth.designer.dat',
+            'in_menu' => true,
+            'icon' => 'i/system/icons/user_auth.png',
+            'id' => 'User_Auth',
+        ),
+);
