@@ -256,7 +256,7 @@ abstract class Backend_Controller extends Controller
             if($objectConfig->isBoolean($name) && !isset($posted[$name]))
                 $posted[$name] = false;
 
-            if($objectConfig->isNull($name) && $objectConfig->isDateField($name) && isset($posted[$name]) && empty($posted[$name]))
+            if(($objectConfig->isNull($name) || $objectConfig->isDateField($name)) && isset($posted[$name]) && empty($posted[$name]))
                 $posted[$name] = null;
 
 

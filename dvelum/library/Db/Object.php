@@ -408,8 +408,11 @@ class Db_Object
         $propConf = $this->_config->getFieldConfig($name);
         $validator = $this->getConfig()->getValidator($name);
 
-        if($validator && !call_user_func_array(array($validator , 'validate') , array($value)))
-            throw new Exception('Invalid value for field '. $name);
+        // Validate value using special validator
+        // Skip validation if value is null and object field can be null
+        if ($validator && (!$this->getConfig()->isNull($name) || !is_null($value)) && !call_user_func_array([$validator, 'validate'], array($value))){
+            throw new Exception('Invalid value for field ' . $name);
+        }
 
         /*
          * Validate value by fields type in config
