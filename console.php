@@ -21,7 +21,7 @@ if ($dvelumRoot[strlen($dvelumRoot) - 1] == '/')
 define('DVELUM', true);
 define('DVELUM_ROOT' ,$dvelumRoot);
 define('DVELUM_CONSOLE', true);
-define('DVELUM_WWW_PATH', DVELUM_ROOT . '/www');
+define('DVELUM_WWW_PATH', DVELUM_ROOT . '/www/');
 
 chdir(DVELUM_ROOT);
 
