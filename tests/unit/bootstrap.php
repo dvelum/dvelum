@@ -6,7 +6,7 @@ if ($dvelumRoot[strlen($dvelumRoot) - 1] == '/')
 
 define('DVELUM', true);
 define('DVELUM_ROOT' ,$dvelumRoot);
-define('DVELUM_WWW_PATH', $dvelumRoot.'/www');
+define('DVELUM_WWW_PATH', $dvelumRoot.'/www/');
 $_SERVER['DOCUMENT_ROOT'] = DVELUM_WWW_PATH;
 
 
@@ -22,27 +22,26 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
  */
 require DVELUM_ROOT . '/dvelum/library/Autoloader.php';
 $autoloader = new Autoloader($bootCfg['autoloader']);
-Config::setStorageOptions($bootCfg['config_storage']);
+
+$configStorage = Config::storage();
+$configStorage->setConfig($bootCfg['config_storage']);
 
 //==== Loading system ===========
 /*
  * Reload storage options from local system
  */
-$storageConfig = Config::storage()->get('config_storage.php')->__toArray();
+$storageConfig = $configStorage->get('config_storage.php')->__toArray();
 $storageConfig['file_array'] = array(
     'paths' => array(
         './application/configs/dist/',
         './application/configs/local/',
-        './tests/data/configs/',
-        './tests/configs/',
+        './tests/data/configs/'
     ),
-    'write' =>  './tests/configs/',
+    'write' =>  './tests/data/configs/',
     'apply_to' => './application/configs/dist/',
 );
 
-Config::setStorageOptions(
-    $storageConfig
-);
+$configStorage->setConfig($storageConfig);
 
 /*
  * Connecting main configuration file
@@ -72,7 +71,9 @@ $autoloader->setConfig($autoloaderCfg);
 Registry::set('main', $config , 'config');
 
 // clear test configs
-File::rmdirRecursive('./tests/configs/' , false);
+File::rmdirRecursive('./tests/data/configs/' , false);
+File::copyDir('./tests/data/test_objects/', './tests/data/configs/objects/');
+
 
 /*
  * Starting the application

@@ -224,18 +224,21 @@ class Db_ObjectTest extends PHPUnit_Framework_TestCase
 	      'default_blocks'=>true
 	  ));
 	  $this->assertTrue((boolean) $o->save());
+
 	  $this->assertTrue(Db_Object::objectExists('Page', $iId));
 	  $this->assertEquals($iId, $o->getId());
 	}
 
 	public function testGetTitle()
 	{
-		$cfg = Db_Object_Config::getInstance('Page');
+		$page = new Db_Object('Page');
+		$cfg = $page->getConfig();
+
 		$data = $cfg->getData();
 		$data['link_title'] = '/ {code} / {menu_title} /';
+
 		$cfg->setData($data);
 
-		$page = new Db_Object('Page');
 		$page->set('code' , 'pageCode');
 		$page->set('menu_title' , 'pageTitle');
 
