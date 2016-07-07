@@ -77,10 +77,18 @@ class Backend_Externals_Controller extends Backend_Controller
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }
 
+        $langManager = new Backend_Localization_Manager($this->_configMain);
+        try{
+            $langManager->compileLangFiles();
+        }catch (Exception $e){
+            Response::jsonError($e->getMessage());
+        }
+
         if(!$this->externalsManager->postInstall($id , true)) {
             $errors = $this->externalsManager->getErrors();
             Response::jsonError($this->_lang->get('CANT_EXEC').' '.implode(', ', $errors));
         }
+
         Response::jsonSuccess();
     }
 
