@@ -784,9 +784,10 @@ class Model
      */
     public function getTitle(Db_Object $object)
     {
-        $title = $this->_objectConfig->getLinkTitle();
+        $objectConfig = $object->getConfig();
+        $title = $objectConfig->getLinkTitle();
         if(strpos($title , '{')!==false){
-            $fields = $this->_objectConfig->getFieldsConfig(true);
+            $fields = $objectConfig->getFieldsConfig(true);
             foreach($fields as $name => $cfg){
                 $value =  $object->get($name);
                 if(is_array($value)){
