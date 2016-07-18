@@ -11,7 +11,7 @@
 class Db_Object_Config
 {
     const LINK_OBJECT = 'object';
-    const LINK_OBJECT_LIST = 'multy';
+    const LINK_OBJECT_LIST = 'multi';
     const LINK_DICTIONARY = 'dictionary';
     const DEFAULT_CONNECTION = 'default';
     const RELATION_MANY_TO_MANY = 'many_to_many';
@@ -265,6 +265,12 @@ class Db_Object_Config
            $dataLink['acl'] = false;
        if(!isset($dataLink['slave_connection']) || empty($dataLink['slave_connection']))
            $dataLink['slave_connection'] = $dataLink['connection'];
+
+       foreach($dataLink['fields'] as &$field){
+           if(isset($field['link_config']) && isset($field['link_config']['link_type']) && $field['link_config']['link_type'] == 'multy'){
+               $field['link_config']['link_type'] = 'multi';
+           }
+       }
 
         /*
          * Load additional fields for object under revision control

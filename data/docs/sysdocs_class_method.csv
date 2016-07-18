@@ -7763,7 +7763,7 @@ array(
 ...
 &#39;objectNameN&#39;=>array(id1,id2,id3),
  ),
- &#39;multy&#39; =>array(
+ &#39;multi&#39; =>array(
 &#39;objectName&#39;=>array(id1,id2,id3),
 ...
 &#39;objectNameN&#39;=>array(id1,id2,id3),
@@ -7773,11 +7773,11 @@ array(
 when object has link as own property
 array(
 &#39;field1&#39;=>&#39;object&#39;,
-&#39;field2&#39;=>&#39;multy&#39;
+&#39;field2&#39;=>&#39;multi&#39;
 ...
 &#39;fieldN&#39;=>&#39;object&#39;,
  )";;"eaa67b44149a6a4600de73c0d66ff1fe";"0";"1";"protected";"8";"array";"bc383e00c52f6df1e74342c2bcd2ed33";"0";"0";"0";"54505"
-"4353";"_getMultyLinks";"0";"Get multylink associations
+"4353";"_getMultiLinks";"0";"Get multi-link associations
 when links storedin external objects";;"ec974e682911929480d53cdbef73cd27";"0";"1";"protected";"8";"array";"bc383e00c52f6df1e74342c2bcd2ed33";"0";"0";"0";"54506"
 "4353";"getAssociatedStructures";"0";"Check if Object has associated objects";;"37165c822a5be6d8a839c11fe55732b5";"0";"1";"public";"8";"array - associations";"bc383e00c52f6df1e74342c2bcd2ed33";"0";"0";"0";"54507"
 "4354";"__construct";"0";;;"03798abc6649371c95c6ce585a7e673b";"0";"0";"public";"8";;"be437dbe66cb08cbfe3b6d561c66aca9";"0";"0";"0";"54508"

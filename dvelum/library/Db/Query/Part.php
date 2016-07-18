@@ -24,7 +24,7 @@ class Db_Query_Part
 		foreach($cfgFields as $k => $v)
 		{
 			/*
-			 * Ignore multylinks
+			 * Ignore multi-links
 			 */
 			if($config->isMultiLink($k))
 				continue;

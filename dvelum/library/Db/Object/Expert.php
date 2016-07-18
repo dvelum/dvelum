@@ -36,7 +36,7 @@ class Db_Object_Expert
 	 * 			...
 	 * 			'objectNameN'=>array(id1,id2,id3),
 	 * 	   ),
-	 * 	   'multy' =>array(
+	 * 	   'multi' =>array(
 	 * 			'objectName'=>array(id1,id2,id3),
 	 * 			...
 	 * 			'objectNameN'=>array(id1,id2,id3),
@@ -45,7 +45,7 @@ class Db_Object_Expert
 	 */
 	static public function getAssociatedObjects(Db_Object $object)
 	{
-		$linkedObjects = array('single'=>array(),'multy'=>array());
+		$linkedObjects = array('single'=>array(),'multi'=>array());
 
 		self::_buildAssociations();
 
@@ -66,7 +66,7 @@ class Db_Object_Expert
 			 	$linkedObjects['single'][$testObject] = $sLinks;
 		}
 
-		$linkedObjects['multy'] = self::_getMultyLinks($objectName, $objectId);
+		$linkedObjects['multi'] = self::_getMultiLinks($objectName, $objectId);
 
 		return $linkedObjects;
 	}
@@ -78,7 +78,7 @@ class Db_Object_Expert
 	 * @param array $links - links config like
 	 * 	array(
 	 * 		'field1'=>'object',
-	 * 		'field2'=>'multy'
+	 * 		'field2'=>'multi'
 	 * 		...
 	 * 		'fieldN'=>'object',
 	 *  )
@@ -121,13 +121,13 @@ class Db_Object_Expert
 			return Utils::fetchCol($relatedConfig->getPrimaryKey(), $data);
 	}
 	/**
-	 * Get multylink associations
+	 * Get multi-link associations
 	 * when links stored  in external objects
 	 * @param string $objectName
 	 * @param integer $objectId
 	 * @return array
 	 */
-	static protected function _getMultyLinks($objectName , $objectId)
+	static protected function _getMultiLinks($objectName , $objectId)
 	{
 		$configMain = Registry::get('main', 'config');
 
@@ -139,12 +139,12 @@ class Db_Object_Expert
 				  ->from($linkTable, array('id'=>'src_id','object'=>'src'))
 				  ->where('`target` =?',$objectName)
 				  ->where('`target_id` =?', $objectId);
-		$multyLinks = $db->fetchAll($sql);
+		$links = $db->fetchAll($sql);
 
 		$data = array();
 
-		if(!empty($multyLinks))
-			foreach ($multyLinks as $record)
+		if(!empty($links))
+			foreach ($links as $record)
 				$data[$record['object']][] = $record['id'];
 
 		return $data;

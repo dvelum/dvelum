@@ -150,7 +150,7 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
 				for (var umlItemLink in this.umlData[umlItem].links) {
 					var linkLabel = [];
 					for (var umlItemLinkLabel in this.umlData[umlItem].links[umlItemLink]) {
-						if (this.umlData[umlItem].links[umlItemLink][umlItemLinkLabel] == 'object' || this.umlData[umlItem].links[umlItemLink][umlItemLinkLabel] == 'multy') {
+						if (this.umlData[umlItem].links[umlItemLink][umlItemLinkLabel] == 'object' || this.umlData[umlItem].links[umlItemLink][umlItemLinkLabel] == 'multi') {
 							linkLabel.push(umlItemLinkLabel);
 						}
 					}

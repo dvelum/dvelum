@@ -237,7 +237,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 						render:{fn:this.initTooltip,scope:this}
 
 					}},
-				{boxLabel: appLang.MULTI_LINK, name: 'link_type', inputValue: 'multy',
+				{boxLabel: appLang.MULTI_LINK, name: 'link_type', inputValue: 'multi',
 					listeners:{
 						'change':{
 							fn:function( field, newValue, oldValue, options ){

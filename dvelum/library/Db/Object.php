@@ -335,11 +335,11 @@ class Db_Object
         switch ($propConf['link_config']['link_type'])
         {
             case 'object':
-            case 'multy':
+            case 'multi' :
                 return self::objectExists($propConf['link_config']['object'], $value);
                 break;
             case 'dictionary':
-                $dictionary = Dictionary::getInstance($propConf['link_config']['object']);
+                $dictionary = Dictionary::factory($propConf['link_config']['object']);
                 return $dictionary->isValidKey($value);
                 break;
         }

@@ -4770,7 +4770,7 @@
 "54589";"14a1c033ebc723606a3026982c3f78d6";"field";"8";"0";NULL;"0";"string";"9c9fa3745c7a37c6534b8d7a0ace9dee";"0";"41937"
 "54590";"b8d936050360b95de4195d5f8020699b";"linkTypes";"8";"0";"array (
   0 => 'object',
-  1 => 'multy',
+  1 => 'multi',
 )";"0";;"277ee6369a6b17bd007a2a747626d263";"1";"41938"
 "54590";"77f3badccff50d420315a5da5969af53";"groupByObject";"8";"1";"true";"0";"boolean  - group field by linked object, default true";"277ee6369a6b17bd007a2a747626d263";"1";"41939"
 "54591";"12468aa80fbf8df37236830b0646a2a6";"name";"8";"0";NULL;"0";"string";"767d67ec0f7d4b0b33ffb4393d6408ad";"0";"41940"
