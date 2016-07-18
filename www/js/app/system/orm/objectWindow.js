@@ -1053,7 +1053,9 @@ Ext.define('app.crud.orm.ObjectWindow', {
 		var cols = [];
 
 		this.dataStore.each(function(rec){
-			cols.push(rec.get('name'));
+			if(rec.get('link_type')!=='multy'){
+                cols.push(rec.get('name'));
+            }
 		},this);
 
 		var win = Ext.create('app.crud.orm.IndexWindow',{
