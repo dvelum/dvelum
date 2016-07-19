@@ -106,7 +106,11 @@ Registry::set('main', $config , 'config');
 /*
  * Starting the application
  */
-$app = new Application($config);
+$appClass = $config->get('application');
+if(!class_exists($appClass))
+    throw new Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
+
+$app = new $appClass($config);
 $app->setAutoloader($autoloader);
 $app->init();
 
