@@ -246,6 +246,10 @@ return array(
      */
     'template_check_mtime' => true,
     /*
+     * Application class
+     */
+    'application' => 'Application',
+    /*
      * ORM system object used as version storage
      */
     'orm_version_object' => 'Vc',

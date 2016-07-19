@@ -334,7 +334,11 @@ class Install_Controller {
     {
         $mainConfig = Config::storage()->get('main.php', false ,true);
 
-        $app = new Application($mainConfig);
+        $appClass = $mainConfig->get('application');
+        if(!class_exists($appClass))
+            throw new Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
+
+        $app = new $appClass($mainConfig);
         $app->setAutoloader($this->autoloader);
         $app->init();
 
@@ -479,7 +483,11 @@ class Install_Controller {
         /*
          * Starting the application
          */
-        $app = new Application($mainConfig);
+        $appClass = $mainConfig->get('application');
+        if(!class_exists($appClass))
+            throw new Exception('Core class '.$appClass.' does not exist! Check config "application" option!');
+
+        $app = new $appClass($mainConfig);
         $app->setAutoloader($this->autoloader);
         $app->init();
 
