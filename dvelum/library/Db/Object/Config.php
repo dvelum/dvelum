@@ -1483,4 +1483,17 @@ class Db_Object_Config
         $vcFields = $this->_getVcFields();
         return isset($vcFields[$field]);
     }
+
+    /**
+     * Check if object is relations object
+     * @return  boolean
+     */
+    public function isRelationsObject()
+    {
+        if($this->isSystem() && $this->_config->offsetExists('parent_object') && !empty($this->_config->get('parent_object'))){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

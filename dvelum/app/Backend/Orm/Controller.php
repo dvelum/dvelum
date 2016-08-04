@@ -1151,9 +1151,15 @@ class Backend_Orm_Controller extends Backend_Controller
         $defaultX = 10;
         $defaultY = 10;
 
-        foreach($names as $objectName)
+        foreach($names as $index=>$objectName)
         {
-            $data[$objectName]['links'] = Db_Object_Config::getInstance($objectName)->getLinks();
+            $objectConfig = Db_Object_Config::getInstance($objectName);
+            if(!empty($objectConfig->isRelationsObject())){
+                unset($names[$index]);
+                continue;
+            }
+            
+            $data[$objectName]['links'] = $objectConfig->getLinks();
 
             $objectConfig = Db_Object_Config::getInstance($objectName);
             $fields = $objectConfig->getFieldsConfig();
