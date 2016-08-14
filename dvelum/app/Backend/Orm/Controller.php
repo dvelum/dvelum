@@ -1305,7 +1305,7 @@ class Backend_Orm_Controller extends Backend_Controller
      */
     public function listValidatorsAction()
     {
-        $validators = array(array('id'=>'','title'=>'---'));
+        $validators = [];
         $files = File::scanFiles('./dvelum/library/Validator', array('.php'), false, File::Files_Only);
 
         foreach ($files as $v)

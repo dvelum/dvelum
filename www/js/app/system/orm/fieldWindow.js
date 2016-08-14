@@ -164,6 +164,16 @@ Ext.define('app.crud.orm.FieldWindow', {
 			displayField:'title',
 			forceSelection:true,
 			valueField:'id',
+			triggerAction:'all',
+			triggers:{
+				clear: {
+					cls: "x-form-clear-trigger",
+					tooltip:appLang.RESET,
+					handler:function(field){
+						field.reset();
+					}
+				}
+			},
 			store:Ext.create('Ext.data.Store',{
 				model:'app.comboStringModel',
 				autoLoad:true,
