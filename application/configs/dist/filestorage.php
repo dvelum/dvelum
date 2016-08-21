@@ -3,7 +3,7 @@ return array(
 		'development' =>
 				array(
 						'adapter'=>'Orm',
-						'filepath' => __DIR__ . '/../../../filestorage',
+						'filepath' => __DIR__ . '/../../../data/filestorage',
 						'object'=>'filestorage',
 						'check_orm_structure'=> false,
 						'user_id'=>0, //default user ID
@@ -41,7 +41,7 @@ return array(
 		'production' => array(
 
 				'adapter'=>'Orm',
-				'filepath' => __DIR__ . '/../../../filestorage',
+				'filepath' => __DIR__ . '/../../../data/filestorage',
 				'object'=>'filestorage',
 				'check_orm_structure'=> false,
 				'user_id'=>0, //default user ID
