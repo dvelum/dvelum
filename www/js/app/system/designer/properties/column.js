@@ -10,6 +10,30 @@ Ext.define('designer.properties.GridColumn',{
 		
 		var me = this;
 
+
+        this.renderersStore = Ext.create('Ext.data.Store',{
+            model:'app.comboStringModel',
+            proxy: {
+                type: 'ajax',
+                url:this.controllerUrl + 'renderers',
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data',
+                    idProperty: 'id'
+                },
+                extraParams:{
+                    object:this.objectName
+                },
+                simpleSortMode: true
+            },
+            remoteSort: false,
+            autoLoad: true,
+            sorters: [{
+                property : 'title',
+                direction: 'DESC'
+            }]
+        });
+
 		var summaryEditor = Ext.create('Ext.form.field.ComboBox',{		
 			typeAhead: true,
 		    triggerAction: 'all',

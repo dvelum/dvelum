@@ -31,6 +31,7 @@ class Ext_Property_Grid_Column extends Ext_Property_Container
 	public $updater = self::Object;
 	public $variableRowHeight = self::Boolean;
 
+    public $summaryType = self::String;
 
 	// dvelum designer property
 	public $projectColId = self::String;
