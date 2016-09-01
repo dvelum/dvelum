@@ -547,10 +547,10 @@ Ext.define('app.crud.modules.backendView',{
             Ext.Ajax.request({
                 url: this.controllerUrl + 'delete',
                 method: 'post',
-                params:Ext.apply(this.extraParams || {}, {
+                params:Ext.apply({
                     id:record.get('id'),
                     delete_related:deleteRelated
-                }),
+                }, this.extraParams || {}),
                 success: function(response, request) {
                     response =  Ext.JSON.decode(response.responseText);
                     if(response.success){
