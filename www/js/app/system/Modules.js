@@ -218,6 +218,7 @@ Ext.define('app.crud.modules.EditBackendWindow',{
             { fieldLabel:appLang.IN_MENU, name: 'in_menu', xtype:'checkbox'}
         ];
         this.callParent();
+        this.down('iconselectfield').setValue('i/system/icons/default.png');
     }
 });
 
