@@ -14,7 +14,7 @@ Ext.define('designer.grid.column.RendererWindow', {
     maximizable:true,
     modal:true,
     initComponent:function(){
-
+        var me = this;
         this.renderersStore = Ext.create('Ext.data.Store',{
             model:'app.comboStringModel',
             proxy: {
@@ -74,10 +74,10 @@ Ext.define('designer.grid.column.RendererWindow', {
                 "Ctrl-Space": function(cm) {
                     CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
                 },
-                "Ctrl-S": function(cm) {me.saveMethod();},
-                "Ctrl-Z": function(cm) {me.editor.undoAction();},
-                "Ctrl-Y": function(cm) {me.editor.redoAction();},
-                "Shift-Ctrl-Z": function(cm) {me.editor.redoAction();}
+                "Ctrl-S": function(cm) {me.saveData();},
+                "Ctrl-Z": function(cm) {me.callEditor.undoAction();},
+                "Ctrl-Y": function(cm) {me.callEditor.redoAction();},
+                "Shift-Ctrl-Z": function(cm) {me.callEditor.redoAction();}
             }
         });
 
@@ -150,7 +150,7 @@ Ext.define('designer.grid.column.RendererWindow', {
                 "Ctrl-Space": function(cm) {
                     CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
                 },
-                "Ctrl-S": function(cm) {me.saveMethod();},
+                "Ctrl-S": function(cm) {me.saveData();},
                 "Ctrl-Z": function(cm) {me.editor.undoAction();},
                 "Ctrl-Y": function(cm) {me.editor.redoAction();},
                 "Shift-Ctrl-Z": function(cm) {me.editor.redoAction();}
