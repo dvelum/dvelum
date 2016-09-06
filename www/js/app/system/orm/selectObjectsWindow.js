@@ -1,0 +1,47 @@
+Ext.define('app.crud.orm.objectListModel', {
+    extend: 'Ext.data.Model',
+    fields: [
+        {name: 'id', type: 'string'},
+        {name: 'title',  type: 'string'},
+    ]
+});
+
+Ext.define('app.crud.orm.selectObjectsWindow', {
+    extend: 'Ext.window.Window',
+    height: 300,
+    width: 400,
+    layout: 'fit',
+
+    initComponent: function(){
+        var me = this;
+        me.objSelectGrid = Ext.create('Ext.grid.Panel',{
+            xtype:"grid",
+            scrollable: true,
+            store:Ext.create("Ext.data.Store",{
+                model: 'app.crud.orm.objectListModel'
+            }),
+            columns: [
+                { text: 'ID', dataIndex: 'id' },
+                { text: 'Title', dataIndex: 'title', flex: 1 },
+            ],
+            selModel:Ext.create("Ext.selection.CheckboxModel"),
+        });
+        me.bbar = [{
+            text: appLang.SHOW_MAP,
+            handler: me.selectDone,
+            scope: this
+        }];
+        me.dockedItems = [me.tBar];
+        me.items = [me.objSelectGrid];
+        me.callParent();
+    },
+    setData: function(data){
+        this.objSelectGrid.getStore().setData(data);
+    },
+    selectDone: function(){
+        var selected = this.objSelectGrid.getSelectionModel().getSelection();
+        var data = [];
+        Ext.each(selected,function(item){data.push(item.get('id'))});
+        this.fireEventArgs('objectsSelected',[data]);
+    }
+});

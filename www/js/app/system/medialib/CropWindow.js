@@ -80,8 +80,8 @@ Ext.define('app.medialib.CropWindow',{
 		var ry = handle.extList[curImg][1] / cds.h;
 
 		jQuery('#cropThumb').css({
-			width: Math.round(rx * ($('#cropSrc').attr('width'))) + 'px',
-			height: Math.round(ry * ($('#cropSrc').attr('height'))) + 'px',
+			width: Math.round(rx * ($('#cropSrc').width())) + 'px',
+			height: Math.round(ry * ($('#cropSrc').height())) + 'px',
 			marginLeft: '-' + Math.round(rx * cds.x) + 'px',
 			marginTop: '-' + Math.round(ry * cds.y) + 'px'
 		});
