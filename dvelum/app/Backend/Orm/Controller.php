@@ -43,20 +43,19 @@ class Backend_Orm_Controller extends Backend_Controller
 
         $this->_resource->addRawJs('var ormTooltips = '.Lang::lang('orm_tooltips')->getJson().';');
 
-        $res->addJs('/js/app/system/SearchPanel.js'  , 0);
-        $res->addJs('/js/app/system/ORM.js?v='.$version , 2);
+        $res->addJs('/js/app/system/SearchPanel.js', 0);
+        $res->addJs('/js/app/system/ORM.js?v='.$version, 2);
 
-        $res->addJs('/js/app/system/EditWindow.js' , 1);
-        $res->addJs('/js/app/system/HistoryPanel.js' , 1);
-        $res->addJs('/js/app/system/ContentWindow.js' , 1);
+        $res->addJs('/js/app/system/EditWindow.js', 1);
+        $res->addJs('/js/app/system/HistoryPanel.js', 1);
+        $res->addJs('/js/app/system/ContentWindow.js', 1);
         $res->addJs('/js/app/system/RevisionPanel.js', 2);
         $res->addJs('/js/app/system/RelatedGridPanel.js', 2);
         Model::factory('Medialib')->includeScripts();
-        $res->addJs('/js/lib/uml/raphael.js'  , 3);
-        // $res->addJs('/js/lib/uml/raphael.2.1.min.js'  , 3);
-        $res->addJs('/js/lib/uml/joint.js'  , 4);
-        $res->addJs('/js/lib/uml/joint.dia.js'  , 5);
-        $res->addJs('/js/lib/uml/joint.dia.uml.js'  , 6);
+        $res->addCss('/css/system/joint.min.css', 1);
+        $res->addJs('/js/lib/uml/lodash.min.js', 2);
+        $res->addJs('/js/lib/uml/backbone-min.js', 3);
+        $res->addJs('/js/lib/uml/joint.min.js', 4);
         $res->addJs('/js/app/system/crud/orm.js', 7);
     }
 
@@ -1147,6 +1146,12 @@ class Backend_Orm_Controller extends Backend_Controller
         $data = $field = array();
         $manager = new Db_Object_Manager();
         $names = $manager->getRegisteredObjects();
+        $objects = Request::post('objects','array',$names);
+        $showObj = [];
+        foreach($objects as $objName){
+            if(in_array($objName,$names))
+                array_push($showObj,$objName);
+        }
 
         $defaultX = 10;
         $defaultY = 10;
@@ -1154,7 +1159,7 @@ class Backend_Orm_Controller extends Backend_Controller
         foreach($names as $index=>$objectName)
         {
             $objectConfig = Db_Object_Config::getInstance($objectName);
-            if(!empty($objectConfig->isRelationsObject())){
+            if(!empty($objectConfig->isRelationsObject()) || !in_array($objectName,$showObj)){
                 unset($names[$index]);
                 continue;
             }
@@ -1184,6 +1189,8 @@ class Backend_Orm_Controller extends Backend_Controller
 
         foreach($names as $objectName){
             foreach($data[$objectName]['links'] as $link => $link_value){
+                if(!isset($data[$link]))
+                    continue;
                 $data[$link]['weight'] = ( !isset($data[$link]['weight']) ? 1 : $data[$link]['weight'] + 1 );
             }
             if(!isset($data[$objectName]['weight']))
@@ -1220,6 +1227,14 @@ class Backend_Orm_Controller extends Backend_Controller
         $data = json_decode($map , true);
 
         $config = Config::storage()->get(self::UML_MAP_CFG,true, false);
+        $saved = $config->get('items');
+        $manager = new Db_Object_Manager();
+        $registered = $manager->getRegisteredObjects();
+
+        foreach($saved as $k => $item){
+            if(!array_key_exists($k,$data) && in_array($k,$registered,true))
+                $data[$k] = $item;
+        }
 
         $config->set('items' , $data);
 
@@ -1336,7 +1351,8 @@ class Backend_Orm_Controller extends Backend_Controller
             'js/app/system/orm/connections.js',
             'js/app/system/orm/logWindow.js',
             'js/app/system/orm/import.js',
-            'js/app/system/orm/taskStatusWindow.js'
+            'js/app/system/orm/taskStatusWindow.js',
+            'js/app/system/orm/selectObjectsWindow.js'
         );
 
         if(!$this->_configMain->get('development')){
@@ -1542,10 +1558,10 @@ class Backend_Orm_Controller extends Backend_Controller
            var ormTooltips = '.Lang::lang('orm_tooltips')->getJson().';
         ');
 
-        $projectData['includes']['js'][] = '/js/lib/uml/raphael.js';
-        $projectData['includes']['js'][] = '/js/lib/uml/joint.js';
-        $projectData['includes']['js'][] = '/js/lib/uml/joint.dia.js';
-        $projectData['includes']['js'][] = '/js/lib/uml/joint.dia.uml.js';
+        $projectData['includes']['css'][] = '/css/system/joint.min.css';
+        $projectData['includes']['js'][] = '/js/lib/uml/lodash.min.js';
+        $projectData['includes']['js'][] = '/js/lib/uml/backbone-min.js';
+        $projectData['includes']['js'][] = '/js/lib/uml/joint.min.js';
         $projectData['includes']['js'][] = '/js/app/system/ORM.js?v='.$version;
 
         /*

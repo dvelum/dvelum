@@ -271,7 +271,10 @@
     background-image: url('../../i/system/left.png');
 }
 .uploadIcon{
-        background-image: url('../../i/system/upload.png');
+    background-image: url('../../i/system/upload.png');
+}
+.filterIcon{
+    background-image: url('../../i/system/filter.png');
 }
 
 .urlTriggerIcon{

@@ -573,4 +573,6 @@
   573 => 'REINSTALL',
   574 => 'LAST_VERSION',
   575 => 'STATIC_HTML',
+  576 => 'SHOW_MAP',
+  577 => 'FILTER_OBJECTS',
 ); 
