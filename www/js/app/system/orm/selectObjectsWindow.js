@@ -11,6 +11,8 @@ Ext.define('app.crud.orm.selectObjectsWindow', {
     height: 300,
     width: 400,
     layout: 'fit',
+    modal: true,
+    title: appLang.FILTER_OBJECTS,
 
     initComponent: function(){
         var me = this;
@@ -21,13 +23,12 @@ Ext.define('app.crud.orm.selectObjectsWindow', {
                 model: 'app.crud.orm.objectListModel'
             }),
             columns: [
-                { text: 'ID', dataIndex: 'id' },
                 { text: 'Title', dataIndex: 'title', flex: 1 },
             ],
             selModel:Ext.create("Ext.selection.CheckboxModel"),
         });
-        me.bbar = [{
-            text: appLang.SHOW_MAP,
+        me.fbar = [{
+            text: appLang.APPLY,
             handler: me.selectDone,
             scope: this
         }];
