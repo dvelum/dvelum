@@ -35,8 +35,14 @@ Ext.define('app.crud.orm.selectObjectsWindow', {
         me.items = [me.objSelectGrid];
         me.callParent();
     },
-    setData: function(data){
-        this.objSelectGrid.getStore().setData(data);
+    setData: function(items,showed){
+    	this.objSelectGrid.getStore().setData(items);
+        var sm = this.objSelectGrid.getSelectionModel();
+		this.objSelectGrid.getStore().each(function(record){
+			if(Ext.Array.contains(showed, record.get('id'))){
+                sm.select(record, true);
+			}
+		});
     },
     selectDone: function(){
         var selected = this.objSelectGrid.getSelectionModel().getSelection();
