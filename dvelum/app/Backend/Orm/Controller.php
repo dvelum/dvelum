@@ -1146,18 +1146,21 @@ class Backend_Orm_Controller extends Backend_Controller
         $data = $field = array();
         $manager = new Db_Object_Manager();
         $names = $manager->getRegisteredObjects();
-        $objects = Request::post('objects','array',$names);
-        $showObj = [];
-        foreach($objects as $objName){
-            if(in_array($objName,$names))
-                array_push($showObj,$objName);
+        $showObj = Request::post('objects','array',[]);
+        if(empty($showObj)){
+            foreach($names as $name)
+                if(!isset($items[$name]['show']) || $items[$name]['show'])
+                    $showObj[] = $name;
+        }else{
+            foreach ($showObj as $k => $name)
+                if(!in_array($name, $names, true))
+                    unset($showObj[$k]);
         }
 
         $defaultX = 10;
         $defaultY = 10;
 
-        foreach($names as $index=>$objectName)
-        {
+        foreach($names as $index=>$objectName){
             $objectConfig = Db_Object_Config::getInstance($objectName);
             if(!empty($objectConfig->isRelationsObject()) || !in_array($objectName,$showObj)){
                 unset($names[$index]);
@@ -1169,16 +1172,12 @@ class Backend_Orm_Controller extends Backend_Controller
             $objectConfig = Db_Object_Config::getInstance($objectName);
             $fields = $objectConfig->getFieldsConfig();
 
-            foreach($fields as $fieldName => $fieldData)
-            {
+            foreach($fields as $fieldName => $fieldData){
                 $data[$objectName]['fields'][] = $fieldName;
 
-                if(isset($items[$objectName]))
-                {
+                if(isset($items[$objectName])){
                     $data[$objectName]['position'] = array('x'=>$items[$objectName]['x'],'y'=>$items[$objectName]['y']);
-                }
-                else
-                {
+                }else{
                     $data[$objectName]['position'] = array('x'=>$defaultX , 'y'=>$defaultY);
                     $defaultX+=10;
                     $defaultY+=10;
@@ -1231,7 +1230,22 @@ class Backend_Orm_Controller extends Backend_Controller
         $manager = new Db_Object_Manager();
         $registered = $manager->getRegisteredObjects();
 
+        /**
+         * Check objects map from request and set show property
+         */
+        foreach($data as $k => $item){
+            if(!in_array($k,$registered,true)){
+                unset($data[$k]);
+                continue;
+            }
+            $data[$k]['show'] = true;
+        }
+
+        /**
+         * Add saved map objects with checking that object is registered
+         */
         foreach($saved as $k => $item){
+            $item['show'] = false;
             if(!array_key_exists($k,$data) && in_array($k,$registered,true))
                 $data[$k] = $item;
         }

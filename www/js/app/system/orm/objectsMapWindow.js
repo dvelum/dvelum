@@ -92,7 +92,7 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
     showSelectObjects:function(){
         var me = this;
         var win = Ext.create('app.crud.orm.selectObjectsWindow',{});
-        win.setData(app.crud.orm.getObjectsList());
+        win.setData(app.crud.orm.getObjectsList(),Object.keys(this.umlData));
         win.on('objectsSelected',function(objects){
             me.params = {'objects[]': objects},
             me.loadData();
