@@ -31,6 +31,10 @@ Ext.define('app.crud.orm.selectObjectsWindow', {
             text: appLang.APPLY,
             handler: me.selectDone,
             scope: this
+        },{
+            text: appLang.CANCEL,
+            handler: me.close,
+            scope: this
         }];
         me.dockedItems = [me.tBar];
         me.items = [me.objSelectGrid];
