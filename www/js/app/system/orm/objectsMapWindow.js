@@ -196,6 +196,25 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
                             }}]
                         });
                         link.attr({'.tool-remove': {'display': 'none'}, rect: {fill: '#fff'}});
+                        if(umlItem == umlItemLink){
+                        	var obj = this.allItems[umlItem];
+                        	var objPos = obj.position();
+                        	var objSize = obj.prop('size');
+                        	link.prop({'vertices':[
+                        		{
+                        			'x': objPos.x + objSize.width + 20,
+                        			'y': objPos.y + Math.ceil(objSize.height / 2)
+                        		},
+                        		{
+                        			'x': objPos.x + objSize.width + 20,
+                        			'y': objPos.y + objSize.height + 20
+                        		},
+                        		{
+                        			'x': objPos.x + Math.ceil(objSize.width / 2),
+                        			'y': objPos.y + objSize.height + 20
+                        		}
+                        	]});
+                        }
                         link.addTo(this.graph);
                     }
                 }
