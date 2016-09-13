@@ -195,7 +195,11 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
                                 },
                             }}]
                         });
-                        link.attr({'.tool-remove': {'display': 'none'}, rect: {fill: '#fff'}});
+                        link.attr({
+                        	'.tool-remove': {'display': 'none'},
+                        	rect: {fill: '#fff'},
+                            '.marker-target': { fill: 'black', stroke: 'black', d: 'M 10 0 L 0 5 L 10 10 z' }
+                        });
                         if(umlItem == umlItemLink){
                         	var obj = this.allItems[umlItem];
                         	var objPos = obj.position();
