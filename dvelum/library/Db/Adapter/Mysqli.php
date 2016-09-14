@@ -184,7 +184,9 @@ class Db_Adapter_Mysqli extends Zend_Db_Adapter_Mysqli
      */
     public function select()
     {
-    	return new Db_Select();
+        $select = new Db_Select();
+        $select->setMysqli($this->getConnection());
+    	return $select;
     }
 
    /**

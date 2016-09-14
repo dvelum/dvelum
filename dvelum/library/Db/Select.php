@@ -31,7 +31,13 @@ class Db_Select
 
     public $localCache = true;
 
+    /**
+     * @var Mysqli
+     */
+    protected $_mysqliConnection = false;
+
     protected $_distinct = false;
+
     protected $_from,
         $_where,
         $_join,
@@ -59,6 +65,13 @@ class Db_Select
     );
 
     protected $_aliasCount = array();
+
+    /**
+     * @param mysqli $connection
+     */
+    public function setMysqli(\mysqli $connection){
+        $this->_mysqliConnection = $connection;
+    }
 
     /**
      * Add a DISTINCT clause
@@ -511,7 +524,12 @@ class Db_Select
         } elseif (is_float($value)) {
             return sprintf('%F', $value);
         }
-        return "'" . addcslashes($value, "\000\\'\"\032\n\r") . "'";
+
+        if($this->_mysqliConnection){
+            return "'" . $this->_mysqliConnection->real_escape_string($value) . "'";
+        }else{
+            return "'" . addcslashes($value, "\000\\'\"\032\n\r") . "'";
+        }
     }
 
     protected function _tableAlias($table)
