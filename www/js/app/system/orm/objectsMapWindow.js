@@ -186,6 +186,7 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
     linkUmlStates: function(){
         if(!this.allIsRendered)
             for(var umlItem in this.umlData){
+            	this.allItems[umlItem].linksObj = {};
                 for(var umlItemLink in this.umlData[umlItem].links){
                     var linkLabel = [];
                     for(var umlItemLinkLabel in this.umlData[umlItem].links[umlItemLink]){
@@ -208,6 +209,12 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
                                 },
                             }}]
                         });
+	                    if(typeof this.umlData[umlItem].savedlinks[umlItemLink] != 'undefined'){
+							if(typeof this.umlData[umlItem].savedlinks[umlItemLink].vertices != 'undefined'){
+	                    		var vertices = this.umlData[umlItem].savedlinks[umlItemLink].vertices;
+								link.prop('vertices',vertices);
+							}
+	                    }
                         link.attr({
                             '.tool-remove': {'display': 'none'}, rect: {fill: '#fff'},
                             '.marker-target': { fill: 'black', stroke: 'black', d: 'M 10 0 L 0 5 L 10 10 z' }
@@ -232,6 +239,7 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
                             ]});
                         }
                         link.addTo(this.graph);
+                        this.allItems[umlItem].linksObj[umlItemLink] = link;
                     }
                 }
             }
@@ -273,6 +281,11 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
 
         Ext.Object.each(this.allItems, function(index, item){
             map[index] = item.get('position');
+            map[index].links = {};
+            Ext.Object.each(this.allItems[index].linksObj, function(target,link){
+            	map[index].links[target] = {};
+            	map[index].links[target]['vertices'] = link.prop('vertices');
+            });
         },this);
 
         this.getEl().mask(appLang.SAVING);
