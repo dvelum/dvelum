@@ -21,22 +21,30 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
     uml: null,
     graph: null,
     paper: null,
-    umlOptions: {renderOnResize: false, objWidth: 130},
+    umlOptions: {renderOnResize: false, objWidth: 120},
     umlObjAttrs: {
-        rect: {rx: 7, ry: 7},
-        '.uml-class-name-rect': {
-            'stroke-width': 0.5
+        '.uml-state-body': {
+            'stroke-width': 0.5, 'stroke': '#000', rx: 10, ry: 10,
+            'fill': {
+                type: 'linearGradient',
+                stops: [
+                    { offset: '0%', color: '#9BC7E3' },
+                    { offset: '100%', color: '#5C95BE' }
+                ],
+                attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%'}
+            }
         },
-        '.uml-class-methods-rect': {
-            'display': 'none'
+        '.uml-state-separator': {
+            'stroke-width': 1,
+            stroke: '#000',
         },
-        '.uml-class-attrs-rect': {
-            'stroke-width': 0.5
+        '.uml-state-name': {
+            'font-size': 11,
+            'font-family': 'Arial'
         },
-        '.uml-class-attrs-text': {
-            ref: '.uml-class-attrs-rect',
-            'ref-y': 0.5,
-            'y-alignment': 'middle'
+        '.uml-state-events': {
+            'font-size': 10,
+            'font-family': 'Arial'
         }
     },
     umlData: null,
@@ -136,9 +144,10 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
                 for(var i = 0, len = item.fields.length; i < len; i++){
                     objectFields.push((i+1)+'. '+item.fields[i]);
                 }
-                var elemHeight = (12 * i) + 30;
+                var elemHeight = (10 * i) + 30;
                 this.allItems[index] = this.createUmlState(item.position, this.umlOptions.objWidth, elemHeight, index, objectFields);
                 this.allItems[index].isRendered = true;
+                this.allItems[index].attr('rect/filter', {name: 'dropShadow', args: {dx: 2, dy: 2, blur: 3}});
             },this);
 
             this.graph.clear();
@@ -158,12 +167,16 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
      * @param {object} objectFields
      */
     createUmlState: function(position, itemWidth, itemHeight, title, objectFields){
-        return new this.uml.Class({
+        var attrs = this.umlObjAttrs;
+        attrs['.uml-state-body'].height = itemHeight;
+        attrs['.uml-state-body'].width = itemWidth;
+
+        return new this.uml.State({
             position: position,
             size: {width: itemWidth, height: itemHeight},
             name: title,
-            attributes: objectFields,
-            attrs: this.umlObjAttrs
+            events: objectFields,
+            attrs: attrs
         });
     },
 
@@ -196,28 +209,27 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
                             }}]
                         });
                         link.attr({
-                        	'.tool-remove': {'display': 'none'},
-                        	rect: {fill: '#fff'},
+                            '.tool-remove': {'display': 'none'}, rect: {fill: '#fff'},
                             '.marker-target': { fill: 'black', stroke: 'black', d: 'M 10 0 L 0 5 L 10 10 z' }
                         });
                         if(umlItem == umlItemLink){
-                        	var obj = this.allItems[umlItem];
-                        	var objPos = obj.position();
-                        	var objSize = obj.prop('size');
-                        	link.prop({'vertices':[
-                        		{
-                        			'x': objPos.x + objSize.width + 20,
-                        			'y': objPos.y + Math.ceil(objSize.height / 2)
-                        		},
-                        		{
-                        			'x': objPos.x + objSize.width + 20,
-                        			'y': objPos.y + objSize.height + 20
-                        		},
-                        		{
-                        			'x': objPos.x + Math.ceil(objSize.width / 2),
-                        			'y': objPos.y + objSize.height + 20
-                        		}
-                        	]});
+                            var obj = this.allItems[umlItem];
+                            var objPos = obj.position();
+                            var objSize = obj.prop('size');
+                            link.prop({'vertices':[
+                                {
+                                    'x': objPos.x + objSize.width + 20,
+                                    'y': objPos.y + Math.ceil(objSize.height / 2)
+                                },
+                                {
+                                    'x': objPos.x + objSize.width + 20,
+                                    'y': objPos.y + objSize.height + 20
+                                },
+                                {
+                                    'x': objPos.x + Math.ceil(objSize.width / 2),
+                                    'y': objPos.y + objSize.height + 20
+                                }
+                            ]});
                         }
                         link.addTo(this.graph);
                     }
