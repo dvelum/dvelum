@@ -1177,6 +1177,9 @@ class Backend_Orm_Controller extends Backend_Controller
 
                 if(isset($items[$objectName])){
                     $data[$objectName]['position'] = array('x'=>$items[$objectName]['x'],'y'=>$items[$objectName]['y']);
+                    $data[$objectName]['savedlinks'] = [];
+                    if(!empty(isset($items[$objectName]['links'])))
+                        $data[$objectName]['savedlinks'] = $items[$objectName]['links'];
                 }else{
                     $data[$objectName]['position'] = array('x'=>$defaultX , 'y'=>$defaultY);
                     $defaultX+=10;
