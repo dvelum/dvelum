@@ -310,8 +310,10 @@ abstract class Backend_Controller_Crud extends Backend_Controller
     public function linkedlistAction()
     {
         $object = Request::post('object', 'string', false);
+        $filter = Request::post('filter' , 'array' , []);
         $pager = Request::post('pager' , 'array' , array());
         $query = Request::post('search' , 'string' , false);
+        $filter = array_merge($filter , Request::extFilters());
 
         if($object === false || !Db_Object_Config::configExists($object))
             Response::jsonError($this->_lang->WRONG_REQUEST);
@@ -345,7 +347,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $data = array();
         if($count)
         {
-             $data = $model->getList($pager, false, $fields , false , $query);
+             $data = $model->getList($pager, $filter, $fields , false , $query);
 
             if(!empty($data))
             {
