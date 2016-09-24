@@ -2,7 +2,7 @@
 /**
  * Users module UI Controller
  */
-class Backend_User_Controller extends Backend_Controller
+class Backend_User_Controller extends Backend_Controller_Crud
 {
     /**
      * Load user info action
@@ -123,22 +123,71 @@ class Backend_User_Controller extends Backend_Controller
             if(isset($list[$v['module']]) && !empty($list[$v['module']]['title'])){
                 $v['title'] = $list[$v['module']]['title'];
             }
-
-            $class = $manager->getModuleController($k);
-            if(! class_exists($class))
-            {
-                $v['rc'] = false;
-                continue;
-            }
-
-            $reflector = new ReflectionClass($class);
-
-            if($reflector->isSubclassOf('Backend_Controller_Crud_Vc'))
-                $v['rc'] = true;
-            else
-                $v['rc'] = false;
+            $v['vc'] = $manager->isVcModule($k);
         }
         unset($v);
+        Response::jsonSuccess(array_values($data));
+    }
+
+    /**
+     * Get list of individual permissions
+     */
+    public function individualPermissionsAction()
+    {
+        $userId = Request::post('id', Filter::FILTER_INTEGER, false);
+
+        if(!$userId)
+            Response::jsonSuccess([]);
+
+        $userInfo = Model::factory('User')->getCachedItem($userId);
+
+        if(!$userInfo)
+            Response::jsonSuccess([]);
+
+        $permissionsModel =  Model::factory('Permissions');
+
+        $manager = new Modules_Manager();
+        $modules = $manager->getRegisteredModules();
+        $list = $manager->getList();
+
+        foreach($modules as $name)
+        {
+            if(!isset($data[$name]))
+            {
+                $data[$name] = array(
+                    'module' => $name ,
+                    'view' => false ,
+                    'edit' => false ,
+                    'delete' => false ,
+                    'publish' => false
+                );
+            }
+            if(isset($list[$name]) && !empty($list[$name]['title'])){
+                $data[$name]['title'] = $list[$name]['title'];
+            }else{
+                $data[$name]['title'] = $name;
+            }
+            $data[$name]['rc'] = $manager->isVcModule($name);
+        }
+
+        $permissionFields = ['view','edit','delete','publish'];
+        $records = $permissionsModel->getRecords($userId, $userInfo['group_id']);
+
+        foreach ($records as $item)
+        {
+
+            foreach ($permissionFields as $field)
+            {
+                if($item[$field]){
+                    $data[$item['module']][$field] = $item[$field];
+                }
+
+                if($item['group_id']){
+                    $data[$item['module']]['g_'.$field] = $item[$field];
+                }
+
+            }
+        }
         Response::jsonSuccess(array_values($data));
     }
 
@@ -219,6 +268,10 @@ class Backend_User_Controller extends Backend_Controller
             Request::updatePost('pass' , password_hash($pass , PASSWORD_DEFAULT));
 
         $object = $this->getPostedData($this->_module);
+
+        if(!$object->get('admin')){
+            $object->set('group_id', null);
+        }
 
         /*
          * New user

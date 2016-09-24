@@ -50,9 +50,18 @@ class Model_Permissions extends Model
 
          /*
           * Replace group permissions by permissions redefined for concrete user
+          * (additional approved rights)
           */
-         if(!empty($userRights))
-             $data = array_merge($data , Utils::rekey('module', $userRights));
+         if(!empty($userRights)){
+             foreach ($userRights as $k=>$v){
+                 foreach (self::$_fields as $field){
+                     if(isset($v[$field]) && $v[$field]){
+                         $data[$v['module']][$field] = true;
+                     }
+                 }
+             }
+         }
+         $data = array_merge($data , Utils::rekey('module', $userRights));
 
          /*
           * Cache info
@@ -61,6 +70,24 @@ class Model_Permissions extends Model
          	$cache->save($data , 'user_permissions' . $userId);
 
          return $data;
+    }
+
+    /**
+     * Get records from permissions table
+     * for user and group
+     * @param $userId
+     * @param $groupId
+     * @return array
+     */
+    public function getRecords($userId , $groupId)
+    {
+        $sql = $this->_dbSlave->select()->from($this->table())->where('user_id =?', $userId)->orWhere('group_id =?',$groupId);
+        try{
+            return $this->_dbSlave->fetchAll($sql);
+        }catch (Exception $e){
+            $this->logError($e->getMessage());
+            return [];
+        }
     }
     /**
      * Remove permissions records for

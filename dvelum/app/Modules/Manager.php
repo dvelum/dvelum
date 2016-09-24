@@ -343,4 +343,25 @@ class Modules_Manager
         }
         return array_values($list);
     }
+
+    /**
+     * Check if module uses version control
+     * @name string - module name
+     * @return boolean
+     */
+    public function isVcModule($name)
+    {
+        $class = $this->getModuleController($name);
+
+        if(!class_exists($class)) {
+            return false;
+        }
+
+        $reflector = new ReflectionClass($class);
+
+        if($reflector->isSubclassOf('Backend_Controller_Crud_Vc'))
+            return true;
+        else
+            return false;
+    }
 }
