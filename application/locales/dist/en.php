@@ -245,7 +245,7 @@
   'GENERAL' => 'General',
   'GROUP' => 'Group',
   'GROUPS' => 'Groups',
-  'GROUP_PERMISSIONS' => 'group permissions',
+  'GROUP_PERMISSIONS' => 'Group permissions',
   'KILL_TASK' => 'Kill task',
   'KEY' => 'Key',
   'KEY_DUPLICATE' => 'An item with this name already exists',
@@ -575,5 +575,7 @@
   'REINSTALL' => 'Reinstall',
   'LAST_VERSION' => 'Last Version',
   'SHOW_MAP' => 'Show map',
-  'FILTER_OBJECTS' => 'Filter objects'
+  'FILTER_OBJECTS' => 'Filter objects',
+  'USER_PERMISSIONS' => 'User permissions',
+  'PERMISSIONS' => 'Permissions',
 );

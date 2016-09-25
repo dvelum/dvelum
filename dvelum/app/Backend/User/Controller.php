@@ -123,7 +123,7 @@ class Backend_User_Controller extends Backend_Controller_Crud
             if(isset($list[$v['module']]) && !empty($list[$v['module']]['title'])){
                 $v['title'] = $list[$v['module']]['title'];
             }
-            $v['vc'] = $manager->isVcModule($k);
+            $v['rc'] = $manager->isVcModule($k);
         }
         unset($v);
         Response::jsonSuccess(array_values($data));
@@ -170,11 +170,13 @@ class Backend_User_Controller extends Backend_Controller_Crud
             $data[$name]['rc'] = $manager->isVcModule($name);
         }
 
-        $permissionFields = ['view','edit','delete','publish'];
+        $permissionFields = ['view','edit','delete','publish','only_own'];
         $records = $permissionsModel->getRecords($userId, $userInfo['group_id']);
 
         foreach ($records as $item)
         {
+            if(!isset($data[$item['module']]))
+                continue;
 
             foreach ($permissionFields as $field)
             {

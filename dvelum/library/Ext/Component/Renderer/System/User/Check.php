@@ -7,7 +7,7 @@ class Ext_Component_Renderer_System_User_Check extends Ext_Component_Renderer
                     var headerCt = this.getHeaderContainer(), column = headerCt.getHeaderAtIndex(colIndex);
                     if(record.get("g_" + column.dataIndex)){
                         metaData.tdStyle = "background-color:#DCDCDC;"
-                        metaData.tdAttr = "data-qtip="+appLang.GROUP_PERMISSIONS;
+                        metaData.tdAttr = "data-qtip=\""+appLang.GROUP_PERMISSIONS+"\"";
                     }
                     return app.checkboxRenderer(value, metaData, record, rowIndex, colIndex, store);
                }';
