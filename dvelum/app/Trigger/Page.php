@@ -36,7 +36,7 @@ class Trigger_Page extends Trigger
 		$this->_cache->remove(Model_Page::getCodeHash($code));
 		$bm = new Blockmanager();
 		$bm->invalidatePageMap($id);
-		$this->_cache->remove(Frontend_Router::CACHE_KEY_ROUTES);
+		$this->_cache->remove(Router_Module::CACHE_KEY_ROUTES);
 	}
 	
 	public function clearBlockCache($pageId)
