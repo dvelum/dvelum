@@ -166,7 +166,7 @@ class Externals_Manager
         if(!empty($configPaths)){
             $storage = Config::storage();
             foreach($configPaths as $path){
-                $storage->addPath($path);
+                $storage->prependPath($path);
             }
         }
         // Add localization paths

@@ -176,6 +176,15 @@ class Config_Storage
         $this->config['file_array']['paths'][] = $path;
     }
 
+    /**
+     * Prepend config path
+     * @param $path
+     */
+    public function prependPath($path)
+    {
+        array_unshift($this->config['file_array']['paths'], $path);
+    }
+
 	/**
 	 * Get write path
 	 * @return string
