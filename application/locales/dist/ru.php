@@ -577,5 +577,7 @@
   'REINSTALL' => 'Переустановить',
   'LAST_VERSION' => 'Последняя версия',
   'SHOW_MAP' => 'Показать карту',
-  'FILTER_OBJECTS' => 'Выбрать объекты'
+  'FILTER_OBJECTS' => 'Выбрать объекты',
+  'USER_PERMISSIONS' => 'Права пользователей',
+  'PERMISSIONS' => 'Права доступа',
 ); 
