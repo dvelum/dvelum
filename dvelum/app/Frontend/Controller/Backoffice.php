@@ -23,6 +23,13 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
     protected $_module;
 
     /**
+     * Link to Config object of the frontend application
+     *
+     * @var Config_Abstract
+     */
+    protected $_configFrontend;
+
+    /**
      * Link to Config object of the backend application
      *
      * @var Config_Abstract
@@ -57,6 +64,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
         $this->_configMain = Registry::get('main' , 'config');
 
         $cacheManager = new Cache_Manager();
+        $this->_configFrontend = Config::storage()->get('frontend.php');
         $this->_configBackoffice = Config::storage()->get('backend.php');
         $this->_cache = $cacheManager->get('data');
 
@@ -78,9 +86,10 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
      * Include theme-specific resources
      */
     protected function includeTheme(){
-        $this->_resource->addJs('/js/lib/ext6/build/theme-gray/theme-gray.js' , 2);
-        $this->_resource->addCss('/js/lib/ext6/build/theme-gray/resources/theme-gray-all.css');
-        $this->_resource->addCss('/css/system/gray/style.css');
+        $theme = $this->_configFrontend->get('backoffice_extjs_theme');
+        $this->_resource->addJs('/js/lib/ext6/build/theme-'.$theme.'/theme-'.$theme.'.js' , 2);
+        $this->_resource->addCss('/js/lib/ext6/build/theme-gray/resources/theme-'.$theme.'-all.css');
+        $this->_resource->addCss('/css/system/'.$theme.'/style.css');
     }
 
     /**
