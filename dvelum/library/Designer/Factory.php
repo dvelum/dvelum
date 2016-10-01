@@ -114,7 +114,7 @@ class Designer_Factory
             if($renderTo)
             {
                 $initCode.='
-                    app.content.doComponentLayout();
+                    app.content.updateLayout();
                 ';
             }
         }
@@ -192,7 +192,7 @@ class Designer_Factory
         if(!empty($names))
         {
 
-           $renderTo = str_replace('-', '_', $renderTo);
+            $renderTo = str_replace('-', '_', $renderTo);
 
             $items = [];
 
@@ -279,39 +279,39 @@ class Designer_Factory
         // include langs
         if(isset($projectConfig['langs']) && !empty($projectConfig['langs']))
         {
-          $language = Lang::getDefaultDictionary();
-          $lansPath = $designerConfig->get('langs_path');
-          $langsUrl = $designerConfig->get('langs_url');
+            $language = Lang::getDefaultDictionary();
+            $lansPath = $designerConfig->get('langs_path');
+            $langsUrl = $designerConfig->get('langs_url');
 
-          foreach ($projectConfig['langs'] as $k=>$file)
-          {
-             $file =  $language.'/'.$file.'.js';
-             if(file_exists($lansPath.$file)){
-               $includes[] = $langsUrl . $file . '?' . filemtime($lansPath.$file);
-             }
-          }
+            foreach ($projectConfig['langs'] as $k=>$file)
+            {
+                $file =  $language.'/'.$file.'.js';
+                if(file_exists($lansPath.$file)){
+                    $includes[] = $langsUrl . $file . '?' . filemtime($lansPath.$file);
+                }
+            }
         }
 
         if(isset($projectConfig['files']) && !empty($projectConfig['files']))
         {
-                foreach ($projectConfig['files'] as $file)
-                {
-                    $ext = File::getExt($file);
+            foreach ($projectConfig['files'] as $file)
+            {
+                $ext = File::getExt($file);
 
-                    if($ext === '.js' || $ext === '.css')
-                    {
-                        $includes[] = $file;
-                    }else
-                    {
-                        $projectFile = $manager->findWorkingCopy($file);
-                        $subProject = Designer_Factory::loadProject($designerConfig,  $projectFile);
-                        $projectKey = self::getProjectCacheKey($projectFile);
-                        $files = self::getProjectIncludes($projectKey , $subProject , true , $replace , $debug);
-                        unset($subProject);
-                        if(!empty($files))
-                            $includes = array_merge($includes , $files);
-                    }
+                if($ext === '.js' || $ext === '.css')
+                {
+                    $includes[] = $file;
+                }else
+                {
+                    $projectFile = $manager->findWorkingCopy($file);
+                    $subProject = Designer_Factory::loadProject($designerConfig,  $projectFile);
+                    $projectKey = self::getProjectCacheKey($projectFile);
+                    $files = self::getProjectIncludes($projectKey , $subProject , true , $replace , $debug);
+                    unset($subProject);
+                    if(!empty($files))
+                        $includes = array_merge($includes , $files);
                 }
+            }
         }
 
         Ext_Code::setRunNamespace($projectConfig['runnamespace']);
@@ -356,17 +356,17 @@ class Designer_Factory
      */
     static public function replaceCodeTemplates(array $replaces , $code)
     {
-      if(!empty($replaces))
-      {
-          $k = array();
-          $v = array();
-          foreach ($replaces as $item)
-          {
-              $k[] = $item['tpl'];
-              $v[] = $item['value'];
-          }
-          return str_replace($k , $v , $code);
-      }
+        if(!empty($replaces))
+        {
+            $k = array();
+            $v = array();
+            foreach ($replaces as $item)
+            {
+                $k[] = $item['tpl'];
+                $v[] = $item['value'];
+            }
+            return str_replace($k , $v , $code);
+        }
         return $code;
     }
 }
