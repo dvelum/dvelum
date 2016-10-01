@@ -12,8 +12,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-abstract class Frontend_Controller_Backoffice extends Backend_Controller
-{
+abstract class Frontend_Controller_Backoffice extends Backend_Controller{
     /**
      * Module id assigned to controller;
      * Is to be defined in child class
@@ -22,6 +21,13 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
      * @var string
      */
     protected $_module;
+
+    /**
+     * Link to Config object of the frontend application
+     *
+     * @var Config_Abstract
+     */
+    protected $_configFrontend;
 
     /**
      * Link to Config object of the backend application
@@ -50,8 +56,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
      */
     protected $_isAjaxRequest;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->_page = Page::getInstance();
         $this->_resource = Resource::getInstance();
         $this->_module = $this->getModule();
@@ -59,6 +64,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
         $this->_configMain = Registry::get('main' , 'config');
 
         $cacheManager = new Cache_Manager();
+        $this->_configFrontend = Config::storage()->get('frontend.php');
         $this->_configBackoffice = Config::storage()->get('backend.php');
         $this->_cache = $cacheManager->get('data');
 
@@ -77,10 +83,19 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
     }
 
     /**
+     * Include theme-specific resources
+     */
+    protected function includeTheme(){
+        $theme = $this->_configFrontend->get('backoffice_extjs_theme');
+        $this->_resource->addJs('/js/lib/ext6/build/theme-'.$theme.'/theme-'.$theme.'.js' , 2);
+        $this->_resource->addCss('/js/lib/ext6/build/theme-gray/resources/theme-'.$theme.'-all.css');
+        $this->_resource->addCss('/css/system/'.$theme.'/style.css');
+    }
+
+    /**
      * Include required JavaScript files defined in the configuration file
      */
-    public function includeScripts()
-    {
+    public function includeScripts(){
         $media = Model::factory('Medialib');
         $media->includeScripts();
         $cfg = Config::storage()->get('js_inc_backend.php');
@@ -92,10 +107,9 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
         $this->_resource->addJs('/js/lib/ext6/build/locale/locale-'.$this->_configMain['language'].'.js', 2 , true , 'head');
         $this->_resource->addJs('/js/app/frontend/application.js', 3 , false ,  'head');
         $this->_resource->addJs('/js/app/system/common.js', 3 , false ,  'head');
+        $this->_resource->addCss('/css/system/style.css',1);
 
-        $this->_resource->addJs('/js/lib/ext6/build/theme-gray/theme-gray.js' , 2);
-        $this->_resource->addCss('/js/lib/ext6/build/theme-gray/resources/theme-gray-all.css');
-        $this->_resource->addCss('/css/system/gray/style.css');
+        $this->includeTheme();
 
         $this->_resource->addInlineJs('
            var developmentMode = '.intval($this->_configMain->get('development')).';
@@ -121,8 +135,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
     /**
      * Check user permissions and authentication
      */
-    public function checkAuth()
-    {
+    public function checkAuth(){
         $user = User::getInstance();
         $uid = false;
 
@@ -156,16 +169,14 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
     /**
      * Show login form
      */
-    protected function loginAction()
-    {
+    protected function loginAction(){
         $template = new Template();
         $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
         Response::put($template->render('public/backoffice_login.php'));
         Application::close();
     }
 
-    public function indexAction()
-    {
+    public function indexAction(){
         $this->_resource->addInlineJs('
          var canEdit = ' . intval($this->_user->canEdit($this->_module)) . ';
          var canDelete = ' . intval($this->_user->canDelete($this->_module)) . ';
@@ -179,8 +190,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
      *
      * @param string $project - path to project file
      */
-    protected function _runDesignerProject($project, $renderTo = false)
-    {
+    protected function _runDesignerProject($project, $renderTo = false){
         $manager = new Designer_Manager($this->_configMain);
         $manager->renderProject($project , $renderTo);
     }
@@ -190,8 +200,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller
      *
      * @return string
      */
-    protected function _errorResponse($msg)
-    {
+    protected function _errorResponse($msg){
         if(Request::isAjax())
             Response::jsonError($msg);
         else
