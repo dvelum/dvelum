@@ -120,13 +120,16 @@ class Model_Acl_Simple extends Model
       $groupPermissions = $this->getList(false, array('group_id'=>$groupId,'user_id'=>null));
       $sorted = Utils::rekey('object', $groupPermissions);
 
-      $modulesToRemove = array();
-
-      if(!empty($sorted))
-          $modulesToRemove = array_diff(array_keys($sorted), Utils::fetchCol('object', $data));
-
+      $modulesToRemove = Utils::fetchCol('object', $data);
       if(!empty($modulesToRemove))
-          $this->_db->delete($this->table(),'`object` IN (\''.implode("','", $modulesToRemove).'\') AND `group_id`='.intval($groupId));
+      {
+          try{
+              $this->_db->delete($this->table(),'`object` IN (\''.implode("','", $modulesToRemove).'\') AND `group_id`='.intval($groupId));
+          }catch (Exception $e){
+              $this->logError($e->getMessage());
+              return false;
+          }
+      }
 
       $errors = false;
 

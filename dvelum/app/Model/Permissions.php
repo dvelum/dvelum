@@ -161,13 +161,17 @@ class Model_Permissions extends Model
     	$groupPermissions = $this->getList(false, array('group_id'=>$groupId,'user_id'=>0));
     	$sorted = Utils::rekey('module', $groupPermissions);
 
-    	$modulesToRemove = array();
-
-    	if(!empty($sorted))
-    		$modulesToRemove = array_diff(array_keys($sorted), Utils::fetchCol('module', $data));
+    	$modulesToRemove = Utils::fetchCol('module', $data);
 
     	if(!empty($modulesToRemove))
-    		$this->_db->delete($this->table(),'`module` IN (\''.implode("','", $modulesToRemove).'\') AND `group_id`='.intval($groupId));
+    	{
+    	    try{
+                $this->_db->delete($this->table(),'`module` IN (\''.implode("','", $modulesToRemove).'\') AND `group_id`='.intval($groupId));
+            }catch (Exception $e){
+                $this->logError($e->getMessage());
+                return false;
+            }
+        }
 
         $errors = false;
 

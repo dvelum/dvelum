@@ -173,6 +173,7 @@ class Backend_User_Controller extends Backend_Controller_Crud
         $permissionFields = ['view','edit','delete','publish','only_own'];
         $records = $permissionsModel->getRecords($userId, $userInfo['group_id']);
 
+
         foreach ($records as $item)
         {
             if(!isset($data[$item['module']]))
@@ -181,11 +182,12 @@ class Backend_User_Controller extends Backend_Controller_Crud
             foreach ($permissionFields as $field)
             {
                 if($item[$field]){
-                    $data[$item['module']][$field] = $item[$field];
+                    $data[$item['module']][$field] = (boolean) $item[$field];
                 }
 
                 if($item['group_id']){
-                    $data[$item['module']]['g_'.$field] = $item[$field];
+                    $data[$item['module']]['g_'.$field] = (boolean) $item[$field];
+                    continue;
                 }
 
             }
