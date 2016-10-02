@@ -100,7 +100,7 @@ class Backend_User_Controller extends Backend_Controller_Crud
 
         $manager = new Modules_Manager();
         $modules = $manager->getRegisteredModules();
-        $list = $manager->getList();
+        $moduleKeys = array_flip($modules);
 
         foreach($modules as $name)
         {
@@ -119,6 +119,11 @@ class Backend_User_Controller extends Backend_Controller_Crud
 
         foreach($data as $k => &$v)
         {
+            // remove unregistered modules from data
+            if(!isset($moduleKeys[$v['module']])){
+                unset($data[$k]);
+            }
+
             $v['title'] = $v['module'];
             if(isset($list[$v['module']]) && !empty($list[$v['module']]['title'])){
                 $v['title'] = $list[$v['module']]['title'];
