@@ -11,7 +11,7 @@
       'columnLines' => true,
       'selModel' => ' {                 selType: \'cellmodel\'             }',
       'viewConfig' => '{                 stripeRows: true             }',
-      'title' => '[js:] appLang.GROUP_PERMISSIONS',
+      'title' => '[js:] appLang.PERMISSIONS',
       'frame' => false,
       'hidden' => false,
       'isExtended' => true,

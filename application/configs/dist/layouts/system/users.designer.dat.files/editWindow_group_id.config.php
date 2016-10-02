@@ -12,6 +12,7 @@
       'displayField' => 'title',
       'forceSelection' => true,
       'queryMode' => 'remote',
+      'allowBlank' => false,
       'name' => 'group_id',
       'disabled' => true,
       'hidden' => true,

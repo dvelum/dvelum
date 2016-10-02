@@ -15,7 +15,7 @@ Ext.Ajax.request({
         if (response.success) {
             store.commitChanges();
         } else {
-            Ext.Msg.alert(' ', response.msg);
+            Ext.Msg.alert(appLang.MESSAGE, response.msg);
         }
     },
     failure: app.ajaxFailure

@@ -212,19 +212,30 @@ class Backend_User_Controller extends Backend_Controller_Crud
         $data = json_decode($data , true);
 
         if(empty($data) || ! $groupId)
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
 
-        if(Model::factory('Permissions')->updateGroupPermissions($groupId , $data))
-        {
-            if(Backend_Cache_Manager::resetAll())
-                Response::jsonSuccess();
-            else
-                Response::jsonError($this->_lang->get('CANT_RESET_CACHE'));
-        }
-        else
-        {
+        if(!Model::factory('Permissions')->updateGroupPermissions($groupId , $data)) {
             Response::jsonError($this->_lang->get('CANT_EXEC'));
         }
+        Response::jsonSuccess();
+    }
+
+    public function saveIndividualPermissionsAction()
+    {
+        $this->_checkCanEdit();
+        $data = Request::post('data' , 'raw' , false);
+        $userId = Request::post('user_id' , 'int' , false);
+        $data = json_decode($data , true);
+
+        if(empty($data) || !$userId){
+            echo 'here';
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        if(!Model::factory('Permissions')->updateUserPermissions($userId , $data)){
+            Response::jsonError($this->_lang->get('CANT_EXEC'));
+        }
+        Response::jsonSuccess();
     }
 
     /**
