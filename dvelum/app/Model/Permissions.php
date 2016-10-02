@@ -15,14 +15,6 @@ class Model_Permissions extends Model
          if(empty($userId))
             throw new Exception('Need user id');
 
-		 $cache = self::$_defaults['dataCache'];
-
-        /*
-         * Check if cache exists
-         */
-    	if($cache && $data = $cache->load('user_permissions' . $userId))
-    		return $data;
-
     	$data = array();
     	/*
     	 * Load permissions for group
@@ -62,13 +54,6 @@ class Model_Permissions extends Model
              }
          }
          $data = array_merge($data , Utils::rekey('module', $userRights));
-
-         /*
-          * Cache info
-          */
-         if($cache)
-         	$cache->save($data , 'user_permissions' . $userId);
-
          return $data;
     }
 
@@ -157,24 +142,20 @@ class Model_Permissions extends Model
      */
     public function updateGroupPermissions($groupId , array $data)
     {
-
-    	$groupPermissions = $this->getList(false, array('group_id'=>$groupId,'user_id'=>0));
-    	$sorted = Utils::rekey('module', $groupPermissions);
-
-    	$modulesToRemove = array();
-
-    	if(!empty($sorted))
-    		$modulesToRemove = array_diff(array_keys($sorted), Utils::fetchCol('module', $data));
-
+    	$modulesToRemove = Utils::fetchCol('module', $data);
     	if(!empty($modulesToRemove))
-    		$this->_db->delete($this->table(),'`module` IN (\''.implode("','", $modulesToRemove).'\') AND `group_id`='.intval($groupId));
+    	{
+    	    try{
+                $this->_db->delete($this->table(),'`module` IN (\''.implode("','", $modulesToRemove).'\') AND `group_id`='.intval($groupId));
+            }catch (Exception $e){
+                $this->logError($e->getMessage());
+                return false;
+            }
+        }
 
         $errors = false;
-
     	foreach ($data as $values)
     	{
-    		if(empty($values))
-    			return false;
     		/**
     		 * Check if all needed fields are present
     		 */
@@ -183,39 +164,27 @@ class Model_Permissions extends Model
     		if(!empty($diff))
     			continue;
 
-    		try{
+    		try
+            {
+                $obj = new Db_Object($this->_name);
+                $obj->setValues(array(
+                        'view'=>(boolean)$values['view'],
+                        'edit'=>(boolean)$values['edit'],
+                        'delete'=>(boolean)$values['delete'],
+                        'publish'=>(boolean)$values['publish'],
+                        'only_own'=>(boolean)$values['only_own'],
+                        'module'=>$values['module'],
+                        'group_id'=>$groupId,
+                        'user_id'=>null
+                ));
 
-    			if(isset($sorted[$values['module']]))
-    			{
-    					$obj = new Db_Object($this->_name , $sorted[$values['module']][$this->_objectConfig->getPrimaryKey()]);
-    					$obj->setValues(array(
-    							'view'=>(boolean)$values['view'],
-    							'edit'=>(boolean)$values['edit'],
-    							'delete'=>(boolean)$values['delete'],
-    							'publish'=>(boolean)$values['publish'],
-								'only_own'=>(boolean)$values['only_own'],
-    					));
-    			}
-    			else
-    			{
-                    	$obj = new Db_Object($this->_name);
-                    	$obj->setValues(array(
-                    			'view'=>(boolean)$values['view'],
-                    			'edit'=>(boolean)$values['edit'],
-                    			'delete'=>(boolean)$values['delete'],
-                    			'publish'=>(boolean)$values['publish'],
-								'only_own'=>(boolean)$values['only_own'],
-                    			'module'=>$values['module'],
-                    			'group_id'=>$groupId,
-                    			'user_id'=>null
-                    	));
-    			}
-
-			    if(!$obj->save())
-			    	$errors = true;
+			    if(!$obj->save()){
+                    $errors = true;
+                }
 
     		}catch (Exception $e){
     			$errors = true;
+                $this->logError($e->getMessage());
     		}
     	}
 
@@ -223,6 +192,103 @@ class Model_Permissions extends Model
     		return false;
     	else
     	   return true;
+    }
+    /**
+     * Update group permissions
+     * @param integer $userId
+     * @param array $data - permissions like array(
+     * 													array(
+     * 														'module'=>'module',
+     * 														'view'=>true,
+     * 														'edit'=>false,
+     * 														'delete'=>false,
+     * 														'publish'=>false
+     * 													),
+     * 													...
+     * 												)
+     * @return boolean
+     */
+    public function updateUserPermissions($userId, $data)
+    {
+        $modulesToRemove = Utils::fetchCol('module', $data);
+        if(!empty($modulesToRemove))
+        {
+            try{
+                $this->_db->delete($this->table(),'`module` IN (\''.implode("','", $modulesToRemove).'\') AND `user_id`='.intval($userId));
+            }catch (Exception $e){
+                $this->logError($e->getMessage());
+                return false;
+            }
+        }
+        $userInfo = Model::factory('User')->getCachedItem($userId);
+        $groupPermissions = [];
+
+        if($userInfo['group_id']){
+            $sql = $this->_dbSlave	->select()
+                ->from($this->table() , self::$_fields)
+                ->where('`group_id` = '.intval($userInfo['group_id']))
+                ->where('`user_id` IS NULL');
+
+            $groupPermissions = $this->_dbSlave->fetchAll($sql);
+            if(!empty($groupPermissions)){
+                $groupPermissions = Utils::rekey('module', $groupPermissions);
+            }
+        }
+
+        $errors = false;
+        $fields = ['view','edit','delete','publish','only_own'];
+        foreach ($data as $values)
+        {
+            /**
+             * Check if all needed fields are present
+             */
+            $diff = array_diff(self::$_fields, array_keys($values));
+
+            if(!empty($diff))
+                continue;
+
+            try
+            {
+                $needUpdate = false;
+
+                if(isset($groupPermissions[$values['module']])){
+                    foreach ($fields as $field){
+                        if((boolean)$groupPermissions[$values['module']][$field] !== (boolean) $values[$field]){
+                            $needUpdate = true;
+                        }
+                    }
+                }
+
+                if(!$needUpdate){
+                    continue;
+                }
+
+                $obj = new Db_Object($this->_name);
+                $obj->setValues(array(
+                    'view'=>(boolean)$values['view'],
+                    'edit'=>(boolean)$values['edit'],
+                    'delete'=>(boolean)$values['delete'],
+                    'publish'=>(boolean)$values['publish'],
+                    'only_own'=>(boolean)$values['only_own'],
+                    'module'=>$values['module'],
+                    'group_id'=>null,
+                    'user_id'=>$userId
+                ));
+
+                if(!$obj->save()){
+                    $errors = true;
+                }
+
+            }catch (Exception $e){
+                $errors = true;
+                $this->logError($e->getMessage());
+            }
+        }
+
+        if($errors)
+            return false;
+        else
+            return true;
     }
     /**
      * Set group permissions

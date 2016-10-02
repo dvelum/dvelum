@@ -3,13 +3,15 @@ this.usersTab = Ext.create('appUsersClasses.Users',{
   canDelete:canDelete
 });
 
+this.individualPermissionsTab = Ext.create('appUsersClasses.individualPermissions',{
+	canEdit:canEdit
+});
 
 this.permissionsPanel = Ext.create('appUsersClasses.Permissions',{
   canEdit:canEdit ,
   canDelete:canDelete,
   region:'center'
 });
-
 
 this.groupsPanel = Ext.create('appUsersClasses.Groups',{
   canEdit:canEdit ,
@@ -41,12 +43,12 @@ this.groupsPanel = Ext.create('appUsersClasses.Groups',{
 
 this.groupsTab = Ext.create('Ext.Panel',{
   layout:'border',
-  title:appLang.GROUPS,
+  title:appLang.GROUP_PERMISSIONS,
   activeTab:0,
   deferredRender:false,
   items:[this.groupsPanel ,this.permissionsPanel]
 });
 
 this.removeAll();
-this.add([this.usersTab , this.groupsTab]);
+this.add([this.usersTab , this.groupsTab, this.individualPermissionsTab]);
 this.setActiveTab(0);
