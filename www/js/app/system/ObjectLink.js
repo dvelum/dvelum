@@ -25,7 +25,7 @@ Ext.define('app.objectLink.Field',{
      * @property {Object}
      */
     extraParams:null,
-    actions:{
+    ajaxActions:{
         title:'otitle',
         list:'linkedlist'
     },
@@ -103,7 +103,7 @@ Ext.define('app.objectLink.Field',{
             height:500,
             selectMode:true,
             objectName:this.objectName,
-            controllerUrl:this.controllerUrl + this.actions.list,
+            controllerUrl:this.controllerUrl + this.ajaxActions.list,
             title:this.fieldLabel,
             extraParams:this.extraParams
         });
@@ -141,7 +141,7 @@ Ext.define('app.objectLink.Field',{
         me.dataFieldLabel.setValue(appLang.LOADING);
 
         Ext.Ajax.request({
-            url:this.controllerUrl + this.actions.title,
+            url:this.controllerUrl + this.ajaxActions.title,
             method: 'post',
             params:Ext.apply({
                 object:this.objectName,
