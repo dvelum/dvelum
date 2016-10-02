@@ -88,7 +88,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
     protected function includeTheme(){
         $theme = $this->_configFrontend->get('backoffice_extjs_theme');
         $this->_resource->addJs('/js/lib/ext6/build/theme-'.$theme.'/theme-'.$theme.'.js' , 2);
-        $this->_resource->addCss('/js/lib/ext6/build/theme-gray/resources/theme-'.$theme.'-all.css');
+        $this->_resource->addCss('/js/lib/ext6/build/theme-'.$theme.'/resources/theme-'.$theme.'-all.css');
         $this->_resource->addCss('/css/system/'.$theme.'/style.css');
     }
 
