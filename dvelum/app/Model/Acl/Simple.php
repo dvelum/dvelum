@@ -116,10 +116,6 @@ class Model_Acl_Simple extends Model
   */
   public function updateGroupPermissions($groupId , array $data)
   {
-
-      $groupPermissions = $this->getList(false, array('group_id'=>$groupId,'user_id'=>null));
-      $sorted = Utils::rekey('object', $groupPermissions);
-
       $modulesToRemove = Utils::fetchCol('object', $data);
       if(!empty($modulesToRemove))
       {
@@ -135,9 +131,6 @@ class Model_Acl_Simple extends Model
 
       foreach ($data as $values)
       {
-          if(empty($values))
-              return false;
-
           /**
            * Check if all needed fields are present
            */
@@ -147,39 +140,25 @@ class Model_Acl_Simple extends Model
               continue;
 
           try{
+              $obj = new Db_Object($this->_name);
+              $obj->setValues(array(
+                  'view'=>(boolean)$values['view'],
+                  'create'=>(boolean)$values['create'],
+                  'edit'=>(boolean)$values['edit'],
+                  'delete'=>(boolean)$values['delete'],
+                  'publish'=>(boolean)$values['publish'],
+                  'object'=>$values['object'],
+                  'group_id'=>$groupId,
+                  'user_id'=>null
+              ));
 
-              if(isset($sorted[$values['object']]))
-              {
-                  $obj = new Db_Object($this->_name , $sorted[$values['object']][$this->_objectConfig->getPrimaryKey()]);
-                  $obj->setValues(array(
-                      'view'=>(boolean)$values['view'],
-                      'create'=>(boolean)$values['create'],
-                      'edit'=>(boolean)$values['edit'],
-                      'delete'=>(boolean)$values['delete'],
-                      'publish'=>(boolean)$values['publish'],
-                  ));
-              }
-              else
-              {
-                  $obj = new Db_Object($this->_name);
-                  $obj->setValues(array(
-                      'view'=>(boolean)$values['view'],
-                      'create'=>(boolean)$values['create'],
-                      'edit'=>(boolean)$values['edit'],
-                      'delete'=>(boolean)$values['delete'],
-                      'publish'=>(boolean)$values['publish'],
-                      'object'=>$values['object'],
-                      'group_id'=>$groupId,
-                      'user_id'=>null
-                  ));
-              }
-
-              if(!$obj->save())
+              if(!$obj->save()){
                   $errors = true;
+              }
 
           }catch (Exception $e){
              $this->logError($e->getMessage());
-              $errors = true;
+             $errors = true;
           }
       }
 

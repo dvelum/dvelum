@@ -157,12 +157,7 @@ class Model_Permissions extends Model
      */
     public function updateGroupPermissions($groupId , array $data)
     {
-
-    	$groupPermissions = $this->getList(false, array('group_id'=>$groupId,'user_id'=>0));
-    	$sorted = Utils::rekey('module', $groupPermissions);
-
     	$modulesToRemove = Utils::fetchCol('module', $data);
-
     	if(!empty($modulesToRemove))
     	{
     	    try{
@@ -174,11 +169,8 @@ class Model_Permissions extends Model
         }
 
         $errors = false;
-
     	foreach ($data as $values)
     	{
-    		if(empty($values))
-    			return false;
     		/**
     		 * Check if all needed fields are present
     		 */
@@ -187,39 +179,27 @@ class Model_Permissions extends Model
     		if(!empty($diff))
     			continue;
 
-    		try{
+    		try
+            {
+                $obj = new Db_Object($this->_name);
+                $obj->setValues(array(
+                        'view'=>(boolean)$values['view'],
+                        'edit'=>(boolean)$values['edit'],
+                        'delete'=>(boolean)$values['delete'],
+                        'publish'=>(boolean)$values['publish'],
+                        'only_own'=>(boolean)$values['only_own'],
+                        'module'=>$values['module'],
+                        'group_id'=>$groupId,
+                        'user_id'=>null
+                ));
 
-    			if(isset($sorted[$values['module']]))
-    			{
-    					$obj = new Db_Object($this->_name , $sorted[$values['module']][$this->_objectConfig->getPrimaryKey()]);
-    					$obj->setValues(array(
-    							'view'=>(boolean)$values['view'],
-    							'edit'=>(boolean)$values['edit'],
-    							'delete'=>(boolean)$values['delete'],
-    							'publish'=>(boolean)$values['publish'],
-								'only_own'=>(boolean)$values['only_own'],
-    					));
-    			}
-    			else
-    			{
-                    	$obj = new Db_Object($this->_name);
-                    	$obj->setValues(array(
-                    			'view'=>(boolean)$values['view'],
-                    			'edit'=>(boolean)$values['edit'],
-                    			'delete'=>(boolean)$values['delete'],
-                    			'publish'=>(boolean)$values['publish'],
-								'only_own'=>(boolean)$values['only_own'],
-                    			'module'=>$values['module'],
-                    			'group_id'=>$groupId,
-                    			'user_id'=>null
-                    	));
-    			}
-
-			    if(!$obj->save())
-			    	$errors = true;
+			    if(!$obj->save()){
+                    $errors = true;
+                }
 
     		}catch (Exception $e){
     			$errors = true;
+                $this->logError($e->getMessage());
     		}
     	}
 
