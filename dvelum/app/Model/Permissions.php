@@ -15,14 +15,6 @@ class Model_Permissions extends Model
          if(empty($userId))
             throw new Exception('Need user id');
 
-		 $cache = self::$_defaults['dataCache'];
-
-        /*
-         * Check if cache exists
-         */
-    	if($cache && $data = $cache->load('user_permissions' . $userId))
-    		return $data;
-
     	$data = array();
     	/*
     	 * Load permissions for group
@@ -62,13 +54,6 @@ class Model_Permissions extends Model
              }
          }
          $data = array_merge($data , Utils::rekey('module', $userRights));
-
-         /*
-          * Cache info
-          */
-         if($cache)
-         	$cache->save($data , 'user_permissions' . $userId);
-
          return $data;
     }
 
