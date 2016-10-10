@@ -85,19 +85,25 @@ class Template
     public function render($path)
     {
         $hash = '';
-        if($this->_cache && $this->_useCache)
-        {
-            $hash = md5('tpl_' . $path . '_' . serialize($this->_data));
-            $html = $this->_cache->load($hash);
-
-            if($html !== false)
-                return $html;
-        }
 
         $realPath = $this->_storage->get($path);
 
         if(!$realPath){
             return '';
+        }
+
+        if($this->_cache && $this->_useCache)
+        {
+            if(self::$_checkMTime){
+                $hash = md5('tpl_' . $path . '_' . serialize($this->_data).filemtime($realPath));
+            }else{
+                $hash = md5('tpl_' . $path . '_' . serialize($this->_data));
+            }
+
+            $html = $this->_cache->load($hash);
+
+            if($html !== false)
+                return $html;
         }
 
         ob_start();
