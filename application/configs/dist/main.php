@@ -162,6 +162,12 @@ return array(
             './dvelum/library',
             './vendor'
         ),
+        // priority paths (cannot be overridden by external modules)
+        'priority'=>[
+            './application/controllers',
+            './application/models',
+            './application/library',
+        ],
         /*
         * Use class maps
         */

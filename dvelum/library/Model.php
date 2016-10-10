@@ -1028,6 +1028,45 @@ class Model
         return true;
     }
 
+    /**
+     * Insert single record on duplicate key update
+     * @param $data
+     * @return boolean
+     */
+    public function insertOnDuplicateKeyUpdate($data)
+    {
+        $keys = array_keys($data);
+
+        foreach ($keys as &$val){
+            $val = $this->_db->quoteIdentifier($val);
+        }unset($val);
+
+        $values = array_values($data);
+        foreach ($values as &$val){
+            $val = $this->_db->quote($val);
+        }unset($val);
+
+        $sql = 'INSERT INTO ' . $this->_db->quoteIdentifier($this->table()). ' ('.implode(',',$keys).') VALUES ('.implode(',',$values).') ON DUPLICATE KEY UPDATE ';
+
+        $updates = [];
+        foreach ($keys as $key){
+            $updates[] = $key.' = VALUES('.$key.') ';
+        }
+
+        $sql.= implode(', ', $updates).';';
+
+        try{
+            $this->_db->query($sql);
+            return true;
+        }catch(Exception $e){
+            $this->logError($e->getMessage() .' SQL: '.$sql);
+            return false;
+        }
+    }
+
+    /**
+     * Get list of serach fields (get from ORM)
+     */
     protected function getSearchFields()
     {
         if(is_null($this->searchFields)){

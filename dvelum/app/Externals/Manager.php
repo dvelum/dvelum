@@ -154,11 +154,20 @@ class Externals_Manager
         // Add autoloader paths
         if(!empty($autoLoadPaths)){
             $autoloaderCfg = $this->appConfig->get('autoloader');
+            $newСhain = $autoloaderCfg['priority'];
 
             foreach($autoLoadPaths as $path){
-                $this->autoloader->registerPath($path, true);
-                array_unshift($autoloaderCfg['paths'],$path);
+                $newСhain[] = $path;
             }
+
+            foreach ($autoloaderCfg['paths'] as $path){
+                if(!in_array($path,$newСhain,true)){
+                    $newСhain[] = $path;
+                }
+            }
+            $autoloaderCfg['paths'] = $newСhain;
+            // update autoloader paths
+            $this->autoloader->setConfig(['paths'=>$newСhain]);
             // update main configuration
             $this->appConfig->set('autoloader',$autoloaderCfg);
         }
