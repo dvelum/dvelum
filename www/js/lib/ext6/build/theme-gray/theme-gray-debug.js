@@ -38,8 +38,7 @@ Ext.define('Ext.theme.classic.grid.column.Widget', {
             datefield: 'grid-cell',
             timefield: 'grid-cell',
             filefield: 'grid-cell',
-            fileuploadfield: 'grid-cell',
-            sliderwidget: 'grid-cell'
+            fileuploadfield: 'grid-cell'
         }
     }
 });
