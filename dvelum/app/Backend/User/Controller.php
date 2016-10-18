@@ -228,7 +228,6 @@ class Backend_User_Controller extends Backend_Controller_Crud
         $data = json_decode($data , true);
 
         if(empty($data) || !$userId){
-            echo 'here';
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }
 

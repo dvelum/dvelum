@@ -257,6 +257,8 @@ class Model_Permissions extends Model
                             $needUpdate = true;
                         }
                     }
+                }else{
+                    $needUpdate = true;
                 }
 
                 if(!$needUpdate){
