@@ -72,7 +72,11 @@ class Ext_Component_Filter extends Ext_Object
 			$listener.='
 			 }';
 
-			$object->addListener('change', $listener);
+            if($this->_viewObject->getClass() == 'Form_Field_Combobox') {
+                $object->addListener('select', $listener);
+            } else {
+                $object->addListener('change', $listener);
+            }
 		}
 		return $object->__toString();
 	}
