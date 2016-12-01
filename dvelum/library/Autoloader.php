@@ -22,6 +22,7 @@ class Autoloader
     protected $_debugData = array();
     protected $_classMap = array();
     protected $_paths = array();
+    protected $_plugins = array();
 
     /**
      * Set autoloader config
@@ -48,6 +49,9 @@ class Autoloader
         if(isset($config['debug']) && $config['debug'])
             $this->_debug = true;
 
+        if(isset($config['plugins']) && $config['plugins'])
+            $this->_plugins = $this->initPlugins($config['plugins']);
+
         /*
          * Registering Autoloader
          */
@@ -71,6 +75,9 @@ class Autoloader
 
         if(isset($config['debug']))
             $this->_debug = $config['debug'];
+
+        if(isset($config['plugins']) && $config['plugins'])
+            $this->_plugins = $this->initPlugins($config['plugins']);
     }
 
     /**
@@ -111,6 +118,7 @@ class Autoloader
      */
     public function load($class)
     {
+        $rawCls = $class;
         $class = str_replace('\\' , '_' , $class);
 
         if(!empty($this->_classMap) && isset($this->_classMap[$class]))
@@ -139,6 +147,20 @@ class Autoloader
                 return true;
             }
         }
+        /*
+         * Try to load using plugin
+         */
+        if(!empty($this->_plugins)){
+            foreach ($this->_plugins as $adapter){
+                if($adapter->load($rawCls)){
+                    if($this->_debug){
+                        $this->_debugData[] = $rawCls;
+                    }
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -173,5 +195,18 @@ class Autoloader
     public function getLoadedClasses()
     {
         return $this->_debugData;
+    }
+
+    /**
+     * Init autoloader plugins
+     * @param array $config
+     * @return array
+     */
+    public function initPlugins(array $config)
+    {
+        foreach ($config as $index=>$plugin) {
+            $config[$index]= new $plugin['class']($plugin['config']);
+        }
+        return $config;
     }
 }
