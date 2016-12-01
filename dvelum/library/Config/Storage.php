@@ -1,4 +1,5 @@
 <?php
+use Dvelum\Config;
 class Config_Storage
 {
     /**
@@ -72,7 +73,7 @@ class Config_Storage
         if($data === false)
             return false;
 
-        $object = new Config_File_Array($this->config['file_array']['write'] . $localPath , false);
+        $object = new Config\File\AsArray($this->config['file_array']['write'] . $localPath , false);
 
         if($this->config['file_array']['apply_to']!==false && $merge)
             $object->setApplyTo($this->config['file_array']['apply_to'] . $localPath );
@@ -94,7 +95,7 @@ class Config_Storage
      */
     public function create($localPath)
     {
-        return Config_File_Array::create($this->getWrite() . $localPath);
+        return Config\File\AsArray::create($this->getWrite() . $localPath);
     }
 
     /**

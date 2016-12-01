@@ -26,7 +26,7 @@ class Debug
 		self::$_scriptStartTime = $time;
 	}
 
-	static public function addDbProfiler(Zend_Db_Profiler $profiler)
+	static public function addDbProfiler(\Zend\Db\Adapter\Profiler\Profiler $profiler)
 	{
 		self::$_dbProfilers[] =  $profiler;
 	}

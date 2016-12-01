@@ -23,6 +23,9 @@ namespace Dvelum;
 use Dvelum\Config;
 use Dvelum\Orm;
 
+
+
+
 /**
  * Base class for data models
  */
@@ -30,25 +33,25 @@ class Model
 {
     /**
      * DB Object Storage
-     * @var Db_Objectstore
+     * @var Orm\Object\Storage
      */
     protected $store;
 
     /**
      * Database connection
-     * @var Zenddb_Adapter_Abstract
+     * @var Db_Adapter
      */
     protected $db;
 
     /**
      * Slave DB connection
-     * @var Zenddb_Adapter_Abstract
+     * @var Db_Adapter
      */
     protected $dbSlave;
 
     /**
      * Db_Object config
-     * @var Db_Object_Config
+     * @var Orm\Object\Config
      */
     protected $objectConfig;
 
@@ -78,7 +81,7 @@ class Model
 
     /**
      * Global (For all Models) db connection
-     * @var Zenddb_Adapter_Abstract
+     * @var \Db_Adapter
      */
     static protected $dbConnection = false;
 

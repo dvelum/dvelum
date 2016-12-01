@@ -6,6 +6,8 @@
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * @license General Public License version 3
  */
+use Dvelum\Config;
+
 class Dictionary
 {
     protected static $_instances = array();

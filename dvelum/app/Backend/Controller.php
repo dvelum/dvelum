@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
 use Dvelum\Config;
 /**
  * This is the base class for implementing administrative controllers
@@ -319,7 +319,7 @@ abstract class Backend_Controller extends Controller
 
         $this->includeScripts();
 
-        $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
+        $modulesConfig = Config\Factory::config(Config\Factory::File_Array , $this->_configMain->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($this->_module);
 
         if(strlen($moduleCfg['designer']))

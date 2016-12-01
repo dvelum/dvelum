@@ -1,4 +1,5 @@
 <?php
+use Dvelum\Config;
 
 class Dictionary_Manager
 {

@@ -281,12 +281,15 @@ class Application
             }
         };
 
+        /**
+         * @todo handle connection error
+         */
         $conManager = new Db_Manager($this->_config);
         try{
             $dbConfig = $conManager->getDbConfig('default');
             $this->_db = $conManager->getDbConnection('default');
-            if($dbConfig->get('adapterNamespace') == 'Db_Adapter')
-                $this->_db->setConnectionErrorHandler($dbErrorHandler);
+//            if($dbConfig->get('adapterNamespace') == 'Db_Adapter')
+//                $this->_db->setConnectionErrorHandler($dbErrorHandler);
         }
         catch (Exception $e){
             $dbErrorHandler($e);

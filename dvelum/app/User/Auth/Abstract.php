@@ -4,15 +4,17 @@
  * @author Sergey Leschenko
  */
 
+use Dvelum\Config;
+
 abstract class User_Auth_Abstract
 {
 	protected $userData = false;
 	protected $config = false;
 
 	/**
-	 * @param Config_Abstract $config - auth provider config
+	 * @param Config\Config $config - auth provider config
 	 */
-	function __construct(Config_Abstract $config)
+	public function __construct(Config\Config $config)
 	{
 		$this->config = $config;
 	}
@@ -23,7 +25,7 @@ abstract class User_Auth_Abstract
 	 * @param string $password
 	 * @return boolean
 	 */
-	abstract public function auth($login,$password);
+	abstract public function auth($login, $password);
 
 	/**
 	 * Get Dvelum user data (object User)

@@ -35,7 +35,7 @@ class Object
 
     protected $name;
     /**
-     * @var Db_Objectconfig
+     * @var Object\Config
      */
     protected $config;
 
@@ -281,7 +281,7 @@ class Object
     public function setId($id)
     {
         if($this->acl && !static::$disableAclCheck)
-            $this->_checkCanEdit();
+            $this->checkCanEdit();
 
         $this->id = (integer) $id;
     }
@@ -406,7 +406,7 @@ class Object
     public function set($name , $value)
     {
         if($this->acl)
-            $this->_checkCanEdit();
+            $this->checkCanEdit();
 
         $propConf = $this->config->getFieldConfig($name);
         $validator = $this->getConfig()->getValidator($name);
@@ -611,7 +611,7 @@ class Object
     {
         if($this->acl){
             try{
-                $this->_checkCanEdit();
+                $this->checkCanEdit();
             }catch (Exception $e){
                 $this->_errors[] = $e->getMessage();
 
@@ -711,7 +711,7 @@ class Object
     {
         if($this->acl){
             try{
-                $this->_checkCanDelete();
+                $this->checkCanDelete();
             }catch (Exception $e){
                 $this->_errors[] = $e->getMessage();
 
@@ -963,13 +963,13 @@ class Object
             throw new Exception('You do not have permission to view data in this object ['.$this->getName().':'.$this->getId().'].');
     }
 
-    protected function _checkCanEdit()
+    protected function checkCanEdit()
     {
         if($this->acl && !$this->acl->canEdit($this))
             throw new Exception('You do not have permission to edit data in this object ['.$this->getName().':'.$this->getId().'].');
     }
 
-    protected function _checkCanDelete()
+    protected function checkCanDelete()
     {
         if($this->acl && !$this->acl->canDelete($this))
             throw new Exception('You do not have permission to delete this object ['.$this->getName().':'.$this->getId().'].');
@@ -981,7 +981,7 @@ class Object
             throw new Exception('You do not have permission to create object ['.$this->getName().'].');
     }
 
-    protected function _checkCanPublish()
+    protected function checkCanPublish()
     {
         if($this->acl && !$this->acl->canPublish($this))
             throw new Exception('You do not have permission to publish object ['.$this->getName().'].');
@@ -996,7 +996,7 @@ class Object
     {
         if($this->acl){
             try{
-                $this->_checkCanPublish();
+                $this->checkCanPublish();
             }catch (Exception $e){
                 $this->_errors[] = $e->getMessage();
 
@@ -1030,7 +1030,7 @@ class Object
     {
         if($this->acl){
             try{
-                $this->_checkCanPublish();
+                $this->checkCanPublish();
             }catch (Exception $e){
                 $this->_errors[] = $e->getMessage();
 
@@ -1161,7 +1161,7 @@ class Object
         if($this->acl)
         {
             try{
-                $this->_checkCanEdit();
+                $this->checkCanEdit();
             }catch (Exception $e){
                 $this->_errors[] = $e->getMessage();
 

@@ -12,7 +12,7 @@ class Log_Db implements Log
     protected $_table;
     /**
      * Подключение к бд
-     * @var Zend_Db_Adapter_Abstract
+     * @var Db_Adapter
      */
     protected $_db;
     /**
@@ -28,7 +28,7 @@ class Log_Db implements Log
     );
     protected $_lastError = '';
 
-    public function __construct($logName , Zend_Db_Adapter_Abstract $dbConnection , $tableName)
+    public function __construct($logName , Db_Adapter $dbConnection , $tableName)
     {
         $this->_name = $logName;
         $this->_table = $tableName;
@@ -64,7 +64,7 @@ class Log_Db implements Log
      * Установить коннектор подключения к бд
      * @param Zend_Db_Adapter_Abstract $db
      */
-	public function setDbConnection(Zend_Db_Adapter_Abstract $db)
+	public function setDbConnection(Zend\Db\Adapter\Adapter $db)
 	{
 		$this->_db = $db;
 	}

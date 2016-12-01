@@ -2,6 +2,10 @@
 /**
  * ORM UI Controller
  */
+use Dvelum\Config;
+use Dvelum\Model;
+use Dvelum\Orm;
+
 class Backend_Orm_Controller extends Backend_Controller
 {
     const UML_MAP_CFG = 'umlMap.php';
@@ -30,7 +34,7 @@ class Backend_Orm_Controller extends Backend_Controller
         }
         //tooltips
         $lPath = $this->_configMain->get('language').'/orm.php';
-        Lang::addDictionaryLoader('orm_tooltips', $lPath, Config::File_Array);
+        Lang::addDictionaryLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
 
         $this->_resource->addInlineJs('
           var canPublish =  '.((integer)$this->_user->canPublish($this->_module)).';
@@ -71,7 +75,7 @@ class Backend_Orm_Controller extends Backend_Controller
         /*
          * Getting list of objects
          */
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
 
         $names = $manager->getRegisteredObjects();
         if(empty($names))
@@ -84,11 +88,11 @@ class Backend_Orm_Controller extends Backend_Controller
          */
         foreach ($names as $objectName)
         {
-            $configObject = Db_Object_Config::getInstance($objectName);
+            $configObject = Orm\Object\Config::factory($objectName);
             $objectModel = Model::factory($objectName);
             $config =  $configObject->__toArray();
             $objectTable = $objectModel->table();
-            $builder = new Db_Object_Builder($objectName);
+            $builder = new Orm\Object\Builder($objectName);
 
             $records = 0;
             $dataLength = 0;

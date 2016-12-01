@@ -2,6 +2,10 @@
 /**
  * Localization controller (Backoffice UI)
  */
+
+use Dvelum\Config;
+use Dvelum\Model;
+
 class Backend_Localization_Controller extends Backend_Controller_Crud
 {
     /**

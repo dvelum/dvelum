@@ -9,9 +9,13 @@
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * @license General Public License version 3
  */
-class Db_Object_Property
+
+namespace Dvelum\Orm\Object;
+use Dvelum\Config;
+use Dvelum\Orm\Object;
+
+class Property
 {
-    
     /**
      *  List of acceptable properties
      * @var array

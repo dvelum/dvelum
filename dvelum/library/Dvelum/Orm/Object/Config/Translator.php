@@ -43,7 +43,7 @@ class Translator
 	public function getTranslation()
 	{
 		if(!$this->_translation){
-			$this->_translation = Lang::storage()->get($this->_mainConfig, true, true);
+			$this->_translation = \Lang::storage()->get($this->_mainConfig, true, true);
 		}
 		return $this->_translation;
 	}
@@ -88,7 +88,7 @@ class Translator
 			if(isset($v['lazyLang']) && $v['lazyLang'])
 			{
 				if(!$this->_lang)
-					$this->_lang = Lang::lang();
+					$this->_lang = \Lang::lang();
 				
 				if(isset($v['title']))
 					$v['title'] = $this->_lang->get($v['title']);

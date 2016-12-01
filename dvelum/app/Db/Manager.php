@@ -23,13 +23,13 @@ use Dvelum\Config;
 class Db_Manager implements Db_Manager_Interface
 {
     protected $_dbConnections = array();
-    protected $_dbConfigs = array(); 
-    
+    protected $_dbConfigs = array();
+
     /**
      * @var Config_Abstract
      */
     protected $_appConfig;
-    
+
     /**
      * @param \Dvelum\Config\Config $appConfig - Application config (main)
      */
@@ -37,7 +37,7 @@ class Db_Manager implements Db_Manager_Interface
     {
         $this->_appConfig = $appConfig;
     }
-    
+
     /**
      * Get Database connection
      * @param string $name
@@ -46,21 +46,27 @@ class Db_Manager implements Db_Manager_Interface
      */
     public function getDbConnection($name)
     {
-        $workMode = $this->_appConfig->get('development');       
+        $workMode = $this->_appConfig->get('development');
         if(!isset($this->_dbConnections[$workMode][$name]))
         {
-           $cfg = $this->getDbConfig($name);
-           $db = \Zend_Db::factory($cfg->get('adapter') ,  $cfg->__toArray());
-           /*
-            * Enable Db profiler for development mode Attention! Db Profiler causes
-            * memory leaks at background tasks. (Dev mode)
-            */
+            $cfg = $this->getDbConfig($name);
+            $cfg->set('driver', $cfg->get('adapter'));
+            /*
+             * Enable Db profiler for development mode Attention! Db Profiler causes
+             * memory leaks at background tasks. (Dev mode)
+             */
             if($this->_appConfig->get('development')){
-                $db->getProfiler()->setEnabled(true);
+                $cfg->set('profiler' , true);
+            }
+
+            $db = new \Db_Adapter($cfg->__toArray());
+
+            if($this->_appConfig->get('development')){
                 \Debug::addDbProfiler($db->getProfiler());
             }
-            $this->_dbConnections[$workMode][$name] = $db;            
-        }        
+
+            $this->_dbConnections[$workMode][$name] = $db;
+        }
         return $this->_dbConnections[$workMode][$name];
     }
     /**
@@ -77,15 +83,15 @@ class Db_Manager implements Db_Manager_Interface
             $workMode = \Application::MODE_DEVELOPMENT;
 
         if(!isset($this->_dbConfigs[$workMode][$name]))
-        {         
+        {
             $dbConfigPaths = $this->_appConfig->get('db_configs');
-            
+
             if(!isset($dbConfigPaths[$workMode]))
-                throw new Exception('Invalid application work mode ' . $workMode);
+                throw new \Exception('Invalid application work mode ' . $workMode);
 
             $this->_dbConfigs[$workMode][$name] = Config\Factory::storage()->get($dbConfigPaths[$workMode]['dir'].$name.'.php' , true , false);
         }
-        
+
         return $this->_dbConfigs[$workMode][$name];
     }
 }

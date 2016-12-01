@@ -49,7 +49,7 @@ class Config
     static protected $configs = [];
 
     /**
-     * @var Config_Abstract
+     * @var \Dvelum\Config\Config
      */
     protected $config;
 
@@ -65,25 +65,25 @@ class Config
      */
     static protected $cryptFields;
     /**
-     * @var Config_Abstract
+     * @var \Dvelum\Config\Config
      */
     static protected $encConfig;
 
     /**
      * @var string $name
-     * @return Db_Objectconfig
+     * @return Orm\Object\Config
      */
     protected $name;
 
     /**
      * Translation config
-     * @var Config_Abstract
+     * @var \Dvelum\Config\Config
      */
     static protected $translation = null;
 
     /**
      * Translation adapter
-     * @var Db_Objectconfigtranslator
+     * @var Orm\Object\Config\Translator
      */
     static protected $translator = false;
 
@@ -92,19 +92,12 @@ class Config
      * @var boolean
      */
     protected $translated = false;
-
-    /**
-     * Default Database table prefix
-     * @deprecated since 0.9.1
-     * @var string
-     */
-    static protected $defaultDbPrefix;
-
+    
     /**
      * Database table prefix
      * @var string
      */
-    protected $_dbPrefix;
+    protected $dbPrefix;
 
     protected $localCache = [];
 
@@ -505,7 +498,7 @@ class Config
     {
         $cfg = $this->getFieldConfig($field);
 
-        if(isset($cfg['type']) && $cfg['type']==='link' && is_array($cfg['linkconfig']) && $cfg['linkconfig']['link_type']===self::LINK_OBJECT_LIST)
+        if(isset($cfg['type']) && $cfg['type']==='link' && isset($cfg['linkconfig']) && is_array($cfg['linkconfig']) && $cfg['linkconfig']['link_type']===self::LINK_OBJECT_LIST)
             return true;
         else
             return false;
@@ -617,7 +610,7 @@ class Config
      * @param boolean $groupByObject - group field by linked object, default true
      * @return array  [objectName=>[field => link_type]] | [field =>["object"=>objectName,"link_type"=>link_type]]
      */
-    public function getLinks($linkTypes = array(Db_Objectconfig::LINK_OBJECT,Db_Objectconfig::LINK_OBJECT_LIST), $groupByObject = true)
+    public function getLinks($linkTypes = array(Orm\Object\Config::LINK_OBJECT, Orm\Object\Config::LINK_OBJECT_LIST), $groupByObject = true)
     {
         $data = [];
         $fields = $this->getFieldsConfig(true);

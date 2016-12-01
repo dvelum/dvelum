@@ -16,22 +16,24 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+use Dvelum\Config;
+
 class Designer_Factory
 {
     /**
      * Load project
-     * @param Config_Abstract $designerConfig - designer config
+     * @param Config\Config $designerConfig - designer config
      * @param string $projectFile - project file path
      * @return Designer_Project
      * @throws Exception
      */
-    static public function loadProject(Config_Abstract $designerConfig , $projectFile)
+    static public function loadProject(Config\Config $designerConfig , $projectFile)
     {
         $storage = Designer_Storage::getInstance($designerConfig->get('storage') , $designerConfig);
         return $storage->load($projectFile);
     }
 
-    static public function importProject(Config_Abstract $designerConfig , $projectFile)
+    static public function importProject(Config\Config $designerConfig , $projectFile)
     {
         $storage = Designer_Storage::getInstance($designerConfig->get('storage') , $designerConfig);
         return $storage->import($projectFile);
@@ -50,13 +52,13 @@ class Designer_Factory
     /**
      * Init layout from designer project
      * @property string $projectFile - designer project related path
-     * @property Config_Abstract $designerConfig
+     * @property Config\Config $designerConfig
      * @property array $replace, optional
      * @property string | boolean $renderTo
      * @property string | boolean $moduleId
      * @todo cache the code
      */
-    static public function runProject($projectFile , Config_Abstract $designerConfig , $replace = array(), $renderTo = false, $moduleId = false)
+    static public function runProject($projectFile , Config\Config $designerConfig , $replace = array(), $renderTo = false, $moduleId = false)
     {
         /**
          * @todo slow operation

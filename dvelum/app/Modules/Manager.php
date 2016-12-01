@@ -26,10 +26,10 @@ class Modules_Manager
         $configPath = $this->_appConfig->get($this->_mainconfigKey);
         $this->_config = Config\Factory::storage()->get($configPath, false, true);
 
-        $this->_distConfig = new Config_File_Array(Config::storage()->getApplyTo() . $configPath);
+        $this->_distConfig = new Config\File\AsArray(Config::storage()->getApplyTo() . $configPath);
 
         if(file_exists(Config::storage()->getWrite() . $configPath)){
-            $this->_curConfig = new Config_File_Array(Config::storage()->getWrite() . $configPath);
+            $this->_curConfig = new Config\File\AsArray(Config::storage()->getWrite() . $configPath);
         }
 
         $locale = Lang::lang()->getName();

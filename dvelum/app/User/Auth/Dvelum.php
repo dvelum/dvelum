@@ -4,6 +4,9 @@
  * @author Sergey Leschenko
  */
 
+use Dvelum\Config;
+use Dvelum\Model;
+
 class User_Auth_Dvelum extends User_Auth_Abstract
 {
 	/**
