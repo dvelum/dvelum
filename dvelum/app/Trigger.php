@@ -1,5 +1,7 @@
 <?php
 
+use Dvelum\Config;
+
 /**
  * Default Trigger
  * Handle Db_Object Events
@@ -23,16 +25,16 @@ class Trigger
 
     /**
      * Set application config
-     * @param Config_Abstract $config
+     * @param Config\Config $config
      */
-    static public function setApplicationConfig(Config_Abstract $config)
+    static public function setApplicationConfig(Config\Config $config)
     {
         static::$applicationConfig = $config;
     }
 
 	protected function _getItemCacheKey(Db_Object $object)
 	{
-		$objectModel = Model::factory($object->getName());
+		$objectModel = \Model::factory($object->getName());
 		return $objectModel->getCacheKey(array('item',$object->getId()));
 	}
 

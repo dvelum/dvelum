@@ -17,7 +17,7 @@ class Classmap
     public function __construct(Config_Abstract $appConfig)
     {
         $this->appConfig = $appConfig;
-        $this->autoloaderCfg = $this->appConfig->get('autoloader');
+        $this->autoloaderCfg = Config::storage()->get('autoloader.php')->__toArray();
     }
 
     public function load()

@@ -51,18 +51,22 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 require DVELUM_ROOT . '/dvelum/library/Autoloader.php';
 $autoloader = new Autoloader($bootCfg['autoloader']);
 
-$configStorage = Config::storage();
+
+use \Dvelum\Config\Factory as ConfigFactory;
+
+$configStorage = ConfigFactory::storage();
 $configStorage->setConfig($bootCfg['config_storage']);
 
 //==== Loading system ===========
 /*
  * Reload storage options from local system
  */
-$configStorage->setConfig(Config::storage()->get('config_storage.php')->__toArray());
+$configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->__toArray());
 /*
  * Connecting main configuration file
  */
-$config = Config::storage()->get('main.php');
+$config = ConfigFactory::storage()->get('main.php');
+
 
 /*
  * Disable op caching for development mode
@@ -74,14 +78,14 @@ if($config->get('development')){
 /*
  * Setting autoloader config
  */
-$autoloaderCfg = $config->get('autoloader');
+$autoloaderCfg = ConfigFactory::storage()->get('autoloader.php')->__toArray();
 $autoloaderCfg['debug'] = $config->get('development');
 
 if(!isset($autoloaderCfg['useMap']))
     $autoloaderCfg['useMap'] = true;
 
 if($autoloaderCfg['useMap'] && $autoloaderCfg['map'])
-    $autoloaderCfg['map'] = require Config::storage()->getPath($autoloaderCfg['map']);
+    $autoloaderCfg['map'] = require ConfigFactory::storage()->getPath($autoloaderCfg['map']);
 else
     $autoloaderCfg['map'] = false;
 
@@ -90,7 +94,7 @@ $autoloader->setConfig($autoloaderCfg);
 /**
  * Enable Zend Framework 1.x library support
  */
-set_include_path(get_include_path() . PATH_SEPARATOR . $config->get('vendor_lib'));
+\set_include_path(get_include_path() . PATH_SEPARATOR . $config->get('vendor_lib'));
 
 /*
  * Installation mode

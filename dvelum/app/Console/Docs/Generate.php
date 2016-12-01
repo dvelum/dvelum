@@ -22,7 +22,8 @@ class Console_Docs_Generate extends Console_Action
 
         $sysDocsCfg = Config::storage()->get('sysdocs.php');
         $sysDocs = new Sysdocs_Generator($sysDocsCfg);
-        $sysDocs->setAutoloaderPaths($this->appConfig->get('autoloader')['paths']);
+        $autoloaderCfg = Config::storage()->get('autoloader.php')->__toArray();
+        $sysDocs->setAutoloaderPaths($autoloaderCfg['paths']);
 
         if(isset($this->params[0]) && $this->params[0]==='locale'){
             $sysDocs->migrateLocale();

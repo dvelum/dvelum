@@ -153,7 +153,8 @@ class Externals_Manager
         }
         // Add autoloader paths
         if(!empty($autoLoadPaths)){
-            $autoloaderCfg = $this->appConfig->get('autoloader');
+            $autoloaderConfig = Config::storage()->get('autoloader.php');
+            $autoloaderCfg = $autoloaderConfig->__toArray();
             $newСhain = $autoloaderCfg['priority'];
 
             foreach($autoLoadPaths as $path){
@@ -169,7 +170,7 @@ class Externals_Manager
             // update autoloader paths
             $this->autoloader->setConfig(['paths'=>$newСhain]);
             // update main configuration
-            $this->appConfig->set('autoloader',$autoloaderCfg);
+            $autoloaderConfig->setData($autoloaderCfg);
         }
         // Add Config paths
         if(!empty($configPaths)){

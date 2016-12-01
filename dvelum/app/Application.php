@@ -1,6 +1,6 @@
 <?php
 /*
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
+ * DVelum project http://code.google.com/p/dvelum/, https://github.com/k-samuel/dvelum , http://dvelum.net
  * Copyright (C) 2011-2015  Kirill A Egorov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
+
+use Dvelum\Config;
+use Dvelum\Model as Model;
 /**
  * Application - is the main class that initializes system configuration
  * settings. The system starts working with running an object of this class.
@@ -57,9 +61,9 @@ class Application
 
     /**
      * The constructor accepts the main configuration object as an argument
-     * @param Config_Abstract $config
+     * @param Config\Config $config
      */
-    public function __construct(Config_Abstract $config)
+    public function __construct(Config\Config $config)
     {
         $this->_config = $config;
     }
@@ -112,7 +116,7 @@ class Application
          */
         $langStorage = Lang::storage();
         $langStorage->setConfig(
-            Config::storage()->get('lang_storage.php')->__toArray()
+            Config\Factory::storage()->get('lang_storage.php')->__toArray()
         );
 
         /*
@@ -120,7 +124,7 @@ class Application
          */
         $templateStorage = Template::storage();
         $templateStorage->setConfig(
-            Config::storage()->get('template_storage.php')->__toArray()
+            Config\Factory::storage()->get('template_storage.php')->__toArray()
         );
 
         Request::setConfig(array(
@@ -139,7 +143,7 @@ class Application
         * Init lang dictionary (Lazy Load)
         */
         $lang = $this->_config->get('language');
-        Lang::addDictionaryLoader($lang ,  $lang . '.php' , Config::File_Array);
+        Lang::addDictionaryLoader($lang ,  $lang . '.php' , Config\Factory::File_Array);
         Lang::setDefaultDictionary($this->_config->get('language'));
 
         $eventManager = new Eventmanager();
@@ -165,7 +169,7 @@ class Application
         /*
          * Prepare models
          */
-        Model::setDefaults(array(
+        \Dvelum\Model::setDefaults(array(
             'hardCacheTime'  => $this->_config->get('frontend_hardcache'),
             'dataCache' => $this->_cache  ,
             'dbObjectStore'  => $objectStore,

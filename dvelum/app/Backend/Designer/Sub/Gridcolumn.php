@@ -89,7 +89,8 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 	public function renderersAction()
 	{
 		$data = array();
-		$autoloaderPaths = $this->_configMain['autoloader']['paths'];
+        $autoloaderCfg = Config::storage()->get('autoloader.php')->__toArray();
+		$autoloaderPaths = $autoloaderCfg['paths'];
 		$files = array();
 		$classes = array();
 
