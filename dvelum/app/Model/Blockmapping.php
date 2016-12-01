@@ -1,4 +1,7 @@
 <?php
+
+use Dvelum\Model as Model;
+
 class Model_Blockmapping extends Model
 {
  	/**

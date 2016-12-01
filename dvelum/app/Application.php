@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 use Dvelum\Config;
 use Dvelum\Model as Model;
+use Dvelum\Orm as Orm;
 /**
  * Application - is the main class that initializes system configuration
  * settings. The system starts working with running an object of this class.
@@ -179,13 +180,13 @@ class Application
         /*
          * Prepare Db_Object
          */
-        $translator = new Db_Object_Config_Translator($this->_config->get('language') . '/objects.php');
-        Db_Object_Config::setConfigPath($this->_config->get('object_configs'));
-        Db_Object_Config::setTranslator($translator);
+        $translator = new Orm\Object\Config\Translator($this->_config->get('language') . '/objects.php');
+        Orm\Object\Config::setConfigPath($this->_config->get('object_configs'));
+        Orm\Object\Config::setTranslator($translator);
 
         if($this->_config->get('db_object_error_log'))
         {
-            $log = new Log_File($this->_config->get('db_object_error_log_path'));
+            $log = new \Log_File($this->_config->get('db_object_error_log_path'));
             /*
              * Switch to Db_Object error log
              */
@@ -195,13 +196,13 @@ class Application
                 $errorTable = $errorModel->table();
                 $errorDb = $errorModel->getDbConnection();
 
-                $logOrmDb = new Log_Db('db_object_error_log' , $errorDb , $errorTable);
-                $logModelDb = new Log_Db('model' , $errorDb , $errorTable);
-                Db_Object::setLog(new Log_Mixed($log, $logOrmDb));
-                Model::setDefaultLog(new Log_Mixed($log, $logModelDb));
+                $logOrmDb = new \Log_Db('db_object_error_log' , $errorDb , $errorTable);
+                $logModelDb = new \Log_Db('model' , $errorDb , $errorTable);
+                Orm\Object::setLog(new \Log_Mixed($log, $logOrmDb));
+                Model::setDefaultLog(new \Log_Mixed($log, $logModelDb));
                 $objectStore->setLog($logOrmDb);
             }else{
-                Db_Object::setLog($log);
+                Orm\Object::setLog($log);
                 Model::setDefaultLog($log);
                 $objectStore->setLog($log);
             }
@@ -209,7 +210,7 @@ class Application
         /*
          * Prepare dictionaries
          */
-        Dictionary::setConfigPath($this->_config->get('dictionary_folder') . $this->_config->get('language').'/');
+        \Dictionary::setConfigPath($this->_config->get('dictionary_folder') . $this->_config->get('language').'/');
 
         // init external modules
         $externalsCfg = $this->_config->get('externals');
@@ -227,15 +228,15 @@ class Application
      */
     protected function _initExternals()
     {
-        $externals = Config::storage()->get('external_modules.php');
+        $externals = Config\Factory::storage()->get('external_modules.php');
 
-        Externals_Manager::setConfig([
+        \Externals_Manager::setConfig([
             'appConfig'=>$this->_config,
             'autoloader' =>$this->_autoloader
         ]);
 
         if($externals->getCount()){
-            Externals_Manager::factory()->loadModules();
+            \Externals_Manager::factory()->loadModules();
         }
     }
 
@@ -326,12 +327,12 @@ class Application
          */
         Db_Object_Builder::useForeignKeys($this->_config->get('foreign_keys'));
 
-        $cfgBackend = Config::storage()->get('backend.php');
+        $cfgBackend = Config\Factory::storage()->get('backend.php');
 
         Registry::set('backend' , $cfgBackend , 'config');
 
         self::$_templates = 'system/' . $cfgBackend->get('theme') . '/';
-        $page = Page::getInstance();
+        $page = \Page::getInstance();
         $page->setTemplatesPath(self::$_templates);
 
         /*

@@ -1,4 +1,8 @@
 <?php
+
+use Dvelum\Model as Model;
+use Dvelum\Config;
+
 class Model_User extends Model
 {
 	const AUTH_LOGIN = 'ulogin';

@@ -65,7 +65,7 @@ class Factory
      * @param boolean $useCache - optional , default true. Use cache if available
      * @return Config
      */
-    static public function config(string $type , string $name , bool $useCache = true) : Config
+    static public function config(int $type , string $name , bool $useCache = true) : Config
     {
         $store = self::$store;
         $cache = self::$cache;

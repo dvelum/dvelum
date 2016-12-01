@@ -1,4 +1,8 @@
 <?php
+
+use Dvelum\Model as Model;
+use Dvelum\Config;
+
 class Model_Medialib extends Model
 {
     static protected $_scriptsIncluded = false;

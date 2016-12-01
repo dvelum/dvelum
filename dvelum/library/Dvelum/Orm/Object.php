@@ -919,7 +919,7 @@ class Object
      * Enable error log. Set log adapter
      * @param Log $log
      */
-    static public function setLog(Log $log)
+    static public function setLog(\Log $log)
     {
         self::$_log = $log;
     }

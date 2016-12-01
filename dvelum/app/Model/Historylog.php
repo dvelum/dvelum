@@ -1,4 +1,7 @@
 <?php
+
+use Dvelum\Model as Model;
+
 /**
  * History logger
  * @author Kirill Egorov 2011

@@ -272,7 +272,7 @@ class Model
             $class = 'Model_' . $objectName;
             self::$instances[$listName] = new $class($objectName);
         }else{
-            self::$instances[$listName] = new Model($objectName);
+            self::$instances[$listName] = new static($objectName);
         }
         return self::$instances[$listName];
     }
@@ -944,7 +944,7 @@ class Model
      * Set default error log adapter
      * @param Log $log
      */
-    static public function setDefaultLog(Log $log)
+    static public function setDefaultLog(\Log $log)
     {
       self::$defaults['errorLog'] = $log;
     }

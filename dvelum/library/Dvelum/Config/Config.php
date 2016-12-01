@@ -68,7 +68,7 @@ abstract class Config implements \ArrayAccess , \Iterator
     /**
      * Get the configuration parameter
      * @param string $key — parameter name
-     * @throws Exception
+     * @throws \Exception
      * @return mixed
      */
     public function get($key)
@@ -76,7 +76,7 @@ abstract class Config implements \ArrayAccess , \Iterator
         if(isset($this->data[$key]))
             return $this->data[$key];
         else
-            throw new Exception('Config::get Invalid key '.$key);
+            throw new \Exception('Config::get Invalid key '.$key);
     }
 
     /**

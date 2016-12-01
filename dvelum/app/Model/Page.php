@@ -1,4 +1,7 @@
 <?php
+
+use Dvelum\Model as Model;
+
 /**
  * Pages Model
  * @author Kirill Egorov 2011

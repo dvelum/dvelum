@@ -1,4 +1,5 @@
 <?php
+use Dvelum\Config;
 /**
  * Frontend modules manager
  */
@@ -23,7 +24,7 @@ class Modules_Manager
     {
         $this->_appConfig = Registry::get('main', 'config');
         $configPath = $this->_appConfig->get($this->_mainconfigKey);
-        $this->_config = Config::storage()->get($configPath, false, true);
+        $this->_config = Config\Factory::storage()->get($configPath, false, true);
 
         $this->_distConfig = new Config_File_Array(Config::storage()->getApplyTo() . $configPath);
 

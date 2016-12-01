@@ -1,4 +1,7 @@
 <?php
+
+use Dvelum\Model as Model;
+
 class Model_Acl_Simple extends Model
 {
   static protected $_fields = array('view','create','edit','delete','object','publish');

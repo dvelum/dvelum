@@ -1,4 +1,5 @@
 <?php
+use Dvelum\Config;
 
 class Externals_Manager
 {
@@ -43,9 +44,9 @@ class Externals_Manager
         return $manager;
     }
 
-    private function __construct(Config_Abstract $config, Autoloader $autoloader)
+    private function __construct(Config\Config $config, \Autoloader $autoloader)
     {
-        $this->config = Config::storage()->get('external_modules.php');
+        $this->config = Config\Factory::storage()->get('external_modules.php');
         $this->autoloader = $autoloader;
         $this->appConfig = $config;
         $this->externalsConfig = $this->appConfig->get('externals');
@@ -63,14 +64,14 @@ class Externals_Manager
             return true;
         }
 
-        $vendors =  File::scanFiles($path, false, false, File::Dirs_Only);
+        $vendors =  \File::scanFiles($path, false, false, File::Dirs_Only);
 
         $hasNew = false;
         if(!empty($vendors))
         {
             foreach($vendors as $vendorPath)
             {
-                $modules = File::scanFiles($vendorPath, false, false, File::Dirs_Only);
+                $modules = \File::scanFiles($vendorPath, false, false, File::Dirs_Only);
                 if(empty($modules)){
                     continue;
                 }
@@ -98,8 +99,8 @@ class Externals_Manager
 
         if($hasNew){
             if(!$this->config->save()){
-                $writePath = Config::storage()->getWrite();
-                $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$writePath.'external_modules.php';
+                $writePath = Config\Factory::storage()->getWrite();
+                $this->errors[] = \Lang::lang()->get('CANT_WRITE_FS').' '.$writePath.'external_modules.php';
                 return false;
             };
         }

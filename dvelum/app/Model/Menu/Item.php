@@ -1,4 +1,7 @@
 <?php
+
+use Dvelum\Model as Model;
+
 /**
  * Menu item model
  */

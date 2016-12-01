@@ -1,4 +1,8 @@
 <?php
+
+use Dvelum\Model as Model;
+use Dvelum\Config;
+
 class Model_Permissions extends Model
 {
  	static protected $_fields = array('view','edit','delete','publish','module','only_own');
@@ -13,7 +17,7 @@ class Model_Permissions extends Model
     public function getPermissions($userId , $groupId)
     {
          if(empty($userId))
-            throw new Exception('Need user id');
+            throw new \Exception('Need user id');
 
     	$data = array();
     	/*
@@ -21,11 +25,11 @@ class Model_Permissions extends Model
     	 */
     	if($groupId){
 
-    	 	$sql = $this->_dbSlave->select()
+    	 	$sql = $this->dbSlave->select()
             				 ->from($this->table() , self::$_fields)
             				 ->where('`group_id` = '.intval($groupId))
     	 	                 ->where('`user_id` IS NULL');
-            $groupRights = $this->_dbSlave->fetchAll($sql);
+            $groupRights = $this->dbSlave->fetchAll($sql);
 
             if(!empty($groupRights))
             	$data =  Utils::rekey('module', $groupRights);
@@ -33,12 +37,12 @@ class Model_Permissions extends Model
          /*
           * Load permissions for user
           */
-         $sql = $this->_dbSlave	->select()
+         $sql = $this->dbSlave	->select()
 				            ->from($this->table() , self::$_fields)
 				            ->where('`user_id` = '.intval($userId))
                             ->where('`group_id` IS NULL');
 
-         $userRights = $this->_dbSlave->fetchAll($sql);
+         $userRights = $this->dbSlave->fetchAll($sql);
 
          /*
           * Replace group permissions by permissions redefined for concrete user
@@ -66,9 +70,9 @@ class Model_Permissions extends Model
      */
     public function getRecords($userId , $groupId)
     {
-        $sql = $this->_dbSlave->select()->from($this->table())->where('user_id =?', $userId)->orWhere('group_id =?',$groupId);
+        $sql = $this->dbSlave->select()->from($this->table())->where('user_id =?', $userId)->orWhere('group_id =?',$groupId);
         try{
-            return $this->_dbSlave->fetchAll($sql);
+            return $this->dbSlave->fetchAll($sql);
         }catch (Exception $e){
             $this->logError($e->getMessage());
             return [];
@@ -82,16 +86,16 @@ class Model_Permissions extends Model
     {
     	$modules = Config::factory(Config::File_Array , Registry::get('main' , 'config')->get('backend_modules'));
 
-    	$sql = $this->_dbSlave->select()
+    	$sql = $this->dbSlave->select()
     		  ->from($this->table() , array('module'))
     		  ->distinct();
 
-    	$data = $this->_dbSlave->fetchCol($sql);
+    	$data = $this->dbSlave->fetchCol($sql);
 
     	if(!empty($data))
     		foreach ($data as $name)
     			if(!$modules->offsetExists($name))
-    				$this->_db->delete($this->table(),'module='.$this->_db->quote($name).'');
+    				$this->db->delete($this->table(),'module='.$this->_db->quote($name).'');
     }
     /**
      * Get permissions for user group
@@ -104,24 +108,24 @@ class Model_Permissions extends Model
 		/*
          * Check if cache exists
          */
-    	if($this->_cache && $data = $this->_cache->load('group_permissions' . $groupId))
+    	if($this->cache && $data = $this->cache->load('group_permissions' . $groupId))
     		return $data;
 
-    	$sql = $this->_dbSlave	->select()
+    	$sql = $this->dbSlave->select()
             				->from($this->table() , self::$_fields)
             				->where('`group_id` = '.intval($groupId))
     	                    ->where('`user_id` IS NULL');
 
-        $data = $this->_dbSlave->fetchAll($sql);
+        $data = $this->dbSlave->fetchAll($sql);
 
         if(!empty($data))
-            $data =  Utils::rekey('module', $data);
+            $data = Utils::rekey('module', $data);
 
          /*
           * Cache info
           */
-         if($this->_cache)
-			 $this->_cache->save($data , 'group_permissions' . $groupId);
+         if($this->cache)
+			 $this->cache->save($data , 'group_permissions' . $groupId);
 
 		return $data;
     }
@@ -146,7 +150,7 @@ class Model_Permissions extends Model
     	if(!empty($modulesToRemove))
     	{
     	    try{
-                $this->_db->delete($this->table(),'`module` IN (\''.implode("','", $modulesToRemove).'\') AND `group_id`='.intval($groupId));
+                $this->db->delete($this->table(),'`module` IN (\''.implode("','", $modulesToRemove).'\') AND `group_id`='.intval($groupId));
             }catch (Exception $e){
                 $this->logError($e->getMessage());
                 return false;

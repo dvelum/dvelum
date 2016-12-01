@@ -1,5 +1,8 @@
 <?php
 
+use Dvelum\Model as Model;
+
+
 class Model_Blocks extends Model
 {
 
