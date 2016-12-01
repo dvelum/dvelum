@@ -59,7 +59,7 @@ if($config->get('development')){
 /*
  * Setting autoloader config
  */
-$autoloaderCfg = $config->get('autoloader');
+$autoloaderCfg = Config::storage()->get('autoloader.php')->__toArray();
 $autoloaderCfg['debug'] = $config->get('development');
 
 if(!isset($autoloaderCfg['useMap']))

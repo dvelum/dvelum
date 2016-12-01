@@ -1,0 +1,7 @@
+{
+    "name": "DVelum",
+    "require": {
+        "php":">=7.0.0",
+        "zendframework/zend-db": "^2.8"
+    }
+}
