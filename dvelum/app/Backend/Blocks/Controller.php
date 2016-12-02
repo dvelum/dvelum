@@ -77,7 +77,7 @@ class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc
     public function classListAction()
     {	
     	$blocksPath = $this->_configMain['blocks'];
-        $filePath = $this->_configMain->get('autoloader');
+        $filePath = Config::storage()->get('autoloader.php');
         $filePath = $filePath['paths'];
 
         $classes = [];

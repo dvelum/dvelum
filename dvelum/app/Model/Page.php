@@ -186,9 +186,9 @@ class Model_Page extends Model
     {
     	$codes = false;
 
-    	if($this->_cache){
+    	if($this->cache){
     		$cacheKey = $this->getCacheKey(array('codes'));
-    		$codes = $this->_cache->load($cacheKey);
+    		$codes = $this->cache->load($cacheKey);
     	}
 
     	if($codes)
@@ -200,8 +200,8 @@ class Model_Page extends Model
 		else
 			$codes = array();
 
-		if($this->_cache)
-            $this->_cache->save($codes, $cacheKey);
+		if($this->cache)
+            $this->cache->save($codes, $cacheKey);
 
 		return $codes;
     }
@@ -230,9 +230,9 @@ class Model_Page extends Model
         if($tree instanceof Tree)
             return $tree;
 
-        if($this->_cache){
+        if($this->cache){
             $cacheKey = $this->getCacheKey(array('pages_tree_data'));
-            $tree = $this->_cache->load($cacheKey);
+            $tree = $this->cache->load($cacheKey);
         }
 
         if($tree instanceof Tree)
@@ -246,8 +246,8 @@ class Model_Page extends Model
             foreach ($data as $k=>$v)
             $tree->addItem($v['id'], $v['parent_id'], $v);
 
-        if($this->_cache)
-            $this->_cache->save($tree, $cacheKey);
+        if($this->cache)
+            $this->cache->save($tree, $cacheKey);
 
         return $tree;
     }

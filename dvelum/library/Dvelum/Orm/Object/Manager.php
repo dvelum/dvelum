@@ -9,8 +9,6 @@
  * @license General Public License version 3
  */
 namespace Dvelum\Orm\Object;
-use Dvelum\Config;
-use Dvelum\Orm\Object;
 
 class Manager
 {
@@ -25,11 +23,11 @@ class Manager
     	if(is_null(self::$_objects))
     	{
 			self::$_objects = array();
-			$paths = Config::storage()->getPaths();
+			$paths = \Dvelum\Config::storage()->getPaths();
 
 			$list = array();
 
-			$cfgPath = Object\Config::getConfigPath();
+			$cfgPath = Config::getConfigPath();
 
 			foreach($paths as $path)
 			{

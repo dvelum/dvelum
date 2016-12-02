@@ -10,7 +10,8 @@
  * @license General Public License version 3
  */
 
-namespace Dvelum\Orm\Object;
+namespace Dvelum\Orm\Object\Field;
+
 use Dvelum\Config;
 use Dvelum\Orm\Object;
 
@@ -46,6 +47,7 @@ class Property
             'hidden',
             'relations_type'
     );
+
     public static $numberLength = array(
             'tinyint' => 3 , 
             'smallint' => 5 , 

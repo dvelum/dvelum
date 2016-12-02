@@ -1,4 +1,9 @@
 <?php
+
+namespace Dvelum\Orm\Object;
+
+use Dvelum\Model;
+
 /**
  * Db_Object information expert
  * Helps to find  relations between objects
@@ -9,7 +14,7 @@
  *
  * @todo Test (its betta version)
  */
-class Db_Object_Expert
+class Expert
 {
 	static protected $_objectAssociations = null;
 
@@ -18,17 +23,17 @@ class Db_Object_Expert
 		if(!is_null(self::$_objectAssociations))
 			return;
 
-		$manager = new Db_Object_Manager();
+		$manager = new Manager();
 		$objects = $manager->getRegisteredObjects();
 		foreach ($objects as $name){
-			$config = Db_Object_Config::getInstance($name);
+			$config = Config::factory($name);
 			$links = $config->getLinks();
 			self::$_objectAssociations[$name] = $links;
 		}
 	}
 	/**
 	 * Get Associated objects
-	 * @param Db_Object $object
+	 * @param Object $object
 	 * @return array   like
 	 * array(
 	 * 	  'single' => array(
@@ -43,7 +48,7 @@ class Db_Object_Expert
 	 * 	   )
 	 * )
 	 */
-	static public function getAssociatedObjects(Db_Object $object)
+	static public function getAssociatedObjects(Object $object)
 	{
 		$linkedObjects = array('single'=>array(),'multi'=>array());
 
@@ -86,7 +91,7 @@ class Db_Object_Expert
 	 */
 	static protected function _getSingleLinks($objectId, $relatedObject , $links)
 	{
-		$relatedConfig = Db_Object_Config::getInstance($relatedObject);
+		$relatedConfig = Config::factory($relatedObject);
 		$relatedObjectModel = Model::factory($relatedObject);
 		$fields = array();
 		$singleRelated = array();

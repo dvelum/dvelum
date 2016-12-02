@@ -59,23 +59,23 @@ class Model_Vc extends Model
             if(!is_array($record_id))
             {
 
-                $sql = $this->_dbSlave->select()
+                $sql = $this->dbSlave->select()
                                  ->from(
                                      $this->table() ,
                                      array('max_version'=>'MAX(version)')
                                   )
                                  ->where('record_id =?' , $record_id)
                                  ->where('object_name =?', $objectName);
-                 return (integer) $this->_dbSlave->fetchOne($sql);
+                 return (integer) $this->dbSlave->fetchOne($sql);
 
             } else {
-                 $sql = $this->_dbSlave->select()
+                 $sql = $this->dbSlave->select()
                                  ->from($this->table() , array('max_version'=>'MAX(version)' ,'rec'=>'record_id'))
                                  ->where('`record_id` IN(?)' , $record_id)
                                  ->where('`object_name` =?', $objectName)
                                  ->group('record_id');
 
-                 $revs = $this->_dbSlave->fetchAll($sql);
+                 $revs = $this->dbSlave->fetchAll($sql);
 
                  if(empty($revs))
                      return array();
@@ -108,13 +108,13 @@ class Model_Vc extends Model
      */
     public function getData($objectName , $recordId, $version)
     {
-         $sql = $this->_dbSlave->select()
+         $sql = $this->dbSlave->select()
                           ->from($this->table() , array('data'))
                           ->where('object_name = ?', $objectName)
                           ->where('record_id =?' , $recordId)
                           ->where('version = ?' , $version);
 
-         $data = $this->_dbSlave->fetchOne($sql);
+         $data = $this->dbSlave->fetchOne($sql);
 
          if(!empty($data))
              return unserialize(base64_decode($data));
@@ -128,12 +128,12 @@ class Model_Vc extends Model
      */
     public function removeItemVc($object , $recordId)
     {
-    	$select = $this->_dbSlave->select()
+    	$select = $this->dbSlave->select()
     						->from($this->table(), 'id')
     						->where('`object_name` = ?', $this->_dbSlave->quote($object))
     						->where('`record_id` = ?', $recordId);
-    	$vcIds = $this->_dbSlave->fetchCol($select);
-    	$store = $this->_getObjectsStore();
-        $store->deleteObjects($this->_name, $vcIds);
+    	$vcIds = $this->dbSlave->fetchCol($select);
+    	$store = $this->getObjectsStore();
+        $store->deleteObjects($this->name, $vcIds);
     }
 }

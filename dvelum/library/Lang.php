@@ -1,4 +1,5 @@
 <?php
+use Dvelum\Config;
 /*
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * Copyright (C) 2011-2012  Kirill A Egorov
@@ -104,7 +105,7 @@ class Lang
 		if(isset(self::$_loaders[$name]))
 		{
 			switch(self::$_loaders[$name]['type']){
-				case Config::File_Array :
+                case Config\Factory::File_Array:
 					self::$_dictionaries[$name] = static::storage()->get(self::$_loaders[$name]['src'] , true , true);
 					$this->_dictionary = self::$_dictionaries[$name];
 					break;

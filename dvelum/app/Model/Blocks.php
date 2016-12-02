@@ -56,7 +56,7 @@ class Model_Blocks extends Model
 
     $bMapping = Model::factory('Blockmapping');
 
-    $sql = $this->_dbSlave->select()
+    $sql = $this->dbSlave->select()
       ->from(array(
             't' => $this->table()
     ))
@@ -73,7 +73,7 @@ class Model_Blocks extends Model
     }
     $sql->order('map.order_no ASC');
 
-    $data = $this->_dbSlave->fetchAll($sql);
+    $data = $this->dbSlave->fetchAll($sql);
 
     if(! empty($data))
       $data = Utils::groupByKey('place', $data);
@@ -108,11 +108,11 @@ class Model_Blocks extends Model
         foreach($items as $index => $config)
           $ids[] = $config['id'];
 
-        $sql = $this->_dbSlave->select()
+        $sql = $this->dbSlave->select()
           ->from($this->table())
           ->where('`id` IN(' . Model::listIntegers($ids) . ')');
 
-        $info = $this->_dbSlave->fetchAll($sql);
+        $info = $this->dbSlave->fetchAll($sql);
       }
     }
 

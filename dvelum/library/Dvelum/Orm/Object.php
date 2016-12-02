@@ -91,7 +91,7 @@ class Object
         $this->name = strtolower($name);
         $this->id = $id;
 
-        $this->config = Object\Config::getInstance($name);
+        $this->config = Config::factory($name);
         $this->primaryKey = $this->config->getPrimaryKey();
         $this->model = \Dvelum\Model::factory($name);
         $this->acl = $this->config->getAcl();
@@ -255,9 +255,10 @@ class Object
     {
         return !empty($this->updates);
     }
+
     /**
      * Get ORM configuration object (data structure helper)
-     * @return Db_Objectconfig
+     * @return Object\Config
      */
     public function getConfig()
     {
@@ -363,7 +364,7 @@ class Object
             return false;
 
         try {
-            $cfg = Object\Config::getInstance($name);
+            $cfg = Object\Config::factory($name);
         }catch (Exception $e){
             return false;
         }
@@ -489,7 +490,7 @@ class Object
         }
         else
         {
-            $value = Object\Property::filter($propConf, $value);
+            $value = Object\Field\Property::filter($propConf, $value);
         }
 
         if(isset($propConf['db_len']) && $propConf['db_len']){
@@ -543,7 +544,7 @@ class Object
     }
     /**
      * @param string $key
-     * @throws Exception
+     * @throws \Exception
      * @return mixed
      */
     public function __get($key)
@@ -559,7 +560,7 @@ class Object
      * If field value was updated method returns new value
      * otherwise returns old value
      * @param string $name - field name
-     * @throws Exception
+     * @throws \Exception
      * @return mixed
      */
     public function get($name)
@@ -588,7 +589,7 @@ class Object
      * Get the initial object field value (received from the database)
      * whether the field value was updated or not
      * @param string $name - field name
-     * @throws Exception
+     * @throws \Exception
      * @return mixed
      */
     public function getOld($name)
@@ -614,7 +615,7 @@ class Object
         if($this->acl){
             try{
                 $this->checkCanEdit();
-            }catch (Exception $e){
+            }catch (\Exception $e){
                 $this->_errors[] = $e->getMessage();
 
                 if(self::$_log)
@@ -838,13 +839,13 @@ class Object
      *
      * @param string $name
      * @param integer | array $id
-     * @throws Exception
+     * @throws \Exception
      * @return Object | array
      */
-    static public function factory($name , $id = false)
+    static public function factory(strin $name , $id = false)
     {
         if(!is_array($id))
-            return Object::factory($name , $id);
+            return new static($name , $id);
 
         $list = [];
         $model = Model::factory($name);
@@ -897,7 +898,7 @@ class Object
 
         foreach ($data as $item)
         {
-            $o = Object::factory($name);
+            $o = static::factory($name);
             /*
              * Apply links info
              */
@@ -919,7 +920,7 @@ class Object
 
     /**
      * Enable error log. Set log adapter
-     * @param Log $log
+     * @param \Log $log
      */
     static public function setLog(\Log $log)
     {
@@ -962,31 +963,31 @@ class Object
     protected function checkCanRead()
     {
         if($this->acl && !$this->acl->canRead($this))
-            throw new Exception('You do not have permission to view data in this object ['.$this->getName().':'.$this->getId().'].');
+            throw new \Exception('You do not have permission to view data in this object ['.$this->getName().':'.$this->getId().'].');
     }
 
     protected function checkCanEdit()
     {
         if($this->acl && !$this->acl->canEdit($this))
-            throw new Exception('You do not have permission to edit data in this object ['.$this->getName().':'.$this->getId().'].');
+            throw new \Exception('You do not have permission to edit data in this object ['.$this->getName().':'.$this->getId().'].');
     }
 
     protected function checkCanDelete()
     {
         if($this->acl && !$this->acl->canDelete($this))
-            throw new Exception('You do not have permission to delete this object ['.$this->getName().':'.$this->getId().'].');
+            throw new \Exception('You do not have permission to delete this object ['.$this->getName().':'.$this->getId().'].');
     }
 
     protected function checkCanCreate()
     {
         if($this->acl && !$this->acl->canCreate($this))
-            throw new Exception('You do not have permission to create object ['.$this->getName().'].');
+            throw new \Exception('You do not have permission to create object ['.$this->getName().'].');
     }
 
     protected function checkCanPublish()
     {
         if($this->acl && !$this->acl->canPublish($this))
-            throw new Exception('You do not have permission to publish object ['.$this->getName().'].');
+            throw new \Exception('You do not have permission to publish object ['.$this->getName().'].');
     }
     /**
      * Unpublish VC object
@@ -1133,6 +1134,7 @@ class Object
         }
         $this->version = $vers;
     }
+
     /**
      * Reject changes
      */
@@ -1140,6 +1142,7 @@ class Object
     {
         $this->updates = [];
     }
+
     /**
      * Save object as new version
      * @param boolean $log  - log changes
@@ -1202,7 +1205,7 @@ class Object
     }
     /**
      * Get Access control List
-     * @return Db_Objectacl | false
+     * @return Object\Acl | false
      */
     public function getAcl()
     {

@@ -1,4 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace Dvelum\Orm\Object;
+
+use Dvelum\Orm;
+use Dvelum\Model;
+use Dvelum\Config;
+
 /**
  * Storage adapter for Db_Object
  * @package Db
@@ -9,16 +17,16 @@
  * @license General Public License version 3
  * @uses Model_Links
  */
-class Db_Object_Store
+class Store
 {
     /**
-     * @var Db_Object_Event_Manager (optional)
+     * @var Event\Manager (optional)
      */
-    protected $_eventManager = null;
+    protected $eventManager = null;
     /**
-     * @var Log
+     * @var \Log
      */
-    protected $_log = false;
+    protected $log = false;
     /**
      * @var array
      */
@@ -28,55 +36,60 @@ class Db_Object_Store
         'versionObject' => 'Vc'
     ];
 
-    public function __construct(array $config = array())
+    public function __construct(array $config = [])
     {
        if(empty($options))
            return;
 
        $this->config =  array_merge($this->config , $config);
     }
+    
     /**
      * Get links object name
      * @return string
      */
-    public function getLinksObjectName()
+    public function getLinksObjectName() : string
     {
     	return $this->config['linksObject'];
     }
+    
     /**
      * Get history object name
      * @return string
      */
-    public function getHistoryObjectName()
+    public function getHistoryObjectName() : string 
     {
     	return $this->config['historyObject'];
     }
+    
     /**
      * Get version object name
      * @return string
      */
-    public function getVersionObjectName()
+    public function getVersionObjectName() : string 
     {
     	return $this->config['versionObject'];
     }
+    
     /**
      * Set log Adapter
-     * @param Log $log
+     * @param \Log $log
      */
-    public function setLog(Log $log)
+    public function setLog(\Log $log)
     {
-    	$this->_log = $log;
+    	$this->log = $log;
     }
+    
     /**
      * Set event manager
-     * @param Db_Object_Event_Manager $obj
+     * @param \Eventmanager $obj
      */
-    public function setEventManager(Db_Object_Event_Manager $obj)
+    public function setEventManager(\Eventmanager $obj)
     {
-    	$this->_eventManager = $obj;
+    	$this->eventManager = $obj;
     }
 
-    protected function _getDbConnection(Db_Object $object)
+    protected function getDbConnection(Object $object)
     {
     	return Model::factory($object->getName())->getDbConnection();
     }
@@ -90,8 +103,8 @@ class Db_Object_Store
     {
         if($object->getConfig()->isReadOnly())
         {
-            if($this->_log)
-                $this->_log->log('ORM :: cannot update readonly object '. $object->getConfig()->getName());
+            if($this->log)
+                $this->log->log('ORM :: cannot update readonly object '. $object->getConfig()->getName());
 
             return false;
         }
@@ -111,8 +124,8 @@ class Db_Object_Store
         /*
          * Fire "BEFORE_UPDATE" Event if event manager exists
          */
-        if($this->_eventManager)
-            $this->_eventManager->fireEvent(Db_Object_Event_Manager::BEFORE_UPDATE, $object);
+        if($this->eventManager)
+            $this->eventManager->fireEvent(Event\Manager::BEFORE_UPDATE, $object);
 
        /*
         * Validate unique values
@@ -121,14 +134,14 @@ class Db_Object_Store
 
         if(!empty($values))
         {
-          if($this->_log)
+          if($this->log)
           {
             $errors = array();
             foreach($values as $k => $v)
             {
               $errors[] = $k . ':' . $v;
             }
-            $this->_log->log($object->getName() . '::update ' . implode(', ' , $errors));
+            $this->log->log($object->getName() . '::update ' . implode(', ' , $errors));
           }
           return false;
         }
@@ -141,7 +154,7 @@ class Db_Object_Store
          /*
           * Get Database connector for object model;
           */
-         $db = $this->_getDbConnection($object);
+         $db = $this->getDbConnection($object);
 
 	     if($transact && $transaction)
 	    	 $db->beginTransaction();
@@ -163,8 +176,8 @@ class Db_Object_Store
          /*
           * Fire "AFTER_UPDATE" Event if event manager exists
           */
-         if($this->_eventManager)
-            $this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_UPDATE, $object);
+         if($this->eventManager)
+            $this->eventManager->fireEvent(Event\Manager::AFTER_UPDATE, $object);
 
 	     return $object->getId();
     }
@@ -172,7 +185,7 @@ class Db_Object_Store
     protected function _updateOperation(Db_Object $object)
     {
         try{
-            $db = $this->_getDbConnection($object);
+            $db = $this->getDbConnection($object);
             $updates = $object->getUpdates();
 
             if($object->getConfig()->hasEncrypted())
@@ -188,33 +201,33 @@ class Db_Object_Store
             /*
              * Fire "AFTER_UPDATE_BEFORE_COMMIT" Event if event manager exists
              */
-            if($this->_eventManager)
-                $this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_UPDATE_BEFORE_COMMIT, $object);
+            if($this->eventManager)
+                $this->eventManager->fireEvent(Event\Manager::AFTER_UPDATE_BEFORE_COMMIT, $object);
             $object->commitChanges();
 
             return true;
 
         }catch (Exception $e){
 
-            if($this->_log)
-                $this->_log->log($object->getName().'::_updateOperation '.$e->getMessage());
+            if($this->log)
+                $this->log->log($object->getName().'::_updateOperation '.$e->getMessage());
 
             return false;
         }
     }
 
     /**
-     * Unpublish Db_Objects
-     * @param Db_Object $object
+     * Unpublish Objects
+     * @param Object $object
      * @param boolean $transaction - optional, default false
      * @return bool
      */
-    public function unpublish(Db_Object $object , $transaction = true)
+    public function unpublish(Object $object , $transaction = true)
     {
     	if($object->getConfig()->isReadOnly())
     	{
-    		if($this->_log)
-    			$this->_log->log('ORM :: cannot unpublish readonly object '. $object->getConfig()->getName());
+    		if($this->log)
+    			$this->log->log('ORM :: cannot unpublish readonly object '. $object->getConfig()->getName());
 
     		return false;
     	}
@@ -227,8 +240,8 @@ class Db_Object_Store
 
     	if (!$object->getConfig()->isRevControl())
     	{
-    		if($this->_log){
-    			$this->_log->log($object->getName().'::unpublish Cannot unpublish object is not under version control');
+    		if($this->log){
+    			$this->log->log($object->getName().'::unpublish Cannot unpublish object is not under version control');
     		}
     		return false;
     	}
@@ -236,8 +249,8 @@ class Db_Object_Store
        /*
         * Fire "BEFORE_UNPUBLISH" Event if event manager exists
     	*/
-    	if($this->_eventManager)
-    		$this->_eventManager->fireEvent(Db_Object_Event_Manager::BEFORE_UNPUBLISH, $object);
+    	if($this->eventManager)
+    		$this->eventManager->fireEvent(Event\Manager::BEFORE_UNPUBLISH, $object);
 
        /*
     	* Check if DB table support transactions
@@ -246,7 +259,7 @@ class Db_Object_Store
     	/*
     	 * Get Database connector for object model;
     	*/
-    	$db = $this->_getDbConnection($object);
+    	$db = $this->getDbConnection($object);
 
     	if($transact && $transaction)
     		$db->beginTransaction();
@@ -267,24 +280,24 @@ class Db_Object_Store
     	/*
     	 * Fire "AFTER_UPDATE" Event if event manager exists
     	*/
-    	if($this->_eventManager)
-    		$this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_UNPUBLISH, $object);
+    	if($this->eventManager)
+    		$this->eventManager->fireEvent(Event\Manager::AFTER_UNPUBLISH, $object);
 
     	return true;
     }
 
    /**
     * Publish Db_Object
-    * @param Db_Object $object
+    * @param Object $object
     * @param boolean $transaction - optional, default true
     * @return boolean
     */
-    public function publish(Db_Object $object, $transaction = true)
+    public function publish(Object $object, $transaction = true)
     {
     	if($object->getConfig()->isReadOnly())
     	{
-    		if($this->_log)
-    			$this->_log->log('ORM :: cannot publish readonly object '. $object->getConfig()->getName());
+    		if($this->log)
+    			$this->log->log('ORM :: cannot publish readonly object '. $object->getConfig()->getName());
 
     		return false;
     	}
@@ -296,8 +309,8 @@ class Db_Object_Store
 
     	if(!$object->getConfig()->isRevControl())
     	{
-    		if($this->_log){
-    			$this->_log->log($object->getName().'::publish Cannot publish object is not under version control');
+    		if($this->log){
+    			$this->log->log($object->getName().'::publish Cannot publish object is not under version control');
     		}
     		return false;
     	}
@@ -305,8 +318,8 @@ class Db_Object_Store
     	/*
     	 * Fire "BEFORE_UNPUBLISH" Event if event manager exists
     	*/
-    	if($this->_eventManager)
-    		$this->_eventManager->fireEvent(Db_Object_Event_Manager::BEFORE_PUBLISH, $object);
+    	if($this->eventManager)
+    		$this->eventManager->fireEvent(Event\Manager::BEFORE_PUBLISH, $object);
 
     	/*
     	 * Check if DB table support transactions
@@ -315,7 +328,7 @@ class Db_Object_Store
     	/*
     	 * Get Database connector for object model;
     	*/
-    	$db = $this->_getDbConnection($object);
+    	$db = $this->getDbConnection($object);
 
     	if($transact && $transaction)
     		$db->beginTransaction();
@@ -336,8 +349,8 @@ class Db_Object_Store
     	/*
     	 * Fire "AFTER_UPDATE" Event if event manager exists
     	 */
-    	if($this->_eventManager)
-    		$this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_PUBLISH, $object);
+    	if($this->eventManager)
+    		$this->eventManager->fireEvent(Event\Manager::AFTER_PUBLISH, $object);
 
     	return true;
     }
@@ -401,8 +414,8 @@ class Db_Object_Store
             $db->delete($linksObjModel->table() , $where);
             return true;
         } catch (Exception $e){
-        	if($this->_log)
-        		$this->_log->log($object->getName().'::_clearLinks '.$e->getMessage());
+        	if($this->log)
+        		$this->log->log($object->getName().'::_clearLinks '.$e->getMessage());
             return false;
         }
     }
@@ -464,20 +477,20 @@ class Db_Object_Store
     {
         if($object->getConfig()->isReadOnly())
         {
-            if($this->_log)
-                $this->_log->log('ORM :: cannot insert readonly object '. $object->getConfig()->getName());
+            if($this->log)
+                $this->log->log('ORM :: cannot insert readonly object '. $object->getConfig()->getName());
 
             return false;
         }
 
-    	if($this->_eventManager)
-            $this->_eventManager->fireEvent(Db_Object_Event_Manager::BEFORE_ADD, $object);
+    	if($this->eventManager)
+            $this->eventManager->fireEvent(Event\Manager::BEFORE_ADD, $object);
        /*
 	    * Check if DB table support transactions
 	    */
     	$transact = $object->getConfig()->isTransact();
 
-    	$db = $this->_getDbConnection($object);
+    	$db = $this->getDbConnection($object);
 
     	if($transact && $transaction)
     		$db->beginTransaction();
@@ -496,8 +509,8 @@ class Db_Object_Store
         		$db->commit();
         }
 
-        if($this->_eventManager)
-        	$this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_ADD, $object);
+        if($this->eventManager)
+        	$this->eventManager->fireEvent(Event\Manager::AFTER_ADD, $object);
 
         return $object->getId();
     }
@@ -556,19 +569,19 @@ class Db_Object_Store
 
         if(!empty($values))
         {
-            if($this->_log)
+            if($this->log)
             {
                 $errors = array();
                 foreach($values as $k => $v)
                 {
                     $errors[] = $k . ':' . $v;
                 }
-                $this->_log->log($object->getName() . '::insert ' . implode(', ' , $errors));
+                $this->log->log($object->getName() . '::insert ' . implode(', ' , $errors));
             }
             return false;
         }
 
-        $db = $this->_getDbConnection($object);
+        $db = $this->getDbConnection($object);
 
         $objectTable = $object->getTable();
 
@@ -603,8 +616,8 @@ class Db_Object_Store
 
     	if($object->getConfig()->isReadOnly())
     	{
-    		if($this->_log)
-    			$this->_log->log('ORM :: cannot addVersion for readonly object '. $object->getConfig()->getName());
+    		if($this->log)
+    			$this->log->log('ORM :: cannot addVersion for readonly object '. $object->getConfig()->getName());
 
     		return false;
     	}
@@ -616,8 +629,8 @@ class Db_Object_Store
 
     	if(!$object->getConfig()->isRevControl())
     	{
-    		if($this->_log)
-    			$this->_log->log($object->getName().'::publish Cannot addVersion. Object is not under version control');
+    		if($this->log)
+    			$this->log->log($object->getName().'::publish Cannot addVersion. Object is not under version control');
 
     		return false;
     	}
@@ -625,8 +638,8 @@ class Db_Object_Store
     	/*
     	 * Fire "BEFORE_ADD_VERSION" Event if event manager exists
     	*/
-    	if($this->_eventManager)
-    		$this->_eventManager->fireEvent(Db_Object_Event_Manager::BEFORE_ADD_VERSION, $object);
+    	if($this->eventManager)
+    		$this->eventManager->fireEvent(Event\Manager::BEFORE_ADD_VERSION, $object);
 
        /*
     	* Create new revision
@@ -658,16 +671,16 @@ class Db_Object_Store
                 throw new Exception('Cannot save object');
 
         }catch(Exception $e){
-            if($this->_log)
-                $this->_log->log('Cannot update unpublished object data '. $e->getMessage());
+            if($this->log)
+                $this->log->log('Cannot update unpublished object data '. $e->getMessage());
     		return false;
     	}
 
     	/*
     	 * Fire "AFTER_ADD_VERSION" Event if event manager exists
     	 */
-    	if($this->_eventManager)
-    		$this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_ADD_VERSION, $object);
+    	if($this->eventManager)
+    		$this->eventManager->fireEvent(Event\Manager::AFTER_ADD_VERSION, $object);
 
     	return  $versNum;
     }
@@ -683,8 +696,8 @@ class Db_Object_Store
 
         if($object->getConfig()->isReadOnly())
         {
-            if($this->_log)
-                $this->_log->log('ORM :: cannot delete readonly object '. $object->getName());
+            if($this->log)
+                $this->log->log('ORM :: cannot delete readonly object '. $object->getName());
 
             return false;
         }
@@ -692,12 +705,12 @@ class Db_Object_Store
         if(!$object->getId())
             return false;
 
-        if($this->_eventManager)
-        	$this->_eventManager->fireEvent(Db_Object_Event_Manager::BEFORE_DELETE, $object);
+        if($this->eventManager)
+        	$this->eventManager->fireEvent(Event\Manager::BEFORE_DELETE, $object);
 
         $transact = $object->getConfig()->isTransact();
 
-        $db = $this->_getDbConnection($object);
+        $db = $this->getDbConnection($object);
 
     	if($transact && $transaction)
     		$db->beginTransaction();
@@ -719,8 +732,8 @@ class Db_Object_Store
                 $db->rollBack();
         }
 
-        if($this->_eventManager)
-        	$this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_DELETE, $object);
+        if($this->eventManager)
+        	$this->eventManager->fireEvent(Event\Manager::AFTER_DELETE, $object);
 
         return $success;
     }
@@ -730,14 +743,14 @@ class Db_Object_Store
      * @param array $ids
      * @return boolean
      */
-    public function deleteObjects($objectName, array $ids)
+    public function deleteObjects($objectName, array $ids) : bool
     {
         $objectConfig =  Db_Object_Config::getInstance($objectName);
 
         if($objectConfig->isReadOnly())
         {
-            if($this->_log)
-                $this->_log->log('ORM :: cannot delete readonly objects '. $objectConfig->getName());
+            if($this->log)
+                $this->log->log('ORM :: cannot delete readonly objects '. $objectConfig->getName());
 
             return false;
         }
@@ -748,18 +761,18 @@ class Db_Object_Store
     	if(empty($ids))
     		return true;
 
-    	$specialCase = Db_Object::factory($objectName);
+    	$specialCase = Object::factory($objectName);
 
-    	$db = $this->_getDbConnection($specialCase);
+    	$db = $this->getDbConnection($specialCase);
 
 	    $where = $db->quoteInto('`id` IN(?)', $ids);
 
-	    if($this->_eventManager)
+	    if($this->eventManager)
 	    {
 	       	foreach ($ids as $id)
 	       	{
 	       		$specialCase->setId($id);
-	       		$this->_eventManager->fireEvent(Db_Object_Event_Manager::BEFORE_DELETE, $specialCase);
+	       		$this->eventManager->fireEvent(Event\Manager::BEFORE_DELETE, $specialCase);
 	       	}
 	    }
 
@@ -779,9 +792,9 @@ class Db_Object_Store
          */
         if($objectConfig->hasHistory())
          	foreach ($ids as $v)
-        		$history->log($userId, $v, Model_Historylog::Delete , $tableName);
+        		$history->log($userId, $v, \Model_Historylog::Delete , $tableName);
 
-        if($this->_eventManager)
+        if($this->eventManager)
         {
         	/*
         	 * Fire "AFTER_DELETE" event for each deleted object
@@ -789,7 +802,7 @@ class Db_Object_Store
 	        foreach ($ids as $id)
 	        {
 	        	$specialCase->setId($id);
-	        	$this->_eventManager->fireEvent(Db_Object_Event_Manager::AFTER_DELETE, $specialCase);
+	        	$this->eventManager->fireEvent(Event\Manager::AFTER_DELETE, $specialCase);
 	        }
         }
         return true;

@@ -1,4 +1,7 @@
 <?php
+namespace Dvelum\Orm\Object\Event;
+use Dvelum\Orm;
+
 /**
  * Abstract class for event managing
  * @author Kirill A Egorov kirill.a.egorov@gmail.com
@@ -6,7 +9,8 @@
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * @license General Public License version 3
  */
-abstract class Db_Object_Event_Manager{
+abstract class Manager
+{
 	const BEFORE_ADD = 'onBeforeAdd';
 	const BEFORE_UPDATE = 'onBeforeUpdate';
 	const BEFORE_DELETE = 'onBeforeDelete';
@@ -25,7 +29,7 @@ abstract class Db_Object_Event_Manager{
 	 * Note that onBeforeDelete and onAfterDelete events provide "SpacialCase" empty Db_Object
 	 * id property exists
 	 * @param string $code  (action constant)
-	 * @param Db_Object $object
+	 * @param Orm\Object $object
 	 */
-	abstract public function fireEvent($code , Db_Object $object);
+	abstract public function fireEvent(string $code , Orm\Object $object);
 }

@@ -381,7 +381,7 @@ class Model
      */
     public function getItemByUniqueField($fieldName , $value , $fields = '*')
     {
-        if(!$this->objectConfig->isUnique($fieldName)){
+        if(!$this->objectConfig->getField($fieldName)->isUnique()){
           $eText = 'getItemByUniqueField field "'.$fieldName.'" ['.$this->objectConfig->getName().'] should be unique';
           $this->logError($eText);
             throw new Exception($eText);
@@ -627,7 +627,7 @@ class Model
           continue;
         }
 
-        if($this->objectConfig->fieldExists($field) && $this->objectConfig->isBoolean($field))
+        if($this->objectConfig->fieldExists($field) && $this->objectConfig->getField($field)->isBoolean())
           $filters[$field] = Filter::filterValue(Filter::FILTER_BOOLEAN, $val);
       }
       return $filters;

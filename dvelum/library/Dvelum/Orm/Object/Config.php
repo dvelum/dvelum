@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Object;
 
 use Dvelum\Orm;
+use Dvelum\Config as Cfg;
 
 /**
  * Orm Object structure config
@@ -103,7 +104,7 @@ class Config
 
     /**
      * Access Control List
-     * @var Db_Object_Acl
+     * @var Acl
      */
     protected $_acl = false;
 
@@ -156,7 +157,7 @@ class Config
         if(!self::configExists($name))
             throw new \Exception('Undefined object config '. $name);
 
-        $this->config = \Dvelum\Config\Factory::storage()->get(self::$configs[$name], !$force , false);
+        $this->config = Cfg\Factory::storage()->get(self::$configs[$name], !$force , false);
         $this->loadProperties();
     }
 
@@ -252,25 +253,17 @@ class Config
     {
         $dataLink = & $this->config->dataLink();
         $pKeyName = $this->getPrimaryKey();
-        /*
-         * System field init
-         */
-        $dataLink['fields'][$pKeyName] =  array(
-            'title'=>'PRIMARY_KEY',
-            'system'=>true,
-            'db_type' => 'bigint',
-            'db_isNull' => false,
-            'db_unsigned'=>true,
-            'db_auto_increment'=>true,
-            'unique'=>'PRIMARY',
-            'is_search' =>true,
-            'lazyLang'=>true
-        );
+
+        $dataLink['fields'][$pKeyName] = Cfg\Factory::config(
+            Cfg\Factory::File_Array,
+            self::$configPath.'system/pk_field.php'
+        )->__toArray();
+
         /*
          * System index init
          */
         $dataLink['indexes']['PRIMARY'] = array(
-            'columns'=>array($pKeyName),
+            'columns'=>[$pKeyName],
             'fulltext'=>false,
             'unique'=>true,
             'primary'=>true
@@ -294,9 +287,10 @@ class Config
         if(!isset($dataLink['slave_connection']) || empty($dataLink['slave_connection']))
             $dataLink['slave_connection'] = $dataLink['connection'];
 
-        foreach($dataLink['fields'] as &$field){
-            if(isset($field['link_config']) && isset($field['link_config']['link_type']) && $field['link_config']['link_type'] == 'multy'){
-                $field['link_config']['link_type'] = 'multi';
+
+        foreach($dataLink['fields'] as & $config){
+            if(isset($config['link_config']) && isset($config['link_config']['link_type']) && $config['link_config']['link_type'] == 'multy'){
+                $config['link_config']['link_type'] = 'multi';
             }
         }
         
@@ -314,6 +308,10 @@ class Config
          */
         if(!empty($dataLink['acl']))
             $this->_acl = Orm\Object\Acl::factory($dataLink['acl']);
+
+        foreach($dataLink['fields'] as & $config){
+            $config = new Config\Field($config);
+        }
     }
 
     protected function _getVcFields()
@@ -473,71 +471,6 @@ class Config
     }
 
     /**
-     * Check if a field is a object link
-     * @param string $field
-     * @throws Exception
-     * @return boolean
-     */
-    public function isObjectLink($field)
-    {
-        $cfg = $this->getFieldConfig($field);
-
-        if(isset($cfg['type']) && $cfg['type']==='link' && is_array($cfg['linkconfig']) && $cfg['linkconfig']['link_type']===self::LINK_OBJECT)
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check if a field is a multilink (a list of links to objects of the same type)
-     * @param string $field
-     * @throws Exception
-     * @return boolean
-     */
-    public function isMultiLink($field)
-    {
-        $cfg = $this->getFieldConfig($field);
-
-        if(isset($cfg['type']) && $cfg['type']==='link' && isset($cfg['linkconfig']) && is_array($cfg['linkconfig']) && $cfg['linkconfig']['link_type']===self::LINK_OBJECT_LIST)
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check if field is ManyToMany relation
-     * @param $field
-     * @return boolean
-     */
-    public function isManyToManyLink($field)
-    {
-        $cfg = $this->getFieldConfig($field);
-
-        if(isset($cfg['type']) && $cfg['type']==='link'
-            && is_array($cfg['linkconfig'])
-            && $cfg['linkconfig']['link_type'] === self::LINK_OBJECT_LIST
-            && isset($cfg['linkconfig']['relations_type'])
-            && $cfg['linkconfig']['relations_type'] === self::RELATION_MANY_TO_MANY
-        ){
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Get the name of the object referenced by the field
-     * @param string $field
-     * @return string  or false on error
-     */
-    public function getLinkedObject($field)
-    {
-        if(!$this->isLink($field))
-            return false;
-        $cfg = $this->getFieldConfig($field);
-        return 	$cfg['linkconfig']['object'];
-    }
-
-    /**
      * Get the name of the dictionary that is referenced by the field
      * @param string $field
      * @return string or false on error
@@ -550,59 +483,6 @@ class Config
         return 	$cfg['linkconfig']['object'];
     }
 
-    /**
-     * Check if the field is a link
-     * @param string $field
-     * @return boolean
-     */
-    public function isLink($field)
-    {
-        $cfg = $this->getFieldConfig($field);
-        if(isset($cfg['type']) && $cfg['type']==='link')
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check if the field is a link to the dictionary
-     * @param string $field
-     * @return boolean
-     */
-    public function isDictionaryLink($field)
-    {
-        $cfg = $this->getFieldConfig($field);
-        if(isset($cfg['type']) && $cfg['type']==='link' && is_array($cfg['linkconfig']) && $cfg['linkconfig']['link_type']==='dictionary')
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check if html is allowed
-     * @param string $field
-     * @return boolean
-     */
-    public function isHtml($field)
-    {
-        $cfg = $this->getFieldConfig($field);
-
-        if(isset($cfg['allow_html']) && $cfg['allow_html'])
-            return true;
-
-        return false;
-    }
-
-    /**
-     * Get the database type for the field
-     * @param string $field
-     * @return string
-     */
-    public function getDbType($field)
-    {
-        $cfg = $this->getFieldConfig($field);
-        return $cfg['db_type'];
-    }
 
     /**
      * Get a list of fields linking to external objects
@@ -629,22 +509,7 @@ class Config
         return $data;
     }
 
-    /**
-     * Check whether the field should be unique
-     * @param string $name
-     * @return boolean
-     */
-    public function isUnique($name)
-    {
-        $fields = $this->config->get('fields');
-        if(!isset($fields[$name]['unique']))
-            return false;
 
-        if(is_string($fields[$name]['unique']) && strlen($fields[$name]['unique']))
-            return true;
-
-        return (boolean) $fields[$name]['unique'];
-    }
     /**
      * Check if the object uses history log
      * @return boolean
@@ -688,110 +553,6 @@ class Config
         return $this->config->get('use_db_prefix');
     }
 
-    /**
-     * Check whether the field is a boolean field
-     * @param string $field
-     * @return boolean
-     */
-    public function isBoolean($field)
-    {
-        return (isset($this->config['fields'][$field]['db_type']) &&  $this->config['fields'][$field]['db_type'] === 'boolean');
-    }
-
-    /**
-     * Check whether the field is a numeric field
-     * @param string $field
-     * @return boolean
-     */
-    public function isNumeric($field)
-    {
-        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] ,Orm\Object\Builder::$numTypes , true));
-    }
-
-    /**
-     * Check whether the field is a integer field
-     * @param string $field
-     * @return boolean
-     */
-    public function isInteger($field)
-    {
-        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$intTypes , true));
-    }
-
-    /**
-     * Check whether the field is a float field
-     * @param string $field
-     * @return boolean
-     */
-    public function isFloat($field)
-    {
-        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$floatTypes , true));
-    }
-
-    /**
-     * Check whether the field is a text field
-     * @param boolean $field
-     * @param boolean $charTypes optional
-     */
-    public function isText($field , $charTypes = false)
-    {
-        if(!isset($this->config['fields'][$field]['db_type']))
-            return false;
-
-        $isText =  (in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$textTypes , true));
-
-        if($charTypes && !$isText)
-            $isText =  (in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$charTypes, true));
-
-        return $isText;
-    }
-
-    /**
-     * Check whether the field is a date field
-     * @param boolean $field
-     */
-    public function isDateField($field)
-    {
-        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$dateTypes, true));
-    }
-
-    /**
-     * Check if the field value is required
-     * @param string $field
-     * @return boolean
-     */
-    public function isRequired($field)
-    {
-        if(isset($this->config['fields'][$field]['required']) &&  $this->config['fields'][$field]['required'])
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check if field can be used for search
-     * @param string $field
-     * @return boolean
-     */
-    public function isSearch($field)
-    {
-        if(isset($this->config['fields'][$field]['is_search']) && $this->config['fields'][$field]['is_search'])
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check if field is encrypted
-     * @param string $field
-     */
-    public function isEncrypted($field)
-    {
-        if(isset($this->config['fields'][$field]['type']) && $this->config['fields'][$field]['type']==='encrypted')
-            return true;
-        else
-            return false;
-    }
 
     /**
      * Check if the field is present in the description
@@ -1259,62 +1020,7 @@ class Config
         return self::$translator;
     }
 
-    /**
-     * Get field default value. Note! Method return false if value not specified
-     * @return string | false
-     */
-    public function getDefault($field)
-    {
-        $field = $this->getFieldConfig($field);
-        if(isset($field['db_default']))
-            return $field['db_default'];
-        else
-            return false;
-    }
 
-    /**
-     * Check if field has default value
-     * @return boolean
-     */
-    public function hasDefault($field)
-    {
-        $field = $this->getFieldConfig($field);
-        if(isset($field['db_default']) && $field['db_default']!==false)
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check if field is numeric and unsigned
-     * @param string $field
-     * @return boolean
-     */
-    public function isUnsigned($field)
-    {
-        if(!$this->isNumeric($field))
-            return false;
-
-        $field = $this->getFieldConfig($field);
-        if(isset($field['db_unsigned']) && $field['db_unsigned'])
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check if field  can be null
-     * @param string $field
-     * @return boolean
-     */
-    public function isNull($field)
-    {
-        $field = $this->getFieldConfig($field);
-        if(isset($field['db_isNull']) && $field['db_isNull'])
-            return true;
-        else
-            return false;
-    }
 
     /**
      * Check and fix config file, update old config structure
@@ -1491,15 +1197,7 @@ class Config
         return false;
     }
 
-    /**
-     * Check if field is virtual (no database representation)
-     * @param $field
-     * @return bool
-     */
-    public function isVirtual($field)
-    {
-        return $this->isMultiLink($field);
-    }
+
 
     /**
      * Check if field is system field of version control
@@ -1523,5 +1221,15 @@ class Config
         }else{
             return false;
         }
+    }
+
+    /**
+     * Get object field
+     * @param string $name
+     * @return Config\Field
+     */
+    public function getField(string $name) : Config\Field
+    {
+        return $this->config['fields'][$name];
     }
 }

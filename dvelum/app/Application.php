@@ -328,7 +328,7 @@ class Application
         /*
          * Prepare objects
          */
-        Db_Object_Builder::useForeignKeys($this->_config->get('foreign_keys'));
+        Orm\Object\Builder::useForeignKeys($this->_config->get('foreign_keys'));
 
         $cfgBackend = Config\Factory::storage()->get('backend.php');
 

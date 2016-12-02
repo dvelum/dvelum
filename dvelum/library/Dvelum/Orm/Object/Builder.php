@@ -12,20 +12,19 @@ namespace Dvelum\Orm\Object;
 
 use Dvelum\Orm;
 use Dvelum\Model;
-use Dvelum\Config;
 
 class Builder
 {
     /**
      *
-     * @var Zend_Db_Adapter_Mysqli
+     * @var \Db_Adapter
      */
     protected $_db;
     protected $_objectName;
 
     /**
      *
-     * @var Db_Object_Config
+     * @var Config
      */
     protected $_objectConfig;
 
@@ -43,7 +42,7 @@ class Builder
     /**
      *
      * @param string $objectName
-     * @param booleab $forceConfig, optional
+     * @param boolean $forceConfig, optional
      */
     public function __construct($objectName , $forceConfig = true)
     {
@@ -171,11 +170,9 @@ class Builder
 
     /**
      * Check if DB table has correct structure
-     *
-     * @param Db_Object $object
      * @return boolean
      */
-    public function validate()
+    public function validate() : bool
     {
         if(! $this->tableExists())
             return false;
@@ -325,9 +322,9 @@ class Builder
                     if($v['db_scale'] != $column->getNumericScale() || $v['db_precision'] != $column->getNumericPrecision())
                         $lenCmp = true;
                 }
-                elseif(in_array($v['db_type'] , self::$numTypes , true) && isset(Orm\Object\Property::$numberLength[$v['db_type']]))
+                elseif(in_array($v['db_type'] , self::$numTypes , true) && isset(Orm\Object\Field\Property::$numberLength[$v['db_type']]))
                 {
-                    $lenCmp = (string) Orm\Object\Property::$numberLength[$v['db_type']] != (string) $column->getCharacterMaximumLength();
+                    $lenCmp = (string) Orm\Object\Field\Property::$numberLength[$v['db_type']] != (string) $column->getCharacterMaximumLength();
                 }
                 else
                 {
@@ -917,7 +914,7 @@ class Builder
      */
     protected function _proppertySql($name , $data)
     {
-        $property = new Orm\Object\Property($name);
+        $property = new Orm\Object\Field\Property($name);
         $property->setData($data);
         return $property->__toSql();
     }
@@ -929,7 +926,7 @@ class Builder
      */
     protected function _sqlCreate()
     {
-        $config = Orm\Object\Config::factory($this->_objectName);
+        $config = Config::factory($this->_objectName);
 
         $fields = $config->get('fields');
 
@@ -1179,7 +1176,7 @@ class Builder
         {
             $brokenFields = array();
             foreach($links as $o => $fieldList)
-                if(! Orm\Object\Config::configExists($o))
+                if(! Config::configExists($o))
                     foreach($fieldList as $field => $cfg)
                         $brokenFields[$field] = $o;
         }
@@ -1205,7 +1202,7 @@ class Builder
             if(!empty($fields)){
                 foreach($fields as $fieldName=>$linkType){
                     $relationObjectName = $this->_objectConfig->getRelationsObject($fieldName);
-                    if(!Orm\Object\Config::configExists($relationObjectName)){
+                    if(!Config::configExists($relationObjectName)){
                         return false;
                     }
                 }
@@ -1223,7 +1220,7 @@ class Builder
             if(!empty($fields)){
                 foreach($fields as $fieldName=>$linkType){
                     $relationObjectName = $this->_objectConfig->getRelationsObject($fieldName);
-                    if(!Orm\Object\Config::configExists($relationObjectName)){
+                    if(!Config::configExists($relationObjectName)){
                         $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
                     }
                 }
@@ -1247,11 +1244,11 @@ class Builder
         $db = $objectModel->getDbConnection();
         $tablePrefix = $objectModel->getDbPrefix();
 
-        $oConfigPath = Orm\Object\Config::getConfigPath();
-        $configDir  = Config::storage()->getWrite() . $oConfigPath;
+        $oConfigPath = Config::getConfigPath();
+        $configDir  = \Dvelum\Config::storage()->getWrite() . $oConfigPath;
 
-        $fieldList = Config::storage()->get('objects/relations/fields.php');
-        $indexesList = Config::storage()->get('objects/relations/indexes.php');
+        $fieldList = \Dvelum\Config::storage()->get('objects/relations/fields.php');
+        $indexesList = \Dvelum\Config::storage()->get('objects/relations/indexes.php');
 
         if(empty($fieldList))
             throw new Exception('Cannot get relation fields: ' . 'objects/relations/fields.php');
@@ -1311,16 +1308,16 @@ class Builder
             /*
              * Write object config
              */
-            if(!Config\File\AsArray::create($configDir. $newObjectName . '.php'))
+            if(!\Dvelum\Config\File\AsArray::create($configDir. $newObjectName . '.php'))
                 Response::jsonError($lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php');
 
-            $cfg = Config::storage()->get($oConfigPath. strtolower($newObjectName).'.php' , false , false);
+            $cfg = \Dvelum\Config::storage()->get($oConfigPath. strtolower($newObjectName).'.php' , false , false);
 
             $cfg->setData($objectData);
             $cfg->save();
 
 
-            $cfg = Orm\Object\Config::factory($newObjectName);
+            $cfg = Config::factory($newObjectName);
             $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->_objectName.' & '.$linkedObject);
 
             if(!$cfg->save())
@@ -1329,7 +1326,7 @@ class Builder
             /*
              * Build database
             */
-            $builder = Orm\Object\Builder($newObjectName);
+            $builder = new Builder($newObjectName);
             $builder->build();
         }
     }

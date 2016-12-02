@@ -1,12 +1,13 @@
 <?php
+namespace Dvelum\Orm\Object;
 /**
  * Import component, experimental class
- * @package Db
- * @subpackage Db_Object 
+ * @package ORM
+ * @subpackage Object
  * @license General Public License version 3
  * @example
  */
-class Db_Object_Import
+class Import
 {
     protected $_errors = array();
     
@@ -17,11 +18,11 @@ class Db_Object_Import
     
     /**
      * Find PRIMARY KEY
-     * @param Zend_Db_Adapter_Abstract $db
+     * @param \Db_Adapter $db
      * @param string $table
      * @return array | boolean (false)
      */
-    public function findPrimaryKey(Zend_Db_Adapter_Abstract $db , $table)
+    public function findPrimaryKey(\Db_Adapter $db , string $table)
     {
         $fields = $db->describeTable($table);
         $primary = false;
@@ -36,11 +37,11 @@ class Db_Object_Import
       
     /**
      * Check if PRIMARY KEY of external DB table is correct
-     * @param Zend_Db_Adapter_Abstract $db
+     * @param \Db_Adapter $db
      * @param string $table
      * @return boolean
      */
-    public function isValidPrimaryKey(Zend_Db_Adapter_Abstract $db , $table)
+    public function isValidPrimaryKey(\Db_Adapter $db , string $table)
     {     
         $primary = $this->findPrimaryKey($db, $table);
 
@@ -51,7 +52,7 @@ class Db_Object_Import
                
         $dataType = strtolower($primary['DATA_TYPE']);
         
-        if(!in_array($dataType , Db_Object_Builder::$numTypes , true)){
+        if(!in_array($dataType , Builder::$numTypes , true)){
             $this->_errors[] = 'PRIMARY KEY is not numeric';
             return false;
         }
@@ -65,12 +66,13 @@ class Db_Object_Import
 
     /**
      * @todo cleanup the code
-     * @param Zend_Db_Adapter_Mysqli $dbAdapter
+     * @param \Db_Adapter $dbAdapter
      * @param string $tableName
+     * @param mixed $adapterPrefix, optional default - false
      * @throws Exception
      * @return array
      */
-    public function createConfigByTable(Zend_Db_Adapter_Abstract $dbAdapter , $tableName , $adapterPrefix = false)
+    public function createConfigByTable(\Db_Adapter $dbAdapter , string $tableName , $adapterPrefix = false)
     {
         $config = array();
         

@@ -7,8 +7,8 @@ class Model_Menu extends Model
 
     public function resetCachedMenuLinks($menuId)
     {
-        if($this->_cache)
-            $this->_cache->remove($this->getCacheKey(array('links' , $menuId)));
+        if($this->cache)
+            $this->cache->remove($this->getCacheKey(array('links' , $menuId)));
     }
 
     public function getCachedMenuLinks($menuId)
@@ -21,10 +21,10 @@ class Model_Menu extends Model
 
         $list = false;
 
-        if($this->_cache)
+        if($this->cache)
         {
             $cacheKey = $this->getCacheKey(array('links' , $menuId));
-            $list = $this->_cache->load($cacheKey);
+            $list = $this->cache->load($cacheKey);
         }
 
         if($list !== false)
@@ -55,8 +55,8 @@ class Model_Menu extends Model
 
         $this->_addUrls($list);
 
-        if($this->_cache)
-            $this->_cache->save($list , $cacheKey);
+        if($this->cache)
+            $this->cache->save($list , $cacheKey);
 
         return $list;
     }
