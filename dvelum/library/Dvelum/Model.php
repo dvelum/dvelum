@@ -204,7 +204,7 @@ class Model
      * Set the adapter of the object store
      * @param Db_Objectstore $store
      */
-    public function setObjectsStore(Db_Objectstore $store)
+    public function setObjectsStore(Orm\Object\Store $store)
     {
         $this->store = $store;
     }
@@ -789,11 +789,11 @@ class Model
 
     /**
      * Get object title
-     * @param Db_Object $object - object for getting title
+     * @param Orm\Object $object - object for getting title
      * @return mixed|string - object title
      * @throws Exception
      */
-    public function getTitle(Db_Object $object)
+    public function getTitle(Orm\Object $object)
     {
         $objectConfig = $object->getConfig();
         $title = $objectConfig->getLinkTitle();
@@ -821,7 +821,7 @@ class Model
      */
     public function remove($recordId , $log = true)
     {
-        $object = new Db_Object($this->name , $recordId);
+        $object = Orm\Object::factory($this->name , $recordId);
         if(self::_getObjectsStore()->delete($object , $log))
             return true;
         else

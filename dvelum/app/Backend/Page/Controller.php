@@ -1,4 +1,7 @@
 <?php
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
 class Backend_Page_Controller extends Backend_Controller_Crud_Vc
 {
     public function indexAction()
@@ -128,7 +131,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         try{
-            $pObject = new Db_Object('page' , $id);
+            $pObject = Orm\Object::factory('page' , $id);
             $pObject->set('parent_id', $newParent);
             $pObject->save();
             Model::factory('Page')->updateSortOrder($order);
@@ -166,10 +169,10 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
 
     /**
      * Find staging URL
-     * @param Db_Object $obj
+     * @param Orm\Object $obj
      * @return string
      */
-    public function getStagingUrl(Db_Object $obj)
+    public function getStagingUrl(Orm\Object $obj)
     {
         return Request::url(array($obj->code));
     }
@@ -178,7 +181,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
      * (non-PHPdoc)
      * @see Backend_Controller_Crud_Vc::_loadData()
      */
-    protected function _loadData(Db_Object $object , $version)
+    protected function _loadData(Orm\Object $object , $version)
     {
         $data = parent::_loadData($object, $version);
 
@@ -273,11 +276,10 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
      */
     protected function _collectBlockLinksData(array $data)
     {
-
         $ids = Utils::fetchCol('id', $data);
         $data =  Utils::rekey('id', $data);
 
-        $obj = new Db_Object('Blocks');
+        $obj = Orm\Object::factory('Blocks');
         $model = Model::factory('Blocks');
 
         $fields = array('id' , 'title'=>$obj->getConfig()->getLinkTitle(),'is_system');
@@ -331,7 +333,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
             Response::jsonError($this->_lang->CANT_PUBLISH);
 
         try{
-            $object = new Db_Object($this->_objectName , $id);
+            $object = Orm\Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC);
         }
@@ -418,7 +420,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         try{
-            $object = new Db_Object($this->_objectName , $id);
+            $object = Orm\Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
         }

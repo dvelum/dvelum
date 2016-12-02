@@ -19,6 +19,7 @@
 
 use Dvelum\Model;
 use Dvelum\Config;
+use Dvelum\Orm;
 /**
  * This is the base class for implementing administrative controllers
  */
@@ -220,13 +221,13 @@ abstract class Backend_Controller extends Controller
 
         if($id){
             try{
-                $obj = new Db_Object($objectName , $id);
+                $obj =  Orm\Object::factory($objectName , $id);
             }catch(Exception $e){
                 Response::jsonError($this->_lang->CANT_EXEC);
             }
         }else{
             try{
-                $obj = new Db_Object($objectName);
+                $obj =  Orm\Object::facroty($objectName);
             }catch (Exception $e){
                 Response::jsonError($this->_lang->CANT_EXEC.'<br>'.$e->getMessage());
             }

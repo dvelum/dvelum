@@ -17,6 +17,10 @@
  * (creating, editing, updating and deleting)
  * for ORM object under version control
  */
+use Dvelum\Model;
+use Dvelum\Config;
+use Dvelum\Orm;
+
 abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 {
     /**
@@ -36,9 +40,9 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
     /**
      * Check object owner
-     * @param Db_Object $object
+     * @param Orm\Object $object
      */
-    protected function _checkOwner(Db_Object $object)
+    protected function _checkOwner(Orm\Object $object)
     {
         if(!$object->getConfig()->isRevControl()){
             return;
@@ -98,7 +102,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $ids = Utils::fetchCol('id' , $data);
 
         if(!empty($this->_listLinks)){
-            $objectConfig = Db_Object_Config::getInstance($this->_objectName);
+            $objectConfig = Orm\Object\Config::factory($this->_objectName);
             if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
                 throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
             }
@@ -109,11 +113,11 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
     /**
      * Get the object data ready to be sent
-     * @param Db_Object $object
+     * @param Orm\Object $object
      * @param integer $version
      * @return array
      */
-    protected function _loadData(Db_Object $object , $version)
+    protected function _loadData(Orm\Object $object , $version)
     {
         $id = $object->getId();
         $vc = Model::factory('Vc');
@@ -149,7 +153,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         /*
          * Prepare Object List properties
          */
-        $linkedObjects = $object->getConfig()->getLinks([Db_Object_Config::LINK_OBJECT_LIST]);
+        $linkedObjects = $object->getConfig()->getLinks([Orm\Object\Config::LINK_OBJECT_LIST]);
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
                 $data[$field] = $this->_collectLinksData($field, $object , $linkObject);
@@ -171,7 +175,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
         if($id){
             try{
-                $obj = new Db_Object($this->_objectName , $id);
+                $obj = Orm\Object::factory($this->_objectName , $id);
             }catch(Exception $e){
                 Model::factory($this->_objectName)->logError($e->getMessage());
                 return [];
@@ -206,7 +210,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $id = Request::post('id' , 'integer' , false);
 
         try{
-            $object = new Db_Object($this->_objectName , $id);
+            $object = Orm\Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
         }
@@ -237,7 +241,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $this->_checkCanPublish();
 
         try{
-            $object = new Db_Object($this->_objectName , $id);
+            $object = Orm\Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC);
         }
@@ -267,7 +271,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $this->_checkCanPublish();
 
         try{
-            $object = new Db_Object($this->_objectName , $id);
+            $object = Orm\Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC . '. ' .  $e->getMessage());
         }
@@ -295,10 +299,10 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * Define the object data preview page URL
      * (needs to be redefined in the child class
      * as per the application structure)
-     * @param Db_Object $object
+     * @param Orm\Object $object
      * @return string
      */
-    public function getStagingUrl(Db_Object $object)
+    public function getStagingUrl(Orm\Object $object)
     {
         $routerClass =  $this->_configMain->get('frontend_router');
         $frontendRouter = new $routerClass();
@@ -315,7 +319,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::insertObject()
      */
-    public function insertObject(Db_Object $object)
+    public function insertObject(Orm\Object $object)
     {
         $object->published = false;
         $object->author_id = User::getInstance()->id;
@@ -345,7 +349,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::updateObject()
      */
-    public function updateObject(Db_Object $object)
+    public function updateObject(Orm\Object $object)
     {
         $author = $object->get('author_id');
         if(empty($author)){
@@ -376,7 +380,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * and closes the application.
      * @param Db_Object $object
      */
-    public function unpublishObject(Db_Object $object)
+    public function unpublishObject(Orm\Object $object)
     {
         if(!$object->get('published'))
             Response::jsonError($this->_lang->NOT_PUBLISHED);

@@ -1,9 +1,11 @@
 <?php
+use Dvelum\Config;
+use Dvelum\Orm;
+
 /**
  * User Auth provider for LDAP.
  * @author Sergey Leschenko
  */
-
 class User_Auth_Ldap extends User_Auth_Abstract
 {
 	protected $lc = false;
@@ -15,9 +17,9 @@ class User_Auth_Ldap extends User_Auth_Abstract
 	private $bindStatus = false;
 
 	/**
-	 * @param Config_Abstract $config - auth provider config
+	 * @param Config\Config $config - auth provider config
 	 */
-	public function __construct(Config_Abstract $config)
+	public function __construct(Config\Config $config)
 	{
 		if(!extension_loaded('ldap'))
 			throw new Exception('Cannot find php-ldap extension!');
@@ -65,7 +67,7 @@ class User_Auth_Ldap extends User_Auth_Abstract
 		if(empty($authCfg))
 			return false;
 
-		$authCfg = Db_Object::factory('User_Auth',$authCfg[0]['id'])->get('config');
+		$authCfg = Orm\Object::factory('User_Auth',$authCfg[0]['id'])->get('config');
 		$authCfg = json_decode($authCfg,true);
 
 		$loginSearchFilter = (isset($authCfg['loginSearchFilter']))

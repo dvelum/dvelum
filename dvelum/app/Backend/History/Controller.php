@@ -1,4 +1,8 @@
 <?php
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
+
 class Backend_History_Controller extends Backend_Controller
 {
     public function indexAction(){}
@@ -20,7 +24,7 @@ class Backend_History_Controller extends Backend_Controller
             Response::jsonSuccess(array());
 
         try{
-            $o = new Db_Object($object);
+            $o = Orm\Object::factory($object);
         }catch (Exception $e){
             Response::jsonSuccess(array());
         }

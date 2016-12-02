@@ -17,9 +17,9 @@ class Backend_Orm_Controller extends Backend_Controller
     {
         parent::__construct();
 
-        Db_Object_Builder::writeLog($this->_configMain['use_orm_build_log']);
-        Db_Object_Builder::setLogPrefix($this->_configMain['development_version'].'_build_log.sql');
-        Db_Object_Builder::setLogsPath($this->_configMain['orm_log_path']);
+        Orm\Object\Builder::writeLog($this->_configMain['use_orm_build_log']);
+        Orm\Object\Builder::setLogPrefix($this->_configMain['development_version'].'_build_log.sql');
+        Orm\Object\Builder::setLogsPath($this->_configMain['orm_log_path']);
     }
 
     public function indexAction()
@@ -223,12 +223,12 @@ class Backend_Orm_Controller extends Backend_Controller
             Response::jsonError($this->_lang->INVALID_VALUE);
 
         try{
-            $objectConfig = Db_Object_Config::getInstance($object);
+            $objectConfig = Orm\Object\Config::factory($object);
         }catch (Exception $e){
             Response::jsonError($this->_lang->INVALID_VALUE);
         }
 
-        $builder = new Db_Object_Builder($object);
+        $builder = new Orm\Object\Builder($object);
         $brokenFields = $builder->hasBrokenLinks();
 
         $fieldsCfg = $objectConfig->getFieldsConfig();
@@ -257,9 +257,9 @@ class Backend_Orm_Controller extends Backend_Controller
 
             $v['type'] =  $v['db_type'];
 
-            if(in_array($v['db_type'], Db_Object_Builder::$charTypes , true)){
+            if(in_array($v['db_type'], Orm\Object\Builder::$charTypes , true)){
                 $v['type'].=' ('.$v['db_len'].')';
-            }elseif (in_array($v['db_type'], Db_Object_Builder::$floatTypes , true)){
+            }elseif (in_array($v['db_type'], Orm\Object\Builder::$floatTypes , true)){
                 $v['type'].=' ('.$v['db_scale'].','.$v['db_precision'].')';
             }
         }unset($v);
@@ -277,7 +277,7 @@ class Backend_Orm_Controller extends Backend_Controller
             Response::jsonError($this->_lang->INVALID_VALUE);
 
         try{
-            $objectConfig = Db_Object_Config::getInstance($object);
+            $objectConfig = Orm\Object\Config::getInstance($object);
         }catch (Exception $e){
             Response::jsonError($this->_lang->INVALID_VALUE);
         }
@@ -323,7 +323,7 @@ class Backend_Orm_Controller extends Backend_Controller
             Response::jsonError($this->_lang->INVALID_VALUE);
 
         try {
-            $config = Db_Object_Config::getInstance($object);
+            $config = Orm\Object\Config::factory($object);
             $info = $config->__toArray();
             $info['name'] = $object;
             $info['use_acl'] = false;
@@ -360,7 +360,7 @@ class Backend_Orm_Controller extends Backend_Controller
             Response::jsonError($this->_lang->FILL_FORM , array(array('id'=>'name','msg'=>$this->_lang->CANT_BE_EMPTY)));
 
         try{
-            $objectCfg = Db_Object_Config::getInstance($object);
+            $objectCfg = Orm\Object\Config::factory($object);
         }catch (Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST .' code 2');
         }
@@ -435,7 +435,7 @@ class Backend_Orm_Controller extends Backend_Controller
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         try{
-            $objectCfg = Db_Object_Config::getInstance($object);
+            $objectCfg = Orm\Object\Config::factory($object);
         }catch (Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST .' code 2');
         }
@@ -547,7 +547,7 @@ class Backend_Orm_Controller extends Backend_Controller
         //$db = Model::getGlobalDbConnection();
         $db = $connection;
         $tables = $db->listTables();
-        $oConfigPath = Db_Object_Config::getConfigPath();
+        $oConfigPath = Orm\Object\Config::getConfigPath();
         $configDir  = Config::storage()->getWrite() . $oConfigPath;
 
         $tableName = $data['table'];
@@ -584,7 +584,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $cfg->save();
 
         try{
-            $cfg = Db_Object_Config::getInstance($name);
+            $cfg = Orm\Object\Config::factory($name);
             $cfg->setObjectTitle($data['title']);
 
             if(!$cfg->save())
@@ -593,7 +593,7 @@ class Backend_Orm_Controller extends Backend_Controller
             /*
              * Build database
             */
-            $builder = new Db_Object_Builder($name);
+            $builder = new Orm\Object\Builder($name);
             $builder->build();
 
         }catch (Exception $e){
@@ -622,12 +622,12 @@ class Backend_Orm_Controller extends Backend_Controller
         }
 
         try {
-            $config = Db_Object_Config::getInstance($name);
+            $config = Orm\Object\Config::factory($name);
         }catch (Exception $e){
             Response::jsonError($this->_lang->INVALID_VALUE);
         }
 
-        $builder = new Db_Object_Builder($name);
+        $builder = new Orm\Object\Builder($name);
 
         /*
          * Rename Db Table
@@ -714,23 +714,23 @@ class Backend_Orm_Controller extends Backend_Controller
         if(!$name)
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
-        $objectConfig = Db_Object_Config::getInstance($name);
+        $objectConfig = Orm\Object\Config::factory($name);
 
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if($acl){
-            if(!$acl->can(Db_Object_Acl::ACCESS_CREATE , $name) || !$acl->can(Db_Object_Acl::ACCESS_VIEW , $name)){
+            if(!$acl->can(Orm\Object\Acl::ACCESS_CREATE , $name) || !$acl->can(Orm\Object\Acl::ACCESS_VIEW , $name)){
                 Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
             }
         }
 
         try {
-            $obj = new Db_Object($name);
+            $obj = Orm\Object::factory($name);
         } catch (Exception $e){
             Response::jsonError($this->_lang->get('CANT_GET_VALIDATE_INFO'));
         }
 
-        $builder = new Db_Object_Builder($name);
+        $builder = new Orm\Object\Builder($name);
         $tableExists = $builder->tableExists();
 
         $colUpd = array();
@@ -777,10 +777,10 @@ class Backend_Orm_Controller extends Backend_Controller
         if(!$name)
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
-        if(!Db_Object_Config::configExists($name))
+        if(!Orm\Object\Config::configExists($name))
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
-        $builder = new Db_Object_Builder($name);
+        $builder = new Orm\Object\Builder($name);
 
         if(!$builder->build() || !$builder->buildForeignKeys())
             Response::jsonError($this->_lang->CANT_EXEC.' ' . implode(',', $builder->getErrors()));
@@ -809,7 +809,7 @@ class Backend_Orm_Controller extends Backend_Controller
         foreach ($names as $name)
         {
             try{
-                $builder = new Db_Object_Builder($name);
+                $builder = new Orm\Object\Builder($name);
                 if(!$builder->buildForeignKeys(true , false))
                     $flag = true;
             }catch(Exception $e){
@@ -817,7 +817,7 @@ class Backend_Orm_Controller extends Backend_Controller
             }
         }
 
-        if(Db_Object_Builder::foreignKeys())
+        if(Orm\Object\Builder::foreignKeys())
         {
             /*
              * build only fields
@@ -825,7 +825,7 @@ class Backend_Orm_Controller extends Backend_Controller
             foreach ($names as $name)
             {
                 try{
-                    $builder = new Db_Object_Builder($name);
+                    $builder = new Orm\Object\Builder($name);
                     $builder->build(false);
                 }catch(Exception $e){
                     $flag = true;
@@ -838,7 +838,7 @@ class Backend_Orm_Controller extends Backend_Controller
             foreach ($names as $name)
             {
                 try{
-                    $builder = new Db_Object_Builder($name);
+                    $builder = new Orm\Object\Builder($name);
                     if(!$builder->buildForeignKeys(true , true))
                         $flag = true;
                 }catch(Exception $e){
@@ -850,7 +850,7 @@ class Backend_Orm_Controller extends Backend_Controller
             foreach ($names as $name)
             {
                 try{
-                    $builder = new Db_Object_Builder($name);
+                    $builder = new Orm\Object\Builder($name);
                     $builder->build();
                 }catch(Exception $e){
                     $flag = true;
@@ -907,7 +907,7 @@ class Backend_Orm_Controller extends Backend_Controller
             /**
              * @var Db_Object_Config
              */
-            $objectCfg = Db_Object_Config::getInstance($object);
+            $objectCfg = Orm\Object\Config::factory($object);
         }catch (Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST .' code 2');
         }
@@ -935,7 +935,7 @@ class Backend_Orm_Controller extends Backend_Controller
              */
             $newConfig['link_config']['link_type'] = Request::post('link_type', 'str', 'object');
 
-            if($newConfig['link_config']['link_type'] === Db_Object_Config::LINK_DICTIONARY)
+            if($newConfig['link_config']['link_type'] === Orm\Object\Config::LINK_DICTIONARY)
             {
                 $newConfig['link_config']['object'] = Request::post('dictionary', 'str', '');
                 $newConfig['db_type'] = 'varchar';
@@ -955,7 +955,7 @@ class Backend_Orm_Controller extends Backend_Controller
                     Response::jsonError($this->_lang->FILL_FORM , array(array('id'=>'object','msg'=>$this->_lang->CANT_BE_EMPTY)));
 
                 try {
-                    $cf = Db_Object_Config::getInstance($linkedObject);
+                    $cf = Orm\Object\Config::factory($linkedObject);
                 }catch(Exception $e){
                     Response::jsonError($this->_lang->FILL_FORM , array(array('id'=>'object','msg'=>$this->_lang->INVALID_VALUE)));
                 }
@@ -963,7 +963,7 @@ class Backend_Orm_Controller extends Backend_Controller
 
                 switch ($newConfig['link_config']['link_type'])
                 {
-                    case Db_Object_Config::LINK_OBJECT_LIST:
+                    case Orm\Object\Config::LINK_OBJECT_LIST:
 
                         $newConfig['link_config']['relations_type'] = Request::post('relations_type' , 'string' , false);
                         if(!in_array($newConfig['link_config']['relations_type'] , array('polymorphic','many_to_many') , true)){
@@ -975,7 +975,7 @@ class Backend_Orm_Controller extends Backend_Controller
                         $newConfig['db_default'] = '';
                         break;
 
-                    case Db_Object_Config::LINK_OBJECT:
+                    case Orm\Object\Config::LINK_OBJECT:
                         $newConfig['db_isNull'] = (boolean) !$newConfig['required'];
                         $newConfig['db_type'] ='bigint';
                         $newConfig['db_default'] = false;
@@ -1013,13 +1013,13 @@ class Backend_Orm_Controller extends Backend_Controller
                  */
                 $newConfig['required'] = false;
                 $newConfig['db_default'] = (integer)Request::post('db_default', 'bool', false);
-            }elseif(in_array($newConfig['db_type'] , Db_Object_Builder::$intTypes , true)){
+            }elseif(in_array($newConfig['db_type'] , Orm\Object\Builder::$intTypes , true)){
                 /*
                  * integer
                  */
                 $newConfig['db_default'] = Request::post('db_default', 'integer', false);
                 $newConfig['db_unsigned'] = Request::post('db_unsigned', 'bool', false);
-            }elseif(in_array($newConfig['db_type'], Db_Object_Builder::$floatTypes)){
+            }elseif(in_array($newConfig['db_type'], Orm\Object\Builder::$floatTypes)){
                 /*
                  * float
                  */
@@ -1027,7 +1027,7 @@ class Backend_Orm_Controller extends Backend_Controller
                 $newConfig['db_unsigned'] = Request::post('db_unsigned', 'bool', false);
                 $newConfig['db_scale'] = Request::post('db_scale', 'integer', 0);
                 $newConfig['db_precision'] = Request::post('db_precision', 'integer', 0);
-            }elseif(in_array($newConfig['db_type'] , Db_Object_Builder::$charTypes , true)){
+            }elseif(in_array($newConfig['db_type'] , Orm\Object\Builder::$charTypes , true)){
                 /*
                  * char
                  */
@@ -1035,7 +1035,7 @@ class Backend_Orm_Controller extends Backend_Controller
                 $newConfig['db_len'] = Request::post('db_len', 'integer', 255);
                 $newConfig['is_search'] =Request::post('is_search', 'bool', false);
                 $newConfig['allow_html'] =Request::post('allow_html', 'bool', false);
-            }elseif(in_array($newConfig['db_type'] , Db_Object_Builder::$textTypes , true)){
+            }elseif(in_array($newConfig['db_type'] , Orm\Object\Builder::$textTypes , true)){
                 /*
                  * text
                  */
@@ -1046,7 +1046,7 @@ class Backend_Orm_Controller extends Backend_Controller
                 if(!$newConfig['required'])
                     $newConfig['db_isNull'] = true;
 
-            }elseif(in_array($newConfig['db_type'] , Db_Object_Builder::$dateTypes , true)){
+            }elseif(in_array($newConfig['db_type'] , Orm\Object\Builder::$dateTypes , true)){
                 /*
                  * date
                  */
@@ -1085,7 +1085,7 @@ class Backend_Orm_Controller extends Backend_Controller
             $objectCfg->fixConfig();
         }
         if($objectCfg->save()){
-            $builder = new Db_Object_Builder($object);
+            $builder = Orm\Object\Builder($object);
             $builder->build();
             Response::jsonSuccess();
         }else{
@@ -1107,7 +1107,7 @@ class Backend_Orm_Controller extends Backend_Controller
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         try{
-            $oConfig  = Db_Object_Config::getInstance($objectName);
+            $oConfig  = Orm\Object\Config::factory($objectName);
             if($deleteTable && ($oConfig->isLocked() || $oConfig->isReadOnly())){
                 Response::jsonError($this->_lang->DB_CANT_DELETE_LOCKED_TABLE);
             }
@@ -1148,7 +1148,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $items = $config->get('items');
 
         $data = $field = array();
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
         $names = $manager->getRegisteredObjects();
         $showObj = Request::post('objects','array',[]);
         if(empty($showObj)){
@@ -1165,7 +1165,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $defaultY = 10;
 
         foreach($names as $index=>$objectName){
-            $objectConfig = Db_Object_Config::getInstance($objectName);
+            $objectConfig = Orm\Object\Config::factory($objectName);
             if(!empty($objectConfig->isRelationsObject()) || !in_array($objectName,$showObj)){
                 unset($names[$index]);
                 continue;
@@ -1173,7 +1173,7 @@ class Backend_Orm_Controller extends Backend_Controller
             
             $data[$objectName]['links'] = $objectConfig->getLinks();
 
-            $objectConfig = Db_Object_Config::getInstance($objectName);
+            $objectConfig = Orm\Object\Config::factory($objectName);
             $fields = $objectConfig->getFieldsConfig();
 
             foreach($fields as $fieldName => $fieldData){
@@ -1234,7 +1234,7 @@ class Backend_Orm_Controller extends Backend_Controller
 
         $config = Config::storage()->get(self::UML_MAP_CFG,true, false);
         $saved = $config->get('items');
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
         $registered = $manager->getRegisteredObjects();
 
         /**
@@ -1420,11 +1420,11 @@ class Backend_Orm_Controller extends Backend_Controller
      */
     public function fixConfigsAction()
     {
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
         $names = $manager->getRegisteredObjects();
         foreach ($names as $objectName)
         {
-            $cfg = Db_Object_Config::getInstance($objectName);
+            $cfg = Orm\Object\Config::factory($objectName);
             $cfg->save();
         }
         Response::jsonSuccess();
@@ -1438,7 +1438,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $this->_checkCanEdit();
         $object = Request::post('object' , 'string' , false);
 
-        if(!$object || !Db_Object_Config::configExists($object)){
+        if(!$object || !Orm\Object\Config::configExists($object)){
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }
 
@@ -1481,7 +1481,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $this->_checkCanEdit();
         $object = Request::post('object' , 'string' , false);
 
-        if(!$object || !Db_Object_Config::configExists($object)){
+        if(!$object || !Orm\Object\Config::configExists($object)){
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }
 

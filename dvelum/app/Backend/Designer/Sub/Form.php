@@ -2,6 +2,7 @@
 /**
  * Operations with forms
  */
+use Dvelum\Orm;
 class Backend_Designer_Sub_Form extends Backend_Designer_Sub
 {
 	/**
@@ -42,7 +43,7 @@ class Backend_Designer_Sub_Form extends Backend_Designer_Sub
 		if(!$importObject || empty($importFields)  || $this->_project->objectExists($importObject))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 		
-		$importObjectConfig = Db_Object_Config::getInstance($importObject);
+		$importObjectConfig = Orm\Object\Config::factory($importObject);
 		
 		foreach ($importFields as $name)
 			if($importObjectConfig->fieldExists($name))

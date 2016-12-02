@@ -1,4 +1,7 @@
 <?php
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
 /**
  * Background tasks module UI Controller
  */

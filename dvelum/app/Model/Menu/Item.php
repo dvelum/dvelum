@@ -1,6 +1,7 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
+use Dvelum\Orm;
 
 /**
  * Menu item model
@@ -92,7 +93,7 @@ class Model_Menu_Item extends Model
     	{
     		foreach($links as $k=>$item)	
     		{
-    			$obj = new Db_Object('Menu_Item');
+    			$obj = Orm\Object::factory('Menu_Item');
     			try{  				
     				$obj->tree_id = $item['id'];
     				$obj->page_id = $item['page_id'];

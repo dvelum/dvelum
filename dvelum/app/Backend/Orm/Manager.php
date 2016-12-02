@@ -1,4 +1,6 @@
 <?php
+use Dvelum\Orm;
+
 class Backend_Orm_Manager
 {
 	const ERROR_EXEC = 1;
@@ -21,7 +23,7 @@ class Backend_Orm_Manager
 		//if(!empty($assoc))
 		//	return self::ERROR_HAS_LINKS;
 
-		$objectConfig = Db_Object_Config::getInstance($name);
+		$objectConfig = Orm\Object\Config::factory($name);
 		$manyToMany = $objectConfig->getManyToMany();
 
 		if(!empty($manyToMany))
@@ -61,12 +63,12 @@ class Backend_Orm_Manager
 		$path = $objectsWrite . Registry::get('main' , 'config')->get('object_configs') . $name . '.php';
 
 		try{
-		  $cfg = Db_Object_Config::getInstance($name);
+		  $cfg = Orm\Object\Config::factory($name);
 		}catch (Exception $e){
 		  return self::ERROR_FS;
 		}
 		
-		$builder = new Db_Object_Builder($name);
+		$builder = new Orm\Object\Builder($name);
 		
 		if($deleteTable && !$cfg->isLocked() && !$cfg->isReadOnly()){
 		  if(!$builder->remove()){
@@ -123,7 +125,7 @@ class Backend_Orm_Manager
 	public function getFieldConfig($object , $field)
 	{
 		try {
-			$cfg = Db_Object_Config::getInstance($object);
+			$cfg = Orm\Object\Config::factory($object);
 		}catch (Exception $e){
 			return false;
 		}
@@ -158,7 +160,7 @@ class Backend_Orm_Manager
 	public function getIndexConfig($object , $index)
 	{	
 		try {
-			$cfg = Db_Object_Config::getInstance($object);
+			$cfg = Orm\Object\Config::factory($object);
 		}catch (Exception $e){
 			return false;
 		}	
@@ -181,7 +183,7 @@ class Backend_Orm_Manager
 		$localisations = $this->getLocalisations();
 
 		try{
-			$objectCfg = Db_Object_Config::getInstance($objectName);
+			$objectCfg = Orm\Object\Config::factory($objectName);
 		}catch (Exception $e){
 			return self::ERROR_INVALID_OBJECT;
 		}
@@ -218,12 +220,12 @@ class Backend_Orm_Manager
 	
 	/**
 	 * Rename object field
-	 * @param Db_Object_Config $cfg
+	 * @param Orm\Object\Config $cfg
 	 * @param string $oldName
 	 * @param string $newName
 	 * @return integer 0 on success or error code
 	 */
-	public function renameField(Db_Object_Config $cfg , $oldName , $newName)
+	public function renameField(Orm\Object\Config $cfg , $oldName , $newName)
 	{
 		$localisations = $this->getLocalisations();
 		$langWritePath = Lang::storage()->getWrite();
@@ -265,7 +267,7 @@ class Backend_Orm_Manager
 	   /*
 		* Check fs write permissions for associated objects
 		*/
-		$assoc = Db_Object_Expert::getAssociatedStructures($oldName);
+		$assoc = Orm\Object\Expert::getAssociatedStructures($oldName);
 		if(!empty($assoc))
 			foreach ($assoc as $config)
 				if(!is_writable(Config::storage()->getPath($path).strtolower($config['object']).'.php'))
@@ -309,7 +311,7 @@ class Backend_Orm_Manager
 				$object = $config['object'];
 				$fields = $config['fields'];
 				
-				$oConfig = Db_Object_Config::getInstance($object);
+				$oConfig = Orm\Object\Config::factory($object);
 				
 				foreach ($fields as $fName=>$fType)				
 					if($oConfig->isLink($fName))

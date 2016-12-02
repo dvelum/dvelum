@@ -1,4 +1,8 @@
 <?php
+use Dvelum\Model;
+use Dvelum\Config;
+use Dvelum\Orm;
+
 class Backend_Logs_Controller extends Backend_Controller_Crud
 {
 	protected  $_canViewObjects = ['User'];
@@ -23,15 +27,15 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
 		if(!empty($data))
 		{
             $users = Utils::fetchCol('user_id' , $data);
-            $users = Db_Object::factory('User' , $users);
+            $users = Orm\Object::factory('User' , $users);
 
 			foreach ($data as $k=>&$v)
 			{
                 if(!empty($v['user_id']) && isset($users[$v['user_id']])){
                     $v['user_name'] = $users[$v['user_id']]->getTitle();
                 }
-                if(!empty($v['object']) && Db_Object_Config::configExists($v['object'])){
-                    $v['object_title'] = Db_Object_Config::getInstance($v['object'])->getTitle();
+                if(!empty($v['object']) && Orm\Object\Config::configExists($v['object'])){
+                    $v['object_title'] = Orm\Object\Config::factory($v['object'])->getTitle();
                 }
 			}unset($v);
 		}
@@ -44,11 +48,11 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
      */
     public function objectsListAction()
     {
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
         $list = $manager->getRegisteredObjects();
         $data = [];
         foreach ($list as $object){
-            $data[] = ['id'=>$object, 'title' => Db_Object_Config::getInstance($object)->getTitle()];
+            $data[] = ['id'=>$object, 'title' => Orm\Object\Config::factory($object)->getTitle()];
         }
         Response::jsonSuccess($data);
     }
@@ -67,7 +71,7 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
         $id = intval($filter['id']);
 
         try{
-            $rec = new Db_Object('Historylog' , $id);
+            $rec = Orm\Object::factory('Historylog' , $id);
         }catch (Exception $e){
             Model::factory('Historylog')->logError('Invalid id requested: '.$id);
             Response::jsonSuccess();

@@ -1,7 +1,11 @@
 <?php
+
+use Dvelum\Orm;
+use Dvelum\Model;
+
 class Trigger_Menu extends Trigger
 {
-	public function onAfterDelete(Db_Object $object)
+	public function onAfterDelete(Orm\Object $object)
 	{		
 		if(!$this->_cache)
 			return;
@@ -10,7 +14,7 @@ class Trigger_Menu extends Trigger
 		$this->clearBlockCache($object);
 	}
 	
-	public function onAfterUpdate(Db_Object $object)
+	public function onAfterUpdate(Orm\Object $object)
 	{
 		if(!$this->_cache)
 			return;
@@ -19,7 +23,7 @@ class Trigger_Menu extends Trigger
 		$this->clearBlockCache($object);	
 	}
 
-	public function clearBlockCache(Db_Object $object)
+	public function clearBlockCache(Orm\Object $object)
 	{
 		if(!$this->_cache)
 			return;

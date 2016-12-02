@@ -66,9 +66,22 @@ class Db_Adapter
         throw new Exception('not implemented');
     }
 
-    public function fetchOne()
+    public function fetchOne($sql)
     {
-        throw new Exception('not implemented');
+        $statement = $this->adapter->createStatement();
+        $statement->prepare($sql);
+
+        $result = $statement->execute();
+
+        if ($result instanceof ResultInterface && $result->isQueryResult()) {
+            $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
+            $resultSet->initialize($result);
+            $result = $resultSet->current();
+            if(!empty($result)){
+                return  array_values($result)[0];
+            }
+        }
+        return null;
     }
 
     public function fetchRow($sql)

@@ -1,4 +1,7 @@
 <?php
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
 class Backend_Externals_Controller extends Backend_Controller
 {
     /**

@@ -1,6 +1,7 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
+use Dvelum\Orm;
 
 class Model_Mediacategory extends Model
 {
@@ -72,7 +73,7 @@ class Model_Mediacategory extends Model
     $i=0;
     foreach ($sortedIds as $v)
     {
-      $obj = new Db_Object($this->_name, intval($v));
+      $obj = Orm\Object::factory($this->_name, intval($v));
       $obj->set('order_no', $i);
       $obj->save();
       $i++;

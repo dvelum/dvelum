@@ -929,7 +929,7 @@ class Builder
      */
     protected function _sqlCreate()
     {
-        $config = Db_Object_Config::getInstance($this->_objectName);
+        $config = Orm\Object\Config::factory($this->_objectName);
 
         $fields = $config->get('fields');
 
@@ -1179,7 +1179,7 @@ class Builder
         {
             $brokenFields = array();
             foreach($links as $o => $fieldList)
-                if(! Db_Object_Config::configExists($o))
+                if(! Orm\Object\Config::configExists($o))
                     foreach($fieldList as $field => $cfg)
                         $brokenFields[$field] = $o;
         }
@@ -1205,7 +1205,7 @@ class Builder
             if(!empty($fields)){
                 foreach($fields as $fieldName=>$linkType){
                     $relationObjectName = $this->_objectConfig->getRelationsObject($fieldName);
-                    if(!Db_Object_Config::configExists($relationObjectName)){
+                    if(!Orm\Object\Config::configExists($relationObjectName)){
                         return false;
                     }
                 }
@@ -1223,7 +1223,7 @@ class Builder
             if(!empty($fields)){
                 foreach($fields as $fieldName=>$linkType){
                     $relationObjectName = $this->_objectConfig->getRelationsObject($fieldName);
-                    if(!Db_Object_Config::configExists($relationObjectName)){
+                    if(!Orm\Object\Config::configExists($relationObjectName)){
                         $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
                     }
                 }
@@ -1247,7 +1247,7 @@ class Builder
         $db = $objectModel->getDbConnection();
         $tablePrefix = $objectModel->getDbPrefix();
 
-        $oConfigPath = Db_Object_Config::getConfigPath();
+        $oConfigPath = Orm\Object\Config::getConfigPath();
         $configDir  = Config::storage()->getWrite() . $oConfigPath;
 
         $fieldList = Config::storage()->get('objects/relations/fields.php');
@@ -1311,7 +1311,7 @@ class Builder
             /*
              * Write object config
              */
-            if(!Config_File_Array::create($configDir. $newObjectName . '.php'))
+            if(!Config\File\AsArray::create($configDir. $newObjectName . '.php'))
                 Response::jsonError($lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php');
 
             $cfg = Config::storage()->get($oConfigPath. strtolower($newObjectName).'.php' , false , false);
@@ -1320,7 +1320,7 @@ class Builder
             $cfg->save();
 
 
-            $cfg = Db_Object_Config::getInstance($newObjectName);
+            $cfg = Orm\Object\Config::factory($newObjectName);
             $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->_objectName.' & '.$linkedObject);
 
             if(!$cfg->save())
@@ -1329,7 +1329,7 @@ class Builder
             /*
              * Build database
             */
-            $builder = new Db_Object_Builder($newObjectName);
+            $builder = Orm\Object\Builder($newObjectName);
             $builder->build();
         }
     }

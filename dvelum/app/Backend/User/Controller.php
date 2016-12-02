@@ -2,6 +2,10 @@
 /**
  * Users module UI Controller
  */
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
+
 class Backend_User_Controller extends Backend_Controller_Crud
 {
     /**
@@ -15,7 +19,7 @@ class Backend_User_Controller extends Backend_Controller_Crud
 
         try
         {
-            $user = new Db_Object('user' , $id);
+            $user = Orm\Object::factory('user' , $id);
             $userData = $user->getData();
             unset($userData['pass']);
             Response::jsonSuccess($userData);

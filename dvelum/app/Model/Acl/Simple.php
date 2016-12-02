@@ -1,6 +1,7 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
+use Dvelum\Orm;
 
 class Model_Acl_Simple extends Model
 {
@@ -143,7 +144,7 @@ class Model_Acl_Simple extends Model
               continue;
 
           try{
-              $obj = new Db_Object($this->_name);
+              $obj = Orm\Object::factory($this->_name);
               $obj->setValues(array(
                   'view'=>(boolean)$values['view'],
                   'create'=>(boolean)$values['create'],

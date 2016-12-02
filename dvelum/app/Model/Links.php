@@ -1,14 +1,15 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
+use Dvelum\Orm;
 
 class Model_Links extends Model
 {
     /**
      * Clear object links
-     * @param Db_Object $object
+     * @param Orm\Object $object
      */
-    public function clearObjectLinks(Db_Object $object)
+    public function clearObjectLinks(Orm\Object $object)
     {
         $this->_db->delete($this->table(),'src = '.$this->_db->quote($object->getName()).' AND src_id = '.intval($object->getId()));
     }

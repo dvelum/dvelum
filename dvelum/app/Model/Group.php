@@ -1,6 +1,7 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
+use Dvelum\Orm;
 
 class Model_Group extends Model
 {
@@ -13,29 +14,32 @@ class Model_Group extends Model
 		/*
 		 * Check cache
 		 */
-		if($this->_cache && $data = $this->_cache->load('groups_list'))
+		if($this->cache && $data = $this->cache->load('groups_list'))
 			return $data;
 
 		$data = array();
-		$sql = $this->_dbSlave->select()->from($this->table() , array('id' , 'title'));
-		$data = $this->_dbSlave->fetchAll($sql);
+		$sql = $this->dbSlave->select()->from($this->table() , array('id' , 'title'));
+		$data = $this->dbSlave->fetchAll($sql);
+
 		if(!empty($data))
-			$data = Utils::collectData('id', 'title', $data);
+			$data = \Utils::collectData('id', 'title', $data);
 		/*
 		 * Store cache
 		 */
-		if($this->_cache)
-			$this->_cache->save($data, 'groups_list');
+		if($this->cache)
+			$this->cache->save($data, 'groups_list');
 
 		return $data;
 	}
+
 	/**
 	 * Add users group
 	 * @param string  $title - group name
+     * @return mixed
 	 */
-	public function addGroup($title)
+	public function addGroup(string $title)
 	{
-		$obj = new Db_Object($this->_name);
+		$obj = Orm\Object::factory($this->_name);
 		$obj->set('title', $title);
 
 		if(!$obj->save())
@@ -44,8 +48,8 @@ class Model_Group extends Model
 		/**
 		 * Invalidate cache
 		 */
-		if($this->_cache)
-			$this->_cache->remove('groups_list');
+		if($this->cache)
+			$this->cache->remove('groups_list');
 
 		return $obj->getId();
 	}
@@ -56,7 +60,7 @@ class Model_Group extends Model
 	 */
 	public function removeGroup($id)
 	{
-		$obj = new Db_Object($this->_name, $id);
+		$obj = Orm\Object::factory($this->name, $id);
 
 		if(!$obj->delete())
 			return false;
@@ -64,8 +68,8 @@ class Model_Group extends Model
 		/**
 		 * Invalidate cache
 		 */
-		if($this->_cache)
-			$this->_cache->remove('groups_list');
+		if($this->cache)
+			$this->cache->remove('groups_list');
 
 		return true;
 	}

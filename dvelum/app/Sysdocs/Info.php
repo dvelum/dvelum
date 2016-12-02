@@ -1,4 +1,6 @@
 <?php
+use Dvelum\Orm;
+
 class Sysdocs_Info
 {
     /**
@@ -325,7 +327,7 @@ class Sysdocs_Info
       }
       
       try{
-        $o = new Db_Object('sysdocs_localization' , $id);
+        $o = Orm\Object::factory('sysdocs_localization' , $id);
         $o->setValues(array(
           'field'=>'description',
           'hid'=>$fileHid,

@@ -1,5 +1,7 @@
 <?php
-
+use Dvelum\Orm;
+use Dvelum\Model;
+use Dvelum\Config;
 class Modules_Generator
 {
    /**
@@ -56,7 +58,7 @@ class Modules_Generator
       $runNamespace = 'app'.$jsName.'Application';
       $classNamespace = 'app'.$jsName.'Components';
 
-      $objectConfig = Db_Object_Config::getInstance($object);
+      $objectConfig = Orm\Object\Config::factory($object);
       $primaryKey = $objectConfig->getPrimaryKey();
 
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
@@ -73,7 +75,7 @@ class Modules_Generator
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
+          if(in_array($item['db_type'] , Orm\Object\Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -88,7 +90,7 @@ class Modules_Generator
       $dataFields = array();
       foreach($objectConfig->getFieldsConfig(true) as $key => $item)
       {
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
+          if(in_array($item['db_type'] , Orm\Object\Builder::$textTypes , true))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -102,8 +104,8 @@ class Modules_Generator
 
       $linksToShow = array_keys($objectConfig->getLinks(
           [
-              Db_Object_Config::LINK_OBJECT,
-              Db_Object_Config::LINK_OBJECT_LIST,
+              Orm\Object\Config::LINK_OBJECT,
+              Orm\Object\Config::LINK_OBJECT_LIST,
              // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
           ],
           false
@@ -115,18 +117,27 @@ class Modules_Generator
           }
       }
 
-      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc{' . "\n" .
-      '	 protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n" ;
+      $controllerContent = '
+<?php 
+
+use Dvelum\Config;
+use Dvelum\Model;
+use Dvelum\Orm;
+
+class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
+{
+    protected $_listFields = ["' . implode('","' , $dataFields) . '"];
+    ';
 
       if(!empty($linksToShow)) {
-          $controllerContent .= '	 protected $_listLinks = ["' . implode('","', $linksToShow) . '"];' . "\n";
+          $controllerContent .= '    protected $_listLinks = ["' . implode('","', $linksToShow) . '"];';
       }else{
-          $controllerContent.= '	 protected $_listLinks = [];' . "\n" ;
+          $controllerContent.= '    protected $_listLinks = [];';
       }
 
-      $controllerContent.=
-      '  protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];' . "\n" .
-      '}';
+    $controllerContent.='
+    protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];
+}';
 
       /*
        * Create controller
@@ -476,7 +487,7 @@ class Modules_Generator
       $runNamespace = 'app'.$jsName.'Application';
       $classNamespace = 'app'.$jsName.'Components';
 
-      $objectConfig = Db_Object_Config::getInstance($object);
+      $objectConfig = Orm\Object\Config::getInstance($object);
       $primaryKey = $objectConfig->getPrimaryKey();
 
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
@@ -494,7 +505,7 @@ class Modules_Generator
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
+          if(in_array($item['db_type'] , Orm\Object\Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -508,7 +519,7 @@ class Modules_Generator
       $dataFields = array();
       foreach($objectConfig->getFieldsConfig(true) as $key => $item)
       {
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
+          if(in_array($item['db_type'] , Orm\Object\Builder::$textTypes , true))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -521,8 +532,8 @@ class Modules_Generator
 
       $linksToShow = array_keys($objectConfig->getLinks(
           [
-              Db_Object_Config::LINK_OBJECT,
-              Db_Object_Config::LINK_OBJECT_LIST,
+              Orm\Object\Config::LINK_OBJECT,
+              Orm\Object\Config::LINK_OBJECT_LIST,
              // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
           ],
           false
@@ -534,19 +545,27 @@ class Modules_Generator
           }
       }
 
-      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud{' . "\n" .
-      ' protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n";
+      $controllerContent = '<?php
+      
+use Dvelum\Config;
+use Dvelum\Model;
+use Dvelum\Orm;
+      
+class Backend_' . $name . '_Controller extends Backend_Controller_Crud
+{
+    protected $_listFields = ["' . implode('","' , $dataFields) . '"];
+    ';
 
 
       if(!empty($linksToShow)){
-          $controllerContent.= ' protected $_listLinks = ["' . implode('","' , $linksToShow) . '"];' . "\n";
+          $controllerContent.= '    protected $_listLinks = ["' . implode('","' , $linksToShow) . '"];';
       }else{
-          $controllerContent.= ' protected $_listLinks = [];' . "\n";
+          $controllerContent.= '    protected $_listLinks = [];';
       }
 
-      $controllerContent.=
-      ' protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];' . "\n" .
-      '} ';
+      $controllerContent.= '
+    protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];
+} ';
 
       /*
        * Create controller

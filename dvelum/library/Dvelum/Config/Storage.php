@@ -30,7 +30,7 @@ class Storage
      * Debugger log
      * @var array
      */
-    protected $debugInfo = array();
+    protected $debugInfo = [];
 
     /**
      * Get config by local path

@@ -4,6 +4,10 @@
  * Mediacategory module controller
  * Backoffice UI
  */
+use Dvelum\Orm;
+use Dvelum\Model;
+use Dvelum\Config;
+
 class Backend_Mediacategory_Controller extends Backend_Controller_Crud
 {
     public function getModule()
@@ -35,7 +39,7 @@ class Backend_Mediacategory_Controller extends Backend_Controller_Crud
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         try{
-            $pObject = new Db_Object('mediacategory' , $id);
+            $pObject = Orm\Object::factory('mediacategory' , $id);
             $pObject->set('parent_id', $newParent);
             $pObject->save();
             Model::factory('Mediacategory')->updateSortOrder($order);
@@ -59,7 +63,7 @@ class Backend_Mediacategory_Controller extends Backend_Controller_Crud
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
 
         try{
-            $object = new Db_Object($this->_objectName , $id);
+            $object = Orm\Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }

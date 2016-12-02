@@ -3,9 +3,11 @@
  * ACL adapter based on Db_Object
  * access permissions and DB table as storage
  */
-class Acl_Table_Simple extends Db_Object_Acl
+use Dvelum\Orm;
+
+class Acl_Table_Simple extends Orm\Object\Acl
 {
-    static $_rights = array();
+    static $_rights = [];
 
     public function __construct()
     {
@@ -68,7 +70,7 @@ class Acl_Table_Simple extends Db_Object_Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canCreate()
      */
-    public function canCreate(Db_Object $object)
+    public function canCreate(Orm\Object $object)
     {
         return $this->_checkPermission($object, self::ACCESS_CREATE);
     }
@@ -76,7 +78,7 @@ class Acl_Table_Simple extends Db_Object_Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canEdit()
      */
-    public function canEdit(Db_Object $object)
+    public function canEdit(Orm\Object $object)
     {
         return $this->_checkPermission($object, self::ACCESS_EDIT);
     }
@@ -84,7 +86,7 @@ class Acl_Table_Simple extends Db_Object_Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canDelete()
      */
-    public function canDelete(Db_Object $object)
+    public function canDelete(Orm\Object $object)
     {
         return $this->_checkPermission($object, self::ACCESS_DELETE);
     }
@@ -92,7 +94,7 @@ class Acl_Table_Simple extends Db_Object_Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canPublish()
      */
-    public function canPublish(Db_Object $object)
+    public function canPublish(Orm\Object $object)
     {
         return $this->_checkPermission($object, self::ACCESS_PUBLISH);
     }
@@ -100,17 +102,17 @@ class Acl_Table_Simple extends Db_Object_Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canRead()
      */
-    public function canRead(Db_Object $object)
+    public function canRead(Orm\Object $object)
     {
         return $this->_checkPermission($object, self::ACCESS_VIEW);
     }
     /**
      * Check permissions for object
-     * @param Db_Object $object - object name
+     * @param Orm\Object $object - object name
      * @param string $permissionType - permission type
      * @return boolean
      */
-    protected function _checkPermission(Db_Object $object , $permissionType)
+    protected function _checkPermission(Orm\Object $object , $permissionType)
     {
         return $this->can($permissionType , $object->getName());
     }

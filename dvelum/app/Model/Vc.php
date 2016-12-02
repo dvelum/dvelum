@@ -1,14 +1,15 @@
 <?php
-use Dvelum\Model as Model;
+use Dvelum\Model;
+use Dvelum\Orm;
 
 class Model_Vc extends Model
 {
     /**
      * Create new  version
-     * @property Db_Object $object
+     * @property Orm\Object $object
      * @return boolean
      */
-    public function newVersion(Db_Object $object)
+    public function newVersion(Orm\Object $object)
     {
        $object->commitChanges();
        $newVersion = ($this->getLastVersion($object->getName(),$object->getId())+ 1);
@@ -28,7 +29,7 @@ class Model_Vc extends Model
 
        $newData['id'] = $object->getId();
        try{
-               $vObject = new Db_Object('vc');
+               $vObject = Orm\Object::factory('vc');
                $vObject->set('date' , date('Y-m-d'));
                $vObject->set('data' , base64_encode(serialize($newData)));
                $vObject->set('user_id' , User::getInstance()->id);

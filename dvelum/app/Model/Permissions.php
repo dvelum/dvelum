@@ -1,7 +1,8 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
 use Dvelum\Config;
+use Dvelum\Orm;
 
 class Model_Permissions extends Model
 {
@@ -170,7 +171,7 @@ class Model_Permissions extends Model
 
     		try
             {
-                $obj = new Db_Object($this->_name);
+                $obj = Orm\Object::factory($this->name);
                 $obj->setValues(array(
                         'view'=>(boolean)$values['view'],
                         'edit'=>(boolean)$values['edit'],
@@ -269,7 +270,7 @@ class Model_Permissions extends Model
                     continue;
                 }
 
-                $obj = new Db_Object($this->_name);
+                $obj = Orm\Object::factory($this->name);
                 $obj->setValues(array(
                     'view'=>(boolean)$values['view'],
                     'edit'=>(boolean)$values['edit'],
@@ -325,9 +326,9 @@ class Model_Permissions extends Model
     		$objectId = $data[0]['id'];
 
         try{
-    		$groupObj = new Db_Object('permissions',$objectId);
+    		$groupObj = Orm\Object::factory('permissions',$objectId);
     	}catch(Exception $e){
-    		$groupObj = new Db_Object('permissions');
+    		$groupObj = Orm\Object::factory('permissions');
     	}
 
     	$groupObj->module=$module;

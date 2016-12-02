@@ -313,7 +313,7 @@ class Config
          * Init ACL adapter
          */
         if(!empty($dataLink['acl']))
-            $this->_acl = Db_Object_Acl::factory($dataLink['acl']);
+            $this->_acl = Orm\Object\Acl::factory($dataLink['acl']);
     }
 
     protected function _getVcFields()
@@ -705,7 +705,7 @@ class Config
      */
     public function isNumeric($field)
     {
-        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Db_Object_Builder::$numTypes , true));
+        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] ,Orm\Object\Builder::$numTypes , true));
     }
 
     /**
@@ -715,7 +715,7 @@ class Config
      */
     public function isInteger($field)
     {
-        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Db_Object_Builder::$intTypes , true));
+        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$intTypes , true));
     }
 
     /**
@@ -725,7 +725,7 @@ class Config
      */
     public function isFloat($field)
     {
-        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Db_Object_Builder::$floatTypes , true));
+        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$floatTypes , true));
     }
 
     /**
@@ -738,10 +738,10 @@ class Config
         if(!isset($this->config['fields'][$field]['db_type']))
             return false;
 
-        $isText =  (in_array($this->config['fields'][$field]['db_type'] , Db_Object_Builder::$textTypes , true));
+        $isText =  (in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$textTypes , true));
 
         if($charTypes && !$isText)
-            $isText =  (in_array($this->config['fields'][$field]['db_type'] , Db_Object_Builder::$charTypes, true));
+            $isText =  (in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$charTypes, true));
 
         return $isText;
     }
@@ -752,7 +752,7 @@ class Config
      */
     public function isDateField($field)
     {
-        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Db_Object_Builder::$dateTypes, true));
+        return (isset($this->config['fields'][$field]['db_type']) && in_array($this->config['fields'][$field]['db_type'] , Orm\Object\Builder::$dateTypes, true));
     }
 
     /**
@@ -1031,7 +1031,7 @@ class Config
             }
         }
         $this->config->set('indexes', $indexes);
-        $builder = new Db_Object_Builder($this->getName() , false);
+        $builder = new Orm\Object\Builder($this->getName() , false);
         return $builder->renameField($oldName , $newName);
     }
 
@@ -1158,7 +1158,7 @@ class Config
         $curDb = $curModel->getDbConnection();
         $curDbCfg = $curDb->getConfig();
 
-        $links = $this->getLinks(array(Db_Objectconfig::LINK_OBJECT));
+        $links = $this->getLinks([Orm\Object\Config::LINK_OBJECT]);
 
         if(empty($links))
             return [];

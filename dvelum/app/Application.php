@@ -19,8 +19,8 @@
 declare(strict_types=1);
 
 use Dvelum\Config;
-use Dvelum\Model as Model;
-use Dvelum\Orm as Orm;
+use Dvelum\Model;
+use Dvelum\Orm;
 /**
  * Application - is the main class that initializes system configuration
  * settings. The system starts working with running an object of this class.
@@ -160,7 +160,7 @@ class Application
        /*
         * Prepare Db object storage
         */
-        $objectStore = new Db_Object_Store(array(
+        $objectStore = new Orm\Object\Store(array(
             'linksObject' => $this->_config->get('orm_links_object'),
             'historyObject' => $this->_config->get('orm_history_object'),
             'versionObject' => $this->_config->get('orm_version_object'),

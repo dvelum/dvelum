@@ -2,6 +2,9 @@
 /**
  * Default backoffice controller
  */
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
 class Backend_Index_Controller extends Backend_Controller
 {
     public function indexAction()

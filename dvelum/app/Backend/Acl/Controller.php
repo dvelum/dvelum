@@ -1,4 +1,8 @@
 <?php
+use Dvelum\Config;
+use Dvelum\Model;
+use Dvelum\Orm;
+
 class Backend_Acl_Controller extends Backend_Controller
 {
     /**
@@ -43,7 +47,7 @@ class Backend_Acl_Controller extends Backend_Controller
         if(!empty($data))
             $data = Utils::rekey('object' , $data);
 
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
         $objects = $manager->getRegisteredObjects();
 
         foreach($objects as $name)
@@ -65,12 +69,12 @@ class Backend_Acl_Controller extends Backend_Controller
 
         foreach($data as $k => &$v)
         {
-            if(!Db_Object_Config::configExists($k))
+            if(!Orm\Object\Config::configExists($k))
             {
                 unset($data[$k]);
                 continue;
             }
-            $cfg = Db_Object_Config::getInstance($k);
+            $cfg = Orm\Object\Config::factory($k);
 
             if($cfg->isRevControl())
                 $v['rc'] = true;

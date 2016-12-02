@@ -1,6 +1,7 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
+use Dvelum\Orm;
 
 /**
  * Pages Model
@@ -105,7 +106,7 @@ class Model_Page extends Model
     {
             $i=0;
             foreach ($sortedIds as $v){
-            	$obj = new Db_Object($this->_name, intval($v));
+            	$obj = Orm\Object::factory($this->name, intval($v));
 				$obj->set('order_no', $i);
 				$obj->save();
 
@@ -119,7 +120,7 @@ class Model_Page extends Model
      */
      public function codeExists($code)
      {
-          return  $this->_dbSlave->fetchOne($this->_dbSlave->select()
+          return  $this->dbSlave->fetchOne($this->dbSlave->select()
                                 ->from($this->table() , array('count'=>'COUNT(*)'))
                                 ->where('code = ?' , $code)
                   );
@@ -132,8 +133,8 @@ class Model_Page extends Model
      */
     public function getIdByCode($code)
     {
-         $recId = $this->_dbSlave->fetchOne(
-                $this->_dbSlave->select()
+         $recId = $this->dbSlave->fetchOne(
+                $this->dbSlave->select()
                           ->from($this->table(), array('id'))
                           ->where('code =?',$code)
          );
@@ -154,7 +155,7 @@ class Model_Page extends Model
      */
     public function resetChilds($id)
     {
-    	$obj = new Db_Object($this->_name, intval($id));
+    	$obj = Orm\Object::factory($this->_name, intval($id));
 		$obj->set('parent_id', 0);
 		$obj->save();
     }
@@ -166,8 +167,8 @@ class Model_Page extends Model
      */
     public function getCodeByModule($name)
     {
-    	 $data = $this->_dbSlave->fetchOne(
-			        $this->_dbSlave->select()
+    	 $data = $this->dbSlave->fetchOne(
+			        $this->dbSlave->select()
 			                ->from($this->table(),array('code'))
 			                ->where('`func_code` = ?' ,$name)
 			                ->order('published DESC')

@@ -1,4 +1,7 @@
 <?php
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
 /**
  * Documentation generator
  * @author Kirill A Egorov, 2014
@@ -26,7 +29,7 @@ class Sysdocs_Generator
 	 */
 	protected $autoloaderPaths = [];
 
-	public function __construct(Config_Abstract $config)
+	public function __construct(Config\Config $config)
 	{
 		$this->config = $config;
 		$this->vers = $config->get('gen_version');
@@ -150,11 +153,11 @@ class Sysdocs_Generator
 	 * Store file
 	 * @param string $filepath
 	 */
-	protected function storeFile($filepath)
+	protected function storeFile(string $filepath)
 	{
 	  $isDir = is_dir($filepath);
 
-	  $o = Db_Object::factory('sysdocs_file');
+	  $o = Orm\Object::factory('sysdocs_file');
 	  $o->setValues(array(
 	    'path'=>dirname($filepath).'/',
 	    'name'=>basename($filepath),
@@ -220,7 +223,7 @@ class Sysdocs_Generator
 	    $extends = $analyzer->getExtends();
 	    $parentId = null;
 
-	    $o = Db_Object::factory('sysdocs_class');
+	    $o = Orm\Object::factory('sysdocs_class');
 	    $o->setValues(array(
 	        'fileHid'=>$data['hid'],
 	        'name'=>$className,
@@ -247,7 +250,7 @@ class Sysdocs_Generator
 	   $this->output("\t".$className.': '.number_format((microtime(true) - $time) , 3) .'s.');
 	}
 
-	protected function processProperties(Db_Object $class , sysdocs_Analyzer $analyzer)
+	protected function processProperties(Orm\Object $class , sysdocs_Analyzer $analyzer)
 	{
 	  $constants = $analyzer->getConstants();
 
@@ -305,7 +308,7 @@ class Sysdocs_Generator
 	}
 
 
-	protected function processMethods(Db_Object $class , sysdocs_Analyzer $analyzer)
+	protected function processMethods(Orm\Object $class , sysdocs_Analyzer $analyzer)
 	{
 	     $methods = $analyzer->getMethods();
 	     $paramsList = array();
@@ -364,11 +367,11 @@ class Sysdocs_Generator
 	 * Store class method
 	 * @param array $data
 	 * @throws Exception
-	 * @return Db_Object
+	 * @return Orm\Object
 	 */
 	protected function storeMethod(array $data)
 	{
-	    $o = Db_Object::factory('sysdocs_class_method');
+	    $o = Orm\Object::factory('sysdocs_class_method');
 	    $o->setValues($data);
 
 	    $hid = $this->historyId->getHid($o);
@@ -393,7 +396,7 @@ class Sysdocs_Generator
 	  if(!empty($classData))
 	  {
 	      $parentId = $classData[0]['id'];
-    	  $object = new Db_Object('sysdocs_class' , $objectId);
+    	  $object = Orm\Object::factory('sysdocs_class' , $objectId);
     	  $object->set('parentId' , $parentId);
     	  if(!$object->save(false,false)){
     	      throw new Exception('Cannot save sysdocs_class parentId '. $objectId);

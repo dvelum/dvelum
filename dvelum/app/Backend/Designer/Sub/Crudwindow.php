@@ -2,6 +2,7 @@
 /**
  * Operations with CRUD window components
  */
+use Dvelum\Orm;
 class Backend_Designer_Sub_Crudwindow extends Backend_Designer_Sub
 {
 	/**
@@ -39,10 +40,10 @@ class Backend_Designer_Sub_Crudwindow extends Backend_Designer_Sub
 		$importObject = Request::post('importobject', 'string', false);
 		$importFields = Request::post('importfields', 'array', array());
 		
-		if(!$importObject || empty($importFields)  ||  !Db_Object_Config::configExists($importObject))
+		if(!$importObject || empty($importFields)  ||  !Orm\Object\Config::configExists($importObject))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 		
-		$importObjectConfig = Db_Object_Config::getInstance($importObject);
+		$importObjectConfig = Orm\Object\Config::factory($importObject);
 		
 		foreach ($importFields as $name)
 			if($importObjectConfig->fieldExists($name))

@@ -1,7 +1,7 @@
 <?php
 return array(
-  'core'=>'1.0.1',
-  'designer'=>'1.1',
+  'core'=>'2.0.0',
+  'designer'=>'1.2',
   'medialib'=>'0.5',
-  'orm'=>'0.9.9'
+  'orm'=>'2.0.0'
 );

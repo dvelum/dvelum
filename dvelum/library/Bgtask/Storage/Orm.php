@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+use Dvelum\Orm;
 /**
  * 
  * ORM based tasks storage
@@ -72,7 +72,7 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
      */
     public function signal($pid , $signal)
     {
-    	$object = new Db_Object('bgtask_signal');
+    	$object = Orm\Object::factory('bgtask_signal');
     	$object->pid = $pid;
     	$object->signal = $signal;
     	return $object->save(false);  	
@@ -214,7 +214,7 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
       */
      public function addTaskRecord($description)
      {
-     		$object = new Db_Object('bgtask');
+     		$object = Orm\Object::factory('bgtask');
      		$object->title = $description;
      		$pid = $object->save();
      		$this->_objects[$pid] = $object;
@@ -222,14 +222,14 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
      }
      
      /**
-      * Load Db_Object
+      * Load Orm\Object
       * @param string $class
       * @param integer $pid
       */
      protected function _getObject($pid)
      {
      	if(!isset($this->_objects[$pid]))
-     		$this->_objects[$pid] = new Db_Object('bgtask' , $pid);
+     		$this->_objects[$pid] = Orm\Object::factory('bgtask' , $pid);
      	
      	return $this->_objects[$pid];
      }

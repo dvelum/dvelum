@@ -1,5 +1,10 @@
 <?php
-class Install_Controller {
+use Dvelum\Config;
+use Dvelum\Model;
+use Dvelum\Orm;
+
+class Install_Controller
+{
     /**
      * Document root
      * @var string
@@ -342,12 +347,12 @@ class Install_Controller {
         $app->setAutoloader($this->autoloader);
         $app->init();
 
-        $dbObjectManager = new Db_Object_Manager();
+        $dbObjectManager = new Orm\Object\Manager();
         $objects = $dbObjectManager->getRegisteredObjects();
 
         foreach ($objects as $name)
         {
-            $dbObjectBuilder = new Db_Object_Builder($name);
+            $dbObjectBuilder = new Orm\Object\Builder($name);
             if(!$dbObjectBuilder->build())
                 $buildErrors[] = $name;
         }
@@ -528,7 +533,7 @@ class Install_Controller {
             }
 
             // Add group
-            $group = new Db_Object('Group');
+            $group = Orm\Object::factory('Group');
             $group->setValues(array(
                 'title'=>$this->localization->get('ADMINISTRATORS') ,
                 'system'=>true
@@ -537,7 +542,7 @@ class Install_Controller {
             $groupId = $group->getId();
 
             // Add user
-            $user = new Db_Object('user');
+            $user = Orm\Object::factory('user');
 
             $user->setValues(array(
                     'name' =>'Admin',
@@ -573,7 +578,7 @@ class Install_Controller {
             $u->setAuthorized();
 
             // Add index Page
-            $page = new Db_Object('Page');
+            $page = Orm\Object::factory('Page');
             $page->setValues(array(
                 'code'=>'index',
                 'is_fixed'=>1,
@@ -602,7 +607,7 @@ class Install_Controller {
                 return false;
 
             // Add console page
-            $consolePage = new Db_Object('Page');
+            $consolePage = Orm\Object::factory('Page');
             $consolePage->setValues([
                 'code'=>'console',
                 'is_fixed'=>1,
@@ -631,7 +636,7 @@ class Install_Controller {
                 return false;
 
             // add menu
-            $topMenu = Db_Object::factory('Menu');
+            $topMenu = Orm\Object::factory('Menu');
             $topMenu->setValues([
                 'code' =>'headerMenu',
                 'title' => 'Header Menu'
@@ -640,7 +645,7 @@ class Install_Controller {
             if(!$topMenu->save())
                 return false;
 
-            $topMenuItem = Db_Object::factory('Menu_Item');
+            $topMenuItem = Orm\Object::factory('Menu_Item');
             $topMenuItem->setValues([
                 'page_id'=>$page->getId(),
                 'title'=>'Index',
@@ -656,7 +661,7 @@ class Install_Controller {
                 return false;
 
 
-            $bottomMenu = Db_Object::factory('Menu');
+            $bottomMenu = Orm\Object::factory('Menu');
             $bottomMenu->setValues([
                 'code' =>'footerMenu',
                 'title' => 'Footer Menu'
@@ -664,7 +669,7 @@ class Install_Controller {
             if(!$bottomMenu->save())
                 return false;
 
-            $bottomMenuItem = Db_Object::factory('Menu_Item');
+            $bottomMenuItem = Orm\Object::factory('Menu_Item');
             $bottomMenuItem->setValues([
                 'page_id'=>$page->getId(),
                 'title'=>'Index',
@@ -679,7 +684,7 @@ class Install_Controller {
                 return false;
 
 
-            $leftMenu = Db_Object::factory('Menu');
+            $leftMenu = Orm\Object::factory('Menu');
             $leftMenu->setValues([
                 'code' =>'menu',
                 'title' => 'Menu'
@@ -687,7 +692,7 @@ class Install_Controller {
             if(!$leftMenu->save())
                 return false;
 
-            $leftMenuItem = Db_Object::factory('Menu_Item');
+            $leftMenuItem = Orm\Object::factory('Menu_Item');
             $leftMenuItem->setValues([
                 'page_id'=>$page->getId(),
                 'title'=>'Index',
@@ -703,7 +708,7 @@ class Install_Controller {
 
 
             // add blocks
-            $topMenuBlock = Db_Object::factory('Blocks');
+            $topMenuBlock = Orm\Object::factory('Blocks');
             $topMenuBlock->setValues([
                 'title' => 'Header Menu',
                 'published' =>1,
@@ -719,7 +724,7 @@ class Install_Controller {
                 return false;
 
 
-            $bottomMenuBlock = Db_Object::factory('Blocks');
+            $bottomMenuBlock = Orm\Object::factory('Blocks');
             $bottomMenuBlock->setValues([
                 'title' => 'Footer Menu',
                 'published' =>1,
@@ -734,7 +739,7 @@ class Install_Controller {
             if(!$bottomMenuBlock->saveVersion() || !$bottomMenuBlock->publish())
                 return false;
 
-            $menuBlock = Db_Object::factory('Blocks');
+            $menuBlock = Orm\Object::factory('Blocks');
             $menuBlock->setValues([
                 'title' => 'Menu',
                 'published' =>1,
@@ -749,7 +754,7 @@ class Install_Controller {
             if(!$menuBlock->saveVersion() || !$menuBlock->publish())
                 return false;
 
-            $testBlock = Db_Object::factory('Blocks');
+            $testBlock = Orm\Object::factory('Blocks');
             $testBlock->setValues([
                 'title' => 'Test Block',
                 'published' =>1,

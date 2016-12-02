@@ -1,7 +1,8 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
 use Dvelum\Config;
+use Dvelum\Orm;
 
 class Model_Medialib extends Model
 {
@@ -47,7 +48,7 @@ class Model_Medialib extends Model
             'category'=>$category
         );
 
-        $obj = new Db_Object($this->_name);
+        $obj = Orm\Object::factory($this->_name);
         $obj->setValues($data);
         if($obj->save()){
             return $obj->getId();
@@ -65,7 +66,7 @@ class Model_Medialib extends Model
         if(!$id)
             return false;
 
-        $obj = new Db_Object($this->_name, $id);
+        $obj = Orm\Object::factory($this->_name, $id);
         $data = $obj->getData();
 
         if(empty($data))
@@ -151,7 +152,7 @@ class Model_Medialib extends Model
         if(!$id)
             return false;
         try{
-            $obj = new Db_Object($this->_name, $id);
+            $obj = Orm\Object::factory($this->_name, $id);
             $obj->setValues($data);
             $obj->save();
             $hLog = Model::factory('Historylog');
@@ -310,7 +311,7 @@ class Model_Medialib extends Model
      */
     public function updateModifyDate($id)
     {
-        $obj = new Db_Object($this->_name, $id);
+        $obj = Orm\Object::factory($this->_name, $id);
         $obj->set('modified', date('Y-m-d h:i:s'));
         $obj->save();
     }
@@ -322,7 +323,7 @@ class Model_Medialib extends Model
      */
     public function markCroped($id)
     {
-        $obj = new Db_Object($this->_name, $id);
+        $obj = Orm\Object::factory($this->_name, $id);
         $obj->set('croped', 1);
         $obj->save();
     }

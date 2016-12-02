@@ -2,6 +2,7 @@
 /**
  * Should be called from backend controller
  */
+use Dvelum\Orm;
 class Backend_Orm_Dataview_Editor extends Backend_Controller_Crud
 {
     public function __construct()
@@ -14,7 +15,7 @@ class Backend_Orm_Dataview_Editor extends Backend_Controller_Crud
     {
         $dataObject = Request::post('d_object', 'string', false);
 
-        if(!$dataObject || !Db_Object_Config::configExists($dataObject))
+        if(!$dataObject || !Orm\Object\Config::configExists($dataObject))
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         return ucfirst($dataObject);

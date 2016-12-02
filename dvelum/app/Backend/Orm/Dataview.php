@@ -1,4 +1,6 @@
 <?php
+use Dvelum\Orm;
+
 class Backend_Orm_Dataview extends Backend_Controller_Crud
 {
 	public function getModule(){
@@ -10,10 +12,10 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 	{
 		$object = Request::post('object', 'string', false);
 
-		if(!$object || !Db_Object_Config::configExists($object))
+		if(!$object || !Orm\Object\Config::configExists($object))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
-		$cfg = Db_Object_Config::getInstance($object);
+		$cfg = Orm\Object\Config::factory($object);
 
 		$fields = $cfg->getFieldsConfig(true);
 		$fieldsCfg = array();
@@ -124,16 +126,16 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 		$query = Request::post('search', 'string', false);
 		$params = Request::post('pager', 'array', array());
 
-		if(!$object || !Db_Object_Config::configExists($object))
+		if(!$object || !Orm\Object\Config::configExists($object))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
-		$cfg = Db_Object_Config::getInstance($object);
+		$cfg = Orm\Object\Config::factory($object);
 		$fieldsCfg = $cfg->getFieldsConfig(true);
 
 		$fields = array();
 		$dictionaries = array();
-		$objectLinks = $cfg->getLinks(array(Db_Object_Config::LINK_OBJECT));
-		$linkLists = $cfg->getLinks(array(Db_Object_Config::LINK_OBJECT_LIST));
+		$objectLinks = $cfg->getLinks(array(Orm\Object\Config::LINK_OBJECT));
+		$linkLists = $cfg->getLinks(array(Orm\Object\Config::LINK_OBJECT_LIST));
 
 		foreach ($fieldsCfg as $name=>$fCfg)
 		{
@@ -162,9 +164,9 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 
             $fieldsToShow = array_keys($cfg->getLinks(
                 [
-                    Db_Object_Config::LINK_OBJECT,
-                    Db_Object_Config::LINK_OBJECT_LIST,
-                    Db_Object_Config::LINK_DICTIONARY
+                    Orm\Object\Config::LINK_OBJECT,
+                    Orm\Object\Config::LINK_OBJECT_LIST,
+                    Orm\Object\Config::LINK_DICTIONARY
                 ],
                 false
             ));
@@ -179,10 +181,10 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 	public function editorconfigAction()
 	{
 		$object = Request::post('object', 'string', false);
-		if(!$object || !Db_Object_Config::configExists($object))
+		if(!$object || !Orm\Object\Config::configExists($object))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
-		$objectConfig = Db_Object_Config::getInstance($object);
+		$objectConfig = Orm\Object\Config::factory($object);
 
 		$data = array();
 
@@ -219,7 +221,7 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 			if($objectConfig->isMultiLink($field))
 			{
 			  $linkedObject = $objectConfig->getLinkedObject($field);
-			  $linkedCfg = Db_Object_Config::getInstance($linkedObject);
+			  $linkedCfg = Orm\Object\Config::factory($linkedObject);
 				$related[] = array(
 					'field' => $field,
 					'object' => $linkedObject,
@@ -310,11 +312,11 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 		$object = Request::post('object','string', false);
 		$id = Request::post('id', 'string', false);
 
-		if(!$object || !Db_Object_Config::configExists($object))
+		if(!$object || !Orm\Object\Config::configExists($object))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
 		try {
-			$o = Db_Object::factory($object, $id);
+			$o = Orm\Object::factory($object, $id);
 			Response::jsonSuccess(array('title'=>$o->getTitle()));
 		}catch (Exception $e){
 			Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);

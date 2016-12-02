@@ -1,5 +1,5 @@
 <?php
-
+use Dvelum\Orm;
 class Backend_Designer_Sub_Orm extends Backend_Designer_Sub
 { 
 	/**
@@ -7,13 +7,13 @@ class Backend_Designer_Sub_Orm extends Backend_Designer_Sub
 	 */
 	public function listAction()
 	{
-		$manager = new Db_Object_Manager();
+		$manager = new Orm\Object\Manager();
 		$objects = $manager->getRegisteredObjects();
 		$data = array();
 		
 		if(!empty($objects))
 			foreach ($objects as $name)
-				$data[] = array('name'=>$name ,'title'=>Db_Object_Config::getInstance($name)->getTitle());
+				$data[] = array('name'=>$name ,'title'=>Orm\Object\Config::factory($name)->getTitle());
 			
 		Response::jsonSuccess($data);
 	}
@@ -28,7 +28,7 @@ class Backend_Designer_Sub_Orm extends Backend_Designer_Sub
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 			
 		try{
-			$config = Db_Object_Config::getInstance($objectName);
+			$config = Orm\Object\Config::factory($objectName);
 		}catch (Exception $e){
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 		}
@@ -54,7 +54,7 @@ class Backend_Designer_Sub_Orm extends Backend_Designer_Sub
 					 $obj = $config->getLinkedObject($name);
 					 $oName = $obj . '';
 					 try{
-					 	$oCfg = Db_Object_Config::getInstance($obj);
+					 	$oCfg = Orm\Object\Config::factory($obj);
 					 	$oName.= ' ('.$oCfg->get('title').')';
 					 }catch (Exception $e){
 					 	//empty on error

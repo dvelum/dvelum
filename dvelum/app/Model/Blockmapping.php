@@ -1,6 +1,7 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
+use Dvelum\Orm;
 
 class Model_Blockmapping extends Model
 {
@@ -30,7 +31,7 @@ class Model_Blockmapping extends Model
         $order = 0;
         foreach ($blockIds as $id)
         {
-            $blockmapItem = new Db_Object('blockmapping');
+            $blockmapItem = Orm\Object::factory('blockmapping');
             $blockmapItem->set('block_id' , $id);
             if($pageId)
               $blockmapItem->set('page_id' , $pageId);

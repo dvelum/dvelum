@@ -1,5 +1,9 @@
 <?php
-class Backend_Modules_Controller extends Backend_Controller{
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
+class Backend_Modules_Controller extends Backend_Controller
+{
     /**
      * (non-PHPdoc)
      * @see Backend_Controller::indexAction()
@@ -238,7 +242,7 @@ class Backend_Modules_Controller extends Backend_Controller{
      */
     public function objectsAction()
     {
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
         $list = $manager->getRegisteredObjects();
         $data = array();
 
@@ -246,7 +250,7 @@ class Backend_Modules_Controller extends Backend_Controller{
 
         foreach ($list as $key)
             if(!in_array(ucfirst($key), $systemObjects , true) && !class_exists('Backend_'.Utils_String::formatClassName($key).'_Controller'))
-                $data[]= array('id'=>$key , 'title'=>Db_Object_Config::getInstance($key)->getTitle());
+                $data[]= array('id'=>$key , 'title'=>Orm\Object\Config::factory($key)->getTitle());
 
         Response::jsonSuccess($data);
     }
@@ -278,17 +282,17 @@ class Backend_Modules_Controller extends Backend_Controller{
         if(file_exists($projectFile))
             Response::jsonError($this->_lang->FILE_EXISTS . '(' . $projectFile . ')');
 
-        $objectConfig = Db_Object_Config::getInstance($object);
+        $objectConfig =Orm\Object\Config::factory($object);
 
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if($acl){
-            if(!$acl->can(Db_Object_Acl::ACCESS_CREATE , $object)  || 	!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
+            if(!$acl->can(Orm\Object\Acl::ACCESS_CREATE , $object)  || 	!$acl->can(Orm\Object\Acl::ACCESS_VIEW , $object)){
                 Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
             }
         }
 
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
 
         if(!$manager->objectExists($object))
             Response::jsonError($this->_lang->FILL_FORM , array('id'=>'object','msg'=>$this->_lang->INVALID_VALUE));

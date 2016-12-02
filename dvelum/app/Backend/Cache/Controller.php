@@ -1,4 +1,7 @@
 <?php
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
 class Backend_Cache_Controller extends Backend_Controller_Crud
 {
     public function indexAction()

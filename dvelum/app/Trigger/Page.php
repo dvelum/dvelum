@@ -1,15 +1,16 @@
 <?php
+use Dvelum\Orm;
+use Dvelum\Model;
+
 class Trigger_Page extends Trigger
 {
-
-	
-	public function onAfterAdd(Db_Object $object)
+	public function onAfterAdd(Orm\Object $object)
 	{
 		parent::onAfterAdd($object);	
 		$this->clearBlockCache($object->getId());
 	}
 	
-	public function onAfterUpdate(Db_Object $object)
+	public function onAfterUpdate(Orm\Object $object)
 	{
 		parent::onAfterUpdate($object);
 			
@@ -17,7 +18,7 @@ class Trigger_Page extends Trigger
 		$this->clearItemCache($object->code ,$object->getId());	
 	}
 	
-	public function onAfterDelete(Db_Object $object)
+	public function onAfterDelete(Orm\Object $object)
 	{
 		parent::onAfterDelete($object);
 			

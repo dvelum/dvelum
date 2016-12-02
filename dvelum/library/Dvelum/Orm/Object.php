@@ -19,6 +19,8 @@
 declare(strict_types=1);
 
 namespace Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
 /**
  * Database Object class. ORM element.
  * @author Kirill Egorov 2011  DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
@@ -115,7 +117,7 @@ class Object
         if(empty($data))
             throw new Exception('Cannot find object '.$this->name.':'.$this->id);
 
-        $links = $this->config->getLinks([Db_Objectconfig::LINK_OBJECT_LIST]);
+        $links = $this->config->getLinks([Object\config::LINK_OBJECT_LIST]);
 
         if(!empty($links))
         {
@@ -357,11 +359,11 @@ class Object
      */
     static public function objectExists($name , $ids)
     {
-        if(!Db_Objectconfig::configExists($name))
+        if(!Object\Config::configExists($name))
             return false;
 
         try {
-            $cfg = Db_Objectconfig::getInstance($name);
+            $cfg = Object\Config::getInstance($name);
         }catch (Exception $e){
             return false;
         }
@@ -447,7 +449,7 @@ class Object
         elseif ($this->config->isLink($name))
         {
             if(is_object($value)){
-                if($value instanceof Db_Object)
+                if($value instanceof Object)
                 {
                     if($this->config->isObjectLink($name))
                     {
@@ -487,7 +489,7 @@ class Object
         }
         else
         {
-            $value = Db_Object_Property::filter($propConf, $value);
+            $value = Object\Property::filter($propConf, $value);
         }
 
         if(isset($propConf['db_len']) && $propConf['db_len']){
@@ -837,12 +839,12 @@ class Object
      * @param string $name
      * @param integer | array $id
      * @throws Exception
-     * @return Db_Object | array
+     * @return Object | array
      */
     static public function factory($name , $id = false)
     {
         if(!is_array($id))
-            return new Db_Object($name , $id);
+            return Object::factory($name , $id);
 
         $list = [];
         $model = Model::factory($name);
@@ -850,12 +852,12 @@ class Object
 
         static::$disableAclCheck = true;
 
-        $config = Db_Objectconfig::getInstance($name);
+        $config = Object\Config::factory($name);
 
         /*
          * Load links info
          */
-        $links = $config->getLinks([Db_Objectconfig::LINK_OBJECT_LIST]);
+        $links = $config->getLinks([Object\Config::LINK_OBJECT_LIST]);
         $linksData = [];
 
         if(!empty($links))
@@ -895,7 +897,7 @@ class Object
 
         foreach ($data as $item)
         {
-            $o = new Db_Object($name);
+            $o = Object::factory($name);
             /*
              * Apply links info
              */

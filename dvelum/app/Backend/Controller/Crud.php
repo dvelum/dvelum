@@ -21,6 +21,10 @@
  * CRUD backend applications (creating, editing, updating, deleting)
  * for ORM objects
  */
+use Dvelum\Model;
+use Dvelum\Config;
+use Dvelum\Orm;
+
 abstract class Backend_Controller_Crud extends Backend_Controller
 {
     /**
@@ -104,7 +108,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             return [];
 
         if(!empty($this->_listLinks)){
-            $objectConfig = Db_Object_Config::getInstance($this->_objectName);
+            $objectConfig = Orm\Object\Config::factory($this->_objectName);
             if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
                 throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
             }
@@ -140,7 +144,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             return [];
 
         try{
-            $obj = new Db_Object($this->_objectName , $id);
+            $obj = Orm\Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Model::factory($this->_objectName)->logError($e->getMessage());
             return [];
@@ -151,7 +155,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         /*
          * Prepare object list properties
          */
-        $linkedObjects = $obj->getConfig()->getLinks([Db_Object_Config::LINK_OBJECT_LIST]);
+        $linkedObjects = $obj->getConfig()->getLinks([Orm\Object\Config::LINK_OBJECT_LIST]);
 
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
@@ -174,7 +178,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * @param string $targetObjectName
      * @return array
      */
-    protected function _collectLinksData($fieldName, Db_Object $object , $targetObjectName)
+    protected function _collectLinksData($fieldName, Orm\Object $object , $targetObjectName)
     {
         $result = [];
 
@@ -182,8 +186,8 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         if(!empty($data))
         {
-            $list = Db_Object::factory($targetObjectName , $data);
-            $isVc = Db_Object_Config::getInstance($targetObjectName)->isRevControl();
+            $list = Orm\Object::factory($targetObjectName , $data);
+            $isVc = Orm\Object\Config::factory($targetObjectName)->isRevControl();
             foreach($data as $id){
                 if(isset($list[$id])){
                     $result[] = [
@@ -257,7 +261,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         try{
-            $object = new Db_Object($this->_objectName , $id);
+            $object =  Orm\Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
         }
@@ -279,10 +283,10 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * Save new ORM object (insert data)
      * Sends JSON reply in the result and
      * closes the application
-     * @param Db_Object $object
+     * @param Orm\Object $object
      * @return void
      */
-    public function insertObject(Db_Object $object)
+    public function insertObject(Orm\Object $object)
     {
         if(!$recId = $object->save())
             Response::jsonError($this->_lang->CANT_CREATE);
@@ -294,9 +298,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * Update ORM object data
      * Sends JSON reply in the result and
      * closes the application
-     * @param Db_Object $object
+     * @param Orm\Object $object
      */
-    public function updateObject(Db_Object $object)
+    public function updateObject(Orm\Object $object)
     {
         if(!$object->save())
             Response::jsonError($this->_lang->CANT_EXEC);
@@ -315,20 +319,21 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $query = Request::post('search' , 'string' , false);
         $filter = array_merge($filter , Request::extFilters());
 
-        if($object === false || !Db_Object_Config::configExists($object))
+        if($object === false || !Orm\Object\Config::configExists($object))
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         if(!in_array(strtolower($object), $this->_canViewObjects , true))
         	Response::jsonError($this->_lang->CANT_VIEW);
 
-        $objectCfg = Db_Object_Config::getInstance($object);
+        $objectCfg = Orm\Object\Config::factory($object);
         $primaryKey = $objectCfg->getPrimaryKey();
 
-        $objectConfig = Db_Object_Config::getInstance($object);
+        $objectConfig = Orm\Object\Config::factory($object);
+
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if($acl){
-            if(!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
+            if(!$acl->can(Orm\Object\Acl::ACCESS_VIEW , $object)){
                 Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
             }
         }
@@ -353,7 +358,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             {
                 $objectIds = Utils::fetchCol('id' , $data);
                 try{
-                    $objects = Db_Object::factory($object ,$objectIds);
+                    $objects = Orm\Object::factory($object ,$objectIds);
                 }catch (Exception $e){
                     Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
                     Response::jsonError($this->_lang->get('CANT_EXEC'));
@@ -389,23 +394,23 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $object = Request::post('object','string', false);
         $id = Request::post('id', 'string', false);
 
-        if(!$object || !Db_Object_Config::configExists($object))
+        if(!$object || !Orm\Object\Config::configExists($object))
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         if(!in_array(strtolower($object), $this->_canViewObjects , true))
             Response::jsonError($this->_lang->CANT_VIEW);
 
-        $objectConfig = Db_Object_Config::getInstance($object);
+        $objectConfig = Orm\Object\Config::factory($object);
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if($acl){
-            if(!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
+            if(!$acl->can(Orm\Object\Acl::ACCESS_VIEW , $object)){
                 Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
             }
         }
 
         try {
-            $o = Db_Object::factory($object, $id);
+            $o = Orm\Object::factory($object, $id);
             Response::jsonSuccess(array('title'=>$o->getTitle()));
         }catch (Exception $e){
             Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
@@ -416,14 +421,14 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
     /**
      * Add related objects info into getList results
-     * @param Db_Object_Config $cfg
+     * @param Orm\Object\Config $cfg
      * @param array $fieldsToShow  list of link fields to process ( key - result field, value - object field)
      * object field will be used as result field for numeric keys
      * @param array & $data rows from  Model::getList result
      * @param string $pKey - name of Primary Key field in $data
      * @throws Exception
      */
-    protected function addLinkedInfo(Db_Object_Config $cfg, array $fieldsToShow, array  & $data, $pKey)
+    protected function addLinkedInfo(Orm\Object\Config $cfg, array $fieldsToShow, array  & $data, $pKey)
     {
         $fieldsToKeys = [];
         foreach($fieldsToShow as $key=>$val){
@@ -436,9 +441,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         $links = $cfg->getLinks(
             [
-                Db_Object_Config::LINK_OBJECT,
-                Db_Object_Config::LINK_OBJECT_LIST,
-                Db_Object_Config::LINK_DICTIONARY
+                Orm\Object\Config::LINK_OBJECT,
+                Orm\Object\Config::LINK_OBJECT_LIST,
+                Orm\Object\Config::LINK_DICTIONARY
             ],
             false
         );
@@ -457,14 +462,14 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         }
 
         $rowIds = Utils::fetchCol($pKey , $data);
-        $rowObjects = Db_Object::factory($cfg->getName() , $rowIds);
+        $rowObjects = Orm\Object::factory($cfg->getName() , $rowIds);
         $listedObjects = [];
 
         foreach($rowObjects as $object)
         {
             foreach ($links as $field=>$config)
             {
-                if($config['link_type'] === Db_Object_Config::LINK_DICTIONARY){
+                if($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY){
                     continue;
                 }
 
@@ -485,7 +490,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         }
 
         foreach($listedObjects as $object => $ids){
-            $listedObjects[$object] = Db_Object::factory($object, array_unique($ids));
+            $listedObjects[$object] = Orm\Object::factory($object, array_unique($ids));
         }
 
         foreach ($data as &$row)
@@ -501,7 +506,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
                 if(!empty($value))
                 {
-                    if($config['link_type'] === Db_Object_Config::LINK_DICTIONARY)
+                    if($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY)
                     {
                         $dictionary = Dictionary::factory($config['object']);
                         if($dictionary->isValidKey($value)){
@@ -529,12 +534,12 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
     /**
      * String representation of related object for addLinkedInfo method
-     * @param Db_Object $rowObject
+     * @param Orm\Object $rowObject
      * @param string $field
-     * @param Db_Object $relatedObject
+     * @param Orm\Object $relatedObject
      * @return string
      */
-    protected function linkedInfoObjectRenderer(Db_Object $rowObject, $field, Db_Object $relatedObject)
+    protected function linkedInfoObjectRenderer(Orm\Object $rowObject, $field, Orm\Object $relatedObject)
     {
         return $relatedObject->getTitle();
     }

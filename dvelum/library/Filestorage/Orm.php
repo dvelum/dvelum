@@ -16,6 +16,9 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+use Dvelum\Model;
+use Dvelum\Config;
+use Dvelum\Orm;
 /**
  * Filestorage ORM adpater.
  * @uses Db_Object, Model
@@ -55,10 +58,10 @@ class Filestorage_Orm extends Filestorage_Simple
      */
     public function checkOrmStructure()
     {
-        if(!Db_Object_Config::configExists($this->_object))
+        if(!Orm\Object\Config::configExists($this->_object))
             throw new Exception('Filestorage_Orm undefined Orm object');
 
-        $cfg = Db_Object_Config::getInstance($this->_object);
+        $cfg = Orm\Object\Config::factory($this->_object);
         $fields = $cfg->getFieldsConfig(true);
 
         foreach ($this->_objectFields as $name)
@@ -79,7 +82,7 @@ class Filestorage_Orm extends Filestorage_Simple
         foreach ($data as $k=>&$v)
         {
             try{
-                $o = new Db_Object($this->_object);
+                $o = Orm\Object::factory($this->_object);
                 $o->setValues(
                     array(
                         'path' => $v['path'],
@@ -117,11 +120,11 @@ class Filestorage_Orm extends Filestorage_Simple
      */
     public function remove($fileId)
     {
-        if(!Db_Object::objectExists($this->_object, $fileId))
+        if(!Orm\Object::objectExists($this->_object, $fileId))
             return true;
 
         try{
-            $o = new Db_Object($this->_object ,  $fileId);
+            $o = Orm\Object::factory($this->_object ,  $fileId);
         }catch (Exception $e){
             return false;
         }
@@ -145,7 +148,7 @@ class Filestorage_Orm extends Filestorage_Simple
             return false;
 
         try{
-            $o = new Db_Object($this->_object);
+            $o = Orm\Object::factory($this->_object);
             $o->setValues(
                 array(
                     'path' => $data['path'],

@@ -1,15 +1,16 @@
 <?php
+use Dvelum\Orm;
+use Dvelum\Config;
 /**
  * User Auth provider for Kerberos.
  * @author Sergey Leschenko
  */
-
 class User_Auth_Kerberos extends User_Auth_Abstract
 {
 	/**
-	 * @param Config_Abstract $config - auth provider config
+	 * @param Config\Config $config - auth provider config
 	 */
-	public function __construct(Config_Abstract $config)
+	public function __construct(Config\Config $config)
 	{
 		if(!extension_loaded('krb5'))
 			throw new Exception('Cannot find php-krb5 extension!');
@@ -54,7 +55,7 @@ class User_Auth_Kerberos extends User_Auth_Abstract
 		if(empty($authCfg))
 			return false;
 
-		$authCfg = Db_Object::factory('User_Auth',$authCfg[0]['id'])->get('config');
+		$authCfg = Orm\Object::factory('User_Auth',$authCfg[0]['id'])->get('config');
 		$authCfg = json_decode($authCfg,true);
 
 		$principal = (isset($authCfg['principal']))

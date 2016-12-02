@@ -1,5 +1,7 @@
-<?php 
-class Backend_User_Auth_Controller extends Backend_Controller_Crud{
+<?php
+use Dvelum\Orm;
+class Backend_User_Auth_Controller extends Backend_Controller_Crud
+{
     protected $_listFields = ["user","type","id"];
     protected $_listLinks = ["user"];
     protected $_canViewObjects = ["user"];
@@ -28,7 +30,7 @@ class Backend_User_Auth_Controller extends Backend_Controller_Crud{
             return [];
 
         if(!empty($this->_listLinks)){
-            $objectConfig = Db_Object_Config::getInstance($this->_objectName);
+            $objectConfig = Orm\Object\Config::factory($this->_objectName);
             if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
             throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
             }

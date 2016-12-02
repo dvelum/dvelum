@@ -2,6 +2,10 @@
 /**
  * Filestorage UI controller
  */
+use Dvelum\Config;
+use Dvelum\Orm;
+use Dvelum\Model;
+
 class Backend_Filestorage_Controller extends Backend_Controller_Crud
 {
 	protected $_listFields = array("path","date","ext","size","user_id","name","id");
@@ -73,7 +77,7 @@ class Backend_Filestorage_Controller extends Backend_Controller_Crud
         }
 
         try{
-            $file = new Db_Object('Filestorage' , $fileId);
+            $file = Orm\Object::factory('Filestorage' , $fileId);
         }catch (Exception $e){
             Response::redirect('/');
         }
@@ -147,7 +151,7 @@ class Backend_Filestorage_Controller extends Backend_Controller_Crud
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
 
         try{
-            $object = new Db_Object($this->_objectName , $id);
+            $object = Orm\Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }

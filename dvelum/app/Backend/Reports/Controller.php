@@ -1,4 +1,7 @@
 <?php
+use Dvelum\Orm;
+use Dvelum\Config;
+use Dvelum\Model;
 /**
  * @todo cleanup the code (Оптимизировать повторяющиеся конструкции)
  * @author Kirill
@@ -90,7 +93,7 @@ class Backend_Reports_Controller extends Backend_Controller
             $items = array();
             $partconfig = array();
             if($rootPart){
-                $helper = Db_Object_Config::getInstance($rootPart->getObject());
+                $helper = Orm\Object\Config::factory($rootPart->getObject());
                 $partconfig['title'] = $helper->get('title');
                 $partconfig['object'] = $rootPart->getObject();
                 $items = $this->_partConfig($query , $rootPart);
@@ -152,7 +155,7 @@ class Backend_Reports_Controller extends Backend_Controller
             Response::jsonError($this->_lang->WRONG_REQUEST . ' 1');
 
         try{
-            $objectCfg = Db_Object_Config::getInstance($object);
+            $objectCfg = Orm\Object\Config::factory($object);
         }catch (Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST .' 2');
         }
@@ -332,7 +335,7 @@ class Backend_Reports_Controller extends Backend_Controller
         if($part === false)
             Response::jsonError($this->_lang->WRONG_REQUEST .' code 3');
 
-        $oCfg = Db_Object_Config::getInstance($part->getObject());
+        $oCfg = Orm\Object\Config::factory($part->getObject());
 
         $childPart = $query->findChild($partId , $objectField);
         if($childPart)
@@ -341,7 +344,7 @@ class Backend_Reports_Controller extends Backend_Controller
         $newPart = new Db_Query_Part();
         $newPart->setObject($subObject);
         $newPart->setParentField($objectField);
-        $newPart->setChildField(Db_Object_Config::getInstance($subObject)->getPrimaryKey());
+        $newPart->setChildField(Orm\Object\Config::factory($subObject)->getPrimaryKey());
 
         if(!$query->addPart($newPart , $partId))
             Response::jsonArray(array('success'=>true,'msg'=>$this->_lang->REPORT_RECURSION_LIMIT,'limit'=>true));
@@ -372,7 +375,7 @@ class Backend_Reports_Controller extends Backend_Controller
         }
 
         try{
-            $config = Db_Object_Config::getInstance($object);
+            $config = Orm\Object\Config::factory($object);
         }catch(Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
         }
@@ -390,7 +393,7 @@ class Backend_Reports_Controller extends Backend_Controller
     {
         $cfg = array();
         $fields = $part->getFields();
-        $objectConfig = Db_Object_Config::getInstance($part->getObject());
+        $objectConfig = Orm\Object\Config::factory($part->getObject());
 
         $mainPanel = new stdClass();
         $mainPanel->xtype='panel';
@@ -427,7 +430,7 @@ class Backend_Reports_Controller extends Backend_Controller
 
                 if($linked){
                     $obj->valueSubObject = $linked;
-                    $obj->valueSubObjectTtile = Db_Object_Config::getInstance($linked)->get('title');
+                    $obj->valueSubObjectTtile = Orm\Object\Config::factory($linked)->get('title');
                 }
             }
 
@@ -635,10 +638,10 @@ class Backend_Reports_Controller extends Backend_Controller
      */
     public function objectsAction()
     {
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
         $list = $manager->getRegisteredObjects();
         foreach ($list as $key)
-           $data[]= array('id'=>$key , 'title'=>Db_Object_Config::getInstance($key)->getTitle());
+           $data[]= array('id'=>$key , 'title'=>Orm\Object\Config::factory($key)->getTitle());
 
         Response::jsonArray($data);
     }
@@ -770,7 +773,7 @@ class Backend_Reports_Controller extends Backend_Controller
         $objects = $query->getSelectedObjects();
         if(!empty($objects))
             foreach ($objects as $object)
-                $result[] = array('id'=>$object , 'title'=>Db_Object_Config::getInstance($object)->get('title'));
+                $result[] = array('id'=>$object , 'title'=>Orm\Object\Config::factory($object)->get('title'));
 
         Response::jsonSuccess($result);
     }
@@ -789,7 +792,7 @@ class Backend_Reports_Controller extends Backend_Controller
         $query = $this->_session->get('query');
         $result = array();
 
-        $fields = Db_Object_Config::getInstance($object)->getFieldsConfig(true);
+        $fields = Orm\Object\Config::factory($object)->getFieldsConfig(true);
         if(!empty($fields))
             foreach ($fields as $code =>$config)
                 $result[] = array('id'=>$code,'title'=>$config['title']);

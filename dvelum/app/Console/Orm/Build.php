@@ -1,4 +1,5 @@
 <?php
+use Dvelum\Orm;
 class Console_Orm_Build extends Console_Action
 {
     /**
@@ -7,11 +8,11 @@ class Console_Orm_Build extends Console_Action
      */
     public function run()
     {
-        $dbObjectManager = new Db_Object_Manager();
+        $dbObjectManager = new Orm\Object\Manager();
         foreach($dbObjectManager->getRegisteredObjects() as $object)
         {
             echo 'build ' . $object . ' : ';
-            $builder = new Db_Object_Builder($object);
+            $builder = new Orm\Object\Builder($object);
             if($builder->build()){
                 echo 'OK';
             }else{

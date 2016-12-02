@@ -1,4 +1,5 @@
 <?php
+use Dvelum\Orm;
 class Backend_Orm_Connections_Controller extends Backend_Controller
 {
     /**
@@ -316,7 +317,7 @@ class Backend_Orm_Connections_Controller extends Backend_Controller
         
         $data = array();
 
-       $manager = new Db_Object_Manager();
+       $manager = new Orm\Object\Manager();
        $objects = $manager->getRegisteredObjects();
        
        $tablesObjects = array();
@@ -375,7 +376,7 @@ class Backend_Orm_Connections_Controller extends Backend_Controller
             Response::jsonError($this->_lang->CANT_CONNECT.' '.$e->getMessage());
         }
 
-        $import = new Db_Object_Import();
+        $import = new Orm\Object\Import();
         
         if(!$import->isValidPrimaryKey($db , $table))
         {
@@ -389,7 +390,7 @@ class Backend_Orm_Connections_Controller extends Backend_Controller
             Response::jsonError( $this->_lang->DB_CANT_CONNECT_TABLE. ' '. $this->_lang->DB_MSG_UNIQUE_PRIMARY. ' ' . $errors);
         }
         
-        $manager = new Db_Object_Manager();
+        $manager = new Orm\Object\Manager();
         $newObjectName = strtolower(str_replace('_', '', $table));
         
         if($manager->objectExists($newObjectName))

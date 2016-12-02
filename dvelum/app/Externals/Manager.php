@@ -1,5 +1,6 @@
 <?php
 use Dvelum\Config;
+use Dvelum\Orm;
 
 class Externals_Manager
 {
@@ -297,9 +298,9 @@ class Externals_Manager
             foreach($modConf['objects'] as $object)
             {
                 try{
-                    $objectCfg = Db_Object_Config::getInstance($object);
+                    $objectCfg = Orm\Object\Config::factory($object);
                     if(!$objectCfg->isLocked() && !$objectCfg->isReadOnly()){
-                        $builder = new Db_Object_Builder($object);
+                        $builder = new Orm\Object\Builder($object);
                         if(!$builder->build()){
                             $errors = $builder->getErrors();
                             if(!empty($errors) && is_array($errors)){
@@ -388,9 +389,9 @@ class Externals_Manager
             foreach($modConf['objects'] as $object)
             {
                 try{
-                    $objectCfg = Db_Object_Config::getInstance($object);
+                    $objectCfg = Orm\Object\Config::factory($object);
                     if(!$objectCfg->isLocked() && !$objectCfg->isReadOnly()){
-                        $builder = new Db_Object_Builder($object);
+                        $builder = new Orm\Object\Builder($object);
                         if(!$builder->remove()){
                             $this->errors[] = $builder->getErrors();
                         }
