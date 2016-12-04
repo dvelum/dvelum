@@ -89,17 +89,21 @@ class Store
     	$this->eventManager = $obj;
     }
 
-    protected function getDbConnection(Object $object)
+    /**
+     * @param Orm\Object $object
+     * @return \Db_Adapter
+     */
+    protected function getDbConnection(Orm\Object $object) : \Db_Adapter
     {
     	return Model::factory($object->getName())->getDbConnection();
     }
     /**
      * Update Db object
-     * @param Db_Object $object
+     * @param Orm\Object $object
      * @param boolean $transaction - optional, use transaction if available
      * @return boolean
      */
-    public function update(Db_Object $object , $transaction = true)
+    public function update(Orm\Object $object , $transaction = true)
     {
         if($object->getConfig()->isReadOnly())
         {
@@ -182,7 +186,7 @@ class Store
 	     return $object->getId();
     }
 
-    protected function _updateOperation(Db_Object $object)
+    protected function _updateOperation(Orm\Object $object)
     {
         try{
             $db = $this->getDbConnection($object);
@@ -218,11 +222,11 @@ class Store
 
     /**
      * Unpublish Objects
-     * @param Object $object
+     * @param Orm\Object $object
      * @param boolean $transaction - optional, default false
      * @return bool
      */
-    public function unpublish(Object $object , $transaction = true)
+    public function unpublish(Orm\Object $object , $transaction = true)
     {
     	if($object->getConfig()->isReadOnly())
     	{
@@ -288,11 +292,11 @@ class Store
 
    /**
     * Publish Db_Object
-    * @param Object $object
+    * @param Orm\Object $object
     * @param boolean $transaction - optional, default true
     * @return boolean
     */
-    public function publish(Object $object, $transaction = true)
+    public function publish(Orm\Object $object, $transaction = true)
     {
     	if($object->getConfig()->isReadOnly())
     	{
@@ -355,7 +359,7 @@ class Store
     	return true;
     }
 
-    protected function _updateLinks(Db_Object $object)
+    protected function _updateLinks(Orm\Object $object) : bool
     {
         $updates = $object->getUpdates();
 
@@ -381,12 +385,12 @@ class Store
 
     /**
      * Remove object multi links
-     * @param Db_Object $object
+     * @param Orm\Object $object
      * @param string $objectField
      * @param string $targetObjectName
      * @return bool
      */
-    protected function _clearLinks(Db_Object $object ,$objectField , $targetObjectName)
+    protected function _clearLinks(Orm\Object $object ,$objectField , $targetObjectName)
     {
 
         if($object->getConfig()->isManyToManyLink($objectField))
@@ -421,13 +425,13 @@ class Store
     }
     /**
      * Create links to the object
-     * @param Db_Object $object
+     * @param Orm\Object $object
      * @param string $objectField
      * @param string $targetObjectName
      * @param array $links
      * @return boolean
      */
-    protected function _createLinks(Db_Object $object, $objectField , $targetObjectName , array $links)
+    protected function _createLinks(Orm\Object $object, $objectField , $targetObjectName , array $links) : bool
     {
         $order = 0;
         $data = [];
@@ -469,11 +473,11 @@ class Store
     }
     /**
      * Insert Db object
-     * @param Db_Object $object
+     * @param Orm\Object $object
      * @param boolean $transaction - optional , use transaction if available
      * @return integer -  inserted id
      */
-    public function insert(Db_Object $object , $transaction = true)
+    public function insert(Orm\Object $object , $transaction = true)
     {
         if($object->getConfig()->isReadOnly())
         {
@@ -515,7 +519,7 @@ class Store
         return $object->getId();
     }
 
-    public function encryptData(Db_Object $object , $data)
+    public function encryptData(Orm\Object $object , $data)
     {
         $objectConfig = $object->getConfig();
         $ivField = $objectConfig->getIvField();
@@ -546,7 +550,7 @@ class Store
         return $data;
     }
 
-    protected function _insertOperation(Db_Object $object)
+    protected function _insertOperation(Orm\Object $object)
     {
     	$insertId = $object->getInsertId();
 
@@ -606,12 +610,11 @@ class Store
 
 	/**
 	 * Add new object version
-	 * @param Db_Object $object
-     * @param boolean $log - optional, log changes
+	 * @param Orm\Object $object
      * @param boolean $useTransaction - optional , use transaction if available
 	 * @return boolean|integer - vers number
 	 */
-    public function addVersion(Db_Object $object , $log = true , $useTransaction = true)
+    public function addVersion(Orm\Object $object , $useTransaction = true)
     {
 
     	if($object->getConfig()->isReadOnly())
@@ -650,7 +653,7 @@ class Store
     		return false;
 
     	try{
-            $oldObject = new Db_Object($object->getName() , $object->getId());
+            $oldObject = Orm\Object::factory($object->getName() , $object->getId());
             /**
     		 * Update object if not published
     		 */
@@ -686,12 +689,12 @@ class Store
     }
 
     /**
-     * Delete Db object
-     * @param Db_Object $object
+     * Delete Orm\Object
+     * @param Orm\Object $object
      * @param boolean $transaction - optional , use transaction if available
      * @return boolean
      */
-    public function delete(Db_Object $object , $transaction = true)
+    public function delete(Orm\Object $object , $transaction = true)
     {
 
         if($object->getConfig()->isReadOnly())
@@ -738,14 +741,14 @@ class Store
         return $success;
     }
     /**
-     * Delete Db object
+     * Delete Orm\Object
      * @param string $objectName
      * @param array $ids
      * @return boolean
      */
     public function deleteObjects($objectName, array $ids) : bool
     {
-        $objectConfig =  Db_Object_Config::getInstance($objectName);
+        $objectConfig =  Orm\Object\Config::factory($objectName);
 
         if($objectConfig->isReadOnly())
         {
@@ -761,7 +764,7 @@ class Store
     	if(empty($ids))
     		return true;
 
-    	$specialCase = Object::factory($objectName);
+    	$specialCase = Orm\Object::factory($objectName);
 
     	$db = $this->getDbConnection($specialCase);
 
@@ -780,12 +783,12 @@ class Store
 	    	return false;
 
 	    /*
-	     * Clear object liks (links from object)
+	     * Clear object links (links from object)
 	     */
 	    Model::factory($this->config['linksObject'])->clearLinksFor($objectName , $ids);
 
         $history = Model::factory($this->config['historyObject']);
-        $userId = User::getInstance()->id;
+        $userId = \User::getInstance()->id;
 
         /*
          * Save history if required

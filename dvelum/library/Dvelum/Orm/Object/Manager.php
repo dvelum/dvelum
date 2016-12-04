@@ -1,4 +1,7 @@
 <?php
+declare(strict_types=1);
+namespace Dvelum\Orm\Object;
+
 /**
  * Db_Object Manager class
  * @package Db
@@ -8,7 +11,6 @@
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * @license General Public License version 3
  */
-namespace Dvelum\Orm\Object;
 
 class Manager
 {
@@ -56,7 +58,7 @@ class Manager
      * @param string $name
      * @return boolean
      */
-    public function objectExists($name)
+    public function objectExists(string $name) : bool
     {
     	$list = $this->getRegisteredObjects();
     	return in_array(strtolower($name), $list , true);

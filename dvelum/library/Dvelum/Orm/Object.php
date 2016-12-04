@@ -592,7 +592,7 @@ class Object
      * @throws \Exception
      * @return mixed
      */
-    public function getOld($name)
+    public function getOld(string $name)
     {
         if($this->acl)
             $this->checkCanRead();
@@ -608,7 +608,7 @@ class Object
      * If data update in your code is carried out within an external transaction
      * set the value to  false,
      * otherwise, the first update will lead to saving the changes
-     * @return boolean;
+     * @return integer | boolean;
      */
     public function save($useTransaction = true)
     {
@@ -616,7 +616,7 @@ class Object
             try{
                 $this->checkCanEdit();
             }catch (\Exception $e){
-                $this->_errors[] = $e->getMessage();
+                $this->errors[] = $e->getMessage();
 
                 if(self::$_log)
                     self::$_log->log($e->getMessage());
@@ -631,7 +631,7 @@ class Object
         if($this->config->isReadOnly())
         {
             $text = 'ORM :: cannot save readonly object '. $this->config->getName();
-            $this->_errors[] = $text;
+            $this->errors[] = $text;
             if(self::$_log)
                 self::$_log->log($text);
             return false;
@@ -649,7 +649,7 @@ class Object
         if($emptyFields!==true)
         {
             $text = 'ORM :: Fields can not be empty. '.$this->getName().' ['.implode(',', $emptyFields).']';
-            $this->_errors[] = $text;
+            $this->errors[] = $text;
             if(self::$_log)
                 self::$_log->log($text);
             return false;
@@ -662,11 +662,11 @@ class Object
             foreach($values as $k => $v)
             {
                 $text = 'The Field value should be unique '.$k . ':' . $v;
-                $this->_errors[] = $text;
+                $this->errors[] = $text;
             }
 
             if(self::$_log)
-                self::$_log->log($this->getName() . ' ' . implode(', ' , $this->_errors));
+                self::$_log->log($this->getName() . ' ' . implode(', ' , $this->errors));
 
             return false;
         }
@@ -695,7 +695,7 @@ class Object
                 return $id;
             }
         }catch (Exception $e){
-            $this->_errors[] = $e->getMessage();
+            $this->errors[] = $e->getMessage();
             if(self::$_log)
                 self::$_log->log($e->getMessage());
             return false;
@@ -710,13 +710,13 @@ class Object
      * otherwise, the first update will lead to saving the changes
      * @return boolean - success
      */
-    public function delete($useTransaction = true)
+    public function delete($useTransaction = true) : bool
     {
         if($this->acl){
             try{
                 $this->checkCanDelete();
             }catch (Exception $e){
-                $this->_errors[] = $e->getMessage();
+                $this->errors[] = $e->getMessage();
 
                 if(self::$_log)
                     self::$_log->log($e->getMessage());
@@ -732,7 +732,7 @@ class Object
      * @param array $data
      * @return array
      */
-    public function serializeLinks($data)
+    public function serializeLinks($data) : array
     {
         foreach ($data as $k=>$v)
         {
@@ -821,7 +821,7 @@ class Object
      * Convert object into string representation
      * @return string
      */
-    public function __toString()
+    public function __toString() : string
     {
         return strval($this->getId());
     }
@@ -829,7 +829,7 @@ class Object
     /**
      * Get object title
      */
-    public function getTitle()
+    public function getTitle() : string
     {
         return $this->model->getTitle($this);
     }
@@ -838,11 +838,11 @@ class Object
      * Factory method of object creation is preferable to use, cf. method  __construct() description
      *
      * @param string $name
-     * @param integer | array $id
+     * @param integer | integer[] | boolean $id, optional default false
      * @throws \Exception
-     * @return Object | array
+     * @return Object | Object[]
      */
-    static public function factory(strin $name , $id = false)
+    static public function factory(string $name , $id = false)
     {
         if(!is_array($id))
             return new static($name , $id);
@@ -951,13 +951,14 @@ class Object
         else
             return $emptyFields;
     }
+
     /**
      * Get errors
      * @return array
      */
     public function getErrors()
     {
-        return $this->_errors;
+        return $this->errors;
     }
 
     protected function checkCanRead()
@@ -989,6 +990,7 @@ class Object
         if($this->acl && !$this->acl->canPublish($this))
             throw new \Exception('You do not have permission to publish object ['.$this->getName().'].');
     }
+
     /**
      * Unpublish VC object
      * @param boolean $log  - log changes
@@ -1001,7 +1003,7 @@ class Object
             try{
                 $this->checkCanPublish();
             }catch (Exception $e){
-                $this->_errors[] = $e->getMessage();
+                $this->errors[] = $e->getMessage();
 
                 if(self::$_log)
                     self::$_log->log($e->getMessage());
@@ -1035,7 +1037,7 @@ class Object
             try{
                 $this->checkCanPublish();
             }catch (Exception $e){
-                $this->_errors[] = $e->getMessage();
+                $this->errors[] = $e->getMessage();
 
                 if(self::$_log)
                     self::$_log->log($e->getMessage());
@@ -1055,7 +1057,7 @@ class Object
             }
             catch (Exception $e)
             {
-                $this->_errors[] = $e->getMessage();
+                $this->errors[] = $e->getMessage();
 
                 if(self::$_log)
                     self::$_log->log($e->getMessage());
@@ -1073,6 +1075,7 @@ class Object
         $this->publishedversion = $this->getVersion();
         return $store->publish($this , $log , $useTransaction);
     }
+
     /**
      * Get loaded version
      * @return integer
@@ -1081,6 +1084,7 @@ class Object
     {
         return $this->version;
     }
+
     /**
      * Load version
      * @param integer $vers
@@ -1145,14 +1149,13 @@ class Object
 
     /**
      * Save object as new version
-     * @param boolean $log  - log changes
      * @param boolean $useTransaction — using a transaction when changing data is optional.
      * @return boolean
      */
-    public function saveVersion($log = true , $useTransaction = true)
+    public function saveVersion($useTransaction = true)
     {
         if(!$this->config->isRevControl()){
-            return $this->save($log ,$useTransaction);
+            return $this->save($useTransaction);
         }
 
         if($this->config->hasEncrypted()){
@@ -1168,7 +1171,7 @@ class Object
             try{
                 $this->checkCanEdit();
             }catch (Exception $e){
-                $this->_errors[] = $e->getMessage();
+                $this->errors[] = $e->getMessage();
 
                 if(self::$_log)
                     self::$_log->log($e->getMessage());
@@ -1193,7 +1196,7 @@ class Object
         if(self::$_log)
             $store->setLog(self::$_log);
 
-        $vers = $store->addVersion($this , $log , $useTransaction);
+        $vers = $store->addVersion($this , $useTransaction);
 
         if($vers){
             $this->version = $vers;
@@ -1203,6 +1206,7 @@ class Object
             return false;
         }
     }
+
     /**
      * Get Access control List
      * @return Object\Acl | false
@@ -1211,6 +1215,7 @@ class Object
     {
         return $this->acl;
     }
+
     /**
      * Set insert id for object (Should not exist in the database)
      * @param int $id
@@ -1219,6 +1224,7 @@ class Object
     {
         $this->insertId = $id;
     }
+
     /**
      * Get insert ID
      * @return integer
@@ -1227,6 +1233,7 @@ class Object
     {
         return $this->insertId;
     }
+
     /**
      * Check DB object class
      * @param $name

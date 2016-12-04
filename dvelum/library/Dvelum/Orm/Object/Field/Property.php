@@ -1,27 +1,28 @@
 <?php
-/**
- * Db_Object Property class
- * Note: "id"  property creates automatically
- * @package Db
- * @subpackage Db_Object
- * @author Kirill A Egorov kirill.a.egorov@gmail.com 
- * @copyright Copyright (C) 2011-2012  Kirill A Egorov, 
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
- * @license General Public License version 3
- */
+declare(strict_types=1);
 
 namespace Dvelum\Orm\Object\Field;
 
 use Dvelum\Config;
 use Dvelum\Orm\Object;
 
+/**
+ * Db_Object Property class
+ * Note: "id"  property creates automatically
+ * @package Db
+ * @subpackage Db_Object
+ * @author Kirill A Egorov kirill.a.egorov@gmail.com
+ * @copyright Copyright (C) 2011-2012  Kirill A Egorov,
+ * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
+ * @license General Public License version 3
+ */
 class Property
 {
     /**
      *  List of acceptable properties
      * @var array
      */
-    public static $_acceptedData = array(
+    public static $_acceptedData = [
             'title' , 
             'required' , 
             'allow_html' , 
@@ -46,22 +47,22 @@ class Property
             'use_db_prefix',
             'hidden',
             'relations_type'
-    );
+    ];
 
-    public static $numberLength = array(
+    public static $numberLength = [
             'tinyint' => 3 , 
             'smallint' => 5 , 
             'mediumint' => 8 , 
             'int' => 10 , 
             'bigint' => 20
-    );
+    ];
     
     /**
      * Properties data
      * @var array
      */
-    protected $_data = array();
-    protected $_name = array();
+    protected $_data = [];
+    protected $_name = [];
 
     public function __construct($name)
     {
@@ -71,7 +72,7 @@ class Property
     /**
      * Set property data
      * @param array $data
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     public function setData(array $data)
@@ -81,7 +82,7 @@ class Property
             if(in_array($key , self::$_acceptedData))
                 $this->_data[$key] = $value;
             else
-                throw new Exception('Invalid property name "' . $key . '"');
+                throw new \Exception('Invalid property name "' . $key . '"');
         }
     }
 
@@ -97,7 +98,7 @@ class Property
     /**
      * Getter
      * @param string $key
-     * @throws Exception
+     * @throws \Exception
      * @return mixed
      */
     public function __get($key)
@@ -105,7 +106,7 @@ class Property
         if(isset($this->_data[$key]))
             return $this->_data[$key];
         else
-            throw new Exception('Invalid property name "' . $key . '"');
+            throw new \Exception('Invalid property name "' . $key . '"');
     }
 
     public function __isset($key)
@@ -231,7 +232,7 @@ class Property
     /**
      * Setter
      * @param string $key
-     * @throws Exception
+     * @throws \Exception
      * @param mixed $value
      */
     public function __set($key , $value)
@@ -239,14 +240,14 @@ class Property
         if(in_array(self::$_acceptedData , $key))
             $this->_data[$key] = $value;
         else
-            throw new Exception('Invalid property name');
+            throw new \Exception('Invalid property name');
     }
 
     /**
        * Property filter
        * @param array $fieldInfo - property config data
        * @param mixed $value
-       * @throws Exception
+       * @throws \Exception
        * @return mixed
        */
     static public function filter($fieldInfo , $value)
@@ -258,24 +259,24 @@ class Property
             case 'mediumint' :
             case 'int' :
             case 'bigint' :
-                $value = Filter::filterValue('int' , $value);
+                $value = \Filter::filterValue('int' , $value);
                 break;
             
             case 'float' :
             case 'double' :
             case 'decimal' :
-                $value = Filter::filterValue('float' , $value);
+                $value = \Filter::filterValue('float' , $value);
                 
                 break;
             case 'bool' :
             case 'boolean' :
-                $value = Filter::filterValue('boolean' , $value);
+                $value = \Filter::filterValue('boolean' , $value);
                 break;
             case 'date' :
             case 'time' :
             case 'timestamp' :
             case 'datetime' :
-                $value = Filter::filterValue('string' , $value);
+                $value = \Filter::filterValue('string' , $value);
                 break;
             case 'tinytext' :
             case 'text' :
@@ -287,13 +288,13 @@ class Property
             case 'char' :
             case 'varchar' :
                 if(!isset($fieldInfo['allow_html']) || !$fieldInfo['allow_html'])
-                    $value = Filter::filterValue('string' , $value);
+                    $value = \Filter::filterValue('string' , $value);
                 break;
                 //  case 'bit':
                 //		$value = preg_replace ('/[^01]*/', '', $value);
                 break;
             default :
-                throw new Exception('Invalid property type "' . $fieldInfo['db_type'] . '"');
+                throw new \Exception('Invalid property type "' . $fieldInfo['db_type'] . '"');
         }
         return $value;
     }

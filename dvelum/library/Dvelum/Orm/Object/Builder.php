@@ -1,4 +1,10 @@
 <?php
+declare(strict_types=1);
+
+namespace Dvelum\Orm\Object;
+
+use Dvelum\Orm;
+use Dvelum\Model;
 /**
  * Builder for Db_object
  * @package Db
@@ -8,11 +14,6 @@
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * @license General Public License version 3
  */
-namespace Dvelum\Orm\Object;
-
-use Dvelum\Orm;
-use Dvelum\Model;
-
 class Builder
 {
     /**
