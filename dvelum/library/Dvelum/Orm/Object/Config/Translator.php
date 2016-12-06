@@ -83,13 +83,13 @@ class Translator
 				$objectConfig['title'] = $objectName;
 		}
 		 
-		foreach ($objectConfig['fields'] as $k => &$v)
+		foreach ($objectConfig['fields'] as $k => $v)
 		{
 			if(isset($v['lazyLang']) && $v['lazyLang'])
 			{
 				if(!$this->_lang)
 					$this->_lang = \Lang::lang();
-				
+
 				if(isset($v['title']))
 					$v['title'] = $this->_lang->get($v['title']);
 				else 

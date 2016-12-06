@@ -326,4 +326,13 @@ class Field implements \ArrayAccess
     }
     //====End of ArrayAccess implementation ====
 
+    public function __toArray() : array
+    {
+        return $this->config;
+    }
+
+    public function __isset($name)
+    {
+        return isset($this->config[$name]);
+    }
 }

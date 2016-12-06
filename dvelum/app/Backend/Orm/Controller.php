@@ -235,8 +235,9 @@ class Backend_Orm_Controller extends Backend_Controller
 
         foreach ($fieldsCfg as $k=>&$v)
         {
+            $v= $v->__toArray();
             $v['name'] = $k;
-            $v['unique'] = $objectConfig->isUnique($k);
+            $v['unique'] = $objectConfig->getField($k)->isUnique();
 
             if(isset($brokenFields[$k]))
                 $v['broken'] = true;
