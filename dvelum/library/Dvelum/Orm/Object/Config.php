@@ -22,6 +22,7 @@ namespace Dvelum\Orm\Object;
 
 use Dvelum\Orm;
 use Dvelum\Config as Cfg;
+use Dvelum\Model;
 
 /**
  * Orm Object structure config

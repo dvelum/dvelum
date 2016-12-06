@@ -21,7 +21,7 @@ class Builder
      * @var \Db_Adapter
      */
     protected $_db;
-    protected $_objectName;
+    protected $objectName;
 
     /**
      *
@@ -47,7 +47,7 @@ class Builder
      */
     public function __construct($objectName , $forceConfig = true)
     {
-        $this->_objectName = $objectName;
+        $this->objectName = $objectName;
         $this->_objectConfig = Orm\Object\Config::factory($objectName , $forceConfig);
         $this->_model = Model::factory($objectName);
         $this->_db = $this->_model->getDbConnection();
@@ -217,7 +217,6 @@ class Builder
     /**
      * Prepare list of columns to be updated
      *
-     * @param Db_Object $object
      * @return array (
      *         'name'=>'somename',
      *         'action'=>[drop/add/change],
@@ -233,6 +232,7 @@ class Builder
         else
             $fields = $this->_getExistingColumns()->getColumns();
 
+
         /**
          * @var \Zend\Db\Metadata\Object\ColumnObject $column
          */
@@ -243,7 +243,7 @@ class Builder
 
         // except virtual fields
         foreach($config['fields'] as $field=>$cfg){
-            if($this->_objectConfig->isVirtual($field)){
+            if($this->_objectConfig->getField($field)->isVirtual()){
                 unset($config['fields'][$field]);
             }
         }
@@ -253,7 +253,8 @@ class Builder
          */
         foreach($columns as $name=>$column)
         {
-            if(! array_key_exists($name, $config['fields'])){
+            if(!isset($config['fields'][$name]))
+            {
                 $updates[] = array(
                     'name' => $name ,
                     'action' => 'drop' ,
@@ -262,13 +263,12 @@ class Builder
             }
         }
 
-
         foreach($config['fields'] as $name => $v)
         {
             /*
              * Add new field
              */
-            if(!isset($colums[$name]))
+            if(!isset($columns[$name]))
             {
                 $updates[] = array(
                     'name' => $name ,
@@ -291,7 +291,7 @@ class Builder
             /*
              * IsNull compare flag
              */
-            $nullcmp = false;
+            $nullCmp = false;
             /*
              * Default value compare flag
              */
@@ -320,17 +320,20 @@ class Builder
 
                 if(in_array($v['db_type'] , self::$floatTypes , true))
                 {
-                    if($v['db_scale'] != $column->getNumericScale() || $v['db_precision'] != $column->getNumericPrecision())
+                    /*
+                     * @note ZF3 has inverted scale and precision values
+                     */
+                    if((int) $v['db_scale'] != (int) $column->getNumericPrecision() || (int) $v['db_precision'] != (int) $column->getNumericScale())
                         $lenCmp = true;
                 }
                 elseif(in_array($v['db_type'] , self::$numTypes , true) && isset(Orm\Object\Field\Property::$numberLength[$v['db_type']]))
                 {
-                    $lenCmp = (string) Orm\Object\Field\Property::$numberLength[$v['db_type']] != (string) $column->getCharacterMaximumLength();
+                    $lenCmp = (int) Orm\Object\Field\Property::$numberLength[$v['db_type']] != (int) $column->getNumericPrecision();
                 }
                 else
                 {
                     if(isset($v['db_len']))
-                        $lenCmp = (string) $v['db_len'] != (string) $column->getCharacterMaximumLength();
+                        $lenCmp = (int) $v['db_len'] != (int) $column->getCharacterMaximumLength();
                 }
 
                 /*
@@ -349,7 +352,7 @@ class Builder
                         $v['db_isNull'] = true;
                 }
 
-                $nullcmp = (boolean) $v['db_isNull'] !==  $column->isNullable();
+                $nullCmp = (boolean) $v['db_isNull'] !==  $column->isNullable();
 
                 if((!isset($v['db_unsigned']) || !$v['db_unsigned']) && $column->isNumericUnsigned())
                     $unsignedCmp = true;
@@ -383,27 +386,25 @@ class Builder
 
 
 
-
-
-
-            /*
+          /*
            * If not passed at least one comparison then rebuild the the field
            */
-            if($typeCmp || $lenCmp || $nullcmp || $defaultCmp || $unsignedCmp || $incrementCmp)
+            if($typeCmp || $lenCmp || $nullCmp || $defaultCmp || $unsignedCmp || $incrementCmp)
             {
-                /*
-                 * echo $this->_objectName.'<br>'; var_dump($v);
-                 * var_dump($fields[$name]); echo 'type - ' . intval($typeCmp)."<br>";
-                 * echo 'len - ' . intval($lenCmp)."<br>"; echo 'null - ' .
-                 * intval($nullcmp)."<br>"; echo 'default - ' .
-                 * intval($defaultCmp)."<br>"; echo 'unsigned - ' .
-                 * intval($unsignedCmp)."<br>"; echo 'increment - ' .
-                 * intval($incrementCmp)."<br>";
-                 */
-
                 $updates[] = array(
                     'name' => $name ,
-                    'action' => 'change'
+                    'action' => 'change',
+                    'info' => [
+                        'object' => $this->objectName,
+                        'cmp_flags' =>[
+                            'type' => (boolean) $typeCmp,
+                            'length' => (boolean) $lenCmp,
+                            'null' => (boolean) $nullCmp,
+                            'default' => (boolean) $defaultCmp,
+                            'unsigned' => (boolean) $unsignedCmp,
+                            'increment' => (boolean) $incrementCmp
+                        ]
+                    ]
                 );
             }
         }
@@ -861,9 +862,7 @@ class Builder
      *
      * @param string $index
      * @param array $config
-     * @param boolean $create
-     *          - optional use create table mode
-     * @param Db_Object $object
+     * @param boolean $create - optional use create table mode
      * @return string
      */
     protected function _prepareIndex($index , array $config , $create = false)
@@ -927,7 +926,7 @@ class Builder
      */
     protected function _sqlCreate()
     {
-        $config = Config::factory($this->_objectName);
+        $config = Config::factory($this->objectName);
 
         $fields = $config->get('fields');
 
@@ -1136,7 +1135,7 @@ class Builder
 
         try
         {
-            $model = Model::factory($this->_objectName);
+            $model = Model::factory($this->objectName);
 
             if(! $this->tableExists())
                 return true;
@@ -1241,7 +1240,7 @@ class Builder
         $usePrefix = true;
         $connection = $this->_objectConfig->get('connection');
 
-        $objectModel = Model::factory($this->_objectName);
+        $objectModel = Model::factory($this->objectName);
         $db = $objectModel->getDbConnection();
         $tablePrefix = $objectModel->getDbPrefix();
 
@@ -1260,7 +1259,7 @@ class Builder
         $fieldList= $fieldList->__toArray();
         $indexesList = $indexesList->__toArray();
 
-        $fieldList['source_id']['link_config']['object'] = $this->_objectName;
+        $fieldList['source_id']['link_config']['object'] = $this->objectName;
 
 
         foreach($list as $fieldName=>$info)
@@ -1273,7 +1272,7 @@ class Builder
             $fieldList['target_id']['link_config']['object'] = $linkedObject;
 
             $objectData = [
-                'parent_object' => $this->_objectName,
+                'parent_object' => $this->objectName,
                 'connection'=>$connection,
                 'use_db_prefix'=>$usePrefix,
                 'disable_keys' => false,
@@ -1319,7 +1318,7 @@ class Builder
 
 
             $cfg = Config::factory($newObjectName);
-            $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->_objectName.' & '.$linkedObject);
+            $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->objectName.' & '.$linkedObject);
 
             if(!$cfg->save())
                 Response::jsonError($lang->get('CANT_WRITE_FS'));

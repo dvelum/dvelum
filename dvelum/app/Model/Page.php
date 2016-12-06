@@ -100,7 +100,7 @@ class Model_Page extends Model
 
     /**
      * Update pages order_no
-     * @param array $data
+     * @param array $sortedIds
      */
     public function updateSortOrder(array $sortedIds)
     {
@@ -131,7 +131,7 @@ class Model_Page extends Model
      * @param string $code
      * @return integer;
      */
-    public function getIdByCode($code)
+    public function getIdByCode($code) : int
     {
          $recId = $this->dbSlave->fetchOne(
                 $this->dbSlave->select()
@@ -145,10 +145,13 @@ class Model_Page extends Model
     /**
      * Get hash for pagecode
      * @param string $code
+     * @return string
      */
-    static public function getCodeHash($code){
+    static public function getCodeHash($code) : string
+    {
     	return md5('page_'.$code);
     }
+
     /**
      * Reset childs elements set parent 0
      * @param page $id
@@ -185,6 +188,7 @@ class Model_Page extends Model
     public function getCachedCodes()
     {
     	$codes = false;
+        $cacheKey = '';
 
     	if($this->cache){
     		$cacheKey = $this->getCacheKey(array('codes'));

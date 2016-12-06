@@ -91,7 +91,7 @@ class Object
         $this->name = strtolower($name);
         $this->id = $id;
 
-        $this->config = Config::factory($name);
+        $this->config = Object\Config::factory($name);
         $this->primaryKey = $this->config->getPrimaryKey();
         $this->model = \Dvelum\Model::factory($name);
         $this->acl = $this->config->getAcl();

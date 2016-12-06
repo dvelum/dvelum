@@ -733,9 +733,9 @@ class Backend_Orm_Controller extends Backend_Controller
         $builder = new Orm\Object\Builder($name);
         $tableExists = $builder->tableExists();
 
-        $colUpd = array();
-        $indUpd = array();
-        $keyUpd = array();
+        $colUpd = [];
+        $indUpd = [];
+        $keyUpd = [];
 
         if($tableExists){
             $colUpd =  $builder->prepareColumnUpdates();
