@@ -174,14 +174,16 @@ class Object
 
         foreach($data as $field => &$value)
         {
-            if($this->getConfig()->isBoolean($field)){
+            $fieldObject = $this->getConfig()->getField($field);
+
+            if($fieldObject->isBoolean()){
                 if($value)
                     $value = true;
                 else
                     $value = false;
             }
 
-            if($this->config->isEncrypted($field)){
+            if($fieldObject->isEncrypted()){
                 if(!empty($iv)){
                     $value = $this->config->decrypt($value, $iv);
                 }
@@ -414,16 +416,18 @@ class Object
         $propConf = $this->config->getFieldConfig($name);
         $validator = $this->getConfig()->getValidator($name);
 
+        $field = $this->getConfig()->getField($name);
+
         // Validate value using special validator
         // Skip validation if value is null and object field can be null
-        if ($validator && (!$this->getConfig()->isNull($name) || !is_null($value)) && !call_user_func_array([$validator, 'validate'], array($value))){
+        if ($validator && (!$field->isNull() || !is_null($value)) && !call_user_func_array([$validator, 'validate'], [$value])){
             throw new Exception('Invalid value for field ' . $name);
         }
 
         /*
          * Validate value by fields type in config
          */
-        if($this->config->isMultiLink($name))
+        if($field->isMultiLink())
         {
             if(is_array($value) && !empty($value[0])){
                 if(!$this->_validateLink($name , $value))
@@ -433,9 +437,9 @@ class Object
                 $value = [];
             }
         }
-        elseif ($this->config->isDictionaryLink($name))
+        elseif ($field->isDictionaryLink())
         {
-            if($this->config->isRequired($name) && !strlen($value))
+            if($field->isRequired() && !strlen($value))
                 throw new Exception('Field '. $name.' cannot be empty');
 
             if(strlen($value))
@@ -447,12 +451,12 @@ class Object
                     throw new Exception('Invalid dictionary value ['.$name.']');
             }
         }
-        elseif ($this->config->isLink($name))
+        elseif ($field->isLink())
         {
             if(is_object($value)){
                 if($value instanceof Object)
                 {
-                    if($this->config->isObjectLink($name))
+                    if($field->isObjectLink())
                     {
                         if(!$value->isInstanceOf($this->getLinkedObject($name))){
                             throw new Exception('Invalid value type for field '. $name.' expects ' . $this->getLinkedObject($name) . ', '.$value->getName().' passed');
@@ -467,7 +471,7 @@ class Object
             if(is_array($value))
                 throw new Exception('Invalid value for field '. $name);
 
-            if($this->config->isRequired($name) && !strlen($value))
+            if($field->isRequired() && !strlen($value))
                 throw new Exception('Field '. $name.' cannot be empty');
 
             $value = intval($value);
@@ -480,11 +484,11 @@ class Object
 
         }
         // mysql strict mode patch
-        elseif($this->config->isBoolean($name))
+        elseif($field->isBoolean())
         {
             $value = intval((boolean)$value);
         }
-        elseif (is_null($value) && $this->config->isNull($name))
+        elseif (is_null($value) && $field->isNull())
         {
             $value = null;
         }
@@ -494,7 +498,7 @@ class Object
         }
 
         if(isset($propConf['db_len']) && $propConf['db_len']){
-            if(mb_strlen($value,'UTF-8') > $propConf['db_len'])
+            if(mb_strlen((string)$value ,'UTF-8') > $propConf['db_len'])
                 throw new Exception('The field value exceeds the allowable length ['.$name.']');
             if($propConf['db_type'] == 'bit' && (strlen($value) > $propConf['db_len'] || strlen($value) < $propConf['db_len']))
                 throw new Exception('Invalid length for bit value ['.$name.']');
@@ -736,7 +740,7 @@ class Object
     {
         foreach ($data as $k=>$v)
         {
-            if($this->config->isMultiLink($k)) {
+            if($this->config->getField($k)->isMultiLink($k)) {
                 unset($data[$k]);
             }
         }
@@ -758,7 +762,7 @@ class Object
             if($k===$this->primaryKey)
                 continue;
 
-            if(!$this->config->isUnique($k))
+            if(!$this->config->getField($k)->isUnique())
                 continue;
 
             $value  = $this->get($k);
@@ -938,7 +942,7 @@ class Object
 
         foreach ($fields as $name)
         {
-            if(!$this->config->isRequired($name))
+            if(!$this->config->getField($name)->isRequired())
                 continue;
 
             $val = $this->get($name);

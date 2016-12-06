@@ -665,14 +665,12 @@ class Builder
 
     /**
      * Prepare list of indexes to be updated
-     *
-     * @param Db_Object $object
      * @return array (
      *         'name'=>'indexname',
      *         'action'=>[drop/add],
      *         )
      */
-    public function prepareIndexUpdates()
+    public function prepareIndexUpdates() : array
     {
         $updates = array();
         /*
@@ -793,7 +791,7 @@ class Builder
         $realKeysNames = array();
 
         if(!empty($realKeys))
-            $realKeys = Utils::rekey('CONSTRAINT_NAME' , $realKeys);
+            $realKeys = \Utils::rekey('CONSTRAINT_NAME' , $realKeys);
 
         if(!empty($configForeignKeys))
         {
@@ -884,7 +882,7 @@ class Builder
          */
         foreach($config['columns'] as &$col)
         {
-            if($this->_objectConfig->isText($col))
+            if($this->_objectConfig->getField($col)->isText())
                 $col = '`' . $col . '`(32)';
             else
                 $col = '`' . $col . '`';

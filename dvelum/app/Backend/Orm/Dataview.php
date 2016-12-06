@@ -32,16 +32,17 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 			$col->dataIndex = $name;
 			$col->text = $itemCfg['title'];
 
-			$dbType = $cfg->getDbType($name);
+            $field = $cfg->getField($name);
+			$dbType = $field->getDbType();
 
-			if($cfg->isLink($name))
+			if($field->isLink())
 			{
 				$col->align = 'left';
 				$fieldCfg->type = "string";
 
-				if($cfg->isDictionaryLink($name)){
+				if($field->isDictionaryLink()){
 					$col->text.=' <span style="color:green;">('.$this->_lang->DICTIONARY.')</span>';
-				}elseif($cfg->isMultiLink($name)){
+				}elseif($field->isMultiLink()){
 					$col->text.=' <span style="color:red;">('.$this->_lang->MULTI_LINK.')</span>';
 				}else{
 					$col->text.=' <span style="color:#0000FF;">('.$this->_lang->LINK.')</span>';
@@ -49,10 +50,10 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 
 
 			}
-			elseif($cfg->isNumeric($name))
+			elseif($field->isNumeric())
 			{
 				$col->align = 'right';
-				if($cfg->isFloat($name)){
+				if($field->isFloat()){
 					$fieldCfg->type = "float";
 					$col->xtype="numbercolumn";
 				}
@@ -60,13 +61,13 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 					$fieldCfg->type = "integer";
 				}
 			}
-			elseif($cfg->isBoolean($name))
+			elseif($field->isBoolean())
 			{
 				$fieldCfg->type = "boolean";
 				$col->xtype="booleancolumn";
 				$col->align = 'center';
 			}
-			elseif($cfg->isText($name))
+			elseif($field->isText())
 			{
 				$col->align = 'left';
 				$fieldCfg->type = "string";
@@ -92,12 +93,12 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 				$fieldCfg->type = "string";
 			}
 
-			if($cfg->isSearch($name))
+			if($field->isSearch())
 			{
 				  $col->text='<img data-qtip="'.$this->_lang->SEARCH.'" src="'.$this->_configMain->get('wwwroot').'i/system/search.png" height="10"/> ' .$col->text;
 			}
 
-            if($cfg->isMultiLink($name)){
+            if($field->isMultiLink()){
                 $col->sortable = false;
             }
 
@@ -139,16 +140,18 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 
 		foreach ($fieldsCfg as $name=>$fCfg)
 		{
-			if($cfg->isDictionaryLink($name))
+		    $field = $cfg->getField($name);
+
+			if($field->isDictionaryLink())
 			{
-				$dictionaries[$name] = $cfg->getLinkedDictionary($name);
+				$dictionaries[$name] = $field->getLinkedDictionary();
 			}
 
-			if($cfg->isText($name) && !$cfg->isLink($name))
+			if($field->isText($name) && !$field->isLink())
 			{
 				$fields[$name] = '"[ text ]"';
 			}
-			elseif(!$cfg->isVirtual($name))
+			elseif(!$field->isVirtual())
 			{
 				$fields[] = $name;
 			}
@@ -218,9 +221,11 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 
 			$fieldCfg = $objectConfig->getFieldConfig($field);
 
-			if($objectConfig->isMultiLink($field))
+            $fieldObj = $objectConfig->getField($field);
+
+			if($fieldObj->isMultiLink())
 			{
-			  $linkedObject = $objectConfig->getLinkedObject($field);
+			  $linkedObject = $fieldObj->getLinkedObject();
 			  $linkedCfg = Orm\Object\Config::factory($linkedObject);
 				$related[] = array(
 					'field' => $field,
@@ -229,9 +234,9 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 					'titleField' => $linkedCfg->getLinkTitle()
 				);
 			}
-			elseif($objectConfig->isObjectLink($field))
+			elseif($fieldObj->isObjectLink())
 			{
-				if($objectConfig->getLinkedObject($field) === 'medialib')
+				if($fieldObj->getLinkedObject() === 'medialib')
 				{
 					$data[] ='{
 									xtype:"medialibitemfield",
@@ -247,7 +252,7 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 					$data[]='
 						{
 							xtype:"objectfield",
-							objectName:"'.$objectConfig->getLinkedObject($field).'",
+							objectName:"'.$fieldObj->getLinkedObject().'",
 							controllerUrl:"'.Request::url(array($backendCfg['adminPath'] ,'orm' , 'dataview',''), false).'",
 							fieldLabel:"'.$fieldCfg['title'].'",
 							name:"'.$field.'",
@@ -271,7 +276,7 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 					  $newField->readOnly = true;
 					}
 
-					if($objectConfig->isText($field) && $objectConfig->isHtml($field))
+					if($fieldObj->isText() && $fieldObj->isHtml())
 					{
 						$tabs[] = $newField->__toString();
 					}

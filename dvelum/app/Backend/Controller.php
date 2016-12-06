@@ -227,7 +227,7 @@ abstract class Backend_Controller extends Controller
             }
         }else{
             try{
-                $obj =  Orm\Object::facroty($objectName);
+                $obj =  Orm\Object::factory($objectName);
             }catch (Exception $e){
                 Response::jsonError($this->_lang->CANT_EXEC.'<br>'.$e->getMessage());
             }
@@ -243,6 +243,7 @@ abstract class Backend_Controller extends Controller
         $fields = $obj->getFields();
         $errors = array();
 
+
         $objectConfig = $obj->getConfig();
         $systemFields = $objectConfig->getSystemFieldsConfig();
 
@@ -251,23 +252,25 @@ abstract class Backend_Controller extends Controller
             if($name == 'id')
                 continue;
 
-            if($objectConfig->isRequired($name) &&  !isset($systemFields[$name]) &&  (!isset($posted[$name]) || !strlen($posted[$name])))
+            $field =  $objectConfig->getField($name);
+
+            if($field->isRequired() &&  !isset($systemFields[$name]) &&  (!isset($posted[$name]) || !strlen($posted[$name])))
             {
                 $errors[$name] = $this->_lang->CANT_BE_EMPTY;
                 continue;
             }
 
-            if($objectConfig->isBoolean($name) && !isset($posted[$name]))
+            if($field->isBoolean() && !isset($posted[$name]))
                 $posted[$name] = false;
 
-            if(($objectConfig->isNull($name) || $objectConfig->isDateField($name)) && isset($posted[$name]) && empty($posted[$name]))
+            if(($field->isNull() || $field->isDateField()) && isset($posted[$name]) && empty($posted[$name]))
                 $posted[$name] = null;
 
 
             if(!array_key_exists($name , $posted))
                 continue;
 
-            if(!$id && ( (is_string($posted[$name]) && !strlen((string)$posted[$name])) || (is_array($posted[$name]) && empty($posted[$name])) ) && $objectConfig->hasDefault($name))
+            if(!$id && ( (is_string($posted[$name]) && !strlen((string)$posted[$name])) || (is_array($posted[$name]) && empty($posted[$name])) ) && $field->hasDefault())
                 continue;
 
             try{

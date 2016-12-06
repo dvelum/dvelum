@@ -36,6 +36,18 @@ class Field implements \ArrayAccess
     }
 
     /**
+     * Get field type
+     * @return string
+     */
+    public function getType() : string
+    {
+        if(!isset($this->config['type']))
+            return '';
+
+        return (string) $this->config['type'];
+    }
+
+    /**
      * Check whether the field is a boolean field
      * @return boolean
      */
@@ -149,9 +161,9 @@ class Field implements \ArrayAccess
      * Check if the field is a link to the dictionary
      * @return boolean
      */
-    public function isDictionaryLink($field) : bool
+    public function isDictionaryLink() : bool
     {
-        if(isset($this->config['type']) && $this->config['type']==='link' && is_array($this->config['linkconfig']) && $this->config['linkconfig']['link_type']==='dictionary')
+        if(isset($this->config['type']) && $this->config['type']==='link' && isset($this->config['link_config']) && is_array($this->config['link_config']) && $this->config['link_config']['link_type']==='dictionary')
             return true;
         else
             return false;
@@ -199,7 +211,7 @@ class Field implements \ArrayAccess
      */
     public function isObjectLink() : bool
     {
-        if(isset($this->config['type']) && $this->config['type']==='link' && is_array($this->config['linkconfig']) && $this->config['linkconfig']['link_type']===Orm\Object\Config::LINK_OBJECT)
+        if(isset($this->config['type']) && $this->config['type']==='link' && isset($this->config['link_config']) && is_array($this->config['link_config']) && $this->config['link_config']['link_type']===Orm\Object\Config::LINK_OBJECT)
             return true;
         else
             return false;
@@ -211,7 +223,7 @@ class Field implements \ArrayAccess
      */
     public function isMultiLink() : bool
     {
-        if(isset($this->config['type']) && $this->config['type']==='link' && isset($this->config['linkconfig']) && is_array($this->config['linkconfig']) && $this->config['linkconfig']['link_type']===Orm\Object\Config::LINK_OBJECT_LIST)
+        if(isset($this->config['type']) && $this->config['type']==='link' && isset($this->config['link_config']) && is_array($this->config['link_config']) && $this->config['link_config']['link_type']===Orm\Object\Config::LINK_OBJECT_LIST)
             return true;
         else
             return false;
@@ -224,10 +236,10 @@ class Field implements \ArrayAccess
     public function isManyToManyLink() : bool
     {
         if(isset($this->config['type']) && $this->config['type']==='link'
-            && is_array($this->config['linkconfig'])
-            && $this->config['linkconfig']['link_type'] === Orm\Object\Config::LINK_OBJECT_LIST
-            && isset($this->config['linkconfig']['relations_type'])
-            && $this->config['linkconfig']['relations_type'] === Orm\Object\Config::RELATION_MANY_TO_MANY
+            && is_array($this->config['link_config'])
+            && $this->config['link_config']['link_type'] === Orm\Object\Config::LINK_OBJECT_LIST
+            && isset($this->config['link_config']['relations_type'])
+            && $this->config['link_config']['relations_type'] === Orm\Object\Config::RELATION_MANY_TO_MANY
         ){
             return true;
         }
@@ -243,7 +255,7 @@ class Field implements \ArrayAccess
         if(!$this->isLink())
             return false;
 
-        return 	$this->config['linkconfig']['object'];
+        return 	$this->config['link_config']['object'];
     }
 
     /**
@@ -295,6 +307,18 @@ class Field implements \ArrayAccess
             return true;
         else
             return false;
+    }
+
+    /**
+     * Get the name of the dictionary that is referenced by the field
+     * @return string | bool on error
+     */
+    public function getLinkedDictionary()
+    {
+        if(!$this->isDictionaryLink())
+            return false;
+
+        return 	$this->config['link_config']['object'];
     }
 
     /**

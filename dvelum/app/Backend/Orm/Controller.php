@@ -55,6 +55,10 @@ class Backend_Orm_Controller extends Backend_Controller
         $res->addJs('/js/app/system/ContentWindow.js', 1);
         $res->addJs('/js/app/system/RevisionPanel.js', 2);
         $res->addJs('/js/app/system/RelatedGridPanel.js', 2);
+
+        $res->addJs('/js/app/system/SelectWindow.js', 2);
+        $res->addJs('/js/app/system/ObjectLink.js', 3);
+
         Model::factory('Medialib')->includeScripts();
         $res->addCss('/css/system/joint.min.css', 1);
         $res->addJs('/js/lib/uml/lodash.min.js', 2);
@@ -1152,6 +1156,7 @@ class Backend_Orm_Controller extends Backend_Controller
         $manager = new Orm\Object\Manager();
         $names = $manager->getRegisteredObjects();
         $showObj = Request::post('objects','array',[]);
+
         if(empty($showObj)){
             foreach($names as $name)
                 if(!isset($items[$name]['show']) || $items[$name]['show'])
@@ -1165,7 +1170,8 @@ class Backend_Orm_Controller extends Backend_Controller
         $defaultX = 10;
         $defaultY = 10;
 
-        foreach($names as $index=>$objectName){
+        foreach($names as $index=>$objectName)
+        {
             $objectConfig = Orm\Object\Config::factory($objectName);
             if(!empty($objectConfig->isRelationsObject()) || !in_array($objectName,$showObj)){
                 unset($names[$index]);
@@ -1177,7 +1183,8 @@ class Backend_Orm_Controller extends Backend_Controller
             $objectConfig = Orm\Object\Config::factory($objectName);
             $fields = $objectConfig->getFieldsConfig();
 
-            foreach($fields as $fieldName => $fieldData){
+            foreach($fields as $fieldName => $fieldData)
+            {
                 $data[$objectName]['fields'][] = $fieldName;
 
                 if(isset($items[$objectName])){
@@ -1194,10 +1201,13 @@ class Backend_Orm_Controller extends Backend_Controller
             sort($data[$objectName]['fields']);
         }
 
-        foreach($names as $objectName){
-            foreach($data[$objectName]['links'] as $link => $link_value){
+        foreach($names as $objectName)
+        {
+            foreach($data[$objectName]['links'] as $link => $link_value)
+            {
                 if(!isset($data[$link]))
                     continue;
+
                 $data[$link]['weight'] = ( !isset($data[$link]['weight']) ? 1 : $data[$link]['weight'] + 1 );
             }
             if(!isset($data[$objectName]['weight']))

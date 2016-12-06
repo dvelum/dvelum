@@ -85,6 +85,11 @@ class Adapter
         return null;
     }
 
+    public function query($sql)
+    {
+        $this->adapter->query($sql, Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+    }
+
     public function fetchRow($sql)
     {
         $statement = $this->adapter->createStatement();
@@ -138,4 +143,31 @@ class Adapter
         $metadata = new Db\Metadata\Metadata($this->adapter);
         return $metadata->getTable($tableName);
     }
+
+    public function beginTransaction()
+    {
+        $this->adapter->getDriver()->getConnection()->beginTransaction();
+    }
+
+    public function rollback()
+    {
+        $this->adapter->getDriver()->getConnection()->rollback();
+    }
+
+    public function commit()
+    {
+        $this->adapter->getDriver()->getConnection()->commit();
+    }
+
+    public function insert($table , $values)
+    {
+        $sql = $this->sql();
+        $insert = $sql->insert($table);
+        $insert->values($values);
+
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $statement->execute();
+
+    }
+
 }

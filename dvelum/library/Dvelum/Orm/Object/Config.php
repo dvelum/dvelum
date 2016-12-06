@@ -345,7 +345,7 @@ class Config
         $fieldsConfig = $this->get('fields');
 
         foreach ($fieldsConfig as $k=>$v)
-            if($this->isSearch($k))
+            if($this->getField($k)->isSearch())
                 $fields[] = $k;
         return $fields;
     }
@@ -472,39 +472,30 @@ class Config
     }
 
     /**
-     * Get the name of the dictionary that is referenced by the field
-     * @param string $field
-     * @return string or false on error
-     */
-    public function getLinkedDictionary($field)
-    {
-        if(!$this->isDictionaryLink($field))
-            return false;
-        $cfg = $this->getFieldConfig($field);
-        return 	$cfg['linkconfig']['object'];
-    }
-
-
-    /**
      * Get a list of fields linking to external objects
      * @param array $linkTypes  - optional link type filter
      * @param boolean $groupByObject - group field by linked object, default true
      * @return array  [objectName=>[field => link_type]] | [field =>["object"=>objectName,"link_type"=>link_type]]
      */
-    public function getLinks($linkTypes = array(Orm\Object\Config::LINK_OBJECT, Orm\Object\Config::LINK_OBJECT_LIST), $groupByObject = true)
+    public function getLinks($linkTypes = [Orm\Object\Config::LINK_OBJECT, Orm\Object\Config::LINK_OBJECT_LIST], $groupByObject = true)
     {
         $data = [];
         $fields = $this->getFieldsConfig(true);
-        foreach ($fields as $name=>$cfg) {
+        foreach ($fields as $name=>$cfg)
+        {
+            $cfg = $cfg->__toArray();
+
             if(isset($cfg['type']) && $cfg['type']==='link'
-                && isset($cfg['linkconfig']['link_type'])
-                && in_array($cfg['linkconfig']['link_type'], $linkTypes , true)
-                && isset($cfg['linkconfig']['object'])
+                && isset($cfg['link_config']['link_type'])
+                && in_array($cfg['link_config']['link_type'], $linkTypes , true)
+                && isset($cfg['link_config']['object'])
             ){
+
+
                 if($groupByObject)
-                    $data[$cfg['linkconfig']['object']][$name] = $cfg['linkconfig']['link_type'];
+                    $data[$cfg['link_config']['object']][$name] = $cfg['link_config']['link_type'];
                 else
-                    $data[$name] = ['object'=>$cfg['linkconfig']['object'],'link_type'=>$cfg['linkconfig']['link_type']];
+                    $data[$name] = ['object'=>$cfg['link_config']['object'],'link_type'=>$cfg['link_config']['link_type']];
             }
         }
         return $data;
@@ -745,7 +736,7 @@ class Config
             return false;
 
         $cfg = & $this->config->dataLink();
-        $cfg['fields'][$field]['linkconfig']['object'] = $linkedObject;
+        $cfg['fields'][$field]['link_config']['object'] = $linkedObject;
         return true;
     }
 
@@ -928,7 +919,7 @@ class Config
         $keys = [];
         foreach ($links as $object=>$fields)
         {
-            $oConfig = Db_Objectconfig::getInstance($object);
+            $oConfig = static::factory($object);
             /*
              *  Only InnoDb implements Foreign Keys
              */
@@ -944,8 +935,9 @@ class Config
 
             foreach ($fields as $name=>$linkType)
             {
+                $field  = $this->getField($name);
 
-                if($this->isRequired($name))
+                if($field->isRequired())
                     $onDelete = 'RESTRICT';
                 else
                     $onDelete = 'SET NULL';
@@ -1165,13 +1157,13 @@ class Config
         foreach($fieldConfigs as $field=>$cfg)
         {
             if(isset($cfg['type']) && $cfg['type']==='link'
-                && isset($cfg['linkconfig']['link_type'])
-                && $cfg['linkconfig']['link_type'] == Self::LINK_OBJECT_LIST
-                && isset($cfg['linkconfig']['object'])
-                && isset($cfg['linkconfig']['relations_type'])
-                && $cfg['linkconfig']['relations_type'] == self::RELATION_MANY_TO_MANY
+                && isset($cfg['link_config']['link_type'])
+                && $cfg['link_config']['link_type'] == Self::LINK_OBJECT_LIST
+                && isset($cfg['link_config']['object'])
+                && isset($cfg['link_config']['relations_type'])
+                && $cfg['link_config']['relations_type'] == self::RELATION_MANY_TO_MANY
             ){
-                $result[$cfg['linkconfig']['object']][$field] = self::RELATION_MANY_TO_MANY;
+                $result[$cfg['link_config']['object']][$field] = self::RELATION_MANY_TO_MANY;
             }
         }
         return $result;
@@ -1187,13 +1179,13 @@ class Config
         $cfg = $this->getFieldConfig($field);
 
         if(isset($cfg['type']) && $cfg['type']==='link'
-            && isset($cfg['linkconfig']['link_type'])
-            && $cfg['linkconfig']['link_type'] == self::LINK_OBJECT_LIST
-            && isset($cfg['linkconfig']['object'])
-            && isset($cfg['linkconfig']['relations_type'])
-            && $cfg['linkconfig']['relations_type'] == self::RELATION_MANY_TO_MANY
+            && isset($cfg['link_config']['link_type'])
+            && $cfg['link_config']['link_type'] == self::LINK_OBJECT_LIST
+            && isset($cfg['link_config']['object'])
+            && isset($cfg['link_config']['relations_type'])
+            && $cfg['link_config']['relations_type'] == self::RELATION_MANY_TO_MANY
         ){
-            return $this->getName().'_'.$field.'_to_'.$cfg['linkconfig']['object'];
+            return $this->getName().'_'.$field.'_to_'.$cfg['link_config']['object'];
         }
         return false;
     }
