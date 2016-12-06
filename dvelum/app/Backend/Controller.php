@@ -61,10 +61,17 @@ abstract class Backend_Controller extends Controller
      */
     protected $_isAjaxRequest;
 
+    /**
+     * Controller config
+     * @var \Dvelum\Config $config
+     */
+    protected $config;
+
     public function __construct()
     {
         parent::__construct();
 
+        $this->config = $this->getConfig();
         $cacheManager = new Cache_Manager();
         $this->_configBackend = Registry::get('backend' , 'config');
         $this->_module = $this->getModule();
@@ -78,6 +85,15 @@ abstract class Backend_Controller extends Controller
         }
         $this->checkAuth();
     }
+
+    /**
+     * Get controller configuration
+     */
+    protected function getConfig()
+    {
+        return Config::storage()->get('backend/controller.php');
+    }
+
     /**
      * Include required JavaScript files defined in the configuration file
      */
@@ -217,81 +233,38 @@ abstract class Backend_Controller extends Controller
      */
     public function getPostedData($objectName)
     {
-        $id = Request::post('id' , 'integer' , 0);
+        $formCfg = $this->config->get('form');
+        $adapterConfig = Config::storage()->get($formCfg['config']);
+        $adapterConfig->set('orm_object', $objectName);
+        /**
+         * @var \Dvelum\App\Form\Adapter $form
+         */
+        $form = new $formCfg['adapter'](
+            $this->request,
+            $this->_lang,
+            $adapterConfig
+        );
 
-        if($id){
-            try{
-                $obj =  Orm\Object::factory($objectName , $id);
-            }catch(Exception $e){
-                Response::jsonError($this->_lang->CANT_EXEC);
-            }
-        }else{
-            try{
-                $obj =  Orm\Object::factory($objectName);
-            }catch (Exception $e){
-                Response::jsonError($this->_lang->CANT_EXEC.'<br>'.$e->getMessage());
-            }
-        }
-
-        $acl = $obj->getAcl();
-
-        if($acl && !$acl->canEdit($obj))
-            Response::jsonError($this->_lang->CANT_MODIFY);
-
-        $posted = Request::postArray();
-
-        $fields = $obj->getFields();
-        $errors = array();
-
-
-        $objectConfig = $obj->getConfig();
-        $systemFields = $objectConfig->getSystemFieldsConfig();
-
-        foreach($fields as $name)
+        if(!$form->validateRequest())
         {
-            if($name == 'id')
-                continue;
-
-            $field =  $objectConfig->getField($name);
-
-            if($field->isRequired() &&  !isset($systemFields[$name]) &&  (!isset($posted[$name]) || !strlen($posted[$name])))
+            $errors = $form->getErrors();
+            $formMessages = [$this->_lang->get('FILL_FORM')];
+            $fieldMessages = [];
+            /**
+             * @var \Dvelum\App\Form\Error $item
+             */
+            foreach ($errors as $item)
             {
-                $errors[$name] = $this->_lang->CANT_BE_EMPTY;
-                continue;
+                $field = $item->getField();
+                if(empty($field)){
+                    $formMessages[] = $item->getMessage();
+                }else{
+                    $fieldMessages[$field] = $item->getMessage();
+                }
             }
-
-            if($field->isBoolean() && !isset($posted[$name]))
-                $posted[$name] = false;
-
-            if(($field->isNull() || $field->isDateField()) && isset($posted[$name]) && empty($posted[$name]))
-                $posted[$name] = null;
-
-
-            if(!array_key_exists($name , $posted))
-                continue;
-
-            if(!$id && ( (is_string($posted[$name]) && !strlen((string)$posted[$name])) || (is_array($posted[$name]) && empty($posted[$name])) ) && $field->hasDefault())
-                continue;
-
-            try{
-                $obj->set($name , $posted[$name]);
-            }catch(Exception $e){
-                $errors[$name] = $this->_lang->INVALID_VALUE;
-            }
+            Response::jsonError(implode('; <br>', $formMessages) , $fieldMessages);
         }
-
-        if(!empty($errors))
-            Response::jsonError($this->_lang->FILL_FORM , $errors);
-
-        $errors = $obj->validateUniqueValues();
-
-        if(!empty($errors))
-            Response::jsonError($this->_lang->FILL_FORM , $errors);
-
-        if($id)
-            $obj->setId($id);
-
-        return $obj;
+        return $form->getData;
     }
     /**
      * Check edit permissions

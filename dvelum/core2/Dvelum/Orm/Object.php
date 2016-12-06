@@ -477,7 +477,7 @@ class Object
             $value = intval($value);
 
             if($value != 0 && !$this->_validateLink($name, $value))
-                throw new Exception('Invalid value for field '. $name);
+                throw new \Exception('Invalid value for field '. $name);
 
             if($value == 0)
                 $value = null;
@@ -749,9 +749,9 @@ class Object
 
     /**
      * Validate unique fields, object field groups
-     * Returns errors array or returns false, is used for ExtJS forms
+     * Returns array of errors  or null .
      * @property boolean $new
-     * @return mixed false / array
+     * @return mixed array | null
      */
     public function validateUniqueValues()
     {
@@ -791,7 +791,7 @@ class Object
         }
 
         if(empty($uniqGroups))
-            return false;
+            return null;
 
         $db = $this->model->getDbConnection();
 
@@ -803,22 +803,21 @@ class Object
             if($this->getId())
                 $sql->where(' '.$db->quoteIdentifier($this->primaryKey).' != ?', $this->getId());
 
-            foreach ($group as $k=>$v){
+            foreach ($group as $k=>$v)
+            {
                 if($k===$this->primaryKey)
                     continue;
+
                 $sql->where($db->quoteIdentifier($k) . ' =?' , $v);
             }
 
             $count = $db->fetchOne($sql);
 
             if($count > 0){
-                foreach ($group as $k=>&$v){
-                    $v = Lang::lang()->get('SB_UNIQUE');
-                }unset($v);
-                return $group;
+                return array_keys($group);
             }
         }
-        return false;
+        return null;
     }
 
     /**

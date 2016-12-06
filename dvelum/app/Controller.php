@@ -50,12 +50,19 @@ abstract class Controller
      */
     protected $_configMain;
 
+    /**
+     * @var \Dvelum\Request $request;
+     */
+    protected $request;
+
     public function __construct()
     {
         $this->_page = Page::getInstance();
         $this->_resource = Resource::getInstance();
         $this->_lang = Lang::lang();
         $this->_configMain = Registry::get('main' , 'config');
+
+        $this->request = \Dvelum\Request::factory();
     }
 
     /**

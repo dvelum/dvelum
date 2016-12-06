@@ -8,6 +8,7 @@ return [
         './application/library',
         './dvelum/app',
         './dvelum/library',
+        './dvelum/core2',
         './vendor'
     ),
     // priority paths (cannot be overridden by external modules)

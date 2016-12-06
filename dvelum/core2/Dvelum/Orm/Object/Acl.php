@@ -2,6 +2,8 @@
 
 namespace Dvelum\Orm\Object;
 
+use Dvelum\Orm\Object;
+
 abstract class Acl
 {
     const ACCESS_VIEW = 'view';

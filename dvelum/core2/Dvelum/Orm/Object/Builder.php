@@ -20,25 +20,25 @@ class Builder
      *
      * @var \Db_Adapter
      */
-    protected $_db;
+    protected $db;
     protected $objectName;
 
     /**
      *
      * @var Config
      */
-    protected $_objectConfig;
+    protected $objectConfig;
 
     /**
      *
      * @var Model
      */
     protected $_model;
-    protected static $_writeLog = false;
-    protected static $_logPrefix = '0.1';
-    protected static $_logsPath = './logs/';
-    protected static $_foreignKeys = false;
-    protected $_errors = array();
+    protected static $writeLog = false;
+    protected static $logPrefix = '0.1';
+    protected static $logsPath = './logs/';
+    protected static $foreignKeys = false;
+    protected $errors = [];
 
     /**
      *
@@ -48,11 +48,11 @@ class Builder
     public function __construct($objectName , $forceConfig = true)
     {
         $this->objectName = $objectName;
-        $this->_objectConfig = Orm\Object\Config::factory($objectName , $forceConfig);
-        $this->_model = Model::factory($objectName);
-        $this->_db = $this->_model->getDbConnection();
+        $this->objectConfig = Orm\Object\Config::factory($objectName , $forceConfig);
+        $this->model = Model::factory($objectName);
+        $this->db = $this->model->getDbConnection();
 
-        $this->_dbPrefix = $this->_model->getDbPrefix();
+        $this->dbPrefix = $this->model->getDbPrefix();
     }
     public static $numTypes = array(
         'tinyint' ,
@@ -108,7 +108,7 @@ class Builder
      */
     static public function writeLog($flag)
     {
-        self::$_writeLog = (boolean) $flag;
+        self::$writeLog = (boolean) $flag;
     }
 
     /**
@@ -118,7 +118,7 @@ class Builder
      */
     static public function setLogPrefix($string)
     {
-        self::$_logPrefix = strval($string);
+        self::$logPrefix = strval($string);
     }
 
     /**
@@ -128,7 +128,7 @@ class Builder
      */
     static public function setLogsPath($string)
     {
-        self::$_logsPath = $string;
+        self::$logsPath = $string;
     }
 
     /**
@@ -138,7 +138,7 @@ class Builder
      */
     static public function useForeignKeys($boolean)
     {
-        self::$_foreignKeys = (boolean) $boolean;
+        self::$foreignKeys = (boolean) $boolean;
     }
 
     /**
@@ -148,7 +148,7 @@ class Builder
      */
     static public function foreignKeys()
     {
-        return self::$_foreignKeys;
+        return self::$foreignKeys;
     }
 
     /**
@@ -158,11 +158,11 @@ class Builder
      */
     protected function _logSql($sql)
     {
-        if(! self::$_writeLog)
+        if(! self::$writeLog)
             return;
 
         $str = "\n--\n--" . date('Y-m-d H:i:s') . "\n--\n" . $sql;
-        $filePath = self::$_logsPath . $this->_objectConfig->get('connection') .'_'. self::$_logPrefix;
+        $filePath = self::$logsPath . $this->objectConfig->get('connection') .'_'. self::$logPrefix;
         $result = @file_put_contents($filePath, $str , FILE_APPEND);
 
         if($result === false)
@@ -186,7 +186,7 @@ class Builder
         $updateIndexes = $this->prepareIndexUpdates();
         $engineUpdate = $this->prepareEngineUpdate();
         $updateKeys = array();
-        if(self::$_foreignKeys)
+        if(self::$foreignKeys)
             $updateKeys = $this->prepareKeysUpdate();
 
         if(! empty($updateColumns) || ! empty($updateIndexes) || ! empty($updateKeys) || ! empty($engineUpdate))
@@ -202,16 +202,16 @@ class Builder
      */
     public function prepareEngineUpdate()
     {
-        $config = $this->_objectConfig->__toArray();
-        $conf = $this->_db->fetchRow('SHOW TABLE STATUS WHERE `name` = "' . $this->_model->table() . '"');
+        $config = $this->objectConfig->__toArray();
+        $conf = $this->db->fetchRow('SHOW TABLE STATUS WHERE `name` = "' . $this->model->table() . '"');
 
         if(! $conf || ! isset($conf['Engine']))
             return false;
 
-        if(strtolower($conf['Engine']) === strtolower($this->_objectConfig->get('engine')))
+        if(strtolower($conf['Engine']) === strtolower($this->objectConfig->get('engine')))
             return false;
 
-        return $this->changeTableEngine($this->_objectConfig->get('engine') , true);
+        return $this->changeTableEngine($this->objectConfig->get('engine') , true);
     }
 
     /**
@@ -224,7 +224,7 @@ class Builder
      */
     public function prepareColumnUpdates()
     {
-        $config = $this->_objectConfig->__toArray();
+        $config = $this->objectConfig->__toArray();
         $updates = array();
 
         if(! $this->tableExists())
@@ -243,7 +243,7 @@ class Builder
 
         // except virtual fields
         foreach($config['fields'] as $field=>$cfg){
-            if($this->_objectConfig->getField($field)->isVirtual()){
+            if($this->objectConfig->getField($field)->isVirtual()){
                 unset($config['fields'][$field]);
             }
         }
@@ -378,10 +378,10 @@ class Builder
             /**
              * @todo migrate identity
              */
-//            if($fields[$name]['IDENTITY'] && $name != $this->_objectConfig->getPrimaryKey())
+//            if($fields[$name]['IDENTITY'] && $name != $this->objectConfig->getPrimaryKey())
 //                $incrementCmp = true;
 //
-//            if($name == $this->_objectConfig->getPrimaryKey() && ! $fields[$name]['IDENTITY'])
+//            if($name == $this->objectConfig->getPrimaryKey() && ! $fields[$name]['IDENTITY'])
 //                $incrementCmp = true;
 
 
@@ -420,25 +420,25 @@ class Builder
      */
     public function renameField($oldName , $newName)
     {
-        if($this->_objectConfig->isLocked() || $this->_objectConfig->isReadOnly())
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
         {
-            $this->_errors[] = 'Can not build locked object ' . $this->_objectConfig->getName();
+            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
             return false;
         }
 
-        $fieldConfig = $this->_objectConfig->getFieldConfig($newName);
+        $fieldConfig = $this->objectConfig->getFieldConfig($newName);
 
-        $sql = ' ALTER TABLE ' . $this->_model->table() . ' CHANGE `' . $oldName . '` ' . $this->_proppertySql($newName , $fieldConfig);
+        $sql = ' ALTER TABLE ' . $this->model->table() . ' CHANGE `' . $oldName . '` ' . $this->_proppertySql($newName , $fieldConfig);
 
         try
         {
-            $this->_db->query($sql);
+            $this->db->query($sql);
             $this->_logSql($sql);
             return true;
         }
         catch(Exception $e)
         {
-            $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
         }
     }
@@ -450,10 +450,10 @@ class Builder
      */
     public function build($buildKeys = true)
     {
-        $this->_errors = array();
-        if($this->_objectConfig->isLocked() || $this->_objectConfig->isReadOnly())
+        $this->errors = array();
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
         {
-            $this->_errors[] = 'Can not build locked object ' . $this->_objectConfig->getName();
+            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
             return false;
         }
         /*
@@ -465,7 +465,7 @@ class Builder
             try
             {
                 $sql = $this->_sqlCreate();
-                $this->_db->query($sql);
+                $this->db->query($sql);
                 $this->_logSql($sql);
                 if($buildKeys)
                     return $this->buildForeignKeys();
@@ -474,7 +474,7 @@ class Builder
             }
             catch(Exception $e)
             {
-                $this->_errors[] = $e->getMessage() . ' <br><b>SQL:</b> ' . $sql;
+                $this->errors[] = $e->getMessage() . ' <br><b>SQL:</b> ' . $sql;
                 return false;
             }
         }
@@ -496,7 +496,7 @@ class Builder
 
         if(! empty($colUpdates))
         {
-            $fieldsConfig = $this->_objectConfig->getFieldsConfig();
+            $fieldsConfig = $this->objectConfig->getFieldsConfig();
             foreach($colUpdates as $info)
             {
                 switch($info['action'])
@@ -516,7 +516,7 @@ class Builder
 
         if(!empty($indexUpdates))
         {
-            $indexConfig = $this->_objectConfig->getIndexesConfig();
+            $indexConfig = $this->objectConfig->getIndexesConfig();
 
             foreach($indexUpdates as $info)
             {
@@ -539,22 +539,22 @@ class Builder
         {
             try
             {
-                $this->_db->query($engineUpdate);
+                $this->db->query($engineUpdate);
                 $this->_logSql($engineUpdate);
             }
             catch(Exception $e)
             {
-                $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $engineUpdate;
+                $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $engineUpdate;
             }
         }
 
         if(!empty($cmd))
         {
-            $dbCfg = $this->_db->getConfig();
+            $dbCfg = $this->db->getConfig();
             try
             {
-                $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->_model->table() . '` ' . implode(',' , $cmd) . ';';
-                $this->_db->query($sql);
+                $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->model->table() . '` ' . implode(',' , $cmd) . ';';
+                $this->db->query($sql);
                 $this->_logSql($sql);
                 if($buildKeys)
                     return $this->buildForeignKeys(false , true);
@@ -563,7 +563,7 @@ class Builder
             }
             catch(Exception $e)
             {
-                $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+                $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
                 return false;
             }
         }
@@ -573,12 +573,12 @@ class Builder
             try{
                 $this->updateRelations($ralationsUpdate);
             }catch (Exception $e){
-                $this->_errors[] = $e->getMessage();
+                $this->errors[] = $e->getMessage();
                 return false;
             }
         }
 
-        if(empty($this->_errors))
+        if(empty($this->errors))
             return true;
         else
             return true;
@@ -591,16 +591,16 @@ class Builder
      */
     public function buildForeignKeys($remove = true , $create = true)
     {
-        if($this->_objectConfig->isLocked() || $this->_objectConfig->isReadOnly())
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
         {
-            $this->_errors[] = 'Can not build locked object ' . $this->_objectConfig->getName();
+            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
             return false;
         }
 
         $keysUpdates = array();
         $cmd = array();
 
-        if(self::$_foreignKeys)
+        if(self::$foreignKeys)
             $keysUpdates = $this->prepareKeysUpdate();
         else
             $keysUpdates = $this->prepareKeysUpdate(true);
@@ -629,17 +629,17 @@ class Builder
 
         if(!empty($cmd))
         {
-            $dbCfg = $this->_db->getConfig();
+            $dbCfg = $this->db->getConfig();
             try
             {
-                $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->_model->table() . '` ' . implode(',' , $cmd) . ';';
-                $this->_db->query($sql);
+                $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->model->table() . '` ' . implode(',' , $cmd) . ';';
+                $this->db->query($sql);
                 $this->_logSql($sql);
                 return true;
             }
             catch(Exception $e)
             {
-                $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+                $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
                 return false;
             }
         }
@@ -655,7 +655,7 @@ class Builder
     protected function _createIndexes()
     {
         $cmd = array();
-        $configIndexes = $this->_objectConfig->getIndexesConfig();
+        $configIndexes = $this->objectConfig->getIndexesConfig();
 
         foreach($configIndexes as $index => $config)
             $cmd[] = $this->_prepareIndex($index , $config , true);
@@ -676,7 +676,7 @@ class Builder
         /*
          * Get indexes form database table
          */
-        $indexes = $this->_db->fetchAll('SHOW INDEX FROM `' . $this->_model->table() . '`');
+        $indexes = $this->db->fetchAll('SHOW INDEX FROM `' . $this->model->table() . '`');
         $realIndexes = array();
 
         if(empty($indexes))
@@ -699,7 +699,7 @@ class Builder
         /*
          * Get indexes from object config
          */
-        $configIndexes = $this->_objectConfig->getIndexesConfig();
+        $configIndexes = $this->objectConfig->getIndexesConfig();
         $cmd = array();
 
         /*
@@ -757,10 +757,10 @@ class Builder
      */
     public function getOrmForeignKeys()
     {
-        if(!self::$_foreignKeys)
+        if(!self::$foreignKeys)
             return array();
 
-        $data = $this->_objectConfig->getForeignKeys();
+        $data = $this->objectConfig->getForeignKeys();
         $keys = array();
 
         if(!empty($data))
@@ -777,7 +777,7 @@ class Builder
     public function prepareKeysUpdate($dropOnly = false)
     {
         $updates = array();
-        $curTable = $this->_model->table();
+        $curTable = $this->model->table();
 
         /*
          * Get foreign keys form ORM
@@ -787,7 +787,7 @@ class Builder
         /*
          * Get foreign keys form database table
          */
-        $realKeys = $this->getForeignKeys($this->_model->table());
+        $realKeys = $this->getForeignKeys($this->model->table());
         $realKeysNames = array();
 
         if(!empty($realKeys))
@@ -826,15 +826,15 @@ class Builder
      */
     public function getForeignKeys($dbTable)
     {
-        $dbConfig = $this->_db->getConfig();
-        $sql = $this->_db->select()
-            ->from($this->_db->quoteIdentifier('information_schema.TABLE_CONSTRAINTS'))
+        $dbConfig = $this->db->getConfig();
+        $sql = $this->db->select()
+            ->from($this->db->quoteIdentifier('information_schema.TABLE_CONSTRAINTS'))
             ->where('`CONSTRAINT_SCHEMA` =?' , $dbConfig['dbname'])
             ->where('`TABLE_SCHEMA` =?' , $dbConfig['dbname'])
             ->where('`TABLE_NAME` =?' , $dbTable)
             ->where('`CONSTRAINT_TYPE` = "FOREIGN KEY"');
 
-        return $this->_db->fetchAll($sql);
+        return $this->db->fetchAll($sql);
     }
 
     /**
@@ -882,7 +882,7 @@ class Builder
          */
         foreach($config['columns'] as &$col)
         {
-            if($this->_objectConfig->getField($col)->isText())
+            if($this->objectConfig->getField($col)->isText())
                 $col = '`' . $col . '`(32)';
             else
                 $col = '`' . $col . '`';
@@ -928,7 +928,7 @@ class Builder
 
         $fields = $config->get('fields');
 
-        $sql = ' CREATE TABLE  `' . $this->_model->table() . '` (';
+        $sql = ' CREATE TABLE  `' . $this->model->table() . '` (';
 
         if(empty($fields))
             throw new Exception('_sqlCreate :: empty properties');
@@ -958,7 +958,7 @@ class Builder
      */
     protected function _getExistingColumns()
     {
-        return $this->_db->describeTable($this->_model->table());
+        return $this->db->describeTable($this->model->table());
     }
 
     /**
@@ -973,13 +973,13 @@ class Builder
     public function tableExists($name = false , $addPrefix = false)
     {
         if(!$name)
-            $name = $this->_model->table();
+            $name = $this->model->table();
 
         if($addPrefix)
-            $name = $this->_model->getDbPrefix() . $name;
+            $name = $this->model->getDbPrefix() . $name;
 
         try{
-            $tables = $this->_db->listTables();
+            $tables = $this->db->listTables();
         }
         catch (Exception $e)
         {
@@ -998,26 +998,26 @@ class Builder
      */
     public function renameTable($newName)
     {
-        if($this->_objectConfig->isLocked() || $this->_objectConfig->isReadOnly())
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
         {
-            $this->_errors[] = 'Can not build locked object ' . $this->_objectConfig->getName();
+            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
             return false;
         }
 
         $store = Store_Local::getInstance();
-        $sql = 'RENAME TABLE `' . $this->_model->table() . '` TO `' . $this->_model->getDbPrefix() . $newName . '` ;';
+        $sql = 'RENAME TABLE `' . $this->model->table() . '` TO `' . $this->model->getDbPrefix() . $newName . '` ;';
 
         try
         {
-            $this->_db->query($sql);
+            $this->db->query($sql);
             $this->_logSql($sql);
-            $this->_objectConfig->getConfig()->set('table' , $newName);
-            $this->_model->refreshTableInfo();
+            $this->objectConfig->getConfig()->set('table' , $newName);
+            $this->model->refreshTableInfo();
             return true;
         }
         catch(Exception $e)
         {
-            $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
         }
     }
@@ -1035,8 +1035,8 @@ class Builder
         $restrictedIndexes = array();
         $restrictedFields = array();
 
-        $indexes = $this->_objectConfig->getIndexesConfig();
-        $fields = $this->_objectConfig->getFieldsConfig();
+        $indexes = $this->objectConfig->getIndexesConfig();
+        $fields = $this->objectConfig->getFieldsConfig();
 
         switch(strtolower($newEngineType))
         {
@@ -1093,26 +1093,26 @@ class Builder
      */
     public function changeTableEngine($engine , $returnQuery = false)
     {
-        if($this->_objectConfig->isLocked() || $this->_objectConfig->isReadOnly())
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
         {
-            $this->_errors[] = 'Can not build locked object ' . $this->_objectConfig->getName();
+            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
             return false;
         }
 
-        $sql = 'ALTER TABLE `' . $this->_model->table() . '` ENGINE = ' . $engine;
+        $sql = 'ALTER TABLE `' . $this->model->table() . '` ENGINE = ' . $engine;
 
         if($returnQuery)
             return $sql;
 
         try
         {
-            $this->_db->query($sql);
+            $this->db->query($sql);
             $this->_logSql($sql);
             return true;
         }
         catch(Exception $e)
         {
-            $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
         }
     }
@@ -1125,9 +1125,9 @@ class Builder
      */
     public function remove()
     {
-        if($this->_objectConfig->isLocked() || $this->_objectConfig->isReadOnly())
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
         {
-            $this->_errors[] = 'Can not remove locked object table ' . $this->_objectConfig->getName();
+            $this->errors[] = 'Can not remove locked object table ' . $this->objectConfig->getName();
             return false;
         }
 
@@ -1146,7 +1146,7 @@ class Builder
         }
         catch(Exception $e)
         {
-            $this->_errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
         }
     }
@@ -1158,7 +1158,7 @@ class Builder
      */
     public function getErrors()
     {
-        return $this->_errors;
+        return $this->errors;
     }
 
     /**
@@ -1167,7 +1167,7 @@ class Builder
      */
     public function hasBrokenLinks()
     {
-        $links = $this->_objectConfig->getLinks();
+        $links = $this->objectConfig->getLinks();
         $brokenFields = array();
 
         if(!empty($links))
@@ -1190,7 +1190,7 @@ class Builder
      */
     protected function checkRelations()
     {
-        $list = $this->_objectConfig->getManyToMany();
+        $list = $this->objectConfig->getManyToMany();
         if(!$list){
             return true;
         }
@@ -1199,7 +1199,7 @@ class Builder
         {
             if(!empty($fields)){
                 foreach($fields as $fieldName=>$linkType){
-                    $relationObjectName = $this->_objectConfig->getRelationsObject($fieldName);
+                    $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
                     if(!Config::configExists($relationObjectName)){
                         return false;
                     }
@@ -1212,12 +1212,12 @@ class Builder
     public function getObjectsUpdatesInfo()
     {
         $updates = [];
-        $list = $this->_objectConfig->getManyToMany();
+        $list = $this->objectConfig->getManyToMany();
         foreach($list as $objectName=>$fields)
         {
             if(!empty($fields)){
                 foreach($fields as $fieldName=>$linkType){
-                    $relationObjectName = $this->_objectConfig->getRelationsObject($fieldName);
+                    $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
                     if(!Config::configExists($relationObjectName)){
                         $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
                     }
@@ -1236,7 +1236,7 @@ class Builder
     {
         $lang = Lang::lang();
         $usePrefix = true;
-        $connection = $this->_objectConfig->get('connection');
+        $connection = $this->objectConfig->get('connection');
 
         $objectModel = Model::factory($this->objectName);
         $db = $objectModel->getDbConnection();
@@ -1265,7 +1265,7 @@ class Builder
             $newObjectName = $info['name'];
             $tableName = $newObjectName;
 
-            $linkedObject = $this->_objectConfig->getLinkedObject($fieldName);
+            $linkedObject = $this->objectConfig->getLinkedObject($fieldName);
 
             $fieldList['target_id']['link_config']['object'] = $linkedObject;
 

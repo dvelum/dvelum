@@ -1024,26 +1024,27 @@ class Config
         $cfg = & $this->config->dataLink();
         foreach ($fields as $name)
         {
+            $field = $this->getField($name);
             /*
              * config validation for links
              */
-            if($this->isLink($name))
+            if($field->isLink())
             {
                 $v = & $cfg['fields'][$name];
-                $isRequired = $this->isRequired($name);
-                if($this->isDictionaryLink($name)){
+                $isRequired = $field->isRequired();
+                if($field->isDictionaryLink()){
                     $v['db_isNull'] = false;
                     if($isRequired){
                         $v['db_default'] = false;
                     }else{
                         $v['db_default'] = '';
                     }
-                }elseif ($this->isObjectLink($name)){
+                }elseif ($field->isObjectLink()){
                     $v['db_isNull'] = (boolean) !$isRequired;
                     $v['db_type'] ='bigint';
                     $v['db_default'] = false;
                     $v['db_unsigned'] = true;
-                }elseif ($this->isMultiLink($name)){
+                }elseif ($field->isMultiLink()){
                     $v['db_type'] = 'longtext';
                     $v['db_isNull'] = false;
                     $v['db_default'] = '';
