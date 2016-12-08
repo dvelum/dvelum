@@ -125,7 +125,7 @@ class Designer_Factory
                     app.application.fireEvent("projectLoaded", "'.$moduleId.'");
                 });';
 
-        $resource = Resource::getInstance();
+        $resource = \Dvelum\Resource::factory();
 
         if($projectData && isset($projectData['includes']) && !empty($projectData['includes']))
         {
@@ -254,7 +254,7 @@ class Designer_Factory
                 }
             }
         }
-        $projectData['includes']['js'][] = Resource::getInstance()->cacheJs($initCode , true);
+        $projectData['includes']['js'][] = \Dvelum\Resource::factory()->cacheJs($initCode , true);
         return $projectData;
     }
 

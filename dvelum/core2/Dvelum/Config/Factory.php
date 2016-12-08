@@ -13,6 +13,9 @@ declare(strict_types=1);
  * <http://www.gnu.org/licenses/>.
  */
 namespace Dvelum\Config;
+
+use Dvelum\Config;
+
 /**
  * Configuration Object Factory
  *
@@ -63,9 +66,9 @@ class Factory
      * @param integer $type -type of the object being created, Config class constant
      * @param string $name - identifier
      * @param boolean $useCache - optional , default true. Use cache if available
-     * @return Config
+     * @return Config\Config
      */
-    static public function config(int $type , string $name , bool $useCache = true) : Config
+    static public function config(int $type , string $name , bool $useCache = true) : Config\Config
     {
         $store = self::$store;
         $cache = self::$cache;
@@ -96,7 +99,7 @@ class Factory
                 $config =  static::storage()->get($name,$useCache);
                 break;
             case self::Simple :
-                $config = new Config_Simple($name);
+                $config = new Config\Config($name);
                 break;
         }
 
@@ -186,9 +189,9 @@ class Factory
      * @param array $data
      * @return Config
      */
-    static public function create(array $data) : Config
+    static public function create(array $data) : Config\Config
     {
-        $config = new Config();
+        $config = new Config\Config();
         $config->setData($data);
         return $config;
     }

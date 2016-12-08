@@ -132,7 +132,7 @@ class Sysdocs_Controller
     public function indexAction()
     {
         $this->includeScripts();
-        Resource::getInstance()->addInlineJs('
+        \Dvelum\Resource::factory()->addInlineJs('
            app.docLang = "'.$this->language.'";
            app.docVersion = "'.$this->version.'";
            var canEdit = '.intval($this->canEdit).';    

@@ -1,6 +1,6 @@
 <?php
 $page = $this->get('page');
-$resource = Resource::getInstance();
+$resource = \Dvelum\Resource::factory();
 $wwwRoot = Request::wwwRoot();
 ?>
 <!DOCTYPE html>

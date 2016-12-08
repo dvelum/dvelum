@@ -33,6 +33,10 @@ if($this->get('useCSRFToken')){
     $token = $csrf->createToken();
 }
 
+$request = \Dvelum\Request::factory();
+$lang = \Dvelum\Lang::lang();
+$user = \Dvelum\App\Session\User::factory();
+
 $menuData = [];
 $modules = $this->modules;
 foreach($modules as $data)
@@ -43,7 +47,7 @@ foreach($modules as $data)
     $menuData[] = [
         'id' => $data['id'],
         'dev' => $data['dev'],
-        'url' =>  Request::url(array($this->get('adminPath'),$data['id'])),
+        'url' =>  $request->url([$this->get('adminPath'),$data['id']]),
         'title'=> $data['title'],
         'icon'=> $wwwRoot . $data['icon']
     ];
@@ -51,15 +55,15 @@ foreach($modules as $data)
 $menuData[] = [
     'id' => 'logout',
     'dev' => false,
-    'url' =>  \Dvelum\Request::factory()->url([$this->get('adminPath'),'']) . '?logout=1',
-    'title'=> \Dvelum\Lang::lang()->get('LOGOUT'),
+    'url' =>  $request->url([$this->get('adminPath'),'']) . '?logout=1',
+    'title'=> $lang->get('LOGOUT'),
     'icon' => $wwwRoot . 'i/system/icons/logout.png'
 ];
 
 $res->addInlineJs('
 		app.menuData = '.json_encode($menuData).';
 		app.permissions = Ext.create("app.PermissionsStorage");
-		var rights = '.json_encode(\Dvelum\App\Session\User::factory()->getPermissions()).';
+		var rights = '.json_encode($user->getPermissions()).';
 		app.permissions.setData(rights);
 	');
 
@@ -86,10 +90,10 @@ $res->addInlineJs('
 <div id="header" class="x-hidden">
     <div class="sysVersion"><img src="<?php echo $wwwRoot;?>i/logo-s.png" />
         <span class="num"><?php echo $this->get('version');?></span>
-        <div class="loginInfo"><?php echo \Dvelum\Lang::lang()->get('YOU_LOGGED_AS');?>:
-            <span class="name"><?php echo \Dvelum\App\Session\User::factory()->name;?></span>
-            <span class="logout"><a href="<?php echo \Dvelum\Request::factory()->url([$this->get('adminPath'),'']);?>?logout=1">
-	   <img src="<?php echo $wwwRoot;?>i/system/icons/logout.png" title="<?php echo \Dvelum\Lang::lang()->get('LOGOUT');?>" height="16" width="16">
+        <div class="loginInfo"><?php echo $lang->get('YOU_LOGGED_AS');?>:
+            <span class="name"><?php echo $user->name;?></span>
+            <span class="logout"><a href="<?php echo $request->url([$this->get('adminPath'),'']);?>?logout=1">
+	   <img src="<?php echo $wwwRoot;?>i/system/icons/logout.png" title="<?php echo $lang->get('LOGOUT');?>" height="16" width="16">
 	  </a></span>
         </div>
     </div>

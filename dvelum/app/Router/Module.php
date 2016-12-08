@@ -103,7 +103,7 @@ class Router_Module extends Router
             'path' => $page->getThemePath() ,
             'templatesRoot' => Application::getTemplatesPath() ,
             'blockManager' => $blockManager ,
-            'resource' => Resource::getInstance(),
+            'resource' => \Dvelum\Resource::factory(),
             'pagesTree' => Model::factory('Page')->getTree()
         ));
         Response::put($template->render($page->getThemePath().'layout.php'));

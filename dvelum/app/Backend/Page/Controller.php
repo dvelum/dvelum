@@ -8,12 +8,12 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     {
         parent::indexAction();
 
-        $resource = Resource::getInstance();
+        $resource = $this->_resource;
         $resource->addJs('/js/app/system/BlocksPanel.js' , 3);
         $resource->addJs('/js/app/system/Page.js' , 3);
 
         $moduleManager = new Modules_Manager_Frontend();
-        $fModules = Config::factory(Config::File_Array, $this->_configMain->get('frontend_modules'));
+        $fModules = Config::factory(Config\Factory::File_Array, $this->_configMain->get('frontend_modules'));
         $funcList = array(
             array('id'=>'','title'=>'---')
         );

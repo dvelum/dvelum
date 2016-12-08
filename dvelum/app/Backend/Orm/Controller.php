@@ -26,7 +26,7 @@ class Backend_Orm_Controller extends Backend_Controller
     {
         $version = Config::storage()->get('versions.php')->get('orm');
 
-        $res = Resource::getInstance();
+        $res = \Dvelum\Resource::factory();
         $dbConfigs = array();
 
         foreach ($this->_configMain->get('db_configs') as $k=>$v){

@@ -44,7 +44,6 @@ class Backend_Reports_Controller extends Backend_Controller
 
     public function indexAction()
     {
-        $res = Resource::getInstance();
         $this->_resource->addInlineJs('
             var canEdit = '.((boolean)$this->_user->canEdit($this->_module)).';
             var canDelete = '.((boolean)$this->_user->canDelete($this->_module)).';
@@ -55,7 +54,7 @@ class Backend_Reports_Controller extends Backend_Controller
         $this->_resource->addCss('/js/lib/CodeMirror/addon/hint/show-hint.css');
         $this->_resource->addCss('/js/lib/CodeMirror/theme/eclipse.css');
 
-        $res->addJs('/js/lib/CodeMirror/lib/codemirror.js', 0);
+        $this->_resource->addJs('/js/lib/CodeMirror/lib/codemirror.js', 0);
         $codeMirrorFiles = [
             '/js/lib/CodeMirror/addon/hint/show-hint.js',
             '/js/lib/CodeMirror/addon/hint/javascript-hint.js',
@@ -68,17 +67,17 @@ class Backend_Reports_Controller extends Backend_Controller
         ];
 
         foreach($codeMirrorFiles as $file){
-            $res->addJs($file, 1);
+            $this->_resource->addJs($file, 1);
         }
 
-        $res->addJs('/js/app/system/FilesystemWindow.js', 1);
-        $res->addJs('/js/app/system/SqlEditor.js', 1);
-        $res->addJs('/js/app/system/report/filter.js', 1);
-        $res->addJs('/js/app/system/report/config.js', 1);
-        $res->addJs('/js/app/system/report/results.js', 1);
-        $res->addJs('/js/app/system/report/record.js', 1);
-        $res->addJs('/js/app/system/Reports.js', 1);
-        $res->addJs('/js/app/system/crud/reports.js', 2);
+        $this->_resource->addJs('/js/app/system/FilesystemWindow.js', 1);
+        $this->_resource->addJs('/js/app/system/SqlEditor.js', 1);
+        $this->_resource->addJs('/js/app/system/report/filter.js', 1);
+        $this->_resource->addJs('/js/app/system/report/config.js', 1);
+        $this->_resource->addJs('/js/app/system/report/results.js', 1);
+        $this->_resource->addJs('/js/app/system/report/record.js', 1);
+        $this->_resource->addJs('/js/app/system/Reports.js', 1);
+        $this->_resource->addJs('/js/app/system/crud/reports.js', 2);
     }
     /**
      * Check if report is loaded

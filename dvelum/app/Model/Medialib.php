@@ -175,7 +175,7 @@ class Model_Medialib extends Model
 
         $conf = $this->getConfig()->__toArray();
 
-        $resource = Resource::getInstance();
+        $resource = \Dvelum\Resource::factory();
         $resource->addCss('/js/lib/jquery.Jcrop.css');
 
         $editor = Registry::get('main' , 'config')->get('html_editor');

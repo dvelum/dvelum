@@ -13,7 +13,7 @@ class Config
         return \Dvelum\Config\Factory::storage();
     }
 
-    public function factory($type, $name, $useCache = true)
+    static public function factory($type, $name, $useCache = true)
     {
         return \Dvelum\Config\Factory::config($type, $name, $useCache);
     }

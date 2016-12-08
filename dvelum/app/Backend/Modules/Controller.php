@@ -10,7 +10,7 @@ class Backend_Modules_Controller extends Backend_Controller
      */
      public function indexAction()
      {    
-         $res = Resource::getInstance();  
+         $res = $this->_resource;
          $res->addJs('/js/app/system/FilesystemWindow.js'  , 1);
          $res->addJs('/js/app/system/ImageField.js'  , 1);
          $res->addJs('/js/app/system/IconField.js'  , 1);

@@ -58,7 +58,7 @@ abstract class Controller
     public function __construct()
     {
         $this->_page = Page::getInstance();
-        $this->_resource = Resource::getInstance();
+        $this->_resource = \Dvelum\Resource::factory();
         $this->_lang = Lang::lang();
         $this->_configMain = Registry::get('main' , 'config');
 

@@ -600,7 +600,7 @@ class Designer_Project_Code
             /**
              * @todo Уменьшить связанность
              */
-            Resource::getInstance()->addJs('/js/lib/jquery.js'  , 1);
+            \Dvelum\Resource::factory()->addJs('/js/lib/jquery.js'  , 1);
             Model::factory('Medialib')->includeScripts();
         }
 

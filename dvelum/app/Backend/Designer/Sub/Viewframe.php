@@ -18,7 +18,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$page->setTemplatesPath('system/' . $designerTheme. '/');
 
 
-		$res = Resource::getInstance();
+		$res = \Dvelum\Resource::factory();
 		$res->addJs('/js/lib/jquery.js'  , 0);
 
 		$backendScripts = Config::storage()->get('js_inc_backend.php');

@@ -1,6 +1,7 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Model;
+use Dvelum\Config;
 
 class Model_Filestorage extends Model
 {
@@ -10,10 +11,10 @@ class Model_Filestorage extends Model
 	 */
 	public function getStorage()
 	{
-		$configMain = Registry::get('main' , 'config');
+		$configMain = Config::storage()->get('main.php');
 
 		$storageConfig = Config::storage()->get('filestorage.php');
-		$storageCfg = new Config_Simple('_filestorage');
+		$storageCfg = Config::factory(Config\Factory::Simple,'_filestorage');
 
 		if($configMain->get('development')){
 			$storageCfg->setData($storageConfig->get('development'));
@@ -23,7 +24,7 @@ class Model_Filestorage extends Model
 
 		$storageCfg->set('user_id', User::getInstance()->id);
 
-		$fileStorage = Filestorage::factory($storageCfg->get('adapter'), $storageCfg);
+		$fileStorage = \Filestorage::factory($storageCfg->get('adapter'), $storageCfg);
 
 		$log = $this->getLogsAdapter();
 
