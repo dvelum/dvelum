@@ -25,7 +25,7 @@ namespace Dvelum\Config;
  * @abstract
  * @package Config
  */
-abstract class Config  extends \Config_Abstract implements \ArrayAccess , \Iterator
+class Config  extends \Config_Abstract implements \ArrayAccess , \Iterator
 {
     /**
      * Config Data
@@ -43,7 +43,7 @@ abstract class Config  extends \Config_Abstract implements \ArrayAccess , \Itera
      * Constructor
      * @param string $name - configuration identifier
      */
-    public function __construct($name)
+    public function __construct(string $name = '')
     {
         $this->name = $name;
     }

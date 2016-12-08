@@ -230,7 +230,7 @@ return array(
     /*
      * Application class
      */
-    'application' => 'Application',
+    'application' => '\\Dvelum\\App\\Application',
     /*
      * ORM system object used as version storage
      */

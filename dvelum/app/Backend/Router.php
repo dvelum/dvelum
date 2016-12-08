@@ -11,7 +11,7 @@ class Backend_Router extends Router
 	 */
 	public function route()
 	{
-		$cfg = Registry::get('backend' , 'config');
+        $cfg = \Dvelum\Config::storage()->get('backend.php');
 
 		$controller = $this->_request->getPart(1);
 		$controller = Utils_String::formatClassName(Filter::filterValue('pagecode', $controller));
@@ -42,7 +42,7 @@ class Backend_Router extends Router
 	 */
 	public function findUrl($module)
 	{
-		$cfg = Registry::get('main' , 'config');
+		$cfg = \Dvelum\Config::storage()->get('backend.php');
 		return Request::url(array($cfg['adminPath'] , $module),false);
 	}
 }

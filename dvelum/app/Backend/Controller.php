@@ -73,7 +73,7 @@ abstract class Backend_Controller extends Controller
 
         $this->config = $this->getConfig();
         $cacheManager = new Cache_Manager();
-        $this->_configBackend = Registry::get('backend' , 'config');
+        $this->_configBackend = Config::storage()->get('backend.php');
         $this->_module = $this->getModule();
         $this->_cache = $cacheManager->get('data');
 
@@ -155,7 +155,7 @@ abstract class Backend_Controller extends Controller
             // switch language
             if(!empty($userLang) && $userLang!=$this->_configMain->get('language') && in_array($userLang, $acceptedLanguages , true)){
                 $this->_configMain->set('language' , $userLang);
-                Lang::addDictionaryLoader($userLang ,  $userLang . '.php' , Config::File_Array);
+                Lang::addDictionaryLoader($userLang ,  $userLang . '.php' , Config\Factory::File_Array);
                 Lang::setDefaultDictionary($userLang);
                 Dictionary::setConfigPath($this->_configMain->get('dictionary_folder') . $this->_configMain->get('language').'/');
             }
@@ -229,7 +229,7 @@ abstract class Backend_Controller extends Controller
      * (in case of failure, JSON error message is sent)
      *
      * @param string $objectName
-     * @return Db_Object
+     * @return \Dvelum\Orm\Object
      */
     public function getPostedData($objectName)
     {
@@ -321,7 +321,7 @@ abstract class Backend_Controller extends Controller
      */
     protected function desktopModuleInfo()
     {
-        $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
+        $modulesConfig = Config::factory(Config\Factory::File_Array , $this->_configMain->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($this->_module);
 
         $projectData = [];

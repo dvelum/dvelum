@@ -12,6 +12,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
+
 namespace Dvelum\Config;
 
 class Storage

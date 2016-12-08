@@ -180,4 +180,16 @@ class Factory
         }
         return $store;
     }
+
+    /**
+     * Create new config object
+     * @param array $data
+     * @return Config
+     */
+    static public function create(array $data) : Config
+    {
+        $config = new Config();
+        $config->setData($data);
+        return $config;
+    }
 }

@@ -3,7 +3,8 @@
 
 	$theme = $this->get('theme');
 
-	$res = Resource::getInstance();
+	$res = $this->get('resource');
+
 	$res->addJs('/js/app/system/common.js' , -2);
 	$res->addJs('/js/app/system/Application.js' , -1);
 
@@ -62,7 +63,7 @@
 		app.permissions.setData(rights);
 	');
 
-	$wwwRoot = Request::wwwRoot();
+	$wwwRoot = $this->get('wwwRoot');
 ?>
 <!DOCTYPE html>
 <html>
@@ -86,9 +87,9 @@
 <div id="header" class="x-hidden">
  <div class="sysVersion"><img src="<?php echo $wwwRoot;?>i/logo-s.png" />
 	 <span class="num"><?php echo $this->get('version');?></span>
-	 <div class="loginInfo"><?php echo Lang::lang()->get('YOU_LOGGED_AS');?>:
-	  <span class="name"><?php echo User::getInstance()->getInfo()['name'];?></span>
-	  <span class="logout"><a href="<?php echo Request::url([$this->get('adminPath'),'']);?>?logout=1">
+	 <div class="loginInfo"><?php echo \Dvelum\Lang::lang()->get('YOU_LOGGED_AS');?>:
+	  <span class="name"><?php echo \Dvelum\App\Session\User::factory()->name;?></span>
+	  <span class="logout"><a href="<?php echo \Dvelum\Request::factory()->url([$this->get('adminPath'),'']);?>?logout=1">
 	   <img src="<?php echo $wwwRoot;?>i/system/icons/logout.png" title="<?php echo Lang::lang()->get('LOGOUT');?>" height="16" width="16">
 	  </a></span>
 	 </div>
