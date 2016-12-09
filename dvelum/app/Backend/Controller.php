@@ -20,6 +20,9 @@
 use Dvelum\Model;
 use Dvelum\Config;
 use Dvelum\Orm;
+use Dvelum\Request;
+use Dvelum\App\Data;
+use Dvelum\App\Session;
 /**
  * This is the base class for implementing administrative controllers
  */
@@ -67,17 +70,23 @@ abstract class Backend_Controller extends Controller
      */
     protected $config;
 
+    /**
+     * @var \Dvelum\App\Controller\EventManager
+     */
+    protected $eventManager;
+
     public function __construct()
     {
         parent::__construct();
 
+        $this->eventManager = new Dvelum\App\Controller\EventManager();
         $this->config = $this->getConfig();
         $cacheManager = new Cache_Manager();
         $this->_configBackend = Config::storage()->get('backend.php');
         $this->_module = $this->getModule();
         $this->_cache = $cacheManager->get('data');
 
-        if(Request::get('logout' , 'boolean' , false)){
+        if(Request::factory()->get('logout' , 'boolean' , false)){
             User::getInstance()->logout();
             session_destroy();
             if(!Request::isAjax())
@@ -144,7 +153,7 @@ abstract class Backend_Controller extends Controller
      */
     public function checkAuth()
     {
-        $user = User::getInstance();
+        $user = Session\User::getInstance();
         $uid = false;
 
         if($user->isAuthorized()) {

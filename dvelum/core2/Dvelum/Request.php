@@ -72,6 +72,17 @@ class Request
         return \Request::post($field, $type, $default);
     }
 
+    /**
+     * @param $field
+     * @param $type
+     * @param $default
+     * @return mixed
+     */
+    public function get($field, $type, $default)
+    {
+        return \Request::post($field, $type, $default);
+    }
+
     public function getPart($index)
     {
         return $this->request->getPart($index);
@@ -80,5 +91,10 @@ class Request
     public function url(array $paths , $useExtension = true)
     {
         return \Request::url($paths , $useExtension);
+    }
+
+    public function extFilters()
+    {
+        return \Request::extFilters();
     }
 }

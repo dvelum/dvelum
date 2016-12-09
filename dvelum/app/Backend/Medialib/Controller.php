@@ -2,22 +2,30 @@
 use Dvelum\Orm;
 use Dvelum\Config;
 use Dvelum\Model;
-class Backend_Medialib_Controller extends Backend_Controller
+use Dvelum\Request;
+use Dvelum\App\Controller\EventManager;
+
+class Backend_Medialib_Controller extends Backend_Controller_Crud
 {
-    /**
-     * Get list of media library items
-     */
-    public function listAction()
+
+    public function initListeners()
     {
-        $pager = Request::post('pager', 'array', array());
-        $filter = Request::post('filter', 'array', array());
-        $query = Request::post('search', 'string', false);
+        $apiRequest = $this->apiRequest;
+        $apiRequest->setObject($this->getObjectName());
 
-        if(isset($filter['category']) && !intval($filter['category']))
-            $filter['category'] = null;
+        $this->eventManager->on(EventManager::BEFORE_LIST, function(\Dvelum\App\Controller\Event $event) use ($apiRequest){
+            $category = $apiRequest->getFilter('category');
+            if(empty($category)){
+                $apiRequest->resetFilter('category');
+            }
+        });
 
-        $media = Model::factory('Medialib');
-        $data = $media->getListVc($pager , $filter, $query,'*','user_name');
+        $this->eventManager->on(EventManager::AFTER_LIST,[$this, 'prepareList']);
+    }
+
+    public function prepareList(\Dvelum\App\Controller\Event $event)
+    {
+        $data = & $event->getData()->data;
 
         $wwwRoot = $this->_configMain->get('wwwroot');
 
@@ -37,17 +45,9 @@ class Backend_Medialib_Controller extends Backend_Controller
                     $v['thumbnail'] = $wwwRoot . 'i/unknown.png';
                     $v['srcpath'] = '';
                 }
-
                 $v['path'] = Model_Medialib::addWebRoot($v['path']);
             }unset($v);
         }
-
-        $result = array(
-            'success'=>true,
-            'count'=>$media->getCount( $filter , $query),
-            'data'=>$data
-        );
-        Response::jsonArray($result);
     }
 
     /**

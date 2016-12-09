@@ -24,6 +24,9 @@
 use Dvelum\Model;
 use Dvelum\Config;
 use Dvelum\Orm;
+use Dvelum\App\Data;
+use Dvelum\App\Session;
+use Dvelum\App\Controller\EventManager;
 
 abstract class Backend_Controller_Crud extends Backend_Controller
 {
@@ -52,12 +55,43 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      */
     protected $_listLinks = [];
 
+    /**
+     * @var Data\Api\Request
+     */
+    protected $apiRequest;
+
     public function __construct()
     {
         parent::__construct();
         $this->_objectName = $this->getObjectName();
         $this->_canViewObjects[] = $this->_objectName;
         $this->_canViewObjects = array_map('strtolower', $this->_canViewObjects);
+
+        $this->apiRequest = $this->getApiRequest($this->request);
+        $this->initListeners();
+    }
+
+    /**
+     *  Event listeners can be defined here
+     */
+    public function initListeners(){}
+
+
+    /**
+     * @return Data\Api
+     */
+    protected function getApi(Data\Api\Request $request, \User $user) : Data\Api
+    {
+        return new Data\Api($request, $user);
+    }
+
+    /**
+     * @param Dvelum\Request $request
+     * @return Data\Api\Request
+     */
+    protected function  getApiRequest(Dvelum\Request $request) : Data\Api\Request
+    {
+        return new Data\Api\Request($request);
     }
 
    /**
@@ -80,32 +114,42 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      */
     public function listAction()
     {
-        $result = $this->_getList();
-        if(empty($result)){
-            Response::jsonSuccess([]);
-        }else{
-            Response::jsonArray($result);
+        if(!$this->eventManager->fireEvent(EventManager::BEFORE_LIST, new stdClass())){
+            Response::jsonError($this->eventManager->getError());
         }
+
+        $result = $this->_getList();
+
+        $eventData = new stdClass();
+        $eventData->data = $result['data'];
+        $eventData->count = $result['count'];
+
+        if(!$this->eventManager->fireEvent(EventManager::AFTER_LIST, $eventData)){
+            Response::jsonError($this->eventManager->getError());
+        }
+
+        Response::jsonSuccess(
+            $eventData->data,
+            ['count'=>$eventData->count]
+        );
     }
 
     /**
      * Prepare data for listAction
+     * backward compatibility
      * @return array
      * @throws Exception
      */
     protected function _getList()
     {
-        $pager = Request::post('pager' , 'array' , []);
-        $filter = Request::post('filter' , 'array' , []);
-        $query = Request::post('search' , 'string' , false);
-        $filter = array_merge($filter , Request::extFilters());
+        $api = $this->getApi($this->apiRequest, $this->_user);
+        $count = $api->getCount();
 
-        $dataModel = Model::factory($this->_objectName);
+        if(!$count){
+            return ['data'=>[],'count'=>0];
+        }
 
-        $data = $dataModel->getListVc($pager , $filter , $query , $this->_listFields);
-
-        if(empty($data))
-            return [];
+        $data = $api->getList();
 
         if(!empty($this->_listLinks)){
             $objectConfig = Orm\Object\Config::factory($this->_objectName);
@@ -114,7 +158,8 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             }
             $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
         }
-        return ['data' =>$data , 'count'=> $dataModel->getCount($filter , $query)];
+
+        return ['data' =>$data , 'count'=> $count];
     }
 
     /**
