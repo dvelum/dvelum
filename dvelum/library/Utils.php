@@ -82,15 +82,21 @@ class Utils
      * @throws Exception
      * @return array
      */
-    static public function fetchCol($key , array $data)
+    static public function fetchCol($key , array $data) : array
     {
-        $result = array();
+        $result = [];
 
         if(empty($data))
-            return array();
+            return [];
 
         foreach($data as $v)
-            $result[] = $v[$key];
+        {
+            if(is_object($v)){
+                $result[] = $v->{$key};
+            }else{
+                $result[] = $v[$key];
+            }
+        }
 
         return $result;
     }
@@ -360,5 +366,17 @@ class Utils
         }
 
         return $result;
+    }
+
+    /**
+     * Transfer an array to a list of integers for inserting into an SQL-query form,
+     * is used to improve the performance of Zend_Select queries setup
+     * join values by ","
+     * @param array $ids
+     * @return string
+     */
+    static public function listIntegers(array $ids) : string
+    {
+        return implode(',' , array_map('intval' , array_unique($ids)));
     }
 }

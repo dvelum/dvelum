@@ -1,9 +1,32 @@
 <?php
+/*
+ * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
+ * Copyright (C) 2011-2012  Kirill A Egorov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+declare(strict_types=1);
 
 namespace Dvelum;
 
 use Dvelum\Config;
 
+/**
+ * Resources Class
+ * Used for work with JS and CSS sources
+ * @author Kirill A Egorov 2011
+ */
 class Resource
 {
     /**
@@ -30,6 +53,10 @@ class Resource
         return $instance;
     }
 
+    /**
+     * Set configuration options
+     * @param Config\Config $config
+     */
     public function setConfig(Config\Config $config)
     {
         $this->config = $config;
@@ -52,7 +79,7 @@ class Resource
      * Add javascript file to the contentent
      *
      * @param string $file- file path relate to document root
-     * @param integer $order  - include order
+     * @param mixed $order  - include order
      * @param boolean $minified - file already minified
      * @param string $tag - file ident
      */
@@ -73,18 +100,16 @@ class Resource
             $item->order = $order;
             $item->tag = $tag;
             $item->minified = $minified;
-
             $this->jsFiles[$hash] = $item;
-
         }
     }
 
     /**
-     * Add css file to the contentent
+     * Add css file to the content
      * @param string $file
      * @param mixed $order
      */
-    public function addCss($file , $order = false)
+    public function addCss(string $file , $order = false)
     {
         if($file[0] === '/')
             $file = substr($file, 1);
@@ -109,7 +134,7 @@ class Resource
      * (will be minified and cached)
      * @param string $script
      */
-    public function addRawJs($script)
+    public function addRawJs(string $script)
     {
         $this->rawJs .= $script;
     }
@@ -118,7 +143,7 @@ class Resource
      * Add standalone JS file (no modifications)
      * @param string $file - file path relative to the document root directory
      */
-    public function addJsRawFile($file)
+    public function addJsRawFile(string $file)
     {
         if($file[0] === '/')
             $file = substr($file, 1);
@@ -131,19 +156,20 @@ class Resource
      * Add inline Java Script code
      * @param string $script
      */
-    public function addInlineJs($script)
+    public function addInlineJs(string $script)
     {
-        $this->inlineJs .= $script;
+        $this->inlineJs.= $script;
     }
 
     /**
      * Add inline css syles
-     * @param string $script
+     * @param string $css
      */
-    public function addRawCss($script)
+    public function addRawCss(string $css)
     {
-        $this->rawCss .= $script;
+        $this->rawCss.= $css;
     }
+
     /**
      * Include JS resources by tag
      * @param boolean $useMin
@@ -177,13 +203,15 @@ class Resource
 
         return $s;
     }
+
     /**
      * Returns javascript source tags. Include order: Files , Raw , Inline
      * @param boolean $useMin - use Js minify
      * @param boolean $compile - compile Files into one
+     * @param mixed $tag
      * @return string
      */
-    public function includeJs($useMin = false , $compile = false , $tag = false)
+    public function includeJs($useMin = false , $compile = false , $tag = false) : string
     {
         $fileList = $this->jsFiles;
 
@@ -225,10 +253,10 @@ class Resource
     /**
      * Create cache file for JS code
      * @param string $code
-     * @param boolean $minify, optional default false
+     * @param bool $minify, optional default false
      * @return string - file url
      */
-    public function cacheJs($code , $minify = false)
+    public function cacheJs(string $code , bool $minify = false) : string
     {
         $hash = md5($code);
         $cacheFile = $hash . '.js';
@@ -251,7 +279,7 @@ class Resource
      * @param boolean $minify - minify scripts
      * @return string  - cached file path
      */
-    protected function compileJsFiles($files , $minify)
+    protected function compileJsFiles(array $files , bool $minify) : string
     {
         $validHash = $this->getFileHash(\Utils::fetchCol('file' , $files));
 
@@ -290,9 +318,9 @@ class Resource
      * @param array $files - File paths relative to the document root directory
      * @return string
      */
-    protected function getFileHash($array)
+    protected function getFileHash(array $files)
     {
-        $listHash = \md5(\serialize($array));
+        $listHash = \md5(\serialize($files));
         /*
          * Checking if hash is cached
          * (IO operations is too expensive)
@@ -305,9 +333,9 @@ class Resource
         }
 
         $dataHash = '';
-        foreach($array as $file)
+        foreach($files as $file)
         {
-            $paramsPos = strpos($file , '?' , true);
+            $paramsPos = strpos($file , '?');
             if($paramsPos!==false)
             {
                 $file = substr($file, 0 , $paramsPos);
@@ -325,7 +353,7 @@ class Resource
      * Get html code for css files include
      * @return string
      */
-    public function includeCss()
+    public function includeCss() : string
     {
         $s = '';
 
@@ -347,7 +375,7 @@ class Resource
      * Get raw JS code
      * @return string
      */
-    public function getInlineJs()
+    public function getInlineJs() : string
     {
         return $this->rawJs;
     }
@@ -359,5 +387,4 @@ class Resource
     {
         $this->rawJs = '';
     }
-
 }

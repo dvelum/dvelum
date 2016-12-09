@@ -1,4 +1,8 @@
 <?php
+
+use Dvelum\Template;
+use Dvelum\Model;
+
 /**
  * Menu block
  * @author Kirill A Egorov 2011 DVelum project
@@ -39,7 +43,7 @@ class Block_Menu extends Block
         ));
 
         if(static::dependsOnPage){
-            $tpl->set('page' , Page::getInstance());
+            $tpl->set('page' , \Page::getInstance());
             $tpl->set('pagesTree' , Model::factory('Page')->getTree());
         }		
 		return $tpl->render(Application::getTemplatesPath() . $this->_template);

@@ -1,18 +1,21 @@
 <?php
+use Dvelum\Config;
+use Dvelum\Db;
+
 interface Db_Manager_Interface
 {
     /**
      * Get DB connection
      * @param string $name
      * @throws Exception
-     * @return Zend_Db_Adapter_Abstract
+     * @return Db\Adapter
      */
-    public function getDbConnection($name);
+    public function getDbConnection(string $name) : Db\Adapter;
     /**
      * Get DB connection config
      * @param string $name
      * @throws Exception
-     * @return Config_Abstract
+     * @return Config\Config
      */
-    public function getDbConfig($name);
+    public function getDbConfig(string $name) : Config\Config;
 }

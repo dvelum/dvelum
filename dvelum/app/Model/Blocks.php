@@ -110,7 +110,7 @@ class Model_Blocks extends Model
 
         $sql = $this->dbSlave->select()
           ->from($this->table())
-          ->where('`id` IN(' . Model::listIntegers($ids) . ')');
+          ->where('`id` IN(' . \Utils::listIntegers($ids) . ')');
 
         $info = $this->dbSlave->fetchAll($sql);
       }

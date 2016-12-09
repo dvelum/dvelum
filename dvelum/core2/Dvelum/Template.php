@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
+
 namespace Dvelum;
 
 use Dvelum\Config\Storage;
@@ -30,7 +32,7 @@ class Template
      * Template data (local variables)
      * @var array
      */
-    private $_data = array();
+    private $data = [];
 
     /**
      * Default cache interface
@@ -45,7 +47,7 @@ class Template
     /**
      * @var \Cache_Interface
      */
-    protected $_cache = false;
+    protected $cache = false;
     /**
      * @var boolean
      */
@@ -54,7 +56,7 @@ class Template
     /**
      * @var \Dvelum\Template\Storage
      */
-    protected $_storage;
+    protected $storage;
 
     /**
      * Set the template cache manager (system method)
@@ -69,16 +71,15 @@ class Template
      * Set _checkMTime flag
      * @param boolean $flag
      */
-    static public function checkMtime($flag)
+    static public function checkMtime(bool $flag)
     {
         self::$_checkMTime = $flag;
     }
 
     public function __construct()
     {
-        $this->_cache = self::$_defaultCache;
-        $this->_storage = self::storage();
-
+        $this->cache = self::$_defaultCache;
+        $this->storage = self::storage();
     }
     /**
      * Template Render
@@ -89,32 +90,32 @@ class Template
     {
         $hash = '';
 
-        $realPath = $this->_storage->get($path);
+        $realPath = $this->storage->get($path);
 
         if(!$realPath){
             return '';
         }
 
-        if($this->_cache && $this->_useCache)
+        if($this->cache && $this->useCache)
         {
             if(self::$_checkMTime){
-                $hash = md5('tpl_' . $path . '_' . serialize($this->_data).filemtime($realPath));
+                $hash = md5('tpl_' . $path . '_' . serialize($this->data).filemtime($realPath));
             }else{
-                $hash = md5('tpl_' . $path . '_' . serialize($this->_data));
+                $hash = md5('tpl_' . $path . '_' . serialize($this->data));
             }
 
-            $html = $this->_cache->load($hash);
+            $html = $this->cache->load($hash);
 
             if($html !== false)
                 return $html;
         }
 
-        ob_start();
+        \ob_start();
         include $realPath;
-        $result = ob_get_clean();
+        $result = \ob_get_clean();
 
-        if($this->_cache && $this->_useCache)
-            $this->_cache->save($result , $hash);
+        if($this->cache && $this->useCache)
+            $this->cache->save($result , $hash);
 
         return $result;
     }
@@ -124,9 +125,9 @@ class Template
      * @param string $name
      * @param mixed $value
      */
-    public function set($name , $value)
+    public function set(string $name , $value)
     {
-        $this->_data[$name] = $value;
+        $this->data[$name] = $value;
     }
 
     /**
@@ -136,7 +137,7 @@ class Template
     public function setProperties(array $data)
     {
         foreach ($data as $name=>$value)
-            $this->_data[$name] = $value;
+            $this->data[$name] = $value;
     }
 
     /**
@@ -144,11 +145,12 @@ class Template
      * @param string $name
      * @return mixed
      */
-    public function get($name)
+    public function get(string $name)
     {
-        if(!isset($this->_data[$name]))
+        if(!isset($this->data[$name]))
             return null;
-        return $this->_data[$name];
+
+        return $this->data[$name];
     }
 
     public function __set($name , $value)
@@ -158,7 +160,7 @@ class Template
 
     public function __isset($name)
     {
-        return isset($this->_data[$name]);
+        return isset($this->data[$name]);
     }
 
     public function __get($name)
@@ -168,7 +170,7 @@ class Template
 
     public function __unset($name)
     {
-        unset($this->_data[$name]);
+        unset($this->data[$name]);
     }
 
     /**
@@ -176,7 +178,7 @@ class Template
      */
     public function clear()
     {
-        $this->_data = array();
+        $this->data = [];
     }
 
     /**
@@ -184,7 +186,7 @@ class Template
      */
     public function disableCache()
     {
-        $this->_useCache = false;
+        $this->useCache = false;
     }
 
     /**
@@ -192,16 +194,16 @@ class Template
      */
     public function enableCache()
     {
-        $this->_useCache = true;
+        $this->useCache = true;
     }
 
     /**
      * Get template data
      * @return array
      */
-    public function getData()
+    public function getData() : array
     {
-        return $this->_data;
+        return $this->data;
     }
 
     /**
@@ -211,7 +213,7 @@ class Template
      */
     public function setData(array $data)
     {
-        $this->_data = $data;
+        $this->data = $data;
     }
 
     /**
@@ -236,7 +238,7 @@ class Template
      * @param bool|true $useCache
      * @return string
      */
-    public function renderTemplate($templatePath, array $data = [], $useCache = true)
+    public function renderTemplate(string $templatePath, array $data = [], $useCache = true) : string
     {
         $tpl = new self();
         $tpl->setData($data);

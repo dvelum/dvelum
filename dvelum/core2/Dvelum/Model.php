@@ -22,8 +22,7 @@ namespace Dvelum;
 
 use Dvelum\Config;
 use Dvelum\Orm;
-
-
+use Dvelum\Db;
 
 
 /**
@@ -39,13 +38,13 @@ class Model
 
     /**
      * Database connection
-     * @var Db_Adapter
+     * @var \Db_Adapter
      */
     protected $db;
 
     /**
      * Slave DB connection
-     * @var Db_Adapter
+     * @var Db\Adapter
      */
     protected $dbSlave;
 
@@ -69,7 +68,7 @@ class Model
 
     /**
      * Current Cache_Interface
-     * @var Cache_Interface
+     * @var \Cache_Interface
     */
     protected $cache;
 
@@ -81,7 +80,7 @@ class Model
 
     /**
      * Global (For all Models) db connection
-     * @var \Db_Adapter
+     * @var Db\Adapter
      */
     static protected $dbConnection = false;
 
@@ -100,7 +99,7 @@ class Model
 
     /**
      * Connection manager
-     * @var Db_Manager_Interface
+     * @var \Db_Manager_Interface
      */
     protected $dbManager;
 
@@ -144,7 +143,7 @@ class Model
 
     /**
      * Get default Db Connection manager
-     * @return Db_Manager
+     * @return  Db\Manager
      */
     static public function getDefaultDbManager()
     {
@@ -185,24 +184,25 @@ class Model
 
     /**
      * Get Object Storage
-     * @return Db_Objectstore
+     * @return Orm\Object\Store
      */
-    protected function _getObjectsStore()
+    protected function _getObjectsStore() : Orm\Object\Store
     {
         return $this->store;
     }
 
     /**
      * Set Database connector for concrete model
+     * @param Db\Adapter $db
      */
-    public function setDbConnection(Zenddb_Adapter_Abstract $db)
+    public function setDbConnection(Db\Adapter $db)
     {
         $this->db = $db;
     }
 
     /**
      * Set the adapter of the object store
-     * @param Db_Objectstore $store
+     * @param Orm\Object\Store $store
      */
     public function setObjectsStore(Orm\Object\Store $store)
     {
@@ -229,7 +229,7 @@ class Model
 
     /**
      * Get Slave Db Connection
-     * @return Zenddb_Adapter_Abstract
+     * @return Db\Adapter
      */
     public function getSlaveDbConnection()
     {
@@ -238,7 +238,7 @@ class Model
 
     /**
      * Get current db manager
-     * @return Db_Manager_Interface
+     * @return \Db_Manager_Interface
      */
     public function getDbManager()
     {
@@ -247,7 +247,7 @@ class Model
 
     /**
      * Get storage adapter
-     * @return Db_Objectstore
+     * @return Orm\Object\Store
      */
     public function getStore()
     {
@@ -284,7 +284,7 @@ class Model
      * Get the name of the object, which the model refers to
      * @return string
      */
-    public function getObjectName()
+    public function getObjectName() : string
     {
         return $this->name;
     }
@@ -294,7 +294,7 @@ class Model
      * @param array $params - parameters can not contain arrays, objects and resources
      * @return string
      */
-    public function getCacheKey(array $params)
+    public function getCacheKey(array $params) : string
     {
         return md5($this->getObjectName().'-'.implode('-', $params));
     }
@@ -303,7 +303,7 @@ class Model
      * Get the name of the database table (with prefix)
      * @return string
      */
-    public function table()
+    public function table() : string
     {
       return $this->dbPrefix . $this->table;
     }
@@ -351,7 +351,7 @@ class Model
      * @param string $value - field value
      * @return array
      */
-    public function getCachedItemByField($field , $value)
+    public function getCachedItemByField(string $field , $value)
     {
         $cacheKey = $this->getCacheKey(array('item', $field, $value));
         $data = false;
@@ -375,16 +375,16 @@ class Model
      *
      * @param string $fieldName
      * @param string $value
-     * @param array $fields - optional
-     * @throws Exception
+     * @param mixed $fields - optional
+     * @throws \Exception
      * @return array
      */
-    public function getItemByUniqueField($fieldName , $value , $fields = '*')
+    public function getItemByUniqueField(string $fieldName , $value , $fields = '*')
     {
         if(!$this->objectConfig->getField($fieldName)->isUnique()){
           $eText = 'getItemByUniqueField field "'.$fieldName.'" ['.$this->objectConfig->getName().'] should be unique';
           $this->logError($eText);
-            throw new Exception($eText);
+            throw new \Exception($eText);
         }
         $sql = $this->dbSlave->select()->from($this->table() , $fields);
         $sql->where($this->dbSlave->quoteIdentifier($fieldName).' = ?' , $value);
@@ -393,8 +393,9 @@ class Model
 
     /**
      * Get a number of entries a list of IDs
-     * @param array $ids — list of IDs
-     * @param array $fields — optional - the list of fields to retrieve
+     * @param array $ids - list of IDs
+     * @param mixed $fields - optional - the list of fields to retrieve
+     * @param bool $useCache - optional, defaul false
      * @return array / false
      */
     final public function getItems(array $ids , $fields = '*' , $useCache = false)
@@ -402,7 +403,7 @@ class Model
         $data = false;
 
         if(empty($ids))
-            return array();
+            return [];
 
         if($useCache && $this->cache){
             $cacheKey = $this->getCacheKey(array('list', serialize(func_get_args())));
@@ -413,11 +414,11 @@ class Model
         {
             $sql = $this->dbSlave->select()
                          ->from($this->table() , $fields)
-                         ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) .' IN('.self::listIntegers($ids).')');
+                         ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) .' IN('.\Utils::listIntegers($ids).')');
             $data = $this->dbSlave->fetchAll($sql);
 
             if(!$data)
-                $data = array();
+                $data = [];
 
             if($useCache && $this->cache)
                 $this->cache->save($data , $cacheKey , $this->cacheTime);
@@ -428,7 +429,7 @@ class Model
 
     /**
      * Add filters (where) to the query
-     * @param Db_Select | Zenddb_Select $sql
+     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql | string
      * @param array $filters  the key - the field name, value
      * @return void
      */
@@ -440,7 +441,7 @@ class Model
         foreach($filters as $k => $v)
         {
 
-           if($v instanceof  Db_Select_Filter)
+           if($v instanceof  \Db_Select_Filter)
            {
              $v->applyTo($this->db, $sql);
            }
@@ -525,18 +526,6 @@ class Model
               $sql->order(array($params['sort'] => $params['dir']));
             }
         }
-    }
-
-    /**
-     * Transfer an array to a list of integers for inserting into an SQL-query form,
-     * is used to improve the performance of Zend_Select queries setup
-     * join values by ","
-     * @param array $ids
-     * @return string
-     */
-    static public function listIntegers(array $ids)
-    {
-        return implode(',' , array_map('intval' , array_unique($ids)));
     }
 
     /**
