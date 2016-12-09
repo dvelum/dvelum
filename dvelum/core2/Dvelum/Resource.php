@@ -260,7 +260,7 @@ class Resource
     {
         $hash = md5($code);
         $cacheFile = $hash . '.js';
-        $cacheFile = \Utils::createCachePath( $this->config->get('jsCachePath') , $cacheFile);
+        $cacheFile = \Utils::createCachePath( $this->config->get('jsCacheSysPath') , $cacheFile);
 
         if(!file_exists($cacheFile))
         {
@@ -270,7 +270,7 @@ class Resource
             file_put_contents($cacheFile, $code);
         }
 
-        return str_replace($this->config->get('jsCachePath'), $this->config->get('wwwRoot'). $this->config->get('jsCacheUrl'), $cacheFile);
+        return str_replace($this->config->get('jsCacheSysPath'), $this->config->get('wwwRoot'). $this->config->get('jsCacheSysPath'), $cacheFile);
     }
 
     /**
@@ -283,9 +283,9 @@ class Resource
     {
         $validHash = $this->getFileHash(\Utils::fetchCol('file' , $files));
 
-        $cacheFile = \Utils::createCachePath($this->config->get('jsCachePath'), $validHash . '.js');
+        $cacheFile = \Utils::createCachePath($this->config->get('jsCacheSysPath'), $validHash . '.js');
 
-        $cachedUrl = \str_replace($this->config->get('jsCachePath'), $this->config->get('jsCacheUrl') , $cacheFile);
+        $cachedUrl = \str_replace($this->config->get('jsCacheSysPath'), $this->config->get('jsCacheSysPath') , $cacheFile);
 
         if(file_exists($cacheFile))
             return $cachedUrl;
