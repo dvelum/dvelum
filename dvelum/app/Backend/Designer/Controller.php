@@ -110,9 +110,10 @@ class Backend_Designer_Controller extends Backend_Controller
 	
 	public function indexAction()
 	{
+        $configBackend = Config::storage()->get('backend.php');
         // change theme
         $designerTheme = $this->_config->get('theme');
-        $this->_configBackend->set('theme' , $designerTheme);
+        $configBackend->set('theme' , $designerTheme);
         $page = Page::getInstance();
         $page->setTemplatesPath('system/' . $designerTheme. '/');
 

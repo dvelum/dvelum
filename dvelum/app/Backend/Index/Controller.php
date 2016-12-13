@@ -9,8 +9,10 @@ class Backend_Index_Controller extends Backend_Controller
 {
     public function indexAction()
     {
+        $config = Config::storage()->get('backend.php');
+
         $this->includeScripts();
-        if(!in_array($this->_configBackend->get('theme') , $this->_configBackend->get('desktop_themes') , true)){
+        if(!in_array($config->get('theme') , $config->get('desktop_themes') , true)){
             $this->_resource->addJs('js/app/system/crud/index.js', 4);
         }
     }

@@ -11,7 +11,7 @@ class EventManager
 
     /**
      * @param string $event
-     * @param $handler - callabale || [obj,method]
+     * @param callabale|array [obj,method] $handler
      */
     public function on(string $event, $handler)
     {
@@ -55,7 +55,11 @@ class EventManager
         return true;
     }
 
-    public function getError()
+    /**
+     * Get event error message
+     * @return string
+     */
+    public function getError() : string
     {
         return $this->error;
     }

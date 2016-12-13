@@ -246,7 +246,8 @@ class Backend_Modules_Controller extends Backend_Controller
         $list = $manager->getRegisteredObjects();
         $data = array();
 
-        $systemObjects = $this->_configBackend['system_objects'];
+        $config = Config::storage()->get('backend.php');
+        $systemObjects = $config->get('system_objects');
 
         foreach ($list as $key)
             if(!in_array(ucfirst($key), $systemObjects , true) && !class_exists('Backend_'.Utils_String::formatClassName($key).'_Controller'))
@@ -297,7 +298,8 @@ class Backend_Modules_Controller extends Backend_Controller
         if(!$manager->objectExists($object))
             Response::jsonError($this->_lang->FILL_FORM , array('id'=>'object','msg'=>$this->_lang->INVALID_VALUE));
 
-        $codeGenadApter = $this->_configBackend->get('modules_generator');
+        $config = Config::storage()->get('backend.php');
+        $codeGenadApter = $config->get('modules_generator');
 
         $codeGen = new $codeGenadApter();
         try{

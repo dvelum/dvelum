@@ -4,7 +4,7 @@ namespace Dvelum;
 use Dvelum\Config;
 /*
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
- * Copyright (C) 2011-2012  Kirill A Egorov
+ * Copyright (C) 2011-2016  Kirill A Egorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,22 +21,22 @@ use Dvelum\Config;
  */
 class Lang
 {
-    protected $_dictionary = false;
-    protected $_dictionaryName = '';
+    protected $dictionary = false;
+    protected $dictionaryName = '';
 
-    static protected $_dictionaries = array();
-    static protected $_loaders = array();
-    static protected $_defaultDictionary = null;
+    static protected $dictionaries = [];
+    static protected $loaders = [];
+    static protected $defaultDictionary = null;
 
 
     /**
      * @param string $name
      */
-    protected function __construct($name)
+    protected function __construct(string $name)
     {
-        $this->_dictionaryName = $name;
-        if(isset(self::$_dictionaries[$name]))
-            $this->_dictionary = self::$_dictionaries[$name];
+        $this->dictionaryName = $name;
+        if(isset(self::$dictionaries[$name]))
+            $this->dictionary = self::$dictionaries[$name];
     }
 
     /**
@@ -45,20 +45,20 @@ class Lang
      */
     public function getName()
     {
-        return $this->_dictionaryName;
+        return $this->dictionaryName;
     }
 
     /**
      * Set default localization
      * @param string $name
-     * @throws Exception
+     * @throws \Exception
      */
-    static public function setDefaultDictionary($name)
+    static public function setDefaultDictionary(string $name)
     {
-        if(!isset(self::$_dictionaries[$name]) && !isset(self::$_loaders[$name]))
-            throw new Exception('Dictionary '.$name.' is not found');
+        if(!isset(self::$dictionaries[$name]) && !isset(self::$loaders[$name]))
+            throw new \Exception('Dictionary '.$name.' is not found');
 
-        self::$_defaultDictionary = $name;
+        self::$defaultDictionary = $name;
     }
 
     /**
@@ -67,7 +67,7 @@ class Lang
      */
     static public function getDefaultDictionary()
     {
-        return self::$_defaultDictionary;
+        return self::$defaultDictionary;
     }
 
     /**
@@ -76,9 +76,9 @@ class Lang
      * @param Config\Config $dictionary — configuration object
      * @return void
      */
-    static public function addDictionary($name , Config\Config $dictionary)
+    static public function addDictionary(string $name , Config\Config $dictionary)
     {
-        self::$_dictionaries[$name] = $dictionary;
+        self::$dictionaries[$name] = $dictionary;
     }
 
     /**
@@ -87,29 +87,29 @@ class Lang
      * @param mixed $src - dictionary source
      * @param integer $type - Config constant
      */
-    static public function addDictionaryLoader($name , $src , $type = Config\Factory::File_Array)
+    static public function addDictionaryLoader(string $name , $src , $type = Config\Factory::File_Array)
     {
-        self::$_loaders[$name] = array('src'=> $src , 'type' =>$type);
+        self::$loaders[$name] = array('src'=> $src , 'type' =>$type);
     }
 
 
-    protected function _loadDictionary($name)
+    protected function loadDictionary($name)
     {
-        if($this->_dictionary)
+        if($this->dictionary)
             return;
 
-        if(isset(self::$_dictionaries[$name]))
+        if(isset(self::$dictionaries[$name]))
         {
-            $this->_dictionary = self::$_dictionaries[$name];
+            $this->dictionary = self::$dictionaries[$name];
             return;
         }
 
-        if(isset(self::$_loaders[$name]))
+        if(isset(self::$loaders[$name]))
         {
-            switch(self::$_loaders[$name]['type']){
+            switch(self::$loaders[$name]['type']){
                 case Config\Factory::File_Array:
-                    self::$_dictionaries[$name] = static::storage()->get(self::$_loaders[$name]['src'] , true , true);
-                    $this->_dictionary = self::$_dictionaries[$name];
+                    self::$dictionaries[$name] = static::storage()->get(self::$loaders[$name]['src'] , true , true);
+                    $this->dictionary = self::$dictionaries[$name];
                     break;
             }
         }
@@ -121,12 +121,12 @@ class Lang
      * @param string $key
      * @return string
      */
-    public function get($key)
+    public function get(string $key) : string
     {
-        $this->_loadDictionary($this->_dictionaryName);
+        $this->loadDictionary($this->dictionaryName);
 
-        if($this->_dictionary->offsetExists($key))
-            return $this->_dictionary->get($key);
+        if($this->dictionary->offsetExists($key))
+            return $this->dictionary->get($key);
         else
             return '[' . $key . ']';
     }
@@ -138,33 +138,33 @@ class Lang
 
     public function __isset($key)
     {
-        $this->_loadDictionary($this->_dictionaryName);
+        $this->loadDictionary($this->dictionaryName);
 
-        return $this->_dictionary->offsetExists($key);
+        return $this->dictionary->offsetExists($key);
     }
 
     /**
      * Convert the localization dictionary to JSON
      * @return string
      */
-    public function getJson()
+    public function getJson() : string
     {
-        $this->_loadDictionary($this->_dictionaryName);
-        return json_encode($this->_dictionary->__toArray());
+        $this->loadDictionary($this->dictionaryName);
+        return \json_encode($this->dictionary->__toArray());
     }
 
     /**
      * Convert the localization dictionary to JavaScript object
      * @return string
      */
-    public function getJsObject()
+    public function getJsObject() : string
     {
-        $this->_loadDictionary($this->_dictionaryName);
+        $this->loadDictionary($this->dictionaryName);
         $items = array();
-        foreach($this->_dictionary as $k => $v)
+        foreach($this->dictionary as $k => $v)
             $items[] = $k . ':"' . $v . '"';
 
-        return str_replace("\n","",'{' . implode(',' , $items) . '}');
+        return \str_replace("\n","",'{' . implode(',' , $items) . '}');
     }
 
     /**
@@ -177,9 +177,9 @@ class Lang
     static public function lang(string $name = '') : self
     {
         if(empty($name))
-            $name = self::$_defaultDictionary;
+            $name = self::$defaultDictionary;
 
-        if(!isset(self::$_dictionaries[$name]) && !isset(self::$_loaders[$name]))
+        if(!isset(self::$dictionaries[$name]) && !isset(self::$loaders[$name]))
             throw new \Exception('Lang::lang Dictionary "'.$name.'" is not found');
 
         return new self($name);

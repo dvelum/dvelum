@@ -97,4 +97,9 @@ class Request
     {
         return \Request::extFilters();
     }
+
+    public function isAjax()
+    {
+        return\Request::isAjax();
+    }
 }
