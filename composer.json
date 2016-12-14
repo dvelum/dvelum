@@ -2,6 +2,7 @@
     "name": "DVelum",
     "require": {
         "php":">=7.0.0",
-        "zendframework/zend-db": "^2.8"
+        "zendframework/zend-db": "^2.8",
+        "psr/log": "^1.0"
     }
 }
