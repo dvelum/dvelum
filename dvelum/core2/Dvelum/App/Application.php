@@ -11,6 +11,7 @@ use Dvelum\Config;
 use Dvelum\Model;
 use Dvelum\Orm;
 use Dvelum\Lang;
+use Dvelum\Log;
 /**
  * Application - is the main class that initializes system configuration
  * settings. The system starts working with running an object of this class.
@@ -169,7 +170,7 @@ class Application
 
         if($this->config->get('db_object_error_log'))
         {
-            $log = new \Log_File($this->config->get('db_object_error_log_path'));
+            $log = new Log\File($this->config->get('db_object_error_log_path'));
             /*
              * Switch to Db_Object error log
              */
@@ -179,10 +180,10 @@ class Application
                 $errorTable = $errorModel->table();
                 $errorDb = $errorModel->getDbConnection();
 
-                $logOrmDb = new \Log_Db('db_object_error_log' , $errorDb , $errorTable);
-                $logModelDb = new \Log_Db('model' , $errorDb , $errorTable);
-                Orm\Object::setLog(new \Log_Mixed($log, $logOrmDb));
-                Model::setDefaultLog(new \Log_Mixed($log, $logModelDb));
+                $logOrmDb = new Log\Db('db_object_error_log' , $errorDb , $errorTable);
+                $logModelDb = new Log\Db('model' , $errorDb , $errorTable);
+                Orm\Object::setLog(new Log\Mixed($log, $logOrmDb));
+                Model::setDefaultLog(new Log\Mixed($log, $logModelDb));
                 $objectStore->setLog($logOrmDb);
             }else{
                 Orm\Object::setLog($log);

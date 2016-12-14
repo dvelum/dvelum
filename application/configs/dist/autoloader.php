@@ -9,7 +9,8 @@ return [
         './dvelum/app',
         './dvelum/library',
         './dvelum/core2',
-        './vendor'
+        './vendor',
+        './vendor/psr/log'
     ),
     // priority paths (cannot be overridden by external modules)
     'priority'=>[
@@ -30,7 +31,7 @@ return [
             'config' => [
                 'paths' => [
                     'Zend\\Stdlib' => './vendor/zendframework/zend-stlib/src',
-                    'Zend\\Db' => './vendor/zendframework/zend-db/src',
+                    'Zend\\Db' => './vendor/zendframework/zend-db/src'
                 ]
             ]
         ]

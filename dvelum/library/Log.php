@@ -1,4 +1,4 @@
 <?php
 interface Log{
-	public function log($message);
+	public function log($level, $message, array $context = array());
 }

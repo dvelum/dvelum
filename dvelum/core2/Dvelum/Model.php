@@ -963,12 +963,12 @@ class Model
      * Log error message
      * @param string $message
      */
-    public function logError($message)
+    public function logError(string $message)
     {
       if(!$this->log)
        return;
 
-      $this->log->log(get_called_class().': ' . $message);
+      $this->log->log(\Psr\Log\LogLevel::ERROR, get_called_class().': ' . $message);
     }
 
     /**

@@ -1,36 +1,35 @@
 <?php
-/*
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
- * Kirill A Egorov
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 namespace Dvelum\App\Backend;
 
-use Dvelum\Model;
-use Dvelum\Config;
-use Dvelum\Orm;
-use Dvelum\Request;
 use Dvelum\App;
+use Dvelum\Config;
+use Dvelum\Model;
+use Dvelum\Orm;
 use Dvelum\App\Data;
+use Dvelum\Request;
 use Dvelum\App\Session;
+use Dvelum\Lang;
+use Dvelum\App\Controller\EventManager;
 
-/**
- * This is the base class for implementing administrative controllers
- */
-abstract class Controller extends \Controller
+class Controller extends App\Controller
 {
+
+    /**
+     * Controller events manager
+     * @var App\Controller\EventManager
+     */
+    protected $eventManager;
+
+    /**
+     * Controller configuration
+     * @var Config\Config
+     */
+    protected $config;
+    /**
+     * Localization adapter
+     * @var Lang
+     */
+    protected $lang;
     /**
      * Module id assigned to controller;
      * Is to be defined in child class
@@ -38,66 +37,225 @@ abstract class Controller extends \Controller
      *
      * @var string
      */
-    protected $_module;
+    protected $module;
+    /**
+     * Current Db_Object name
+     * @var string
+     */
+    protected $objectName = false;
+    /**
+     * List of ORM objects accepted via linkedListAction and otitleAction
+     * @var array
+     */
+    protected $canViewObjects = [];
+    /**
+     * List of ORM object link fields displayed with related values in the main list (listAction)
+     * (dictionary, object link, object list) key - result field, value - object field
+     * object field will be used as result field for numeric keys
+     * Requires primary key in result set
+     * @var array
+     */
+    protected $listLinks = [];
 
     /**
-     * Link to Config object of the connected JS files
-     *
-     * @var Config_Abstract
+     * API Request object
+     * @var Data\Api\Request
      */
-    protected $_configJs;
+    protected $apiRequest;
 
     /**
      * Link to User object (current user)
-     *
-     * @var User
+     * @var Session\User
      */
-    protected $_user;
-
-    /**
-     * The checkbox signifies whether the current request has
-     * been sent using AJAX
-     */
-    protected $_isAjaxRequest;
-
-    /**
-     * Controller config
-     * @var \Dvelum\Config $config
-     */
-    protected $config;
-
-    /**
-     * @var \Dvelum\App\Controller\EventManager
-     */
-    protected $eventManager;
+    protected $user;
 
     public function __construct()
     {
         parent::__construct();
 
         $this->eventManager = new App\Controller\EventManager();
-        $this->config = $this->getConfig();
-        $cacheManager = new \Cache_Manager();
-        //$this->_configBackend = Config::storage()->get('backend.php');
-        $this->moduleName = $this->getModule();
-        $this->_module = $this->getModule();
-        $this->_cache = $cacheManager->get('data');
 
-        if(Request::factory()->get('logout' , 'boolean' , false)){
-            User::getInstance()->logout();
-            session_destroy();
-            if(!Request::isAjax())
-                Response::redirect(Request::url(array($this->_configMain->get('adminPath'))));
-        }
+        $this->config = $this->getConfig();
+        $this->module = $this->getModule();
+        $this->objectName = $this->getObjectName();
+        $this->canViewObjects[] = $this->objectName;
+        $this->canViewObjects = \array_map('strtolower', $this->canViewObjects);
+        $this->apiRequest = $this->getApiRequest($this->request);
+        $this->lang = Lang::lang();
+
+        $this->initListeners();
+
+        $this->checkLogout();
         $this->checkAuth();
     }
 
     /**
      * Get controller configuration
+     * @return Config\Config
      */
-    protected function getConfig()
+    protected function getConfig() : Config\Config
     {
         return Config::storage()->get('backend/controller.php');
+    }
+
+    protected function checkLogout()
+    {
+        if($this->request->get('logout' , 'boolean' , false)){
+            App\Session\User::factory()->logout();
+            session_destroy();
+            if(!$this->request->isAjax()){
+                $this->response->redirect($this->request->url(array($this->appConfig->get('adminPath'))));
+            }
+        }
+    }
+
+    /**
+     * Get module name of the current class
+     * @return string
+     */
+    public function getModule()
+    {
+        $manager = new \Modules_Manager();
+        return $manager->getControllerModule(get_called_class());
+    }
+
+    /**
+     *  Event listeners can be defined here
+     */
+    public function initListeners(){}
+
+    /**
+     * @param Data\Api\Request $request
+     * @param Session\User $user
+     * @return Data\Api
+     */
+    protected function getApi(Data\Api\Request $request, Session\User $user) : Data\Api
+    {
+        return new Data\Api($request, $user);
+    }
+
+    /**
+     * @param Request $request
+     * @return Data\Api\Request
+     */
+    protected function getApiRequest(Request $request) : Data\Api\Request
+    {
+        return new Data\Api\Request($request);
+    }
+
+    /**
+     * Get name of the object, which edits the controller
+     * @return string
+     */
+    public function getObjectName() : string
+    {
+        return str_replace(array('Backend_', '_Controller','\\Backend\\','\\Controller') , '' , get_called_class());
+    }
+
+    /**
+     * Check user permissions and authentication
+     */
+    public function checkAuth()
+    {
+        $configBackend = Config::storage()->get('backend.php');
+
+        $user = Session\User::getInstance();
+        $uid = false;
+
+        if($user->isAuthorized()) {
+            $uid = $user->id;
+            $userLang =$user->getLanguage();
+            $langManager = new \Backend_Localization_Manager($this->appConfig);
+            $acceptedLanguages = $langManager->getLangs(true);
+            // switch language
+            if(!empty($userLang) && $userLang!=$this->appConfig->get('language') && in_array($userLang, $acceptedLanguages , true)){
+                $this->appConfig->set('language' , $userLang);
+                Lang::addDictionaryLoader($userLang ,  $userLang . '.php' , Config\Factory::File_Array);
+                Lang::setDefaultDictionary($userLang);
+                \Dictionary::setConfigPath($this->appConfig->get('dictionary_folder') . $this->appConfig->get('language').'/');
+            }
+        }
+
+        if(! $uid || ! $user->isAdmin()){
+            if($this->request->isAjax())
+                Response::jsonError($this->_lang->MSG_AUTHORIZE);
+            else
+                $this->loginAction();
+        }
+        /*
+         * Check CSRF token
+         */
+        if($configBackend->get('use_csrf_token') && Request::hasPost()){
+            $csrf = new \Security_Csrf();
+            $csrf->setOptions(
+                array(
+                    'lifetime' => $configBackend->get('use_csrf_token_lifetime'),
+                    'cleanupLimit' => $configBackend->get('use_csrf_token_garbage_limit')
+                ));
+
+            if(!$csrf->checkHeader() && !$csrf->checkPost())
+                $this->_errorResponse($this->_lang->MSG_NEED_CSRF_TOKEN);
+        }
+
+        $this->user = $user;
+
+        $isSysController = in_array(get_called_class() , $configBackend->get('system_controllers') , true);
+
+        if($isSysController)
+            return;
+
+        if(!$this->user->canView($this->module)){
+            $this->response->error($this->lang->get('CANT_VIEW'));
+        }
+
+        $moduleManager = new \Modules_Manager();
+
+        /*
+         * Redirect for undefined module
+         */
+        if(!$moduleManager->isValidModule($this->module)){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+        }
+
+        $moduleCfg = $moduleManager->getModuleConfig($this->module);
+
+        /*
+         * Redirect for disabled module
+         */
+        if($moduleCfg['active'] == false) {
+            $this->response->error($this->lang->get('CANT_VIEW'));
+        }
+
+        /*
+         * Redirect for dev module at production
+         */
+        if($moduleCfg['dev'] && ! $this->appConfig['development']){
+            $this->response->error($this->lang->get('CANT_VIEW'));
+        }
+    }
+
+    /**
+     * Default action
+     */
+    public function indexAction()
+    {
+        $this->includeScripts();
+
+        $this->resource->addInlineJs('
+	        var canEdit = ' . intval($this->user->canEdit($this->module)) . ';
+	        var canDelete = ' . intval($this->user->canDelete($this->module)) . ';
+	    ');
+
+        $this->includeScripts();
+
+        $modulesConfig = Config\Factory::config(Config\Factory::File_Array , $this->appConfig->get('backend_modules'));
+        $moduleCfg = $modulesConfig->get($this->module);
+
+        if(strlen($moduleCfg['designer']))
+            $this->runDesignerProject($moduleCfg['designer']);
+        else
+            if(file_exists($this->appConfig->get('jsPath').'app/system/crud/' . strtolower($this->module) . '.js'))
+                $this->resource->addJs('/js/app/system/crud/' . strtolower($this->module) .'.js' , 4);
     }
 
     /**
@@ -114,243 +272,115 @@ abstract class Controller extends \Controller
             $js = $cfg->get('js');
             if(!empty($js))
                 foreach($js as $file => $config)
-                    $this->_resource->addJs($file , $config['order'] , $config['minified']);
+                    $this->resource->addJs($file , $config['order'] , $config['minified']);
 
             $css = $cfg->get('css');
             if(!empty($css))
                 foreach($css as $file => $config)
-                    $this->_resource->addCss($file , $config['order']);
+                    $this->resource->addCss($file , $config['order']);
         }
-
     }
-    /**
-     * Send JSON error message
-     *
-     * @return string
-     */
-    protected function _errorResponse($msg)
-    {
-        if(Request::isAjax())
-            Response::jsonError($msg);
-        else
-            Response::redirect(Request::url(array($this->_configMain->get('adminPath'))));
-    }
-    /**
-     * Get module name of the current class
-     *
-     * @return string
-     */
-    public function getModule()
-    {
-        $manager = new \Modules_Manager();
-        return $manager->getControllerModule(get_called_class());
-    }
-    /**
-     * Check user permissions and authentication
-     */
-    public function checkAuth()
-    {
-        $configBackend = Config::storage()->get('backend.php');
-            
-        $user = Session\User::getInstance();
-        $uid = false;
 
-        if($user->isAuthorized()) {
-            $uid = $user->id;
-            $userLang =$user->getLanguage();
-            $langManager = new \Backend_Localization_Manager($this->_configMain);
-            $acceptedLanguages = $langManager->getLangs(true);
-            // switch language
-            if(!empty($userLang) && $userLang!=$this->_configMain->get('language') && in_array($userLang, $acceptedLanguages , true)){
-                $this->_configMain->set('language' , $userLang);
-                Lang::addDictionaryLoader($userLang ,  $userLang . '.php' , Config\Factory::File_Array);
-                Lang::setDefaultDictionary($userLang);
-                Dictionary::setConfigPath($this->_configMain->get('dictionary_folder') . $this->_configMain->get('language').'/');
-            }
-        }
-
-        if(! $uid || ! $user->isAdmin()){
-            if($this->request->isAjax())
-                Response::jsonError($this->_lang->MSG_AUTHORIZE);
-            else
-                $this->loginAction();
-        }
-        /*
-         * Check CSRF token
-         */
-        if($configBackend->get('use_csrf_token') && Request::hasPost()){
-            $csrf = new Security_Csrf();
-            $csrf->setOptions(
-                array(
-                    'lifetime' => $configBackend->get('use_csrf_token_lifetime'),
-                    'cleanupLimit' => $configBackend->get('use_csrf_token_garbage_limit')
-                ));
-
-            if(!$csrf->checkHeader() && !$csrf->checkPost())
-                $this->_errorResponse($this->_lang->MSG_NEED_CSRF_TOKEN);
-        }
-
-        $this->_user = $user;
-
-        $isSysController = in_array(get_called_class() , $configBackend->get('system_controllers') , true);
-
-        if($isSysController)
-            return;
-
-        if(! $this->_user->canView($this->_module))
-            $this->_errorResponse($this->_lang->CANT_VIEW);
-
-        $moduleManager = new \Modules_Manager();
-
-        /*
-         * Redirect for undefined module
-         */
-        if(!$moduleManager->isValidModule($this->_module))
-            $this->_errorResponse($this->_lang->WRONG_REQUEST);
-
-        $moduleCfg = $moduleManager->getModuleConfig($this->_module);
-
-        /*
-         * Redirect for disabled module
-         */
-        if($moduleCfg['active'] == false)
-            $this->_errorResponse($this->_lang->CANT_VIEW);
-
-        /*
-         * Redirect for dev module at prouction
-         */
-        if($moduleCfg['dev'] && ! $this->_configMain['development'])
-            $this->_errorResponse($this->_lang->CANT_VIEW);
-    }
-    /**
-     * Show login form
-     */
-    protected function loginAction()
-    {
-        $configBackend = Config::storage()->get('backend.php');
-
-        $template = new Template();
-        $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
-        Response::put($template->render('system/'.$configBackend->get('theme') . '/login.php'));
-        Application::close();
-    }
-    /**
-     * Get posted data and put it into Db_Object
-     * (in case of failure, JSON error message is sent)
-     *
-     * @param string $objectName
-     * @return \Dvelum\Orm\Object
-     */
-    public function getPostedData($objectName)
-    {
-        $formCfg = $this->config->get('form');
-        $adapterConfig = Config::storage()->get($formCfg['config']);
-        $adapterConfig->set('orm_object', $objectName);
-        /**
-         * @var \Dvelum\App\Form\Adapter $form
-         */
-        $form = new $formCfg['adapter'](
-            $this->request,
-            $this->_lang,
-            $adapterConfig
-        );
-
-        if(!$form->validateRequest())
-        {
-            $errors = $form->getErrors();
-            $formMessages = [$this->_lang->get('FILL_FORM')];
-            $fieldMessages = [];
-            /**
-             * @var \Dvelum\App\Form\Error $item
-             */
-            foreach ($errors as $item)
-            {
-                $field = $item->getField();
-                if(empty($field)){
-                    $formMessages[] = $item->getMessage();
-                }else{
-                    $fieldMessages[$field] = $item->getMessage();
-                }
-            }
-            Response::jsonError(implode('; <br>', $formMessages) , $fieldMessages);
-        }
-        return $form->getData;
-    }
-    /**
-     * Check edit permissions
-     */
-    protected function _checkCanEdit()
-    {
-        if(!User::getInstance()->canEdit($this->_module))
-            Response::jsonError($this->_lang->CANT_MODIFY);
-    }
-    /**
-     * Check delete permissions
-     */
-    protected function _checkCanDelete()
-    {
-        if(!User::getInstance()->canDelete($this->_module))
-            Response::jsonError($this->_lang->CANT_DELETE);
-    }
-    /**
-     * Default action
-     */
-    public function indexAction()
-    {
-        $this->includeScripts();
-
-        $this->_resource->addInlineJs('
-	        var canEdit = ' . intval($this->_user->canEdit($this->_module)) . ';
-	        var canDelete = ' . intval($this->_user->canDelete($this->_module)) . ';
-	    ');
-
-        $this->includeScripts();
-
-        $modulesConfig = Config\Factory::config(Config\Factory::File_Array , $this->_configMain->get('backend_modules'));
-        $moduleCfg = $modulesConfig->get($this->_module);
-
-        if(strlen($moduleCfg['designer']))
-            $this->_runDesignerProject($moduleCfg['designer']);
-        else
-            if(file_exists($this->_configMain->get('jsPath').'app/system/crud/' . strtolower($this->_module) . '.js'))
-                $this->_resource->addJs('/js/app/system/crud/' . strtolower($this->_module) .'.js' , 4);
-    }
     /**
      * Run designer project
      * @param string $project - path to project file
      * @param string | boolean $renderTo
      */
-    protected function _runDesignerProject($project , $renderTo = false)
+    protected function runDesignerProject($project , $renderTo = false)
     {
-        $manager = new \Designer_Manager($this->_configMain);
+        $manager = new \Designer_Manager($this->appConfig);
         $project = $manager->findWorkingCopy($project);
-        $manager->renderProject($project, $renderTo, $this->_module);
+        $manager->renderProject($project, $renderTo, $this->module);
     }
     /**
      * Get desktop module info
      */
     protected function desktopModuleInfo()
     {
-        $modulesConfig = Config::factory(Config\Factory::File_Array , $this->_configMain->get('backend_modules'));
-        $moduleCfg = $modulesConfig->get($this->_module);
+        $modulesConfig = Config::factory(Config\Factory::File_Array , $this->appConfig->get('backend_modules'));
+        $moduleCfg = $modulesConfig->get($this->module);
 
         $projectData = [];
 
         if(strlen($moduleCfg['designer']))
         {
-            $manager = new \Designer_Manager($this->_configMain);
+            $manager = new \Designer_Manager($this->appConfig);
             $project = $manager->findWorkingCopy($moduleCfg['designer']);
-            $projectData =  $manager->compileDesktopProject($project, 'app.__modules.'.$this->_module , $this->_module);
+            $projectData =  $manager->compileDesktopProject($project, 'app.__modules.'.$this->module , $this->module);
             $projectData['isDesigner'] = true;
             $modulesManager = new \Modules_Manager();
             $modulesList = $modulesManager->getList();
-            $projectData['title'] = (isset($modulesList[$this->_module])) ? $modulesList[$this->_module]['title'] : '';
+            $projectData['title'] = (isset($modulesList[$this->module])) ? $modulesList[$this->module]['title'] : '';
         }
         else
         {
-            if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
-                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
+            if(file_exists($this->appConfig->get('jsPath').'app/system/desktop/' . strtolower($this->module) . '.js'))
+                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->module) .'.js';
         }
         return $projectData;
+    }
+
+    /**
+     * Get list of items. Returns JSON reply with
+     * ORM object field data or return array with data and count;
+     * Filtering, pagination and search are available
+     * Sends JSON reply in the result
+     * and closes the application (by default).
+     * @throws Exception
+     * @return void
+     */
+    public function listAction()
+    {
+        if(!$this->eventManager->fireEvent(EventManager::BEFORE_LIST, new stdClass())){
+            $this->response->error($this->eventManager->getError());
+        }
+
+        $result = $this->getList();
+
+        $eventData = new \stdClass();
+        $eventData->data = $result['data'];
+        $eventData->count = $result['count'];
+
+        if(!$this->eventManager->fireEvent(EventManager::AFTER_LIST, $eventData)){
+            $this->response->error($this->eventManager->getError());
+        }
+
+        $this->response->success(
+            $eventData->data,
+            ['count'=>$eventData->count]
+        );
+    }
+
+    /**
+     * Prepare data for listAction
+     * backward compatibility
+     * @return array
+     * @throws \Exception
+     */
+    protected function getList()
+    {
+        $api = $this->getApi($this->apiRequest, $this->_user);
+        $count = $api->getCount();
+
+        if(!$count){
+            return ['data'=>[],'count'=>0];
+        }
+
+        $data = $api->getList();
+
+        if(!empty($this->listLinks)){
+            $objectConfig = Orm\Object\Config::factory($this->objectName);
+            /**
+             * @todo refactor
+             */
+//
+//            if(!in_array($objectConfig->getPrimaryKey(),'',true)){
+//                throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
+//            }
+
+            $this->addLinkedInfo($objectConfig, $this->listLinks, $data, $objectConfig->getPrimaryKey());
+        }
+
+        return ['data' =>$data , 'count'=> $count];
     }
 }

@@ -108,7 +108,7 @@ class Modules_Manager
      */
     public function getModuleName($class)
     {
-        return Utils_String::formatClassName(strtolower(str_replace(array('Backend_','_Controller'), '', $class)));
+        return \Utils_String::formatClassName(strtolower(str_replace(array('Backend_','_Controller'), '', $class)));
     }
 
     /**

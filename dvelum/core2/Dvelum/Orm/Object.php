@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm;
 use Dvelum\Config;
 use Dvelum\Model;
+use Psr\Log\LogLevel;
 /**
  * Database Object class. ORM element.
  * @author Kirill Egorov 2011  DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
@@ -33,7 +34,7 @@ class Object
      * Error log adapter
      * @var Log
      */
-    static protected $_log = false;
+    static protected $log = false;
 
     protected $name;
     /**
@@ -622,22 +623,22 @@ class Object
             }catch (\Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$_log)
-                    self::$_log->log($e->getMessage());
+                if(self::$log)
+                    self::$log->log(LogLevel::ERROR , $e->getMessage());
                 return false;
             }
         }
 
         $store  = $this->model->getStore();
-        if(self::$_log)
-            $store->setLog(self::$_log);
+        if(self::$log)
+            $store->setLog(self::$log);
 
         if($this->config->isReadOnly())
         {
             $text = 'ORM :: cannot save readonly object '. $this->config->getName();
             $this->errors[] = $text;
-            if(self::$_log)
-                self::$_log->log($text);
+            if(self::$log)
+                self::$log->log(LogLevel::ERROR, $text);
             return false;
         }
 
@@ -654,8 +655,8 @@ class Object
         {
             $text = 'ORM :: Fields can not be empty. '.$this->getName().' ['.implode(',', $emptyFields).']';
             $this->errors[] = $text;
-            if(self::$_log)
-                self::$_log->log($text);
+            if(self::$log)
+                self::$log->log(LogLevel::ERROR, $text);
             return false;
         }
 
@@ -669,8 +670,8 @@ class Object
                 $this->errors[] = $text;
             }
 
-            if(self::$_log)
-                self::$_log->log($this->getName() . ' ' . implode(', ' , $this->errors));
+            if(self::$log)
+                self::$log->log(LogLevel::ERROR, $this->getName() . ' ' . implode(', ' , $this->errors));
 
             return false;
         }
@@ -700,8 +701,8 @@ class Object
             }
         }catch (Exception $e){
             $this->errors[] = $e->getMessage();
-            if(self::$_log)
-                self::$_log->log($e->getMessage());
+            if(self::$log)
+                self::$log->log(LogLevel::ERROR, $e->getMessage());
             return false;
         }
     }
@@ -722,8 +723,8 @@ class Object
             }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$_log)
-                    self::$_log->log($e->getMessage());
+                if(self::$log)
+                    self::$log->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
@@ -927,7 +928,7 @@ class Object
      */
     static public function setLog(\Log $log)
     {
-        self::$_log = $log;
+        self::$log = $log;
     }
 
     /**
@@ -1008,20 +1009,23 @@ class Object
             }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$_log)
-                    self::$_log->log($e->getMessage());
+                if(self::$log)
+                    self::$log->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
 
         $store  = $this->model->getStore();
-        if(self::$_log)
-            $store->setLog(self::$_log);
+        if(self::$log)
+            $store->setLog(self::$log);
 
         $this->publishedversion = 0;
         $this->published = false;
         $this->date_updated = date('Y-m-d H:i:s');
-        $this->editorid = User::getInstance()->getId();
+        /**
+         * @todo refactor
+         */
+        $this->editorid = \Dvelum\App\Session\User::factory()->getId();
 
         return $store->unpublish($this , $log , $useTransaction);
     }
@@ -1042,16 +1046,16 @@ class Object
             }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$_log)
-                    self::$_log->log($e->getMessage());
+                if(self::$log)
+                    self::$log->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
 
         $store  = $this->model->getStore();
 
-        if(self::$_log)
-            $store->setLog(self::$_log);
+        if(self::$log)
+            $store->setLog(self::$log);
 
         if($version && $version !== $this->getVersion())
         {
@@ -1062,15 +1066,15 @@ class Object
             {
                 $this->errors[] = $e->getMessage();
 
-                if(self::$_log)
-                    self::$_log->log($e->getMessage());
+                if(self::$log)
+                    self::$log->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
 
         $this->published = true;
         $this->date_updated = date('Y-m-d H:i:s');
-        $this->editorid = User::getInstance()->getId();
+        $this->editorid = \Dvelum\App\Session\User::factory()->getId();
 
         if(empty($this->date_published))
             $this->set('date_published' , date('Y-m-d H:i:s'));
@@ -1176,8 +1180,8 @@ class Object
             }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$_log)
-                    self::$_log->log($e->getMessage());
+                if(self::$log)
+                    self::$log->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
@@ -1196,8 +1200,8 @@ class Object
 
         $store  = $this->model->getStore();
 
-        if(self::$_log)
-            $store->setLog(self::$_log);
+        if(self::$log)
+            $store->setLog(self::$log);
 
         $vers = $store->addVersion($this , $useTransaction);
 
