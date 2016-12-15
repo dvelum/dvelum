@@ -5,7 +5,8 @@
 use Dvelum\Orm;
 use Dvelum\Config;
 use Dvelum\Model;
-class Backend_Index_Controller extends Backend_Controller
+
+class Backend_Index_Controller extends Dvelum\App\Backend\Controller
 {
     public function indexAction()
     {

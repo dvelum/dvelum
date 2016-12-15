@@ -1,2 +1,2 @@
 <?php
-class Template extends \Dvelum\Template{}
+class Template extends \Dvelum\View{}

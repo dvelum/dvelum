@@ -25,7 +25,7 @@ namespace Dvelum\Config;
  * @abstract
  * @package Config
  */
-class Config  extends \Config_Abstract implements \ArrayAccess , \Iterator
+class Adapter  extends \Config_Abstract implements \ArrayAccess , \Iterator
 {
     /**
      * Config Data

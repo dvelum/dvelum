@@ -23,10 +23,10 @@ namespace Dvelum;
 use Dvelum\Config\Storage;
 
 /**
- * Template class
+ * View class
  * @author Kirill A Egorov 2011
  */
-class Template
+class View
 {
     /**
      * Template data (local variables)

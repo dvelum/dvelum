@@ -24,16 +24,16 @@ class Designer_Manager
 {
     /**
      * Application configuration
-     * @var Config\Config
+     * @var Config\Adapter
      */
     protected $_appConfig;
     /**
      * Designer configuration
-     * @var Config\Config
+     * @var Config\Adapter
      */
     protected $_designerConfig;
 
-    public function __construct(Config\Config $appConfig)
+    public function __construct(Config\Adapter $appConfig)
     {
         $this->_appConfig = $appConfig;
         $this->_designerConfig = Config::storage()->get('designer.php');

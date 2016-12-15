@@ -73,10 +73,10 @@ class Lang
     /**
      * Add localization dictionary
      * @param string $name — localization name
-     * @param Config\Config $dictionary — configuration object
+     * @param Config\Adapter $dictionary — configuration object
      * @return void
      */
-    static public function addDictionary(string $name , Config\Config $dictionary)
+    static public function addDictionary(string $name , Config\Adapter $dictionary)
     {
         self::$dictionaries[$name] = $dictionary;
     }

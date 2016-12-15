@@ -36,9 +36,9 @@ class Request
 
     /**
      * Set configuration options
-     * @param Config\Config $config
+     * @param Config\Adapter $config
      */
-    public function setConfig(Config\Config $config)
+    public function setConfig(Config\Adapter $config)
     {
         $this->config = $config;
     }
@@ -101,5 +101,10 @@ class Request
     public function isAjax()
     {
         return\Request::isAjax();
+    }
+
+    public function hasPost()
+    {
+        return \Request::hasPost();
     }
 }

@@ -5,10 +5,10 @@ namespace Dvelum\App\Session;
 class User extends \User
 {
     /**
-     * @return \User
+     * @return User
      */
-    static public function factory()
+    static public function factory() : self
     {
-       return \User::getInstance();
+       return static::getInstance();
     }
 }

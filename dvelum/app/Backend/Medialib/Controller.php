@@ -5,7 +5,7 @@ use Dvelum\Model;
 use Dvelum\Request;
 use Dvelum\App\Controller\EventManager;
 
-class Backend_Medialib_Controller extends Backend_Controller_Crud
+class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
 {
 
     public function initListeners()
@@ -27,7 +27,7 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
     {
         $data = & $event->getData()->data;
 
-        $wwwRoot = $this->_configMain->get('wwwroot');
+        $wwwRoot = $this->appConfig->get('wwwroot');
 
         if(!empty($data))
         {
@@ -55,33 +55,33 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
      */
     public function uploadAction()
     {
-        $uploadCategory = Request::getInstance()->getPart(3);
+        $uploadCategory = $this->request->getPart(3);
 
         if(!$uploadCategory)
             $uploadCategory = null;
 
-        $this->_checkCanEdit();
+        $this->checkCanEdit();
 
-        $docRoot = $this->_configMain->get('wwwpath');
+        $docRoot = $this->appConfig->get('wwwpath');
         $mediaModel = Model::factory('Medialib');
         $mediaCfg = $mediaModel->getConfig();
 
-        $path = $this->_configMain->get('uploads') . date('Y') . '/' . date('m') . '/' . date('d') . '/';
+        $path = $this->appConfig->get('uploads') . date('Y') . '/' . date('m') . '/' . date('d') . '/';
 
         if(!is_dir($path) && !@mkdir($path, 0775, true))
-            Response::jsonError($this->_lang->CANT_WRITE_FS);
+            $this->response->error($this->lang->get('CANT_WRITE_FS'));
 
         $files = Request::files();
 
         $uploader = new Upload($mediaCfg->__toArray());
 
         if(empty($files))
-            Response::jsonError($this->_lang->NOT_UPLOADED);
+            $this->response->error($this->lang->get('NOT_UPLOADED'));
 
         $uploaded = $uploader->start($files, $path);
 
         if(empty($uploaded))
-            Response::jsonError($this->_lang->NOT_UPLOADED);
+            $this->response->error($this->lang->get('NOT_UPLOADED'));
 
         $data = array();
 
@@ -104,7 +104,7 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
 
             $data[] = $item;
         }
-        Response::jsonSuccess($data);
+        $this->response->success($data);
     }
 
     /**
@@ -112,33 +112,33 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
      */
     public function cropAction()
     {
-        $this->_checkCanEdit();
+        $this->checkCanEdit();
 
-        $id = Request::post('id', 'integer', false);
-        $x = Request::post('x', 'integer', false);
-        $y = Request::post('y', 'integer', false);
-        $w = Request::post('w', 'integer', false);
-        $h = Request::post('h', 'integer', false);
-        $type = Request::post('type','string', false)  ;
+        $id = $this->request->post('id', 'integer', false);
+        $x = $this->request->post('x', 'integer', false);
+        $y = $this->request->post('y', 'integer', false);
+        $w = $this->request->post('w', 'integer', false);
+        $h = $this->request->post('h', 'integer', false);
+        $type = $this->request->post('type','string', false)  ;
 
         if(!$id || !$w || !$h || !$type){
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
 
         $mediaModel = Model::factory('Medialib');
         $item = $mediaModel->getItem($id);
 
         if(!$item){
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
 
         if($mediaModel->cropAndResize($item, $x, $y, $w, $h , $type))
         {
             $mediaModel->updateModifyDate($id);
             $mediaModel->markCroped($id);
-            Response::jsonSuccess();
+            $this->response->success();
         }else{
-            Response::jsonError($this->_lang->CANT_EXEC);
+            $this->response->error($this->lang->get('CANT_EXEC'));
         }
     }
 
@@ -147,17 +147,17 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
      */
     public function removeAction()
     {
-        $this->_checkCanDelete();
-        $id = Request::post('id','integer', false);
+        $this->checkCanDelete();
+        $id = $this->request->post('id','integer', false);
 
         if(!$id)
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         $media= Model::factory('Medialib');
         if($media->remove($id))
-            Response::jsonSuccess();
+            $this->response->success();
         else
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
     }
 
     /**
@@ -165,34 +165,34 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
      */
     public function updateAction()
     {
-        $this->_checkCanEdit();
-        $id = Request::post('id' , 'integer' , false);
+        $this->checkCanEdit();
+        $id = $this->request->post('id' , 'integer' , false);
 
         if(!$id)
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
 
-        $fields = array('title' , 'alttext' , 'caption' , 'description');
-        $data = array();
+        $fields = ['title' , 'alttext' , 'caption' , 'description'];
+        $data = [];
 
         foreach($fields as $v)
         {
             if($v == 'caption')
-                $data[$v] = Request::post($v , 'raw' , '');
+                $data[$v] = $this->request->post($v , 'raw' , '');
             elseif($v == 'category')
-                $data[$v] = Request::post($v,'integer', null);
+                $data[$v] = $this->request->post($v,'integer', null);
             else
-                $data[$v] = Request::post($v , 'string' , '');
+                $data[$v] = $this->request->post($v , 'string' , '');
         }
 
         if(!strlen($data['title']))
-            Response::jsonError($this->_lang->FILL_FORM , array('title' => $this->_lang->CANT_BE_EMPTY));
+            $this->response->error($this->lang->get('FILL_FORM') , array('title' => $this->lang->get('CANT_BE_EMPTY')));
 
         $media = Model::factory('Medialib');
 
         if($media->update($id , $data))
-            Response::jsonSuccess();
+            $this->response->success();
         else
-            Response::jsonError($this->_lang->CANT_EXEC);
+            $this->response->error($this->lang->get('CANT_EXEC'));
     }
 
     /**
@@ -200,10 +200,10 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
      */
     public function getitemAction()
     {
-        $id = Request::post('id','integer',false);
+        $id = $this->request->post('id','integer',false);
 
         if(!$id)
-            Response::jsonError();
+            $this->response->error();
 
         $item = Model::factory('Medialib')->getItem($id);
 
@@ -216,38 +216,36 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
         $item['icon'] = Model_Medialib::getImgPath($item['path'] , $item['ext'] , 'icon' , true);
         $item['path'] = Model_Medialib::addWebRoot($item['path']);
 
-        Response::jsonSuccess($item);
+        $this->response->success($item);
     }
 
     /**
-     * Get item info for mediaitem field
+     * Get item info for media item field
      */
     public function infoAction()
     {
-        $id = Request::post('id','integer',false);
+        $id = $this->request->post('id','integer',false);
 
         if(!$id)
-            Response::jsonSuccess(array('exists'=>false));
+            $this->response->success(array('exists'=>false));
 
         $item = Model::factory('Medialib')->getItem($id);
 
         if(empty($item))
-            Response::jsonSuccess(array('exists'=>false));
+            $this->response->success(array('exists'=>false));
 
         if($item['type'] == 'image')
             $icon = Model_Medialib::getImgPath($item['path'] , $item['ext'] , 'thumbnail' , true).'?m='.date('ymdhis' , strtotime($item['modified']));
         else
-            $icon = $this->_configMain->get('wwwroot') . 'i/unknown.png';
+            $icon = $this->appConfig->get('wwwroot') . 'i/unknown.png';
 
-        Response::jsonSuccess(
-            array(
-                'exists'=>true ,
-                'type'=>$item['type'],
-                'icon'=>$icon,
-                'title'=>$item['title'],
-                'size' => $item['size'].' Mb'
-            )
-        );
+        $this->response->success([
+            'exists'=>true ,
+            'type'=>$item['type'],
+            'icon'=>$icon,
+            'title'=>$item['title'],
+            'size' => $item['size'].' Mb'
+        ]);
     }
 
     /**
@@ -255,12 +253,11 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
      */
     public function rightsAction()
     {
-        $user = User::getInstance();
         $results = array(
-            'canEdit'=>$user->canEdit($this->_module),
-            'canDelete'=>$user->canDelete($this->_module),
+            'canEdit'=>$this->moduleAcl->canEdit($this->module),
+            'canDelete'=>$this->moduleAcl->canDelete($this->module),
         );
-        Response::jsonSuccess($results);
+        $this->response->success($results);
     }
 
     /**
@@ -280,14 +277,15 @@ class Backend_Medialib_Controller extends Backend_Controller_Crud
             'js/app/system/medialib/CropWindow.js'
         );
 
-        if(!$this->_configMain->get('development')){
-            die('Use development mode');
+        if(!$this->appConfig->get('development')){
+            $this->response->put('Use development mode');
+            $this->response->send();
         }
 
         $s = '';
         $totalSize = 0;
 
-        $wwwPath = $this->_configMain->get('wwwpath');
+        $wwwPath = $this->appConfig->get('wwwpath');
 
         foreach ($sources as $filePath){
             $s.=file_get_contents($wwwPath.'/'.$filePath)."\n";

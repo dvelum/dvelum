@@ -23,9 +23,9 @@ class Backend_Localization_Manager
     protected $_langsPaths;
 
     /**
-     * @param Config_Abstract $appConfig
+     * @param Config\Adapter $appConfig
      */
-    public function __construct(Config\Config $appConfig)
+    public function __construct(Config\Adapter $appConfig)
     {
         $this->_appConfig =  $appConfig;
         $this->_langsPaths = Lang::storage()->getPaths();

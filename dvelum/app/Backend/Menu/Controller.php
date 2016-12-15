@@ -2,6 +2,7 @@
 use Dvelum\Orm;
 use Dvelum\Config;
 use Dvelum\Model;
+
 class Backend_Menu_Controller extends Backend_Controller_Crud
 {
 	 /**
@@ -16,7 +17,7 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
         	var menuItemlinkTypes = '.Dictionary::getInstance('link_type')->__toJs().';
         ');
         
-        $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
+        $modulesConfig = Config::factory(Config\Factory::File_Array , $this->_configMain->get('backend_modules'));
        
         Model::factory('Medialib')->includeScripts();
 

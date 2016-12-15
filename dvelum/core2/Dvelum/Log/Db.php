@@ -52,7 +52,7 @@ class Db extends \Psr\Log\AbstractLogger implements \Log
             $result = $this->db->insert(
                 $this->table,
                 [
-                    $this->logFields['name'] => $this->_name,
+                    $this->logFields['name'] => $this->name,
                     $this->logFields['message'] => $message,
                     $this->logFields['date']=> date('Y-m-d H:i:s'),
                     $this->logFields['level']=> json_encode($context)

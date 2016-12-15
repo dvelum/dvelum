@@ -36,6 +36,7 @@ if($this->get('useCSRFToken')){
 $request = \Dvelum\Request::factory();
 $lang = \Dvelum\Lang::lang();
 $user = \Dvelum\App\Session\User::factory();
+$moduleAcl = $user->getModuleAcl();
 
 $menuData = [];
 $modules = $this->modules;
@@ -63,7 +64,7 @@ $menuData[] = [
 $res->addInlineJs('
 		app.menuData = '.json_encode($menuData).';
 		app.permissions = Ext.create("app.PermissionsStorage");
-		var rights = '.json_encode($user->getPermissions()).';
+		var rights = '.json_encode($moduleAcl->getPermissions()).';
 		app.permissions.setData(rights);
 	');
 

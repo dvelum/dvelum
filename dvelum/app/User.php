@@ -9,7 +9,7 @@ class User
 {
 	protected static $_instance;
 	
-	protected $_permissions = null;
+
 	/**
      * @var Model_User
      */
@@ -21,6 +21,8 @@ class User
 	protected $_authChecked = false;
 
 	protected $authProvider = false;
+
+    protected $moduleAcl = false;
 
 	/**
      * @var Store_Session
@@ -57,9 +59,9 @@ class User
      */
 	static public function getInstance()
 	{
-		if(!isset(self::$_instance))
-			self::$_instance = new self();
-		return self::$_instance;
+		if(!isset(static::$_instance))
+			static::$_instance = new static();
+		return static::$_instance;
 	}
 
 	protected function __construct()
@@ -138,23 +140,28 @@ class User
 
 	/**
 	 * The object has a getter defined, which can be invoked by a key. 
-	 * @param mixed $val
+	 * @param mixed $property
 	 * @throws Exception
 	 * @return mixed:
 	 */
-	public function __get($val)
+	public function __get($property)
 	{
-		if($val === 'id')
-			return $this->_id;
-		
-		if(empty($this->_info))
-			$this->_loadData();
-		
-		if(isset($this->_info[$val]))
-			return $this->_info[$val];
-		else
-			throw new Exception('User. Invalid property "' . $val . '" ');
+		return $this->get($property);
 	}
+
+	public function get($property)
+    {
+        if($property === 'id')
+            return $this->_id;
+
+        if(empty($this->_info))
+            $this->_loadData();
+
+        if(isset($this->_info[$property]))
+            return $this->_info[$property];
+        else
+            throw new \Exception('User. Invalid property "' . $property . '" ');
+    }
 	
 	public function __isset($property)
 	{
@@ -174,25 +181,9 @@ class User
 	*/
 	public function isAuthorized()
 	{
-		if(!$this->_authChecked)
-		{
-			$userData = $this->_model->checkLogin();	
-			if($userData)
-			{
-				$this->_authChecked = true;
-				$this->setId($userData['id']);
-				$this->setInfo($userData);
-				$this->setAuthorized();
-				return true;
-			}
-		}
-		
-		$ses = Store::factory(Store::Session);
-
-		if($ses->keyExists('auth') && $ses->get('auth'))
-			return (boolean) $ses->get('auth_id');
-		else
-			return false;
+	    if ($this->_authChecked){
+            return true;
+        }
 	}
 
 	/**
@@ -221,15 +212,20 @@ class User
 		$ses->set('auth_id' , $this->_id);			
 		$this->_authChecked = true;	
 	}
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see User::getId()
-	 */
+
 	public function getId()
 	{
 	  return  $this->_id;
 	}
+
+    /**
+     * Get user group
+     * @return bool|mixed
+     */
+	public function getGroup()
+    {
+        return $this->get('group_id');
+    }
 
 	/**
      *  Remove User authorization data (the session remains active, while the User is logged out)
@@ -271,136 +267,111 @@ class User
 	{
 		$this->_session->set('lang' , $lang);
 	}
-	
-	
-	/* == ADMIN SECTION == */
-	
-	/**
-	 * Get modules available for the current user
-	 * @return array
-	 */
-	public function getAvailableModules()
-	{
-		if(!isset($this->_permissions))
-			$this->_loadPermissions();
-		
-		$data = array();
-		if(!empty($this->_permissions))
-			foreach($this->_permissions as $name => $config)
-				if($config['view'])
-					$data[$name] = $name;
-		
-		return $data;
-	}
+
+    /**
+     * @return \Dvelum\App\Module\Acl
+     */
+	public function getModuleAcl() : \Dvelum\App\Module\Acl
+    {
+        if(!$this->moduleAcl){
+            $this->moduleAcl  = new \Dvelum\App\Module\Acl($this);
+        }
+        return  $this->moduleAcl;
+    }
+
+
+
+    /**
+     * Get modules available for the current user
+     * @deprecated
+     * @return array
+     */
+    public function getAvailableModules()
+    {
+        $acl = $this->getModuleAcl();
+        return $acl->getAvailableModules();
+    }
 
     /**
      * Get user permissions
+     * @deprecated
      * @return array
      */
     public function getPermissions()
     {
-        if($this->isAdmin())
-        {
-            if(!isset($this->_permissions))
-                $this->_loadPermissions();
-
-            return $this->_permissions;
-        }else{
-            return [];
-        }
+        $acl = $this->getModuleAcl();
+        return $acl->getPermissions();
     }
 
-	/**
-	 * Get module permissions
-	 * @param $module
-	 * @return bool | []
-	 */
-	public function getModulePermissions($module)
-	{
-		$permissions = $this->getPermissions();
-		if(isset($permissions[$module])){
-			return $permissions[$module];
-		}else{
-			return false;
-		}
-	}
-	
-	/**
-     * Load user permissions
-     * @return void
+    /**
+     * Get module permissions
+     * @param $module
+     * @deprecated
+     * @return bool | []
      */
-	protected function _loadPermissions()
-	{
-		$this->_permissions = Model::factory('Permissions')->getPermissions($this->_id , $this->group_id);
-	}
+    public function getModulePermissions($module)
+    {
+        $acl = $this->getModuleAcl();
+        return $acl->getModulePermissions($module);
+    }
 
-	/**
+    /**
      * Check if user can view module data
      * @param string $module
+     * @deprecated
      * @return boolean
      */
-	public function canView($module)
-	{
-		return $this->_checkPermission($module , 'view');
-	}
+    public function canView($module) : bool
+    {
+        $acl = $this->getModuleAcl();
+        return $acl->canView($module);
+    }
 
-	/**
+    /**
      * Check if user can edit module data
      * @param string $module
+     * @deprecated
      * @return boolean
      */
-	public function canEdit($module)
-	{
-		return $this->_checkPermission($module , 'edit');
-	}
+    public function canEdit($module) : bool
+    {
+        $acl = $this->getModuleAcl();
+        return $acl->canEdit($module);
+    }
 
-	/**
+    /**
      * Check if user can delete module data
      * @param string $module
+     * @deprecated
      * @return boolean
      */
-	public function canDelete($module)
-	{
-		return $this->_checkPermission($module , 'delete');
-	}
+    public function canDelete($module) : bool
+    {
+        $acl = $this->getModuleAcl();
+        return $acl->canDelete($module);
+    }
 
-	/**
+    /**
      * Check if user can publish module data
      * @param string $module
+     * @deprecated
      * @return boolean
      */
-	public function canPublish($module)
-	{
-		return $this->_checkPermission($module , 'publish');
-	}
+    public function canPublish($module) : bool
+    {
+        $acl = $this->getModuleAcl();
+        return $acl->canPublish($module);
+    }
 
-	/**
-	 * Check if user can view only own records
-	 * @param $module
-	 * @return bool
-	 */
-	public function onlyOwnRecords($module)
-	{
-		return $this->_checkPermission($module , 'only_own');
-	}
-
-	/**
-     * Check permission for module
-     * @param string $module - module name
-     * @param string $perm  - permission type
-     * @return boolean
+    /**
+     * Check if user can view only own records
+     * @param $module
+     * @deprecated
+     * @return bool
      */
-	protected function _checkPermission($module , $perm)
-	{
-		if($module === false)
-			return false;
-		
-		if(is_null($this->_permissions))
-			$this->_loadPermissions();
-		
-		if(isset($this->_permissions[$module]) && $this->_permissions[$module][$perm])
-			return true;
-		else
-			return false;
-	}
+    public function onlyOwnRecords($module) : bool
+    {
+        $acl = $this->getModuleAcl();
+        return $acl->onlyOwnRecords($module);
+    }
 }

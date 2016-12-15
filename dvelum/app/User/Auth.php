@@ -10,11 +10,11 @@ class User_Auth
 {
 	/**
 	 * Factory method of User_Auth instantiation
-	 * @param Config\Config $config — auth provider config
+	 * @param Config\Adapter $config — auth provider config
      * @throws \Exception
 	 * @return User_Auth_Abstract
 	 */
-	static public function factory(Config\Config $config) : User_Auth_Abstract
+	static public function factory(Config\Adapter $config) : User_Auth_Abstract
 	{
 		$providerAdapter = $config->get('adapter');
 

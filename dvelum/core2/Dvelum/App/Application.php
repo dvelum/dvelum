@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App;
 
-use Dvelum\Template;
+use Dvelum\View;
 use Dvelum\Autoloader;
 use Dvelum\Request;
 use Dvelum\Resource;
@@ -31,7 +31,7 @@ class Application
     protected static $_templates = '';
     /**
      * Application config
-     * @var Config\Config
+     * @var Config\Adapter
      */
     protected $config;
 
@@ -46,9 +46,9 @@ class Application
     
     /**
      * The constructor accepts the main configuration object as an argument
-     * @param Config\Config $config
+     * @param Config\Adapter $config
      */
-    public function __construct(Config\Config $config)
+    public function __construct(Config\Adapter $config)
     {
         $this->config = $config;
     }
@@ -99,7 +99,7 @@ class Application
         /*
          * Init templates storage
          */
-        $templateStorage = Template::storage();
+        $templateStorage = View::storage();
         $templateStorage->setConfig(
             Config\Factory::storage()->get('template_storage.php')->__toArray()
         );
@@ -338,7 +338,7 @@ class Application
         /*
          * Load template
          */
-        $template = new Template();
+        $template = new View();
         $template->disableCache();
         $template->setProperties(array(
             'wwwRoot'=>$this->config->get('wwwroot'),
@@ -351,7 +351,7 @@ class Application
             'version' => Config::storage()->get('versions.php')->get('core'),
             'lang' => $this->config->get('language'),
             'modules' => $modulesManager->getList(),
-            'userModules' => Session\User::factory()->getAvailableModules(),
+            'userModules' => Session\User::factory()->getModuleAcl()->getAvailableModules(),
             'useCSRFToken' => $cfgBackend->get('use_csrf_token'),
             'theme' => $cfgBackend->get('theme')
         ));

@@ -6,27 +6,27 @@ use Dvelum\Orm;
 use Dvelum\Config;
 use Dvelum\Model;
 
-class Backend_User_Controller extends Backend_Controller_Crud
+class Backend_User_Controller extends  Dvelum\App\Backend\Controller
 {
     /**
      * Load user info action
      */
     public function userLoadAction()
     {
-        $id = Request::post('id' , 'integer' , false);
+        $id = $this->request->post('id' , 'integer' , false);
         if(!$id)
-            Response::jsonError($this->_lang->get('INVALID_VALUE'));
+           $this->response->error($this->lang->get('INVALID_VALUE'));
 
         try
         {
             $user = Orm\Object::factory('user' , $id);
             $userData = $user->getData();
             unset($userData['pass']);
-            Response::jsonSuccess($userData);
+            $this->response->success($userData);
         }
         catch(Exception $e)
         {
-            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
     }
 
@@ -35,9 +35,9 @@ class Backend_User_Controller extends Backend_Controller_Crud
      */
     public function userListAction()
     {
-        $pager = Request::post('pager' , 'array' , array());
-        $filter = Request::post('filter' , 'array' , array());
-        $query = Request::post('search' , 'string' , false);
+        $pager = $this->request->post('pager' , 'array' , array());
+        $filter = $this->request->post('filter' , 'array' , array());
+        $query = $this->request->post('search' , 'string' , false);
 
         $model = Model::factory('User');
         $count = $model->getCount($filter , $query);
@@ -62,12 +62,8 @@ class Backend_User_Controller extends Backend_Controller_Crud
                 else
                     $v['group_title'] = '';
         unset($v);
-        $result = array(
-            'success' => true ,
-            'count' => $count ,
-            'data' => $data
-        );
-        Response::jsonArray($result);
+
+        $this->response->success($data,['count'=>$count]);
     }
 
     /**
@@ -80,7 +76,7 @@ class Backend_User_Controller extends Backend_Controller_Crud
             'title' ,
             'system'
         ));
-        Response::jsonSuccess($data);
+       $this->response->success($data);
     }
 
     /**
@@ -88,13 +84,13 @@ class Backend_User_Controller extends Backend_Controller_Crud
      */
     public function permissionsAction()
     {
-        $user = Request::post('user_id' , 'int' , 0);
-        $group = Request::post('group_id' , 'int' , 0);
+        $user = $this->request->post('user_id' , 'int' , 0);
+        $group = $this->request->post('group_id' , 'int' , 0);
 
         $data = array();
 
         if($user && $group)
-            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+           $this->response->error($this->_lang->get('WRONG_REQUEST'));
 
         if($group)
             $data = Model::factory('Permissions')->getGroupPermissions($group);
@@ -135,7 +131,7 @@ class Backend_User_Controller extends Backend_Controller_Crud
             $v['rc'] = $manager->isVcModule($k);
         }
         unset($v);
-        Response::jsonSuccess(array_values($data));
+       $this->response->success(array_values($data));
     }
 
     /**
@@ -143,15 +139,15 @@ class Backend_User_Controller extends Backend_Controller_Crud
      */
     public function individualPermissionsAction()
     {
-        $userId = Request::post('id', Filter::FILTER_INTEGER, false);
+        $userId = $this->request->post('id', Filter::FILTER_INTEGER, false);
 
         if(!$userId)
-            Response::jsonSuccess([]);
+           $this->response->success();
 
         $userInfo = Model::factory('User')->getCachedItem($userId);
 
         if(!$userInfo)
-            Response::jsonSuccess([]);
+           $this->response->success([]);
 
         $permissionsModel =  Model::factory('Permissions');
 
@@ -201,7 +197,7 @@ class Backend_User_Controller extends Backend_Controller_Crud
 
             }
         }
-        Response::jsonSuccess(array_values($data));
+        $this->response->success(array_values($data));
     }
 
     /**
@@ -209,36 +205,36 @@ class Backend_User_Controller extends Backend_Controller_Crud
      */
     public function savePermissionsAction()
     {
-        $this->_checkCanEdit();
+        $this->checkCanEdit();
 
-        $data = Request::post('data' , 'raw' , false);
-        $groupId = Request::post('group_id' , 'int' , false);
+        $data = $this->request->post('data' , 'raw' , false);
+        $groupId = $this->request->post('group_id' , 'int' , false);
         $data = json_decode($data , true);
 
         if(empty($data) || ! $groupId)
-            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         if(!Model::factory('Permissions')->updateGroupPermissions($groupId , $data)) {
-            Response::jsonError($this->_lang->get('CANT_EXEC'));
+           $this->response->error($this->lang->get('CANT_EXEC'));
         }
-        Response::jsonSuccess();
+        $this->response->success();
     }
 
     public function saveIndividualPermissionsAction()
     {
-        $this->_checkCanEdit();
-        $data = Request::post('data' , 'raw' , false);
-        $userId = Request::post('user_id' , 'int' , false);
+        $this->checkCanEdit();
+        $data = $this->request->post('data' , 'raw' , false);
+        $userId = $this->request->post('user_id' , 'int' , false);
         $data = json_decode($data , true);
 
         if(empty($data) || !$userId){
-            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
 
         if(!Model::factory('Permissions')->updateUserPermissions($userId , $data)){
-            Response::jsonError($this->_lang->get('CANT_EXEC'));
+           $this->response->error($this->lang->get('CANT_EXEC'));
         }
-        Response::jsonSuccess();
+       $this->response->success();
     }
 
     /**
@@ -246,17 +242,17 @@ class Backend_User_Controller extends Backend_Controller_Crud
      */
     public function addGroupAction()
     {
-        $this->_checkCanEdit();
+        $this->checkCanEdit();
 
-        $title = Request::post('name' , 'str' , false);
+        $title = $this->request->post('name' , 'str' , false);
         if($title === false)
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         $gModel = Model::factory('Group');
         if($gModel->addGroup($title))
-            Response::jsonSuccess(array());
+           $this->response->success(array());
         else
-            Response::jsonError($this->_lang->CANT_EXEC);
+           $this->response->error($this->lang->get('CANT_EXEC'));
     }
 
     /**
@@ -264,18 +260,18 @@ class Backend_User_Controller extends Backend_Controller_Crud
      */
     public function removeGroupAction()
     {
-        $this->_checkCanDelete();
+        $this->checkCanDelete();
 
-        $id = Request::post('id' , 'int' , false);
+        $id = $this->request->post('id' , 'int' , false);
         if(! $id)
-            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         $gModel = Model::factory('Group');
         $pModel = Model::factory('Permissions');
         if($gModel->removeGroup($id) && $pModel->removeGroup($id))
-            Response::jsonSuccess(array());
+           $this->response->success(array());
         else
-            Response::jsonError($this->_lang->get('CANT_EXEC'));
+           $this->response->error($this->lang->get('CANT_EXEC'));
     }
 
     /**
@@ -285,12 +281,12 @@ class Backend_User_Controller extends Backend_Controller_Crud
     {
         $this->_checkCanEdit();
 
-        $pass = Request::post('pass' , 'string' , false);
+        $pass = $this->request->post('pass' , 'string' , false);
 
         if($pass)
             Request::updatePost('pass' , password_hash($pass , PASSWORD_DEFAULT));
 
-        $object = $this->getPostedData($this->_module);
+        $object = $this->getPostedData($this->module);
 
         if(!$object->get('admin')){
             $object->set('group_id', null);
@@ -312,9 +308,9 @@ class Backend_User_Controller extends Backend_Controller_Crud
         }
 
         if(!$recId = $object->save())
-            Response::jsonError($this->_lang->get('CANT_EXEC'));
+           $this->response->error($this->lang->get('CANT_EXEC'));
 
-        Response::jsonSuccess();
+       $this->response->success();
     }
 
     /**
@@ -324,18 +320,18 @@ class Backend_User_Controller extends Backend_Controller_Crud
     {
         $this->_checkCanDelete();
 
-        $id = Request::post('id' , 'int' , false);
+        $id = $this->request->post('id' , 'int' , false);
 
         if(! $id)
-            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         if(User::getInstance()->getId() == $id)
-            Response::jsonError($this->_lang->get('CANT_DELETE_OWN_PROFILE'));
+           $this->response->error($this->lang->get('CANT_DELETE_OWN_PROFILE'));
 
         if(Model::factory('User')->remove($id))
-            Response::jsonSuccess();
+           $this->response->success();
         else
-            Response::jsonError($this->_lang->get('CANT_EXEC'));
+           $this->response->error($this->lang->get('CANT_EXEC'));
     }
 
     /**
@@ -343,16 +339,16 @@ class Backend_User_Controller extends Backend_Controller_Crud
      */
     public function checkLoginAction()
     {
-        $id = Request::post('id' , 'int' , 0);
-        $value = Request::post('value' , 'string' , false);
+        $id = $this->request->post('id' , 'int' , 0);
+        $value = $this->request->post('value' , 'string' , false);
 
         if(! $value)
-            Response::jsonError($this->_lang->get('INVALID_VALUE'));
+           $this->response->error($this->lang->get('INVALID_VALUE'));
 
         if(Model::factory('User')->checkUnique($id , 'login' , $value))
-            Response::jsonSuccess();
+           $this->response->success();
         else
-            Response::jsonError($this->_lang->get('SB_UNIQUE'));
+           $this->response->error($this->lang->get('SB_UNIQUE'));
     }
 
     /**
@@ -360,15 +356,15 @@ class Backend_User_Controller extends Backend_Controller_Crud
      */
     public function checkEmailAction()
     {
-        $id = Request::post('id' , 'int' , false);
-        $value = Request::post('value' , Filter::FILTER_EMAIL , false);
+        $id = $this->request->post('id' , 'int' , false);
+        $value = $this->request->post('value' , Filter::FILTER_EMAIL , false);
 
         if(empty($value) || !Validator_Email::validate($value))
-            Response::jsonError($this->_lang->get('INVALID_VALUE'));
+           $this->response->error($this->lang->get('INVALID_VALUE'));
 
         if(Model::factory('User')->checkUnique($id , 'email' , $value))
-            Response::jsonSuccess();
+           $this->response->success();
         else
-            Response::jsonError($this->_lang->get('SB_UNIQUE'));
+           $this->response->error($this->lang->get('SB_UNIQUE'));
     }
 }

@@ -25,7 +25,7 @@ namespace Dvelum\Config;
  * @abstract
  * @package Config
  */
- abstract class File extends Config
+ abstract class File extends Adapter
  {
      protected $writePath;
      

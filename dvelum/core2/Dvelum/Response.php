@@ -1,12 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: samuel
- * Date: 14.12.16
- * Time: 22:31
- */
 
 namespace Dvelum;
+
+use Dvelum\Config;
 
 class Response
 {
@@ -56,8 +52,16 @@ class Response
 
     public function success(array $data = [], array $params = [])
     {
+        $message  = '';
         switch ($this->format)
         {
+            case self::FORMAT_HTML:
+
+                if(Config::storage()->get('main.php')->get('development')){
+                    $this->put('<pre>');
+                    $this->put(var_export(array_merge(['data'=>$data],$params),true));
+                }
+                break;
             case self::FORMAT_JSON :
                 $message = ['success'=>true];
                 if(!empty($data)){
@@ -76,5 +80,11 @@ class Response
     public function setFormat(string $format)
     {
         $this->format = $format;
+    }
+
+    public function json(array $data = [])
+    {
+        $this->put(json_encode($data));
+        $this->send();
     }
 }

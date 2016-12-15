@@ -5,11 +5,7 @@ use Dvelum\Config;
 
 class Model_User extends Model
 {
-	const AUTH_LOGIN = 'ulogin';
-	const AUTH_PASSWORD = 'upassword';
-	const AUTH_PROVIDER = 'uprovider';
-    const AUTH_LANG = 'ulang';
-	
+
     /**
      * Get user info
      * @param integer $id
@@ -21,35 +17,7 @@ class Model_User extends Model
         return $this->getCachedItem($id);  
     }
 
-    /**
-     * Login as user
-     * @param string $login
-     * @param string $password
-     * @param string $provider
-     * @return array | boolean false   User DATA or false
-     */
-    public function login($login, $password, $provider = 'dvelum')
-    {
-        $providerCfg = Config::storage()->get('auth/' . $provider . '.php', false, true);
-        if (!$providerCfg)
-            throw new Exception('Wrong auth provider config: ' . 'auth/' . $provider . '.php');
 
-        $authProvider = User_Auth::factory($providerCfg);
-        if (!$authProvider->auth($login, $password))
-            return false;
-
-        $data = $authProvider->getUserData();
-
-        if (!$data)
-            return false;
-
-        $user = User::getInstance();
-        $user->setId($data['id']);
-        $user->setInfo($data);
-		$user->setAuthProvider($authProvider);
-
-        return $data;
-    }
 
 	/**
 	 * Check if login form has been posted

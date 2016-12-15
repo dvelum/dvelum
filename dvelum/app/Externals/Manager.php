@@ -46,7 +46,7 @@ class Externals_Manager
         return $manager;
     }
 
-    private function __construct(Config\Config $config, Autoloader $autoloader)
+    private function __construct(Config\Adapter $config, Autoloader $autoloader)
     {
         $this->config = Config\Factory::storage()->get('external_modules.php');
         $this->autoloader = $autoloader;

@@ -668,7 +668,7 @@ class Config
 
         $translation = self::$translator->getTranslation();
 
-        if($translation instanceof \Dvelum\Config\Config){
+        if($translation instanceof \Dvelum\Config\Adapter){
             $translationsData = & $translation->dataLink();
             $translationsData[$this->name]['title'] = $this->config->get('title');
         }
@@ -684,7 +684,7 @@ class Config
         $config->set('indexes' , $indexes);
         $config->offsetUnset('title');
 
-        if($translation instanceof \Dvelum\Config\Config && !$translation->save())
+        if($translation instanceof \Dvelum\Config\Adapter && !$translation->save())
             return false;
 
         $this->fixConfig();

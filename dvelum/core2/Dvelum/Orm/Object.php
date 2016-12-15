@@ -32,7 +32,7 @@ class Object
 {
     /**
      * Error log adapter
-     * @var Log
+     * @var \Psr\Log\LoggerInterface
      */
     static protected $log = false;
 
@@ -472,7 +472,7 @@ class Object
             if(is_array($value))
                 throw new Exception('Invalid value for field '. $name);
 
-            if($field->isRequired() && !strlen($value))
+            if($field->isRequired() && !strlen((string) $value))
                 throw new Exception('Field '. $name.' cannot be empty');
 
             $value = intval($value);
@@ -507,7 +507,7 @@ class Object
 
         if(isset($this->data[$name]))
         {
-            if($this->getConfig()->isBoolean($name) && intval($this->data[$name]) === intval($value) )
+            if($this->getConfig()->getField($name)->isBoolean() && intval($this->data[$name]) === intval($value) )
             {
                 unset($this->updates[$name]);
                 return true;
@@ -1129,7 +1129,7 @@ class Object
             {
                 try{
 
-                    if($this->config->isEncrypted($k)){
+                    if($this->config->getField($k)->isEncrypted()){
                         if(!empty($iv)){
                             $v = $this->config->decrypt($v, $iv);
                         }

@@ -76,18 +76,95 @@ abstract class Backend_Controller extends \Controller
         $this->eventManager = new App\Controller\EventManager();
         $this->config = $this->getConfig();
         $cacheManager = new \Cache_Manager();
-        //$this->_configBackend = Config::storage()->get('backend.php');
-        $this->moduleName = $this->getModule();
         $this->_module = $this->getModule();
+        $this->_configBackend = Config::storage()->get('backend.php');
         $this->_cache = $cacheManager->get('data');
+        $this->response = \Dvelum\Response::factory();
 
-        if(Request::factory()->get('logout' , 'boolean' , false)){
-            User::getInstance()->logout();
-            session_destroy();
-            if(!Request::isAjax())
-                Response::redirect(Request::url(array($this->_configMain->get('adminPath'))));
+        $this->initSession();
+    }
+
+    protected function initSession()
+    {
+        $auth = new App\Backend\Auth($this->request, $this->_configMain);
+
+        if($this->request->get('logout' , 'boolean' , false)){
+            $auth->logout();
+            if(!$this->request->isAjax()){
+                $this->response->redirect($this->request->url([$this->_configMain->get('adminPath')]));
+            }
         }
-        $this->checkAuth();
+
+        $this->_user = $auth->auth();
+
+        if(!$this->_user->isAuthorized() || !$this->_user->isAdmin())
+        {
+            if($this->request->isAjax()){
+                $this->response->error($this->_lang->get('MSG_AUTHORIZE'));
+            }else{
+                $this->loginAction();
+                return;
+            }
+        }
+
+        $this->moduleAcl = $this->_user->getModuleAcl();
+
+        /*
+         * Check is valid module requested
+         */
+        $this->validateModule();
+
+        /*
+         * Check CSRF token
+         */
+        if($this->_configBackend->get('use_csrf_token') && $this->request->hasPost()) {
+            $this->validateCsrfToken();
+        }
+
+        $this->checkCanView();
+
+    }
+
+    protected function validateCsrfToken()
+    {
+        $csrf = new \Security_Csrf();
+        $csrf->setOptions([
+            'lifetime' => $this->_configBackend->get('use_csrf_token_lifetime'),
+            'cleanupLimit' => $this->_configBackend->get('use_csrf_token_garbage_limit')
+        ]);
+
+        if(!$csrf->checkHeader() && !$csrf->checkPost()){
+            $this->response->error($this->_lang->get('MSG_NEED_CSRF_TOKEN'));
+        }
+    }
+
+    protected function validateModule()
+    {
+        $moduleManager = new \Modules_Manager();
+
+        if(in_array($this->_module, $this->_configBackend->get('system_controllers'),true)){
+            return;
+        }
+
+        /*
+         * Redirect for undefined module
+         */
+        if(!$moduleManager->isValidModule($this->_module))
+            $this->response->error($this->_lang->get('WRONG_REQUEST'));
+
+        $moduleCfg = $moduleManager->getModuleConfig($this->_module);
+
+        /*
+         * disabled module
+         */
+        if($moduleCfg['active'] == false)
+            $this->response->error($this->_lang->get('CANT_VIEW'));
+
+        /*
+         * dev module at production
+         */
+        if($moduleCfg['dev'] && ! $this->_configMain['development'])
+            $this->response->error($this->_lang->get('CANT_VIEW'));
     }
 
     /**
@@ -143,83 +220,17 @@ abstract class Backend_Controller extends \Controller
         $manager = new \Modules_Manager();
         return $manager->getControllerModule(get_called_class());
     }
+
     /**
-     * Check user permissions and authentication
+     * Check view permissions
      */
-    public function checkAuth()
+    protected function checkCanView()
     {
-        $configBackend = Config::storage()->get('backend.php');
-
-        $user = Session\User::getInstance();
-        $uid = false;
-
-        if($user->isAuthorized()) {
-            $uid = $user->id;
-            $userLang =$user->getLanguage();
-            $langManager = new \Backend_Localization_Manager($this->_configMain);
-            $acceptedLanguages = $langManager->getLangs(true);
-            // switch language
-            if(!empty($userLang) && $userLang!=$this->_configMain->get('language') && in_array($userLang, $acceptedLanguages , true)){
-                $this->_configMain->set('language' , $userLang);
-                Lang::addDictionaryLoader($userLang ,  $userLang . '.php' , Config\Factory::File_Array);
-                Lang::setDefaultDictionary($userLang);
-                Dictionary::setConfigPath($this->_configMain->get('dictionary_folder') . $this->_configMain->get('language').'/');
-            }
+        if(!$this->moduleAcl->canView($this->_module)){
+            $this->response->error($this->_lang->get('CANT_VIEW'));
         }
-
-        if(! $uid || ! $user->isAdmin()){
-            if($this->request->isAjax())
-                Response::jsonError($this->_lang->MSG_AUTHORIZE);
-            else
-                $this->loginAction();
-        }
-        /*
-         * Check CSRF token
-         */
-        if($configBackend->get('use_csrf_token') && Request::hasPost()){
-            $csrf = new Security_Csrf();
-            $csrf->setOptions(
-                array(
-                    'lifetime' => $configBackend->get('use_csrf_token_lifetime'),
-                    'cleanupLimit' => $configBackend->get('use_csrf_token_garbage_limit')
-                ));
-
-            if(!$csrf->checkHeader() && !$csrf->checkPost())
-                $this->_errorResponse($this->_lang->MSG_NEED_CSRF_TOKEN);
-        }
-
-        $this->_user = $user;
-
-        $isSysController = in_array(get_called_class() , $configBackend->get('system_controllers') , true);
-
-        if($isSysController)
-            return;
-
-        if(! $this->_user->canView($this->_module))
-            $this->_errorResponse($this->_lang->CANT_VIEW);
-
-        $moduleManager = new \Modules_Manager();
-
-        /*
-         * Redirect for undefined module
-         */
-        if(!$moduleManager->isValidModule($this->_module))
-            $this->_errorResponse($this->_lang->WRONG_REQUEST);
-
-        $moduleCfg = $moduleManager->getModuleConfig($this->_module);
-
-        /*
-         * Redirect for disabled module
-         */
-        if($moduleCfg['active'] == false)
-            $this->_errorResponse($this->_lang->CANT_VIEW);
-
-        /*
-         * Redirect for dev module at prouction
-         */
-        if($moduleCfg['dev'] && ! $this->_configMain['development'])
-            $this->_errorResponse($this->_lang->CANT_VIEW);
     }
+
     /**
      * Show login form
      */

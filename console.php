@@ -33,10 +33,12 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/dvelum/library/Autoloader.php';
-$autoloader = new Autoloader($bootCfg['autoloader']);
+require DVELUM_ROOT . '/dvelum/core2/Dvelum/Autoloader.php';
+$autoloader = new \Dvelum\Autoloader($bootCfg['autoloader']);
 
-$configStorage = Config::storage();
+use \Dvelum\Config\Factory as ConfigFactory;
+
+$configStorage = ConfigFactory::storage();
 $configStorage->setConfig($bootCfg['config_storage']);
 
 //==== Loading system ===========

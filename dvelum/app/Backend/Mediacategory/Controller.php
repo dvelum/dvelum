@@ -8,7 +8,7 @@ use Dvelum\Orm;
 use Dvelum\Model;
 use Dvelum\Config;
 
-class Backend_Mediacategory_Controller extends Backend_Controller_Crud
+class Backend_Mediacategory_Controller extends Dvelum\App\Backend\Api\Controller
 {
     public function getModule()
     {
@@ -21,7 +21,7 @@ class Backend_Mediacategory_Controller extends Backend_Controller_Crud
     public function treeListAction()
     {
         $model = Model::factory('Mediacategory');;
-        Response::jsonArray($model->getCategoriesTree());
+        $this->response->json($model->getCategoriesTree());
     }
 
     /**
@@ -29,23 +29,23 @@ class Backend_Mediacategory_Controller extends Backend_Controller_Crud
      */
     public function sortCatalogAction()
     {
-        $this->_checkCanEdit();
+        $this->checkCanEdit();
 
-        $id = Request::post('id','integer',false);
-        $newParent = Request::post('newparent','integer',false);
-        $order = Request::post('order', 'array' , array());
+        $id = $this->request->post('id','integer',false);
+        $newParent = $this->request->post('newparent','integer',false);
+        $order = $this->request->post('order', 'array' , array());
 
         if(!$id || !strlen($newParent) || empty($order))
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         try{
             $pObject = Orm\Object::factory('mediacategory' , $id);
             $pObject->set('parent_id', $newParent);
             $pObject->save();
             Model::factory('Mediacategory')->updateSortOrder($order);
-            Response::jsonSuccess();
+           $this->response->success();
         } catch (Exception $e){
-            Response::jsonError($this->_lang->CANT_EXEC . ' ' . $e->getMessage());
+           $this->response->error($this->lang->get('CANT_EXEC') . ' ' . $e->getMessage());
         }
     }
 
@@ -57,32 +57,32 @@ class Backend_Mediacategory_Controller extends Backend_Controller_Crud
     public function deleteAction()
     {
         $this->_checkCanDelete();
-        $id = Request::post('id' , 'integer' , false);
+        $id = $this->request->post('id' , 'integer' , false);
 
         if(!$id)
-            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         try{
-            $object = Orm\Object::factory($this->_objectName , $id);
+            $object = Orm\Object::factory($this->objectName , $id);
         }catch(Exception $e){
-            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
 
         $childCount = Model::factory('Mediacategory')->getCount(array('parent_id'=>$id));
         if($childCount)
-            Response::jsonError($this->_lang->get('REMOVE_CHILDREN'));
+           $this->response->error($this->lang->get('REMOVE_CHILDREN'));
 
-        if($this->_configMain->get('vc_clear_on_delete'))
-            Model::factory('Vc')->removeItemVc($this->_objectName , $id);
+        if($this->configMain->get('vc_clear_on_delete'))
+            Model::factory('Vc')->removeItemVc($this->objectName , $id);
 
         $medialib = Model::factory('Medialib');
 
         $medialib->categoryRemoved($id);
 
         if(!$object->delete())
-            Response::jsonError($this->_lang->get('CANT_EXEC'));
+           $this->response->error($this->lang->get('CANT_EXEC'));
 
-        Response::jsonSuccess();
+       $this->response->success();
     }
 
     /**
@@ -91,21 +91,22 @@ class Backend_Mediacategory_Controller extends Backend_Controller_Crud
     public function placeItemsAction()
     {
         $this->_checkCanEdit();
-        $items = Request::post('items', 'string', false);
-        $category = Request::post('catalog', 'integer', false);
+        $items = $this->request->post('items', 'string', false);
+        $category = $this->request->post('catalog', 'integer', false);
 
         if($items === false|| $category === false)
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         $items = json_decode($items , true);
+        
         if(!is_array($items) || empty($items))
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         $medialibModel = Model::factory('Medialib');
 
         if($medialibModel->updateItemsCategory($items , $category))
-            Response::jsonSuccess();
+           $this->response->success();
         else
-            Response::jsonError($this->_lang->CANT_EXEC);
+           $this->response->error($this->lang->get('CANT_EXEC'));
     }
 }

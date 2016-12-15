@@ -66,9 +66,9 @@ class Factory
      * @param integer $type -type of the object being created, Config class constant
      * @param string $name - identifier
      * @param boolean $useCache - optional , default true. Use cache if available
-     * @return Config\Config
+     * @return Config\Adapter
      */
-    static public function config(int $type , string $name , bool $useCache = true) : Config\Config
+    static public function config(int $type , string $name , bool $useCache = true) : Config\Adapter
     {
         $store = self::$store;
         $cache = self::$cache;
@@ -99,7 +99,7 @@ class Factory
                 $config =  static::storage()->get($name,$useCache);
                 break;
             case self::Simple :
-                $config = new Config\Config($name);
+                $config = new Config\Adapter($name);
                 break;
         }
 
@@ -187,11 +187,11 @@ class Factory
     /**
      * Create new config object
      * @param array $data
-     * @return Config
+     * @return Config\Adapter
      */
-    static public function create(array $data) : Config\Config
+    static public function create(array $data) : Config\Adapter
     {
-        $config = new Config\Config();
+        $config = new Config\Adapter();
         $config->setData($data);
         return $config;
     }

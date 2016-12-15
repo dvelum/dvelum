@@ -8,9 +8,9 @@ use Dvelum\Config;
 class User_Auth_Kerberos extends User_Auth_Abstract
 {
 	/**
-	 * @param Config\Config $config - auth provider config
+	 * @param Config\Adapter $config - auth provider config
 	 */
-	public function __construct(Config\Config $config)
+	public function __construct(Config\Adapter $config)
 	{
 		if(!extension_loaded('krb5'))
 			throw new Exception('Cannot find php-krb5 extension!');
