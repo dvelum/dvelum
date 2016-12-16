@@ -1,6 +1,6 @@
 <?php
 
-use Dvelum\Template;
+use Dvelum\View;
 use Dvelum\Model;
 
 /**
@@ -35,7 +35,7 @@ class Block_Menu extends Block
 	{
 		$this->_collectData();
 
-		$tpl = new Template();
+		$tpl = new View();
         $tpl->setData(array(
             'config' => $this->_config,
             'place' => $this->_config['place'],

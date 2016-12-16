@@ -111,7 +111,7 @@ class Model
 
     /**
      * Current error log adapter
-     * @var Log | false
+     * @var \Psr\Log\LoggerInterface | false
      */
     protected $log = false;
 
