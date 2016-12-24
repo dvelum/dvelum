@@ -8,7 +8,7 @@ return [
         './application/library',
         './dvelum/app',
         './dvelum/library',
-        './dvelum/core2',
+        './dvelum2',
         './vendor',
         './vendor/psr/log'
     ),
