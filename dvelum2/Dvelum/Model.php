@@ -220,7 +220,7 @@ class Model
 
     /**
      * Get Master Db connector
-     * return Zenddb_Adapter_Abstract
+     * return Db\Adapter
      */
     public function getDbConnection()
     {

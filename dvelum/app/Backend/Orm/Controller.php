@@ -6,7 +6,9 @@ use Dvelum\Config;
 use Dvelum\Model;
 use Dvelum\Orm;
 
-class Backend_Orm_Controller extends \Dvelum\App\Backend\Controller
+class Backend_Orm_Controller extends \Dvelum\App\Backend\Orm\Controller{}
+
+class Backend_Orm_ControllerOld extends \Dvelum\App\Backend\Controller
 {
     const UML_MAP_CFG = 'umlMap.php';
 
@@ -1306,7 +1308,6 @@ class Backend_Orm_Controller extends \Dvelum\App\Backend\Controller
     {
         $request = Request::getInstance();
         $router = new Backend_Router();
-
         $router->runController('Backend_Orm_Connections_Controller' , $request->getPart(3));
     }
 

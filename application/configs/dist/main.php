@@ -201,11 +201,6 @@ return array(
     'wwwroot' => $wwwRoot,
     'wwwpath' => $wwwPath,
     /*
-     * Get real rows count for innodb tables (COUNT(*))
-     * Set it "false" for large data volumes
-     */
-    'orm_innodb_real_rows_count' => false,
-    /*
      * Directories for storing data base connection settings as per the system mode
      */
     'db_configs' => array(

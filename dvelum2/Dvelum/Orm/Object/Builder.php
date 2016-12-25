@@ -21,10 +21,13 @@ class Builder
      * @var \Db_Adapter
      */
     protected $db;
+
+    /**
+     * @var string $objectName
+     */
     protected $objectName;
 
     /**
-     *
      * @var Config
      */
     protected $objectConfig;

@@ -22,6 +22,14 @@ class Adapter extends  \Db_Adapter
     }
 
     /**
+     * @return Db\Adapter\Adapter
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
+    }
+
+    /**
      * @return \Db_Select
      */
     public function select()
