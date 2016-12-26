@@ -1,8 +1,8 @@
 <?php
 
 return [
-    // Paths for autoloading
-    'paths' => array(
+    // PSR-0 autoload paths
+    'paths' => [
         './application/controllers',
         './application/models',
         './application/library',
@@ -11,29 +11,22 @@ return [
         './dvelum2',
         './vendor',
         './vendor/psr/log'
-    ),
-    // priority paths (cannot be overridden by external modules)
+    ],
+    // paths priority (cannot be overridden by external modules)
     'priority'=>[
         './application/controllers',
         './application/models',
         './application/library',
     ],
-    /*
-    * Use class maps
-    */
+    // Use class maps
     'useMap' => false,
     // Use class map (Reduce IO load during autoload)
     // Class map file path (string / false)
     'map' => 'classmap.php',
-    'plugins' =>[
-          'psr-4' =>[
-            'class' => 'Autoloader_Psr4',
-            'config' => [
-                'paths' => [
-                    'Zend\\Stdlib' => './vendor/zendframework/zend-stlib/src',
-                    'Zend\\Db' => './vendor/zendframework/zend-db/src'
-                ]
-            ]
-        ]
+    // PSR-4 autoload paths
+    'psr-4' =>[
+        'Zend\\Stdlib' => './vendor/zendframework/zend-stlib/src',
+        'Zend\\Db' => './vendor/zendframework/zend-db/src'
     ]
+
 ];

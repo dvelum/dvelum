@@ -2,6 +2,9 @@
 use Dvelum\Config;
 use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Lang;
+use Dvelum\View;
+use Dvelum\Template;
 
 class Install_Controller
 {
@@ -12,7 +15,7 @@ class Install_Controller
     protected $docRoot;
     /**
      * Template
-     * @var Template
+     * @var \Dvelum\View $template
      */
     protected $template;
 
@@ -33,7 +36,7 @@ class Install_Controller
     protected $wwwRoot;
 
     /**
-     * @var Autoloader
+     * @var Dvelum\Autoload $autoloader
      */
     protected $autoloader;
 
@@ -61,10 +64,10 @@ class Install_Controller
         /*
          * Set template storage options
          */
-        Template::storage()->setConfig(Config::storage()->get('template_storage.php')->__toArray());
+        View::storage()->setConfig(Config::storage()->get('template_storage.php')->__toArray());
     }
 
-    public function setAutoloader(Autoloader $autoloader)
+    public function setAutoloader(Dvelum\Autoload $autoloader)
     {
         $this->autoloader = $autoloader;
     }
@@ -102,7 +105,7 @@ class Install_Controller
 
     public function indexAction()
     {
-        $this->template = new Template();
+        $this->template = new View();
         $this->template->url = './index.php';
         $this->template->lang = $this->lang;
         $this->template->dictionary = $this->localization;
@@ -211,7 +214,7 @@ class Install_Controller
                 'accessType'=>'required'
             ),
             array(
-                'path'=>'temp',
+                'path'=>'data/temp',
                 'accessType'=>'required'
             ),
             array(
@@ -263,7 +266,8 @@ class Install_Controller
 
         Response::jsonSuccess($data);
     }
-    public function dbcheckAction() {
+    public function dbcheckAction()
+    {
         $host = Request::post('host', 'str', '');
         $port = Request::post('port', 'int', 0);
         $prefix = Request::post('prefix', 'str', '');
@@ -276,7 +280,7 @@ class Install_Controller
             'username'       => Request::post('username', 'str', false),
             'password'       => Request::post('password', 'str', false),
             'dbname'         => Request::post('dbname', 'str', false),
-            'adapter'  => 'Mysqli',
+            'driver'  => 'Mysqli',
             'adapterNamespace' => 'Db_Adapter'
         );
 
@@ -286,16 +290,14 @@ class Install_Controller
         $flag = false;
         if ($params['host'] && $params['username'] && $params['dbname'])
             try {
-                $zendDb = Zend_Db::factory('Mysqli', $params);
-                $zendDb->getServerVersion();
+                $db = new \Zend\Db\Adapter\Adapter($params);
+                @$db->getDriver()->getConnection()->getCurrentSchema();
                 $data['success'] = true;
                 $data['msg'] = $this->localization->get('SUCCESS_DB_CHECK');
-
                 $flag = true;
-
             } catch (Exception $e) {
                 $data['success'] = false;
-                $data['msg'] = $this->localization->get('FAILURE_DB_CHECK');
+                $data['msg'] = $this->localization->get('FAILURE_DB_CHECK') . ' ' . $e->getMessage();
             }
         else {
             $data['success'] = false;

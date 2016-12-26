@@ -226,7 +226,7 @@ class Dictionary_Manager
         static $manager = false;
 
         if(!$manager){
-            $cfg = Registry::get('main' , 'config');
+            $cfg = Config::storage()->get('main.php');
             $cacheManager = new Cache_Manager();
             $cache = $cacheManager->get('data');
             $manager = new static($cfg , $cache);

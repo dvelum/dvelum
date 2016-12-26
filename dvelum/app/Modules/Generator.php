@@ -16,7 +16,7 @@ class Modules_Generator
    public $tabTypes = array('Component_Field_System_Medialibhtml' , 'Component_Field_System_Related', 'Component_Field_System_Objectslist');
 
    public function __construct(){
-        $this->appConfig = Registry::get('main' , 'config');
+        $this->appConfig = Config::storage()->get('main.php');
         $this->designerConfig = Config::storage()->get('designer.php');
         Request::setDelimiter($this->appConfig->get('urlDelimiter'));
    }

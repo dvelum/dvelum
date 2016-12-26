@@ -16,8 +16,8 @@ class Model_Medialib extends Model
      */
     public function getIdByPath($path)
     {
-        $recId = $this->_dbSlave->fetchOne(
-            $this->_dbSlave->select()
+        $recId = $this->dbSlave->fetchOne(
+            $this->dbSlave->select()
                 ->from($this->table() , array('id'))
                 ->where('`path` =?', $path)
         );
@@ -72,7 +72,7 @@ class Model_Medialib extends Model
         if(empty($data))
             return false;
 
-        $docRoot = Registry::get('main' , 'config')->get('docroot');
+        $docRoot = Config::storage()->get('main.php')->get('docroot');
 
         if(strlen($data['path']))
         {
@@ -169,6 +169,7 @@ class Model_Medialib extends Model
     public function includeScripts()
     {
         $version = Config::storage()->get('versions.php')->get('medialib');
+        $appConfig = Config::storage()->get('main.php');
 
         if(self::$_scriptsIncluded)
             return;
@@ -178,7 +179,7 @@ class Model_Medialib extends Model
         $resource = \Dvelum\Resource::factory();
         $resource->addCss('/js/lib/jquery.Jcrop.css');
 
-        $editor = Registry::get('main' , 'config')->get('html_editor');
+        $editor = $appConfig->get('html_editor');
 
         if($editor === 'tinymce'){
             $resource->addJs('/js/lib/tiny_mce/tiny_mce.js',0,true);
@@ -273,7 +274,7 @@ class Model_Medialib extends Model
      */
     public function cropAndResize($srcData , $x,$y,$w,$h , $type)
     {
-        $appConfig = Registry::get('main' , 'config');
+        $appConfig = Config::storage()->get('main.php');
         ini_set('max_execution_time' , 18000);
         ini_set('memory_limit', '384M');
         $docRoot = $appConfig['wwwpath'];

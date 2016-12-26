@@ -85,7 +85,7 @@ class Model_Permissions extends Model
      */
     public function cleanUp()
     {
-    	$modules = Config::factory(Config::File_Array , Registry::get('main' , 'config')->get('backend_modules'));
+    	$modules = Config::factory(Config\Factory::File_Array , Config::storage()->get('main.php')->get('backend_modules'));
 
     	$sql = $this->dbSlave->select()
     		  ->from($this->table() , array('module'))

@@ -119,9 +119,9 @@ class Adapter extends  \Db_Adapter
         return $this->adapter->getPlatform()->quoteIdentifier($string);
     }
 
-    public function quote()
+    public function quote($value)
     {
-        throw new \Exception('not implemented');
+        return $this->adapter->getPlatform()->quoteValue($value);
     }
 
     /**
@@ -175,7 +175,19 @@ class Adapter extends  \Db_Adapter
 
         $statement = $sql->prepareStatementForSqlObject($insert);
         $statement->execute();
+    }
 
+    public function delete($table, $where = null)
+    {
+        $sql = $this->sql();
+        $delete = $sql->delete($table);
+
+        if(!empty($where)){
+            $delete->where($where);
+        }
+
+        $statement = $sql->prepareStatementForSqlObject($delete);
+        $statement->execute();
     }
 
 }

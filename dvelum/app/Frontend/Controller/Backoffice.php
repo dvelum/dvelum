@@ -11,6 +11,7 @@
  * a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
+use Dvelum\Config;
 
 abstract class Frontend_Controller_Backoffice extends Backend_Controller{
     /**
@@ -61,7 +62,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
         $this->_resource = Resource::getInstance();
         $this->_module = $this->getModule();
         $this->_lang = Lang::lang();
-        $this->_configMain = Registry::get('main' , 'config');
+        $this->_configMain = Config::storage()->get('main.php');
 
         $cacheManager = new Cache_Manager();
         $this->_configFrontend = Config::storage()->get('frontend.php');

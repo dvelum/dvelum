@@ -1,4 +1,6 @@
 <?php
+use Dvelum\Config;
+
 class Sysdocs_Controller
 {
     /**
@@ -60,7 +62,7 @@ class Sysdocs_Controller
     {
 
         $this->container = $container;
-        $this->configMain = Registry::get('main' , 'config');
+        $this->configMain = Config::storage()->get('main.php');
         $this->fileModel = Model::factory('Sysdocs_File');
         $this->lang = Lang::lang();
         $this->paramsIndex = $paramsIndex;

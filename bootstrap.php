@@ -48,8 +48,8 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/dvelum2/Dvelum/Autoloader.php';
-$autoloader = new \Dvelum\Autoloader($bootCfg['autoloader']);
+require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
+$autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 
 use \Dvelum\Config\Factory as ConfigFactory;
@@ -91,11 +91,6 @@ else
 
 $autoloader->setConfig($autoloaderCfg);
 
-/**
- * Enable Zend Framework 1.x library support
- */
-\set_include_path(get_include_path() . PATH_SEPARATOR . $config->get('vendor_lib'));
-
 /*
  * Installation mode
  */
@@ -106,7 +101,18 @@ if($config->get('development') === 3 && strpos($_SERVER['REQUEST_URI'],'install'
     exit;
 }
 
-Registry::set('main', $config , 'config');
+/*
+ * Register composer autoload
+ */
+if(file_exists(__DIR__ . '/vendor/autoload.php')){
+    require __DIR__ . '/vendor/autoload.php';
+}
+
+/**
+ * @deprecated
+ */
+Registry::set('main', $config, 'config');
+
 /*
  * Starting the application
  */
@@ -117,7 +123,6 @@ if(!class_exists($appClass))
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);
 $app->init();
-
 $app->run();
 /*
  * Clean the buffer and send response

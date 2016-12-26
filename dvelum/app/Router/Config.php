@@ -1,4 +1,6 @@
 <?php
+use Dvelum\Config;
+
 class Router_Config extends Router
 {
     protected $_appConfig = false;
@@ -6,7 +8,7 @@ class Router_Config extends Router
     public function __construct()
     {
         parent::__construct();
-        $this->_appConfig = Registry::get('main' , 'config');
+        $this->_appConfig = Config::storage()->get('main.php');
     }
 
     /**
@@ -18,7 +20,7 @@ class Router_Config extends Router
     {
         $controller = $this->_request->getPart(0);
         $pathCode = Filter::filterValue('pagecode' , $controller);
-        $routes = Config::factory(Config::File_Array , $this->_appConfig->get('frontend_modules'))->__toArray();
+        $routes = Config::factory(Config\Factory::File_Array , $this->_appConfig->get('frontend_modules'))->__toArray();
 
         if(isset($routes[$pathCode]) && class_exists($routes[$pathCode]['class']))
             $controllerClass = $routes[$pathCode]['class'];

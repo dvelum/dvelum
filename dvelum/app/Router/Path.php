@@ -1,4 +1,6 @@
 <?php
+use Dvelum\Config;
+
 class Router_Path extends Router
 {
     protected $_appConfig = false;
@@ -6,7 +8,7 @@ class Router_Path extends Router
     public function __construct()
     {
         parent::__construct();
-        $this->_appConfig = Registry::get('main' , 'config');
+        $this->_appConfig = Config::storage()->get('main.php');
     }
 
     /**

@@ -909,14 +909,13 @@ class Builder
 
     /**
      * Get property SQL query
-     *
-     * @param array $data
+     * @param Orm\Object\Config\Field $field
      * @return string
      */
-    protected function _proppertySql($name , $data)
+    protected function _proppertySql($name , Orm\Object\Config\Field $field) : string
     {
         $property = new Orm\Object\Field\Property($name);
-        $property->setData($data);
+        $property->setData($field->__toArray());
         return $property->__toSql();
     }
 

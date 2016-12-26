@@ -31,7 +31,7 @@ class Backend_Designer_Sub
 	
 	public function __construct()
 	{
-		$this->_configMain = Registry::get('main' , 'config');
+		$this->_configMain = Config::storage()->get('main.php');
 		$this->_lang = Lang::lang();
 		$this->_db = Model::getDefaultDbManager()->getDbConnection('default');
 		$this->_config = Config::storage()->get('designer.php');

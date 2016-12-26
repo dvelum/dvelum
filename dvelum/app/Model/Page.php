@@ -2,6 +2,7 @@
 
 use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Config;
 
 /**
  * Pages Model
@@ -65,7 +66,7 @@ class Model_Page extends Model
            if(empty($childs))
                 return array();
 
-           $appConfig = Registry::get('main' , 'config');
+           $appConfig = Config::storage()->get('main.php');
 
            foreach($childs as $k=>$v)
            {

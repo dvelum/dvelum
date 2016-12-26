@@ -33,7 +33,7 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/dvelum2/Dvelum/Autoloader.php';
+require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoloader($bootCfg['autoloader']);
 
 use \Dvelum\Config\Factory as ConfigFactory;

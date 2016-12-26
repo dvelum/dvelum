@@ -270,7 +270,7 @@ class Designer_Factory
      */
     static public function getProjectIncludes($cacheKey , Designer_Project $project , $selfInclude = true , $replace = array() , $debug = false)
     {
-        $applicationConfig = Registry::get('main' , 'config');
+        $applicationConfig = Config::storage()->get('main.php');
         $designerConfig = Config::storage()->get('designer.php');
         $manager = new Designer_Manager($applicationConfig);
 

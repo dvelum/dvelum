@@ -22,7 +22,7 @@ class Modules_Manager
 
     public function __construct()
     {
-        $this->_appConfig = Registry::get('main', 'config');
+        $this->_appConfig = Config::storage()->get('main.php');
         $configPath = $this->_appConfig->get($this->_mainconfigKey);
         $this->_config = Config\Factory::storage()->get($configPath, false, true);
 

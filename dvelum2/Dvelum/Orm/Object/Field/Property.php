@@ -190,8 +190,9 @@ class Property
             case 'time' :
             case 'timestamp' :
             case 'datetime' :
-                if(isset($this->_data['db_default']) && !strlen($this->_data['db_default']))
+                if(isset($this->_data['db_default']) && !strlen((string)$this->_data['db_default'])){
                     unset($this->_data['db_default']);
+                }
                 $s = '`' . $this->_name . '` ' . $this->_data['db_type'] . ' ';
                 break;
             case 'tinytext' :

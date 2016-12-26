@@ -134,7 +134,7 @@ return array(
     /*
      * Temporary files directory
      */
-    'tmp' => './temp/',
+    'tmp' => $docRoot . '/data/temp/',
     /*
      * the type of frontend router with two possible values:
      * 'Router_Module' — using tree-like page structure  (‘Pages’ section of the back-office panel);

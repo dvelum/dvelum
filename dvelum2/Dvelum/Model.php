@@ -1020,7 +1020,7 @@ class Model
 
             try{
                $this->db->query($sql);
-            } catch (Exception $e){
+            } catch (\Exception $e){
                 $this->logError('multiInsert: '.$e->getMessage());
                 return false;
             }

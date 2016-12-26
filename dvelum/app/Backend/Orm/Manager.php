@@ -60,7 +60,7 @@ class Backend_Orm_Manager
 				return self::ERROR_FS_LOCALISATION;
 		}
 
-		$path = $objectsWrite . Registry::get('main' , 'config')->get('object_configs') . $name . '.php';
+		$path = $objectsWrite . Config::storage()->get('main.php')->get('object_configs') . $name . '.php';
 
 		try{
 		  $cfg = Orm\Object\Config::factory($name);

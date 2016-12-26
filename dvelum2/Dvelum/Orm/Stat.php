@@ -71,26 +71,24 @@ class Stat
 
             if(!isset($tables[$oDbHash]) && $oDb->getAdapter()->getPlatform()->getName() === 'MySQL')
             {
-                try
-                {
-                    /*
-                     * Getting object db tables info
-                     */
-                    $tablesData = $oDb->fetchAll("SHOW TABLE STATUS");
-                }
-                catch (Exception $e)
-                {
-                    $canConnect = false;
+                $platformAdapter = '\\Dvelum\\Orm\\Stat\\'.$oDb->getAdapter()->getPlatform()->getName();
+
+                if(class_exists($platformAdapter)){
+                    $adapter = new $platformAdapter();
+                    $tablesData = $adapter->getTablesInfo($oModel);
                 }
 
                 if(!empty($tablesData))
+                {
                     foreach ($tablesData as $k=>$v)
-                        $tables[$oDbHash][$v['Name']] = array(
+                    {
+                        $tables[$oDbHash][$v['Name']] = [
                             'rows'=>$v['Rows'],
                             'data_length'=>$v['Data_length'],
                             'index_length'=>$v['Index_length']
-                        );
-
+                        ];
+                    }
+                }
                 unset($tablesData);
             }
 

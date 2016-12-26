@@ -7,6 +7,8 @@ use Dvelum\Config;
 use Dvelum\Model;
 use Dvelum\Orm;
 use Dvelum\Lang;
+use Dvelum\View;
+use Dvelum\Template;
 
 class Controller extends \Dvelum\App\Backend\Controller implements \Router_Interface
 {
@@ -107,5 +109,69 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
             sort($data);
         }
         $this->response->success($data);
+    }
+
+    /**
+     * Validate Object Db Structure
+     */
+    public function validateAction()
+    {
+        $engineUpdate = false;
+
+        $name = $this->request->post('name', 'string', false);
+
+        if(!$name)
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+
+        $objectConfig = Orm\Object\Config::factory($name);
+
+        // Check ACL permissions
+        $acl = $objectConfig->getAcl();
+        if($acl){
+            if(!$acl->can(Orm\Object\Acl::ACCESS_CREATE , $name) || !$acl->can(Orm\Object\Acl::ACCESS_VIEW , $name)){
+                $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
+            }
+        }
+
+        try {
+            $obj = Orm\Object::factory($name);
+        } catch (\Exception $e){
+            $this->response->error($this->lang->get('CANT_GET_VALIDATE_INFO'));
+        }
+
+        $builder = new Orm\Object\Builder($name);
+        $tableExists = $builder->tableExists();
+
+        $colUpd = [];
+        $indUpd = [];
+        $keyUpd = [];
+
+        if($tableExists){
+            $colUpd =  $builder->prepareColumnUpdates();
+            $indUpd =  $builder->prepareIndexUpdates();
+            $keyUpd =  $builder->prepareKeysUpdate();
+            $engineUpdate = $builder->prepareEngineUpdate();
+        }
+
+        $objects = $builder->getObjectsUpdatesInfo();
+
+        if(empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects)){
+            $this->response->success([],['nothingToDo'=>true]);
+        }
+
+        $template = new \Dvelum\View();
+        $template->disableCache();
+        $template->engineUpdate = $engineUpdate;
+        $template->columns = $colUpd;
+        $template->indexes = $indUpd;
+        $template->objects = $objects;
+        $template->keys = $keyUpd;
+        $template->tableExists = $tableExists;
+        $template->tableName = $obj->getTable();
+        $template->lang = $this->lang;
+
+        $msg = $template->render(\Dvelum\App\Application::getTemplatesPath() . 'orm_validate_msg.php');
+
+        $this->response->success([],array('text'=>$msg,'nothingToDo'=>false));
     }
 }

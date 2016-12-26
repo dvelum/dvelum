@@ -1,4 +1,6 @@
 <?php
+use Dvelum\Config;
+
 class Router_Module extends Router
 {
     const CACHE_KEY_ROUTES = 'Frontend_Router_routes';
@@ -8,7 +10,7 @@ class Router_Module extends Router
     public function __construct()
     {
         parent::__construct();
-        $this->_appConfig = Registry::get('main' , 'config');
+        $this->_appConfig = Config::storage()->get('main.php');
     }
 
     /**

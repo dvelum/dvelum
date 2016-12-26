@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Dvelum\App;
 
 use Dvelum\View;
-use Dvelum\Autoloader;
+use Dvelum\Autoload;
 use Dvelum\Request;
 use Dvelum\Resource;
 use Dvelum\Config;
@@ -55,9 +55,9 @@ class Application
     
     /**
      * Inject Auto-loader
-     * @param Autoloader $al
+     * @param Autoload $al
      */
-    public function setAutoloader(Autoloader $al)
+    public function setAutoloader(Autoload $al)
     {
         $this->autoloader = $al;
     }

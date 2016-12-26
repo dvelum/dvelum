@@ -8,7 +8,7 @@ class Backend_Designer_Code
 	 */
 	static public function getControllerUrl($controllerName)
 	{
-		$appCfg = Registry::get('main' , 'config');
+		$appCfg = Config::storage()->get('main.php');
 		$designerConfig = Config::storage()->get($appCfg->get('configs').'designer.php');
     	$templates = $designerConfig->get('templates');	
 		
@@ -82,7 +82,7 @@ class Backend_Designer_Code
 	static public function getPossibleActions($controllerName)
 	{				
 		$manager = new Modules_Manager();
-		$appCfg = Registry::get('main' , 'config');
+		$appCfg = Config::storage()->get('main.php');
 		$designerConfig = Config::storage()->get($appCfg->get('configs').'designer.php');
 		
 		$templates = $designerConfig->get('templates');	
@@ -166,7 +166,7 @@ class Backend_Designer_Code
 	
 	static protected function _moduleByClass($class)
 	{
-		$modules = Config::factory(Config::File_Array, Registry::get('main' , 'config')->get('frontend_modules'));
+		$modules = Config::factory(Config::File_Array, Config::storage()->get('main.php')->get('frontend_modules'));
 		if(!empty($modules)){
 			foreach($modules as $k=>$config){
 				if($config['class']===$class){

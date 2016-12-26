@@ -8,6 +8,8 @@
  * 	types - array of image typecodes like array('icon','thumb',...)
  *  notCroped - boolean flag  - crop only autocroped images
  */
+use Dvelum\Config;
+
 class Task_Recrop extends Bgtask_Abstract
 {
 	/**
@@ -28,7 +30,7 @@ class Task_Recrop extends Bgtask_Abstract
 		$types = $this->_config['types'];
 		$nonCroped = $this->_config['notCroped'];
 		
-		$wwwPath = Registry::get('main' , 'config')->get('wwwPath');
+		$wwwPath = Config::storage()->get('main.php')->get('wwwPath');
 		
 		$filter = array('type'=>'image');
 		

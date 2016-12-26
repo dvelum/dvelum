@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Dvelum\Config;
 /**
  * Block manager component.
  * Serves for managing blocks of page content,
@@ -159,7 +160,7 @@ class Blockmanager
 			{
 				if(self::$_useHardCacheLifetime)
 				{
-					$this->_cache->save($this->_map , $mapKey , Registry::get('main' , 'config')->get('frontend_hardcache'));
+					$this->_cache->save($this->_map , $mapKey , Config::storage()->get('main.php')->get('frontend_hardcache'));
 				}
 				else
 				{
@@ -257,7 +258,7 @@ class Blockmanager
 		{
 			if(self::$_useHardCacheLifetime)
 			{
-				$this->_cache->save($html , $cacheKey , Registry::get('main' , 'config')->get('frontend_hardcache'));
+				$this->_cache->save($html , $cacheKey , Config::storage()->get('main.php')->get('frontend_hardcache'));
 			}
 			else
 			{
