@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Backend\Orm;
 
+use Dvelum\App\Backend\Orm\Manager;
 use Dvelum\Config;
 use Dvelum\Model;
 use Dvelum\Orm;
@@ -16,7 +17,10 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
         'dictionary' => 'Backend_Orm_Dictionary',
         'dataview' => 'Backend_Orm_Dataview',
         'connections' => 'Backend_Orm_Connections_Controller',
-        'log' => 'Backend_Orm_Log'
+        'log' => 'Backend_Orm_Log',
+        'object' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Object',
+        'field' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Field',
+        'index' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Index',
     ];
 
     public function route()
@@ -69,9 +73,8 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
           var useForeignKeys = '.((integer)$this->appConfig['foreign_keys']).';
           var canUseBackup = false;
           var dbConfigsList = '.json_encode($dbConfigs).';
+          var ormTooltips = '.Lang::lang('orm_tooltips')->getJson().';
         ');
-
-        $this->resource->addRawJs('var ormTooltips = '.Lang::lang('orm_tooltips')->getJson().';');
 
         $this->resource->addJs('/js/app/system/SearchPanel.js', 0);
         $this->resource->addJs('/js/app/system/ORM.js?v='.$version, 2);
@@ -112,66 +115,173 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
     }
 
     /**
-     * Validate Object Db Structure
+     * Build all objects action
      */
-    public function validateAction()
+    public function buildAllAction()
     {
-        $engineUpdate = false;
+        $this->checkCanEdit();
 
-        $name = $this->request->post('name', 'string', false);
+        $names = $this->request->post('names', 'array', false);
 
-        if(!$name)
+        if(empty($names))
             $this->response->error($this->lang->get('WRONG_REQUEST'));
 
-        $objectConfig = Orm\Object\Config::factory($name);
+        $flag = false;
 
-        // Check ACL permissions
-        $acl = $objectConfig->getAcl();
-        if($acl){
-            if(!$acl->can(Orm\Object\Acl::ACCESS_CREATE , $name) || !$acl->can(Orm\Object\Acl::ACCESS_VIEW , $name)){
-                $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
+        if(Orm\Object\Builder::foreignKeys())
+        {
+            /*
+             * build only fields
+             */
+            foreach ($names as $name)
+            {
+                try{
+                    $builder = Orm\Object\Builder::factory($name);
+                    $builder->build(false);
+                }catch(\Exception $e){
+                    $flag = true;
+                }
+            }
+
+            /*
+             * Add foreign keys
+             */
+            foreach ($names as $name)
+            {
+                try{
+                    $builder = Orm\Object\Builder::factory($name);
+                    if(!$builder->buildForeignKeys(true , true))
+                        $flag = true;
+                }catch(\Exception $e){
+                    $flag = true;
+                }
+            }
+
+        }else{
+            foreach ($names as $name)
+            {
+                try{
+                    $builder = Orm\Object\Builder::factory($name);
+                    $builder->build();
+                }catch(\Exception $e){
+                    $flag = true;
+                }
             }
         }
 
-        try {
-            $obj = Orm\Object::factory($name);
-        } catch (\Exception $e){
-            $this->response->error($this->lang->get('CANT_GET_VALIDATE_INFO'));
-        }
-
-        $builder = new Orm\Object\Builder($name);
-        $tableExists = $builder->tableExists();
-
-        $colUpd = [];
-        $indUpd = [];
-        $keyUpd = [];
-
-        if($tableExists){
-            $colUpd =  $builder->prepareColumnUpdates();
-            $indUpd =  $builder->prepareIndexUpdates();
-            $keyUpd =  $builder->prepareKeysUpdate();
-            $engineUpdate = $builder->prepareEngineUpdate();
-        }
-
-        $objects = $builder->getObjectsUpdatesInfo();
-
-        if(empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects)){
-            $this->response->success([],['nothingToDo'=>true]);
-        }
-
-        $template = new \Dvelum\View();
-        $template->disableCache();
-        $template->engineUpdate = $engineUpdate;
-        $template->columns = $colUpd;
-        $template->indexes = $indUpd;
-        $template->objects = $objects;
-        $template->keys = $keyUpd;
-        $template->tableExists = $tableExists;
-        $template->tableName = $obj->getTable();
-        $template->lang = $this->lang;
-
-        $msg = $template->render(\Dvelum\App\Application::getTemplatesPath() . 'orm_validate_msg.php');
-
-        $this->response->success([],array('text'=>$msg,'nothingToDo'=>false));
+        if ($flag)
+            $this->response->error($this->lang->get('CANT_EXEC'));
+        else
+            $this->response->success();
     }
+
+    /**
+     * Get list of database connections
+     */
+    public function connectionsListAction()
+    {
+        $manager = new \Backend_Orm_Connections_Manager($this->appConfig->get('db_configs'));
+        $list = $manager->getConnections(0);
+
+        $data = [];
+        if(!empty($list)) {
+            foreach($list as $k=>$v) {
+                $data[] = ['id'=> $k];
+            }
+        }
+        $this->response->success($data);
+    }
+
+    /**
+     * Get list of ACL adapters
+     */
+    public function listAclAction()
+    {
+        $list = [['id'=>'','title'=>'---']];
+        $files = \File::scanFiles('./dvelum/app/Acl', array('.php'), true, \File::Files_Only);
+        foreach ($files as $v){
+            $path = str_replace('./dvelum/app/', '', $v);
+            $name = \Utils::classFromPath($path);
+            $list[] = ['id'=>$name,'title'=>$name];
+        }
+        $this->response->success($list);
+    }
+
+
+    /*
+     * Get connection types (prod , dev , test ... etc)
+    */
+    public function connectionTypesAction()
+    {
+        $data = array();
+        foreach ($this->appConfig->get('db_configs') as $k=>$v){
+            $data[]= ['id'=>$k , 'title'=>$this->lang->get($v['title'])];
+        }
+        $this->response->success($data);
+    }
+
+    /*
+     * Get list of field validators
+     */
+    public function listValidatorsAction()
+    {
+        $validators = [];
+        $files = \File::scanFiles('./dvelum/library/Validator', array('.php'), false, \File::Files_Only);
+
+        foreach ($files as $v)
+        {
+            $name = substr(basename($v), 0, -4);
+            if($name != 'Interface')
+                $validators[] = ['id'=>'Validator_'.$name, 'title'=>$name];
+        }
+
+        $this->response->success($validators);
+    }
+
+    /**
+     * Dev. method. Compile JavaScript sources
+     */
+    public function compileAction()
+    {
+        $sources = array(
+            'js/app/system/orm/panel.js',
+            'js/app/system/orm/dataGrid.js',
+            'js/app/system/orm/objectWindow.js',
+            'js/app/system/orm/fieldWindow.js',
+            'js/app/system/orm/indexWindow.js',
+            'js/app/system/orm/dictionaryWindow.js',
+            'js/app/system/orm/objectsMapWindow.js',
+            'js/app/system/orm/dataViewWindow.js',
+            'js/app/system/orm/objectField.js',
+            'js/app/system/orm/connections.js',
+            'js/app/system/orm/logWindow.js',
+            'js/app/system/orm/import.js',
+            'js/app/system/orm/taskStatusWindow.js',
+            'js/app/system/orm/selectObjectsWindow.js'
+        );
+
+        if(!$this->appConfig->get('development')){
+            die('Use development mode');
+        }
+
+        $s = '';
+        $totalSize = 0;
+
+        $wwwPath = $this->appConfig->get('wwwpath');
+        foreach ($sources as $filePath){
+            $s.=file_get_contents($wwwPath.$filePath)."\n";
+            $totalSize+=filesize($wwwPath.$filePath);
+        }
+
+        $time = microtime(true);
+        file_put_contents($wwwPath.'js/app/system/ORM.js', \Code_Js_Minify::minify($s));
+        echo '
+			Compilation time: '.number_format(microtime(true)-$time,5).' sec<br>
+			Files compiled: '.sizeof($sources).' <br>
+			Total size: '.\Utils::formatFileSize($totalSize).'<br>
+			Compiled File size: '.\Utils::formatFileSize(filesize($wwwPath.'js/app/system/ORM.js')).' <br>
+		';
+        exit;
+    }
+
 }

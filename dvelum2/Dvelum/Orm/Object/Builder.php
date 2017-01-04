@@ -1,10 +1,31 @@
 <?php
+/**
+ *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2016  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 declare(strict_types=1);
 
 namespace Dvelum\Orm\Object;
 
 use Dvelum\Orm;
 use Dvelum\Model;
+use Zend\Db\Sql\Ddl;
+
 /**
  * Builder for Db_object
  * @package Db
@@ -43,20 +64,33 @@ class Builder
     protected static $foreignKeys = false;
     protected $errors = [];
 
+    static public function factory(string $objectName, bool $forceConfig = true) : Builder
+    {
+        $model = Model::factory($objectName);
+        $platform = $model->getDbConnection()->getAdapter()->getPlatform();
+        switch ($platform){
+            case 'MySQL' :
+                return new Builder\MySQL($objectName, $forceConfig);
+                break;
+            default :
+                return new static($objectName, $forceConfig);
+                break;
+        }
+    }
     /**
      *
      * @param string $objectName
      * @param boolean $forceConfig, optional
      */
-    public function __construct($objectName , $forceConfig = true)
+    protected function __construct($objectName , $forceConfig = true)
     {
         $this->objectName = $objectName;
         $this->objectConfig = Orm\Object\Config::factory($objectName , $forceConfig);
         $this->model = Model::factory($objectName);
         $this->db = $this->model->getDbConnection();
-
         $this->dbPrefix = $this->model->getDbPrefix();
     }
+
     public static $numTypes = array(
         'tinyint' ,
         'smallint' ,
@@ -146,7 +180,6 @@ class Builder
 
     /**
      * Check if foreign keys is used
-     *
      * @return boolean
      */
     static public function foreignKeys()
@@ -156,10 +189,10 @@ class Builder
 
     /**
      * Log queries
-     *
      * @param string $sql
+     * @throws \Exception
      */
-    protected function _logSql($sql)
+    protected function logSql($sql)
     {
         if(! self::$writeLog)
             return;
@@ -169,7 +202,7 @@ class Builder
         $result = @file_put_contents($filePath, $str , FILE_APPEND);
 
         if($result === false)
-            throw new Exception('Cant write to log file ' . $filePath);
+            throw new \Exception('Cant write to log file ' . $filePath);
     }
 
     /**
@@ -200,8 +233,7 @@ class Builder
 
     /**
      * Prepare DB engine update SQL
-     *
-     * @return boolean Ambigous string>
+     * @return boolean
      */
     public function prepareEngineUpdate()
     {
@@ -233,7 +265,7 @@ class Builder
         if(! $this->tableExists())
             $fields = [];
         else
-            $fields = $this->_getExistingColumns()->getColumns();
+            $fields = $this->getExistingColumns()->getColumns();
 
 
         /**
@@ -416,7 +448,6 @@ class Builder
 
     /**
      * Rename object field
-     *
      * @param string $oldName
      * @param string $newName
      * @return boolean
@@ -436,10 +467,10 @@ class Builder
         try
         {
             $this->db->query($sql);
-            $this->_logSql($sql);
+            $this->logSql($sql);
             return true;
         }
-        catch(Exception $e)
+        catch(\Exception $e)
         {
             $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
@@ -469,13 +500,13 @@ class Builder
             {
                 $sql = $this->_sqlCreate();
                 $this->db->query($sql);
-                $this->_logSql($sql);
+                $this->logSql($sql);
                 if($buildKeys)
                     return $this->buildForeignKeys();
                 else
                     return true;
             }
-            catch(Exception $e)
+            catch(\Exception $e)
             {
                 $this->errors[] = $e->getMessage() . ' <br><b>SQL:</b> ' . $sql;
                 return false;
@@ -543,7 +574,7 @@ class Builder
             try
             {
                 $this->db->query($engineUpdate);
-                $this->_logSql($engineUpdate);
+                $this->logSql($engineUpdate);
             }
             catch(Exception $e)
             {
@@ -558,7 +589,7 @@ class Builder
             {
                 $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->model->table() . '` ' . implode(',' , $cmd) . ';';
                 $this->db->query($sql);
-                $this->_logSql($sql);
+                $this->logSql($sql);
                 if($buildKeys)
                     return $this->buildForeignKeys(false , true);
                 else
@@ -589,10 +620,12 @@ class Builder
 
     /**
      * Build Foreign Keys
-     *
+     * @param bool $remove - remove keys
+     * @param bool $create - create keys
+     * @throws \Exception
      * @return boolean
      */
-    public function buildForeignKeys($remove = true , $create = true)
+    public function buildForeignKeys($remove = true , $create = true) : bool
     {
         if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
         {
@@ -637,10 +670,10 @@ class Builder
             {
                 $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->model->table() . '` ' . implode(',' , $cmd) . ';';
                 $this->db->query($sql);
-                $this->_logSql($sql);
+                $this->logSql($sql);
                 return true;
             }
-            catch(Exception $e)
+            catch(\Exception $e)
             {
                 $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
                 return false;
@@ -823,11 +856,11 @@ class Builder
 
     /**
      * Get list of foreign keys for DB Table
-     *
      * @param string $dbTable
      * @return array
+     * @todo refactor into Zend Metadata
      */
-    public function getForeignKeys($dbTable)
+    public function getForeignKeys(string $dbTable)
     {
         $dbConfig = $this->db->getConfig();
         $sql = $this->db->select()
@@ -921,7 +954,7 @@ class Builder
 
     /**
      * Get SQL for table creation
-     * @throws Exception
+     * @throws \Exception
      * @return string
      */
     protected function _sqlCreate()
@@ -958,23 +991,20 @@ class Builder
      *
      * @return \Zend\Db\Metadata\Object\TableObject
      */
-    protected function _getExistingColumns()
+    protected function getExistingColumns()
     {
         return $this->db->describeTable($this->model->table());
     }
 
     /**
      * Check if table exists
-     *
-     * @param string $name
-     *          - optional, table neme,
-     * @param boolean $addPrefix
-     *          - optional append prefix, default false
+     * @param string $name - optional, table name,
+     * @param boolean $addPrefix - optional append prefix, default false
      * @return boolean
      */
-    public function tableExists($name = false , $addPrefix = false)
+    public function tableExists(string $name = '', bool $addPrefix = false) : bool
     {
-        if(!$name)
+        if(empty($name))
             $name = $this->model->table();
 
         if($addPrefix)
@@ -982,137 +1012,37 @@ class Builder
 
         try{
             $tables = $this->db->listTables();
-        }
-        catch (Exception $e)
-        {
+        }catch(\Exception $e){
             return false;
         }
+
         return in_array($name , $tables , true);
     }
 
     /**
      * Rename database table
-     *
-     * @param string $newName
-     *          - new table name (without prefix)
+     * @param string $newName - new table name (without prefix)
      * @return boolean
-     * @throws Exception
+     * @throws \Exception
      */
-    public function renameTable($newName)
+    public function renameTable(string $newName) : bool
     {
-        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
-        {
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly()) {
             $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
             return false;
         }
 
-        $store = Store_Local::getInstance();
         $sql = 'RENAME TABLE `' . $this->model->table() . '` TO `' . $this->model->getDbPrefix() . $newName . '` ;';
 
         try
         {
             $this->db->query($sql);
-            $this->_logSql($sql);
+            $this->logSql($sql);
             $this->objectConfig->getConfig()->set('table' , $newName);
             $this->model->refreshTableInfo();
             return true;
         }
-        catch(Exception $e)
-        {
-            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
-            return false;
-        }
-    }
-
-    /**
-     * Tells whether object can be converted to new engine type
-     *
-     * @param string $newEngineType
-     * @throws Exception
-     * @return mixed - true for success or array with restricted indexes and
-     *         fields
-     */
-    public function checkEngineCompatibility($newEngineType)
-    {
-        $restrictedIndexes = array();
-        $restrictedFields = array();
-
-        $indexes = $this->objectConfig->getIndexesConfig();
-        $fields = $this->objectConfig->getFieldsConfig();
-
-        switch(strtolower($newEngineType))
-        {
-            case 'myisam' :
-                break;
-            case 'memory' :
-
-                foreach($fields as $k => $v)
-                {
-                    $type = $v['db_type'];
-
-                    if(in_array($type , self::$textTypes , true) || in_array($type , self::$blobTypes , true))
-                        $restrictedFields[] = $k;
-                }
-
-                foreach($indexes as $k => $v)
-                    if(isset($v['fulltext']) && $v['fulltext'])
-                        $restrictedIndexes[] = $k;
-
-                break;
-            case 'innodb' :
-
-                foreach($indexes as $k => $v)
-                    if(isset($v['fulltext']) && $v['fulltext'])
-                        $restrictedIndexes[] = $k;
-
-                break;
-
-            default :
-                throw new Exception('Unknown db engine type');
-                break;
-        }
-
-        if(! empty($restrictedFields) || ! empty($restrictedIndexes))
-            return array(
-                'indexes' => $restrictedIndexes ,
-                'fields' => $restrictedFields
-            );
-        else
-            return true;
-    }
-
-    /**
-     * Change Db table engine
-     *
-     * @param string $table
-     *          - table name without prefix
-     * @param string $engine
-     *          - new engine name
-     * @param boolean $returnQuery
-     *          - optional, return update query
-     * @return boolean | string
-     * @throws Exception
-     */
-    public function changeTableEngine($engine , $returnQuery = false)
-    {
-        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
-        {
-            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
-            return false;
-        }
-
-        $sql = 'ALTER TABLE `' . $this->model->table() . '` ENGINE = ' . $engine;
-
-        if($returnQuery)
-            return $sql;
-
-        try
-        {
-            $this->db->query($sql);
-            $this->_logSql($sql);
-            return true;
-        }
-        catch(Exception $e)
+        catch(\Exception $e)
         {
             $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
@@ -1121,14 +1051,11 @@ class Builder
 
     /**
      * Remove object
-     *
-     * @param string $name
      * @return boolean
      */
     public function remove()
     {
-        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
-        {
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly()){
             $this->errors[] = 'Can not remove locked object table ' . $this->objectConfig->getName();
             return false;
         }
@@ -1137,16 +1064,18 @@ class Builder
         {
             $model = Model::factory($this->objectName);
 
-            if(! $this->tableExists())
+            if(!$this->tableExists())
                 return true;
 
-            $sql = 'DROP TABLE `' . $model->table() . '`';
-            $model->getDbConnection()
-                ->query($sql);
-            $this->_logSql($sql);
+            $db = $model->getDbConnection();
+
+            $ddl = new Ddl\DropTable($model->table());
+            $sql = $db->sql()->buildSqlString($ddl);
+            $db->query($sql);
+            $this->logSql($sql);
             return true;
         }
-        catch(Exception $e)
+        catch(\Exception $e)
         {
             $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;

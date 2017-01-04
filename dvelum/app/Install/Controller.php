@@ -164,8 +164,8 @@ class Install_Controller
         /**
          * Check for php version
          */
-        $data['items'][0]['title'] = $this->localization->get('PHP_V') . ' >= 5.5.0';
-        if (version_compare(PHP_VERSION, '5.5.0', '<')) {
+        $data['items'][0]['title'] = $this->localization->get('PHP_V') . ' >= 7.0.0';
+        if (version_compare(PHP_VERSION, '7.0.0', '<')) {
             $data['items'][0]['success'] = false;
             $data['items'][0]['error'] = $this->localization->get('UR_PHP_V') . ' ' . PHP_VERSION;
         } else
@@ -354,7 +354,7 @@ class Install_Controller
 
         foreach ($objects as $name)
         {
-            $dbObjectBuilder = new Orm\Object\Builder($name);
+            $dbObjectBuilder = Orm\Object\Builder::factory($name);
             if(!$dbObjectBuilder->build())
                 $buildErrors[] = $name;
         }

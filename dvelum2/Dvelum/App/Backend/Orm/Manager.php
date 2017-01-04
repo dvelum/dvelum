@@ -1,7 +1,29 @@
 <?php
-use Dvelum\Orm;
+/**
+ *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+namespace Dvelum\App\Backend\Orm;
 
-class Backend_Orm_Manager
+use Dvelum\Orm;
+use Dvelum\Lang;
+use Dvelum\Config;
+
+class Manager
 {
 	const ERROR_EXEC = 1;
 	const ERROR_FS = 2;	
@@ -68,7 +90,7 @@ class Backend_Orm_Manager
 		  return self::ERROR_FS;
 		}
 		
-		$builder = new Orm\Object\Builder($name);
+		$builder = Orm\Object\Builder::factory($name);
 		
 		if($deleteTable && !$cfg->isLocked() && !$cfg->isReadOnly()){
 		  if(!$builder->remove()){
@@ -103,7 +125,7 @@ class Backend_Orm_Manager
 			if(!is_dir($path)){
 				continue;
 			}
-			$data =  File::scanFiles($path,false,false,File::Dirs_Only);
+			$data =  \File::scanFiles($path, false, false, \File::Dirs_Only);
 			foreach($data as $k=>&$v){
 				if(!file_exists($v . '/objects.php')){
 					unset($data[$k]);
@@ -126,7 +148,7 @@ class Backend_Orm_Manager
 	{
 		try {
 			$cfg = Orm\Object\Config::factory($object);
-		}catch (Exception $e){
+		}catch (\Exception $e){
 			return false;
 		}
 		 
@@ -161,7 +183,7 @@ class Backend_Orm_Manager
 	{	
 		try {
 			$cfg = Orm\Object\Config::factory($object);
-		}catch (Exception $e){
+		}catch (\Exception $e){
 			return false;
 		}	
 		if(!$cfg->indexExists($index))
@@ -184,7 +206,7 @@ class Backend_Orm_Manager
 
 		try{
 			$objectCfg = Orm\Object\Config::factory($objectName);
-		}catch (Exception $e){
+		}catch (\Exception $e){
 			return self::ERROR_INVALID_OBJECT;
 		}
 		

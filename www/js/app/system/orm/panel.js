@@ -33,7 +33,8 @@ Ext.define('app.crud.orm.Field', {
 		{name:'unique', type:'boolean'},
 		{name:'link_type', type:'string'},
 		{name:'object',type:'string'},
-		{name:'broken', type:'boolean'}
+		{name:'broken', type:'boolean'},
+		{name:'connection', type:'string'}
 	]
 });
 
@@ -60,6 +61,7 @@ Ext.define('app.crud.orm.Main',{
 	isSystemField:null,
 
 	initComponent:function(){
+		var me = this;
 
         app.crud.orm.Actions = {
             addDictionary:		this.controllerUrl  + 'adddictionary',
@@ -67,25 +69,28 @@ Ext.define('app.crud.orm.Main',{
             updateDictionary:	this.controllerUrl  + 'updatedictionary',
             removeDictionary:	this.controllerUrl  + 'removedictionary',
             listObj: 			this.controllerUrl  + 'list',
-            listObjFields: 		this.controllerUrl  + 'fields',
-            listObjIndexes: 	this.controllerUrl  + 'indexes',
-            listBackups: 		this.controllerUrl  + 'listbackups',
             listAcl:			this.controllerUrl  + 'listacl',
-            loadObjCfg: 		this.controllerUrl  + 'load',
-            loadObjField: 		this.controllerUrl  + 'loadfield',
-            loadObjIndex: 		this.controllerUrl  + 'loadindex',
-            makeBackUp: 		this.controllerUrl  + 'makebackup',
-            removeBackUp:		this.controllerUrl  + 'removebackup',
-            removeObject:		this.controllerUrl  + 'removeobject',
-            restoreBackup: 		this.controllerUrl  + 'restorebackup',
-            saveObjCfg: 		this.controllerUrl  + 'save',
-            saveObjField: 		this.controllerUrl  + 'savefield',
-            saveObjIndex:	 	this.controllerUrl  + 'saveindex',
-            deleteIndex: 		this.controllerUrl  + 'deleteindex',
-            deleteField:	 	this.controllerUrl  + 'deletefield',
-            validateObject: 	this.controllerUrl  + 'validate',
-            buildObject:		this.controllerUrl  + 'build',
+
+			// object
+            listObjFields: 		app.createUrl([this.controllerUrl + 'object','fields']),
+            listObjIndexes: 	app.createUrl([this.controllerUrl + 'object','indexes']),
+            validateObject: 	app.createUrl([this.controllerUrl + 'object','validate']),
+            loadObjCfg:			app.createUrl([this.controllerUrl + 'object','load']),
+            buildObject:		app.createUrl([this.controllerUrl + 'object','build']),
+            saveObjCfg: 		app.createUrl([this.controllerUrl + 'object','save']),
+            removeObject:		app.createUrl([this.controllerUrl + 'object','remove']),
+			//field
+            loadObjField: 		app.createUrl([this.controllerUrl + 'field','load']),
+            saveObjField: 		app.createUrl([this.controllerUrl + 'field','save']),
+            deleteField:	 	app.createUrl([this.controllerUrl + 'field','delete']),
+			// index
+            loadObjIndex: 		app.createUrl([this.controllerUrl + 'index','load']),
+            saveObjIndex:	 	app.createUrl([this.controllerUrl + 'index','save']),
+            deleteIndex: 		app.createUrl([this.controllerUrl + 'index','delete']),
+
+
             buildAllObjects:	this.controllerUrl  + 'buildall',
+
             builderLog:			app.createUrl([this.controllerUrl + 'log','']),
             dictionary:			app.createUrl([this.controllerUrl + 'dictionary','']),
             listValidators:		app.createUrl([this.controllerUrl + 'listvalidators','']),
@@ -93,8 +98,11 @@ Ext.define('app.crud.orm.Main',{
             connectionsUrl:		app.createUrl([this.controllerUrl + 'connections','']),
             listConnections:	app.createUrl([this.controllerUrl + 'connectionslist','']),
             importUrl:			app.createUrl([this.controllerUrl + 'import','']),
-            encryptData:		this.controllerUrl  + 'encryptdata',
-            decryptData:		this.controllerUrl  + 'decryptdata',
+
+			// crypt
+            encryptData:		app.createUrl([this.controllerUrl + 'crypt','encrypt']),
+            decryptData:		app.createUrl([this.controllerUrl + 'crypt','decrypt']),
+
             taskStat:			this.controllerUrl  + 'taskstat'
         };
 
@@ -215,6 +223,52 @@ Ext.define('app.crud.orm.Main',{
 			}
 		});
 
+		this.connectionField = Ext.create('Ext.form.field.ComboBox', {
+			forceSelection:true,
+            allowBlank:true,
+            displayField:'id',
+            valueField:'id',
+			emptyText:appLang.ALL,
+            store:Ext.create('Ext.data.Store', {
+				model:'app.comboStringModel',
+                proxy: {
+                    type: 'ajax',
+                    url:app.crud.orm.Actions.listConnections,
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data',
+                        idProperty: 'id'
+                    },
+                    actionMethods : {
+                        create : 'POST',
+                        read   : 'POST',
+                        update : 'POST',
+                        destroy: 'POST'
+                    },
+                    simpleSortMode: true
+                }
+       		}),
+			triggers:{
+                clear: {
+                    cls: "x-form-clear-trigger",
+                    tooltip: appLang.RESET,
+                    handler: function (field) {
+                        field.reset();
+                    }
+                }
+			},
+			listeners: {
+                change: function (field, value) {
+                    if (value) {
+                        me.dataStore.filter("connection", value);
+                    } else {
+                        me.dataStore.clearFilter();
+                        me.searchField.startFilter();
+                    }
+                }
+            }
+        });
+
 		this.toolbarDataGrid = Ext.create('Ext.toolbar.Toolbar', {
 			items:[
 				{
@@ -241,7 +295,7 @@ Ext.define('app.crud.orm.Main',{
 			]
 		});
 
-		this.toolbarDataGrid.add('-', ' ', this.isSystemField,appLang.HIDE_SYSTEM_OBJ);
+		this.toolbarDataGrid.add('-', ' ', this.isSystemField, appLang.HIDE_SYSTEM_OBJ,'-', appLang.DB_CONNECTION+' :',this.connectionField);
 
 		this.dataGrid = Ext.create('app.crud.orm.dataGrid',{
 			store: this.dataStore,

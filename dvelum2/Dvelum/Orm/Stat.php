@@ -55,7 +55,7 @@ class Stat
             $objectModel = Model::factory($objectName);
             $config =  $configObject->__toArray();
             $objectTable = $objectModel->table();
-            $builder = new Orm\Object\Builder($objectName);
+            $builder = Orm\Object\Builder::factory($objectName);
 
             $records = 0;
             $dataLength = 0;

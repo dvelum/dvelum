@@ -119,11 +119,12 @@ Ext.define('app.orm.connections.Window',{
 			columns: [
 				{
 					xtype:'actioncolumn',
-					width:30,
+                    width:30,
+                    align:'center',
+                    dataIndex:'id',
 					items:[
 						{
 							iconCls:'editIcon',
-							width:30,
 							scope:this,
 							handler:function(grid, rowIndex, colIndex){
 								var rec = this.dataStore.getAt(rowIndex);

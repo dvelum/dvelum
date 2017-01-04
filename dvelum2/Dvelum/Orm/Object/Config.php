@@ -408,7 +408,7 @@ class Config
         if(!isset($this->config['fields'][$field]))
             throw new Exception('Invalid field name: ' . $field);
 
-        return $this->config['fields'][$field];
+        return $this->config['fields'][$field]->__toArray();
     }
 
     /**
@@ -784,7 +784,7 @@ class Config
             }
         }
         $this->config->set('indexes', $indexes);
-        $builder = new Orm\Object\Builder($this->getName() , false);
+        $builder = Orm\Object\Builder::factory($this->getName() , false);
         return $builder->renameField($oldName , $newName);
     }
 
