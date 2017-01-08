@@ -45,6 +45,8 @@ class Response
             case self::FORMAT_JSON :
                 $message = json_encode(['success'=>false,'msg'=>$message]);
                 break;
+            case self::FORMAT_HTML :
+                $this->notFound();
         }
         $this->put($message);
         $this->send();
@@ -86,5 +88,13 @@ class Response
     {
         $this->put(json_encode($data));
         $this->send();
+    }
+
+    /**
+     * Send 404 Response code
+     */
+    public function notFound()
+    {
+        header($_SERVER["SERVER_PROTOCOL"]."/1.0 404 Not Found");
     }
 }

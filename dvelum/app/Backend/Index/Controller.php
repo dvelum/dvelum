@@ -8,13 +8,17 @@ use Dvelum\Model;
 
 class Backend_Index_Controller extends Dvelum\App\Backend\Controller
 {
+    public function getModule()
+    {
+        return 'index';
+    }
+
     public function indexAction()
     {
         $config = Config::storage()->get('backend.php');
-
         $this->includeScripts();
         if(!in_array($config->get('theme') , $config->get('desktop_themes') , true)){
-            $this->_resource->addJs('js/app/system/crud/index.js', 4);
+            $this->resource->addJs('js/app/system/crud/index.js', 4);
         }
     }
 
@@ -24,18 +28,20 @@ class Backend_Index_Controller extends Dvelum\App\Backend\Controller
     public function listAction()
     {
         $modulesManager = new Modules_Manager();
+
         $data = $modulesManager->getList();
 
-        $modules = User::getInstance()->getAvailableModules();
-        $data = Utils::sortByField($data  , 'title');
+        $modules = $this->user->getModuleAcl()->getAvailableModules();
 
-        $isDev = (boolean) $this->_configMain->get('development');
+        $data = \Utils::sortByField($data  , 'title');
 
-        $wwwRoot = $this->_configMain->get('wwwroot');
-        $adminPath =  $this->_configMain->get('adminPath');
+        $isDev = (boolean) $this->appConfig->get('development');
+        $wwwRoot = $this->appConfig->get('wwwroot');
+        $adminPath =  $this->appConfig->get('adminPath');
 
-        $result = array();
-        $devItems = array();
+        $result = [];
+        $devItems = [];
+
         foreach($data as $config)
         {
             if(!$config['active'] || !$config['in_menu'] || ($config['dev'] && !$isDev) || !isset($modules[$config['id']])){
@@ -55,7 +61,7 @@ class Backend_Index_Controller extends Dvelum\App\Backend\Controller
             }
 
         }
-        Response::jsonSuccess(array_merge($result,$devItems));
+        $this->response->success(array_merge($result,$devItems));
     }
 
     /**
@@ -63,21 +69,21 @@ class Backend_Index_Controller extends Dvelum\App\Backend\Controller
      */
     public function moduleInfoAction()
     {
-        $module = Request::post('id' , Filter::FILTER_STRING , false);
+        $module = $this->request->post('id' , Filter::FILTER_STRING , false);
 
         $manager = new Modules_Manager();
         $moduleCfg = $manager->getModuleConfig($module);
 
         $info = [];
 
-        if(!$module || !$this->_user->canView($module) || !$moduleCfg['active']){
-            Response::jsonError($this->_lang->get('CANT_VIEW'));
+        if(!$module || !$this->user->getModuleAcl()->canView($module) || !$moduleCfg['active']){
+            $this->response->error($this->lang->get('CANT_VIEW'));
         }
 
         $controller = $moduleCfg['class'];
 
         if(!class_exists($controller)){
-            Response::jsonError('Undefined controller');
+            $this->response->error('Undefined controller');
         }
 
         $controller = new $controller();
@@ -88,7 +94,7 @@ class Backend_Index_Controller extends Dvelum\App\Backend\Controller
             $info['layout'] = false;
         }
 
-        $info['permissions'] = $this->_user->getModulePermissions($module);
-        Response::jsonSuccess($info);
+        $info['permissions'] = $this->user->getModuleAcl()->getModulePermissions($module);
+        $this->response->success($info);
     }
 }

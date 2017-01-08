@@ -8,11 +8,8 @@ use Dvelum\App\Session;
 use Dvelum\Lang;
 use Dvelum\View;
 
-
-
 class Controller extends App\Controller
 {
-
     /**
      * Controller configuration
      * @var Config\Config
@@ -62,7 +59,6 @@ class Controller extends App\Controller
         $this->module = $this->getModule();
         $this->objectName = $this->getObjectName();
         $this->lang = Lang::lang();
-
         $this->initSession();
     }
 
@@ -88,7 +84,6 @@ class Controller extends App\Controller
                 return;
             }
         }
-
         $this->moduleAcl = $this->user->getModuleAcl();
         
         /*
@@ -104,7 +99,6 @@ class Controller extends App\Controller
         }
 
         $this->checkCanView();
-
     }
 
     /**
@@ -154,7 +148,7 @@ class Controller extends App\Controller
     {
         $moduleManager = new \Modules_Manager();
 
-        if(in_array($this->module, $this->configBackend->get('system_controllers'),true)){
+        if(in_array($this->module, $this->configBackend->get('system_controllers'),true) || $this->module == 'index'){
             return;
         }
 

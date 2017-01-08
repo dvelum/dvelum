@@ -59,6 +59,11 @@ class Model_Permissions extends Model
              }
          }
          $data = array_merge($data , Utils::rekey('module', $userRights));
+         $data[] = [
+             'module' => 'index',
+             'view' => true
+         ];
+
          return $data;
     }
 
