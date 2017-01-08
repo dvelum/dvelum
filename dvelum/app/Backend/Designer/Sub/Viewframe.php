@@ -165,12 +165,13 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 
 		$res->addInlineJs($initCode);
 
+		$backendConfig = Config::storage()->get('backend.php');
 		$tpl = new Template();
 		$tpl->lang = $this->_configMain['language'];
 		$tpl->development = $this->_configMain['development'];
 		$tpl->resource = $res;
-		$tpl->useCSRFToken = Registry::get('backend' , 'config')->get('use_csrf_token');
-		$tpl->theme = Config::storage()->get('backend.php')->get('theme');
+		$tpl->useCSRFToken = $backendConfig->get('use_csrf_token');
+		$tpl->theme = $backendConfig->get('theme');
 
 		Response::put($tpl->render(Application::getTemplatesPath().'designer/viewframe.php'));
 	}

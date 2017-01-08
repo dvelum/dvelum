@@ -134,7 +134,7 @@ class Expert
 	 */
 	static protected function _getMultiLinks($objectName , $objectId)
 	{
-		$configMain = Registry::get('main', 'config');
+		$configMain = Config::storage()->get('main.php');
 
 		$linksModel = Model::factory($configMain->get('orm_links_object'));
 		$db = $linksModel->getDbConnection();

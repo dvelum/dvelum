@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Router;
 
 use Dvelum\Config;
+use Dvelum\Lang;
 
 /**
  * Back office

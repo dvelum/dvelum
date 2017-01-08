@@ -70,7 +70,7 @@ abstract class Router implements Router\RouterInterface
         $controller = new $controller();
         $controller->setRouter($this);
 
-        if($controller instanceof Router\RouterInterface){
+        if($controller instanceof Router\RouterInterface || $controller instanceof \Router_Interface){
             return $controller->route();
         }
 

@@ -209,8 +209,7 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 		$related = array();
 		$objectFieldList = array_keys($objectConfig->getFieldsConfig(false));
 
-		$backendCfg = Registry::get('main','config');
-
+        $backendCfg = Config::storage()->get('backend.php');
 
 		$readOnly = $objectConfig->isReadOnly();
 

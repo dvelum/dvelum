@@ -29,16 +29,6 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/blocks.png',
         ),
-    'Cache' =>
-        array (
-            'id' => 'Cache',
-            'dev' => true,
-            'active' => true,
-            'class' => 'Backend_Cache_Controller',
-            'designer' => '',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/cache.png',
-        ),
     'Orm' =>
         array (
             'id' => 'Orm',

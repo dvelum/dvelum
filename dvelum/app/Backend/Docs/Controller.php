@@ -8,7 +8,7 @@ class Backend_Docs_Controller extends Backend_Controller implements Router_Inter
     public function route()
     {
         $controller = new Sysdocs_Controller($this->_configMain ,2 , false);
-        $controller->setCanEdit(User::getInstance()->canEdit($this->_module));
+        $controller->setCanEdit($this->_user->getModuleAcl()->canEdit($this->_module));
         return $controller->run();
     }
     /**

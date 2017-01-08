@@ -107,4 +107,9 @@ class Request
     {
         return \Request::hasPost();
     }
+
+    public function getUri()
+    {
+        return \Request::getInstance()->getUri();
+    }
 }

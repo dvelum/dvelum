@@ -67,9 +67,9 @@ abstract class Controller
 
     /**
      * Set link to router
-     * @param Router_Interface $router
+     * @param Router_Interface | \Dvelum\App\Router\RouterInterface $router
      */
-    public function setRouter(Router_Interface $router)
+    public function setRouter($router)
     {
         $this->_router = $router;
     }
