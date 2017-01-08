@@ -25,13 +25,12 @@
  */
 class Image_Resize
 {
-
     const L_TYPE_H = 1;
     const L_TYPE_V = 2;
     const L_TYPE_S = 3;
 
     /**
-     * Crope image
+     * Crop image
      * @param string  $src - source image path
      * @param string $dest - destination image path
      * @param integer $x - x coord
@@ -108,6 +107,7 @@ class Image_Resize
          */
         $imgInfo = getimagesize($imgPath);
         $im = self::createImg($imgPath , $imgInfo[2]);
+
         /*
          * If image sizes less then need just save image into the new location
          */
@@ -252,8 +252,8 @@ class Image_Resize
     static public function cropResize($imgPath , $width , $height , $newImgPath)
     {
         /*
-     * Get Image size info
-     */
+         * Get Image size info
+         */
         $imgInfo = getimagesize($imgPath);
         $sourceWidth = $imgInfo[0];
         $sourceHeight = $imgInfo[1];
@@ -344,7 +344,7 @@ class Image_Resize
         $newHeight = $newWidth / $proportion;
 
         return array(
-            intval($newWidth) ,
+            intval($newWidth),
             intval($newHeight)
         );
     }
