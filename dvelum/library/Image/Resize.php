@@ -43,7 +43,7 @@ class Image_Resize
 	{
 		$imgInfo = getimagesize($src);
 		$img = self::createImg($src , $imgInfo[2]);
-		$destImg = imagecreatetruecolor($w , $h);
+        $destImg = self::_createDuplicateLayer($imgInfo[2] , $w , $h);
 		imagecopyresampled($destImg , $img , 0 , 0 , $x , $y , $w , $h , $w , $h);
 		imagedestroy($img);
 		self::saveImage($destImg , $dest , $imgInfo[2]);
@@ -168,7 +168,7 @@ class Image_Resize
 	static protected function _createDuplicateLayer($type , $width , $height)
 	{
 		$img = imagecreatetruecolor($width , $height);
-		if($type == IMG_GIF || $type == IMG_PNG)
+		if(in_array($type, array(IMG_GIF, IMG_PNG, IMAGETYPE_GIF, IMAGETYPE_PNG), true))
 		{
 			imagealphablending($img , false);
 			imagesavealpha($img , true);
