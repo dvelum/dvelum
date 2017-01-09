@@ -24,9 +24,12 @@ Official Site (RU)  http://dvelum.ru
 Branches
 
 master -  latest stable version (1.x)
+
 develop - latest development version (1.x)
 
+
 master_09 - latest stable version 0.9.x
+
 dvelum_2.0 - development of version 2.x
 
 
