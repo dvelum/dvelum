@@ -48,6 +48,8 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      */
     protected $_listLinks = [];
 
+    protected $_linkedInfoSeparator = '; ';
+
     public function __construct()
     {
         parent::__construct();
@@ -544,7 +546,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                         }
                     }
                 }
-                $row[$fieldsToKeys[$field]] = implode(', ', $list);
+                $row[$fieldsToKeys[$field]] = implode($this->_linkedInfoSeparator, $list);
             }
         }unset($row);
     }
