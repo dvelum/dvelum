@@ -23,6 +23,7 @@ namespace Dvelum\Orm\Object;
 use Dvelum\Orm;
 use Dvelum\Config as Cfg;
 use Dvelum\Model;
+use Dvelum\Orm\Object\Config\Field;
 
 /**
  * Orm Object structure config
@@ -288,7 +289,6 @@ class Config
         if(!isset($dataLink['slave_connection']) || empty($dataLink['slave_connection']))
             $dataLink['slave_connection'] = $dataLink['connection'];
 
-
         foreach($dataLink['fields'] as & $config){
             if(isset($config['link_config']) && isset($config['link_config']['link_type']) && $config['link_config']['link_type'] == 'multy'){
                 $config['link_config']['link_type'] = 'multi';
@@ -310,8 +310,46 @@ class Config
         if(!empty($dataLink['acl']))
             $this->_acl = Orm\Object\Acl::factory($dataLink['acl']);
 
-        foreach($dataLink['fields'] as & $config){
-            $config = new Config\Field($config);
+        /**
+         * @todo refactor!
+         */
+        foreach($dataLink['fields'] as & $config)
+        {
+            $fieldClass = 'Field';
+            //determine field type
+            $dbType = $config['db_type'];
+            if(isset($config['type']) && $config['type']==='link'  && isset($config['link_config']) && isset($config['link_config']['link_type'])){
+                switch ($config['link_config']['link_type']){
+                    case Orm\Object\Config::LINK_OBJECT;
+                        $fieldClass = 'Object';
+                    break;
+                    case Orm\Object\Config::LINK_OBJECT_LIST;
+                        $fieldClass = 'ObjectList';
+                        break;
+                    case 'dictionary';
+                        $fieldClass = 'Dictionary';
+                        break;
+                }
+            }else{
+                if(in_array($dbType,Orm\Object\Builder::$intTypes,true)){
+                    $fieldClass = 'Integer';
+                }elseif(in_array($dbType,Orm\Object\Builder::$charTypes,true)){
+                    $fieldClass = 'Varchar';
+                }elseif (in_array($dbType,Orm\Object\Builder::$textTypes,true)){
+                    $fieldClass = 'Text';
+                }elseif (in_array($dbType,Orm\Object\Builder::$floatTypes,true)){
+                    $fieldClass = 'Floating';
+                }else{
+                    $fieldClass = $dbType;
+                }
+            }
+            $fieldClass = 'Config\\' . ucfirst($fieldClass);
+
+            if(class_exists($fieldClass)){
+                $config = new $fieldClass($config);
+            }else{
+                $config = new Config\Field($config);
+            }
         }
     }
 

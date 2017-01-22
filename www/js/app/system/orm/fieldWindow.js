@@ -141,7 +141,11 @@ Ext.define('app.crud.orm.FieldWindow', {
 			displayField:'title',
 			valueField:'id',
 			store:Ext.create('Ext.data.Store',{
-				model:'app.comboStringModel',
+				fields:[
+                    {name:'id', type:'string'},
+                    {name:'title', type:'string'},
+                    {name:'group', type:'string'}
+                ],
 				remoteSort:false,
 				sorters: [{
 					property : 'title',
@@ -438,33 +442,85 @@ Ext.define('app.crud.orm.FieldWindow', {
 					fieldLabel: appLang.FIELD_TYPE,
 					items: [
 						{
-							boxLabel: appLang.FILED_STD,
-							name: 'type',
-							inputValue: '',
-							checked: true,
-							listeners:{
-								'change':{
-									fn:function( field, newValue, oldValue, options ){
-										if(newValue){
-											this.processFields(
-												[
-													this.fieldLinkType,
-													this.fieldObject
-												],[
-													this.fieldType
-												]
-											);
+							boxLabel:'Integer',
+                            name: 'type',
+                            inputValue:'integer',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
 
-											this.dbTypeSelected(this.fieldType.getValue());
+                            }
+						},{
+                            boxLabel:'Floating',
+                            name: 'type',
+                            inputValue:'floating',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
 
-										}
-									},
-									scope:this
-								},
-								render:{fn:this.initTooltip,scope:this}
+                            }
+                        },{
+                            boxLabel:'String',
+                            name: 'type',
+                            inputValue:'string',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
 
-							}
-						},
+                            }
+                        },{
+                            boxLabel:'Text',
+                            name: 'type',
+                            inputValue:'text',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
+
+                            }
+                        },{
+                            boxLabel:'Boolean',
+                            name: 'type',
+                            inputValue:'boolean',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
+
+                            }
+                        },{
+                            boxLabel:'Date',
+                            name: 'type',
+                            inputValue:'date',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
+
+                            }
+                        },
+						// {
+						// 	boxLabel: appLang.FILED_STD,
+						// 	name: 'type',
+						// 	inputValue: '',
+						// 	checked: true,
+
+						// },
 						{
 							boxLabel: appLang.LINK,
 							name: 'type',
@@ -622,34 +678,48 @@ Ext.define('app.crud.orm.FieldWindow', {
 
 		this.callParent(arguments);
 	},
+    onStdFieldSelected:function(field, newValue, oldValue, options){
+        if(newValue){
+            this.fieldType.getStore().filter('group',field.inputValue);
+            this.processFields(
+                [
+                    this.fieldLinkType,
+                    this.fieldObject
+                ],[
+                    this.fieldType
+                ]
+            );
+            this.dbTypeSelected(this.fieldType.getValue());
+        }
+    },
 	setTableEngine:function(engine){
 		switch (engine) {
 			case 'Memory':
-				this.fillDbTypesStore([
-					app.crud.orm.intTypes,
-					app.crud.orm.floatTypes,
-					app.crud.orm.charTypes,
-					app.crud.orm.dateTypes
-				]);
+				this.fillDbTypesStore({
+					'integer':app.orm.dataTypes.integer,
+                    'floating':app.orm.dataTypes.floating,
+                    'string':app.orm.dataTypes.string,
+                    'date':app.orm.dataTypes.date,
+                    'boolean':app.orm.dataTypes.boolean
+				});
 				break;
-
 			default:
-				this.fillDbTypesStore([
-					app.crud.orm.intTypes,
-					app.crud.orm.floatTypes,
-					app.crud.orm.charTypes,
-					app.crud.orm.dateTypes,
-					app.crud.orm.textTypes
-//				                       app.crud.orm.blobTypes
-				]);
+				this.fillDbTypesStore({
+                    'integer':app.orm.dataTypes.integer,
+                    'floating':app.orm.dataTypes.floating,
+                    'string':app.orm.dataTypes.string,
+                    'date':app.orm.dataTypes.date,
+                    'boolean':app.orm.dataTypes.boolean,
+					'text':app.orm.dataTypes.text
+				});
 				break;
 		}
 	},
 	fillDbTypesStore:function(arrayTypes){
 		var data = [];
-		Ext.each(arrayTypes, function(types){
+        Ext.Object.each(arrayTypes, function(index, types){
 			Ext.each(types, function(type){
-				data.push({id:type,title:type});
+				data.push({id:type,title:type,group:index});
 			});
 		});
 		this.fieldType.getStore().loadData(data,false);

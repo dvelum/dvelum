@@ -15,6 +15,7 @@ use Dvelum\Orm\Object;
  * @copyright Copyright (C) 2011-2012  Kirill A Egorov,
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * @license General Public License version 3
+ * @deprecated
  */
 class Property
 {
