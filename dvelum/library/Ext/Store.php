@@ -182,14 +182,14 @@ class Ext_Store extends Ext_Object
 
 		if(!empty($this->_fields))
 		{
-            foreach ($this->_fields as $field)
-            {
-                if($field->getConfig()->isValidProperty('mapping') && strlen($field->mapping))
-                {
-                    $model = Ext_Code::appendNamespace($field->mapping);
-                    $field->mapping = $model;
-                }
-            }
+//            foreach ($this->_fields as $field)
+//            {
+//                if($field->getConfig()->isValidProperty('mapping') && strlen($field->mapping))
+//                {
+//                    $model = Ext_Code::appendNamespace($field->mapping);
+//                    $field->mapping = $model;
+//                }
+//            }
             $this->fields = "[\n".Utils_String::addIndent(implode(',',array_values($this->_fields)))."\n]";
         }
 
