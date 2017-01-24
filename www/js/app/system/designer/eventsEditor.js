@@ -183,7 +183,7 @@ Ext.define('designer.eventsEditor',{
 Ext.define('designer.eventsEditorWindow',{
 	extend:'Ext.Window',
 	modal:true,
-	width:500,
+	width:800,
 	height:600,
 	layout:{
 		type: 'vbox',
@@ -283,7 +283,12 @@ Ext.define('designer.eventsEditorWindow',{
 		
 		//this.items = [this.centerPanel];
 		this.callParent();
-		this.on('show',this.loadCode,this);
+        this.on('show', function(){
+            this.loadCode();
+            app.checkSize(this);
+            Ext.WindowMgr.register(this);
+            Ext.WindowMgr.bringToFront(this);
+        }, this);
 	},
 	
 	loadCode:function(){
