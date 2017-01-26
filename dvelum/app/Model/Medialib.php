@@ -26,13 +26,14 @@ class Model_Medialib extends Model
      * @param integer $size (bytes)
      * @param string $type
      * @param string $ext  - extension
+     * @param string $hash - file hash, optional default null
      * @return integer
      */
-    public function addItem($name , $path , $size , $type, $ext , $category = null)
+    public function addItem($name, $path, $size, $type, $ext, $category = null, $hash=null)
     {
         $size = number_format(($size/1024/1024) , 3);
 
-        $data = array(
+        $data = [
             'title'=>$name,
             'path'=>$path,
             'size'=>$size,
@@ -40,11 +41,13 @@ class Model_Medialib extends Model
             'user_id'=>User::getInstance()->id,
             'ext'=>$ext,
             'date'=>date('Y-m-d H:i:s'),
-            'category'=>$category
-        );
+            'category'=>$category,
+            'hash'=> $hash
+        ];
 
         $obj = new Db_Object($this->_name);
         $obj->setValues($data);
+
         if($obj->save()){
             return $obj->getId();
         } else{
@@ -55,8 +58,9 @@ class Model_Medialib extends Model
     /**
      * Delete item from library
      * @param integer $id
+     * @return boolean
      */
-    public function remove($id , $log=true)
+    public function remove($id)
     {
         if(!$id)
             return false;

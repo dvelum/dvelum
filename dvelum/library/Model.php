@@ -806,12 +806,12 @@ class Model
     /**
      * Delete record
      * @param integer $recordId record ID
-     * @param boolean $log — log changes
+     * @return  boolean
      */
-    public function remove($recordId , $log = true)
+    public function remove($recordId)
     {
         $object = new Db_Object($this->_name , $recordId);
-        if(self::_getObjectsStore()->delete($object , $log))
+        if(self::_getObjectsStore()->delete($object))
             return true;
         else
             return false;

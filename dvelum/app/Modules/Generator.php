@@ -32,7 +32,7 @@ class Modules_Generator
           if(!is_dir($dir))
               throw new Exception('Invalid controller dir');
       }else{
-          if(!@mkdir($dir , 0777 , true))
+          if(!@mkdir($dir , 0775 , true))
               throw new Exception(Lang::lang()->get('CANT_WRITE_FS') . ' ' . $dir);
       }
 

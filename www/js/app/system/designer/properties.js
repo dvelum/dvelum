@@ -208,19 +208,19 @@ Ext.define('designer.properties.Panel', {
                     store: storesStore
                 })
             },
-            'mapping':{
-                editor:Ext.create('Ext.form.field.ComboBox',{
-                    typeAhead: true,
-                    triggerAction: 'all',
-                    selectOnTab: true,
-                    labelWidth:80,
-                    forceSelection:false,
-                    queryMode:'local',
-                    displayField:'title',
-                    valueField:'title',
-                    store:app.designer.getModelsStore()
-                })
-            },
+            // 'mapping':{
+            //     editor:Ext.create('Ext.form.field.ComboBox',{
+            //         typeAhead: true,
+            //         triggerAction: 'all',
+            //         selectOnTab: true,
+            //         labelWidth:80,
+            //         forceSelection:false,
+            //         queryMode:'local',
+            //         displayField:'title',
+            //         valueField:'title',
+            //         store:app.designer.getModelsStore()
+            //     })
+            // },
             'menu': {
                 editor: Ext.create('Ext.form.field.ComboBox', {
                     typeAhead: true,
