@@ -2,6 +2,9 @@
     'image' =>
         array (
             'title' => 'Images',
+             // 15 mb
+            'max_file_size'=> 1024*1024*1024*15,
+            'rewrite'=>false,
             'extensions' =>
                 array (
                     0 => '.gif',
