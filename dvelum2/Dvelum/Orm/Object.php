@@ -22,6 +22,7 @@ namespace Dvelum\Orm;
 use Dvelum\Config;
 use Dvelum\Model;
 use Psr\Log\LogLevel;
+use Dvelum\Orm\Exception;
 /**
  * Database Object class. ORM element.
  * @author Kirill Egorov 2011  DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
@@ -325,35 +326,10 @@ class Object
      */
     public function getLinkedObject($field)
     {
-        if(!$this->config->isLink($field))
-            return false;
-
-        $cfg = $this->config->getFieldConfig($field);
-        return $cfg['linkconfig']['object'];
+        return $this->config->getField($field)->getLinkedObject();
     }
 
-    /**
-     * Validate link field
-     * @param string $name
-     * @param mixed $value
-     * @return boolean
-     */
-    protected  function _validateLink($name , $value)
-    {
-        $propConf = $this->config->getFieldConfig($name);
-        switch ($propConf['linkconfig']['link_type'])
-        {
-            case 'object':
-            case 'multi' :
-                return self::objectExists($propConf['linkconfig']['object'], $value);
-                break;
-            case 'dictionary':
-                $dictionary = Dictionary::factory($propConf['linkconfig']['object']);
-                return $dictionary->isValidKey($value);
-                break;
-        }
-        return false;
-    }
+
 
     /**
      * Check if the listed objects exist
@@ -409,7 +385,7 @@ class Object
      * @return bool
      * @throws Exception
      */
-    public function set($name , $value)
+    public function set(string $name , $value)
     {
         if($this->acl)
             $this->checkCanEdit();
@@ -425,90 +401,19 @@ class Object
             throw new Exception('Invalid value for field ' . $name);
         }
 
-        /*
-         * Validate value by fields type in config
-         */
-        if($field->isMultiLink())
-        {
-            if(is_array($value) && !empty($value[0])){
-                if(!$this->_validateLink($name , $value))
-                    throw new Exception('Invalid property value');
-
-            } else {
-                $value = [];
-            }
-        }
-        elseif ($field->isDictionaryLink())
-        {
-            if($field->isRequired() && !strlen($value))
-                throw new Exception('Field '. $name.' cannot be empty');
-
-            if(strlen($value))
-            {
-                $fieldConfig = $this->config->getFieldConfig($name);
-                $dictionary = Dictionary::factory($fieldConfig['linkconfig']['object']);
-
-                if(!$dictionary->isValidKey($value))
-                    throw new Exception('Invalid dictionary value ['.$name.']');
-            }
-        }
-        elseif ($field->isLink())
-        {
-            if(is_object($value)){
-                if($value instanceof Object)
-                {
-                    if($field->isObjectLink())
-                    {
-                        if(!$value->isInstanceOf($this->getLinkedObject($name))){
-                            throw new Exception('Invalid value type for field '. $name.' expects ' . $this->getLinkedObject($name) . ', '.$value->getName().' passed');
-                        }
-                    }
-                    $value = $value->getId();
-                }else{
-                    $value = $value->__toString();
-                }
-            }
-
-            if(is_array($value))
-                throw new Exception('Invalid value for field '. $name);
-
-            if($field->isRequired() && !strlen((string) $value))
-                throw new Exception('Field '. $name.' cannot be empty');
-
-            $value = intval($value);
-
-            if($value != 0 && !$this->_validateLink($name, $value))
-                throw new \Exception('Invalid value for field '. $name);
-
-            if($value == 0)
-                $value = null;
-
-        }
-        // mysql strict mode patch
-        elseif($field->isBoolean())
-        {
-            $value = intval((boolean)$value);
-        }
-        elseif (is_null($value) && $field->isNull())
-        {
-            $value = null;
-        }
-        else
-        {
-            $value = Object\Field\Property::filter($propConf, $value);
+        $value = $field->filter($value);
+        if(!$field->validate($value)){
+            throw new Exception('Invalid value for field '. $name.'. '.$field->getValidationError());
         }
 
         if(isset($propConf['db_len']) && $propConf['db_len']){
-            if(mb_strlen((string)$value ,'UTF-8') > $propConf['db_len'])
-                throw new Exception('The field value exceeds the allowable length ['.$name.']');
             if($propConf['db_type'] == 'bit' && (strlen($value) > $propConf['db_len'] || strlen($value) < $propConf['db_len']))
                 throw new Exception('Invalid length for bit value ['.$name.']');
         }
 
         if(isset($this->data[$name]))
         {
-            if($this->getConfig()->getField($name)->isBoolean() && intval($this->data[$name]) === intval($value) )
-            {
+            if($this->getConfig()->getField($name)->isBoolean() && intval($this->data[$name]) === intval($value) ) {
                 unset($this->updates[$name]);
                 return true;
             }

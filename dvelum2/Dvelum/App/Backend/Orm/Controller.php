@@ -27,7 +27,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
     {
         $action = $this->request->getPart(2);
         if(isset($this->routes[$action])){
-            $router = new \Backend_Router();
+            $router = new \Dvelum\App\Router\Backend();
             $router->runController($this->routes[$action], $this->request->getPart(3));
             return;
         }

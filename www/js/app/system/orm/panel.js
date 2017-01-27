@@ -1,4 +1,5 @@
 Ext.ns('app.crud.orm');
+Ext.ns('app.orm');
 
 app.crud.orm.canEdit = false;
 app.crud.orm.canDelete = false;
@@ -11,7 +12,20 @@ app.crud.orm.floatTypes = ['decimal' ,'float' ,'double'];
 app.crud.orm.charTypes = ['char','varchar'];
 app.crud.orm.textTypes = ['tinytext','text','mediumtext','longtext'];
 app.crud.orm.dateTypes = ['date','datetime','time','timestamp'];
+
 app.crud.orm.blobTypes = ['tinyblob','blob','mediumblob','longblob'];
+
+
+app.orm.dataTypes = {
+	integer:['tinyint','smallint','mediumint','int','bigint'],
+	floating:['decimal' ,'float' ,'double'],
+	date:['date','datetime','time','timestamp'],
+	string:['char','varchar'],
+	text:['tinytext','text','mediumtext','longtext'],
+	boolean:['boolean']
+};
+
+
 app.crud.orm.Actions = {};
 
 app.crud.orm.getObjectsList = function(){

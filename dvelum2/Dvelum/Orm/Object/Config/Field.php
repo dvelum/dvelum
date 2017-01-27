@@ -29,6 +29,7 @@ use Dvelum\Orm;
 class Field implements \ArrayAccess
 {
     protected $config;
+    protected $validationError ='';
 
     public function __construct(array $config)
     {
@@ -358,5 +359,47 @@ class Field implements \ArrayAccess
     public function __isset($name)
     {
         return isset($this->config[$name]);
+    }
+
+    /**
+     * Apply value filter
+     * @param mixed $value
+     * @return mixed
+     */
+    public function filter($value)
+    {
+        return $value;
+    }
+
+    /**
+     * Validate value
+     * @param $value
+     * @return boolean
+     */
+    public function validate($value) : boolean
+    {
+        if($this->isRequired() && !strlen((string)$value)){
+            $this->validationError = 'Field '. $this->getName().' cannot be empty';
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Get field name
+     * @return string
+     */
+    public function getName() : string
+    {
+        return $this->config['name'];
+    }
+
+    /**
+     * Get last validation error
+     * @return string
+     */
+    public function getValidationError() : string
+    {
+        return $this->validationError;
     }
 }

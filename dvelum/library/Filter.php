@@ -74,7 +74,7 @@ class Filter
 				break;
 			case 'bool' :
 			case 'boolean' :
-				$value = filter_var ( $value, FILTER_VALIDATE_BOOLEAN );
+				$value = filter_var ( $value, FILTER_VALIDATE_BOOLEAN);
 				break;
 			case 'int' :
 			case 'integer' :
