@@ -279,10 +279,6 @@ class Model_Medialib extends Model
         $conf = $this->getConfig()->__toArray();
         $thumbSizes = $conf['image']['sizes'];
 
-        // sub dir fix
-        if($srcData['path'][0]!=='/')
-            $srcData['path'] = '/'.$srcData['path'];
-
         $path = $docRoot.$srcData['path'];
 
         if(!file_exists($path))
@@ -290,7 +286,11 @@ class Model_Medialib extends Model
 
         $tmpPath = $appConfig['tmp'].basename($path);
 
-        Image_Resize::cropImage($path, $tmpPath , $x, $y, $w, $h);
+        $path = str_replace('//','/', $path);
+
+        if(!Image_Resize::cropImage($path, $tmpPath , $x, $y, $w, $h)){
+            return false;
+        }
 
         if(!isset($thumbSizes[$type]))
             return false;
