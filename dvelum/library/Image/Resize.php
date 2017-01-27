@@ -47,8 +47,7 @@ class Image_Resize
         imagecopyresampled($destImg , $img , 0 , 0 , $x , $y , $w , $h , $w , $h);
         imagedestroy($img);
 
-        self::saveImage($destImg , $dest , $imgInfo[2]);
-        return true;
+        return self::saveImage($destImg , $dest , $imgInfo[2]);
     }
 
     /**
@@ -99,8 +98,9 @@ class Image_Resize
             return false;
         }
 
-        if($crop)
+        if($crop){
             return self::cropResize($imgPath , $width , $height , $newImgPath);
+        }
 
         /*
          * Get Image size info
@@ -113,8 +113,9 @@ class Image_Resize
          */
         if($imgInfo[0] < $width && $imgInfo[1] < $height)
         {
-            self::saveImage($im , $newImgPath , $imgInfo[2]);
-            return true;
+            $result = self::saveImage($im , $newImgPath , $imgInfo[2]);
+            imagedestroy($im);
+            return $result;
         }
 
         /*
@@ -159,8 +160,7 @@ class Image_Resize
         imagecopyresampled($newImg , $im , 0 , 0 , 0 , 0 , $nWidth , $nHeight , $imgInfo[0] , $imgInfo[1]);
         imagedestroy($im);
 
-        self::saveImage($newImg , $newImgPath , $imgInfo[2]);
-        return true;
+        return self::saveImage($newImg , $newImgPath , $imgInfo[2]);
     }
 
     /**
@@ -210,19 +210,19 @@ class Image_Resize
         switch($imgType)
         {
             case IMAGETYPE_GIF :
-                imagegif($resource , $path);
+                $result = imagegif($resource , $path);
                 break;
             case IMAGETYPE_JPEG :
-                imagejpeg($resource , $path , 100);
+                $result = imagejpeg($resource , $path , 100);
                 break;
             case IMAGETYPE_PNG :
-                imagepng($resource , $path);
+                $result = imagepng($resource , $path);
                 break;
             default :
-                return false;
+                $result = false;
         }
         imagedestroy($resource);
-        return true;
+        return $result;
     }
 
     /**
