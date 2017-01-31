@@ -376,7 +376,7 @@ class Field implements \ArrayAccess
      * @param $value
      * @return boolean
      */
-    public function validate($value) : boolean
+    public function validate($value) : bool
     {
         if($this->isRequired() && !strlen((string)$value)){
             $this->validationError = 'Field '. $this->getName().' cannot be empty';

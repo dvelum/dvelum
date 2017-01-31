@@ -370,7 +370,7 @@ class Store
         {
         	$conf = $object->getConfig()->getFieldConfig($k);
 
-            if($object->getConfig()->isMultiLink($k))
+            if($object->getConfig()->getField($k)->isMultiLink())
             {
                 if(!$this->_clearLinks($object, $k,$conf['link_config']['object']))
                     return false;
@@ -788,7 +788,7 @@ class Store
 	    Model::factory($this->config['linksObject'])->clearLinksFor($objectName , $ids);
 
         $history = Model::factory($this->config['historyObject']);
-        $userId = \User::getInstance()->id;
+        $userId = \Dvelum\App\Session\User::getInstance()->id;
 
         /*
          * Save history if required

@@ -45,7 +45,7 @@ class Model_Historylog extends Model
         if(!is_integer($type))
             throw new Exception('History::log Invalid type');
 
-			$obj = Orm\Object::factory($this->_name);
+			$obj = Orm\Object::factory($this->name);
 			$obj->setValues(array(
                 	'user_id' =>intval($user_id),
                     'record_id' => intval($record_id),

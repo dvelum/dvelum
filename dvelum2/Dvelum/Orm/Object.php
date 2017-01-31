@@ -23,6 +23,7 @@ use Dvelum\Config;
 use Dvelum\Model;
 use Psr\Log\LogLevel;
 use Dvelum\Orm\Exception;
+use Dvelum\App\Session\User;
 /**
  * Database Object class. ORM element.
  * @author Kirill Egorov 2011  DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
@@ -587,7 +588,7 @@ class Object
                 if($this->config->isRevControl()){
                     $this->date_created = date('Y-m-d H:i:s');
                     $this->date_updated = date('Y-m-d H:i:s');
-                    $this->authorid = User::getInstance()->id;
+                    $this->author_id = User::getInstance()->id;
                 }
 
                 $id = $store->insert($this , $useTransaction);
@@ -598,7 +599,7 @@ class Object
 
                 if($this->config->isRevControl()){
                     $this->date_updated = date('Y-m-d H:i:s');
-                    $this->editorid = User::getInstance()->getId();
+                    $this->editor_id = User::getInstance()->getId();
                 }
                 $id = (integer) $store->update($this , $useTransaction);
                 $this->commitChanges();
@@ -930,7 +931,7 @@ class Object
         /**
          * @todo refactor
          */
-        $this->editorid = \Dvelum\App\Session\User::factory()->getId();
+        $this->editor_id = User::factory()->getId();
 
         return $store->unpublish($this , $log , $useTransaction);
     }
@@ -979,12 +980,12 @@ class Object
 
         $this->published = true;
         $this->date_updated = date('Y-m-d H:i:s');
-        $this->editorid = \Dvelum\App\Session\User::factory()->getId();
+        $this->editor_id = User::factory()->getId();
 
         if(empty($this->date_published))
             $this->set('date_published' , date('Y-m-d H:i:s'));
 
-        $this->publishedversion = $this->getVersion();
+        $this->published_version = $this->getVersion();
         return $store->publish($this , $log , $useTransaction);
     }
 
@@ -1021,7 +1022,6 @@ class Object
             throw new Exception('Cannot load version for ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers);
 
         $iv = false;
-        $ivField = false;
         if($this->config->hasEncrypted()){
             $ivField = $this->config->getIvField();
             if(isset($data[$ivField]) && !empty($data[$ivField]))
@@ -1094,14 +1094,14 @@ class Object
         if(!$this->getId())
         {
             $this->published = false;
-            $this->authorid = User::getInstance()->getId();
+            $this->author_id = User::getInstance()->getId();
 
             if(!$this->save(true , $useTransaction))
                 return false;
         }
 
         $this->date_updated = date('Y-m-d H:i:s');
-        $this->editorid = User::getInstance()->getId();
+        $this->editor_id = User::getInstance()->getId();
 
         $store  = $this->model->getStore();
 

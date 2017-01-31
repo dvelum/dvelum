@@ -24,6 +24,7 @@ use Dvelum\Orm;
 use Dvelum\Config as Cfg;
 use Dvelum\Model;
 use Dvelum\Orm\Object\Config\Field;
+use Dvelum\Orm\Exception;
 
 /**
  * Orm Object structure config
@@ -313,8 +314,9 @@ class Config
         /**
          * @todo refactor!
          */
-        foreach($dataLink['fields'] as & $config)
+        foreach($dataLink['fields'] as $fieldName => & $config)
         {
+            $config['name'] = $fieldName;
             $fieldClass = 'Field';
             //determine field type
             $dbType = $config['db_type'];

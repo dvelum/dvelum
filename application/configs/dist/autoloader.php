@@ -25,7 +25,7 @@ return [
     'map' => 'classmap.php',
     // PSR-4 autoload paths
     'psr-4' =>[
-        'Zend\\Stdlib' => './vendor/zendframework/zend-stlib/src',
+        'Zend\\Stdlib' => './vendor/zendframework/zend-stdlib/src',
         'Zend\\Db' => './vendor/zendframework/zend-db/src'
     ]
 

@@ -575,7 +575,7 @@ class Install_Controller
                 if(!$permissionsModel->setGroupPermissions($groupId , $name , true, true , true , true))
                     return false;
 
-            $u = User::getInstance();
+            $u = Dvelum\App\Session\User::getInstance();
             $u->setId($userId);
             $u->setAuthorized();
 

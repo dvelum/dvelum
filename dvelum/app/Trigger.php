@@ -2,6 +2,7 @@
 
 use Dvelum\Config;
 use Dvelum\Orm;
+use Dvelum\App\Session\User;
 
 /**
  * Default Trigger
