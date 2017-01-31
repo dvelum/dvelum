@@ -6,6 +6,8 @@ namespace Dvelum\Orm\Object;
 use Dvelum\Orm;
 use Dvelum\Model;
 use Dvelum\Config;
+use Dvelum\Orm\Exception;
+use \Psr\Log\LogLevel;
 
 /**
  * Storage adapter for Db_Object
@@ -108,7 +110,7 @@ class Store
         if($object->getConfig()->isReadOnly())
         {
             if($this->log)
-                $this->log->log('ORM :: cannot update readonly object '. $object->getConfig()->getName());
+                $this->log->log(LogLevel::ERROR, 'ORM :: cannot update readonly object '. $object->getConfig()->getName());
 
             return false;
         }
@@ -214,7 +216,7 @@ class Store
         }catch (Exception $e){
 
             if($this->log)
-                $this->log->log($object->getName().'::_updateOperation '.$e->getMessage());
+                $this->log->log(LogLevel::ERROR, $object->getName().'::_updateOperation '.$e->getMessage());
 
             return false;
         }
@@ -231,7 +233,7 @@ class Store
     	if($object->getConfig()->isReadOnly())
     	{
     		if($this->log)
-    			$this->log->log('ORM :: cannot unpublish readonly object '. $object->getConfig()->getName());
+    			$this->log->log(LogLevel::ERROR, 'ORM :: cannot unpublish readonly object '. $object->getConfig()->getName());
 
     		return false;
     	}
@@ -245,7 +247,8 @@ class Store
     	if (!$object->getConfig()->isRevControl())
     	{
     		if($this->log){
-    			$this->log->log($object->getName().'::unpublish Cannot unpublish object is not under version control');
+                $msg = $object->getName().'::unpublish Cannot unpublish object is not under version control';
+    			$this->log->log(LogLevel::ERROR, $msg);
     		}
     		return false;
     	}
@@ -301,7 +304,7 @@ class Store
     	if($object->getConfig()->isReadOnly())
     	{
     		if($this->log)
-    			$this->log->log('ORM :: cannot publish readonly object '. $object->getConfig()->getName());
+    			$this->log->log(LogLevel::ERROR, 'ORM :: cannot publish readonly object '. $object->getConfig()->getName());
 
     		return false;
     	}
@@ -314,7 +317,8 @@ class Store
     	if(!$object->getConfig()->isRevControl())
     	{
     		if($this->log){
-    			$this->log->log($object->getName().'::publish Cannot publish object is not under version control');
+                $msg = $object->getName().'::publish Cannot publish object is not under version control';
+    			$this->log->log(LogLevel::ERROR, $msg);
     		}
     		return false;
     	}
@@ -419,7 +423,7 @@ class Store
             return true;
         } catch (Exception $e){
         	if($this->log)
-        		$this->log->log($object->getName().'::_clearLinks '.$e->getMessage());
+        		$this->log->log(LogLevel::ERROR,$object->getName().'::_clearLinks '.$e->getMessage());
             return false;
         }
     }
@@ -482,7 +486,7 @@ class Store
         if($object->getConfig()->isReadOnly())
         {
             if($this->log)
-                $this->log->log('ORM :: cannot insert readonly object '. $object->getConfig()->getName());
+                $this->log->log(LogLevel::ERROR, 'ORM :: cannot insert readonly object '. $object->getConfig()->getName());
 
             return false;
         }
@@ -580,7 +584,7 @@ class Store
                 {
                     $errors[] = $k . ':' . $v;
                 }
-                $this->log->log($object->getName() . '::insert ' . implode(', ' , $errors));
+                $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . implode(', ' , $errors));
             }
             return false;
         }
@@ -589,8 +593,12 @@ class Store
 
         $objectTable = $object->getTable();
 
-    	if(!$db->insert($objectTable, $object->serializeLinks($updates)))
-             return false;
+        try {
+            $db->insert($objectTable, $object->serializeLinks($updates));
+        }catch (Orm\Exception $e) {
+            $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
+            return false;
+        }
 
         $id = $db->lastInsertId($objectTable , $object->getConfig()->getPrimaryKey());
 
@@ -619,8 +627,10 @@ class Store
 
     	if($object->getConfig()->isReadOnly())
     	{
-    		if($this->log)
-    			$this->log->log('ORM :: cannot addVersion for readonly object '. $object->getConfig()->getName());
+    		if($this->log){
+                $msg = 'ORM :: cannot addVersion for readonly object '. $object->getConfig()->getName();
+                $this->log->log(LogLevel::ERROR, $msg);
+            }
 
     		return false;
     	}
@@ -632,8 +642,10 @@ class Store
 
     	if(!$object->getConfig()->isRevControl())
     	{
-    		if($this->log)
-    			$this->log->log($object->getName().'::publish Cannot addVersion. Object is not under version control');
+    		if($this->log){
+                $msg = $object->getName().'::publish Cannot addVersion. Object is not under version control';
+                $this->log->log(LogLevel::ERROR, $msg);
+            }
 
     		return false;
     	}
@@ -675,7 +687,7 @@ class Store
 
         }catch(Exception $e){
             if($this->log)
-                $this->log->log('Cannot update unpublished object data '. $e->getMessage());
+                $this->log->log(LogLevel::ERROR, 'Cannot update unpublished object data '. $e->getMessage());
     		return false;
     	}
 
@@ -700,7 +712,7 @@ class Store
         if($object->getConfig()->isReadOnly())
         {
             if($this->log)
-                $this->log->log('ORM :: cannot delete readonly object '. $object->getName());
+                $this->log->log(LogLevel::ERROR, 'ORM :: cannot delete readonly object '. $object->getName());
 
             return false;
         }
@@ -753,7 +765,7 @@ class Store
         if($objectConfig->isReadOnly())
         {
             if($this->log)
-                $this->log->log('ORM :: cannot delete readonly objects '. $objectConfig->getName());
+                $this->log->log(LogLevel::ERROR, 'ORM :: cannot delete readonly objects '. $objectConfig->getName());
 
             return false;
         }
