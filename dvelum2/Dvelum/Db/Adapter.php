@@ -174,7 +174,7 @@ class Adapter extends  \Db_Adapter
         $insert->values($values);
 
         $statement = $sql->prepareStatementForSqlObject($insert);
-        return $statement->execute();
+        $statement->execute();
     }
 
     public function delete($table, $where = null)
@@ -187,7 +187,7 @@ class Adapter extends  \Db_Adapter
         }
 
         $statement = $sql->prepareStatementForSqlObject($delete);
-        return $statement->execute();
+        $statement->execute();
     }
 
     public function update($table, $values, $where = null )
@@ -200,7 +200,7 @@ class Adapter extends  \Db_Adapter
         }
 
         $statement = $sql->prepareStatementForSqlObject($update);
-        return $statement->execute();
+        $statement->execute();
     }
 
     public function lastInsertId($tableName = null, $primaryKey = null)
