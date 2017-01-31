@@ -43,6 +43,7 @@ Ext.define('app.objectLink.Field',{
             anchor:"100%",
             readOnly :true,
             name:this.name,
+            allowBlank:this.allowBlank,
             listeners:{
                 focus:{
                     fn:this.showSelectionWindow,
@@ -91,6 +92,12 @@ Ext.define('app.objectLink.Field',{
         },this);
 
         this.updateViewState();
+    },
+    isValid:function(){
+        return this.dataField.isValid();
+    },
+    markInvalid:function(){
+        this.dataFieldLabel.markInvalid();
     },
     showSelectionWindow:function(){
 

@@ -77,7 +77,7 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
         Response::jsonSuccess($fields);
     }
     /**
-     * Get list of store fields, include fields from model
+     * Get list of store fields
      */
     public function listfieldsAction()
     {
@@ -96,12 +96,13 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
             $this->_object = $this->_object->getObject();
         $fields = array();
 
-        $model = $this->_object->model;
-
-        if(strlen($model)){
-            $model = $this->_project->getObject($model);
-            $fields = $model->fields;
-        }
+         // Do not show model fields. It cause misleading
+//        $model = $this->_object->model;
+//
+//        if(strlen($model)){
+//            $model = $this->_project->getObject($model);
+//            $fields = $model->fields;
+//        }
 
         if(empty($fields))
             $fields = $this->_object->fields;
