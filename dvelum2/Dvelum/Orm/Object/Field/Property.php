@@ -24,6 +24,7 @@ class Property
      * @var array
      */
     public static $_acceptedData = [
+            'name',
             'title' , 
             'required' , 
             'allow_html' , 

@@ -74,8 +74,8 @@
     array (
       'type' => '',
       'unique' => '',
-      'db_isNull' => false,
-      'required' => true,
+      'db_isNull' => true,
+      'required' => false,
       'db_type' => 'int',
       'db_default' => 0,
       'db_unsigned' => true,

@@ -13,9 +13,9 @@ class Model_Blockmapping extends Model
     public function clearMap($pageId)
     {
         if(!$pageId)
-          $this->_db->delete($this->table(),' `page_id` IS NULL');
+          $this->db->delete($this->table(),' `page_id` IS NULL');
         else 
-          $this->_db->delete($this->table(),' `page_id` = ' . intval($pageId));
+          $this->db->delete($this->table(),' `page_id` = ' . intval($pageId));
     }
     /**
      * Add block map for page

@@ -224,7 +224,7 @@ class Model_Permissions extends Model
         if(!empty($modulesToRemove))
         {
             try{
-                $this->_db->delete($this->table(),'`module` IN (\''.implode("','", $modulesToRemove).'\') AND `user_id`='.intval($userId));
+                $this->db->delete($this->table(),'`module` IN (\''.implode("','", $modulesToRemove).'\') AND `user_id`='.intval($userId));
             }catch (Exception $e){
                 $this->logError($e->getMessage());
                 return false;
@@ -234,12 +234,12 @@ class Model_Permissions extends Model
         $groupPermissions = [];
 
         if($userInfo['group_id']){
-            $sql = $this->_dbSlave	->select()
+            $sql = $this->dbSlave	->select()
                 ->from($this->table() , self::$_fields)
                 ->where('`group_id` = '.intval($userInfo['group_id']))
                 ->where('`user_id` IS NULL');
 
-            $groupPermissions = $this->_dbSlave->fetchAll($sql);
+            $groupPermissions = $this->dbSlave->fetchAll($sql);
             if(!empty($groupPermissions)){
                 $groupPermissions = Utils::rekey('module', $groupPermissions);
             }
@@ -342,7 +342,7 @@ class Model_Permissions extends Model
 		$groupObj->delete=$delete;
 		$groupObj->publish=$publish;
 		$groupObj->group_id=$group;
-    	$groupObj->user_id=0;
+    	$groupObj->user_id=null;
 
     	return $groupObj->save(true);
     }
@@ -354,23 +354,23 @@ class Model_Permissions extends Model
      */
     public function removeGroup($groupId)
     {
-    	$select = $this->_dbSlave->select()
+    	$select = $this->dbSlave->select()
     						->from($this->table(), 'id')
     						->where('`user_id`  IS NULL')
     						->where('`group_id` = ?', $groupId);
 
-    	$groupIds = $this->_dbSlave->fetchCol($select);
+    	$groupIds = $this->dbSlave->fetchCol($select);
 
 		$store = $this->_getObjectsStore();
 
-        if(!empty($groupIds) && !$store->deleteObjects($this->_name, $groupIds))
+        if(!empty($groupIds) && !$store->deleteObjects($this->name, $groupIds))
             return false;
 
     	/**
 		 * Invalidate Cache
     	 */
-    	if($this->_cache)
-			$this->_cache->remove('group_permissions' . $groupId);
+    	if($this->cache)
+			$this->cache->remove('group_permissions' . $groupId);
 
     	return  true;
     }

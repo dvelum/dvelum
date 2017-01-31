@@ -296,7 +296,7 @@ class Resource
             $str .= "\n";
 
             $fileName = $item->file;
-            $paramsPos = \strpos($fileName , '?' , true);
+            $paramsPos = \strpos($fileName , '?');
 
             if($paramsPos!==false){
                 $fileName = \substr($fileName, 0 , $paramsPos);
