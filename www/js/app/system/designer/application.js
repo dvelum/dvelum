@@ -544,6 +544,11 @@ Ext.define('designer.application',{
 							iconCls:'comboboxFieldIcon',
 							showType:'loaded',
 							oClass:'Form_Field_Combobox'
+						},{
+							text:'Tag Field',
+							iconCls:'tagIcon',
+							showType:'loaded',
+							oClass:'Form_Field_Tag'
 						}
 					]
 				})

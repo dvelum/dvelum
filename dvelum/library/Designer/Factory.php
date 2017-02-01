@@ -134,8 +134,7 @@ class Designer_Factory
                     if(strpos($file , '?') === false){
                         $file = $file .'?'. $cachedKey;
                     }
-
-                    $resource->addCss($file , false);
+                    $resource->addCss($file , 100);
                 }else{
 
                     if(strpos($file , '?') === false){
