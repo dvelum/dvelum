@@ -215,7 +215,7 @@ Ext.define('designer.grid.column.Window',{
 							model:'designer.model.fieldsModel',
 							proxy: {
 								type: 'ajax',
-								url:app.createUrl([designer.controllerUrl ,'store','']) +  'listfields',
+								url:app.createUrl([designer.controllerUrl ,'store','']) +  'allfields',
 								reader: {
 									type: 'json',
 									rootProperty: 'data'
