@@ -366,4 +366,50 @@ class Model_Medialib extends Model
             return false;
         }
     }
+
+    /**
+     * Get file icon
+     * @param $filename
+     * @return string
+     */
+    static public function getFilePic($filename)
+    {
+        $ext = File::getExt($filename);
+        $icon = 'i/system/file.png';
+        switch($ext){
+            case '.jpg':
+            case '.jpeg':
+            case '.gif':
+            case '.bmp':
+            case '.png':
+                $icon = 'i/system/folder-image.png';
+                break;
+            case  '.doc':
+            case  '.docx':
+            case  '.odt':
+            case  '.txt':
+                $icon = 'i/system/doc.png';
+                break;
+
+            case  '.xls':
+            case  '.xlsx':
+            case  '.ods':
+            case  '.csv':
+                $icon = 'i/system/excel.png';
+                break;
+            case '.pdf':
+                $icon = 'i/system/pdf.png';
+                break;
+
+            case '.zip':
+            case '.rar':
+            case '.7z':
+                $icon = 'i/system/archive.png';
+                break;
+
+
+            default :  $icon = 'i/system/file.png';
+        }
+        return $icon;
+    }
 }

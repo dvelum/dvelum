@@ -118,7 +118,7 @@ class Upload
                      * @var Upload_AbstractAdapter $uploader
                      */
                     $uploader = $this->_uploaders['file'];
-                    $uploader->upload($item , $path , $formUpload);
+                    $file = $uploader->upload($item , $path , $formUpload);
 
 					if(!empty($file))
 					{
@@ -139,6 +139,7 @@ class Upload
 					break;
 			}
 		}
+
 		return $uploadedFiles;
 	}
 
