@@ -36,6 +36,8 @@ Ext.define('app.objectLink.Field',{
         this.callParent(arguments);
     },
 
+    updateObjectTitle:false,
+
     initComponent:function(){
 
         var  me = this;
@@ -114,16 +116,19 @@ Ext.define('app.objectLink.Field',{
             title:this.fieldLabel,
             extraParams:this.extraParams
         });
+
         win.on('itemSelected',function(record){
-            this.setValue(record.get('id'));
+            this.setRawData(record.get('id'),record.get('title'));
             this.fireEvent('completeEdit');
             win.close();
         },this);
+
         win.show();
         app.checkSize(win);
     },
     setValue:function(value){
         this.dataField.setValue(value);
+        this.updateObjectTitle = true;
         this.fireEvent('change' , this);
     },
     getValue:function(){
@@ -131,12 +136,23 @@ Ext.define('app.objectLink.Field',{
     },
     reset:function(){
         this.dataField.reset();
+        this.updateObjectTitle = true;
         this.fireEvent('change' , this);
     },
-    isValid:function(){
-        return true;
+    setRawData:function(id,title){
+        this.dataField.setValue(id);
+        this.dataFieldLabel.setValue(title);
+        this.updateObjectTitle = false;
+        this.fireEvent('change' , this);
+    },
+    setObjectTitle:function(title){
+        this.dataFieldLabel.setValue(title);
+        this.updateLayout();
     },
     getObjectTitle:function(){
+        if(!this.updateObjectTitle){
+            return;
+        }
         var me = this;
         var curValue = me.getValue();
 
