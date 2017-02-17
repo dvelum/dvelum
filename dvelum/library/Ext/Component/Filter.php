@@ -11,11 +11,21 @@ class Ext_Component_Filter extends Ext_Object
 	/**
 	 * Get visualisation object
 	 * @return Ext_Object
+     * @deprecated
 	 */
 	public function getViewObject()
 	{
-		return $this->_viewObject;
+		return $this->getObject();
 	}
+
+    /**
+     * Get visualisation object
+     * @return Ext_Object
+     */
+	public function getObject()
+    {
+        return $this->_viewObject;
+    }
 
 	/**
 	 * Set visualisation object
@@ -46,38 +56,45 @@ class Ext_Component_Filter extends Ext_Object
 		if($this->_config->isValidProperty('autoFilter') && intval($this->_config->autoFilter))
 			$autoFilter = true;
 
-		$object = $this->getViewObject();
+		$object = $this->getObject();
 
-		if(strlen($store) && strlen($field))
+		if(strlen($store) && strlen($field) && $autoFilter)
 		{
-			$listener = 'function(fld){
-			';
+                $listener = 'function(fld){
+                ';
 
-			if($autoFilter)
-			{
-				if($local)
-				{
-					$listener.= $store.'.filter("'.$field.'" , fld.getValue());';
-				}
-				else
-				{
-					if($this->_viewObject->isValidProperty('multiSelect') && $this->_viewObject->multiSelect){
-						$listener.= $store.'.proxy.setExtraParam("filter['.$field.'][]" , fld.getValue());';
-					}else{
-						$listener.= $store.'.proxy.setExtraParam("filter['.$field.']" , fld.getValue());';
-					}
-					$listener.= $store.'.loadPage(1);';
-				}
-			}
-			$listener.='
-			 }';
 
-            if($this->_viewObject->getClass() == 'Form_Field_Combobox') {
-                $object->addListener('select', $listener);
-            } else {
-                $object->addListener('change', $listener);
-            }
+                    if($local)
+                    {
+                        $listener.= $store.'.filter("'.$field.'" , fld.getValue());';
+                    }
+                    else
+                    {
+                        if($this->_viewObject->isValidProperty('multiSelect') && $this->_viewObject->multiSelect){
+                            $listener.= $store.'.proxy.setExtraParam("filter['.$field.'][]" , fld.getValue());';
+                        }else{
+                            $listener.= $store.'.proxy.setExtraParam("filter['.$field.']" , fld.getValue());';
+                        }
+                        $listener.= $store.'.loadPage(1);';
+                    }
+
+            $listener.= "\n".'}';
+
+                if($this->_viewObject->getClass() == 'Form_Field_Combobox') {
+                    $object->addListener('select', $listener);
+                } else {
+                    $object->addListener('change', $listener);
+                }
 		}
+
+		// copy listeners
+        $listeners = $this->getListeners();
+        if(!empty($listeners)){
+            foreach ($listeners as $name=>$code){
+                $object->addListener($name,$code);
+            }
+        }
+
 		return $object->__toString();
 	}
 
