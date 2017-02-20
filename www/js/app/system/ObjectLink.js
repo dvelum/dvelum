@@ -48,12 +48,12 @@ Ext.define('app.objectLink.Field',{
             allowBlank:this.allowBlank,
             listeners:{
                 focus:{
-                    fn:this.showSelectionWindow,
-                    scope:this
+                    fn:me.showSelectionWindow,
+                    scope:me
                 },
                 change:{
-                    fn:this.getObjectTitle,
-                    scope:this
+                    fn:me.getObjectTitle,
+                    scope:me
                 }
             }
         });
@@ -69,15 +69,15 @@ Ext.define('app.objectLink.Field',{
                     cls: 'x-form-search-trigger',
                     handler:me.showSelectionWindow,
                     tooltip:appLang.SELECT,
-                    scope:this
+                    scope:me
                 },
                 clear: {
                     cls: 'x-form-clear-trigger',
                     tooltip:appLang.RESET,
                     handler:function(){
-                        me.setValue("");
+                        me.setValue('');
                     },
-                    scope:this
+                    scope:me
                 }
             }
         });
@@ -127,16 +127,17 @@ Ext.define('app.objectLink.Field',{
         app.checkSize(win);
     },
     setValue:function(value){
-        this.dataField.setValue(value);
         this.updateObjectTitle = true;
+        this.dataField.setValue(value);
         this.fireEvent('change' , this);
     },
     getValue:function(){
         return this.dataField.getValue();
     },
     reset:function(){
-        this.dataField.reset();
         this.updateObjectTitle = true;
+        this.dataField.reset();
+        this.dataFieldLabel.reset();
         this.fireEvent('change' , this);
     },
     setRawData:function(id,title){
@@ -149,15 +150,17 @@ Ext.define('app.objectLink.Field',{
         this.dataFieldLabel.setValue(title);
         this.updateLayout();
     },
-    getObjectTitle:function(){
-        if(!this.updateObjectTitle){
-            return;
-        }
+    getObjectTitle:function() {
+
         var me = this;
         var curValue = me.getValue();
 
         if(curValue == "" || curValue == 0){
-            me.dataFieldLabel.setValue('');
+            me.dataFieldLabel.setValue('...');
+            return;
+        }
+
+        if(!this.updateObjectTitle){
             return;
         }
 
