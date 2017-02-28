@@ -64,7 +64,7 @@ class Upload
 		$uploadedFiles = array();
 		foreach($files as $k => $item)
 		{
-			if($item['error']){
+			if(isset($item['error']) && $item['error']){
 			    $this->_errors[] = 'Server upload error';
                 continue;
             }
