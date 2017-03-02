@@ -36,7 +36,7 @@ Ext.define('app.objectLink.Field',{
         this.callParent(arguments);
     },
 
-    updateObjectTitle:false,
+    updateObjectTitle:true,
 
     initComponent:function(){
 
@@ -45,18 +45,11 @@ Ext.define('app.objectLink.Field',{
             anchor:"100%",
             readOnly :true,
             name:this.name,
-            allowBlank:this.allowBlank,
-            listeners:{
-                focus:{
-                    fn:me.showSelectionWindow,
-                    scope:me
-                },
-                change:{
-                    fn:me.getObjectTitle,
-                    scope:me
-                }
-            }
+            allowBlank:this.allowBlank
         });
+
+        this.dataField.on('change', me.getObjectTitle, me);
+        this.dataField.on('focus', me.showSelectionWindow, me);
 
         this.dataFieldLabel = Ext.create('Ext.form.field.Text',{
             anchor:"100%",
@@ -151,7 +144,6 @@ Ext.define('app.objectLink.Field',{
         this.updateLayout();
     },
     getObjectTitle:function() {
-
         var me = this;
         var curValue = me.getValue();
 
