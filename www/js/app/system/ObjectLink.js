@@ -56,6 +56,7 @@ Ext.define('app.objectLink.Field',{
             flex:1,
             value:"...",
             editable:false,
+            submitValue:false,
             //	cls:'d_objectLink_input',
             triggers: {
                 select: {
