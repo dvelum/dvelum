@@ -14,17 +14,17 @@ if(!defined('DVELUM'))exit;
 	$res->addJs('/js/lang/'.$this->lang.'.js', -3 , true);
 
 	if($this->get('development'))
-		$res->addJs('/js/lib/ext6/build/ext-all-debug.js', -2 , true );
+		$res->addJs('/js/lib/extjs/build/ext-all-debug.js', -2 , true );
 	else
-		$res->addJs('/js/lib/ext6/build/ext-all.js', -2 , true );
+		$res->addJs('/js/lib/extjs/build/ext-all.js', -2 , true );
 
-	$res->addJs('/js/lib/ext6/build/theme-'.$theme.'/theme-'.$theme.'.js', -1 , true );
+	$res->addJs('/js/lib/extjs/build/classic/theme-'.$theme.'/theme-'.$theme.'.js', -1 , true );
 
-	$res->addJs('/js/lib/ext6/build/locale/locale-'.$this->get('lang').'.js', -1 , true );
+	$res->addJs('/js/lib/extjs/build/classic/locale/locale-'.$this->get('lang').'.js', -1 , true );
 
 	$res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');
 
-	$res->addCss('/js/lib/ext6/build/theme-'.$theme.'/resources/theme-'.$theme.'-all.css' , 1);
+	$res->addCss('/js/lib/extjs/build/classic/theme-'.$theme.'/resources/theme-'.$theme.'-all.css' , 1);
 	$res->addCss('/css/system/style.css' , 2);
 	$res->addCss('/css/system/'.$theme.'/style.css' , 3);
 

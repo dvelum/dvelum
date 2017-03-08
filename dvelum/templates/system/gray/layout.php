@@ -2,9 +2,8 @@
 header('Content-Type: text/html; charset=utf-8');
 
 $theme = $this->get('theme');
-$wwwRoot = $this->get('wwwRoot');
-$res = $this->get('resource');
 
+$res = Resource::getInstance();
 $res->addJs('/js/app/system/common.js' , -2);
 $res->addJs('/js/app/system/Application.js' , -1);
 
@@ -12,17 +11,17 @@ $res->addJs('/js/lib/jquery.js', 1 , true , 'head');
 $res->addJs('/js/lang/'.$this->get('lang').'.js', 1 , true , 'head');
 
 if($this->get('development'))
-    $res->addJs('/js/lib/ext6/build/ext-all-debug.js', 2 , true , 'head');
+    $res->addJs('/js/lib/extjs/build/ext-all-debug.js', 2 , true , 'head');
 else
-    $res->addJs('/js/lib/ext6/build/ext-all.js', 2 , true , 'head');
+    $res->addJs('/js/lib/extjs/build/ext-all.js', 2 , true , 'head');
 
-$res->addJs('/js/lib/ext6/build/theme-'.$theme.'/theme-'.$theme.'.js', 3 , true , 'head');
+$res->addJs('/js/lib/extjs/build/classic/theme-'.$theme.'/theme-'.$theme.'.js', 3 , true , 'head');
 
-$res->addJs('/js/lib/ext6/build/locale/locale-'.$this->get('lang').'.js', 4 , true , 'head');
+$res->addJs('/js/lib/extjs/build/classic/locale/locale-'.$this->get('lang').'.js', 4 , true , 'head');
 
 $res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');
 
-$res->addCss('/js/lib/ext6/build/theme-'.$theme.'/resources/theme-'.$theme.'-all.css' , 1);
+$res->addCss('/js/lib/extjs/build/classic/theme-'.$theme.'/resources/theme-'.$theme.'-all.css' , 1);
 $res->addCss('/css/system/style.css' , 2);
 $res->addCss('/css/system/'.$theme.'/style.css' , 3);
 
@@ -32,6 +31,8 @@ if($this->get('useCSRFToken')){
     $csrf = new Security_Csrf();
     $token = $csrf->createToken();
 }
+
+$wwwRoot = Request::wwwRoot();
 
 $request = \Dvelum\Request::factory();
 $lang = \Dvelum\Lang::lang();
@@ -67,7 +68,6 @@ $res->addInlineJs('
 		var rights = '.json_encode($moduleAcl->getPermissions()).';
 		app.permissions.setData(rights);
 	');
-
 ?>
 <!DOCTYPE html>
 <html>
