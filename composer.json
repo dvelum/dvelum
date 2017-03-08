@@ -2,8 +2,33 @@
     "name": "DVelum",
     "require": {
         "php":">=7.0.0",
+        "ext-mysqli" : "*",
+        "ext-gd" : "*",
+        "ext-mbstring" : "*",
+        "ext-json": "*",
         "zendframework/zend-db": "^2.8",
-        "zendframework/zend-stdlib": "^3.0",
-        "psr/log": "^1.0"
-    }
+        "psr/log": "^1.0",
+        "oomphinc/composer-installers-extender": "^1.1",
+        "dvelum/extjs": "6.2.0"
+    },
+    "extra": {
+        "installer-types": ["dvelum-js-library"],
+        "installer-paths": {
+            "www/js/lib/{$name}": ["type:dvelum-js-library","dvelum/extjs"]
+        }
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "type":"dvelum-js-library",
+                "name": "dvelum/extjs",
+                "version": "6.2.0",
+                "dist": {
+                    "url": "https://github.com/dvelum/extjs/archive/6.2.0.zip",
+                    "type": "zip"
+                }
+            }
+        }
+    ]
 }
