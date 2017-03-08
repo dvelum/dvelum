@@ -6,9 +6,9 @@
         "ext-gd" : "*",
         "ext-mbstring" : "*",
         "ext-json": "*",
+        "oomphinc/composer-installers-extender": "^1.1",
         "zendframework/zend-db": "^2.8",
         "psr/log": "^1.0",
-        "oomphinc/composer-installers-extender": "^1.1",
         "dvelum/extjs": "6.2.0"
     },
     "extra": {
