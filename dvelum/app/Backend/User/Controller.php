@@ -6,7 +6,7 @@ use Dvelum\Orm;
 use Dvelum\Config;
 use Dvelum\Model;
 
-class Backend_User_Controller extends  Dvelum\App\Backend\Controller
+class Backend_User_Controller extends  Dvelum\App\Backend\Api\Controller
 {
     /**
      * Load user info action
@@ -90,7 +90,7 @@ class Backend_User_Controller extends  Dvelum\App\Backend\Controller
         $data = array();
 
         if($user && $group)
-           $this->response->error($this->_lang->get('WRONG_REQUEST'));
+           $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         if($group)
             $data = Model::factory('Permissions')->getGroupPermissions($group);
@@ -279,7 +279,7 @@ class Backend_User_Controller extends  Dvelum\App\Backend\Controller
      */
     public function userSaveAction()
     {
-        $this->_checkCanEdit();
+        $this->checkCanEdit();
 
         $pass = $this->request->post('pass' , 'string' , false);
 
@@ -318,7 +318,7 @@ class Backend_User_Controller extends  Dvelum\App\Backend\Controller
      */
     public function removeUserAction()
     {
-        $this->_checkCanDelete();
+        $this->checkCanDelete();
 
         $id = $this->request->post('id' , 'int' , false);
 
