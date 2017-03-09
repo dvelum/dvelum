@@ -1,6 +1,30 @@
 {
     "name": "DVelum",
-    "version": "2.0.0",
+    "version": "2.0.0-dev",
+    "type": "project",
+    "description": "PHP/ExtJS-based web development platform",
+    "keywords": ["dvelum","php","extjs", "IDE", "orm"],
+    "homepage": "https://github.com/k-samuel/dvelum",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Kirill Yegorov",
+            "email": "kirill@dvelum.com",
+            "role": "Founder, Developer"
+        },{
+            "name": "Andrew Zamotaev",
+            "role": "Developer"
+        },{
+            "name": "Sergey Leschenko",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "support@dvelum.com",
+        "issues": "https://github.com/k-samuel/dvelum/issues",
+        "source": "https://github.com/k-samuel/dvelum",
+        "docs": "https://docs.dvelum.net"
+    },
     "config": {
         "preferred-install": "dist"
     },

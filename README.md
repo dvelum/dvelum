@@ -1,7 +1,7 @@
 DVelum
 ======
 
-Professional PHP/ExtJS-based web development platform
+PHP/ExtJS-based web development platform
 ------
 
 
