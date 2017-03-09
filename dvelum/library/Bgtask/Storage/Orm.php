@@ -84,7 +84,7 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
      */
      public function kill($pid)
      {
-     	$this->_objectModel->remove($pid , false);
+     	$this->_objectModel->remove($pid);
      	$this->_signalModel->clearSignals($pid);
      		
      	if(isset($this->_objects[$pid]))

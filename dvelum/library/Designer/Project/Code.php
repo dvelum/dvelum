@@ -259,10 +259,13 @@ class Designer_Project_Code
 
         if(!empty($objectEvents))
         {
-            if($object->isInstance())
-                $eventsConfig = $object->getObject()->getConfig()->getEvents()->__toArray();
-            else
-                $eventsConfig = $object->getConfig()->getEvents()->__toArray();
+            $eventObject = $object;
+
+            while (method_exists($eventObject, 'getObject')){
+                $eventObject = $eventObject->getObject();
+            }
+
+            $eventsConfig = $eventObject->getConfig()->getEvents()->__toArray();
 
             foreach ($objectEvents as $event => $config)
             {
@@ -333,7 +336,13 @@ class Designer_Project_Code
         $eventManager = $this->_project->getEventManager();
         $objectEvents = $eventManager->getObjectEvents($id);
 
-        $eventsConfig = $object->getConfig()->getEvents()->__toArray();
+        $eventObject = $object;
+
+        while (method_exists($eventObject, 'getObject')){
+            $eventObject = $eventObject->getObject();
+        }
+
+        $eventsConfig = $eventObject->getConfig()->getEvents()->__toArray();
 
         // set handlers
         if(isset($objectEvents['handler'])){
@@ -354,11 +363,13 @@ class Designer_Project_Code
                 if(isset($eventsConfig[$event]))
                     $params = implode(',', array_keys($eventsConfig[$event]));
 
-                if($event === 'handler')
+                if($event === 'handler'){
                     continue;
-                //$object->addListener($event ,"function(".$params."){\n".Utils_String::addIndent($config['code'],2)."\n}");
-                else
+                } else{
                     $object->addListener($event ,"{\n\t\t\tfn:function(".$params."){\n".Utils_String::addIndent($config['code'],2)."\n},\n\t\t\tscope:this\n\t\t}\n");
+                }
+
+                //$object->addListener($event ,"function(".$params."){\n".Utils_String::addIndent($config['code'],2)."\n}");
             }
         }
 
@@ -761,7 +772,12 @@ class Designer_Project_Code
 
             if(!empty($objectEvents))
             {
-                $eventsConfig = $item['data']->getConfig()->getEvents()->__toArray();
+                $eventObject = $item['data'];
+
+                while (method_exists($eventObject, 'getObject')){
+                    $eventObject = $eventObject->getObject();
+                }
+                $eventsConfig = $eventObject->getConfig()->getEvents()->__toArray();
 
                 foreach ($objectEvents as $event => $config)
                 {

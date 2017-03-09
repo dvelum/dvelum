@@ -458,7 +458,7 @@ class Install_Controller
         $mainCfg = Config::storage()->get('main.php' , false , false);
         $writePath = $mainCfg->getWritePath();
 
-        if(!is_dir(dirname($writePath)) && !@mkdir($writePath , 0655, true)){
+        if(!is_dir(dirname($writePath)) && !@mkdir($writePath , 0755, true)){
             Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.dirname($writePath));
         }
 

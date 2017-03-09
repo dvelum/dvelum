@@ -163,6 +163,19 @@
       'db_default' => false,
       'db_unsigned' => true,
     ),
+    'hash' =>
+     array (
+      'type' => '',
+      'unique' => '',
+      'db_isNull' => true,
+      'required' => false,
+      'validator' => '',
+      'db_type' => 'varchar',
+      'db_default' => '',
+      'db_len' => 255,
+      'is_search' => true,
+      'allow_html' => false,
+     ),
   ),
   'indexes' => 
   array (
@@ -183,6 +196,15 @@
       'columns' => 
       array (
         0 => 'title',
+      ),
+    ),
+    'hash' =>
+    array (
+      'fulltext' => false,
+      'unique' => false,
+      'columns' =>
+      array (
+        0 => 'hash',
       ),
     ),
   ),

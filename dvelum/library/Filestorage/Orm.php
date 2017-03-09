@@ -77,7 +77,7 @@ class Filestorage_Orm extends Filestorage_Simple
         $data = parent::upload();
 
         if(empty($data))
-            return array();
+            return false;
 
         foreach ($data as $k=>&$v)
         {

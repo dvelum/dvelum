@@ -7,6 +7,8 @@ Ext.define('designer.properties.FilterComponent',{
 	fieldProperties: null,
 	initComponent:function()
 	{
+        this.eventsControllerUrl = app.createUrl([designer.controllerUrl ,'filterEvents','']);
+
 		this.mainConfigTitle = desLang.properties;
 
 		this.fieldsStore = Ext.create('Ext.data.Store',{
@@ -77,7 +79,8 @@ Ext.define('designer.properties.FilterComponent',{
 			title:desLang.advancedOptions,
 			controllerUrl:app.createUrl([designer.controllerUrl ,'filter','']),
 			objectName:this.objectName,
-			application:me			
+			application:me,
+            showEvents:false
 		});
 		
 		this.fieldProperties.on('dataSaved',function(){
@@ -89,6 +92,5 @@ Ext.define('designer.properties.FilterComponent',{
 		},this);
 		
 		this.add(this.fieldProperties);
-		
 	}
 });    

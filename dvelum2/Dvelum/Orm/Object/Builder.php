@@ -1230,7 +1230,7 @@ class Builder
             if(file_exists($configDir . strtolower($newObjectName).'.php'))
                 throw new Exception($lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE'));
 
-            if(!is_dir($configDir) && !@mkdir($configDir, 0655, true)){
+            if(!is_dir($configDir) && !@mkdir($configDir, 0755, true)){
                 Response::jsonError($lang->get('CANT_WRITE_FS').' '.$configDir);
             }
 

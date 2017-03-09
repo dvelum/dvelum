@@ -560,6 +560,7 @@ Ext.define('app.crud.page.Panel',{
             var index = this.dataStore.getById(parseInt(rec.get('id')));
             if(index!=undefined){
                 this.dataGrid.getSelectionModel().select(index , false , false);
+                this.dataGrid.getView().focusRow(index);
             }
         },this);
 
@@ -574,6 +575,7 @@ Ext.define('app.crud.page.Panel',{
             var node = this.dataTree.getStore().getNodeById(''+rec.get('id'));
             if(node!=null){
                 this.dataTree.getSelectionModel().select(node , false , true);
+                this.dataTree.getView().focusRow(rec);
             }
         },this);
 

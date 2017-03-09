@@ -119,6 +119,7 @@
                     'modified' => 'Date modified',
                     'croped' => 'Is Croped',
                     'category' => 'Category',
+                    'hash'=>'File hash'
                 ),
         ),
     'menu_item' =>

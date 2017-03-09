@@ -192,7 +192,7 @@ Ext.define('designer.methodsEditor',{
 Ext.define('designer.methodEditorWindow',{
 	extend:'Ext.Window',
 	modal:false,
-	width:500,
+	width:800,
 	height:600,
 	y:20,
 	layout:{
@@ -303,7 +303,13 @@ Ext.define('designer.methodEditorWindow',{
 		this.items = [this.dataForm ];
 
 		this.callParent();
-		this.on('show',this.loadMethodData,this);
+
+        this.on('show', function(){
+            this.loadMethodData();
+            app.checkSize(this);
+            Ext.WindowMgr.register(this);
+            Ext.WindowMgr.bringToFront(this);
+        }, this);
 	},
 	/**
 	 * Request method data

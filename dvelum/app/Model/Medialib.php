@@ -31,13 +31,14 @@ class Model_Medialib extends Model
      * @param integer $size (bytes)
      * @param string $type
      * @param string $ext  - extension
+     * @param string $hash - file hash, optional default null
      * @return integer
      */
-    public function addItem($name , $path , $size , $type, $ext , $category = null)
+    public function addItem($name, $path, $size, $type, $ext, $category = null, $hash=null)
     {
         $size = number_format(($size/1024/1024) , 3);
 
-        $data = array(
+        $data = [
             'title'=>$name,
             'path'=>$path,
             'size'=>$size,
@@ -45,11 +46,13 @@ class Model_Medialib extends Model
             'user_id'=>User::getInstance()->id,
             'ext'=>$ext,
             'date'=>date('Y-m-d H:i:s'),
-            'category'=>$category
-        );
+            'category'=>$category,
+            'hash'=> $hash
+        ];
 
         $obj = Orm\Object::factory($this->_name);
         $obj->setValues($data);
+
         if($obj->save()){
             return $obj->getId();
         } else{
@@ -60,8 +63,9 @@ class Model_Medialib extends Model
     /**
      * Delete item from library
      * @param integer $id
+     * @return boolean
      */
-    public function remove($id , $log=true)
+    public function remove($id)
     {
         if(!$id)
             return false;
@@ -281,10 +285,6 @@ class Model_Medialib extends Model
         $conf = $this->getConfig()->__toArray();
         $thumbSizes = $conf['image']['sizes'];
 
-        // sub dir fix
-        if($srcData['path'][0]!=='/')
-            $srcData['path'] = '/'.$srcData['path'];
-
         $path = $docRoot.$srcData['path'];
 
         if(!file_exists($path))
@@ -292,7 +292,11 @@ class Model_Medialib extends Model
 
         $tmpPath = $appConfig['tmp'].basename($path);
 
-        Image_Resize::cropImage($path, $tmpPath , $x, $y, $w, $h);
+        $path = str_replace('//','/', $path);
+
+        if(!Image_Resize::cropImage($path, $tmpPath , $x, $y, $w, $h)){
+            return false;
+        }
 
         if(!isset($thumbSizes[$type]))
             return false;
@@ -367,5 +371,51 @@ class Model_Medialib extends Model
             $this->logError('updateItemsCategory: ' . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Get file icon
+     * @param $filename
+     * @return string
+     */
+    static public function getFilePic($filename)
+    {
+        $ext = File::getExt($filename);
+        $icon = 'i/system/file.png';
+        switch($ext){
+            case '.jpg':
+            case '.jpeg':
+            case '.gif':
+            case '.bmp':
+            case '.png':
+                $icon = 'i/system/folder-image.png';
+                break;
+            case  '.doc':
+            case  '.docx':
+            case  '.odt':
+            case  '.txt':
+                $icon = 'i/system/doc.png';
+                break;
+
+            case  '.xls':
+            case  '.xlsx':
+            case  '.ods':
+            case  '.csv':
+                $icon = 'i/system/excel.png';
+                break;
+            case '.pdf':
+                $icon = 'i/system/pdf.png';
+                break;
+
+            case '.zip':
+            case '.rar':
+            case '.7z':
+                $icon = 'i/system/archive.png';
+                break;
+
+
+            default :  $icon = 'i/system/file.png';
+        }
+        return $icon;
     }
 }

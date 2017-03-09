@@ -41,21 +41,21 @@ abstract class Filestorage_Abstract
     	$this->_config = $config;
     }
     /**
-     * Fileupload via POST and FILES
-     * @throws Exception
+     * Upload files from $_POST and $_FILES
+     * @return  boolean | array
      */
     abstract public function upload();
     /**
      * Remove file from storage
      * @param string $fileId
-     * @return boolen
+     * @return boolean
      */
     abstract public function remove($fileId);
 
     /**
      * Add file (copy to storage)
      * @param string $filePath
-     * @param sting $useName, optional set specific file name
+     * @param string $useName, optional set specific file name
      * @throws Exception
      * @return array | boolean false - file info
      */

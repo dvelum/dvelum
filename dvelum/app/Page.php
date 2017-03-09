@@ -119,4 +119,13 @@ class Page
     {
         return $this->_templatesPath . $this->theme . '/';
     }
+
+    /**
+     * Set template theme
+     * @param $theme
+     */
+    public function setTheme($theme)
+    {
+        $this->theme = $theme;
+    }
 }
