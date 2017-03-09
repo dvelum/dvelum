@@ -50,11 +50,12 @@ class Backend_Filestorage_Controller extends Dvelum\App\Backend\Api\Controller
         $userIds = \Utils::fetchCol('user_id' , $data);
         $userData = [];
 
-        if(!empty($userIds)){
+        if(empty($userIds)){
             return;
         }
 
         $userData = Model::factory('User')->getList(false , array('id'=>$userIds) , array('id','name'));
+
         if(!empty($userData)){
             $userData = \Utils::rekey('id' , $userData);
         }
@@ -67,7 +68,6 @@ class Backend_Filestorage_Controller extends Dvelum\App\Backend\Api\Controller
                 $v['user_name'] = '';
             }
         }unset($v);
-
     }
 
     /**
