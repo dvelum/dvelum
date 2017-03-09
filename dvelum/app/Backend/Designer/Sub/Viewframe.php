@@ -4,7 +4,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 	public function indexAction()
 	{
 		if(!$this->_session->keyExists('loaded') || !$this->_session->get('loaded')){
-			Response::put('');
+			$this->response->error('Project is not loaded');
 			exit;
 		}
 
@@ -14,8 +14,8 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
         // change theme
 		$designerTheme = $designerConfig->get('application_theme');
         $backendConfig->set('theme' , $designerTheme);
-		$page = Page::getInstance();
-		$page->setTemplatesPath('system/' . $designerTheme. '/');
+
+		$this->page->setTemplatesPath('system/' . $designerTheme. '/');
 
 
 		$res = \Dvelum\Resource::factory();
@@ -166,13 +166,14 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$res->addInlineJs($initCode);
 
 		$backendConfig = Config::storage()->get('backend.php');
-		$tpl = new Template();
+		$tpl = new \Dvelum\View();
 		$tpl->lang = $this->_configMain['language'];
 		$tpl->development = $this->_configMain['development'];
 		$tpl->resource = $res;
 		$tpl->useCSRFToken = $backendConfig->get('use_csrf_token');
 		$tpl->theme = $backendConfig->get('theme');
 
-		Response::put($tpl->render(Application::getTemplatesPath().'designer/viewframe.php'));
+		$this->response->put($tpl->render($this->page->getTemplatesPath().'designer/viewframe.php'));
+	    $this->response->send();
 	}
 }

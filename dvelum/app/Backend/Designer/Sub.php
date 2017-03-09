@@ -28,6 +28,15 @@ class Backend_Designer_Sub
 	protected $_configMain;
 	
 	static protected $_poject = null;
+
+    /**
+     * @var \Dvelum\Response
+     */
+	protected $response;
+    /**
+     * @var Page
+     */
+	protected $page;
 	
 	public function __construct()
 	{
@@ -37,6 +46,9 @@ class Backend_Designer_Sub
 		$this->_config = Config::storage()->get('designer.php');
 		$this->_session = Store_Session::getInstance('Designer');
 		$this->_storage = Designer_Storage::getInstance($this->_config->get('storage') , $this->_config);
+
+		$this->page =  \Page::getInstance();
+		$this->response = \Dvelum\Response::factory();
 	}
 	/**
 	 * Check if project is loaded
