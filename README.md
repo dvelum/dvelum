@@ -12,6 +12,8 @@ DVelum is an indispensable toolkit for development of both complex-structured sy
 GNU General Public License version 3.0
 
 
+Issues https://dvelum.ru https://github.com/dvelum/dvelum/issues
+
 Downloads https://sourceforge.net/projects/dvelum/files/
 
 Old Version Downloads https://code.google.com/p/dvelum/downloads/list?can=1
@@ -19,3 +21,7 @@ Old Version Downloads https://code.google.com/p/dvelum/downloads/list?can=1
 Official Site (ENG) http://dvelum.net
 
 Official Site (RU)  http://dvelum.ru
+
+Installation instructions https://dvelum.ru/install_2x.html
+
+
