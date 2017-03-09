@@ -90,10 +90,10 @@ class Controller extends App\Backend\Controller
         $filter = array_merge($filter , $this->request->extFilters());
 
         if($object === false || !Orm\Object\Config::configExists($object))
-            $this->response->error($this->lang->WRONG_REQUEST);
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         if(!in_array(strtolower($object), $this->canViewObjects , true))
-            $this->response->error($this->lang->CANT_VIEW);
+            $this->response->error($this->lang->get('CANT_VIEW'));
 
         $objectCfg = Orm\Object\Config::factory($object);
         $primaryKey = $objectCfg->getPrimaryKey();
@@ -130,7 +130,7 @@ class Controller extends App\Backend\Controller
                 $objectIds = \Utils::fetchCol('id' , $data);
                 try{
                     $objects = Orm\Object::factory($object ,$objectIds);
-                }catch (Exception $e){
+                }catch (\Exception $e){
                     Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
                     $this->response->error($this->lang->get('CANT_EXEC'));
                 }
