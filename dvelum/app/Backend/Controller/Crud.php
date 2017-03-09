@@ -155,7 +155,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         if(!empty($this->_listLinks)){
             $objectConfig = Orm\Object\Config::factory($this->_objectName);
-            if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
+            if(is_array($this->_listFields) && !in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
                 throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
             }
             $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
@@ -366,103 +366,11 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $query = Request::post('search' , 'string' , false);
         $filter = array_merge($filter , Request::extFilters());
 
-        if($object === false || !Db_Object_Config::configExists($object))
-            Response::jsonError($this->_lang->WRONG_REQUEST);
-
-        if(!in_array(strtolower($object), $this->_canViewObjects , true))
-            Response::jsonError($this->_lang->CANT_VIEW);
-
-        $objectCfg = Db_Object_Config::getInstance($object);
-        $primaryKey = $objectCfg->getPrimaryKey();
-
-        $objectConfig = Db_Object_Config::getInstance($object);
-        // Check ACL permissions
-        $acl = $objectConfig->getAcl();
-        if($acl){
-            if(!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
-                Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
-            }
-        }
-        /**
-         * @var Model
-         */
-        $model = Model::factory($object);
-        $rc = $objectCfg->isRevControl();
-
-        if($objectCfg->isRevControl())
-            $fields = array('id'=>$primaryKey, 'published');
-        else
-            $fields = array('id'=>$primaryKey);
-
-        $count = $model->getCount(false , $query ,false);
-        $data = array();
-        if($count)
-        {
-            $data = $model->getList($pager, $filter, $fields , false , $query);
-
-            if(!empty($data))
-            {
-                $objectIds = Utils::fetchCol('id' , $data);
-                try{
-                    $objects = Db_Object::factory($object ,$objectIds);
-                }catch (Exception $e){
-                    Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
-                    Response::jsonError($this->_lang->get('CANT_EXEC'));
-                }
-
-                foreach ($data as &$item)
-                {
-                    if(!$rc)
-                        $item['published'] = true;
-
-
-                    $item['deleted'] = false;
-
-                    if(isset($objects[$item['id']])){
-                        $o = $objects[$item['id']];
-                        $item['title'] = $o->getTitle();
-                        if($rc)
-                            $item['published'] = $o->get('published');
-                    }else{
-                        $item['title'] = $item['id'];
-                    }
-
-                }unset($item);
-            }
-        }
-        return ['data'=>$data,'count'=>$count];
-    }
-
-    /**
-     * Get list of objects which can be linked
-     */
-    public function linkedListAction()
-    {
-        $result = $this->getRelatedObjectsInfo();
-
-        if(empty($result)){
-            Response::jsonSuccess([]);
-        }else{
-            Response::jsonArray($result);
-        }
-    }
-
-    /**
-     * Get list of objects which can be linked
-     */
-    public function linkedlistAction()
-    {
-        $object = Request::post('object', 'string', false);
-        $filter = Request::post('filter' , 'array' , []);
-        $pager = Request::post('pager' , 'array' , array());
-        $query = Request::post('search' , 'string' , false);
-        $filter = array_merge($filter , Request::extFilters());
-
         if($object === false || !Orm\Object\Config::configExists($object))
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
 
         if(!in_array(strtolower($object), $this->_canViewObjects , true))
-            Response::jsonError($this->_lang->CANT_VIEW);
+            Response::jsonError($this->_lang->get('CANT_VIEW'));
 
         $objectCfg = Orm\Object\Config::factory($object);
         $primaryKey = $objectCfg->getPrimaryKey();
@@ -523,54 +431,28 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                 }unset($item);
             }
         }
-        Response::jsonSuccess($data,array('count'=>$count));
+        return ['data'=>$data,'count'=>$count];
     }
+
+    /**
+     * Get list of objects which can be linked
+     */
+    public function linkedListAction()
+    {
+        $result = $this->getRelatedObjectsInfo();
+
+        if(empty($result)){
+            Response::jsonSuccess([]);
+        }else{
+            Response::jsonArray($result);
+        }
+    }
+
 
     /**
      * Get object title
      */
     public function objectTitleAction()
-    {
-        $object = Request::post('object','string', false);
-        $id = Request::post('id', 'string', false);
-
-        if(!$object || !Db_Object_Config::configExists($object))
-            Response::jsonError($this->_lang->WRONG_REQUEST);
-
-        if(!in_array(strtolower($object), $this->_canViewObjects , true))
-            Response::jsonError($this->_lang->CANT_VIEW);
-
-        $objectConfig = Db_Object_Config::getInstance($object);
-        // Check ACL permissions
-        $acl = $objectConfig->getAcl();
-        if($acl){
-            if(!$acl->can(Db_Object_Acl::ACCESS_VIEW , $object)){
-                Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
-            }
-        }
-
-        try {
-            $o = Db_Object::factory($object, $id);
-            Response::jsonSuccess(array('title'=>$o->getTitle()));
-        }catch (Exception $e){
-            Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
-            Response::jsonError($this->_lang->get('CANT_EXEC'));
-        };
-    }
-
-    /**
-     * Get object title
-     * @deprecated
-     */
-    public function otitleAction()
-    {
-        $this->objectTitleAction();
-    }
-
-    /**
-     * Get object title
-     */
-    public function otitleAction()
     {
         $object = Request::post('object','string', false);
         $id = Request::post('id', 'string', false);
@@ -599,6 +481,14 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         }
     }
 
+    /**
+     * Get object title
+     * @deprecated
+     */
+    public function otitleAction()
+    {
+        $this->objectTitleAction();
+    }
 
     /**
      * Add related objects info into getList results
