@@ -35,8 +35,8 @@ class Adapter extends  \Db_Adapter
     public function select()
     {
         $select = new \Db_Select();
-        if($this->params['adapter'] === 'mysqli'){
-            $select->setMysqli($this->adapter->getDriver()->getConnection());
+        if($this->params['adapter'] === 'Mysqli'){
+            $select->setMysqli($this->adapter->getDriver()->getConnection()->getResource());
         }
         return $select;
     }
@@ -46,7 +46,7 @@ class Adapter extends  \Db_Adapter
      */
     public function sql()
     {
-        return new Sql($this->adapter);
+        return  new Sql($this->adapter);
     }
 
     /**
@@ -167,8 +167,28 @@ class Adapter extends  \Db_Adapter
         $this->adapter->getDriver()->getConnection()->commit();
     }
 
+    /**
+     * Fix for mysqli driver
+     * convert bollean into integer
+     * @param array $values
+     * @return array
+     */
+    protected function convertBooleanValues(array $values) : array
+    {
+        foreach ($values as &$value){
+            if(is_bool($value)){
+                $value = intval($value);
+            }
+        }
+        return $values;
+    }
+
     public function insert($table , $values)
     {
+        if(!empty($values) && $this->params['adapter'] === 'Mysqli'){
+            $values = $this->convertBooleanValues($values);
+        }
+
         $sql = $this->sql();
         $insert = $sql->insert($table);
         $insert->values($values);
@@ -192,9 +212,14 @@ class Adapter extends  \Db_Adapter
 
     public function update($table, $values, $where = null )
     {
+        if(!empty($values) && $this->params['adapter'] === 'Mysqli'){
+            $values = $this->convertBooleanValues($values);
+        }
+
         $sql = $this->sql();
         $update = $sql->update($table);
         $update->set($values);
+
         if(!empty($where)){
             $update->where($where);
         }
