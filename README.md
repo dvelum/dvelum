@@ -1,3 +1,5 @@
+[![PHP Version](https://img.shields.io/badge/php-7.0%2B-blue.svg)](https://packagist.org/packages/dvelum/dvelum)
+
 DVelum
 ======
 
