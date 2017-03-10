@@ -41,9 +41,10 @@
         "dvelum/extjs": "6.2.0"
     },
     "extra": {
-        "installer-types": ["js-library"],
+        "installer-types": ["js-library","dvelum-module"],
         "installer-paths": {
-            "www/js/lib/{$name}": ["type:js-library"]
+            "www/js/lib/{$name}": ["type:js-library"],
+            "modules/{$vendor}/{$name}":["type:dvelum-module"]
         }
     },
     "repositories": [

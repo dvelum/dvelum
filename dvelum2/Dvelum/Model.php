@@ -807,9 +807,9 @@ class Model
     /**
      * Delete record
      * @param integer $recordId record ID
-     * @param boolean $log — log changes
+     * @return  boolean
      */
-    public function remove($recordId)
+    public function remove(integer $recordId) :boolean
     {
         $object = Orm\Object::factory($this->name , $recordId);
         if(self::_getObjectsStore()->delete($object))
