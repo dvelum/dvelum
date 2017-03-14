@@ -25,7 +25,9 @@ class Db_Manager implements Db_Manager_Interface
      */
     public function getDbConnection($name)
     {
-        $workMode = $this->_appConfig->get('development');       
+        $workMode = $this->_appConfig->get('development');
+        $debug = $this->_appConfig->get('debug_panel');
+
         if(!isset($this->_dbConnections[$workMode][$name]))
         {
            $cfg = $this->getDbConfig($name);
@@ -34,7 +36,7 @@ class Db_Manager implements Db_Manager_Interface
             * Enable Db profiler for development mode Attention! Db Profiler causes
             * memory leaks at background tasks. (Dev mode)
             */
-            if($this->_appConfig->get('development')){
+            if($this->_appConfig->get('development') && $debug['enabled'] && $debug['options']['sql']){
                 $db->getProfiler()->setEnabled(true);
                 Debug::addDbProfiler($db->getProfiler());
             }

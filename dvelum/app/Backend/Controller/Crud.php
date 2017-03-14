@@ -48,6 +48,8 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      */
     protected $_listLinks = [];
 
+    protected $_linkedInfoSeparator = '; ';
+
     public function __construct()
     {
         parent::__construct();
@@ -307,7 +309,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
     /**
      * Get list of objects which can be linked
      */
-    public function linkedlistAction()
+    protected function getRelatedObjectsInfo()
     {
         $object = Request::post('object', 'string', false);
         $filter = Request::post('filter' , 'array' , []);
@@ -319,7 +321,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         if(!in_array(strtolower($object), $this->_canViewObjects , true))
-        	Response::jsonError($this->_lang->CANT_VIEW);
+            Response::jsonError($this->_lang->CANT_VIEW);
 
         $objectCfg = Db_Object_Config::getInstance($object);
         $primaryKey = $objectCfg->getPrimaryKey();
@@ -347,7 +349,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $data = array();
         if($count)
         {
-             $data = $model->getList($pager, $filter, $fields , false , $query);
+            $data = $model->getList($pager, $filter, $fields , false , $query);
 
             if(!empty($data))
             {
@@ -379,12 +381,26 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                 }unset($item);
             }
         }
-        Response::jsonSuccess($data,array('count'=>$count));
+        return ['data'=>$data,'count'=>$count];
+    }
+
+    /**
+     * Get list of objects which can be linked
+     */
+    public function linkedListAction()
+    {
+        $result = $this->getRelatedObjectsInfo();
+
+        if(empty($result)){
+            Response::jsonSuccess([]);
+        }else{
+            Response::jsonArray($result);
+        }
     }
     /**
      * Get object title
      */
-    public function otitleAction()
+    public function objectTitleAction()
     {
         $object = Request::post('object','string', false);
         $id = Request::post('id', 'string', false);
@@ -410,9 +426,17 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         }catch (Exception $e){
             Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
             Response::jsonError($this->_lang->get('CANT_EXEC'));
-        }
+        };
     }
 
+    /**
+     * Get object title
+     * @deprecated
+     */
+    public function otitleAction()
+    {
+        $this->objectTitleAction();
+    }
 
     /**
      * Add related objects info into getList results
@@ -522,7 +546,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
                         }
                     }
                 }
-                $row[$fieldsToKeys[$field]] = implode(', ', $list);
+                $row[$fieldsToKeys[$field]] = implode($this->_linkedInfoSeparator, $list);
             }
         }unset($row);
     }

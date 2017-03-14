@@ -61,7 +61,7 @@ class Filestorage_Simple extends Filestorage_Abstract
         }
 
         if(empty($files))
-            return array();
+            return false;
 
         $uploadAdapter = $this->_config->get('uploader');
         $uploaderConfig = $this->_config->get('uploader_config');
@@ -71,7 +71,15 @@ class Filestorage_Simple extends Filestorage_Abstract
         $uploaded = $uploader->start($files, $path);
 
         if(empty($uploaded))
-            return array();
+        {
+            $errors = $uploader->getErrors();
+            if(!empty($errors)){
+                $this->logError(implode(', ', $errors));
+                return false;
+            }
+
+            return [];
+        }
 
         foreach ($uploaded as $k=>&$v){
             $v['path'] = str_replace($this->_config->get('filepath') , '' , $v['path']);

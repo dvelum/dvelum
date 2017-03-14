@@ -252,6 +252,9 @@
 .pagingIcon{
     background-image:url(../../../../i/system/designer/pagination.png) !important;
 }
+.tagIcon{
+    background-image: url(../../../../i/system/designer/tag.png) !important;
+}
 
 .urlTrigger{
     width:25px !important;

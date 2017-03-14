@@ -680,8 +680,9 @@ class Db_Object_Store
      */
     public function delete(Db_Object $object , $transaction = true)
     {
+        $objectConfig = $object->getConfig();
 
-        if($object->getConfig()->isReadOnly())
+        if($objectConfig->isReadOnly())
         {
             if($this->_log)
                 $this->_log->log('ORM :: cannot delete readonly object '. $object->getName());
@@ -702,7 +703,15 @@ class Db_Object_Store
     	if($transact && $transaction)
     		$db->beginTransaction();
 
-        Model::factory($this->config['linksObject'])->clearObjectLinks($object);
+        $fields = $objectConfig->getFieldsConfig();
+
+        foreach ($fields as $field=>$conf) {
+            if($objectConfig->isMultiLink($field)){
+                if(!$this->_clearLinks($object, $field, $objectConfig->getLinkedObject($field))){
+                    return false;
+                }
+            }
+        }
 
         if($db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId()))
         {

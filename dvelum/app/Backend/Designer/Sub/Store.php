@@ -77,7 +77,7 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
         Response::jsonSuccess($fields);
     }
     /**
-     * Get list of store fields, include fields from model
+     * Get list of store fields
      */
     public function listfieldsAction()
     {
@@ -96,12 +96,13 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
             $this->_object = $this->_object->getObject();
         $fields = array();
 
-        $model = $this->_object->model;
-
-        if(strlen($model)){
-            $model = $this->_project->getObject($model);
-            $fields = $model->fields;
-        }
+         // Do not show model fields. It cause misleading
+//        $model = $this->_object->model;
+//
+//        if(strlen($model)){
+//            $model = $this->_project->getObject($model);
+//            $fields = $model->fields;
+//        }
 
         if(empty($fields))
             $fields = $this->_object->fields;
@@ -128,9 +129,22 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
 
         $this->_project = $project;
         $this->_object = $project->getObject($name);
+
         if($this->_object->isInstance())
             $this->_object = $this->_object->getObject();
-        $fields = array();
+
+        $fields = [];
+
+        if($this->_object->isValidProperty('fields'))
+        {
+            $fields = $this->_object->fields;
+
+            if(empty($fields))
+                $fields = [];
+
+            if(is_string($fields))
+                $fields = json_decode($fields , true);
+        }
 
         if($this->_object->isValidProperty('model') && strlen($this->_object->model) && $this->_project->objectExists($this->_object->model))
         {
@@ -138,24 +152,19 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
 
             if($model->isValidProperty('fields'))
             {
-                $fields = $model->fields;
-                if(is_string($fields))
-                    $fields = json_decode($model->fields , true);
+                $modelFields = $model->fields;
+
+                if(is_string($modelFields)){
+                    $modelFields = json_decode($modelFields , true);
+                }
+
+                if(!empty($modelFields)){
+                    $fields = array_merge($fields,$modelFields);
+                }
             }
         }
 
-        if(empty($fields) && $this->_object->isValidProperty('fields'))
-        {
-            $fields = $this->_object->fields;
-
-            if(empty($fields))
-                $fields = array();
-
-            if(is_string($fields))
-                $fields = json_decode($fields , true);
-        }
-
-        $data = array();
+        $data = [];
         if(!empty($fields))
         {
             foreach ($fields as $item)

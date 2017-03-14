@@ -68,12 +68,19 @@ class Task_Recrop extends Bgtask_Abstract
 	                continue;
 	                       		
 	            $saveName = str_replace($v['ext'], '-'.$typename.$v['ext'], $path);
-	                           
-	            if($conf['image']['thumb_types'][$typename] == 'crop'){
-	                 Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1],$saveName, true,true);
-	            }else{ 
-	                 Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1],$saveName, true,false);
-	            }       
+
+
+                switch($conf['image']['thumb_types'][$typename]){
+                    case 'crop' :
+                        Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true,true);
+                        break;
+                    case 'resize_fit':
+                        Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true, false);
+                        break;
+                    case 'resize':
+                        Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, false ,false);
+                        break;
+                }
             }                  
             /*
              * Update task status and check for signals 
