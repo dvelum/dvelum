@@ -86,4 +86,13 @@ abstract class Filestorage_Abstract
     {
         return $this->_config;
     }
+
+    /**
+     * Get storage files path
+     * @return mixed
+     */
+    public function getPath()
+    {
+        return $this->_config->get('filepath');
+    }
 }
