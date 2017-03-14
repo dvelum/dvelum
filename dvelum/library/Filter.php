@@ -83,8 +83,10 @@ class Filter
 			case 'float' :
 			case 'decimal' :
 			case 'number' :
-				if(self::$_autoConvertFloatSeparator)
-					$value = str_replace(',', '.', $value);
+			    $value = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND);
+				if(self::$_autoConvertFloatSeparator){
+                    $value = str_replace(',', '.', $value);
+                }
 				$value = floatval ( $value );
 				break;
 			case 'str' :
