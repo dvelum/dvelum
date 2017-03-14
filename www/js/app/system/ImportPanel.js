@@ -74,7 +74,7 @@ Ext.define('app.import.Panel',{
 	 * Additional import form fields
 	 * @property {Array}
 	 */
-	importFormFields:[],
+	importFormFields:null,
 	/**
 	 * @property Ext.form.FieldSet,
 	 */
@@ -171,7 +171,7 @@ Ext.define('app.import.Panel',{
 							width:10
 						},
 						{
-							value:this.lang.click_column,
+							value: '<div style="text-align: center; font-size: 11px;width:100%"><div class="hint-label">'+ this.lang.hint + ':</div>' + this.lang.click_column+'</div>',
 							xtype:'displayfield',
 							name:'importlabel',
 							hidden:true
