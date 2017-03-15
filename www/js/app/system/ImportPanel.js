@@ -391,7 +391,7 @@ Ext.define('app.import.Panel',{
 			dataColumns.push({
 				header: header,
 				dataIndex: 'col'+i,
-				id:'col'+i,
+				itemId:'col'+i,
 				sortable: false,
 				menuDisabled: true,
 				width:140,
@@ -660,8 +660,7 @@ Ext.define('app.import.Panel',{
 		Ext.each(this.expectedColumns , function(record){
 			params['columns['+record.id+']'] = record.columnIndex;
 			if(record.columnIndex == -1){
-				if(record.required || this.visibleGroup == record.group){
-
+				if(record.required || (!Ext.isEmpty(this.visibleGroup) && this.visibleGroup == record.group)){
 					error = true;
 				}
 			}
