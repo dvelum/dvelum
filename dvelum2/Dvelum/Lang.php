@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Dvelum;
 
 use Dvelum\Config;
@@ -43,7 +46,7 @@ class Lang
      * Get current dictionary name
      * @return string
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->dictionaryName;
     }
@@ -65,7 +68,7 @@ class Lang
      * Get default dictionary (lang)
      * @return string
      */
-    static public function getDefaultDictionary()
+    static public function getDefaultDictionary() :string
     {
         return self::$defaultDictionary;
     }
@@ -92,8 +95,11 @@ class Lang
         self::$loaders[$name] = array('src'=> $src , 'type' =>$type);
     }
 
-
-    protected function loadDictionary($name)
+    /**
+     * Load dictionary data
+     * @param string $name
+     */
+    protected function loadDictionary(string $name) : void
     {
         if($this->dictionary)
             return;
