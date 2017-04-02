@@ -225,9 +225,15 @@ class Resource
         /*
          * Raw files
          */
-        if(!empty($this->rawFiles))
-            foreach($this->rawFiles as $file)
-                $s .= '<script type="text/javascript" src="' .  $this->config->get('wwwRoot') . $file . '"></script>' . "\n";
+        if(!empty($this->_rawFiles)){
+            foreach($this->_rawFiles as $file){
+                if(strpos($file,'http')==0){
+                    $s .= '<script type="text/javascript" src="' . $file . '"></script>' . "\n";
+                }else{
+                    $s .= '<script type="text/javascript" src="' . self::$_wwwRoot . $file . '"></script>' . "\n";
+                }
+            }
+        }
 
         $s .=  $this->includeJsByTag($useMin , $compile , $tag);
         /*
