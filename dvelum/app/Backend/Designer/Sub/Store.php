@@ -123,6 +123,8 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
         $this->_checkLoaded();
         $name = Request::post('object', 'string', '');
 
+        $name = trim(str_replace('[new:]','',$name));
+
         $project = $this->_getProject();
         if(!strlen($name) || !$project->objectExists($name))
             Response::jsonError('Undefined Store object');

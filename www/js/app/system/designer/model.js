@@ -82,11 +82,9 @@ Ext.define('designer.model.configWindow',{
 		});
 		
 		this.fieldsProperties =  Ext.create('designer.properties.dataField',{
-			title:'',
 			controllerUrl: app.createUrl([designer.controllerUrl ,'datafield','']),
 			objectName:this.objectName,
 			autoLoadData:false,
-			width:380,
 			autoLoad:false,
 			title:desLang.properties,
 			layout:'fit',
