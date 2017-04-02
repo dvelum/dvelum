@@ -6,7 +6,7 @@ use Dvelum\Orm;
 
 class Model_Medialib extends Model
 {
-    static protected $_scriptsIncluded = false;
+    static protected $scriptsIncluded = false;
 
     /**
      * Get item record by its path
@@ -50,7 +50,7 @@ class Model_Medialib extends Model
             'hash'=> $hash
         ];
 
-        $obj = Orm\Object::factory($this->_name);
+        $obj = Orm\Object::factory($this->name);
         $obj->setValues($data);
 
         if($obj->save()){
@@ -70,7 +70,7 @@ class Model_Medialib extends Model
         if(!$id)
             return false;
 
-        $obj = Orm\Object::factory($this->_name, $id);
+        $obj = Orm\Object::factory($this->name, $id);
         $data = $obj->getData();
 
         if(empty($data))
@@ -132,11 +132,11 @@ class Model_Medialib extends Model
     /**
      * Add author selection join to the query.
      * Used with rev_control objects
-     * @param Db_Select | Zend_Db_Select $sql
+     * @param \Db_Select | Zend_Db_Select $sql
      * @param string $fieldAlias
      * @return void
      */
-    protected function _queryAddAuthor($sql , $fieldAlias)
+    protected function _queryAddAuthor($sql , $fieldAlias) : void
     {
         $sql->joinLeft(
             array('u1' =>  Model::factory('User')->table()) ,
@@ -156,11 +156,11 @@ class Model_Medialib extends Model
         if(!$id)
             return false;
         try{
-            $obj = Orm\Object::factory($this->_name, $id);
+            $obj = Orm\Object::factory($this->name, $id);
             $obj->setValues($data);
             $obj->save();
             $hLog = Model::factory('Historylog');
-            $hLog->log(User::getInstance()->id,$id,Model_Historylog::Update , $this->table());
+            $hLog->log(\Dvelum\App\Session\User::getInstance()->id, $id, Model_Historylog::Update, $this->table());
             return true;
         }catch (Exception $e){
             return false;
@@ -175,7 +175,7 @@ class Model_Medialib extends Model
         $version = Config::storage()->get('versions.php')->get('medialib');
         $appConfig = Config::storage()->get('main.php');
 
-        if(self::$_scriptsIncluded)
+        if(self::$scriptsIncluded)
             return;
 
         $conf = $this->getConfig()->__toArray();
@@ -208,7 +208,7 @@ class Model_Medialib extends Model
       	app.imageSize = '.json_encode($conf['image']['sizes']).';
       	app.medialibControllerName = "medialib";
     ');
-        self::$_scriptsIncluded = true;
+        self::$scriptsIncluded = true;
     }
 
     /**
@@ -216,7 +216,7 @@ class Model_Medialib extends Model
      * @param array $types
      * @return int
      */
-    public function resizeImages($types = false)
+    public function resizeImages($types = false) : int
     {
         $data = Model::factory('Medialib')->getListVc(false , array('type'=>'image'),false,array('path' , 'ext'));
         ini_set('max_execution_time' , 18000);
@@ -302,7 +302,7 @@ class Model_Medialib extends Model
             return false;
 
         $saveName = str_replace($srcData['ext'], '-'.$type.$srcData['ext'], $path);
-        if(!Image_Resize::resize($tmpPath, $thumbSizes[$type][0], $thumbSizes[$type][1], $saveName, true,false))
+        if(!\Image_Resize::resize($tmpPath, $thumbSizes[$type][0], $thumbSizes[$type][1], $saveName, true,false))
             return false;
 
         unlink($tmpPath);
@@ -316,7 +316,7 @@ class Model_Medialib extends Model
      */
     public function updateModifyDate($id)
     {
-        $obj = Orm\Object::factory($this->_name, $id);
+        $obj = Orm\Object::factory($this->name, $id);
         $obj->set('modified', date('Y-m-d h:i:s'));
         $obj->save();
     }
@@ -328,7 +328,7 @@ class Model_Medialib extends Model
      */
     public function markCroped($id)
     {
-        $obj = Orm\Object::factory($this->_name, $id);
+        $obj = Orm\Object::factory($this->name, $id);
         $obj->set('croped', 1);
         $obj->save();
     }
@@ -348,7 +348,7 @@ class Model_Medialib extends Model
      */
     public function categoryRemoved($id)
     {
-        $this->_db->update($this->table(), array('category'=>null), '`category` = '.intval($id));
+        $this->db->update($this->table(), array('category'=>null), '`category` = '.intval($id));
     }
 
     /**
@@ -365,7 +365,7 @@ class Model_Medialib extends Model
             $catalog = null;
 
         try{
-            $this->_db->update($this->table(), array('category'=>$catalog),' `'.$this->getPrimaryKey().'` IN('.implode(',', $items).')');
+            $this->db->update($this->table(), array('category'=>$catalog),' `'.$this->getPrimaryKey().'` IN('.implode(',', $items).')');
             return true;
         }catch(Exception $e){
             $this->logError('updateItemsCategory: ' . $e->getMessage());

@@ -130,4 +130,9 @@ class Request
     {
         return \Request::getInstance()->getUri();
     }
+
+    public function files()
+    {
+        return \Request::files();
+    }
 }

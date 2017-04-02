@@ -95,7 +95,7 @@ class Model_Historylog extends Model
      * (non-PHPdoc)
      * @see Model::_queryAddAuthor()
      */
-    protected function _queryAddAuthor($sql , $fieldAlias)
+    protected function _queryAddAuthor($sql , $fieldAlias) : void
 	{
 		$sql->joinLeft(
 			array('u1' =>  Model::factory('User')->table()) ,

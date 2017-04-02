@@ -71,7 +71,7 @@ class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
         if(!is_dir($path) && !@mkdir($path, 0775, true))
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
 
-        $files = Request::files();
+        $files = $this->request->files();
 
         $uploader = new Upload($mediaCfg->__toArray());
 

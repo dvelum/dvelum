@@ -240,9 +240,9 @@ class Object
 
     /**
      * Get object identifier
-     * @return int
+     * @return int|bool
      */
-    public function getId() : int
+    public function getId()
     {
         return $this->id;
     }

@@ -469,7 +469,7 @@ class Model
      * @param string $fieldAlias
      * @return void
      */
-    protected function _queryAddAuthor($sql , $fieldAlias)  : void
+    protected function _queryAddAuthor($sql , $fieldAlias) : void
     {
         $sql->joinLeft(
             array('u1' =>  Model::factory('User')->table()) ,
