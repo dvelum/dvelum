@@ -1,7 +1,7 @@
 <?php
 /**
- *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- *  Copyright (C) 2011-2016  Kirill Yegorov
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,9 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
-
 declare(strict_types=1);
 
 namespace Dvelum\Orm\Object;
@@ -27,19 +25,19 @@ use Dvelum\Model;
 use Zend\Db\Sql\Ddl;
 
 /**
- * Builder for Db_object
- * @package Db
- * @subpackage Db_Object
- * @author Kirill A Egorov kirill.a.egorov@gmail.com
- * @copyright Copyright (C) 2011-2012  Kirill A Egorov,
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
+ * Builder for Orm\Object
+ * @package Orm
+ * @subpackage Orm\Object
+ * @author Kirill Ygorov
  * @license General Public License version 3
+ *
+ * @todo replace Exceptions, create error messages
  */
 class Builder
 {
     /**
      *
-     * @var \Db_Adapter
+     * @var \Dvelum\Db\Adapter
      */
     protected $db;
 
@@ -140,49 +138,49 @@ class Builder
 
     /**
      * Write SQL log
-     *
      * @param boolean $flag
+     * @return void
      */
-    static public function writeLog($flag)
+    static public function writeLog($flag) : void
     {
         self::$writeLog = (boolean) $flag;
     }
 
     /**
      * Set query log file prefix
-     *
      * @param string $string
+     * @return void
      */
-    static public function setLogPrefix($string)
+    static public function setLogPrefix(string $string) : void
     {
         self::$logPrefix = strval($string);
     }
 
     /**
      * Set logs path
-     *
      * @param string $string
+     * @return void
      */
-    static public function setLogsPath($string)
+    static public function setLogsPath(string $string) : void
     {
         self::$logsPath = $string;
     }
 
     /**
      * Use foreign keys
-     *
-     * @param boolean $boolean
+     * @param bool $flag
+     * @return void
      */
-    static public function useForeignKeys($boolean)
+    static public function useForeignKeys($flag) : void
     {
-        self::$foreignKeys = (boolean) $boolean;
+        self::$foreignKeys = (bool) $flag;
     }
 
     /**
      * Check if foreign keys is used
-     * @return boolean
+     * @return bool
      */
-    static public function foreignKeys()
+    static public function foreignKeys() : bool
     {
         return self::$foreignKeys;
     }
@@ -190,42 +188,46 @@ class Builder
     /**
      * Log queries
      * @param string $sql
-     * @throws \Exception
+     * @return bool
      */
-    protected function logSql($sql)
+    protected function logSql(string $sql) : bool
     {
-        if(! self::$writeLog)
-            return;
+        if(!self::$writeLog)
+            return true;
 
         $str = "\n--\n--" . date('Y-m-d H:i:s') . "\n--\n" . $sql;
         $filePath = self::$logsPath . $this->objectConfig->get('connection') .'_'. self::$logPrefix;
         $result = @file_put_contents($filePath, $str , FILE_APPEND);
 
-        if($result === false)
-            throw new \Exception('Cant write to log file ' . $filePath);
+        if($result === false){
+            $this->errors[] = 'Cant write to log file ' . $filePath;
+            return false;
+        }
+        return true;
     }
 
     /**
      * Check if DB table has correct structure
-     * @return boolean
+     * @return bool
      */
     public function validate() : bool
     {
-        if(! $this->tableExists())
+        if(!$this->tableExists())
             return false;
 
-        if(! $this->checkRelations()){
+        if(!$this->checkRelations()){
             return false;
         }
 
         $updateColumns = $this->prepareColumnUpdates();
         $updateIndexes = $this->prepareIndexUpdates();
         $engineUpdate = $this->prepareEngineUpdate();
-        $updateKeys = array();
+        $updateKeys = [];
+
         if(self::$foreignKeys)
             $updateKeys = $this->prepareKeysUpdate();
 
-        if(! empty($updateColumns) || ! empty($updateIndexes) || ! empty($updateKeys) || ! empty($engineUpdate))
+        if(!empty($updateColumns) || !empty($updateIndexes) || !empty($updateKeys) || !empty($engineUpdate))
             return false;
         else
             return true;
@@ -233,31 +235,31 @@ class Builder
 
     /**
      * Prepare DB engine update SQL
-     * @return boolean
+     * @return string|null
      */
-    public function prepareEngineUpdate()
+    public function prepareEngineUpdate() : ?string
     {
         $config = $this->objectConfig->__toArray();
         $conf = $this->db->fetchRow('SHOW TABLE STATUS WHERE `name` = "' . $this->model->table() . '"');
 
         if(! $conf || ! isset($conf['Engine']))
-            return false;
+            return null;
 
         if(strtolower($conf['Engine']) === strtolower($this->objectConfig->get('engine')))
-            return false;
+            return null;
 
         return $this->changeTableEngine($this->objectConfig->get('engine') , true);
     }
 
     /**
      * Prepare list of columns to be updated
-     *
-     * @return array (
-     *         'name'=>'somename',
+     * returns [
+     *         'name'=>'SomeName',
      *         'action'=>[drop/add/change],
-     *         )
+     *         ]
+     * @return array
      */
-    public function prepareColumnUpdates()
+    public function prepareColumnUpdates() : array
     {
         $config = $this->objectConfig->__toArray();
         $updates = array();
@@ -450,9 +452,9 @@ class Builder
      * Rename object field
      * @param string $oldName
      * @param string $newName
-     * @return boolean
+     * @return bool
      */
-    public function renameField($oldName , $newName)
+    public function renameField($oldName , $newName) : bool
     {
         if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
         {
@@ -479,10 +481,10 @@ class Builder
 
     /**
      * Create / alter db table
-     *
+     * @param bool $buildKeys
      * @return boolean
      */
-    public function build($buildKeys = true)
+    public function build(bool $buildKeys = true) : bool
     {
         $this->errors = array();
         if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
@@ -569,14 +571,14 @@ class Builder
             }
         }
 
-        if(! empty($engineUpdate))
+        if(!empty($engineUpdate))
         {
             try
             {
                 $this->db->query($engineUpdate);
                 $this->logSql($engineUpdate);
             }
-            catch(Exception $e)
+            catch(\Exception $e)
             {
                 $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $engineUpdate;
             }
@@ -595,7 +597,7 @@ class Builder
                 else
                     return true;
             }
-            catch(Exception $e)
+            catch(\Exception $e)
             {
                 $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
                 return false;
@@ -606,7 +608,7 @@ class Builder
         if(!empty($ralationsUpdate)){
             try{
                 $this->updateRelations($ralationsUpdate);
-            }catch (Exception $e){
+            }catch (\Exception $e){
                 $this->errors[] = $e->getMessage();
                 return false;
             }
@@ -622,7 +624,6 @@ class Builder
      * Build Foreign Keys
      * @param bool $remove - remove keys
      * @param bool $create - create keys
-     * @throws \Exception
      * @return boolean
      */
     public function buildForeignKeys($remove = true , $create = true) : bool
@@ -966,7 +967,7 @@ class Builder
         $sql = ' CREATE TABLE  `' . $this->model->table() . '` (';
 
         if(empty($fields))
-            throw new Exception('_sqlCreate :: empty properties');
+            throw new \Exception('_sqlCreate :: empty properties');
         /*
        * Add columns
        */
@@ -1023,7 +1024,6 @@ class Builder
      * Rename database table
      * @param string $newName - new table name (without prefix)
      * @return boolean
-     * @throws \Exception
      */
     public function renameTable(string $newName) : bool
     {
@@ -1162,10 +1162,11 @@ class Builder
      * Create Db_Object`s for relations
      * @throw Exception
      * @param $list
+     * @return bool
      */
-    protected function updateRelations($list)
+    protected function updateRelations($list) : bool
     {
-        $lang = Lang::lang();
+        $lang = \Lang::lang();
         $usePrefix = true;
         $connection = $this->objectConfig->get('connection');
 
@@ -1179,11 +1180,15 @@ class Builder
         $fieldList = \Dvelum\Config::storage()->get('objects/relations/fields.php');
         $indexesList = \Dvelum\Config::storage()->get('objects/relations/indexes.php');
 
-        if(empty($fieldList))
-            throw new Exception('Cannot get relation fields: ' . 'objects/relations/fields.php');
+        if(empty($fieldList)){
+            $this->errors[] = 'Cannot get relation fields: ' . 'objects/relations/fields.php';
+            return false;
+        }
 
-        if(empty($indexesList))
-            throw new Exception('Cannot get relation indexes: ' . 'objects/relations/indexes.php');
+        if(empty($indexesList)){
+            $this->errors[] = 'Cannot get relation indexes: ' . 'objects/relations/indexes.php';
+            return false;
+        }
 
         $fieldList= $fieldList->__toArray();
         $indexesList = $indexesList->__toArray();
@@ -1196,7 +1201,7 @@ class Builder
             $newObjectName = $info['name'];
             $tableName = $newObjectName;
 
-            $linkedObject = $this->objectConfig->getLinkedObject($fieldName);
+            $linkedObject = $this->objectConfig->getField($fieldName)->getLinkedObject();
 
             $fieldList['target_id']['link_config']['object'] = $linkedObject;
 
@@ -1224,34 +1229,48 @@ class Builder
                 $tableName = $tablePrefix . $tableName;
             }
 
-            if(in_array($tableName, $tables ,true))
-                throw new Exception($lang->get('INVALID_VALUE').' Table Name: '.$tableName .' '.$lang->get('SB_UNIQUE'));
+            if(in_array($tableName, $tables ,true)){
+                $this->errors[] = $lang->get('INVALID_VALUE').' Table Name: '.$tableName .' '.$lang->get('SB_UNIQUE');
+                return false;
+            }
 
-            if(file_exists($configDir . strtolower($newObjectName).'.php'))
-                throw new Exception($lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE'));
+            if(file_exists($configDir . strtolower($newObjectName).'.php')){
+                $this->errors[] = $lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE');
+                return false;
+            }
 
             if(!is_dir($configDir) && !@mkdir($configDir, 0755, true)){
-                Response::jsonError($lang->get('CANT_WRITE_FS').' '.$configDir);
+                $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
+                return false;
             }
 
             /*
              * Write object config
              */
-            if(!\Dvelum\Config\File\AsArray::create($configDir. $newObjectName . '.php'))
-                Response::jsonError($lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php');
+            if(!\Dvelum\Config\File\AsArray::create($configDir. $newObjectName . '.php')){
+                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php';
+                return false;
+            }
 
             $cfg = \Dvelum\Config::storage()->get($oConfigPath. strtolower($newObjectName).'.php' , false , false);
 
+            if(!$cfg){
+                $this->errors[] = 'Undefined config file '.$oConfigPath. strtolower($newObjectName).'.php';
+                return false;
+            }
+            /**
+             * @var \Dvelum\Config\File $cfg
+             */
             $cfg->setData($objectData);
             $cfg->save();
 
+            $objectConfig = Config::factory($newObjectName);
+            $objectConfig->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->objectName.' & '.$linkedObject);
 
-            $cfg = Config::factory($newObjectName);
-            $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->objectName.' & '.$linkedObject);
-
-            if(!$cfg->save())
-                Response::jsonError($lang->get('CANT_WRITE_FS'));
-
+            if(!$objectConfig->save()){
+                $this->errors[] = $lang->get('CANT_WRITE_FS');
+                return false;
+            }
             /*
              * Build database
             */

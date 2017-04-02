@@ -93,7 +93,7 @@ class Auth
         $authProvider = \User_Auth::factory($providerCfg);
 
         if (!$authProvider->auth($login, $password))
-            return false;
+            return $user;
 
         $data = $authProvider->getUserData();
 

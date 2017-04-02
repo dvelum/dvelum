@@ -44,20 +44,26 @@ class Adapter extends  \Db_Adapter
     /**
      * @return Sql
      */
-    public function sql()
+    public function sql() : Sql
     {
         return  new Sql($this->adapter);
     }
 
     /**
-     * @return null|Db\Adapter\Profiler\ProfilerInterface
+     * Get Query profiler
+     * @return Db\Adapter\Profiler\ProfilerInterface|null
      */
-    public function getProfiler()
+    public function getProfiler(): ?Db\Adapter\Profiler\ProfilerInterface
     {
         return $this->adapter->getProfiler();
     }
 
-    public function fetchAll($sql)
+    /**
+     * Fetch results
+     * @param $sql
+     * @return array
+     */
+    public function fetchAll($sql) : array
     {
         $statement = $this->adapter->createStatement();
         $statement->prepare($sql);
@@ -98,7 +104,12 @@ class Adapter extends  \Db_Adapter
         $this->adapter->query($sql, Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
     }
 
-    public function fetchRow($sql)
+    /**
+     * Fetch row from result set
+     * @param $sql
+     * @return array
+     */
+    public function fetchRow($sql) : array
     {
         $statement = $this->adapter->createStatement();
         $statement->prepare($sql);

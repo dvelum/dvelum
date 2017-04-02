@@ -75,9 +75,10 @@ class Store
     
     /**
      * Set log Adapter
-     * @param \Log $log
+     * @param \Psr\Log\LoggerInterface $log
+     * @return void
      */
-    public function setLog(\Log $log)
+    public function setLog(\Psr\Log\LoggerInterface $log) : void
     {
     	$this->log = $log;
     }

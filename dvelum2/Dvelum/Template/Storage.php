@@ -1,4 +1,22 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+declare(strict_types=1);
 namespace Dvelum\Template;
 
 class Storage
@@ -8,16 +26,19 @@ class Storage
      * @var array
      */
     static protected $runtimeCache = [];
+
     /**
      * Storage configuration options
      * @var array
      */
     protected $config = [];
+
     /**
      * Set configuration options
      * @param array $options
+     * @return void
      */
-    public function setConfig(array $options)
+    public function setConfig(array $options) : void
     {
         foreach($options as $k=>$v){
             $this->config[$k] = $v;
@@ -60,8 +81,9 @@ class Storage
 
     /**
      * Get template paths
+     * @return array
      */
-    public function getPaths()
+    public function getPaths() : array
     {
         return $this->config['paths'];
     }
@@ -71,7 +93,7 @@ class Storage
      * @param string $path
      * @return void
      */
-    public function addPath($path)
+    public function addPath($path) : void
     {
         $this->config['paths'][] = $path;
     }

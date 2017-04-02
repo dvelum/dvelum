@@ -1,20 +1,20 @@
 <?php
-/*
- * DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- * Copyright (C) 2011-2016  Kirill A Egorov
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -22,30 +22,30 @@ namespace Dvelum\Orm\Object\Config;
 
 class Translator
 {
-	protected $_mainConfig = '';
-	protected $_translation = false;
+	protected $mainConfig = '';
+	protected $translation = false;
 	/**
-	 * @var Lang
+	 * @var \Lang
 	 */
-	protected $_lang = false;
+	protected $lang = false;
 	/**
 	 * @param string $configPath - path to translation Array config
 	*/
 	public function __construct($configPath)
 	{
-		$this->_mainConfig = $configPath;
+		$this->mainConfig = $configPath;
 	}
 
 	/**
 	 * Get object fields translation
-	 * @return Config_Abstract | boolean false
+	 * @return \Config_Abstract | boolean false
 	 */
 	public function getTranslation()
 	{
-		if(!$this->_translation){
-			$this->_translation = \Lang::storage()->get($this->_mainConfig, true, true);
+		if(!$this->translation){
+			$this->translation = \Lang::storage()->get($this->mainConfig, true, true);
 		}
-		return $this->_translation;
+		return $this->translation;
 	}
 
 	/**
@@ -54,7 +54,7 @@ class Translator
 	 */
 	public function getMainConfig()
 	{
-		return $this->_mainConfig;
+		return $this->mainConfig;
 	}
 	
 	/**
@@ -87,11 +87,11 @@ class Translator
 		{
 			if(isset($v['lazyLang']) && $v['lazyLang'])
 			{
-				if(!$this->_lang)
-					$this->_lang = \Lang::lang();
+				if(!$this->lang)
+					$this->lang = \Lang::lang();
 
 				if(isset($v['title']))
-					$v['title'] = $this->_lang->get($v['title']);
+					$v['title'] = $this->lang->get($v['title']);
 				else 
 					$v['title'] = '';
 			}	

@@ -1,10 +1,4 @@
 <?php
-
-declare(strict_types=1);
-
-namespace Dvelum;
-
-use Dvelum\Config;
 /*
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * Copyright (C) 2011-2016  Kirill A Egorov
@@ -22,6 +16,12 @@ use Dvelum\Config;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
+
+namespace Dvelum;
+
+use Dvelum\Config;
+
 class Lang
 {
     protected $dictionary = false;

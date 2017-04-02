@@ -219,8 +219,8 @@ class Field implements \ArrayAccess
     }
 
     /**
-     * Check if a field is a multilink (a list of links to objects of the same type)
-     * @return boolean
+     * Check if a field is a MultiLink (a list of links to objects of the same type)
+     * @return bool
      */
     public function isMultiLink() : bool
     {

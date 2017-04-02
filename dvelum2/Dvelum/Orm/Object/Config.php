@@ -1133,7 +1133,7 @@ class Config
 
     /**
      * Get public key field
-     * @return bool|null
+     * @return string|null
      */
     public function getIvField()
     {
@@ -1151,7 +1151,7 @@ class Config
      */
     public function decrypt($value , $iv)
     {
-        return Utils_String::decrypt($value , self::$encConfig['key'] , $iv);
+        return \Utils_String::decrypt($value , self::$encConfig['key'] , $iv);
     }
 
     /**
@@ -1162,7 +1162,7 @@ class Config
      */
     public function encrypt($value, $iv)
     {
-        return Utils_String::encrypt($value , self::$encConfig['key'] , $iv);
+        return \Utils_String::encrypt($value , self::$encConfig['key'] , $iv);
     }
 
     /**
@@ -1171,7 +1171,7 @@ class Config
      */
     public function createIv()
     {
-        return Utils_String::createEncryptIv();
+        return \Utils_String::createEncryptIv();
     }
 
     /**

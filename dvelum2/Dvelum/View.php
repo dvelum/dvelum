@@ -36,25 +36,25 @@ class View
 
     /**
      * Default cache interface
-     * @var \Cache_Interface
+     * @property \Cache_Interface | bool $defaultCache
      */
-    protected static $_defaultCache = false;
+    protected static $defaultCache = false;
     /**
      * Check modification time for template file. Invalidate cache
-     * @var boolean
+     * @property bool $checkMTime
      */
-    protected static $_checkMTime = false;
+    protected static $checkMTime = false;
     /**
-     * @var \Cache_Interface
+     * @property \Cache_Interface $cache
      */
     protected $cache = false;
     /**
-     * @var boolean
+     * @property boolean $useCache
      */
-    protected $_useCache = true;
+    protected $useCache = true;
 
     /**
-     * @var \Dvelum\Template\Storage
+     * @property  \Dvelum\Template\Storage $storage
      */
     protected $storage;
 
@@ -64,7 +64,7 @@ class View
      */
     static public function setCache(\Cache_Interface $manager)
     {
-        self::$_defaultCache = $manager;
+        self::$defaultCache = $manager;
     }
 
     /**
@@ -73,12 +73,12 @@ class View
      */
     static public function checkMtime(bool $flag)
     {
-        self::$_checkMTime = $flag;
+        self::$checkMTime = $flag;
     }
 
     public function __construct()
     {
-        $this->cache = self::$_defaultCache;
+        $this->cache = self::$defaultCache;
         $this->storage = self::storage();
     }
     /**
@@ -98,7 +98,7 @@ class View
 
         if($this->cache && $this->useCache)
         {
-            if(self::$_checkMTime){
+            if(self::$checkMTime){
                 $hash = md5('tpl_' . $path . '_' . serialize($this->data).filemtime($realPath));
             }else{
                 $hash = md5('tpl_' . $path . '_' . serialize($this->data));
@@ -124,8 +124,9 @@ class View
      * Set property
      * @param string $name
      * @param mixed $value
+     * @return void
      */
-    public function set(string $name , $value)
+    public function set(string $name , $value) : void
     {
         $this->data[$name] = $value;
     }
@@ -133,8 +134,9 @@ class View
     /**
      * Set multiple properties
      * @param array $data
+     * @return void
      */
-    public function setProperties(array $data)
+    public function setProperties(array $data) : void
     {
         foreach ($data as $name=>$value)
             $this->data[$name] = $value;
@@ -175,24 +177,27 @@ class View
 
     /**
      * Empty template data
+     * @return void
      */
-    public function clear()
+    public function clear() : void
     {
         $this->data = [];
     }
 
     /**
      * Disable caching
+     * @return void
      */
-    public function disableCache()
+    public function disableCache() : void
     {
         $this->useCache = false;
     }
 
     /**
      * Enable caching
+     * @return void
      */
-    public function enableCache()
+    public function enableCache() : void
     {
         $this->useCache = true;
     }
@@ -210,8 +215,9 @@ class View
      * Redefine template data using an associative key-value array,
      * old and new data merge
      * @param array $data
+     * @return void
      */
-    public function setData(array $data)
+    public function setData(array $data) : void
     {
         $this->data = $data;
     }
@@ -220,7 +226,7 @@ class View
      * Get Templates storage
      * @return \Dvelum\Template\Storage
      */
-    static public function storage()
+    static public function storage() : \Dvelum\Template\Storage
     {
         static $store = false;
 

@@ -27,6 +27,10 @@ namespace Dvelum\Config;
  */
  abstract class File extends Adapter
  {
+     /**
+      * Path to file
+      * @var string
+      */
      protected $writePath;
      
      public function __construct(string $name , bool $autoRead = true)
@@ -60,10 +64,11 @@ namespace Dvelum\Config;
      /**
       * Save save path
       * @param $path
+      * @return void
       */
-     public function setWritePath(string $path)
+     public function setWritePath(string $path) : void
      {
-         $this->writePath = writePath;
+         $this->writePath = $path;
      }
 
      /**

@@ -1,22 +1,24 @@
 <?php
-declare(strict_types=1);
-/*
- * DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- * Copyright (C) 2011-2016  Kirill A Egorov
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+declare(strict_types=1);
+
 namespace Dvelum\Config\File;
 
 use Dvelum\Config;
@@ -84,17 +86,17 @@ class AsArray extends Config\File
     /**
      * Create config
      * @param string $file - path to config
-     * @throws Exception
+     * @throws \Exception
      * @return boolean - success flag
      */
     static public function create(string $file) : bool
     {
         $dir = dirname($file);
         if(!file_exists($dir) && !@mkdir($dir,0755, true))
-            throw new Exception('Cannot create '.$dir);
+            throw new \Exception('Cannot create '.$dir);
 
         if(\File::getExt($file)!=='.php')
-            throw new Exception('Invalid file name');
+            throw new \Exception('Invalid file name');
 
         if(\Utils::exportArray($file, array())!==false)
             return true;

@@ -1,7 +1,7 @@
 <?php
 /**
- *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- *  Copyright (C) 2011-2016  Kirill Yegorov
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ class Model
 {
     /**
      * DB Object Storage
-     * @var Orm\Object\Storage
+     * @var Orm\Object\Store
      */
     protected $store;
 
@@ -63,21 +63,21 @@ class Model
 
     /**
      * Hard caching time (without validation) for frondend , seconds
-     * @var integer
+     * @var int
      */
     protected $cacheTime;
 
     /**
      * Current Cache_Interface
      * @var \Cache_Interface
-    */
+     */
     protected $cache;
 
     /**
      * DB table prefix
      * @var string
      */
-     protected $dbPrefix = '';
+    protected $dbPrefix = '';
 
     /**
      * Global (For all Models) db connection
@@ -85,18 +85,18 @@ class Model
      */
     static protected $dbConnection = false;
 
-    static protected $defaults = array(
-       // Global (For all Models) Hard caching time
-      'hardCacheTime'  => 60,
-       // Default Cache_Interface
-      'dataCache' => false  ,
-       // Db object storage interface  @var Db_Objectstore
-      'dbObjectStore'  => false,
-       // Default Connection manager  @var Db_Manager_Interface
-      'defaultDbManager' => false,
-       // Default error log adapter  @var Log | false
-      'errorLog' =>false
-    );
+    static protected $defaults = [
+        // Global (For all Models) Hard caching time
+        'hardCacheTime'  => 60,
+        // Default Cache_Interface
+        'dataCache' => false  ,
+        // Db object storage interface  @var Db_Objectstore
+        'dbObjectStore'  => false,
+        // Default Connection manager  @var Db_Manager_Interface
+        'defaultDbManager' => false,
+        // Default error log adapter  @var Log | false
+        'errorLog' =>false
+    ];
 
     /**
      * Connection manager
@@ -126,12 +126,12 @@ class Model
      * Get DB table prefix
      * @return string
      */
-    public function getDbPrefix()
+    public function getDbPrefix() : string
     {
         return $this->dbPrefix;
     }
 
-    protected static $instances = array();
+    protected static $instances = [];
 
     /**
      * Set default configuration options
@@ -146,13 +146,14 @@ class Model
      * Get default Db Connection manager
      * @return  Db\Manager
      */
-    static public function getDefaultDbManager()
+    static public function getDefaultDbManager() : Db\Manager
     {
         return static::$defaults['defaultDbManager'];
     }
 
     /**
      * @param string $objectName
+     * @throws \Exception
      */
     protected function __construct(string $objectName)
     {
@@ -164,8 +165,8 @@ class Model
 
         try{
             $this->objectConfig = Orm\Object\Config::factory($this->name);
-        }catch (Exception $e){
-            throw new Exception('Object '. $objectName.' is not exists');
+        }catch (\Exception $e){
+            throw new \Exception('Object '. $objectName.' is not exists');
         }
 
         $conName = $this->objectConfig->get('connection');
@@ -223,7 +224,7 @@ class Model
      * Get Master Db connector
      * return Db\Adapter
      */
-    public function getDbConnection()
+    public function getDbConnection() : Db\Adapter
     {
         return $this->db;
     }
@@ -232,7 +233,7 @@ class Model
      * Get Slave Db Connection
      * @return Db\Adapter
      */
-    public function getSlaveDbConnection()
+    public function getSlaveDbConnection() : Db\Adapter
     {
         return $this->dbSlave;
     }
@@ -241,7 +242,7 @@ class Model
      * Get current db manager
      * @return \Db_Manager_Interface
      */
-    public function getDbManager()
+    public function getDbManager() : \Db_Manager_Interface
     {
         return $this->dbManager;
     }
@@ -250,7 +251,7 @@ class Model
      * Get storage adapter
      * @return Orm\Object\Store
      */
-    public function getStore()
+    public function getStore() : Orm\Object\Store
     {
         return $this->store;
     }
@@ -269,9 +270,9 @@ class Model
 
         $objectName = implode('_' , array_map('ucfirst',explode('_', $objectName)));
 
-       /*
-        * Instantiate real or virtual model
-        */
+        /*
+         * Instantiate real or virtual model
+         */
         if(class_exists('Model_' . $objectName)){
             $class = 'Model_' . $objectName;
             self::$instances[$listName] = new $class($objectName);
@@ -306,7 +307,7 @@ class Model
      */
     public function table() : string
     {
-      return $this->dbPrefix . $this->table;
+        return $this->dbPrefix . $this->table;
     }
 
     /**
@@ -383,8 +384,8 @@ class Model
     public function getItemByUniqueField(string $fieldName , $value , $fields = '*')
     {
         if(!$this->objectConfig->getField($fieldName)->isUnique()){
-          $eText = 'getItemByUniqueField field "'.$fieldName.'" ['.$this->objectConfig->getName().'] should be unique';
-          $this->logError($eText);
+            $eText = 'getItemByUniqueField field "'.$fieldName.'" ['.$this->objectConfig->getName().'] should be unique';
+            $this->logError($eText);
             throw new \Exception($eText);
         }
         $sql = $this->dbSlave->select()->from($this->table() , $fields);
@@ -414,8 +415,8 @@ class Model
         if($data === false)
         {
             $sql = $this->dbSlave->select()
-                         ->from($this->table() , $fields)
-                         ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) .' IN('.\Utils::listIntegers($ids).')');
+                ->from($this->table() , $fields)
+                ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) .' IN('.\Utils::listIntegers($ids).')');
             $data = $this->dbSlave->fetchAll($sql);
 
             if(!$data)
@@ -434,7 +435,7 @@ class Model
      * @param array $filters  the key - the field name, value
      * @return void
      */
-    public function queryAddFilters($sql , $filters)
+    public function queryAddFilters($sql , $filters)  : void
     {
         if(!is_array($filters) || empty($filters))
             return;
@@ -442,33 +443,33 @@ class Model
         foreach($filters as $k => $v)
         {
 
-           if($v instanceof  \Db_Select_Filter)
-           {
-             $v->applyTo($this->db, $sql);
-           }
-           else
-           {
+            if($v instanceof  \Db_Select_Filter)
+            {
+                $v->applyTo($this->db, $sql);
+            }
+            else
+            {
 
-             if(is_array($v) && !empty($v))
-                 $sql->where($this->db->quoteIdentifier($k) . ' IN(?)' , $v);
-             elseif (is_bool($v))
-                 $sql->where($this->db->quoteIdentifier($k) . ' = '. intval($v));
-             elseif((is_string($v) && strlen($v)) || is_numeric($v))
-                 $sql->where($this->db->quoteIdentifier($k) . ' =?' , $v);
-             elseif (is_null($v))
-                 $sql->where($this->db->quoteIdentifier($k) . ' IS NULL');
-           }
+                if(is_array($v) && !empty($v))
+                    $sql->where($this->db->quoteIdentifier($k) . ' IN(?)' , $v);
+                elseif (is_bool($v))
+                    $sql->where($this->db->quoteIdentifier($k) . ' = '. intval($v));
+                elseif((is_string($v) && strlen($v)) || is_numeric($v))
+                    $sql->where($this->db->quoteIdentifier($k) . ' =?' , $v);
+                elseif (is_null($v))
+                    $sql->where($this->db->quoteIdentifier($k) . ' IS NULL');
+            }
         }
     }
 
     /**
      * Add author selection join to the query.
      * Used with rev_control objects
-     * @param Db_Select | Zenddb_Select $sql
+     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql
      * @param string $fieldAlias
      * @return void
      */
-    protected function _queryAddAuthor($sql , $fieldAlias)
+    protected function _queryAddAuthor($sql , $fieldAlias)  : void
     {
         $sql->joinLeft(
             array('u1' =>  Model::factory('User')->table()) ,
@@ -480,11 +481,11 @@ class Model
     /**
      * Add editor selection join to the query.
      * Used with rev_control objects
-     * @param Db_Select | Zenddb_Select $sql
+     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql
      * @param string $fieldAlias
      * @return void
      */
-    protected function _queryAddEditor($sql , $fieldAlias)
+    protected function _queryAddEditor($sql , $fieldAlias)  : void
     {
         $sql->joinLeft(
             array('u2' =>  Model::factory('User')->table()) ,
@@ -496,11 +497,11 @@ class Model
     /**
      * Add pagination parameters to a query
      * Used in CRUD-controllers for list pagination and sorting
-     * @param Db_Select | Zenddb_Select $sql
+     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql
      * @param array $params — possible keys: start,limit,sort,dir
      * @return void
      */
-    static public function queryAddPagerParams($sql , $params)
+    static public function queryAddPagerParams($sql , $params) : void
     {
         if(isset($params['limit']) && !isset($params['start'])){
             $sql->limit(intval($params['limit']));
@@ -511,32 +512,32 @@ class Model
         if(!empty($params['sort']) && ! empty($params['dir'])){
 
             if(is_array($params['sort']) && !is_array($params['dir'])){
-              $sort = array();
+                $sort = array();
 
-              foreach ($params['sort'] as $key=>$field){
-                if(!is_integer($key)){
-                  $order = trim(strtolower($field));
-                  if($order == 'asc' || $order == 'desc')
-                      $sort[$key] = $order;
-                }else{
-                   $sort[$field] = $params['dir'];
+                foreach ($params['sort'] as $key=>$field){
+                    if(!is_int($key)){
+                        $order = trim(strtolower($field));
+                        if($order == 'asc' || $order == 'desc')
+                            $sort[$key] = $order;
+                    }else{
+                        $sort[$field] = $params['dir'];
+                    }
                 }
-              }
-              $sql->order($sort);
+                $sql->order($sort);
             }else{
-              $sql->order(array($params['sort'] => $params['dir']));
+                $sql->order(array($params['sort'] => $params['dir']));
             }
         }
     }
 
     /**
      * Get a number of objects (rows in a table)
-     * @param array $filters — optional - filters (where) the key - the field name, value
-     * @param string $query - optional - search query — search query
+     * @param array|bool $filters — optional - filters (where) the key - the field name, value
+     * @param string|bool $query - optional - search query — search query
      * @param boolean $useCache — use hard cache
      * it is necessary to remember that hard cache gets invalidated only at the end of its life cycle (configs / main.php),
      * is used in case update triggers can’t be applied
-     * @return integer
+     * @return int
      */
     public function getCount($filters = false , $query = false , $useCache = false)
     {
@@ -575,13 +576,13 @@ class Model
 
     /**
      * Get a list of records (is used by CRUD_VC controllers)
-     * @param array $params  - parameters array('start'=>0,'limit'=>10,'sort'=>'fieldname','dir'=>'DESC')
-     * @param array $filters - filters
-     * @param string $query — optional string for search
+     * @param array|bool $params  - parameters array('start'=>0,'limit'=>10,'sort'=>'fieldname','dir'=>'DESC')
+     * @param array|bool $filters - filters
+     * @param string|bool $query — optional string for search
      * @param mixed $fields — optional list of fields
-     * @param string $author - optional key for storing entry author id
-     * @param string $lastEditor  - optional key  for storing the last editor’s ID
-     * @param array $joins - optional, inclusion config for Zend_Select:
+     * @param string|bool $author - optional key for storing entry author id
+     * @param string|bool $lastEditor  - optional key  for storing the last editor’s ID
+     * @param array|bool $joins - optional, inclusion config for Zend_Select:
      * array(
      *          array(
      *                'joinType'=> joinLeft/left, joinRight/right, joinInner/inner
@@ -590,11 +591,12 @@ class Model
      *                'condition'=> string
      *          )...
      * )
+     * @return array
      */
-    public function getListVc($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
+    public function getListVc($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false) : array
     {
-      if(is_array($filters) && !empty($filters))
-        $filters = $this->_cleanFilters($filters);
+        if(is_array($filters) && !empty($filters))
+            $filters = $this->_cleanFilters($filters);
 
         if($this->dbSlave === Model::factory('User')->getSlaveDbConnection())
             return $this->_getListVcLocal($params , $filters , $query , $fields , $author, $lastEditor, $joins);
@@ -609,18 +611,18 @@ class Model
      */
     protected function _cleanFilters(array $filters)
     {
-      foreach ($filters as $field=>$val)
-      {
-        if(!$val instanceof Db_Select_Filter && !is_null($val) && (!is_array($val) && !strlen((string)$val)))
+        foreach ($filters as $field=>$val)
         {
-          unset($filters[$field]);
-          continue;
-        }
+            if(!$val instanceof \Db_Select_Filter && !is_null($val) && (!is_array($val) && !strlen((string)$val)))
+            {
+                unset($filters[$field]);
+                continue;
+            }
 
-        if($this->objectConfig->fieldExists($field) && $this->objectConfig->getField($field)->isBoolean())
-          $filters[$field] = Filter::filterValue(Filter::FILTER_BOOLEAN, $val);
-      }
-      return $filters;
+            if($this->objectConfig->fieldExists($field) && $this->objectConfig->getField($field)->isBoolean())
+                $filters[$field] = \Filter::filterValue(\Filter::FILTER_BOOLEAN, $val);
+        }
+        return $filters;
     }
 
     protected function _getListVcLocal($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
@@ -696,7 +698,7 @@ class Model
             array_unique($ids);
             $usersData = Model::factory('User')->getList(false,array('id'=>$ids),array('id','name'));
             if(!empty($usersData))
-                $usersData = Utils::rekey('id', $usersData);
+                $usersData = \Utils::rekey('id', $usersData);
         }
 
         foreach ($data as $key=>&$row)
@@ -755,7 +757,7 @@ class Model
             $sql = $this->dbSlave->select()->from($this->table() , $fields);
 
             if(is_array($filters) && !empty($filters))
-              $this->queryAddFilters($sql ,$this->_cleanFilters($filters));
+                $this->queryAddFilters($sql ,$this->_cleanFilters($filters));
 
             if($params)
                 static::queryAddPagerParams($sql , $params);
@@ -781,7 +783,7 @@ class Model
      * Get object title
      * @param Orm\Object $object - object for getting title
      * @return mixed|string - object title
-     * @throws Exception
+     * @throws \Exception
      */
     public function getTitle(Orm\Object $object)
     {
@@ -806,10 +808,10 @@ class Model
 
     /**
      * Delete record
-     * @param integer $recordId record ID
+     * @param int $recordId record ID
      * @return  boolean
      */
-    public function remove(integer $recordId) :boolean
+    public function remove(int $recordId) : bool
     {
         $object = Orm\Object::factory($this->name , $recordId);
         if(self::_getObjectsStore()->delete($object))
@@ -820,7 +822,7 @@ class Model
 
     /**
      * Add joins to the query
-     * @param Db_Select | Zenddb_Select $sql
+     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql
      * @param array $joins   - config for ZendDb join method:
      * array(
      * 		array(
@@ -855,11 +857,12 @@ class Model
 
     /**
      * Add Like where couse for query
-     * @param Db_Select | Zenddb_Select $sql
+     * @param \Db_Select | \Zend\Db\Sql $sql
      * @param string $query
      * @param string $alias - table name alias, optional
+     * @return void
      */
-    protected function _queryAddQuery($sql , $query, $alias = false)
+    protected function _queryAddQuery($sql , $query, $alias = false)  : void
     {
         if(!$alias){
             $alias = $this->table();
@@ -884,18 +887,18 @@ class Model
      * Check whether the field value is unique
      * Returns true if value $fieldValue is unique for $fieldName field
      * otherwise returns false
-     * @param integer $recordId — record ID
+     * @param int $recordId — record ID
      * @param string $fieldName — field name
      * @param mixed $fieldValue — field value
      * @return boolean
      */
-    public function checkUnique($recordId , $fieldName , $fieldValue)
+    public function checkUnique(int $recordId , string $fieldName , $fieldValue) : bool
     {
         return !(boolean) $this->dbSlave->fetchOne(
-                $this->dbSlave->select()
-                          ->from($this->table() , array('count' => 'COUNT(*)'))
-                          ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) .' != ?' , $recordId)
-                          ->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?' , $fieldValue)
+            $this->dbSlave->select()
+                ->from($this->table() , array('count' => 'COUNT(*)'))
+                ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) .' != ?' , $recordId)
+                ->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?' , $fieldValue)
         );
     }
     /**
@@ -909,9 +912,10 @@ class Model
 
     /**
      * Set DB connections manager (since 0.9.1)
-     * @param Db_Manager_Interface $manager
+     * @param \Db_Manager_Interface $manager
+     * @return void
      */
-    public function setDbManager(Db_Manager_Interface $manager)
+    public function setDbManager(\Db_Manager_Interface $manager) : void
     {
         $conName = $this->objectConfig->get('connection');
         $this->dbManager =  $manager;
@@ -926,34 +930,35 @@ class Model
         $this->db = $this->dbManager->getDbConnection($conName);
 
         if($this->objectConfig->hasDbPrefix())
-          $this->dbPrefix = $this->dbManager->getDbConfig($conName)->get('prefix');
+            $this->dbPrefix = $this->dbManager->getDbConfig($conName)->get('prefix');
         else
-          $this->dbPrefix = '';
+            $this->dbPrefix = '';
 
         $this->table = $this->objectConfig->get('table');
     }
 
     /**
      * Set default error log adapter
-     * @param Log $log
+     * @param \Log $log
+     * @return void
      */
-    static public function setDefaultLog(\Log $log)
+    static public function setDefaultLog(\Log $log) : void
     {
-      self::$defaults['errorLog'] = $log;
+        self::$defaults['errorLog'] = $log;
     }
 
     /**
      * Set current log adapter
-     * @param mixed Log | false  $log
+     * @param mixed \Log | false  $log
      */
-    public function setLog($log)
+    public function setLog($log) : void
     {
-      $this->log = $log;
+        $this->log = $log;
     }
 
     /**
      * Get logs Adapter
-     * @return Log
+     * @return \Log
      */
     public function getLogsAdapter()
     {
@@ -963,23 +968,24 @@ class Model
     /**
      * Log error message
      * @param string $message
+     * @return void
      */
-    public function logError(string $message)
+    public function logError(string $message) : void
     {
-      if(!$this->log)
-       return;
+        if(!$this->log)
+            return;
 
-      $this->log->log(\Psr\Log\LogLevel::ERROR, get_called_class().': ' . $message);
+        $this->log->log(\Psr\Log\LogLevel::ERROR, get_called_class().': ' . $message);
     }
 
     /**
      * Insert multiple rows (not safe but fast)
      * @param array $data
-     * @param integer $chunkSize
+     * @param int $chunkSize
      * @param boolean $ignore - optional default false
      * @return boolean
      */
-    public function multiInsert($data , $chunkSize = 300, $ignore = false)
+    public function multiInsert(array $data , int $chunkSize = 300, bool $ignore = false) : bool
     {
         if(empty($data))
             return true;
@@ -1020,7 +1026,7 @@ class Model
             $sql.= 'INTO '.$this->table().' ('.$keys.') '."\n".' VALUES '."\n".'('.implode(')'."\n".',(', array_values($rowset)).') '."\n".'';
 
             try{
-               $this->db->query($sql);
+                $this->db->query($sql);
             } catch (\Exception $e){
                 $this->logError('multiInsert: '.$e->getMessage());
                 return false;
@@ -1059,14 +1065,14 @@ class Model
         try{
             $this->db->query($sql);
             return true;
-        }catch(Exception $e){
+        }catch(\Exception $e){
             $this->logError($e->getMessage() .' SQL: '.$sql);
             return false;
         }
     }
 
     /**
-     * Get list of serach fields (get from ORM)
+     * Get list of search fields (get from ORM)
      */
     protected function getSearchFields()
     {
@@ -1081,7 +1087,7 @@ class Model
      * @param array $fields
      * @return void
      */
-    public function setSearchFields(array $fields)
+    public function setSearchFields(array $fields) : void
     {
         $this->searchFields = $fields;
     }
@@ -1090,7 +1096,7 @@ class Model
      * Reset search fields list (get from ORM)
      * @return void
      */
-    public function resetSearchFields()
+    public function resetSearchFields() : void
     {
         $this->searchFields = null;
     }
@@ -1099,11 +1105,12 @@ class Model
     /**
      * Clear runtime cache
      * @param $name, Object name
+     * @return void
      */
-    static public function removeInstance($name)
+    static public function removeInstance($name) : void
     {
-       $name = strtolower($name);
-       if(isset(static::$instances[$name]))
-           unset(static::$instances[$name]);
+        $name = strtolower($name);
+        if(isset(static::$instances[$name]))
+            unset(static::$instances[$name]);
     }
 }

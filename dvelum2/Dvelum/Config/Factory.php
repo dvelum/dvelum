@@ -1,28 +1,31 @@
 <?php
-declare(strict_types=1);
-/*
- * DVelum project http://code.google.com/p/dvelum/, https://github.com/k-samuel/dvelum , http://dvelum.net Copyright
- * (C) 2011-2016 Kirill A Egorov This program is free software: you can
- * redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version. This program is distributed
- * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details. You should have received
- * a copy of the GNU General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
+
 namespace Dvelum\Config;
 
 use Dvelum\Config;
 
 /**
  * Configuration Object Factory
- *
- * @author Kirill Egorov 2010
+ * @author Kirill Yegorov 2010
  * @package Config
- * @static
- *
  */
 class Factory
 {
@@ -30,20 +33,17 @@ class Factory
     const File_Array = 1;
 
     /**
-     *
-     * @var Store_Interface
+     * @var \Store_Interface
      */
     protected static $store = false;
     /**
-     *
-     * @var Cache_Interface
+     * @var \Cache_Interface
      */
     protected static $cache = false;
 
     /**
      * Set cache adapter
-     *
-     * @param Cache_Interface $core
+     * @param \Cache_Interface $core
      */
     public static function setCacheCore($core)
     {
@@ -52,8 +52,7 @@ class Factory
 
     /**
      * Get cache adapter
-     *
-     * @return Cache_Interface | false
+     * @return \Cache_Interface | false
      */
     public static function getCacheCore()
     {
@@ -62,7 +61,6 @@ class Factory
 
     /**
      * Factory method
-     *
      * @param integer $type -type of the object being created, Config class constant
      * @param string $name - identifier
      * @param boolean $useCache - optional , default true. Use cache if available
@@ -116,8 +114,9 @@ class Factory
 
     /**
      * Clear cache
+     * @return void
      */
-    static public function resetCache()
+    static public function resetCache() : void
     {
         if(is_null(self::$store))
             self::_connectStore();
@@ -136,7 +135,7 @@ class Factory
 
     /**
      * Instantiate storage
-     * @return Store
+     * @return \Store
      */
     static protected function _connectStore()
     {

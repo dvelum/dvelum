@@ -1,5 +1,24 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 declare(strict_types=1);
+
 namespace Dvelum\Orm\Object;
 
 /**
@@ -14,17 +33,17 @@ namespace Dvelum\Orm\Object;
 
 class Manager
 {
-	static protected $_objects = null;
+	static protected $objects = null;
 	
     /**
      * Get list of registered objects (names only)
      * @return array
      */
-    public function getRegisteredObjects()
+    public function getRegisteredObjects() : ?array
     {
-    	if(is_null(self::$_objects))
+    	if(is_null(self::$objects))
     	{
-			self::$_objects = array();
+			self::$objects = array();
 			$paths = \Dvelum\Config::storage()->getPaths();
 
 			$list = array();
@@ -43,20 +62,20 @@ class Manager
 					foreach ($items as $o){
 						$baseName = substr(basename($o), 0, -4);
 						if(!isset($list[$baseName])){
-							self::$_objects[] = $baseName;
+							self::$objects[] = $baseName;
 							$list[$baseName] = true;
 						}
 					}
 				}
 			}
     	}
-    	return self::$_objects;
+    	return self::$objects;
     }
     
     /**
      * Check if object exists
      * @param string $name
-     * @return boolean
+     * @return bool
      */
     public function objectExists(string $name) : bool
     {

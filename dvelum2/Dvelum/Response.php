@@ -1,5 +1,23 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
+declare(strict_types=1);
 namespace Dvelum;
 
 use Dvelum\Config;
@@ -24,22 +42,31 @@ class Response
         return $instance;
     }
 
-    public function redirect($location)
+    /**
+     * Send redirect header
+     * @param $location
+     */
+    public function redirect($location) : void
     {
         \Response::redirect($location);
     }
 
-    public function put(string $string)
+    public function put(string $string) : void
     {
         echo $string;
     }
 
-    public function send()
+    public function send() : void
     {
         exit();
     }
 
-    public function error($message)
+    /**
+     * Send error message
+     * @param string $message
+     * @return void
+     */
+    public function error($message) : void
     {
         switch ($this->format){
             case self::FORMAT_JSON :
@@ -52,7 +79,13 @@ class Response
         $this->send();
     }
 
-    public function success(array $data = [], array $params = [])
+    /**
+     * Send success response
+     * @param array $data
+     * @param array $params
+     * @return void
+     */
+    public function success(array $data = [], array $params = []) : void
     {
         $message  = '';
         switch ($this->format)
@@ -79,21 +112,32 @@ class Response
         $this->send();
     }
 
-    public function setFormat(string $format)
+    /**
+     * Set response format
+     * @param string $format
+     * @return void
+     */
+    public function setFormat(string $format) : void
     {
         $this->format = $format;
     }
 
-    public function json(array $data = [])
+    /**
+     * Send JSON
+     * @param array $data
+     * @return void
+     */
+    public function json(array $data = []) : void
     {
         $this->put(json_encode($data));
         $this->send();
     }
 
     /**
-     * Send 404 Response code
+     * Send 404 Response header
+     * @return void
      */
-    public function notFound()
+    public function notFound() : void
     {
         header($_SERVER["SERVER_PROTOCOL"]."/1.0 404 Not Found");
     }

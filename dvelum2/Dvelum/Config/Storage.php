@@ -38,7 +38,7 @@ class Storage
      * @param string $localPath
      * @param boolean $useCache, optional
      * @param boolean $merge, optional merge with main config
-     * @return Config | false
+     * @return \Config_Abstract | false
      */
     public function get(string $localPath , bool $useCache = true , bool $merge = true)
     {
@@ -136,7 +136,6 @@ class Storage
      * Get list of available configs
      * @param bool $path - optional, default false
      * @param bool $recursive - optional, default false
-     * @throws Exception
      * @return array
      */
     public function getList($path = false, $recursive = false) : array
@@ -187,7 +186,7 @@ class Storage
      * @param string $path
      * @return void
      */
-    public function addPath(string $path)
+    public function addPath(string $path) : void
     {
         $this->config['file_array']['paths'][] = $path;
     }
@@ -195,8 +194,9 @@ class Storage
     /**
      * Prepend config path
      * @param $path
+     * @return void
      */
-    public function prependPath(string $path)
+    public function prependPath(string $path) : void
     {
         \array_unshift($this->config['file_array']['paths'], $path);
     }
@@ -231,8 +231,9 @@ class Storage
     /**
      * Set configuration options
      * @param array $options
+     * @return void
      */
-    public function setConfig(array $options)
+    public function setConfig(array $options) : void
     {
         foreach($options as $k=>$v){
             $this->config[$k] = $v;

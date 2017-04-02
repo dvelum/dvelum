@@ -1,29 +1,31 @@
 <?php
-/*
- * DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- * Copyright (C) 2011-2016  Kirill A Egorov
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
 namespace Dvelum\Orm;
+
 use Dvelum\Config;
 use Dvelum\Model;
 use Psr\Log\LogLevel;
 use Dvelum\Orm\Exception;
 use Dvelum\App\Session\User;
+
 /**
  * Database Object class. ORM element.
  * @author Kirill Egorov 2011  DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
@@ -39,6 +41,7 @@ class Object
     static protected $log = false;
 
     protected $name;
+
     /**
      * @var Object\Config
      */
@@ -112,8 +115,9 @@ class Object
     /**
      * Load object data
      * @throws Exception
+     * @return void
      */
-    protected function loadData()
+    protected function loadData() : void
     {
         $data =  $this->model->getItem($this->id);
 
@@ -151,7 +155,7 @@ class Object
                         );
                     }
                     if(!empty($relationsData)){
-                        $data[$field] = Utils::fetchCol('targetid',$relationsData);
+                        $data[$field] = \Utils::fetchCol('targetid',$relationsData);
                     }
                 }
             }
@@ -163,8 +167,9 @@ class Object
     /**
      * Set raw data from storage
      * @param array $data
+     * @return void
      */
-    protected function _setRawData(array $data)
+    protected function _setRawData(array $data) : void
     {
         unset($data[$this->primaryKey]);
         $iv = false;
@@ -200,7 +205,7 @@ class Object
      * Get object fields
      * @return array
      */
-    public function getFields()
+    public function getFields() : array
     {
         return array_keys($this->config->get('fields'));
     }
@@ -210,7 +215,7 @@ class Object
      * @param boolean $withUpdates, optional default true
      * @return array
      */
-    public function getData($withUpdates = true)
+    public function getData($withUpdates = true) : array
     {
         if($this->acl)
             $this->checkCanRead();
@@ -228,16 +233,16 @@ class Object
      * Get object name
      * @return string
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
 
     /**
      * Get object identifier
-     * @return integer
+     * @return int
      */
-    public function getId()
+    public function getId() : int
     {
         return $this->id;
     }
@@ -246,7 +251,7 @@ class Object
      * Get the full name of the database storing the object data (with prefix)
      * @return string
      */
-    public function getTable()
+    public function getTable() : string
     {
         return $this->model->table();
     }
@@ -254,9 +259,9 @@ class Object
     /**
      * Check if there are object property changes
      * not saved in the database
-     * @return boolean
+     * @return bool
      */
-    public function hasUpdates()
+    public function hasUpdates() : bool
     {
         return !empty($this->updates);
     }
@@ -265,7 +270,7 @@ class Object
      * Get ORM configuration object (data structure helper)
      * @return Object\Config
      */
-    public function getConfig()
+    public function getConfig() : Object\Config
     {
         return $this->config;
     }
@@ -274,7 +279,7 @@ class Object
      * Get updated, but not saved object data
      * @return array
      */
-    public function getUpdates()
+    public function getUpdates() : array
     {
         if($this->acl)
             $this->checkCanRead();
@@ -285,20 +290,21 @@ class Object
     /**
      * Set the object identifier (existing DB ID)
      * @param integer $id
+     * @return void
      */
-    public function setId($id)
+    public function setId($id) : void
     {
         if($this->acl && !static::$disableAclCheck)
             $this->checkCanEdit();
 
-        $this->id = (integer) $id;
+        $this->id = (int) $id;
     }
 
     /**
      * Commit the object data changes (without saving)
      * @return void
      */
-    public function commitChanges()
+    public function commitChanges() : void
     {
         if(empty($this->updates))
             return;
@@ -312,9 +318,9 @@ class Object
     /**
      * Check if the object field exists
      * @param string $name
-     * @return boolean
+     * @return bool
      */
-    public function fieldExists($name)
+    public function fieldExists($name) : bool
     {
         return $this->config->fieldExists($name);
     }
@@ -325,20 +331,18 @@ class Object
      * @param string $field - field name
      * @return string
      */
-    public function getLinkedObject($field)
+    public function getLinkedObject($field) : string
     {
         return $this->config->getField($field)->getLinkedObject();
     }
-
-
 
     /**
      * Check if the listed objects exist
      * @param string $name
      * @param mixed integer/array $ids
-     * @return boolean
+     * @return bool
      */
-    static public function objectExists($name , $ids)
+    static public function objectExists($name , $ids) : bool
     {
         if(!Object\Config::configExists($name))
             return false;
@@ -358,7 +362,7 @@ class Object
         if(empty($data))
             return false;
 
-        $data = Utils::fetchCol($cfg->getPrimaryKey(), $data);
+        $data = \Utils::fetchCol($cfg->getPrimaryKey(), $data);
 
         foreach ($ids as $v)
             if(!in_array(intval($v) , $data , true))
@@ -372,7 +376,7 @@ class Object
      * @throws Exception
      * @return void
      */
-    public function setValues(array $values)
+    public function setValues(array $values) : void
     {
         if(!empty($values))
             foreach ($values as $k => $v)
@@ -386,7 +390,7 @@ class Object
      * @return bool
      * @throws Exception
      */
-    public function set(string $name , $value)
+    public function set(string $name , $value) : bool
     {
         if($this->acl)
             $this->checkCanEdit();
@@ -435,7 +439,7 @@ class Object
      * @throws Exception
      * @return void
      */
-    public function __set($key , $value)
+    public function __set($key , $value) : void
     {
         if($key===$this->primaryKey)
             $this->setId($value);
@@ -443,7 +447,7 @@ class Object
             $this->set($key, $value);
     }
 
-    public function __isset($key)
+    public function __isset($key) : bool
     {
         if($key === $this->primaryKey)
             return isset($this->id);
@@ -510,6 +514,7 @@ class Object
 
         if(!$this->fieldExists($name))
             throw new Exception('Invalid property requested ['.$name.']');
+
         return $this->data[$name];
     }
 
@@ -536,6 +541,7 @@ class Object
         }
 
         $store  = $this->model->getStore();
+
         if(self::$log)
             $store->setLog(self::$log);
 
@@ -619,7 +625,7 @@ class Object
      * If data update in your code is carried out within an external transaction
      * set the value to  false,
      * otherwise, the first update will lead to saving the changes
-     * @return boolean - success
+     * @return bool - success flag
      */
     public function delete($useTransaction = true) : bool
     {
@@ -647,7 +653,7 @@ class Object
     {
         foreach ($data as $k=>$v)
         {
-            if($this->config->getField($k)->isMultiLink($k)) {
+            if($this->config->getField($k)->isMultiLink()) {
                 unset($data[$k]);
             }
         }
@@ -748,14 +754,14 @@ class Object
      * Factory method of object creation is preferable to use, cf. method  __construct() description
      *
      * @param string $name
-     * @param integer | integer[] | boolean $id, optional default false
+     * @param int|int[]|bool $id, optional default false
      * @throws \Exception
-     * @return Object | Object[]
+     * @return self|self[]
      */
     static public function factory(string $name , $id = false)
     {
         if(!is_array($id))
-            return new static($name , $id);
+            return new static($name, $id);
 
         $list = [];
         $model = Model::factory($name);
@@ -777,7 +783,8 @@ class Object
             {
                 foreach($fields as $field=>$linkType)
                 {
-                    if($config->isManyToManyLink($field)){
+                    $fieldObject = $config->getField($field);
+                    if($fieldObject->isManyToManyLink()){
                         $relationsObject = $config->getRelationsObject($field);
                         $relationsData = Model::factory($relationsObject)->getList(
                             ['sort'=>'order_no', 'dir' =>'ASC'],
@@ -785,7 +792,7 @@ class Object
                             ['targetid','sourceid']
                         );
                     }else{
-                        $linkedObject = $config->getLinkedObject($field);
+                        $linkedObject = $fieldObject->getLinkedObject();
                         $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
                         $linksModel = Model::factory($linksObject);
                         $relationsData = $linksModel->getList(
@@ -800,7 +807,7 @@ class Object
                         );
                     }
                     if(!empty($relationsData)){
-                        $linksData[$field] = Utils::groupByKey('sourceid',$relationsData);
+                        $linksData[$field] = \Utils::groupByKey('sourceid',$relationsData);
                     }
                 }
             }
