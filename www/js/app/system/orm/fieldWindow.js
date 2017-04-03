@@ -454,6 +454,18 @@ Ext.define('app.crud.orm.FieldWindow', {
 
                             }
 						},{
+                            boxLabel:'Big Integer',
+                            name: 'type',
+                            inputValue:'biginteger',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
+
+                            }
+                        },{
                             boxLabel:'Floating',
                             name: 'type',
                             inputValue:'floating',
@@ -466,9 +478,45 @@ Ext.define('app.crud.orm.FieldWindow', {
 
                             }
                         },{
-                            boxLabel:'String',
+                            boxLabel:'Decimal',
                             name: 'type',
-                            inputValue:'string',
+                            inputValue:'decimal',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
+
+                            }
+                        },{
+                            boxLabel:'Blob',
+                            name: 'type',
+                            inputValue:'blob',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
+
+                            }
+                        },{
+                            boxLabel:'Char',
+                            name: 'type',
+                            inputValue:'char',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
+
+                            }
+                        },{
+                            boxLabel:'Varchar',
+                            name: 'type',
+                            inputValue:'varchar',
                             listeners:{
                                 'change':{
                                     fn:this.onStdFieldSelected,
@@ -505,6 +553,18 @@ Ext.define('app.crud.orm.FieldWindow', {
                             boxLabel:'Date',
                             name: 'type',
                             inputValue:'date',
+                            listeners:{
+                                'change':{
+                                    fn:this.onStdFieldSelected,
+                                    scope:this
+                                },
+                                render:{fn:this.initTooltip,scope:this}
+
+                            }
+                        },{
+                            boxLabel:'Time',
+                            name: 'type',
+                            inputValue:'time',
                             listeners:{
                                 'change':{
                                     fn:this.onStdFieldSelected,

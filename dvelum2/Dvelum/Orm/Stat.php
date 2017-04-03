@@ -116,7 +116,7 @@ class Stat
 
             $hasBroken = false;
 
-            if($builder->hasBrokenLinks())
+            if(!empty($builder->getBrokenLinks()))
                 $hasBroken = true;
 
             $data[] = [

@@ -35,59 +35,52 @@ use Zend\Db\Sql\Ddl;
  */
 class Builder
 {
-    /**
-     *
-     * @var \Dvelum\Db\Adapter
-     */
-    protected $db;
 
-    /**
-     * @var string $objectName
-     */
-    protected $objectName;
-
-    /**
-     * @var Config
-     */
-    protected $objectConfig;
-
-    /**
-     *
-     * @var Model
-     */
-    protected $_model;
     protected static $writeLog = false;
     protected static $logPrefix = '0.1';
     protected static $logsPath = './logs/';
     protected static $foreignKeys = false;
-    protected $errors = [];
 
-    static public function factory(string $objectName, bool $forceConfig = true) : Builder
-    {
-        $model = Model::factory($objectName);
-        $platform = $model->getDbConnection()->getAdapter()->getPlatform();
-        switch ($platform){
-            case 'MySQL' :
-                return new Builder\MySQL($objectName, $forceConfig);
-                break;
-            default :
-                return new static($objectName, $forceConfig);
-                break;
-        }
-    }
+
     /**
-     *
      * @param string $objectName
-     * @param boolean $forceConfig, optional
+     * @param bool $forceConfig
+     * @return Builder\AbstractAdapter
      */
-    protected function __construct($objectName , $forceConfig = true)
+    static public function factory(string $objectName, bool $forceConfig = true) : Builder\AbstractAdapter
     {
-        $this->objectName = $objectName;
-        $this->objectConfig = Orm\Object\Config::factory($objectName , $forceConfig);
-        $this->model = Model::factory($objectName);
-        $this->db = $this->model->getDbConnection();
-        $this->dbPrefix = $this->model->getDbPrefix();
+        $objectConfig = Config::factory($objectName);
+
+        $adapter = 'Builder_General';
+
+        $config = \Dvelum\Config::factory(\Dvelum\Config\Factory::Simple, $adapter);
+
+        $log = false;
+        if(static::$writeLog){
+            $log = new \Dvelum\Log\File\Sql(static::$logsPath . $objectConfig->get('connection') . '-' . static::$logPrefix . '-build.log');
+        }
+
+        $config->setData([
+           'objectName' => $objectName,
+           'log' => $log,
+           'useForeignKeys' => static::$foreignKeys
+        ]);
+
+        return new Orm\Object\Builder\General\MySQL($config);
+
+//        $model = Model::factory($objectName);
+//        $platform = $model->getDbConnection()->getAdapter()->getPlatform();
+//
+//        switch ($platform){
+//            case 'MySQL' :
+//                return new Builder\MySQL($objectName, $forceConfig);
+//                break;
+//            default :
+//                return new static($objectName, $forceConfig);
+//                break;
+//        }
     }
+
 
     public static $numTypes = array(
         'tinyint' ,
@@ -185,268 +178,13 @@ class Builder
         return self::$foreignKeys;
     }
 
-    /**
-     * Log queries
-     * @param string $sql
-     * @return bool
-     */
-    protected function logSql(string $sql) : bool
-    {
-        if(!self::$writeLog)
-            return true;
-
-        $str = "\n--\n--" . date('Y-m-d H:i:s') . "\n--\n" . $sql;
-        $filePath = self::$logsPath . $this->objectConfig->get('connection') .'_'. self::$logPrefix;
-        $result = @file_put_contents($filePath, $str , FILE_APPEND);
-
-        if($result === false){
-            $this->errors[] = 'Cant write to log file ' . $filePath;
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Check if DB table has correct structure
-     * @return bool
-     */
-    public function validate() : bool
-    {
-        if(!$this->tableExists())
-            return false;
-
-        if(!$this->checkRelations()){
-            return false;
-        }
-
-        $updateColumns = $this->prepareColumnUpdates();
-        $updateIndexes = $this->prepareIndexUpdates();
-        $engineUpdate = $this->prepareEngineUpdate();
-        $updateKeys = [];
-
-        if(self::$foreignKeys)
-            $updateKeys = $this->prepareKeysUpdate();
-
-        if(!empty($updateColumns) || !empty($updateIndexes) || !empty($updateKeys) || !empty($engineUpdate))
-            return false;
-        else
-            return true;
-    }
-
-    /**
-     * Prepare DB engine update SQL
-     * @return string|null
-     */
-    public function prepareEngineUpdate() : ?string
-    {
-        $config = $this->objectConfig->__toArray();
-        $conf = $this->db->fetchRow('SHOW TABLE STATUS WHERE `name` = "' . $this->model->table() . '"');
-
-        if(! $conf || ! isset($conf['Engine']))
-            return null;
-
-        if(strtolower($conf['Engine']) === strtolower($this->objectConfig->get('engine')))
-            return null;
-
-        return $this->changeTableEngine($this->objectConfig->get('engine') , true);
-    }
-
-    /**
-     * Prepare list of columns to be updated
-     * returns [
-     *         'name'=>'SomeName',
-     *         'action'=>[drop/add/change],
-     *         ]
-     * @return array
-     */
-    public function prepareColumnUpdates() : array
-    {
-        $config = $this->objectConfig->__toArray();
-        $updates = array();
-
-        if(! $this->tableExists())
-            $fields = [];
-        else
-            $fields = $this->getExistingColumns()->getColumns();
-
-
-        /**
-         * @var \Zend\Db\Metadata\Object\ColumnObject $column
-         */
-        $columns = [];
-        foreach ($fields as $column){
-            $columns[$column->getName()] = $column;
-        }
-
-        // except virtual fields
-        foreach($config['fields'] as $field=>$cfg){
-            if($this->objectConfig->getField($field)->isVirtual()){
-                unset($config['fields'][$field]);
-            }
-        }
-
-        /*
-         * Remove deprecated fields
-         */
-        foreach($columns as $name=>$column)
-        {
-            if(!isset($config['fields'][$name]))
-            {
-                $updates[] = array(
-                    'name' => $name ,
-                    'action' => 'drop' ,
-                    'type' => 'field'
-                );
-            }
-        }
-
-        foreach($config['fields'] as $name => $v)
-        {
-            /*
-             * Add new field
-             */
-            if(!isset($columns[$name]))
-            {
-                $updates[] = array(
-                    'name' => $name ,
-                    'action' => 'add'
-                );
-                continue;
-            }
-
-            $column = $columns[$name];
-
-            $dataType = strtolower($column->getDataType());
-            /*
-             * Field type compare flag
-             */
-            $typeCmp = false;
-            /*
-             * Field length compare flag
-             */
-            $lenCmp = false;
-            /*
-             * IsNull compare flag
-             */
-            $nullCmp = false;
-            /*
-             * Default value compare flag
-             */
-            $defaultCmp = false;
-            /*
-             * Unsigned compare flag
-             */
-            $unsignedCmp = false;
-            /**
-             * AUTO_INCREMENT compare flag
-             *
-             * @var bool
-             */
-            $incrementCmp = false;
-
-            if($v['db_type'] === 'boolean' && $dataType === 'tinyint')
-            {
-                /*
-                 * skip check for booleans
-                 */
-            }
-            else
-            {
-                if(strtolower($v['db_type']) !== $dataType)
-                    $typeCmp = true;
-
-                if(in_array($v['db_type'] , self::$floatTypes , true))
-                {
-                    /*
-                     * @note ZF3 has inverted scale and precision values
-                     */
-                    if((int) $v['db_scale'] != (int) $column->getNumericPrecision() || (int) $v['db_precision'] != (int) $column->getNumericScale())
-                        $lenCmp = true;
-                }
-                elseif(in_array($v['db_type'] , self::$numTypes , true) && isset(Orm\Object\Field\Property::$numberLength[$v['db_type']]))
-                {
-                    $lenCmp = (int) Orm\Object\Field\Property::$numberLength[$v['db_type']] != (int) $column->getNumericPrecision();
-                }
-                else
-                {
-                    if(isset($v['db_len']))
-                        $lenCmp = (int) $v['db_len'] != (int) $column->getCharacterMaximumLength();
-                }
-
-                /*
-                  Auto set default '' for NOT NULL string properties
-                  if(in_array($v['db_type'] , self::$charTypes , true) && (! isset($v['db_isNull']) || ! $v['db_isNull']) && (! isset($v['db_default']) || $v['db_default'] === false))
-                  {
-                    $v['db_default'] = '';
-                  }
-                */
-
-                if(in_array($v['db_type'] , self::$textTypes , true))
-                {
-                    if(isset($v['required']) && $v['required'])
-                        $v['db_isNull'] = false;
-                    else
-                        $v['db_isNull'] = true;
-                }
-
-                $nullCmp = (boolean) $v['db_isNull'] !==  $column->isNullable();
-
-                if((!isset($v['db_unsigned']) || !$v['db_unsigned']) && $column->isNumericUnsigned())
-                    $unsignedCmp = true;
-
-                if(isset($v['db_unsigned']) && $v['db_unsigned'] && ! $column->isNumericUnsigned())
-                    $unsignedCmp = true;
-            }
-
-            if(!((boolean) $v['db_isNull']) && ! in_array($v['db_type'] , self::$dateTypes , true) && ! in_array($v['db_type'] , self::$textTypes , true))
-            {
-                if((!isset($v['db_default']) || $v['db_default'] === false) && !is_null($column->getColumnDefault())){
-                    $defaultCmp = true;
-                }
-                if(isset($v['db_default']))
-                {
-                    if((is_null($column->getColumnDefault()) && $v['db_default'] !== false) || (! is_null($column->getColumnDefault()) && $v['db_default'] === false))
-                        $defaultCmp = true;
-                    else
-                        $defaultCmp = (string) $v['db_default'] != (string) $column->getColumnDefault();
-                }
-            }
-
-            /**
-             * @todo migrate identity
-             */
-//            if($fields[$name]['IDENTITY'] && $name != $this->objectConfig->getPrimaryKey())
-//                $incrementCmp = true;
-//
-//            if($name == $this->objectConfig->getPrimaryKey() && ! $fields[$name]['IDENTITY'])
-//                $incrementCmp = true;
 
 
 
-          /*
-           * If not passed at least one comparison then rebuild the the field
-           */
-            if($typeCmp || $lenCmp || $nullCmp || $defaultCmp || $unsignedCmp || $incrementCmp)
-            {
-                $updates[] = array(
-                    'name' => $name ,
-                    'action' => 'change',
-                    'info' => [
-                        'object' => $this->objectName,
-                        'cmp_flags' =>[
-                            'type' => (boolean) $typeCmp,
-                            'length' => (boolean) $lenCmp,
-                            'null' => (boolean) $nullCmp,
-                            'default' => (boolean) $defaultCmp,
-                            'unsigned' => (boolean) $unsignedCmp,
-                            'increment' => (boolean) $incrementCmp
-                        ]
-                    ]
-                );
-            }
-        }
-        return $updates;
-    }
+
+
+
+
 
     /**
      * Rename object field
@@ -700,92 +438,7 @@ class Builder
         return $cmd;
     }
 
-    /**
-     * Prepare list of indexes to be updated
-     * @return array (
-     *         'name'=>'indexname',
-     *         'action'=>[drop/add],
-     *         )
-     */
-    public function prepareIndexUpdates() : array
-    {
-        $updates = array();
-        /*
-         * Get indexes form database table
-         */
-        $indexes = $this->db->fetchAll('SHOW INDEX FROM `' . $this->model->table() . '`');
-        $realIndexes = array();
 
-        if(empty($indexes))
-            return array();
-
-        foreach($indexes as $k => $v)
-        {
-
-            $isFulltext = (boolean) ($v['Index_type'] === 'FULLTEXT');
-
-            if(!isset($realIndexes[$v['Key_name']]))
-                $realIndexes[$v['Key_name']] = array(
-                    'columns' => array() ,
-                    'fulltext' => $isFulltext ,
-                    'unique' => (boolean) (! $v['Non_unique'])
-                );
-
-            $realIndexes[$v['Key_name']]['columns'][] = $v['Column_name'];
-        }
-        /*
-         * Get indexes from object config
-         */
-        $configIndexes = $this->objectConfig->getIndexesConfig();
-        $cmd = array();
-
-        /*
-         * Get indexes for Foreign Keys
-         */
-        $foreignKeys = $this->getOrmForeignKeys();
-        /*
-         * Drop invalid indexes
-         */
-        foreach($realIndexes as $index => $conf)
-            if(!isset($configIndexes[$index]) && ! isset($foreignKeys[$index]))
-                $updates[] = array(
-                    'name' => $index ,
-                    'action' => 'drop'
-                );
-
-        /*
-       * Compare DB and Config indexes, create if not exist, drop and create if
-       * invalid
-       */
-        if(!empty($configIndexes))
-        {
-            foreach($configIndexes as $index => $config)
-            {
-                if(! array_key_exists((string) $index , $realIndexes))
-                {
-                    $updates[] = array(
-                        'name' => $index ,
-                        'action' => 'add'
-                    );
-                }
-                else
-                {
-                    if(!$this->_isSameIndexes($config , $realIndexes[$index]))
-                    {
-                        $updates[] = array(
-                            'name' => $index ,
-                            'action' => 'drop'
-                        );
-                        $updates[] = array(
-                            'name' => $index ,
-                            'action' => 'add'
-                        );
-                    }
-                }
-            }
-        }
-        return $updates;
-    }
 
     /**
      * Get object foreign keys
@@ -855,170 +508,9 @@ class Builder
         return $updates;
     }
 
-    /**
-     * Get list of foreign keys for DB Table
-     * @param string $dbTable
-     * @return array
-     * @todo refactor into Zend Metadata
-     */
-    public function getForeignKeys(string $dbTable)
-    {
-        $dbConfig = $this->db->getConfig();
-        $sql = $this->db->select()
-            ->from($this->db->quoteIdentifier('information_schema.TABLE_CONSTRAINTS'))
-            ->where('`CONSTRAINT_SCHEMA` =?' , $dbConfig['dbname'])
-            ->where('`TABLE_SCHEMA` =?' , $dbConfig['dbname'])
-            ->where('`TABLE_NAME` =?' , $dbTable)
-            ->where('`CONSTRAINT_TYPE` = "FOREIGN KEY"');
 
-        return $this->db->fetchAll($sql);
-    }
 
-    /**
-     * Compare existed index and its system config
-     *
-     * @param array $cfg1
-     * @param array $cfg2
-     * @return boolean
-     */
-    protected function _isSameIndexes(array $cfg1 , array $cfg2)
-    {
-        $colDiff = array_diff($cfg1['columns'] , $cfg2['columns']);
-        $colDiffReverse = array_diff($cfg2['columns'] , $cfg1['columns']);
 
-        if($cfg1['fulltext'] !== $cfg2['fulltext'] || $cfg1['unique'] !== $cfg2['unique'] || ! empty($colDiff) || !empty($colDiffReverse))
-            return false;
-
-        return true;
-    }
-
-    /**
-     * Prepare Add INDEX command
-     *
-     * @param string $index
-     * @param array $config
-     * @param boolean $create - optional use create table mode
-     * @return string
-     */
-    protected function _prepareIndex($index , array $config , $create = false)
-    {
-        if(isset($config['primary']) && $config['primary'])
-        {
-            if(! isset($config['columns'][0]))
-                trigger_error('Invalid index config');
-
-            if($create)
-                return "\n" . ' PRIMARY KEY (`' . $config['columns'][0] . '`)';
-            else
-                return "\n" . ' ADD PRIMARY KEY (`' . $config['columns'][0] . '`)';
-        }
-
-        $createType = '';
-        /*
-         * Set key length for text column index
-         */
-        foreach($config['columns'] as &$col)
-        {
-            if($this->objectConfig->getField($col)->isText())
-                $col = '`' . $col . '`(32)';
-            else
-                $col = '`' . $col . '`';
-        }
-        unset($col);
-
-        $str = '`' . $index . '` (' . implode(',' , $config['columns']) . ')';
-
-        if(isset($config['unique']) && $config['unique'])
-            $createType = $indexType = 'UNIQUE';
-        elseif(isset($config['fulltext']) && $config['fulltext'])
-            $createType = $indexType = 'FULLTEXT';
-        else
-            $indexType = 'INDEX';
-
-        if($create)
-            return "\n" . ' ' . $createType . ' KEY ' . $str;
-        else
-            return "\n" . ' ADD ' . $indexType . ' ' . $str;
-    }
-
-    /**
-     * Get property SQL query
-     * @param Orm\Object\Config\Field $field
-     * @return string
-     */
-    protected function _proppertySql($name , Orm\Object\Config\Field $field) : string
-    {
-        $property = new Orm\Object\Field\Property($name);
-        $property->setData($field->__toArray());
-        return $property->__toSql();
-    }
-
-    /**
-     * Get SQL for table creation
-     * @throws \Exception
-     * @return string
-     */
-    protected function _sqlCreate()
-    {
-        $config = Config::factory($this->objectName);
-
-        $fields = $config->get('fields');
-
-        $sql = ' CREATE TABLE  `' . $this->model->table() . '` (';
-
-        if(empty($fields))
-            throw new \Exception('_sqlCreate :: empty properties');
-        /*
-       * Add columns
-       */
-        foreach($fields as $k => $v)
-            $sql .= $this->_proppertySql($k , $v) . ' ,  ' . "\n";
-
-        $indexes = $this->_createIndexes();
-
-        /*
-         * Add indexes
-         */
-        if(! empty($indexes))
-            $sql .= ' ' . implode(', ' , $indexes);
-
-        $sql .= "\n" . ') ENGINE=' . $config->get('engine') . '  DEFAULT CHARSET=utf8 ;';
-
-        return $sql;
-    }
-
-    /**
-     * Get Existing Columns
-     *
-     * @return \Zend\Db\Metadata\Object\TableObject
-     */
-    protected function getExistingColumns()
-    {
-        return $this->db->describeTable($this->model->table());
-    }
-
-    /**
-     * Check if table exists
-     * @param string $name - optional, table name,
-     * @param boolean $addPrefix - optional append prefix, default false
-     * @return boolean
-     */
-    public function tableExists(string $name = '', bool $addPrefix = false) : bool
-    {
-        if(empty($name))
-            $name = $this->model->table();
-
-        if($addPrefix)
-            $name = $this->model->getDbPrefix() . $name;
-
-        try{
-            $tables = $this->db->listTables();
-        }catch(\Exception $e){
-            return false;
-        }
-
-        return in_array($name , $tables , true);
-    }
 
     /**
      * Rename database table
@@ -1082,63 +574,10 @@ class Builder
         }
     }
 
-    /**
-     * Get error messages
-     *
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->errors;
-    }
 
-    /**
-     * Check for broken object links
-     * return array | boolean false
-     */
-    public function hasBrokenLinks()
-    {
-        $links = $this->objectConfig->getLinks();
-        $brokenFields = array();
 
-        if(!empty($links))
-        {
-            $brokenFields = array();
-            foreach($links as $o => $fieldList)
-                if(! Config::configExists($o))
-                    foreach($fieldList as $field => $cfg)
-                        $brokenFields[$field] = $o;
-        }
 
-        if(empty($brokenFields))
-            return false;
-        else
-            return $brokenFields;
-    }
 
-    /**
-     * Check relation objects
-     */
-    protected function checkRelations()
-    {
-        $list = $this->objectConfig->getManyToMany();
-        if(!$list){
-            return true;
-        }
-
-        foreach($list as $objectName=>$fields)
-        {
-            if(!empty($fields)){
-                foreach($fields as $fieldName=>$linkType){
-                    $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
-                    if(!Config::configExists($relationObjectName)){
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
 
     public function getObjectsUpdatesInfo()
     {

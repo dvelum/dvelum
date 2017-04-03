@@ -16,32 +16,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace Dvelum\Log;
 
-class File extends \Psr\Log\AbstractLogger implements \Log
+namespace Dvelum\Log\File;
+
+class Sql extends \Dvelum\Log\File implements \Log
 {
-    protected $file;
-
     /**
-     * Get File name
-     * @return string
+     * @param $level
+     * @param $message
+     * @param array $context
+     * @return void
      */
-    public function getFileName() : string
+    public function log($level, $message, array $context = []) : void
     {
-        return $this->file;
-    }
-
-    /**
-     * @param string $file - logfile path
-     */
-    public function __construct($file)
-    {
-        $this->file = $file;
-    }
-
-    public function log($level, $message, array $context = array())
-    {
-        $message = '['.date('d.m.Y H:i:s') . '] ('.$level.') '. $message . ' '.json_encode($context)."\n";
-        file_put_contents($this->file, $message , FILE_APPEND);
+        file_put_contents($this->file, $message ."\n", FILE_APPEND);
     }
 }

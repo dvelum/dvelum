@@ -171,7 +171,7 @@ class Backend_Orm_ControllerOld extends \Dvelum\App\Backend\Controller
 
             $hasBroken = false;
 
-            if($builder->hasBrokenLinks())
+            if(empty($builder->getBrokenLinks()))
                 $hasBroken = true;
 
             $data[] = array(
@@ -238,7 +238,7 @@ class Backend_Orm_ControllerOld extends \Dvelum\App\Backend\Controller
         }
 
         $builder = new Orm\Object\Builder($object);
-        $brokenFields = $builder->hasBrokenLinks();
+        $brokenFields = $builder->getBrokenLinks();
 
         $fieldsCfg = $objectConfig->getFieldsConfig();
 
@@ -248,7 +248,7 @@ class Backend_Orm_ControllerOld extends \Dvelum\App\Backend\Controller
             $v['name'] = $k;
             $v['unique'] = $objectConfig->getField($k)->isUnique();
 
-            if(isset($brokenFields[$k]))
+            if(!empty($brokenFields) && isset($brokenFields[$k]))
                 $v['broken'] = true;
             else
                 $v['broken'] = false;
