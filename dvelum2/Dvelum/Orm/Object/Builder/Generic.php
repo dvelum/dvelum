@@ -239,9 +239,9 @@ abstract class Generic extends AbstractAdapter
      */
     protected function compareTypes(Metadata\Object\ColumnObject $column, Orm\Object\Config\Field $objectField, $dataTypes) : bool
     {
-       /*
-        * Different data types
-        */
+        /*
+         * Different data types
+         */
         if($dataTypes[0] !== $dataTypes[1]){
             return true;
         }
@@ -296,9 +296,10 @@ abstract class Generic extends AbstractAdapter
     {
         $updates = [];
 
-       /**
-        * @var Metadata\Object\ConstraintObject[] $indexes
-        */
+        /**
+         * @var Metadata\Object\ConstraintObject[] $indexes
+         */
+
         /**
          * @var Metadata\Object\ConstraintObject[] $realKeys
          */
@@ -307,8 +308,8 @@ abstract class Generic extends AbstractAdapter
         * Get foreign keys form database table
         */
         $indexes = $this->getExistingColumns()->getConstraints();
-        $realKeys = [];
-        $realKeyNames = [];
+        $dbList = [];
+        $updatedList = [];
 
         foreach($indexes as $k => $v)
         {
@@ -317,7 +318,7 @@ abstract class Generic extends AbstractAdapter
              */
             if($v->isForeignKey()){
                 $keyName = $v->getName();
-                $realKeys[$keyName] = $v;
+                $dbList[$keyName] = $v;
             }
         }
 
@@ -330,8 +331,8 @@ abstract class Generic extends AbstractAdapter
         {
             foreach($configForeignKeys as $keyName => $item)
             {
-                $realKeysNames[] = $keyName;
-                if(!isset($realKeys[$keyName]) && ! $dropOnly)
+                $updatedList[] = $keyName;
+                if(!isset($dbList[$keyName]) && ! $dropOnly)
                 {
                     $updates[] = array(
                         'name' => $keyName ,
@@ -342,11 +343,11 @@ abstract class Generic extends AbstractAdapter
             }
         }
 
-        if(!empty($realKeys))
+        if(!empty($dbList))
         {
-            foreach($realKeys as $name => $config)
+            foreach($dbList as $name => $config)
             {
-                if (!in_array($name, $realKeysNames, true)) {
+                if (!in_array($name, $updatedList, true)) {
                     $updates[] = array(
                         'name' => $name,
                         'action' => 'drop'
@@ -371,6 +372,7 @@ abstract class Generic extends AbstractAdapter
             'primary' => $object->isPrimaryKey()
         ];
     }
+
     /**
      * Prepare list of indexes to be updated
      * @return array (
