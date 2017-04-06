@@ -26,7 +26,7 @@ use Dvelum\Orm\Object\Builder;
 
 use Zend\Db\Metadata;
 
-abstract class General extends AbstractAdapter
+abstract class Generic extends AbstractAdapter
 {
     protected $types = [];
 
@@ -98,35 +98,16 @@ abstract class General extends AbstractAdapter
 
             $column = $columns[$name];
 
-            $dataType = strtolower($column->getDataType());
-
-            if(!isset($this->types[$dataType])){
-                throw new Exception('Undefined data type: '.$dataType);
-            }
-
             $objectField = $this->objectConfig->getField($name);
-            $dataType = $this->types[$dataType];
-
-
-            if(!isset($v['type']) || empty($v['type']))
-            {
-                $objectDataType = $this->types[$v['db_type']];
-            }
-            else
-            {
-                if($objectField->isDictionaryLink()){
-                    $objectDataType = 'varchar';
-                }elseif($objectField->isMultiLink()){
-                    continue;
-                }elseif ($objectField->isObjectLink()){
-                    $objectDataType = 'biginteger';
-                }elseif($objectField->isEncrypted()){
-                    $objectDataType = 'text';
-                }else{
-                    $objectDataType = $v['type'];
-                }
+            // MultiLink field has no DB representation
+            if($objectField->isMultiLink()){
+                continue;
             }
 
+            $dataTypes = $this->getDataTypes($column,  $objectField);
+
+            $dataType = $dataTypes[0];
+            $objectDataType = $dataTypes[1];
             /*
              * Field type compare flag
              */
@@ -153,9 +134,8 @@ abstract class General extends AbstractAdapter
             /*
              * Different data types
              */
-            if($dataType !== $objectDataType){
-                $typeCmp = true;
-            }
+            $typeCmp = $this->compareTypes($column, $objectField, $dataTypes);
+
 
             if(in_array($dataType, Builder::$floatTypes , true))
             {
@@ -169,7 +149,11 @@ abstract class General extends AbstractAdapter
             }
             elseif(in_array($dataType , Builder::$numTypes , true) && isset(Orm\Object\Field\Property::$numberLength[$v['db_type']]))
             {
-               // $lenCmp = (int) Orm\Object\Field\Property::$numberLength[$v['db_type']] != (int) $column->getNumericPrecision();
+
+                // $lenCmp = (int) Orm\Object\Field\Property::$numberLength[$v['db_type']] != (int) $column->getNumericPrecision();
+            }
+            elseif($objectField->isBoolean()) {
+
             }
             else
             {
@@ -242,10 +226,151 @@ abstract class General extends AbstractAdapter
                 );
             }
         }
+
         return $updates;
     }
 
-    public function prepareKeysUpdate(){}
+    /**
+     * Compare data types. If types are different, then return true
+     * @param Metadata\Object\ColumnObject $column
+     * @param Orm\Object\Config\Field $objectField
+     * @param array $dataTypes
+     * @return bool
+     */
+    protected function compareTypes(Metadata\Object\ColumnObject $column, Orm\Object\Config\Field $objectField, $dataTypes) : bool
+    {
+       /*
+        * Different data types
+        */
+        if($dataTypes[0] !== $dataTypes[1]){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get local representation of column data type
+     * @param Metadata\Object\ColumnObject $column
+     * @param Orm\Object\Config\Field $objectField
+     * @return array  [$dataType, $objectDataType]
+     * @throws \Exception
+     */
+    protected function getDataTypes(Metadata\Object\ColumnObject $column, Orm\Object\Config\Field $objectField) : array
+    {
+        $dataType = strtolower($column->getDataType());
+
+        $type = $objectField->getType();
+
+        if(!isset($this->types[$dataType])){
+            throw new \Exception('Undefined data type: '.$dataType);
+        }
+
+        $dataType = $this->types[$dataType];
+
+        if(empty($type))
+        {
+            $objectDataType = $this->types[$objectField->getDbType()];
+        }
+        else
+        {
+            if($objectField->isDictionaryLink()){
+                $objectDataType = 'varchar';
+            }elseif ($objectField->isObjectLink()){
+                $objectDataType = 'biginteger';
+            }elseif($objectField->isEncrypted()){
+                $objectDataType = 'text';
+            }else{
+                $objectDataType = $this->types[$objectField->getDbType()];
+            }
+        }
+
+        return [$dataType, $objectDataType];
+    }
+
+    /**
+     * Prepare list of Foreign Keys to be updated
+     * @param bool $dropOnly
+     * @return array
+     */
+    public function prepareKeysUpdate($dropOnly = false) : array
+    {
+        $updates = [];
+
+       /**
+        * @var Metadata\Object\ConstraintObject[] $indexes
+        */
+        /**
+         * @var Metadata\Object\ConstraintObject[] $realKeys
+         */
+
+        /*
+        * Get foreign keys form database table
+        */
+        $indexes = $this->getExistingColumns()->getConstraints();
+        $realKeys = [];
+        $realKeyNames = [];
+
+        foreach($indexes as $k => $v)
+        {
+            /**
+             * @var Metadata\Object\ConstraintObject $v
+             */
+            if($v->isForeignKey()){
+                $keyName = $v->getName();
+                $realKeys[$keyName] = $v;
+            }
+        }
+
+        /*
+         * Get foreign keys form ORM
+         */
+        $configForeignKeys = $this->getOrmForeignKeys();
+
+        if(!empty($configForeignKeys))
+        {
+            foreach($configForeignKeys as $keyName => $item)
+            {
+                $realKeysNames[] = $keyName;
+                if(!isset($realKeys[$keyName]) && ! $dropOnly)
+                {
+                    $updates[] = array(
+                        'name' => $keyName ,
+                        'action' => 'add' ,
+                        'config' => $item
+                    );
+                }
+            }
+        }
+
+        if(!empty($realKeys))
+        {
+            foreach($realKeys as $name => $config)
+            {
+                if (!in_array($name, $realKeysNames, true)) {
+                    $updates[] = array(
+                        'name' => $name,
+                        'action' => 'drop'
+                    );
+                }
+            }
+        }
+
+        return $updates;
+    }
+
+    /**
+     * Get index configuration
+     * @param Metadata\Object\ConstraintObject $object
+     * @return array
+     */
+    protected function getIndexConfig(Metadata\Object\ConstraintObject $object) : array
+    {
+        return [
+            'columns' => $object->getColumns(),
+            'unique' => $object->isUnique(),
+            'primary' => $object->isPrimaryKey()
+        ];
+    }
     /**
      * Prepare list of indexes to be updated
      * @return array (
@@ -261,6 +386,10 @@ abstract class General extends AbstractAdapter
          * Get indexes from object config
          */
         $configKeys = $this->objectConfig->getIndexesConfig();
+        /*
+         * Get indexes for Foreign Keys
+         */
+        $foreignKeys = $this->getOrmForeignKeys();
         $objectKeys = [];
         if(!empty($configKeys)){
             foreach ($configKeys as $item){
@@ -274,55 +403,75 @@ abstract class General extends AbstractAdapter
          */
         $indexes = $this->getExistingColumns()->getConstraints();
 
+
         $realIndexes = [];
 
-
+        /**
+         * @todo add foreign key check
+         */
         if(empty($indexes) && empty($objectKeys)){
             return [];
         }
-
 
         foreach($indexes as $k => $v)
         {
             /**
              * @var Metadata\Object\ConstraintObject $v
              */
-            $keyName = implode('_', $v->getColumns());
 
-            if(!isset($realIndexes[$keyName]))
-            {
+            if($v->isForeignKey()){
+
+                $keyName = $v->getName();
                 $realIndexes[$keyName] = [
-                    'columns' => $v->getColumns(),
-                    'unique' => $v->isUnique()
+                    'foreignKey' => true
                 ];
+            }
+            else
+            {
+                $keyName = $this->getIndexId($v->getColumns());
+                if(!isset($realIndexes[$keyName])) {
+                    $realIndexes[$keyName] = $this->getIndexConfig($v);
+                }
             }
         }
 
+        /*
+         * Get indexes from object config
+         */
+        $configIndexes = [];
+        $configIndexesData = $this->objectConfig->getIndexesConfig();
+        if(!empty($configIndexesData))
+        {
+            foreach ($configIndexesData  as $item)
+            {
+                $configIndexes[$this->getIndexId($item['columns'])] = $item;
+            }
+        }
         $cmd = [];
 
-        /*
-         * Get indexes for Foreign Keys
-         */
-        $foreignKeys = $this->getOrmForeignKeys();
         /*
          * Drop invalid indexes
          */
         foreach($realIndexes as $index => $conf)
-            if(!isset($configIndexes[$index]) && ! isset($foreignKeys[$index]))
-                $updates[] = array(
+        {
+            if(!isset($configIndexes[$index]) && !isset($foreignKeys[$index]))
+            {
+                $updates[] = [
                     'name' => $index ,
                     'action' => 'drop'
-                );
+                ];
+            }
+        }
 
         /*
-       * Compare DB and Config indexes, create if not exist, drop and create if
-       * invalid
-       */
+         * Compare DB and Config indexes, create if not exist, drop and create if
+         * invalid
+         */
         if(!empty($configIndexes))
         {
             foreach($configIndexes as $index => $config)
             {
-                if(! array_key_exists((string) $index , $realIndexes))
+                if(!array_key_exists((string) $index , $realIndexes))
                 {
                     $updates[] = array(
                         'name' => $index ,
@@ -331,20 +480,73 @@ abstract class General extends AbstractAdapter
                 }
                 else
                 {
-                    if(!$this->_isSameIndexes($config , $realIndexes[$index]))
+                    if(!$this->isSameIndexes($config , $realIndexes[$index]))
                     {
                         $updates[] = array(
                             'name' => $index ,
                             'action' => 'drop'
                         );
-                        $updates[] = array(
-                            'name' => $index ,
-                            'action' => 'add'
-                        );
+
+                        if(!isset($realIndexes[$index]['foreignKey'])){
+                            $updates[] = array(
+                                'name' => $index ,
+                                'action' => 'add'
+                            );
+                        }
                     }
                 }
             }
         }
         return $updates;
+    }
+
+    /**
+     * Generate unique id for Foreign Key
+     * @param string $fromDb
+     * @param string $fromTable
+     * @param string $fromField
+     * @param string $toDb
+     * @param string $toTable
+     * @param string $toField
+     * @return string
+     */
+    protected function getForeignKeyId(string $fromDb, string $fromTable, string $fromField, string$toDb, string $toTable, string $toField)
+    {
+        return md5($fromDb.'.'.$fromTable.'.'.$fromField.'-'.$toDb.'.'.$toTable.'.'.$toField);
+    }
+
+    /**
+     * Generate unique id for Index
+     * @param array $columns
+     * @return string
+     */
+    protected function getIndexId(array $columns) : string
+    {
+        return implode('_', $columns);
+    }
+
+    /**
+     * Compare existed index and its system config
+     * @param array $cfg1
+     * @param array $cfg2
+     * @return boolean
+     */
+    protected function isSameIndexes(array $cfg1 , array $cfg2)
+    {
+        $colDiff = array_diff($cfg1['columns'] , $cfg2['columns']);
+        $colDiffReverse = array_diff($cfg2['columns'] , $cfg1['columns']);
+
+        if(is_string($cfg1['unique'])){
+            $cfg1['unique'] = (bool) strlen($cfg1['unique']);
+        }
+
+        if(is_string($cfg2['unique'])){
+            $cfg2['unique'] = (bool) strlen($cfg2['unique']);
+        }
+
+        if((bool) $cfg1['unique'] !== (bool) $cfg2['unique'] || ! empty($colDiff) || !empty($colDiffReverse))
+            return false;
+
+        return true;
     }
 }

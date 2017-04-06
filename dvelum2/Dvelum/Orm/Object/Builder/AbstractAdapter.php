@@ -64,8 +64,6 @@ abstract class AbstractAdapter
      */
     protected $useForeignKeys = false;
 
-
-
     abstract public function prepareColumnUpdates();
     abstract public function prepareIndexUpdates();
     abstract public function prepareKeysUpdate();
@@ -244,5 +242,50 @@ abstract class AbstractAdapter
         }
 
         return true;
+    }
+
+    /**
+     * Get object foreign keys
+     * @return array
+     */
+    public function getOrmForeignKeys() : array
+    {
+        if(!$this->useForeignKeys)
+            return [];
+
+        $data = $this->objectConfig->getForeignKeys();
+        $keys = [];
+
+        if(!empty($data))
+        {
+            foreach($data as $item)
+            {
+                $keyName = md5(implode(':' , $item));
+                $keys[$keyName] = $item;
+            }
+        }
+        return $keys;
+    }
+
+    /**
+     * Get updates information
+     * @return array
+     */
+    public function getRelationUpdates() : array
+    {
+        $updates = [];
+        $list = $this->objectConfig->getManyToMany();
+        foreach($list as $objectName=>$fields)
+        {
+            if(!empty($fields)){
+                foreach($fields as $fieldName=>$linkType){
+                    $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
+                    if(!Config::configExists($relationObjectName)){
+                        $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
+                    }
+                }
+            }
+        }
+        return $updates;
     }
 }

@@ -51,7 +51,7 @@ class Builder
     {
         $objectConfig = Config::factory($objectName);
 
-        $adapter = 'Builder_General';
+        $adapter = 'Builder_Generic';
 
         $config = \Dvelum\Config::factory(\Dvelum\Config\Factory::Simple, $adapter);
 
@@ -66,7 +66,7 @@ class Builder
            'useForeignKeys' => static::$foreignKeys
         ]);
 
-        return new Orm\Object\Builder\General\MySQL($config);
+        return new Orm\Object\Builder\Generic\MySQL($config);
 
 //        $model = Model::factory($objectName);
 //        $platform = $model->getDbConnection()->getAdapter()->getPlatform();
@@ -81,53 +81,67 @@ class Builder
 //        }
     }
 
+    public static $booleanTypes = [
+      'bool',
+      'boolean'
+    ];
 
-    public static $numTypes = array(
+    public static $numTypes = [
         'tinyint' ,
         'smallint' ,
         'mediumint' ,
         'int' ,
+        'integer',
         'bigint' ,
         'float' ,
         'double' ,
         'decimal' ,
-        'bit'
-    );
-    public static $intTypes = array(
+        'bit',
+        'biginteger'
+    ];
+
+    public static $intTypes = [
         'tinyint' ,
         'smallint' ,
         'mediumint' ,
         'int' ,
+        'integer',
         'bigint' ,
-        'bit'
-    );
-    public static $floatTypes = array(
+        'bit',
+        'biginteger'
+    ];
+
+    public static $floatTypes = [
         'decimal' ,
         'float' ,
         'double'
-    );
-    public static $charTypes = array(
+    ];
+
+    public static $charTypes = [
         'char' ,
         'varchar'
-    );
-    public static $textTypes = array(
+    ];
+
+    public static $textTypes = [
         'tinytext' ,
         'text' ,
         'mediumtext' ,
         'longtext'
-    );
-    public static $dateTypes = array(
+    ];
+
+    public static $dateTypes = [
         'date' ,
         'datetime' ,
         'time' ,
         'timestamp'
-    );
-    public static $blobTypes = array(
+    ];
+
+    public static $blobTypes = [
         'tinyblob' ,
         'blob' ,
         'mediumblob' ,
         'longblob'
-    );
+    ];
 
     /**
      * Write SQL log
@@ -438,32 +452,6 @@ class Builder
         return $cmd;
     }
 
-
-
-    /**
-     * Get object foreign keys
-     *
-     * @return array
-     */
-    public function getOrmForeignKeys()
-    {
-        if(!self::$foreignKeys)
-            return array();
-
-        $data = $this->objectConfig->getForeignKeys();
-        $keys = array();
-
-        if(!empty($data))
-        {
-            foreach($data as $item)
-            {
-                $keyName = md5(implode(':' , $item));
-                $keys[$keyName] = $item;
-            }
-        }
-        return $keys;
-    }
-
     public function prepareKeysUpdate($dropOnly = false)
     {
         $updates = array();
@@ -507,10 +495,6 @@ class Builder
 
         return $updates;
     }
-
-
-
-
 
     /**
      * Rename database table
@@ -572,29 +556,6 @@ class Builder
             $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
         }
-    }
-
-
-
-
-
-
-    public function getObjectsUpdatesInfo()
-    {
-        $updates = [];
-        $list = $this->objectConfig->getManyToMany();
-        foreach($list as $objectName=>$fields)
-        {
-            if(!empty($fields)){
-                foreach($fields as $fieldName=>$linkType){
-                    $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
-                    if(!Config::configExists($relationObjectName)){
-                        $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
-                    }
-                }
-            }
-        }
-        return $updates;
     }
 
     /**

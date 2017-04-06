@@ -76,10 +76,13 @@ class Object extends \Dvelum\App\Backend\Controller
             $colUpd =  $builder->prepareColumnUpdates();
             $indUpd =  $builder->prepareIndexUpdates();
             $keyUpd =  $builder->prepareKeysUpdate();
-            $engineUpdate = $builder->prepareEngineUpdate();
+
+            if(method_exists($builder,'prepareEngineUpdate')){
+                $engineUpdate = $builder->prepareEngineUpdate();
+            }
         }
 
-        $objects = $builder->getObjectsUpdatesInfo();
+        $objects = $builder->getRelationUpdates();
 
         if(empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects)){
             $this->response->success([],['nothingToDo'=>true]);

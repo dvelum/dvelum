@@ -942,7 +942,7 @@ class Config
      *  ...
      *  )
      */
-    public function getForeignKeys()
+    public function getForeignKeys() : array
     {
         if(!$this->canUseForeignKeys())
             return [];

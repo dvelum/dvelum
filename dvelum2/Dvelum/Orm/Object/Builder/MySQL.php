@@ -22,6 +22,9 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Object\Builder;
 
+use Dvelum\Orm;
+use Dvelum\Orm\Object\Builder;
+
 /**
  * Advanced MySQL Builder
  * @package Dvelum\Orm\Object\Builder
@@ -259,7 +262,7 @@ class MySQL extends AbstractAdapter
                 if(strtolower($v['db_type']) !== $dataType)
                     $typeCmp = true;
 
-                if(in_array($v['db_type'] , self::$floatTypes , true))
+                if(in_array($v['db_type'] , Builder::$floatTypes , true))
                 {
                     /*
                      * @note ZF3 has inverted scale and precision values
@@ -267,7 +270,7 @@ class MySQL extends AbstractAdapter
                     if((int) $v['db_scale'] != (int) $column->getNumericPrecision() || (int) $v['db_precision'] != (int) $column->getNumericScale())
                         $lenCmp = true;
                 }
-                elseif(in_array($v['db_type'] , self::$numTypes , true) && isset(Orm\Object\Field\Property::$numberLength[$v['db_type']]))
+                elseif(in_array($v['db_type'] , Builder::$numTypes , true) && isset(Orm\Object\Field\Property::$numberLength[$v['db_type']]))
                 {
                     $lenCmp = (int) Orm\Object\Field\Property::$numberLength[$v['db_type']] != (int) $column->getNumericPrecision();
                 }
@@ -285,7 +288,7 @@ class MySQL extends AbstractAdapter
                   }
                 */
 
-                if(in_array($v['db_type'] , self::$textTypes , true))
+                if(in_array($v['db_type'] , Builder::$textTypes , true))
                 {
                     if(isset($v['required']) && $v['required'])
                         $v['db_isNull'] = false;
@@ -302,7 +305,7 @@ class MySQL extends AbstractAdapter
                     $unsignedCmp = true;
             }
 
-            if(!((boolean) $v['db_isNull']) && ! in_array($v['db_type'] , self::$dateTypes , true) && ! in_array($v['db_type'] , self::$textTypes , true))
+            if(!((boolean) $v['db_isNull']) && ! in_array($v['db_type'] , Builder::$dateTypes , true) && ! in_array($v['db_type'] , Builder::$textTypes , true))
             {
                 if((!isset($v['db_default']) || $v['db_default'] === false) && !is_null($column->getColumnDefault())){
                     $defaultCmp = true;
@@ -405,7 +408,7 @@ class MySQL extends AbstractAdapter
                     'action' => 'drop'
                 );
 
-        /*
+      /*
        * Compare DB and Config indexes, create if not exist, drop and create if
        * invalid
        */
@@ -422,7 +425,7 @@ class MySQL extends AbstractAdapter
                 }
                 else
                 {
-                    if(!$this->_isSameIndexes($config , $realIndexes[$index]))
+                    if(!$this->isSameIndexes($config , $realIndexes[$index]))
                     {
                         $updates[] = array(
                             'name' => $index ,
@@ -436,6 +439,49 @@ class MySQL extends AbstractAdapter
                 }
             }
         }
+        return $updates;
+    }
+
+    /**
+     * Prepare list of Foreign Keys to be updated
+     * @param bool $dropOnly
+     * @return array
+     */
+    public function prepareKeysUpdate($dropOnly = false) : array
+    {
+        $updates = [];
+        $curTable = $this->model->table();
+        /*
+         * Get foreign keys form ORM
+         */
+        $configForeignKeys = $this->getOrmForeignKeys();
+        /*
+         * Get foreign keys form database table
+         */
+        $realKeys = $this->getForeignKeys($this->model->table());
+        $realKeysNames = array();
+        if(!empty($realKeys))
+            $realKeys = \Utils::rekey('CONSTRAINT_NAME' , $realKeys);
+        if(!empty($configForeignKeys))
+        {
+            foreach($configForeignKeys as $keyName => $item)
+            {
+                $realKeysNames[] = $keyName;
+                if(! isset($realKeys[$keyName]) && ! $dropOnly)
+                    $updates[] = array(
+                        'name' => $keyName ,
+                        'action' => 'add' ,
+                        'config' => $item
+                    );
+            }
+        }
+        if(!empty($realKeys))
+            foreach($realKeys as $name => $config)
+                if(! in_array($name , $realKeysNames , true))
+                    $updates[] = array(
+                        'name' => $name ,
+                        'action' => 'drop'
+                    );
         return $updates;
     }
 
@@ -465,7 +511,7 @@ class MySQL extends AbstractAdapter
      * @param array $cfg2
      * @return boolean
      */
-    protected function _isSameIndexes(array $cfg1 , array $cfg2)
+    protected function isSameIndexes(array $cfg1 , array $cfg2)
     {
         $colDiff = array_diff($cfg1['columns'] , $cfg2['columns']);
         $colDiffReverse = array_diff($cfg2['columns'] , $cfg1['columns']);

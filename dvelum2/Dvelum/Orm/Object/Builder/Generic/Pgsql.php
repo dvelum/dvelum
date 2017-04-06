@@ -18,10 +18,11 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Object\Builder\General;
+namespace Dvelum\Orm\Object\Builder\Generic;
+
 use Dvelum\Orm\Object\Builder;
 
-class Pgsql extends Builder\General
+class Pgsql extends Builder\Generic
 {
     protected $types = [
         'bit' => self::TYPE_INTEGER,

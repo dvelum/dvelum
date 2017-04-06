@@ -18,10 +18,12 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Object\Builder\General;
+namespace Dvelum\Orm\Object\Builder\Generic;
+use Dvelum\Orm;
 use Dvelum\Orm\Object\Builder;
+use Zend\Db\Metadata;
 
-class MySQL extends Builder\General
+class MySQL extends Builder\Generic
 {
     protected $types = [
         'tinyint' => self::TYPE_INTEGER,
@@ -50,7 +52,49 @@ class MySQL extends Builder\General
         'time' => self::TYPE_TIME,
         'timestamp' => self::TYPE_BIGINTEGER,
         'enum' => self::TYPE_VARCHAR,
-        'varbinary' => self::TYPE_BLOB
+        'varbinary' => self::TYPE_BLOB,
+        'boolean' => self::TYPE_BOOLEAN
     ];
+
+    /**
+     * Get index configuration
+     * @param Metadata\Object\ConstraintObject $object
+     * @return array
+     */
+    protected function getIndexConfig(Metadata\Object\ConstraintObject $object) : array
+    {
+        /*
+         * Fix Zend\Db meta info BUG!
+         */
+        $isUnique = $object->isUnique();
+        if($object->isPrimaryKey()){
+            $isUnique = true;
+        }
+
+        return [
+            'columns' => $object->getColumns(),
+            'unique' => $isUnique,
+            'primary' => $object->isPrimaryKey()
+        ];
+    }
+
+    /**
+     * Compare data types. If types are different, then return true
+     * @param Metadata\Object\ColumnObject $column
+     * @param Orm\Object\Config\Field $objectField
+     * @param array $dataTypes
+     * @return bool
+     */
+    protected function compareTypes(Metadata\Object\ColumnObject $column, Orm\Object\Config\Field $objectField, $dataTypes) : bool
+    {
+        if(!$objectField->isBoolean()){
+            return parent::compareTypes($column, $objectField, $dataTypes);
+        }else{
+            if($column->getDataType() !=='tinyint'){
+                return true;
+            }
+            return false;
+        }
+    }
 }
 
