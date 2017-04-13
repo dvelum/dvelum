@@ -99,7 +99,7 @@ class Object
 
         $this->config = Object\Config::factory($name);
         $this->primaryKey = $this->config->getPrimaryKey();
-        $this->model = \Dvelum\Model::factory($name);
+        $this->model = Model::factory($name);
         $this->acl = $this->config->getAcl();
 
         if($this->id){
@@ -173,7 +173,7 @@ class Object
     {
         unset($data[$this->primaryKey]);
         $iv = false;
-        $ivField = false;
+
         if($this->config->hasEncrypted()){
             $ivField = $this->config->getIvField();
             if(isset($data[$ivField]) && !empty($data[$ivField]))
@@ -459,7 +459,7 @@ class Object
     }
     /**
      * @param string $key
-     * @throws \Exception
+     * @throws Exception
      * @return mixed
      */
     public function __get($key)
@@ -475,7 +475,7 @@ class Object
      * If field value was updated method returns new value
      * otherwise returns old value
      * @param string $name - field name
-     * @throws \Exception
+     * @throws Exception
      * @return mixed
      */
     public function get($name)
@@ -504,7 +504,7 @@ class Object
      * Get the initial object field value (received from the database)
      * whether the field value was updated or not
      * @param string $name - field name
-     * @throws \Exception
+     * @throws Exception
      * @return mixed
      */
     public function getOld(string $name)
@@ -531,7 +531,7 @@ class Object
         if($this->acl){
             try{
                 $this->checkCanEdit();
-            }catch (\Exception $e){
+            }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
                 if(self::$log)
@@ -592,9 +592,9 @@ class Object
             if(!$this->getId()){
 
                 if($this->config->isRevControl()){
-                    $this->date_created = date('Y-m-d H:i:s');
-                    $this->date_updated = date('Y-m-d H:i:s');
-                    $this->author_id = User::getInstance()->id;
+                    $this->set('date_created', date('Y-m-d H:i:s'));
+                    $this->set('date_updated', date('Y-m-d H:i:s'));
+                    $this->set('author_id',  User::getInstance()->getId());
                 }
 
                 $id = $store->insert($this , $useTransaction);
@@ -604,10 +604,10 @@ class Object
             } else {
 
                 if($this->config->isRevControl()){
-                    $this->date_updated = date('Y-m-d H:i:s');
-                    $this->editor_id = User::getInstance()->getId();
+                    $this->set('date_updated', date('Y-m-d H:i:s'));
+                    $this->set('editor_id',  User::getInstance()->getId());
                 }
-                $id = (integer) $store->update($this , $useTransaction);
+                $id = (int) $store->update($this , $useTransaction);
                 $this->commitChanges();
                 return $id;
             }
@@ -755,7 +755,7 @@ class Object
      *
      * @param string $name
      * @param int|int[]|bool $id, optional default false
-     * @throws \Exception
+     * @throws Exception
      * @return self|self[]
      */
     static public function factory(string $name , $id = false)
@@ -822,7 +822,7 @@ class Object
             if(!empty($linksData)){
                 foreach($linksData as $field => $source){
                     if(isset($source[$item[$o->primaryKey]])){
-                        $item[$field] = Utils::fetchCol('targetid' , $source[$item[$o->primaryKey]]);
+                        $item[$field] = \Utils::fetchCol('targetid' , $source[$item[$o->primaryKey]]);
                     }
                 }
             }
@@ -881,31 +881,31 @@ class Object
     protected function checkCanRead()
     {
         if($this->acl && !$this->acl->canRead($this))
-            throw new \Exception('You do not have permission to view data in this object ['.$this->getName().':'.$this->getId().'].');
+            throw new Exception('You do not have permission to view data in this object ['.$this->getName().':'.$this->getId().'].');
     }
 
     protected function checkCanEdit()
     {
         if($this->acl && !$this->acl->canEdit($this))
-            throw new \Exception('You do not have permission to edit data in this object ['.$this->getName().':'.$this->getId().'].');
+            throw new Exception('You do not have permission to edit data in this object ['.$this->getName().':'.$this->getId().'].');
     }
 
     protected function checkCanDelete()
     {
         if($this->acl && !$this->acl->canDelete($this))
-            throw new \Exception('You do not have permission to delete this object ['.$this->getName().':'.$this->getId().'].');
+            throw new Exception('You do not have permission to delete this object ['.$this->getName().':'.$this->getId().'].');
     }
 
     protected function checkCanCreate()
     {
         if($this->acl && !$this->acl->canCreate($this))
-            throw new \Exception('You do not have permission to create object ['.$this->getName().'].');
+            throw new Exception('You do not have permission to create object ['.$this->getName().'].');
     }
 
     protected function checkCanPublish()
     {
         if($this->acl && !$this->acl->canPublish($this))
-            throw new \Exception('You do not have permission to publish object ['.$this->getName().'].');
+            throw new Exception('You do not have permission to publish object ['.$this->getName().'].');
     }
 
     /**
@@ -1016,6 +1016,9 @@ class Object
         $this->rejectChanges();
         $versionObject  = $this->model->getStore()->getVersionObjectName();
 
+        /**
+         * @var \Model_Vc $vc
+         */
         $vc = Model::factory($versionObject);
 
         $data = $vc->getData($this->getName() , $this->getId() , $vers);
@@ -1107,18 +1110,18 @@ class Object
                 return false;
         }
 
-        $this->date_updated = date('Y-m-d H:i:s');
-        $this->editor_id = User::getInstance()->getId();
+        $this->set('date_updated', date('Y-m-d H:i:s'));
+        $this->set('editor_id', User::getInstance()->getId());
 
         $store  = $this->model->getStore();
 
         if(self::$log)
             $store->setLog(self::$log);
 
-        $vers = $store->addVersion($this , $useTransaction);
+        $version = $store->addVersion($this , $useTransaction);
 
-        if($vers){
-            $this->version = $vers;
+        if($version){
+            $this->set('version', $version);
             $this->commitChanges();
             return true;
         }else{

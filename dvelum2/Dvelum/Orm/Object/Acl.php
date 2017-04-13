@@ -75,7 +75,7 @@ abstract class Acl
     /**
      * Create ACL adapter object
      * @param string $class
-     * @throws Exception
+     * @throws \Exception
      * @return Object\Acl
      */
     static public function factory($class)
@@ -83,7 +83,7 @@ abstract class Acl
         $object = new $class;
 
         if(!$object instanceof Object\Acl)
-            throw new Exception('Invalid ACL adapter '.$class);
+            throw new \Exception('Invalid ACL adapter '.$class);
 
         return $object;
     }
