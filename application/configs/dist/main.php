@@ -89,6 +89,10 @@ return array(
      * Local controllers path
      */
     'local_controllers' => './application/controllers/',
+    /**
+     * Local models path
+     */
+    'local_models' => './application/models/',
     /*
      * Frontend modules config file
      */

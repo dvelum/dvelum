@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Dvelum\Config;
+use Dvelum\Orm\Model;
 /**
  * Block manager component.
  * Serves for managing blocks of page content,

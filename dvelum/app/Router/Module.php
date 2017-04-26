@@ -1,5 +1,6 @@
 <?php
 use Dvelum\Config;
+use Dvelum\Orm\Model;
 
 class Router_Module extends Router
 {

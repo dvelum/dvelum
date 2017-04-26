@@ -1,4 +1,6 @@
 <?php
+use Dvelum\Orm\Model;
+
 class Frontend_Console_Controller extends Frontend_Controller
 {
 	/**
@@ -220,6 +222,8 @@ class Frontend_Console_Controller extends Frontend_Controller
     {
         $request = Request::getInstance();
         $action = $request->getPart(2);
+
+        print_r($this->_configs);
 
         if($this->_configs->offsetExists($action)){
             $params = $request->getPathParts(3);

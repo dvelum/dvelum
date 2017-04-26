@@ -468,7 +468,7 @@ class Model extends \Model
      * @param string $fieldAlias
      * @return void
      */
-    protected function _queryAddAuthor($sql , $fieldAlias) : void
+    protected function queryAddAuthor($sql , $fieldAlias) : void
     {
         $sql->joinLeft(
             array('u1' =>  Model::factory('User')->table()) ,
@@ -484,7 +484,7 @@ class Model extends \Model
      * @param string $fieldAlias
      * @return void
      */
-    protected function _queryAddEditor($sql , $fieldAlias)  : void
+    protected function queryAddEditor($sql , $fieldAlias)  : void
     {
         $sql->joinLeft(
             array('u2' =>  Model::factory('User')->table()) ,
@@ -562,7 +562,7 @@ class Model extends \Model
             $this->queryAddFilters($sql , $filters);
 
             if($query && strlen($query))
-                $this->_queryAddQuery($sql , $query);
+                $this->queryAddQuery($sql , $query);
 
             $data = $this->dbSlave->fetchOne($sql);
 
@@ -595,12 +595,12 @@ class Model extends \Model
     public function getListVc($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false) : array
     {
         if(is_array($filters) && !empty($filters))
-            $filters = $this->_cleanFilters($filters);
+            $filters = $this->clearFilters($filters);
 
         if($this->dbSlave === Model::factory('User')->getSlaveDbConnection())
-            return $this->_getListVcLocal($params , $filters , $query , $fields , $author, $lastEditor, $joins);
+            return $this->getListVcLocal($params , $filters , $query , $fields , $author, $lastEditor, $joins);
         else
-            return $this->_getListVcRemote($params , $filters , $query , $fields , $author, $lastEditor, $joins);
+            return $this->getListVcRemote($params , $filters , $query , $fields , $author, $lastEditor, $joins);
     }
 
     /**
@@ -608,7 +608,7 @@ class Model extends \Model
      * @param array $filters
      * @return array
      */
-    protected function _cleanFilters(array $filters)
+    protected function clearFilters(array $filters)
     {
         foreach ($filters as $field=>$val)
         {
@@ -624,7 +624,7 @@ class Model extends \Model
         return $filters;
     }
 
-    protected function _getListVcLocal($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
+    protected function getListVcLocal($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
     {
         $sql = $this->dbSlave->select()->from($this->table(), $fields);
 
@@ -632,24 +632,24 @@ class Model extends \Model
             $this->queryAddFilters($sql , $filters);
 
         if($author)
-            $this->_queryAddAuthor($sql , $author);
+            $this->queryAddAuthor($sql , $author);
 
         if($lastEditor)
-            $this->_queryAddEditor($sql , $lastEditor);
+            $this->queryAddEditor($sql , $lastEditor);
 
         if($query && strlen($query))
-            $this->_queryAddQuery($sql , $query);
+            $this->queryAddQuery($sql , $query);
 
         if($params)
             static::queryAddPagerParams($sql , $params);
 
         if(is_array($joins) && !empty($joins))
-            $this->_queryAddJoins($sql, $joins);
+            $this->queryAddJoins($sql, $joins);
 
         return $this->dbSlave->fetchAll($sql);
     }
 
-    protected function _getListVcRemote($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
+    protected function getListVcRemote($params = false , $filters = false , $query = false , $fields = '*' , $author = false , $lastEditor = false , $joins = false)
     {
         if($fields!=='*')
         {
@@ -668,13 +668,13 @@ class Model extends \Model
             $this->queryAddFilters($sql , $filters);
 
         if($query && strlen($query))
-            $this->_queryAddQuery($sql , $query);
+            $this->queryAddQuery($sql , $query);
 
         if($params)
             static::queryAddPagerParams($sql , $params);
 
         if(is_array($joins) && !empty($joins))
-            $this->_queryAddJoins($sql, $joins);
+            $this->queryAddJoins($sql, $joins);
 
         $data = $this->dbSlave->fetchAll($sql);
 
@@ -756,16 +756,16 @@ class Model extends \Model
             $sql = $this->dbSlave->select()->from($this->table() , $fields);
 
             if(is_array($filters) && !empty($filters))
-                $this->queryAddFilters($sql ,$this->_cleanFilters($filters));
+                $this->queryAddFilters($sql ,$this->clearFilters($filters));
 
             if($params)
                 static::queryAddPagerParams($sql , $params);
 
             if($query && strlen($query))
-                $this->_queryAddQuery($sql , $query);
+                $this->queryAddQuery($sql , $query);
 
             if(is_array($joins) && !empty($joins))
-                $this->_queryAddJoins($sql, $joins);
+                $this->queryAddJoins($sql, $joins);
 
             $data = $this->dbSlave->fetchAll($sql);
 
@@ -832,7 +832,7 @@ class Model extends \Model
      * 		)...
      * )
      */
-    protected function _queryAddJoins($sql , array $joins)
+    protected function queryAddJoins($sql , array $joins)
     {
         foreach($joins as $config)
         {
@@ -855,13 +855,23 @@ class Model extends \Model
     }
 
     /**
+     * @param $sql
+     * @param array $joins
+     * @deprecated
+     */
+    protected function _queryAddJoins($sql , array $joins)
+    {
+        $this->queryAddJoins($sql, $joins);
+    }
+
+    /**
      * Add Like where couse for query
      * @param \Db_Select | \Zend\Db\Sql $sql
      * @param string $query
      * @param string $alias - table name alias, optional
      * @return void
      */
-    protected function _queryAddQuery($sql , $query, $alias = false)  : void
+    protected function queryAddQuery($sql , $query, $alias = false)  : void
     {
         if(!$alias){
             $alias = $this->table();
@@ -880,6 +890,16 @@ class Model extends \Model
         }
 
         $sql->where('('. implode(' OR ', $q).')');
+    }
+
+    /**
+     * @param $sql
+     * @param $query
+     * @param bool $alias
+     */
+    protected function _queryAddQuery($sql , $query, $alias = false)
+    {
+        $this->queryAddQuery($sql , $query, $alias);
     }
 
     /**
