@@ -61,8 +61,8 @@ class File
 	static public function fillEndSep($path)
 	{
 		$length = strlen($path);
-		if(!$length || $path[$length - 1] !== DIRECTORY_SEPARATOR)
-			$path .= DIRECTORY_SEPARATOR;
+		if(!$length || $path[$length - 1] !== self::$directorySeparator)
+			$path .= self::$directorySeparator;
 
 		return $path;
 	}
