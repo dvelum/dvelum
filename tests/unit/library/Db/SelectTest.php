@@ -1,5 +1,7 @@
 <?php
-class Db_SelectTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class Db_SelectTest extends TestCase
 {
 	
 	public function testSelectSimple()

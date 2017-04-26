@@ -1,5 +1,7 @@
 <?php
-class Cache_MemcachedTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class Cache_MemcachedTest extends TestCase
 {
 	protected function _connect()
     {

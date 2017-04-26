@@ -1,7 +1,8 @@
 <?php
-class UtilsTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class UtilsTest extends TestCase
 {
-	
 	public function testRekey()
 	{
 		$data = array(

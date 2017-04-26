@@ -1,5 +1,7 @@
-<?php 
-class Db_Object_ConfigTest extends PHPUnit_Framework_TestCase
+<?php
+use PHPUnit\Framework\TestCase;
+
+class Db_Object_ConfigTest extends TestCase
 {
 	
 	public function testRenameField()

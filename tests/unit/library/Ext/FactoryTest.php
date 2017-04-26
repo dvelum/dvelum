@@ -1,6 +1,7 @@
 <?php
+use PHPUnit\Framework\TestCase;
 
-class Ext_FactoryTest extends PHPUnit_Framework_TestCase
+class Ext_FactoryTest extends TestCase
 {
 	public function testObject()
 	{
