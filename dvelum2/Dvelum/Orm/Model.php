@@ -28,7 +28,7 @@ use Dvelum\Db;
 /**
  * Base class for data models
  */
-class Model
+class Model extends \Model
 {
     /**
      * DB Object Storage
