@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-abstract class Bgtask_Log implements Log
+abstract class Bgtask_Log
 {
 	/**
 	 * Log
