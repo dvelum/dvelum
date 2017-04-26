@@ -5,8 +5,8 @@ namespace Dvelum\App\Backend\Orm;
 
 use Dvelum\App\Backend\Orm\Manager;
 use Dvelum\Config;
-use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Lang;
 use Dvelum\View;
 use Dvelum\Template;
@@ -43,12 +43,14 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
     public function __construct()
     {
         parent::__construct();
+
         /*
          * Set Orm Builder log paths
          */
-        Orm\Object\Builder::writeLog($this->appConfig['use_orm_build_log']);
+        $ormConfig = Config::storage()->get('orm.php');
+        Orm\Object\Builder::writeLog($ormConfig['use_orm_build_log']);
+        Orm\Object\Builder::setLogsPath($ormConfig['orm_log_path']);
         Orm\Object\Builder::setLogPrefix($this->appConfig['development_version'].'_build_log.sql');
-        Orm\Object\Builder::setLogsPath($this->appConfig['orm_log_path']);
     }
 
     public function indexAction()
@@ -267,7 +269,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
         $s = '';
         $totalSize = 0;
 
-        $wwwPath = $this->appConfig->get('wwwpath');
+        $wwwPath = $this->appConfig->get('wwwPath');
         foreach ($sources as $filePath){
             $s.=file_get_contents($wwwPath.$filePath)."\n";
             $totalSize+=filesize($wwwPath.$filePath);

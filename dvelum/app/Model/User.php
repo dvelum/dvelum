@@ -1,6 +1,6 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
 
 class Model_User extends Model

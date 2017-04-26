@@ -5,7 +5,7 @@
  */
 
 use Dvelum\Config;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 
 class User_Auth_Dvelum extends User_Auth_Abstract
 {

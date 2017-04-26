@@ -3,8 +3,9 @@
  * Default backoffice controller
  */
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
-use Dvelum\Model;
+
 
 class Backend_Index_Controller extends Dvelum\App\Backend\Controller
 {

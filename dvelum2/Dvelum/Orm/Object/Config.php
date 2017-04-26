@@ -22,7 +22,7 @@ namespace Dvelum\Orm\Object;
 
 use Dvelum\Orm;
 use Dvelum\Config as Cfg;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\Orm\Object\Config\Field;
 use Dvelum\Orm\Exception;
 

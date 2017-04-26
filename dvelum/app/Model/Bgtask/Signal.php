@@ -1,6 +1,5 @@
 <?php
-
-use Dvelum\Model as Model;
+use Dvelum\Orm\Model;
 
 class Model_Bgtask_Signal extends Model
 {

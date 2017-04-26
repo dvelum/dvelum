@@ -1,6 +1,6 @@
 <?php
 
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\Orm;
 
 class Model_Group extends Model

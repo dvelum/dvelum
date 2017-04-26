@@ -3,8 +3,8 @@
  * ORM UI Controller
  */
 use Dvelum\Config;
-use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 
 class Backend_Orm_Controller extends \Dvelum\App\Backend\Orm\Controller{}
 
@@ -1398,7 +1398,7 @@ class Backend_Orm_ControllerOld extends \Dvelum\App\Backend\Controller
         $s = '';
         $totalSize = 0;
 
-        $wwwPath = $this->appConfig->get('wwwpath');
+        $wwwPath = $this->appConfig->get('wwwPath');
         foreach ($sources as $filePath){
             $s.=file_get_contents($wwwPath.$filePath)."\n";
             $totalSize+=filesize($wwwPath.$filePath);

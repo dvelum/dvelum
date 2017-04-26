@@ -2,8 +2,8 @@
 namespace Dvelum\App\Data;
 
 use Dvelum\App;
-use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 
 class Api
 {

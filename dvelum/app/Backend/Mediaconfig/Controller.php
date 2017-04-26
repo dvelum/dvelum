@@ -1,7 +1,7 @@
 <?php
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
-use Dvelum\Model;
 /**
  * Medialibrary configuration module controller
  * Backoffice UI

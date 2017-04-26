@@ -4,8 +4,9 @@ $wwwPath = DVELUM_WWW_PATH;
 $wwwRoot = '/';
 $language = 'en';
 return array(
-    'docroot' => $docRoot,
+    'docRoot' => $docRoot,
     'wwwPath' => $wwwPath,
+    'wwwRoot' => $wwwRoot,
     /*
      * Development mode
      * 0 - production
@@ -19,28 +20,9 @@ return array(
      */
     'development_version' => '0.1',
     /*
-     * Write SQL commands when updating Database structure.
-     * It can help to determine if there have been performed any rename operations.
-     * Please note that renaming operations in ORM interface causes loss of data
-     * during server synchronization, so it's better to use SQL log.
-     */
-    'use_orm_build_log' => true,
-    /*
-     * ORM SQL logs path
-     */
-    'orm_log_path' => $docRoot . '/data/logs/orm/',
-    /*
      * Background tasks log path
      */
     'task_log_path' => $docRoot . '/data/logs/task/',
-    /*
-     * ORM system object used as links storage
-     */
-    'orm_links_object' => 'Links',
-    /*
-     * ORM system object used as history storage
-     */
-    'orm_history_object' => 'Historylog',
     /*
      * File uploads path
      */
@@ -80,21 +62,9 @@ return array(
     'jsCacheSysUrl' => 'js/syscache/',
     'jsCacheSysPath' => $wwwPath . 'js/syscache/',
     /*
-     * Сlear the object version history when deleting an object.
-     * The recommended setting is “false”.  Thus, even though the object has been deleted,
-     * it can be restored from the previous control system revision.
-     * If set to "true", the object and its history will be  totally removed. However,
-     * this allows you to get rid of redundant records in the database.
-     */
-    'vc_clear_on_delete' => false,
-    /*
      * Main directory for config files
      */
     'configs' => '', // configs path $docRoot . '/config/',
-    /*
-    * ORM configs directory
-    */
-    'object_configs' => 'objects/',
     /*
      * Report configs directory
      */
@@ -146,12 +116,7 @@ return array(
     * Use memcached
     */
     'use_cache' => false,
-    /*
-     * Hard caching time (without validation) for frontend , seconds
-     */
-    'frontend_hardcache' => 30,
     'themes' => 'public/',
-
     /*
      * Stop the site with message "Essential maintenance in progress. Please check back later."
      */
@@ -180,21 +145,11 @@ return array(
      */
     'html_editor' => 'ckeditor',
     /*
-     * Use the console command to compile the file system map
-     * (accelerates the compilation process; works only on Linux systems;
-     * execution of the system function should be allowed).
-     */
-    'deploy_use_console' => false,
-    /*
      *  Use hard cache expiration time defined in frontend_hardcache for caching blocks;
      *  allows to reduce the cache time of dynamic blocks;
      *  is used if there are not enough triggers for cache invalidation
      */
     'blockmanager_use_hardcache_time' => false,
-    /*
-     * Use foreign keys
-     */
-    'foreign_keys' => true,
     /*
      * www root
      */
@@ -226,19 +181,6 @@ return array(
      * Application class
      */
     'application' => '\\Dvelum\\App\\Application',
-    /*
-     * ORM system object used as version storage
-     */
-    'orm_version_object' => 'Vc',
-    /*
-     * Db_Object for error log 
-     */
-    'error_log_object' => 'error_log',
-    /*
-     * Log Db_Object errors
-     */
-    'db_object_error_log' => true,
-    'db_object_error_log_path' => $docRoot . '/data/logs/error/db_object.error.log',
     /*
      * Vendor library path
      */

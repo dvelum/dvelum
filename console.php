@@ -50,7 +50,7 @@ $configStorage->setConfig(Config::storage()->get('config_storage.php')->__toArra
  * Connecting main configuration file
  */
 $config = Config::storage()->get('main.php');
-$_SERVER['DOCUMENT_ROOT'] = $config->get('wwwpath');
+$_SERVER['DOCUMENT_ROOT'] = $config->get('wwwPath');
 
 /*
  * Disable op caching for development mode

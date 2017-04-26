@@ -4,7 +4,7 @@
  */
 use Dvelum\Config;
 use Dvelum\Orm;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\App\Controller;
 
 class Backend_Filestorage_Controller extends Dvelum\App\Backend\Api\Controller

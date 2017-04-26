@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Object;
 
 use Dvelum\Orm;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
 use Dvelum\Orm\Exception;
 use \Psr\Log\LogLevel;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Stat;
 
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 
 class MySQL
 {

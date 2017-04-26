@@ -19,7 +19,7 @@
 declare(strict_types=1);
 
 use Dvelum\Config;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\Orm;
 /**
  * Application - is the main class that initializes system configuration
@@ -170,8 +170,8 @@ class Application
         /*
          * Prepare models
          */
-        \Dvelum\Model::setDefaults(array(
-            'hardCacheTime'  => $this->_config->get('frontend_hardcache'),
+        \Dvelum\Orm\Model::setDefaults(array(
+            'hardCacheTime'  => $this->_config->get('hardcache'),
             'dataCache' => $this->_cache  ,
             'dbObjectStore'  => $objectStore,
             'defaultDbManager' => $conManager,

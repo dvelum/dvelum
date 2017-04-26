@@ -1,7 +1,7 @@
 <?php
 
 use Dvelum\View;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 
 /**
  * Menu block

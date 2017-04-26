@@ -21,7 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm;
 
 use Dvelum\Config;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Psr\Log\LogLevel;
 use Dvelum\Orm\Exception;
 use Dvelum\App\Session\User;
@@ -161,7 +161,7 @@ class Object
             }
         }
 
-        $this->_setRawData($data);
+        $this->setRawData($data);
     }
 
     /**
@@ -169,7 +169,7 @@ class Object
      * @param array $data
      * @return void
      */
-    protected function _setRawData(array $data) : void
+    protected function setRawData(array $data) : void
     {
         unset($data[$this->primaryKey]);
         $iv = false;
@@ -828,7 +828,7 @@ class Object
             }
 
             $o->setId($item[$o->primaryKey]);
-            $o->_setRawData($item);
+            $o->setRawData($item);
             $list[$item[$o->primaryKey]] = $o;
         }
         static::$disableAclCheck = false;

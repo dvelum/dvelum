@@ -3,8 +3,8 @@
  * Users module UI Controller
  */
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
-use Dvelum\Model;
 
 class Backend_User_Controller extends  Dvelum\App\Backend\Api\Controller
 {

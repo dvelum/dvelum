@@ -1,6 +1,6 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Orm\Model as Model;
 /**
  * The class is used to identify the current system User.
  * @author Kirill Egorov

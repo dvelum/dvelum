@@ -1,6 +1,6 @@
 <?php
 
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
 
 class Model_Filestorage extends Model

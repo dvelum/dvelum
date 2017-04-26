@@ -1,7 +1,7 @@
 <?php
 
 use Dvelum\Orm;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 
 class Task_Orm_Encrypt extends Bgtask_Abstract
 {

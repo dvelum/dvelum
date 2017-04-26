@@ -17,9 +17,9 @@
  * (creating, editing, updating and deleting)
  * for ORM object under version control
  */
-use Dvelum\Model;
 use Dvelum\Config;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 
 abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 {

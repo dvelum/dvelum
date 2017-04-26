@@ -1,6 +1,6 @@
 <?php
 use Dvelum\Orm;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 
 class Trigger_Page extends Trigger
 {

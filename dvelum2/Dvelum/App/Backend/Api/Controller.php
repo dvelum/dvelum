@@ -3,8 +3,8 @@
 namespace Dvelum\App\Backend\Api;
 
 use Dvelum\App;
-use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\App\Data;
 use Dvelum\App\Session;
 use Dvelum\Request;

@@ -5,7 +5,7 @@
  * Backoffice UI
  */
 use Dvelum\Orm;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
 
 class Backend_Mediacategory_Controller extends Dvelum\App\Backend\Api\Controller

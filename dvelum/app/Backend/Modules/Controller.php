@@ -1,7 +1,8 @@
 <?php
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
-use Dvelum\Model;
+
 class Backend_Modules_Controller extends Backend_Controller
 {
     /**
@@ -515,7 +516,7 @@ class Backend_Modules_Controller extends Backend_Controller
         $path = Request::post('node', 'string', '');
         $path = str_replace('.','', $path);
 
-        $dirPath = $this->_configMain->get('wwwpath');
+        $dirPath = $this->_configMain->get('wwwPath');
 
         if(!is_dir($dirPath.$path))
             Response::jsonArray(array());
@@ -556,7 +557,7 @@ class Backend_Modules_Controller extends Backend_Controller
      */
     public function iconListAction()
     {
-        $dirPath = $this->_configMain->get('wwwpath');
+        $dirPath = $this->_configMain->get('wwwPath');
         $dir = Request::post('dir', 'string', '');
 
         if(!is_dir($dirPath . $dir))

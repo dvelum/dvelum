@@ -5,7 +5,7 @@ namespace Dvelum\App\Backend;
 use Dvelum\App;
 use Dvelum\Config;
 use Dvelum\Request;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 
 class Auth
 {

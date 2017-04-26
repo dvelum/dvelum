@@ -22,8 +22,8 @@ declare(strict_types=1);
 namespace Dvelum\Orm;
 
 use Dvelum\Config;
-use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 
 class Stat
 {

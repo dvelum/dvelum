@@ -1,6 +1,6 @@
 <?php
 use Dvelum\Config;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\Orm;
 
 class Backend_Acl_Controller extends Backend_Controller

@@ -1,8 +1,8 @@
 <?php
 
-use Dvelum\Model;
 use Dvelum\Config;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 
 class Model_Medialib extends Model
 {
@@ -76,7 +76,7 @@ class Model_Medialib extends Model
         if(empty($data))
             return false;
 
-        $docRoot = Config::storage()->get('main.php')->get('docroot');
+        $docRoot = Config::storage()->get('main.php')->get('docRoot');
 
         if(strlen($data['path']))
         {
@@ -281,7 +281,7 @@ class Model_Medialib extends Model
         $appConfig = Config::storage()->get('main.php');
         ini_set('max_execution_time' , 18000);
         ini_set('memory_limit', '384M');
-        $docRoot = $appConfig['wwwpath'];
+        $docRoot = $appConfig['wwwPath'];
         $conf = $this->getConfig()->__toArray();
         $thumbSizes = $conf['image']['sizes'];
 

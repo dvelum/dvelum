@@ -160,7 +160,7 @@ class Blockmanager
 			{
 				if(self::$_useHardCacheLifetime)
 				{
-					$this->_cache->save($this->_map , $mapKey , Config::storage()->get('main.php')->get('frontend_hardcache'));
+					$this->_cache->save($this->_map , $mapKey , Config::storage()->get('orm.php')->get('hardcache'));
 				}
 				else
 				{
@@ -258,7 +258,7 @@ class Blockmanager
 		{
 			if(self::$_useHardCacheLifetime)
 			{
-				$this->_cache->save($html , $cacheKey , Config::storage()->get('main.php')->get('frontend_hardcache'));
+				$this->_cache->save($html , $cacheKey , Config::storage()->get('orm.php')->get('hardcache'));
 			}
 			else
 			{

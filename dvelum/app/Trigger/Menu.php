@@ -1,7 +1,7 @@
 <?php
 
 use Dvelum\Orm;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 
 class Trigger_Menu extends Trigger
 {

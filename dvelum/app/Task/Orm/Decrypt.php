@@ -1,6 +1,6 @@
 <?php
 use Dvelum\Orm;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
 
 class Task_Orm_Decrypt extends Bgtask_Abstract

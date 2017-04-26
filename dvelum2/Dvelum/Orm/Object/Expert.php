@@ -2,7 +2,7 @@
 
 namespace Dvelum\Orm\Object;
 
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 
 /**
  * Db_Object information expert

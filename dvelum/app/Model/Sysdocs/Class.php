@@ -1,6 +1,6 @@
 <?php
 
-use Dvelum\Model as Model;
+use Dvelum\Orm\Model;
 
 class Model_Sysdocs_Class extends Model
 {

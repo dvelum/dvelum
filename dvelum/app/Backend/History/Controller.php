@@ -1,7 +1,7 @@
 <?php
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
-use Dvelum\Model;
 
 class Backend_History_Controller extends Backend_Controller
 {

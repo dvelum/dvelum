@@ -28,8 +28,8 @@ use Dvelum\Autoload;
 use Dvelum\Request;
 use Dvelum\Resource;
 use Dvelum\Config;
-use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Lang;
 use Dvelum\Log;
 use Dvelum\App\Router\Backend as RouterBackend;
@@ -60,7 +60,8 @@ class Application
     /**
      * @var \Cache_Interface
      */
-    protected $cache = false;
+    protected $cache;
+
     /**
      * @var boolean
      */
@@ -98,12 +99,13 @@ class Application
         /*
          * Init cache connection
          */
-        $this->initCache();
+        $cache = $this->initCache();
+        $this->cache = $cache;
 
         /*
          * Init database connection
          */
-        $conManager = $this->initDb();
+        $dbManager = $this->initDb();
 
         /*
          * Apply configs
@@ -130,16 +132,16 @@ class Application
         $request->setConfig(Config\Factory::create([
             'delimiter' => $this->config->get('urlDelimiter'),
             'extension' => $this->config->get('urlExtension'),
-            'wwwRoot' => $this->config->get('wwwroot')
+            'wwwRoot' => $this->config->get('wwwRoot')
         ]));
 
         $resource = Resource::factory();
         $resource->setConfig(Config\Factory::create([
             'jsCacheSysUrl' => $this->config->get('jsCacheSysUrl'),
             'jsCacheSysPath' => $this->config->get('jsCacheSysPath'),
-            'wwwRoot' => $this->config->get('wwwroot'),
-            'wwwPath' => $this->config->get('wwwpath'),
-            'cache'=>$this->cache
+            'wwwRoot' => $this->config->get('wwwRoot'),
+            'wwwPath' => $this->config->get('wwwPath'),
+            'cache'=> $cache
         ]));
 
 
@@ -153,66 +155,18 @@ class Application
         Lang::addDictionaryLoader($lang ,  $lang . '.php' , Config\Factory::File_Array);
         Lang::setDefaultDictionary($this->config->get('language'));
 
-        $eventManager = new \Eventmanager();
-
-        if($this->cache)
+        if($cache)
         {
-            $eventManager->setCache($this->cache);
-            Resource::setCache($this->cache);
-            Template::setCache($this->cache);
+            Resource::setCache($cache);
+            Template::setCache($cache);
             if($this->config->offsetExists('template_check_mtime'))
                 Template::checkMtime($this->config->get('template_check_mtime'));
         }
-        /*
-         * Prepare Db object storage
-         */
-        $objectStore = new Orm\Object\Store(array(
-            'linksObject' => $this->config->get('orm_links_object'),
-            'historyObject' => $this->config->get('orm_history_object'),
-            'versionObject' => $this->config->get('orm_version_object'),
-        ));
-        $objectStore->setEventManager($eventManager);
 
-        /*
-         * Prepare models
-         */
-        \Dvelum\Model::setDefaults(array(
-            'hardCacheTime'  => $this->config->get('frontend_hardcache'),
-            'dataCache' => $this->cache  ,
-            'dbObjectStore'  => $objectStore,
-            'defaultDbManager' => $conManager,
-            'errorLog' => false
-        ));
-        /*
-         * Prepare Db_Object
-         */
-        $translator = new Orm\Object\Config\Translator($this->config->get('language') . '/objects.php');
-        Orm\Object\Config::setConfigPath($this->config->get('object_configs'));
-        Orm\Object\Config::setTranslator($translator);
 
-        if($this->config->get('db_object_error_log'))
-        {
-            $log = new Log\File($this->config->get('db_object_error_log_path'));
-            /*
-             * Switch to Db_Object error log
-             */
-            if(!empty($this->config->get('error_log_object')))
-            {
-                $errorModel = Model::factory($this->config->get('error_log_object'));
-                $errorTable = $errorModel->table();
-                $errorDb = $errorModel->getDbConnection();
+        $ormConfig = Config::storage()->get('orm.php');
+        Orm::init($ormConfig, $dbManager, $lang, $cache);
 
-                $logOrmDb = new Log\Db('db_object_error_log' , $errorDb , $errorTable);
-                $logModelDb = new Log\Db('model' , $errorDb , $errorTable);
-                Orm\Object::setLog(new Log\Mixed($log, $logOrmDb));
-                Model::setDefaultLog(new Log\Mixed($log, $logModelDb));
-                $objectStore->setLog($logOrmDb);
-            }else{
-                Orm\Object::setLog($log);
-                Model::setDefaultLog($log);
-                $objectStore->setLog($log);
-            }
-        }
         /*
          * Prepare dictionaries
          */
@@ -256,11 +210,12 @@ class Application
 
     /**
      * Initialize Cache connections
+     * @return \Cache_Interface | null
      */
-    protected function initCache()
+    protected function initCache() : ?\Cache_Interface
     {
         if(!$this->config->get('use_cache'))
-            return;
+            return null;
 
         $cacheConfig = Config::storage()->get('cache.php')->__toArray();
         $cacheManager = new \Cache_Manager();
@@ -272,7 +227,7 @@ class Application
         if($this->config->get('development'))
             \Debug::setCacheCores($cacheManager->getRegistered());
 
-        $this->cache = $cacheManager->get('data');
+        return $cacheManager->get('data');
     }
 
     /**
@@ -332,11 +287,6 @@ class Application
     {
         if($this->cache)
             Blockmanager::setDefaultCache($this->cache);
-
-        /*
-         * Prepare objects
-         */
-        Orm\Object\Builder::useForeignKeys($this->config->get('foreign_keys'));
 
         $cfgBackend = Config\Factory::storage()->get('backend.php');
 

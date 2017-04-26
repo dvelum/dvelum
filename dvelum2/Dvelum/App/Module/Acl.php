@@ -2,7 +2,7 @@
 namespace Dvelum\App\Module;
 
 use Dvelum\App\Session;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 
 class Acl
 {

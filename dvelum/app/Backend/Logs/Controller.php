@@ -1,7 +1,8 @@
 <?php
-use Dvelum\Model;
+
 use Dvelum\Config;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 
 class Backend_Logs_Controller extends Backend_Controller_Crud
 {

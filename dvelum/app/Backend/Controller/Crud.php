@@ -21,9 +21,9 @@
  * CRUD backend applications (creating, editing, updating, deleting)
  * for ORM objects
  */
-use Dvelum\Model;
 use Dvelum\Config;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\App\Data;
 use Dvelum\App\Session;
 use Dvelum\App\Controller\EventManager;

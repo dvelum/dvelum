@@ -3,7 +3,7 @@ namespace Dvelum\App\Backend;
 
 use Dvelum\App;
 use Dvelum\Config;
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\App\Session;
 use Dvelum\Lang;
 use Dvelum\View;

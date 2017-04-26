@@ -1,7 +1,7 @@
 <?php
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
-use Dvelum\Model;
 /**
  * Documentation generator
  * @author Kirill A Egorov, 2014

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Dvelum\Model;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Request;

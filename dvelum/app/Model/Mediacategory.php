@@ -1,7 +1,7 @@
 <?php
 
-use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 
 class Model_Mediacategory extends Model
 {

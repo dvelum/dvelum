@@ -83,7 +83,7 @@ class Backend_Designer_Sub_Url extends Backend_Designer_Sub
 		$path = Request::post('node', 'string', '');
 		$path = str_replace('.','', $path);
 			
-		$dirPath = $this->_configMain->get('wwwpath');
+		$dirPath = $this->_configMain->get('wwwPath');
 				
 		if(!is_dir($dirPath.$path))
 			Response::jsonArray(array());
@@ -125,7 +125,7 @@ class Backend_Designer_Sub_Url extends Backend_Designer_Sub
 	{
 		$templates = $this->_config->get('templates');
 		
-		$dirPath = $this->_configMain->get('wwwpath');
+		$dirPath = $this->_configMain->get('wwwPath');
 		$dir = Request::post('dir', 'string', '');
 
 		if(!is_dir($dirPath . $dir))

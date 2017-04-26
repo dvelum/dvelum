@@ -1,7 +1,7 @@
 <?php
 use Dvelum\Config;
-use Dvelum\Model;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Lang;
 use Dvelum\View;
 use Dvelum\Template;

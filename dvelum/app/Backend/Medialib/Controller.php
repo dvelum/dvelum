@@ -1,7 +1,7 @@
 <?php
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\Config;
-use Dvelum\Model;
 use Dvelum\Request;
 use Dvelum\App\Controller\EventManager;
 
@@ -62,7 +62,7 @@ class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
 
         $this->checkCanEdit();
 
-        $docRoot = $this->appConfig->get('wwwpath');
+        $docRoot = $this->appConfig->get('wwwPath');
         $mediaModel = Model::factory('Medialib');
         $mediaCfg = $mediaModel->getConfig();
 
@@ -285,7 +285,7 @@ class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
         $s = '';
         $totalSize = 0;
 
-        $wwwPath = $this->appConfig->get('wwwpath');
+        $wwwPath = $this->appConfig->get('wwwPath');
 
         foreach ($sources as $filePath){
             $s.=file_get_contents($wwwPath.'/'.$filePath)."\n";

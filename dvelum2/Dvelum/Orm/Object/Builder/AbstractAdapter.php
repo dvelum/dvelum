@@ -20,12 +20,9 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Object\Builder;
 
-
 use Dvelum\Orm;
-use Dvelum\Model;
-
+use Dvelum\Orm\Model;
 use Dvelum\Log;
-
 
 abstract class AbstractAdapter
 {

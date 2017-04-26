@@ -436,7 +436,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		$path = Request::post('node', 'string', '');
 		$path = str_replace('.','', $path);
 
-		$dirPath = $this->_configMain->get('wwwpath');
+		$dirPath = $this->_configMain->get('wwwPath');
 
 		if(!is_dir($dirPath))
 			Response::jsonArray(array());
