@@ -28,9 +28,8 @@ use Dvelum\App\Session\User;
 
 /**
  * Database Object class. ORM element.
- * @author Kirill Egorov 2011  DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
- * @package Db_Object
- * @uses  Config , Model , Data_Filter , Zend_Db_Adapter , Utils
+ * @author Kirill Egorov 2011-2017  DVelum project
+ * @package Dvelum\Orm
  */
 class Object
 {
