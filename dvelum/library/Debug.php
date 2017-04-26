@@ -191,12 +191,14 @@ class Debug
 
 		foreach(self::$_dbProfilers as $prof)
 		{
-			$totalCount += $prof->getTotalNumQueries();
-			$totalTime += $prof->getTotalElapsedSecs();
-			$prof = $prof->getQueryProfiles();
+			$totalCount += count($prof->getProfiles());
+			//$totalTime += $prof->getTotalElapsedSecs();
+			$prof = $prof->getProfiles();
 			if(!empty($prof)){
-				foreach($prof as $item)
-					$profiles[] = $item;
+				foreach($prof as $item){
+                    $profiles[] = $item;
+                    $totalTime += $item['elapse'];
+                }
 			}
 		}
 
@@ -206,7 +208,7 @@ class Debug
 		{
 			if(!empty($profiles))
 				foreach($profiles as $queryProfile)
-					$str .= '<span style="color:blue;font-size: 11px;">'.number_format($queryProfile->getElapsedSecs(),5).'s. </span><span style="font-size: 11px;color:green;">'. $queryProfile->getQuery()."</span><br>\n";
+					$str .= '<span style="color:blue;font-size: 11px;">'.number_format($queryProfile['elapse'],5).'s. </span><span style="font-size: 11px;color:green;">'. $queryProfile['sql']."</span><br>\n";
 		}
 		$str .= "<br>\n";
 
