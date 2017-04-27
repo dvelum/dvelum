@@ -102,7 +102,7 @@ if($config->get('development') === 3 && strpos($_SERVER['REQUEST_URI'],'install'
 /*
  * Register composer autoload
  */
-if(file_exists(__DIR__ . '/vendor/autoload.php')){
+if($config->get('use_composer_autoload') && file_exists(__DIR__ . '/vendor/autoload.php')){
     require __DIR__ . '/vendor/autoload.php';
 }
 
