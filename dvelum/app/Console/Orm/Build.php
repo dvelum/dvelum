@@ -12,7 +12,7 @@ class Console_Orm_Build extends Console_Action
         foreach($dbObjectManager->getRegisteredObjects() as $object)
         {
             echo 'build ' . $object . ' : ';
-            $builder = new Orm\Object\Builder($object);
+            $builder = Orm\Object\Builder::factory($object);
             if($builder->build()){
                 echo 'OK';
             }else{

@@ -31,7 +31,6 @@ use Dvelum\Orm\Object\Builder;
  */
 class MySQL extends AbstractAdapter
 {
-
     /**
      * Check if DB table has correct structure
      * @return bool
@@ -616,4 +615,211 @@ class MySQL extends AbstractAdapter
 
         return $sql;
     }
+
+
+    /**
+     * Create / alter db table
+     * @param bool $buildKeys
+     * @return boolean
+     */
+    public function build(bool $buildKeys = true) : bool
+    {
+        $this->errors = array();
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
+        {
+            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
+            return false;
+        }
+        /*
+         * Create table if not exists
+         */
+        if(! $this->tableExists())
+        {
+            $sql = '';
+            try
+            {
+                $sql = $this->_sqlCreate();
+                $this->db->query($sql);
+                $this->logSql($sql);
+                if($buildKeys)
+                    return $this->buildForeignKeys();
+                else
+                    return true;
+            }
+            catch(\Exception $e)
+            {
+                $this->errors[] = $e->getMessage() . ' <br><b>SQL:</b> ' . $sql;
+                return false;
+            }
+        }
+
+        $engineUpdate = $this->prepareEngineUpdate();
+        $colUpdates = $this->prepareColumnUpdates();
+        $indexUpdates = $this->prepareIndexUpdates();
+
+        /*
+         * Remove invalid foreign keys
+         */
+        if($buildKeys && ! $this->buildForeignKeys(true , false))
+            return false;
+
+        /*
+         * Update comands
+         */
+        $cmd = array();
+
+        if(! empty($colUpdates))
+        {
+            $fieldsConfig = $this->objectConfig->getFieldsConfig();
+            foreach($colUpdates as $info)
+            {
+                switch($info['action'])
+                {
+                    case 'drop' :
+                        $cmd[] = "\n" . 'DROP `' . $info['name'] . '`';
+                        break;
+                    case 'add' :
+                        $cmd[] = "\n" . 'ADD ' . $this->_proppertySql($info['name'] , $fieldsConfig[$info['name']]);
+                        break;
+                    case 'change' :
+                        $cmd[] = "\n" . 'CHANGE `' . $info['name'] . '`  ' . $this->_proppertySql($info['name'] , $fieldsConfig[$info['name']]);
+                        break;
+                }
+            }
+        }
+
+        if(!empty($indexUpdates))
+        {
+            $indexConfig = $this->objectConfig->getIndexesConfig();
+
+            foreach($indexUpdates as $info)
+            {
+                switch($info['action'])
+                {
+                    case 'drop' :
+                        if($info['name'] == 'PRIMARY')
+                            $cmd[] = "\n" . 'DROP PRIMARY KEY';
+                        else
+                            $cmd[] = "\n" . 'DROP INDEX `' . $info['name'] . '`';
+                        break;
+                    case 'add' :
+                        $cmd[] = $this->_prepareIndex($info['name'] , $indexConfig[$info['name']]);
+                        break;
+                }
+            }
+        }
+
+        if(!empty($engineUpdate))
+        {
+            try
+            {
+                $this->db->query($engineUpdate);
+                $this->logSql($engineUpdate);
+            }
+            catch(\Exception $e)
+            {
+                $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $engineUpdate;
+            }
+        }
+
+        if(!empty($cmd))
+        {
+            $dbCfg = $this->db->getConfig();
+            try
+            {
+                $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->model->table() . '` ' . implode(',' , $cmd) . ';';
+                $this->db->query($sql);
+                $this->logSql($sql);
+                if($buildKeys)
+                    return $this->buildForeignKeys(false , true);
+                else
+                    return true;
+            }
+            catch(\Exception $e)
+            {
+                $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+                return false;
+            }
+        }
+
+        $ralationsUpdate = $this->getRelationUpdates();
+        if(!empty($ralationsUpdate)){
+            try{
+                $this->updateRelations($ralationsUpdate);
+            }catch (\Exception $e){
+                $this->errors[] = $e->getMessage();
+                return false;
+            }
+        }
+
+        if(empty($this->errors))
+            return true;
+        else
+            return true;
+    }
+
+    /**
+     * Build Foreign Keys
+     * @param bool $remove - remove keys
+     * @param bool $create - create keys
+     * @return boolean
+     */
+    public function buildForeignKeys($remove = true , $create = true) : bool
+    {
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
+        {
+            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
+            return false;
+        }
+
+        $keysUpdates = array();
+        $cmd = array();
+
+        if($this->useForeignKeys)
+            $keysUpdates = $this->prepareKeysUpdate();
+        else
+            $keysUpdates = $this->prepareKeysUpdate(true);
+
+        if(!empty($keysUpdates))
+        {
+            foreach($keysUpdates as $info)
+            {
+                switch($info['action'])
+                {
+                    case 'drop' :
+                        if($remove)
+                            $cmd[] = "\n" . 'DROP FOREIGN KEY `' . $info['name'] . '`';
+                        break;
+                    case 'add' :
+                        if($create)
+                            $cmd[] = 'ADD CONSTRAINT `' . $info['name'] . '`
+        						FOREIGN KEY (`' . $info['config']['curField'] . '`)
+    				      		REFERENCES `' . $info['config']['toDb'] . '`.`' . $info['config']['toTable'] . '` (`' . $info['config']['toField'] . '`)
+    				      		ON UPDATE ' . $info['config']['onUpdate'] . '
+    				      		ON DELETE ' . $info['config']['onDelete'];
+                        break;
+                }
+            }
+        }
+
+        if(!empty($cmd))
+        {
+            $dbCfg = $this->db->getConfig();
+            try
+            {
+                $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->model->table() . '` ' . implode(',' , $cmd) . ';';
+                $this->db->query($sql);
+                $this->logSql($sql);
+                return true;
+            }
+            catch(\Exception $e)
+            {
+                $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
