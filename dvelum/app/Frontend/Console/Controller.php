@@ -193,7 +193,7 @@ class Frontend_Console_Controller extends Frontend_Controller
             if(!$adapter instanceof Console_Action){
                 trigger_error($adapterCls.' is not instance of Console_Action');
             }
-            $params = $request->getPathParts(2);
+            $params = $request->getPathParts(1);
             $adapter->init($this->_configMain, $params);
         }else{
             echo 'Undefined Action';
@@ -204,10 +204,10 @@ class Frontend_Console_Controller extends Frontend_Controller
     public function taskAction()
     {
         $request = Request::getInstance();
-        $action = $request->getPart(2);
+        $action = $request->getPart(1);
 
         if($this->_configs->offsetExists($action)){
-            $params = $request->getPathParts(3);
+            $params = $request->getPathParts(2);
             $this->_launchTask($action, $params);
         }else{
             echo 'Undefined Task';
@@ -221,12 +221,12 @@ class Frontend_Console_Controller extends Frontend_Controller
     public function jobAction()
     {
         $request = Request::getInstance();
-        $action = $request->getPart(2);
+        $action = $request->getPart(1);
 
         print_r($this->_configs);
 
         if($this->_configs->offsetExists($action)){
-            $params = $request->getPathParts(3);
+            $params = $request->getPathParts(2);
             $this->_launchJob($action, $params , 'run');
         }else{
             echo 'Undefined Job';
