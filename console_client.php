@@ -8,7 +8,7 @@
  * 3 - Application Error
  */
 if (isset($_SERVER['argc']) && $_SERVER['argc']!==2 ){
-    exit(1);   
+    exit(1);
 }
 
 $scriptStart = microtime(true);
@@ -50,7 +50,6 @@ $configStorage->setConfig(Config::storage()->get('config_storage.php')->__toArra
  * Connecting main configuration file
  */
 $config = Config::storage()->get('main.php');
-$config->set('frontend_router', 'Router_Path');
 $_SERVER['DOCUMENT_ROOT'] = $config->get('wwwpath');
 
 /*
@@ -87,6 +86,6 @@ $app = new $appClass($config);
 $app->setAutoloader($autoloader);
 $app->init();
 
-Request::getInstance()->setUri('/console/'.$_SERVER['argv'][1]);
+Request::getInstance()->setUri($_SERVER['argv'][1]);
 
 $app->run();

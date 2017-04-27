@@ -51,7 +51,6 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
-
 use \Dvelum\Config\Factory as ConfigFactory;
 
 $configStorage = ConfigFactory::storage();
@@ -66,7 +65,6 @@ $configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->_
  * Connecting main configuration file
  */
 $config = ConfigFactory::storage()->get('main.php');
-
 
 /*
  * Disable op caching for development mode
