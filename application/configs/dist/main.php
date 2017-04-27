@@ -212,5 +212,6 @@ return array(
                 'url' => 'https://addons.dvelum.net/api/modules/'
             ]
         ]
-    ]
+    ],
+    'use_composer_autoload' => false
 );
