@@ -8,9 +8,7 @@ return [
         './application/library',
         './dvelum/app',
         './dvelum/library',
-        './dvelum2',
-        './vendor',
-        './vendor/psr/log'
+        './dvelum2'
     ],
     // paths priority (cannot be overridden by external modules)
     'priority'=>[
@@ -19,14 +17,14 @@ return [
         './application/library',
     ],
     // Use class maps
-    'useMap' => false,
+    'useMap' => 1,
     // Use class map (Reduce IO load during autoload)
     // Class map file path (string / false)
     'map' => 'classmap.php',
     // PSR-4 autoload paths
     'psr-4' =>[
+        'Psr\\Log'=>'./vendor/psr/log',
         'Zend\\Stdlib' => './vendor/zendframework/zend-stdlib/src',
         'Zend\\Db' => './vendor/zendframework/zend-db/src'
     ]
-
 ];
