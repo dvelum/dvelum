@@ -20,10 +20,10 @@
 declare(strict_types=1);
 
 namespace Dvelum\Orm\Object\Config\Field;
+use Dvelum\Orm\Object\Config\Field;
 
 class Varchar extends \Dvelum\Orm\Object\Config\Field
 {
-
     /**
      * Apply value filter
      * @param mixed $value
@@ -45,9 +45,9 @@ class Varchar extends \Dvelum\Orm\Object\Config\Field
     /**
      * Validate value
      * @param $value
-     * @return boolean
+     * @return bool
      */
-    public function validate($value) : boolean
+    public function validate($value) : bool
     {
         if(!parent::validate($value)){
             return false;

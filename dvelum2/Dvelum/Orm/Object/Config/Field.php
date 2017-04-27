@@ -373,8 +373,8 @@ class Field implements \ArrayAccess
 
     /**
      * Validate value
-     * @param $value
-     * @return boolean
+     * @param mixed $value
+     * @return bool
      */
     public function validate($value) : bool
     {

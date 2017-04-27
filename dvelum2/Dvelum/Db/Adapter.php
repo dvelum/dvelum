@@ -10,7 +10,7 @@ use Zend\Db\ResultSet\ResultSet;
  * Class Adapter
  * Db adapter proxy
  */
-class Adapter extends  \Db_Adapter
+class Adapter
 {
     protected $params;
     protected $adapter;

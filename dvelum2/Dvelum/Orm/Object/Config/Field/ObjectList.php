@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Object\Config\Field;
 
 use Dvelum\Orm;
+use Dvelum\Orm\Object\Config\Field;
 
 class ObjectList extends Field
 {
@@ -54,9 +55,9 @@ class ObjectList extends Field
     /**
      * Validate value
      * @param $value
-     * @return boolean
+     * @return bool
      */
-    public function validate($value) : boolean
+    public function validate($value) : bool
     {
         if(!parent::validate($value)){
             return false;

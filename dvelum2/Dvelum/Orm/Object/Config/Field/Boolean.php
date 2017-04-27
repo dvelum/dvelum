@@ -21,6 +21,7 @@
 declare(strict_types=1);
 
 namespace Dvelum\Orm\Object\Config\Field;
+use Dvelum\Orm\Object\Config\Field;
 
 class Boolean extends Field
 {

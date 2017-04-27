@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Object\Config\Field;
 
+use Dvelum\Orm\Object\Config\Field;
 use Dvelum\Orm;
 
 class Object extends \Dvelum\Orm\Object\Config\Field
@@ -57,12 +58,11 @@ class Object extends \Dvelum\Orm\Object\Config\Field
      * @param $value
      * @return boolean
      */
-    public function validate($value) : boolean
+    public function validate($value) : bool
     {
         if(!parent::validate($value)){
             return false;
         }
-
 
         if(!empty($value)) {
 
