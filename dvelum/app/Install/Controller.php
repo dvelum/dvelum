@@ -608,35 +608,6 @@ class Install_Controller
             if(!$page->saveVersion() || !$page->publish())
                 return false;
 
-            // Add console page
-            $consolePage = Orm\Object::factory('Page');
-            $consolePage->setValues([
-                'code'=>'console',
-                'is_fixed'=>1,
-                'html_title'=>'Console [System]',
-                'menu_title'=>'Console [System]',
-                'page_title'=>'Console [System]',
-                'meta_keywords'=>'',
-                'meta_description'=>'',
-                'parent_id'=>null,
-                'text' =>'',
-                'func_code'=>'console',
-                'order_no' => 2,
-                'show_blocks'=>false,
-                'published'=>false,
-                'published_version'=>0,
-                'date_created'=>date('Y-m-d H:i:s'),
-                'date_updated'=>date('Y-m-d H:i:s'),
-                'blocks'=>'',
-                'theme'=>'default',
-                'date_published'=>date('Y-m-d H:i:s'),
-                'in_site_map'=>false,
-                'default_blocks'=>true
-            ]);
-
-            if(!$consolePage->saveVersion())
-                return false;
-
             // add menu
             $topMenu = Orm\Object::factory('Menu');
             $topMenu->setValues([
