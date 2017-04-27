@@ -1,5 +1,7 @@
 <?php
-class FilterTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class FilterTest extends TestCase
 {
 	public function testFilterValue()
 	{

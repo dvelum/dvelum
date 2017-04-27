@@ -1,5 +1,7 @@
 <?php
-class TreeTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class TreeTest extends TestCase
 {
 
 	public function testSetItemOrder()

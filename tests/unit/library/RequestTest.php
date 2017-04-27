@@ -1,5 +1,7 @@
 <?php
-class RequestTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class RequestTest extends TestCase
 {
 	public function testSetUri()
 	{

@@ -1,5 +1,7 @@
 <?php
-class Store_LocalTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class Store_LocalTest extends TestCase
 {
 	public function testGetCount()
 	{

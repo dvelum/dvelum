@@ -71,9 +71,9 @@ class Bgtask_Manager
 
     /**
      * Set up logger adapter
-     * @param Log $logger
+     * @param Bgtask_Log $logger
      */
-    public function setLogger(Log $logger)
+    public function setLogger(Bgtask_Log $logger)
     {
     	$this->_logger = $logger;
     }

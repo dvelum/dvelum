@@ -1,5 +1,7 @@
 <?php
-class UploadTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class UploadTest extends TestCase
 {
     public function testCreateDirs()
     {

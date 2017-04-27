@@ -20,8 +20,9 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/dvelum/library/Autoloader.php';
-$autoloader = new Autoloader($bootCfg['autoloader']);
+require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
+$autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
+use \Dvelum\Config\Factory as ConfigFactory;
 
 $configStorage = Config::storage();
 $configStorage->setConfig($bootCfg['config_storage']);
@@ -62,7 +63,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $config->get('vendor_lib'
 /*
  * Setting autoloader config
  */
-$autoloaderCfg = $config->get('autoloader');
+$autoloaderCfg = ConfigFactory::storage()->get('autoloader.php')->__toArray();
 $autoloaderCfg['debug'] = true;
 $autoloaderCfg['map'] = false;
 
@@ -90,11 +91,11 @@ $dbObjectManager = new Db_Object_Manager();
 foreach($dbObjectManager->getRegisteredObjects() as $object)
 {
         echo 'build ' . $object . ' : ';
-        $builder = new Db_Object_Builder($object);
+        $builder = \Dvelum\Orm\Object\Builder::factory($object);
         if($builder->build()){
-                echo 'OK';
+            echo 'OK';
         }else{
-                echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
+           echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
         }
         echo "\n";
 }

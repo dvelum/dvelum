@@ -1,5 +1,7 @@
 <?php
-class Db_ObjectTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class Db_ObjectTest extends TestCase
 {
 	protected function createPage()
 	{

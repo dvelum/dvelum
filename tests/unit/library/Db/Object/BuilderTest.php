@@ -1,6 +1,7 @@
 <?php
+use PHPUnit\Framework\TestCase;
 
-class Db_Object_BuilderTest extends PHPUnit_Framework_TestCase
+class Db_Object_BuilderTest extends TestCase
 {
 	public function testCreateObject()
 	{	
