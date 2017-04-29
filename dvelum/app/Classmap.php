@@ -45,7 +45,7 @@ class Classmap
         $psr4 = $this->autoloaderCfg['psr-4'];
         foreach ($psr4 as $baseSpace=>$path)
         {
-            $v = File::fillEndSep($v);
+            $v = File::fillEndSep($path);
             if(is_dir($v)){
                 $this->findPsr4Classes($v,$v, $baseSpace);
             }
@@ -107,6 +107,7 @@ class Classmap
     protected function findPsr4Classes(string $path , string $exceptPath, string $baseSpace)
     {
         $path = File::fillEndSep($path);
+
         $items = File::scanFiles($path , ['.php'], false);
 
         if(empty($items))
@@ -118,7 +119,7 @@ class Classmap
             {
                 $parts = explode('/', str_replace($exceptPath,'', substr($item,0,-4)));
                 $parts = array_map('ucfirst', $parts);
-                $class = implode('\\', $parts);
+                $class = $baseSpace.'\\'.implode('\\', $parts);
 
                 if(!isset($map[$class]))
                     $this->map[$class] = $item;

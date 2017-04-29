@@ -116,6 +116,8 @@ class Autoload
                 $this->debugData[] = $class;
             }
             return true;
+        }else{
+         //   echo $class."<br>";
         }
 
         foreach ($this->loaders as $loader)

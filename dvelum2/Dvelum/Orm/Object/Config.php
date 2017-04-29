@@ -345,7 +345,7 @@ class Config
                     $fieldClass = $dbType;
                 }
             }
-            $fieldClass = 'Config\\' . ucfirst($fieldClass);
+            $fieldClass = 'Dvelum\\Orm\\Object\\Config\\Field\\' . ucfirst($fieldClass);
 
             if(class_exists($fieldClass)){
                 $config = new $fieldClass($config);
