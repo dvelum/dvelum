@@ -39,7 +39,7 @@ class Config
     const LINK_OBJECT = 'object';
     const LINK_OBJECT_LIST = 'multi';
     const LINK_DICTIONARY = 'dictionary';
-    const DEFAULT_CONNECTION = 'default';
+
     const RELATION_MANY_TO_MANY = 'many_to_many';
 
     /**
@@ -158,7 +158,7 @@ class Config
         $this->name = strtolower($name);
 
         if(!self::configExists($name))
-            throw new \Exception('Undefined object config '. $name);
+            throw new Exception('Undefined object config '. $name);
 
         $this->config = Cfg\Factory::storage()->get(self::$configs[$name], !$force , false);
         $this->loadProperties();
@@ -237,7 +237,7 @@ class Config
     /**
      * Lazy loading for items translation
      */
-    protected function _prepareTranslation()
+    protected function prepareTranslation()
     {
         if($this->translated)
             return;
@@ -257,8 +257,7 @@ class Config
         $dataLink = & $this->config->dataLink();
         $pKeyName = $this->getPrimaryKey();
 
-        $dataLink['fields'][$pKeyName] = Cfg\Factory::config(
-            Cfg\Factory::File_Array,
+        $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
             self::$configPath.'system/pk_field.php'
         )->__toArray();
 
@@ -273,37 +272,22 @@ class Config
         );
 
         /*
-        * Backward compatibility
-        */
-        if(!isset($dataLink['connection']))
-            $dataLink['connection'] = self::DEFAULT_CONNECTION;
-        if(!isset($dataLink['locked']))
-            $dataLink['locked'] = false;
-        if(!isset($dataLink['readonly']))
-            $dataLink['readonly'] = false;
-        if(!isset($dataLink['primary_key']))
-            $dataLink['primary_key'] = $pKeyName;
-        if(!isset($dataLink['use_db_prefix']))
-            $dataLink['use_db_prefix'] = true;
-        if(!isset($dataLink['acl']) || empty($dataLink['acl']))
-            $dataLink['acl'] = false;
+         * Set readonly connection
+         */
         if(!isset($dataLink['slave_connection']) || empty($dataLink['slave_connection']))
             $dataLink['slave_connection'] = $dataLink['connection'];
 
-        foreach($dataLink['fields'] as & $config){
-            if(isset($config['link_config']) && isset($config['link_config']['link_type']) && $config['link_config']['link_type'] == 'multy'){
-                $config['link_config']['link_type'] = 'multi';
-            }
-        }
-        
         /*
          * Load additional fields for object under revision control
          */
         if(isset($dataLink['rev_control']) && $dataLink['rev_control'])
-            $dataLink['fields'] = array_merge($dataLink['fields'] , $this->_getVcFields());
+            $dataLink['fields'] = array_merge($dataLink['fields'] , $this->getVcFields());
 
+        /**
+         * Load additional encryption fields
+         */
         if($this->hasEncrypted())
-            $dataLink['fields'] = array_merge($dataLink['fields'] , $this->_getEncryptionFields());
+            $dataLink['fields'] = array_merge($dataLink['fields'] , $this->getEncryptionFields());
 
         /*
          * Init ACL adapter
@@ -355,22 +339,29 @@ class Config
         }
     }
 
-    protected function _getVcFields()
+    /**
+     * Get Version control fields
+     * @return array
+     */
+    protected function getVcFields()
     {
         if(!isset(self::$vcFields))
-            self::$vcFields = \Dvelum\Config\Factory::config(\Dvelum\Config\Factory::File_Array, self::$configPath.'vc/vc_fields.php')->__toArray();
+            self::$vcFields = Cfg\Factory::storage()->get(self::$configPath.'vc/vc_fields.php')->__toArray();
 
         return self::$vcFields;
     }
 
-    //encrypted
-    protected function _getEncryptionFields()
+    /**
+     * Get encryption fields
+     * @return array
+     */
+    protected function getEncryptionFields()
     {
         if(!isset(self::$cryptFields))
-            self::$cryptFields = \Dvelum\Config\Factory::config(\Dvelum\Config\Factory::File_Array, self::$configPath.'enc/fields.php')->__toArray();
+            self::$cryptFields = Cfg\Factory::storage()->get(self::$configPath.'enc/fields.php')->__toArray();
 
         if(!isset(self::$encConfig))
-            self::$encConfig = \Dvelum\Config\Factory::config(\Dvelum\Config\Factory::File_Array, self::$configPath.'enc/config.php')->__toArray();
+            self::$encConfig = Cfg\Factory::storage()->get(self::$configPath.'enc/config.php')->__toArray();
 
         return self::$cryptFields;
     }
@@ -390,7 +381,6 @@ class Config
         return $fields;
     }
 
-
     /**
      * Get a configuration element by key (system method)
      * @param string $key
@@ -399,7 +389,7 @@ class Config
     public function get($key)
     {
         if($key === 'fields' || $key === 'title')
-            $this->_prepareTranslation();
+            $this->prepareTranslation();
 
         return $this->config->get($key);
     }
@@ -443,7 +433,7 @@ class Config
      */
     public function getFieldConfig($field)
     {
-        $this->_prepareTranslation();
+        $this->prepareTranslation();
 
         if(!isset($this->config['fields'][$field]))
             throw new Exception('Invalid field name: ' . $field);
@@ -459,7 +449,7 @@ class Config
      */
     public function getIndexConfig($index)
     {
-        $this->_prepareTranslation();
+        $this->prepareTranslation();
 
         if(!isset($this->config['indexes'][$index]))
             throw new Exception('indexes Index name: ' . $index);
@@ -474,7 +464,7 @@ class Config
      */
     public function getFieldsConfig($includeSystem = true)
     {
-        $this->_prepareTranslation();
+        $this->prepareTranslation();
 
         if($includeSystem)
             return $this->config['fields'];
@@ -496,15 +486,15 @@ class Config
      */
     public function getSystemFieldsConfig()
     {
-        $this->_prepareTranslation();
+        $this->prepareTranslation();
         $primaryKey = $this->getPrimaryKey();
         $fields = [];
 
         if($this->isRevControl())
-            $fields = $this->_getVcFields();
+            $fields = $this->getVcFields();
 
         if($this->hasEncrypted())
-            $fields = array_merge($fields , $this->_getEncryptionFields());
+            $fields = array_merge($fields , $this->getEncryptionFields());
 
         $fields[$primaryKey] = $this->config['fields'][$primaryKey];
 
@@ -628,7 +618,7 @@ class Config
      */
     public function __toArray()
     {
-        $this->_prepareTranslation();
+        $this->prepareTranslation();
         return $this->config->__toArray();
     }
 
@@ -638,7 +628,7 @@ class Config
      */
     public function getTitle()
     {
-        $this->_prepareTranslation();
+        $this->prepareTranslation();
         return $this->config['title'];
     }
 
@@ -648,7 +638,7 @@ class Config
      */
     public function setObjectTitle($title)
     {
-        $this->_prepareTranslation();
+        $this->prepareTranslation();
         $this->config['title'] = $title;
     }
 
@@ -658,7 +648,7 @@ class Config
      */
     public function getLinkTitle()
     {
-        $this->_prepareTranslation();
+        $this->prepareTranslation();
 
         if(isset($this->config['link_title']) && !empty($this->config['link_title']))
             return $this->config['link_title'];
@@ -727,7 +717,6 @@ class Config
         if($translation instanceof \Dvelum\Config\Adapter && !$translation->save())
             return false;
 
-        $this->fixConfig();
         return $config->save();
     }
 
@@ -910,12 +899,12 @@ class Config
         if($field === $this->getPrimaryKey())
             return true;
 
-        $sFields = $this->_getVcFields();
+        $sFields = $this->getVcFields();
 
         if(isset($sFields[$field]))
             return true;
 
-        $encFields = $this->_getEncryptionFields();
+        $encFields = $this->getEncryptionFields();
         if(isset($encFields[$field]))
             return true;
 
@@ -1053,47 +1042,6 @@ class Config
         return self::$translator;
     }
 
-
-
-    /**
-     * Check and fix config file, update old config structure
-     */
-    public function fixConfig()
-    {
-        $fields = array_keys($this->getFieldsConfig(false));
-        $cfg = & $this->config->dataLink();
-        foreach ($fields as $name)
-        {
-            $field = $this->getField($name);
-            /*
-             * config validation for links
-             */
-            if($field->isLink())
-            {
-                $v = & $cfg['fields'][$name];
-                $isRequired = $field->isRequired();
-                if($field->isDictionaryLink()){
-                    $v['db_isNull'] = false;
-                    if($isRequired){
-                        $v['db_default'] = false;
-                    }else{
-                        $v['db_default'] = '';
-                    }
-                }elseif ($field->isObjectLink()){
-                    $v['db_isNull'] = (boolean) !$isRequired;
-                    $v['db_type'] ='bigint';
-                    $v['db_default'] = false;
-                    $v['db_unsigned'] = true;
-                }elseif ($field->isMultiLink()){
-                    $v['db_type'] = 'longtext';
-                    $v['db_isNull'] = false;
-                    $v['db_default'] = '';
-                }
-            }
-        }
-        unset($v);
-        unset($cfg);
-    }
     /**
      * Get Access Controll_Adapter
      * @return Db_Object_Acl | boolean false
@@ -1240,7 +1188,7 @@ class Config
      */
     public function isVcField($field)
     {
-        $vcFields = $this->_getVcFields();
+        $vcFields = $this->getVcFields();
         return isset($vcFields[$field]);
     }
 
