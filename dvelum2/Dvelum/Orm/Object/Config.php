@@ -53,7 +53,7 @@ class Config
     static protected $configs = [];
 
     /**
-     * @var \Dvelum\Config\Config
+     * @var Cfg\Adapter
      */
     protected $config;
 
@@ -69,7 +69,7 @@ class Config
      */
     static protected $cryptFields;
     /**
-     * @var \Dvelum\Config\Config
+     * @var Cfg\Adapter
      */
     static protected $encConfig;
 
@@ -81,7 +81,7 @@ class Config
 
     /**
      * Translation config
-     * @var \Dvelum\Config\Config
+     * @var Cfg\Adapter
      */
     static protected $translation = null;
 
@@ -109,7 +109,7 @@ class Config
      * Access Control List
      * @var Acl
      */
-    protected $_acl = false;
+    protected $acl = false;
 
     /**
      * Instantiate data structure for the objects named $name
@@ -293,7 +293,7 @@ class Config
          * Init ACL adapter
          */
         if(!empty($dataLink['acl']))
-            $this->_acl = Orm\Object\Acl::factory($dataLink['acl']);
+            $this->acl = Orm\Object\Acl::factory($dataLink['acl']);
 
         /**
          * @todo refactor!
@@ -343,7 +343,7 @@ class Config
      * Get Version control fields
      * @return array
      */
-    protected function getVcFields()
+    protected function getVcFields() : array
     {
         if(!isset(self::$vcFields))
             self::$vcFields = Cfg\Factory::storage()->get(self::$configPath.'vc/vc_fields.php')->__toArray();
@@ -355,7 +355,7 @@ class Config
      * Get encryption fields
      * @return array
      */
-    protected function getEncryptionFields()
+    protected function getEncryptionFields() : array
     {
         if(!isset(self::$cryptFields))
             self::$cryptFields = Cfg\Factory::storage()->get(self::$configPath.'enc/fields.php')->__toArray();
@@ -370,7 +370,7 @@ class Config
      * Get a list of fields to be used for search
      * @return array
      */
-    public function getSearchFields()
+    public function getSearchFields() : array
     {
         $fields = [];
         $fieldsConfig = $this->get('fields');
@@ -386,7 +386,7 @@ class Config
      * @param string $key
      * @return mixed
      */
-    public function get($key)
+    public function get(string $key)
     {
         if($key === 'fields' || $key === 'title')
             $this->prepareTranslation();
@@ -396,8 +396,9 @@ class Config
 
     /**
      * Check if the object is using revision control
+     * @return bool
      */
-    public function isRevControl()
+    public function isRevControl() : bool
     {
         return ($this->config->offsetExists('rev_control') && $this->config->get('rev_control'));
     }
@@ -407,7 +408,7 @@ class Config
      * @param boolean $includeSystem -optional default = true
      * @return array
      */
-    public function getIndexesConfig($includeSystem = true)
+    public function getIndexesConfig($includeSystem = true) : array
     {
         if($this->config->offsetExists('indexes'))
         {
@@ -431,7 +432,7 @@ class Config
      * @throws Exception
      * @return array
      */
-    public function getFieldConfig($field)
+    public function getFieldConfig($field) : array
     {
         $this->prepareTranslation();
 
@@ -447,7 +448,7 @@ class Config
      * @throws Exception
      * @return array
      */
-    public function getIndexConfig($index)
+    public function getIndexConfig($index) : array
     {
         $this->prepareTranslation();
 
@@ -462,7 +463,7 @@ class Config
      * @param boolean $includeSystem -optional default = true
      * @return array
      */
-    public function getFieldsConfig($includeSystem = true)
+    public function getFieldsConfig($includeSystem = true) : array
     {
         $this->prepareTranslation();
 
@@ -477,14 +478,14 @@ class Config
                 unset($fields[$k]);
             }
         }
-        return  $fields;
+        return $fields;
     }
 
     /**
      * Get the configuration of system fields
      * @return array
      */
-    public function getSystemFieldsConfig()
+    public function getSystemFieldsConfig() : array
     {
         $this->prepareTranslation();
         $primaryKey = $this->getPrimaryKey();
@@ -507,7 +508,7 @@ class Config
      * @param boolean $groupByObject - group field by linked object, default true
      * @return array  [objectName=>[field => link_type]] | [field =>["object"=>objectName,"link_type"=>link_type]]
      */
-    public function getLinks($linkTypes = [Orm\Object\Config::LINK_OBJECT, Orm\Object\Config::LINK_OBJECT_LIST], $groupByObject = true)
+    public function getLinks($linkTypes = [Orm\Object\Config::LINK_OBJECT, Orm\Object\Config::LINK_OBJECT_LIST], $groupByObject = true) : array
     {
         $data = [];
         $fields = $this->getFieldsConfig(true);
@@ -534,9 +535,9 @@ class Config
 
     /**
      * Check if the object uses history log
-     * @return boolean
+     * @return bool
      */
-    public function hasHistory()
+    public function hasHistory() : bool
     {
         if($this->config->offsetExists('save_history') && $this->config->get('save_history'))
             return true;
@@ -546,9 +547,9 @@ class Config
 
     /**
      * Check if the object uses extended history log
-     * @return boolean
+     * @return bool
      */
-    public function hasExtendedHistory()
+    public function hasExtendedHistory() : bool
     {
 
         if (
@@ -568,9 +569,9 @@ class Config
 
     /**
      * Check if object has db prefix
-     * @return boolean
+     * @return bool
      */
-    public function hasDbPrefix()
+    public function hasDbPrefix() : bool
     {
         return $this->config->get('use_db_prefix');
     }
@@ -579,8 +580,9 @@ class Config
     /**
      * Check if the field is present in the description
      * @param string $field
+     * @return bool
      */
-    public function fieldExists($field)
+    public function fieldExists(string $field) : bool
     {
         return isset($this->config['fields'][$field]);
     }
@@ -588,9 +590,9 @@ class Config
     /**
      * Check if Index exists
      * @param string $index
-     * @return boolean
+     * @return bool
      */
-    public function indexExists($index)
+    public function indexExists($index) : bool
     {
         return isset($this->config['indexes'][$index]);
     }
@@ -613,10 +615,10 @@ class Config
     }
 
     /**
-     * Conver into array
+     * Convert into array
      * @return array
      */
-    public function __toArray()
+    public function __toArray() : array
     {
         $this->prepareTranslation();
         return $this->config->__toArray();
@@ -626,7 +628,7 @@ class Config
      * Get the title for the object
      * @return string
      */
-    public function getTitle()
+    public function getTitle() : string
     {
         $this->prepareTranslation();
         return $this->config['title'];
@@ -635,8 +637,9 @@ class Config
     /**
      * Set object title
      * @param string $title
+     * @return void
      */
-    public function setObjectTitle($title)
+    public function setObjectTitle($title) : void
     {
         $this->prepareTranslation();
         $this->config['title'] = $title;
@@ -646,7 +649,7 @@ class Config
      * Get the name of the field linking to this object and used as a text representation
      * @return string
      */
-    public function getLinkTitle()
+    public function getLinkTitle() : string
     {
         $this->prepareTranslation();
 
@@ -657,27 +660,27 @@ class Config
     }
     /**
      * Check if object is readonly
-     * @return boolean
+     * @return bool
      */
-    public function isReadOnly()
+    public function isReadOnly() : bool
     {
         return $this->config->get('readonly');
     }
 
     /**
      * Check if object structure is locked
-     * @return boolean
+     * @return bool
      */
-    public function isLocked()
+    public function isLocked() : bool
     {
         return $this->config->get('locked');
     }
 
     /**
      * Check if there are transactions available for this type of objects
-     * @return boolean
+     * @return bool
      */
-    public function isTransact()
+    public function isTransact() : bool
     {
         if(strtolower($this->config->get('engine'))=='innodb')
             return true;
@@ -723,8 +726,9 @@ class Config
     /**
      * Replace configuration data with an array
      * @param array $data
+     * @return void
      */
-    public function setData(array $data)
+    public function setData(array $data) : void
     {
         $this->config->setData($data);
     }
@@ -733,7 +737,7 @@ class Config
      * Get configuration as array
      * @return array
      */
-    public function getData()
+    public function getData() : array
     {
         return $this->config->__toArray();
     }
@@ -743,7 +747,7 @@ class Config
      * @param string $field
      * @param array $config
      */
-    public function setFieldConfig($field , array $config)
+    public function setFieldConfig(string $field , array $config) : void
     {
         $title = '';
         if(isset($config['title']))
@@ -757,9 +761,9 @@ class Config
      * Update field link, set linked object name
      * @param string $field
      * @param string $linkedObject
-     * @return boolean
+     * @return bool
      */
-    public function setFieldLink($field , $linkedObject)
+    public function setFieldLink(string $field , string $linkedObject) : bool
     {
         if(!$this->isLink($field))
             return false;
@@ -773,8 +777,9 @@ class Config
      * Configure the index
      * @param string $index
      * @param array $config
+     * @return void
      */
-    public function setIndexConfig($index , array $config)
+    public function setIndexConfig($index , array $config) : void
     {
         $indexes = $this->getIndexesConfig();
         $indexes[$index] = $config;
@@ -785,9 +790,9 @@ class Config
      * Rename field and rebuild the database table
      * @param string $oldName
      * @param string $newName
-     * @return boolean
+     * @return bool
      */
-    public function renameField($oldName , $newName)
+    public function renameField(string $oldName , string $newName) : bool
     {
         $fields = $this->getFieldsConfig();
         $fields[$newName] = $fields[$oldName];
@@ -821,11 +826,13 @@ class Config
      * Remove field
      * @param string $name
      */
-    public function removeField($name)
+    public function removeField(string $name) : void
     {
         $fields = $this->getFieldsConfig();
+        
         if(!isset($fields[$name]))
             return;
+        
         unset($fields[$name]);
         $this->config->set('fields' , $fields);
 
@@ -858,8 +865,9 @@ class Config
     /**
      * Delete index
      * @param string $name
+     * @return void
      */
-    public function removeIndex($name)
+    public function removeIndex(string $name) : void
     {
         $indexes = $this->getIndexesConfig();
         if(!isset($indexes[$name]))
@@ -870,18 +878,18 @@ class Config
 
     /**
      * Get Config object
-     * @return Config_Abstract
+     * @return Cfg\Adapter
      */
-    public function getConfig()
+    public function getConfig() : Cfg\Adapter
     {
         return $this->config;
     }
 
     /**
      * Check if object is system defined
-     * @return boolean
+     * @return bool
      */
-    public function isSystem()
+    public function isSystem() : bool
     {
         if($this->config->offsetExists('system') && $this->config['system'])
             return true;
@@ -892,9 +900,9 @@ class Config
     /**
      * Check system field
      * @param string $field
-     * @return boolean
+     * @return bool
      */
-    public function isSystemField($field)
+    public function isSystemField(string $field) : bool
     {
         if($field === $this->getPrimaryKey())
             return true;
@@ -989,9 +997,9 @@ class Config
     }
     /**
      * Check if Foreign keys can be used
-     * @return boolean
+     * @return bool
      */
-    public function canUseForeignKeys()
+    public function canUseForeignKeys() : bool
     {
         if($this->config->offsetExists('disable_keys') && $this->config->get('disable_keys'))
             return false;
@@ -1002,10 +1010,11 @@ class Config
         return true;
     }
 
-    /*
+    /**
      * service stub
+     * @return string
      */
-    public function getPrimaryKey()
+    public function getPrimaryKey() : string
     {
         if(isset($this->localCache['primary_key']))
             return $this->localCache['primary_key'];
@@ -1027,8 +1036,9 @@ class Config
     /**
      * Inject translation adapter
      * @param Config\Translator $translator
+     * @return void
      */
-    static public function setTranslator(Config\Translator $translator)
+    static public function setTranslator(Config\Translator $translator) :void
     {
         self::$translator = $translator;
     }
@@ -1043,19 +1053,19 @@ class Config
     }
 
     /**
-     * Get Access Controll_Adapter
-     * @return Db_Object_Acl | boolean false
+     * Get Access Control Adapter
+     * @return Orm\Object\Acl | bool false
      */
-    public function getAcl()
+    public function getAcl() : Orm\Object\Acl
     {
-        return $this->_acl;
+        return $this->acl;
     }
 
     /**
      * Check for encoded fields
-     * @return boolean
+     * @return bool
      */
-    public function hasEncrypted()
+    public function hasEncrypted() : bool
     {
         foreach ($this->config['fields'] as $config){
             if(isset($config['type']) && $config['type']=='encrypted')
@@ -1067,7 +1077,7 @@ class Config
      * Get names of encrypted fields
      * @return array
      */
-    public function getEncryptedFields()
+    public function getEncryptedFields() : array
     {
         $fields = [];
         $fieldsConfig = $this->get('fields');
@@ -1083,10 +1093,10 @@ class Config
      * Get public key field
      * @return string|null
      */
-    public function getIvField()
+    public function getIvField() : ?string
     {
         if(!isset(self::$encConfig))
-            return false;
+            return null;
 
         return self::$encConfig['iv_field'];
     }
@@ -1097,7 +1107,7 @@ class Config
      * @param $iv - public key
      * @return string
      */
-    public function decrypt($value , $iv)
+    public function decrypt($value , $iv) : string
     {
         return \Utils_String::decrypt($value , self::$encConfig['key'] , $iv);
     }
@@ -1108,7 +1118,7 @@ class Config
      * @param $iv  - public key
      * @return string
      */
-    public function encrypt($value, $iv)
+    public function encrypt($value, $iv) : string
     {
         return \Utils_String::encrypt($value , self::$encConfig['key'] , $iv);
     }
@@ -1126,7 +1136,7 @@ class Config
      * Check if object has ManyToMany relations
      * @return bool
      */
-    public function hasManyToMany()
+    public function hasManyToMany() : bool
     {
         $relations = $this->getManyToMany();
         if(!empty($relations)){
@@ -1138,8 +1148,9 @@ class Config
 
     /**
      * Get manyToMany relations
+     * @return array
      */
-    public function getManyToMany()
+    public function getManyToMany() : array
     {
         $result = [];
         $fieldConfigs = $this->getFieldsConfig();
@@ -1179,14 +1190,12 @@ class Config
         return false;
     }
 
-
-
     /**
      * Check if field is system field of version control
      * @param string $field - field name
-     * @return boolean
+     * @return bool
      */
-    public function isVcField($field)
+    public function isVcField($field) : bool
     {
         $vcFields = $this->getVcFields();
         return isset($vcFields[$field]);
@@ -1194,9 +1203,9 @@ class Config
 
     /**
      * Check if object is relations object
-     * @return  boolean
+     * @return  bool
      */
-    public function isRelationsObject()
+    public function isRelationsObject() : bool
     {
         if($this->isSystem() && $this->config->offsetExists('parent_object') && !empty($this->config->get('parent_object'))){
             return true;
