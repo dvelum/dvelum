@@ -13,7 +13,7 @@ class Block_Simple extends Block
 	 */
 	public function render()
 	{
-		$tpl = new Template();
+		$tpl = new Dvelum\View();
 		$tpl->set('data' , $this->_config);
 		return $tpl->render('public/'. $this->_template);
 	}

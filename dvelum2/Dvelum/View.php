@@ -43,7 +43,7 @@ class View
      * Check modification time for template file. Invalidate cache
      * @property bool $checkMTime
      */
-    protected static $checkMTime = false;
+    protected static $checkMTime = true;
     /**
      * @property \Cache_Interface $cache
      */
