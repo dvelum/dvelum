@@ -295,48 +295,6 @@ class Config
         if(!empty($dataLink['acl']))
             $this->acl = Orm\Object\Acl::factory($dataLink['acl']);
 
-        /**
-         * @todo refactor!
-         */
-        foreach($dataLink['fields'] as $fieldName => & $config)
-        {
-            $config['name'] = $fieldName;
-            $fieldClass = 'Field';
-            //determine field type
-            $dbType = $config['db_type'];
-            if(isset($config['type']) && $config['type']==='link'  && isset($config['link_config']) && isset($config['link_config']['link_type'])){
-                switch ($config['link_config']['link_type']){
-                    case Orm\Object\Config::LINK_OBJECT;
-                        $fieldClass = 'Object';
-                    break;
-                    case Orm\Object\Config::LINK_OBJECT_LIST;
-                        $fieldClass = 'ObjectList';
-                        break;
-                    case 'dictionary';
-                        $fieldClass = 'Dictionary';
-                        break;
-                }
-            }else{
-                if(in_array($dbType,Orm\Object\Builder::$intTypes,true)){
-                    $fieldClass = 'Integer';
-                }elseif(in_array($dbType,Orm\Object\Builder::$charTypes,true)){
-                    $fieldClass = 'Varchar';
-                }elseif (in_array($dbType,Orm\Object\Builder::$textTypes,true)){
-                    $fieldClass = 'Text';
-                }elseif (in_array($dbType,Orm\Object\Builder::$floatTypes,true)){
-                    $fieldClass = 'Floating';
-                }else{
-                    $fieldClass = $dbType;
-                }
-            }
-            $fieldClass = 'Dvelum\\Orm\\Object\\Config\\Field\\' . ucfirst($fieldClass);
-
-            if(class_exists($fieldClass)){
-                $config = new $fieldClass($config);
-            }else{
-                $config = new Config\Field($config);
-            }
-        }
     }
 
     /**
@@ -1221,6 +1179,48 @@ class Config
      */
     public function getField(string $name) : Config\Field
     {
-        return $this->config['fields'][$name];
+        $fields = $this->config->get('fields');
+        $config = $fields[$name];
+
+        $config['name'] = $name;
+        $fieldClass = 'Field';
+
+        //detect field type
+        $dbType = $config['db_type'];
+
+        if(isset($config['type']) && $config['type']==='link'  && isset($config['link_config']) && isset($config['link_config']['link_type'])){
+            switch ($config['link_config']['link_type']){
+                case Orm\Object\Config::LINK_OBJECT;
+                    $fieldClass = 'Object';
+                    break;
+                case Orm\Object\Config::LINK_OBJECT_LIST;
+                    $fieldClass = 'ObjectList';
+                    break;
+                case 'dictionary';
+                    $fieldClass = 'Dictionary';
+                    break;
+            }
+        }else{
+            if(in_array($dbType,Orm\Object\Builder::$intTypes,true)){
+                $fieldClass = 'Integer';
+            }elseif(in_array($dbType,Orm\Object\Builder::$charTypes,true)){
+                $fieldClass = 'Varchar';
+            }elseif (in_array($dbType,Orm\Object\Builder::$textTypes,true)){
+                $fieldClass = 'Text';
+            }elseif (in_array($dbType,Orm\Object\Builder::$floatTypes,true)){
+                $fieldClass = 'Floating';
+            }else{
+                $fieldClass = $dbType;
+            }
+        }
+        $fieldClass = 'Dvelum\\Orm\\Object\\Config\\Field\\' . ucfirst($fieldClass);
+
+        if(class_exists($fieldClass)){
+            $field = new $fieldClass($config);
+        }else{
+            $field = new Config\Field($config);
+        }
+
+        return $field;
     }
 }
