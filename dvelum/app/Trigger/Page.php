@@ -35,7 +35,7 @@ class Trigger_Page extends Trigger
 		$this->_cache->remove($model->getCacheKey(array('item', 'code', $code)));
 		$this->_cache->remove(Model_Page::getCodeHash($id));
 		$this->_cache->remove(Model_Page::getCodeHash($code));
-		$bm = new Blockmanager();
+		$bm =  new \Dvelum\App\BlockManager();
 		$bm->invalidatePageMap($id);
 		$this->_cache->remove(Router_Module::CACHE_KEY_ROUTES);
 	}
@@ -43,7 +43,7 @@ class Trigger_Page extends Trigger
 	public function clearBlockCache($pageId)
 	{
 		if($this->_cache){
-			$bm = new Blockmanager();
+			$bm =  new \Dvelum\App\BlockManager();
 			$this->_cache->remove($bm->hashPage($pageId));
 			$this->_cache->remove(Model::factory('Page')->getCacheKey(array('codes')));
 		}

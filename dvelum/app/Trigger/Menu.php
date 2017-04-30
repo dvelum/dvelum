@@ -30,7 +30,7 @@ class Trigger_Menu extends Trigger
 			
 		$menuModel = Model::factory('Menu');
 		$this->_cache->remove($menuModel->resetCachedMenuLinks($object->getId()));			
-		$blockManager = new Blockmanager();
+		$blockManager =  new \Dvelum\App\BlockManager();
 		$blockManager->invalidateCacheBlockMenu($object->getId());
 	}
 }

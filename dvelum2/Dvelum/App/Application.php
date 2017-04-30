@@ -33,6 +33,7 @@ use Dvelum\Orm\Model;
 use Dvelum\Lang;
 use Dvelum\Log;
 use Dvelum\App\Router\Backend as RouterBackend;
+use Dvelum\App\BlockManager;
 
 /**
  * Application - is the main class that initializes system configuration
@@ -286,7 +287,7 @@ class Application
     protected function routeBackoffice()
     {
         if($this->cache)
-            Blockmanager::setDefaultCache($this->cache);
+            BlockManager::setDefaultCache($this->cache);
 
         $cfgBackend = Config\Factory::storage()->get('backend.php');
 
@@ -344,7 +345,7 @@ class Application
      */
     protected function routeFrontend()
     {
-        \Blockmanager::useHardCacheTime($this->config->get('blockmanager_use_hardcache_time'));
+        BlockManager::useHardCacheTime($this->config->get('blockmanager_use_hardcache_time'));
         if($this->config->get('maintenance')){
             $tpl = new Template();
             $tpl->set('msg' , Lang::lang()->get('MAINTENANCE'));

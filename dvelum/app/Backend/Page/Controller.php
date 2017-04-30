@@ -544,7 +544,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
             foreach ($data as $place=>$items)
                 $blockMapping->addBlocks(0 , $place , Utils::fetchCol('id', $items));
 
-        $blockManager = new Blockmanager();
+        $blockManager = new \Dvelum\App\BlockManager();
         $blockManager->invalidateDefaultMap();
         Response::jsonSuccess();
     }

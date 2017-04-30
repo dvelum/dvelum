@@ -23,7 +23,7 @@ class Trigger_Blocks extends Trigger
 	
 	public function clearBlockCache(Orm\Object $object)
 	{	
-		$blockManager = new Blockmanager();
+		$blockManager = new \Dvelum\App\BlockManager();
 		$blockManager->invalidateCacheBlockId($object->getId());
 	}
 }
