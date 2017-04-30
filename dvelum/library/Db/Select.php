@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+declare(strict_types=1);
 /**
  * Class for building SQL SELECT queries
  * Represents an implementation of the Zend_Db_select interface,
@@ -49,7 +50,7 @@ class Db_Select
         $_orHaving,
         $_forUpdate;
 
-    protected $_assembleOrder = array(
+    protected $_assembleOrder = [
         '_getDistinct' => '_distinct',
         '_getFrom' => '_from',
         '_getJoins' => '_join',
@@ -62,9 +63,9 @@ class Db_Select
         '_getLimit' => '_limit',
         '_getForUpdate' => '_forUpdate'
 
-    );
+    ];
 
-    protected $_aliasCount = array();
+    protected $_aliasCount = [];
 
     /**
      * @param mysqli $connection
@@ -89,16 +90,16 @@ class Db_Select
      * @param mixed $columns
      * @return Db_Select
      */
-    public function from($table, $columns = "*")
+    public function from($table, $columns = "*") : self
     {
         if (!is_array($columns)) {
             if ($columns !== '*')
                 $columns = $this->_convertColumnsString($columns);
             else
-                $columns = array($columns);
+                $columns = [$columns];
         }
 
-        $this->_from = array('table' => $table, 'columns' => $columns);
+        $this->_from = ['table' => $table, 'columns' => $columns];
         return $this;
     }
 
@@ -108,7 +109,7 @@ class Db_Select
      * @param mixed $bind
      * @return Db_Select
      */
-    public function where($condition, $bind = false)
+    public function where($condition, $bind = false)  : self
     {
         if (!is_array($this->_where))
             $this->_where = array();
@@ -123,7 +124,7 @@ class Db_Select
      * @param mixed $bind
      * @return Db_Select
      */
-    public function orWhere($condition, $bind = false)
+    public function orWhere($condition, $bind = false) : self
     {
         if (!is_array($this->_orWhere))
             $this->_orWhere = array();
@@ -138,7 +139,7 @@ class Db_Select
      * @param mixed $fields string field name or array of field names
      * @return Db_Select
      */
-    public function group($fields)
+    public function group($fields) : self
     {
         if (!is_array($this->_group))
             $this->_group = array();
@@ -158,7 +159,7 @@ class Db_Select
      * @param mixed $bind
      * @return Db_Select
      */
-    public function having($condition, $bind = false)
+    public function having($condition, $bind = false) : self
     {
         if (!is_array($this->_having))
             $this->_having = array();
@@ -174,7 +175,7 @@ class Db_Select
      * @param mixed $bind
      * @return Db_Select
      */
-    public function orHaving($condition, $bind = false)
+    public function orHaving($condition, $bind = false) : self
     {
         if (!is_array($this->_orHaving))
             $this->_orHaving = array();
@@ -186,11 +187,12 @@ class Db_Select
 
     /**
      * Adding another table to the query using JOIN
-     * @param string $condition
-     * @param mixed $bind
+     * @param string $table
+     * @param mixed $cond
+     * @param mixed $cols
      * @return Db_Select
      */
-    public function join($table, $cond, $cols = '*')
+    public function join($table, $cond, $cols = '*') : self
     {
         $this->joinInner($table, $cond, $cols);
 
@@ -204,7 +206,7 @@ class Db_Select
      * @param mixed $cols
      * @return Db_Select
      */
-    public function joinInner($table, $cond, $cols = '*')
+    public function joinInner($table, $cond, $cols = '*') : self
     {
         $this->_addJoin(self::JOIN_INNER, $table, $cond, $cols);
 
@@ -218,7 +220,7 @@ class Db_Select
      * @param mixed $cols
      * @return Db_Select
      */
-    public function joinLeft($table, $cond, $cols = '*')
+    public function joinLeft($table, $cond, $cols = '*') : self
     {
         $this->_addJoin(self::JOIN_LEFT, $table, $cond, $cols);
 
@@ -232,14 +234,14 @@ class Db_Select
      * @param mixed $cols
      * @return Db_Select
      */
-    public function joinRight($table, $cond, $cols = '*')
+    public function joinRight($table, $cond, $cols = '*') : self
     {
         $this->_addJoin(self::JOIN_RIGHT, $table, $cond, $cols);
 
         return $this;
     }
 
-    protected function _addJoin($type, $table, $cond, $cols)
+    protected function _addJoin($type, $table, $cond, $cols) : self
     {
         if (!is_array($table) || is_int(key($table))) {
             if (is_array($table))
@@ -279,12 +281,12 @@ class Db_Select
     /**
      * Adding a LIMIT clause to the query
      * @param integer $count
-     * @param integer $offset - optional
+     * @param mixed $offset - optional
      * @return Db_Select
      */
-    public function limit($count, $offset = false)
+    public function limit($count, $offset = false) : self
     {
-        $this->_limit = array('count' => $count, 'offset' => $offset);
+        $this->_limit = ['count' => $count, 'offset' => $offset];
 
         return $this;
     }
@@ -295,7 +297,7 @@ class Db_Select
      * @param int $rowCount Use this many rows per page.
      * @return Db_Select This Db_Select object.
      */
-    public function limitPage($page, $rowCount)
+    public function limitPage($page, $rowCount) : self
     {
         $page = ($page > 0) ? $page : 1;
         $rowCount = ($rowCount > 0) ? $rowCount : 1;
@@ -309,7 +311,7 @@ class Db_Select
      * @param boolean asIs optional
      * @return Db_Select
      */
-    public function order($spec, $asIs = false)
+    public function order($spec, $asIs = false) : self
     {
         if ($asIs) {
             $this->_order = array($spec);
@@ -347,18 +349,18 @@ class Db_Select
      * @param bool $flag Whether or not the SELECT is FOR UPDATE (default true).
      * @return Db_Select
      */
-    public function forUpdate($flag = true)
+    public function forUpdate($flag = true) : self
     {
         $this->_forUpdate = $flag;
         return $this;
     }
 
-    public function __toString()
+    public function __toString() : string
     {
         return $this->assemble();
     }
 
-    public function assemble()
+    public function assemble() : string
     {
         $sql = 'SELECT ';
         foreach ($this->_assembleOrder as $method => $data)
@@ -368,7 +370,7 @@ class Db_Select
     }
 
 
-    protected function _getDistinct($sql)
+    protected function _getDistinct($sql) : string
     {
         if ($this->_distinct)
             $sql .= 'DISTINCT ';
@@ -376,7 +378,7 @@ class Db_Select
         return $sql;
     }
 
-    protected function _getFrom($sql)
+    protected function _getFrom($sql) : string
     {
         $columns = $this->_tableFieldsList($this->_from['table'], $this->_from['columns']);
         $tables = array();
@@ -400,7 +402,7 @@ class Db_Select
         return $sql;
     }
 
-    protected function _compileJoin(array $config)
+    protected function _compileJoin(array $config) : string
     {
         $str = '';
         //type, table , condition
@@ -420,24 +422,24 @@ class Db_Select
         return $str;
     }
 
-    protected function _getWhere($sql)
+    protected function _getWhere($sql) : string
     {
         $where = $this->_prepareWhere($this->_where);
 
         return $sql . ' WHERE (' . implode(' AND ', $where) . ')';
     }
 
-    protected function _prepareWhere($list)
+    protected function _prepareWhere($list) : array
     {
-        $where = array();
+        $where = [];
 
         foreach ($list as $item) {
             if ($item['bind'] === false) {
                 $where[] = $item['condition'];
             } else {
-                $items = array();
+                $items = [];
                 if (is_array($item['bind'])) {
-                    $list = array();
+                    $list = [];
 
                     foreach ($item['bind'] as $listValue)
                         $list[] = $this->_quote($listValue);
@@ -453,25 +455,25 @@ class Db_Select
         return $where;
     }
 
-    protected function _getOrWhere($sql)
+    protected function _getOrWhere($sql) : string
     {
         $where = $this->_prepareWhere($this->_orWhere);
         return $sql . ' OR (' . implode(' ) OR ( ', $where) . ')';
     }
 
-    protected function _getHaving($sql)
+    protected function _getHaving($sql) : string
     {
         $having = $this->_prepareWhere($this->_having);
         return $sql . ' HAVING (' . implode(' AND ', $having) . ')';
     }
 
-    protected function _getOrHaving($sql)
+    protected function _getOrHaving($sql) : string
     {
         $having = $this->_prepareWhere($this->_orHaving);
         return $sql . ' OR (' . implode(' ) OR ( ', $having) . ')';
     }
 
-    protected function _getGroup($sql)
+    protected function _getGroup($sql) : string
     {
         foreach ($this->_group as &$item)
             $item = $this->quoteIdentifier($item);
@@ -479,12 +481,12 @@ class Db_Select
         return $sql . ' GROUP BY ' . implode(',', $this->_group);
     }
 
-    protected function _getOrder($sql)
+    protected function _getOrder($sql) : string
     {
         return $sql . ' ORDER BY ' . implode(',', $this->_order);
     }
 
-    protected function _getLimit($sql)
+    protected function _getLimit($sql) : string
     {
         if ($this->_limit['offset'])
             return $sql . ' LIMIT ' . intval($this->_limit['offset']) . ',' . $this->_limit['count'];
@@ -492,7 +494,7 @@ class Db_Select
             return $sql . ' LIMIT ' . $this->_limit['count'];
     }
 
-    protected function _getForUpdate($sql)
+    protected function _getForUpdate($sql) : string
     {
         if ($this->_forUpdate) {
             return $sql . ' FOR UPDATE';
@@ -506,21 +508,20 @@ class Db_Select
      * @param string $str
      * @return string
      */
-    public function quoteIdentifier($str)
+    public function quoteIdentifier($str) : string
     {
         return '`' . str_replace(array('`', '.'), array('', '`.`'), $str) . '`';
     }
 
     /**
      * Quote a raw string.
-     *
      * @param string $value Raw string
-     * @return string           Quoted string
+     * @return string Quoted string
      */
-    protected function _quote($value)
+    protected function _quote($value) : string
     {
         if (is_int($value)) {
-            return $value;
+            return (string) $value;
         } elseif (is_float($value)) {
             return sprintf('%F', $value);
         }
@@ -532,9 +533,9 @@ class Db_Select
         }
     }
 
-    protected function _tableAlias($table)
+    protected function _tableAlias($table) : string
     {
-        static $cache = array();
+        static $cache = [];
 
         $data = '';
 
@@ -569,9 +570,9 @@ class Db_Select
     /**
      * @return array
      */
-    protected function _tableFieldsList($table, $columns)
+    protected function _tableFieldsList($table, array $columns) : array
     {
-        static $cache = array();
+        static $cache = [];
 
         // performance patch
         if ($this->localCache) {
@@ -580,7 +581,7 @@ class Db_Select
                 return $cache[$hash];
         }
 
-        $result = array();
+        $result = [];
 
         if (is_array($table)) {
             $key = key($table);
