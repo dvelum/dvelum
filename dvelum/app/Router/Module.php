@@ -98,13 +98,12 @@ class Router_Module extends Router
     {
         header('Content-Type: text/html; charset=utf-8');
 
-        $template = new Template();
+        $template = new Dvelum\View();
         $template->disableCache();
         $template->setProperties(array(
             'development' => $this->_appConfig->get('development') ,
             'page' => $page ,
             'path' => $page->getThemePath() ,
-            'templatesRoot' => Application::getTemplatesPath() ,
             'blockManager' => $blockManager ,
             'resource' => \Dvelum\Resource::factory(),
             'pagesTree' => Model::factory('Page')->getTree()

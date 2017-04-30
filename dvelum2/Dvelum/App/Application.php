@@ -123,8 +123,7 @@ class Application
         /*
          * Init templates storage
          */
-        $templateStorage = View::storage();
-        $templateStorage->setConfig(
+        View::storage()->setConfig(
             Config\Factory::storage()->get('template_storage.php')->__toArray()
         );
 
@@ -155,14 +154,10 @@ class Application
         Lang::addDictionaryLoader($lang ,  $lang . '.php' , Config\Factory::File_Array);
         Lang::setDefaultDictionary($this->config->get('language'));
 
-        if($cache)
-        {
+        if($cache) {
             Resource::setCache($cache);
-            Template::setCache($cache);
-            if($this->config->offsetExists('template_check_mtime'))
-                Template::checkMtime($this->config->get('template_check_mtime'));
+            View::setCache($cache);
         }
-
 
         $ormConfig = Config::storage()->get('orm.php');
         Orm::init($ormConfig, $dbManager, $lang, $cache);

@@ -178,10 +178,6 @@ return array(
         )
     ),
     /*
-     * Check modification time for template file. Invalidate cache
-     */
-    'template_check_mtime' => true,
-    /*
      * Application class
      */
     'application' => '\\Dvelum\\App\\Application',
