@@ -66,7 +66,7 @@ class Application
      * @var boolean
      */
     protected $initialized = false;
-    
+
     /**
      * The constructor accepts the main configuration object as an argument
      * @param Config\Adapter $config
@@ -75,7 +75,7 @@ class Application
     {
         $this->config = $config;
     }
-    
+
     /**
      * Inject Auto-loader
      * @param Autoload $al
@@ -123,7 +123,8 @@ class Application
         /*
          * Init templates storage
          */
-        View::storage()->setConfig(
+        $templateStorage = View::storage();
+        $templateStorage->setConfig(
             Config\Factory::storage()->get('template_storage.php')->__toArray()
         );
 
@@ -154,10 +155,14 @@ class Application
         Lang::addDictionaryLoader($lang ,  $lang . '.php' , Config\Factory::File_Array);
         Lang::setDefaultDictionary($this->config->get('language'));
 
-        if($cache) {
+        if($cache)
+        {
             Resource::setCache($cache);
-            View::setCache($cache);
+            Template::setCache($cache);
+            if($this->config->offsetExists('template_check_mtime'))
+                Template::checkMtime($this->config->get('template_check_mtime'));
         }
+
 
         $ormConfig = Config::storage()->get('orm.php');
         Orm::init($ormConfig, $dbManager, $lang, $cache);
@@ -231,33 +236,33 @@ class Application
      */
     protected function initDb()
     {
-//        $templatesPath = $this->config->get('templates');
-//        $dev = $this->config->get('development');
-//        $dbErrorHandler = function (Exception $e) use($templatesPath , $dev){
-//            if(Request::isAjax()){
-//                Response::jsonError(Lang::lang()->CANT_CONNECT);
-//            }else{
-//                $tpl = new Template();
-//                $tpl->set('error_msg', 'MySQL : '.$e->getMessage());
-//                $tpl->set('development', $dev);
-//                echo $tpl->render('public/error.php');
-//                exit();
-//            }
-//        };
+        //        $templatesPath = $this->config->get('templates');
+        //        $dev = $this->config->get('development');
+        //        $dbErrorHandler = function (Exception $e) use($templatesPath , $dev){
+        //            if(Request::isAjax()){
+        //                Response::jsonError(Lang::lang()->CANT_CONNECT);
+        //            }else{
+        //                $tpl = new Template();
+        //                $tpl->set('error_msg', 'MySQL : '.$e->getMessage());
+        //                $tpl->set('development', $dev);
+        //                echo $tpl->render('public/error.php');
+        //                exit();
+        //            }
+        //        };
 
         /**
          * @todo handle connection error
          */
         $conManager = new \Db_Manager($this->config);
-//        try{
-//            $dbConfig = $conManager->getDbConfig('default');
-//            $this->_db = $conManager->getDbConnection('default');
-//                        if($dbConfig->get('adapterNamespace') == 'Db_Adapter')
-//                            $this->_db->setConnectionErrorHandler($dbErrorHandler);
-//        }
-//        catch (Exception $e){
-//            $dbErrorHandler($e);
-//        }
+        //        try{
+        //            $dbConfig = $conManager->getDbConfig('default');
+        //            $this->_db = $conManager->getDbConnection('default');
+        //                        if($dbConfig->get('adapterNamespace') == 'Db_Adapter')
+        //                            $this->_db->setConnectionErrorHandler($dbErrorHandler);
+        //        }
+        //        catch (Exception $e){
+        //            $dbErrorHandler($e);
+        //        }
         return $conManager;
     }
 
