@@ -397,7 +397,7 @@ class Config
         if(!isset($this->config['fields'][$field]))
             throw new Exception('Invalid field name: ' . $field);
 
-        return $this->config['fields'][$field]->__toArray();
+        return $this->config['fields'][$field];
     }
 
     /**
@@ -472,8 +472,6 @@ class Config
         $fields = $this->getFieldsConfig(true);
         foreach ($fields as $name=>$cfg)
         {
-            $cfg = $cfg->__toArray();
-
             if(isset($cfg['type']) && $cfg['type']==='link'
                 && isset($cfg['link_config']['link_type'])
                 && in_array($cfg['link_config']['link_type'], $linkTypes , true)

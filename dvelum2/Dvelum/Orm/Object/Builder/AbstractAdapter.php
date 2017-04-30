@@ -285,4 +285,26 @@ abstract class AbstractAdapter
         }
         return $updates;
     }
+
+    /**
+     * Check for broken object links
+     * return array | boolean false
+     */
+    public function hasBrokenLinks()
+    {
+        $links = $this->objectConfig->getLinks();
+        $brokenFields = array();
+        if(!empty($links))
+        {
+            $brokenFields = array();
+            foreach($links as $o => $fieldList)
+                if(! Orm\Object\Config::configExists($o))
+                    foreach($fieldList as $field => $cfg)
+                        $brokenFields[$field] = $o;
+        }
+        if(empty($brokenFields))
+            return false;
+        else
+            return $brokenFields;
+    }
 }

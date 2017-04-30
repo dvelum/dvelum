@@ -65,6 +65,7 @@ class Translator
 	public function translate($objectName , & $objectConfig)
 	{
 		$translation = $this->getTranslation();
+
 		if($translation)
 		{
 			if(isset($translation[$objectName]['title']) && strlen($translation[$objectName]['title']))
@@ -83,7 +84,7 @@ class Translator
 				$objectConfig['title'] = $objectName;
 		}
 		 
-		foreach ($objectConfig['fields'] as $k => $v)
+		foreach ($objectConfig['fields'] as $k => &$v)
 		{
 			if(isset($v['lazyLang']) && $v['lazyLang'])
 			{
@@ -103,6 +104,6 @@ class Translator
 			{
 				$v['title'] = $k;
 			}
-		}
+		}unset($v);
 	}
 }
