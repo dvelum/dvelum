@@ -170,7 +170,7 @@ class Trigger
         }
     }
 
-    public function  onAfterUnpublish(Db_Object $object)
+    public function onAfterUnpublish(Db_Object $object)
     {
         if(!$object->getConfig()->hasHistory()) {
             return;
@@ -204,4 +204,8 @@ class Trigger
         );
 
     }
+
+    public function onAfterInsertBeforeCommit(Db_Object $object){}
+
+    public function onAfterDeleteBeforeCommit(Db_Object $object){}
 }
