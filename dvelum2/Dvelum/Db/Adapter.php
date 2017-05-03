@@ -245,11 +245,11 @@ class Adapter
     }
 
     /**
-     * @param $stm
-     * @param $value
-     * @todo Implement metod!!!
+     * @param array $values
+     * @return string
      */
-    public function quoteInto($stm, $value){
-        trigger_error('quoteInto not implemented');
+    public function quoteValueList(array $values) : string
+    {
+        return $this->adapter->getPlatform()->quoteValueList($values);
     }
 }

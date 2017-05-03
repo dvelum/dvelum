@@ -825,7 +825,7 @@ class Store
 
         $db = $this->getDbConnection($specialCase);
 
-        $where = $db->quoteInto('`id` IN(?)', $ids);
+        $where = '`id` IN('.$db->quoteValueList($ids).')';
 
         if($this->eventManager)
         {
