@@ -31,7 +31,7 @@ class Manager implements \Db_Manager_Interface
     /**
      * @var Config\Adapter
      */
-    protected $_appConfig;
+    protected $appConfig;
 
     /**
      * @param Config\Adapter $appConfig - Application config (main)
@@ -65,7 +65,10 @@ class Manager implements \Db_Manager_Interface
             $db = new Adapter($cfg->__toArray());
 
             if($this->appConfig->get('development')){
-                \Debug::addDbProfiler($db->getProfiler());
+                $profiler = $db->getProfiler();
+                if(!empty($profiler)){
+                    \Debug::addDbProfiler($profiler);
+                }
             }
 
             $this->dbConnections[$workMode][$name] = $db;
