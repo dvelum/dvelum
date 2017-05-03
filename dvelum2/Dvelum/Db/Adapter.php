@@ -244,4 +244,12 @@ class Adapter
         return $this->adapter->getDriver()->getLastGeneratedValue();
     }
 
+    /**
+     * @param $stm
+     * @param $value
+     * @todo Implement metod!!!
+     */
+    public function quoteInto($stm, $value){
+        trigger_error('quoteInto not implemented');
+    }
 }

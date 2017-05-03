@@ -208,4 +208,8 @@ class Trigger
         );
 
     }
+
+    public function onAfterInsertBeforeCommit(Db_Object $object){}
+
+    public function onAfterDeleteBeforeCommit(Db_Object $object){}
 }

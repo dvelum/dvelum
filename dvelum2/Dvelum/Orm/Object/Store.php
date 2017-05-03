@@ -7,7 +7,8 @@ use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
 use Dvelum\Orm\Exception;
-use \Psr\Log\LogLevel;
+use Psr\Log\LogLevel;
+use Psr\Log\LoggerInterface;
 
 /**
  * Storage adapter for Db_Object
@@ -40,56 +41,56 @@ class Store
 
     public function __construct(array $config = [])
     {
-       if(empty($options))
-           return;
+        if(empty($options))
+            return;
 
-       $this->config =  array_merge($this->config , $config);
+        $this->config =  array_merge($this->config , $config);
     }
-    
+
     /**
      * Get links object name
      * @return string
      */
     public function getLinksObjectName() : string
     {
-    	return $this->config['linksObject'];
+        return $this->config['linksObject'];
     }
-    
+
     /**
      * Get history object name
      * @return string
      */
-    public function getHistoryObjectName() : string 
+    public function getHistoryObjectName() : string
     {
-    	return $this->config['historyObject'];
+        return $this->config['historyObject'];
     }
-    
+
     /**
      * Get version object name
      * @return string
      */
-    public function getVersionObjectName() : string 
+    public function getVersionObjectName() : string
     {
-    	return $this->config['versionObject'];
+        return $this->config['versionObject'];
     }
-    
+
     /**
      * Set log Adapter
-     * @param \Psr\Log\LoggerInterface $log
+     * @param LoggerInterface $log
      * @return void
      */
-    public function setLog(\Psr\Log\LoggerInterface $log) : void
+    public function setLog(LoggerInterface $log) : void
     {
-    	$this->log = $log;
+        $this->log = $log;
     }
-    
+
     /**
      * Set event manager
      * @param \Eventmanager $obj
      */
     public function setEventManager(\Eventmanager $obj)
     {
-    	$this->eventManager = $obj;
+        $this->eventManager = $obj;
     }
 
     /**
@@ -98,7 +99,7 @@ class Store
      */
     protected function getDbConnection(Orm\Object $object) : \Db_Adapter
     {
-    	return Model::factory($object->getName())->getDbConnection();
+        return Model::factory($object->getName())->getDbConnection();
     }
     /**
      * Update Db object
@@ -116,10 +117,10 @@ class Store
             return false;
         }
 
-    	 /*
-    	  * Check object id
-    	  */
-    	  if(!$object->getId())
+        /*
+         * Check object id
+         */
+        if(!$object->getId())
             return false;
 
         /*
@@ -134,59 +135,59 @@ class Store
         if($this->eventManager)
             $this->eventManager->fireEvent(Event\Manager::BEFORE_UPDATE, $object);
 
-       /*
-        * Validate unique values
-        *
-        $values = $object->validateUniqueValues();
+        /*
+         * Validate unique values
+         *
+         $values = $object->validateUniqueValues();
 
-        if(!empty($values))
-        {
-          if($this->log)
-          {
-            $errors = array();
-            foreach($values as $k => $v)
-            {
-              $errors[] = $k . ':' . $v;
-            }
-            $this->log->log($object->getName() . '::update ' . implode(', ' , $errors));
-          }
-          return false;
-        }
-        */
+         if(!empty($values))
+         {
+           if($this->log)
+           {
+             $errors = array();
+             foreach($values as $k => $v)
+             {
+               $errors[] = $k . ':' . $v;
+             }
+             $this->log->log($object->getName() . '::update ' . implode(', ' , $errors));
+           }
+           return false;
+         }
+         */
 
-	      /*
-	       * Check if DB table support transactions
-	       */
-         $transact = $object->getConfig()->isTransact();
-         /*
-          * Get Database connector for object model;
-          */
-         $db = $this->getDbConnection($object);
+        /*
+         * Check if DB table support transactions
+         */
+        $transact = $object->getConfig()->isTransact();
+        /*
+         * Get Database connector for object model;
+         */
+        $db = $this->getDbConnection($object);
 
-	     if($transact && $transaction)
-	    	 $db->beginTransaction();
+        if($transact && $transaction)
+            $db->beginTransaction();
 
         $success = $this->_updateOperation($object);
 
         if(!$success)
-	     {
-	     	if($transact && $transaction)
-	        	$db->rollBack();
-	        return false;
-	     }
-	     else
-	     {
-	     	if($transact && $transaction)
-        		$db->commit();
-	     }
+        {
+            if($transact && $transaction)
+                $db->rollBack();
+            return false;
+        }
+        else
+        {
+            if($transact && $transaction)
+                $db->commit();
+        }
 
-         /*
-          * Fire "AFTER_UPDATE" Event if event manager exists
-          */
-         if($this->eventManager)
+        /*
+         * Fire "AFTER_UPDATE" Event if event manager exists
+         */
+        if($this->eventManager)
             $this->eventManager->fireEvent(Event\Manager::AFTER_UPDATE, $object);
 
-	     return $object->getId();
+        return $object->getId();
     }
 
     protected function _updateOperation(Orm\Object $object)
@@ -201,7 +202,7 @@ class Store
             $this->_updateLinks($object);
 
             $updates = $object->serializeLinks($updates);
-            
+
             if(!empty($updates))
                 $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
 
@@ -231,137 +232,137 @@ class Store
      */
     public function unpublish(Orm\Object $object , $transaction = true)
     {
-    	if($object->getConfig()->isReadOnly())
-    	{
-    		if($this->log)
-    			$this->log->log(LogLevel::ERROR, 'ORM :: cannot unpublish readonly object '. $object->getConfig()->getName());
+        if($object->getConfig()->isReadOnly())
+        {
+            if($this->log)
+                $this->log->log(LogLevel::ERROR, 'ORM :: cannot unpublish readonly object '. $object->getConfig()->getName());
 
-    		return false;
-    	}
+            return false;
+        }
 
-       /*
-    	* Check object id
-    	*/
-    	if(!$object->getId())
-    		return false;
+        /*
+         * Check object id
+         */
+        if(!$object->getId())
+            return false;
 
-    	if (!$object->getConfig()->isRevControl())
-    	{
-    		if($this->log){
+        if (!$object->getConfig()->isRevControl())
+        {
+            if($this->log){
                 $msg = $object->getName().'::unpublish Cannot unpublish object is not under version control';
-    			$this->log->log(LogLevel::ERROR, $msg);
-    		}
-    		return false;
-    	}
+                $this->log->log(LogLevel::ERROR, $msg);
+            }
+            return false;
+        }
 
-       /*
-        * Fire "BEFORE_UNPUBLISH" Event if event manager exists
-    	*/
-    	if($this->eventManager)
-    		$this->eventManager->fireEvent(Event\Manager::BEFORE_UNPUBLISH, $object);
+        /*
+         * Fire "BEFORE_UNPUBLISH" Event if event manager exists
+         */
+        if($this->eventManager)
+            $this->eventManager->fireEvent(Event\Manager::BEFORE_UNPUBLISH, $object);
 
-       /*
-    	* Check if DB table support transactions
-    	*/
-    	$transact = $object->getConfig()->isTransact();
-    	/*
-    	 * Get Database connector for object model;
-    	*/
-    	$db = $this->getDbConnection($object);
+        /*
+         * Check if DB table support transactions
+         */
+        $transact = $object->getConfig()->isTransact();
+        /*
+         * Get Database connector for object model;
+        */
+        $db = $this->getDbConnection($object);
 
-    	if($transact && $transaction)
-    		$db->beginTransaction();
+        if($transact && $transaction)
+            $db->beginTransaction();
 
-    	$success = $this->_updateOperation($object);
+        $success = $this->_updateOperation($object);
 
-    	if(!$success)
-    	{
-    		if($transact && $transaction)
-    			$db->rollBack();
-    		return false;
-    	}
-    	else
-    	{
-    		if($transact && $transaction)
-    			$db->commit();
-    	}
-    	/*
-    	 * Fire "AFTER_UPDATE" Event if event manager exists
-    	*/
-    	if($this->eventManager)
-    		$this->eventManager->fireEvent(Event\Manager::AFTER_UNPUBLISH, $object);
+        if(!$success)
+        {
+            if($transact && $transaction)
+                $db->rollBack();
+            return false;
+        }
+        else
+        {
+            if($transact && $transaction)
+                $db->commit();
+        }
+        /*
+         * Fire "AFTER_UPDATE" Event if event manager exists
+        */
+        if($this->eventManager)
+            $this->eventManager->fireEvent(Event\Manager::AFTER_UNPUBLISH, $object);
 
-    	return true;
+        return true;
     }
 
-   /**
-    * Publish Db_Object
-    * @param Orm\Object $object
-    * @param boolean $transaction - optional, default true
-    * @return boolean
-    */
+    /**
+     * Publish Db_Object
+     * @param Orm\Object $object
+     * @param boolean $transaction - optional, default true
+     * @return boolean
+     */
     public function publish(Orm\Object $object, $transaction = true)
     {
-    	if($object->getConfig()->isReadOnly())
-    	{
-    		if($this->log)
-    			$this->log->log(LogLevel::ERROR, 'ORM :: cannot publish readonly object '. $object->getConfig()->getName());
+        if($object->getConfig()->isReadOnly())
+        {
+            if($this->log)
+                $this->log->log(LogLevel::ERROR, 'ORM :: cannot publish readonly object '. $object->getConfig()->getName());
 
-    		return false;
-    	}
-       /*
-    	* Check object id
-    	*/
-    	if(!$object->getId())
-    		return false;
+            return false;
+        }
+        /*
+         * Check object id
+         */
+        if(!$object->getId())
+            return false;
 
-    	if(!$object->getConfig()->isRevControl())
-    	{
-    		if($this->log){
+        if(!$object->getConfig()->isRevControl())
+        {
+            if($this->log){
                 $msg = $object->getName().'::publish Cannot publish object is not under version control';
-    			$this->log->log(LogLevel::ERROR, $msg);
-    		}
-    		return false;
-    	}
+                $this->log->log(LogLevel::ERROR, $msg);
+            }
+            return false;
+        }
 
-    	/*
-    	 * Fire "BEFORE_UNPUBLISH" Event if event manager exists
-    	*/
-    	if($this->eventManager)
-    		$this->eventManager->fireEvent(Event\Manager::BEFORE_PUBLISH, $object);
+        /*
+         * Fire "BEFORE_UNPUBLISH" Event if event manager exists
+        */
+        if($this->eventManager)
+            $this->eventManager->fireEvent(Event\Manager::BEFORE_PUBLISH, $object);
 
-    	/*
-    	 * Check if DB table support transactions
-    	*/
-    	$transact = $object->getConfig()->isTransact();
-    	/*
-    	 * Get Database connector for object model;
-    	*/
-    	$db = $this->getDbConnection($object);
+        /*
+         * Check if DB table support transactions
+        */
+        $transact = $object->getConfig()->isTransact();
+        /*
+         * Get Database connector for object model;
+        */
+        $db = $this->getDbConnection($object);
 
-    	if($transact && $transaction)
-    		$db->beginTransaction();
+        if($transact && $transaction)
+            $db->beginTransaction();
 
-    	$success = $this->_updateOperation($object);
+        $success = $this->_updateOperation($object);
 
-    	if(!$success)
-    	{
-    		if($transact && $transaction)
-    			$db->rollBack();
-    		return false;
-    	}
-    	else
-    	{
-    		if($transact && $transaction)
-    			$db->commit();
-    	}
-    	/*
-    	 * Fire "AFTER_UPDATE" Event if event manager exists
-    	 */
-    	if($this->eventManager)
-    		$this->eventManager->fireEvent(Event\Manager::AFTER_PUBLISH, $object);
+        if(!$success)
+        {
+            if($transact && $transaction)
+                $db->rollBack();
+            return false;
+        }
+        else
+        {
+            if($transact && $transaction)
+                $db->commit();
+        }
+        /*
+         * Fire "AFTER_UPDATE" Event if event manager exists
+         */
+        if($this->eventManager)
+            $this->eventManager->fireEvent(Event\Manager::AFTER_PUBLISH, $object);
 
-    	return true;
+        return true;
     }
 
     protected function _updateLinks(Orm\Object $object) : bool
@@ -369,11 +370,11 @@ class Store
         $updates = $object->getUpdates();
 
         if(empty($updates))
-        	return true;
+            return true;
 
         foreach ($updates as $k=>$v)
         {
-        	$conf = $object->getConfig()->getFieldConfig($k);
+            $conf = $object->getConfig()->getFieldConfig($k);
 
             if($object->getConfig()->getField($k)->isMultiLink())
             {
@@ -398,7 +399,7 @@ class Store
     protected function _clearLinks(Orm\Object $object ,$objectField , $targetObjectName)
     {
 
-        if($object->getConfig()->isManyToManyLink($objectField))
+        if($object->getConfig()->getField($objectField)->isManyToManyLink())
         {
             $linksObjModel = Model::factory($object->getConfig()->getRelationsObject($objectField));
             $where = ' `source_id` = '.intval($object->getId());
@@ -423,8 +424,8 @@ class Store
             $db->delete($linksObjModel->table() , $where);
             return true;
         } catch (Exception $e){
-        	if($this->log)
-        		$this->log->log(LogLevel::ERROR,$object->getName().'::_clearLinks '.$e->getMessage());
+            if($this->log)
+                $this->log->log(LogLevel::ERROR,$object->getName().'::_clearLinks '.$e->getMessage());
             return false;
         }
     }
@@ -441,7 +442,7 @@ class Store
         $order = 0;
         $data = [];
 
-        if($object->getConfig()->isManyToManyLink($objectField))
+        if($object->getConfig()->getField($objectField)->isManyToManyLink())
         {
             $linksObjModel = Model::factory($object->getConfig()->getRelationsObject($objectField));
 
@@ -492,34 +493,34 @@ class Store
             return false;
         }
 
-    	if($this->eventManager)
+        if($this->eventManager)
             $this->eventManager->fireEvent(Event\Manager::BEFORE_ADD, $object);
-       /*
-	    * Check if DB table support transactions
-	    */
-    	$transact = $object->getConfig()->isTransact();
+        /*
+         * Check if DB table support transactions
+         */
+        $transact = $object->getConfig()->isTransact();
 
-    	$db = $this->getDbConnection($object);
+        $db = $this->getDbConnection($object);
 
-    	if($transact && $transaction)
-    		$db->beginTransaction();
+        if($transact && $transaction)
+            $db->beginTransaction();
 
-    	$success = $this->_insertOperation($object);
+        $success = $this->_insertOperation($object);
 
         if(!$success)
         {
-        	if($transact && $transaction)
-        		$db->rollBack();
-        	return false;
+            if($transact && $transaction)
+                $db->rollBack();
+            return false;
         }
         else
         {
-        	if($transact && $transaction)
-        		$db->commit();
+            if($transact && $transaction)
+                $db->commit();
         }
 
         if($this->eventManager)
-        	$this->eventManager->fireEvent(Event\Manager::AFTER_ADD, $object);
+            $this->eventManager->fireEvent(Event\Manager::AFTER_ADD, $object);
 
         return $object->getId();
     }
@@ -557,14 +558,14 @@ class Store
 
     protected function _insertOperation(Orm\Object $object)
     {
-    	$insertId = $object->getInsertId();
+        $insertId = $object->getInsertId();
 
-    	if($insertId){
-    		$updates = array_merge($object->getData() , $object->getUpdates());
-    		$updates[$object->getConfig()->getPrimaryKey()] = $insertId;
-    	}else{
-    		$updates =  $object->getUpdates();
-    	}
+        if($insertId){
+            $updates = array_merge($object->getData() , $object->getUpdates());
+            $updates[$object->getConfig()->getPrimaryKey()] = $insertId;
+        }else{
+            $updates =  $object->getUpdates();
+        }
 
         if($object->getConfig()->hasEncrypted())
             $updates = $this->encryptData($object , $updates);
@@ -604,78 +605,93 @@ class Store
         $id = $db->lastInsertId($objectTable , $object->getConfig()->getPrimaryKey());
 
         if(!$id)
-           return false;
+            return false;
 
         $object->setId($id);
 
         if(!$this->_updateLinks($object))
-           return false;
+            return false;
+
+        try{
+            /*
+             * Fire "AFTER_UPDATE_BEFORE_COMMIT" Event if event manager exists
+             */
+            if($this->eventManager){
+                $this->eventManager->fireEvent(Event\Manager::AFTER_INSERT_BEFORE_COMMIT, $object);
+            }
+        }catch (Exception $e){
+
+            if($this->log)
+                $this->log->log(LogLevel::ERROR, $object->getName().'::_insertOperation '.$e->getMessage());
+
+            return false;
+        }
 
         $object->commitChanges();
         $object->setId($id);
 
-	    return true;
+        return true;
     }
 
-	/**
-	 * Add new object version
-	 * @param Orm\Object $object
+    /**
+     * Add new object version
+     * @param Orm\Object $object
      * @param boolean $useTransaction - optional , use transaction if available
-	 * @return boolean|integer - vers number
-	 */
+     * @return boolean|integer - vers number
+     */
     public function addVersion(Orm\Object $object , $useTransaction = true)
     {
 
-    	if($object->getConfig()->isReadOnly())
-    	{
-    		if($this->log){
+        if($object->getConfig()->isReadOnly())
+        {
+            if($this->log){
                 $msg = 'ORM :: cannot addVersion for readonly object '. $object->getConfig()->getName();
                 $this->log->log(LogLevel::ERROR, $msg);
             }
 
-    		return false;
-    	}
-    	/*
-    	 * Check object id
-    	*/
-    	if(!$object->getId())
-    		return false;
+            return false;
+        }
+        /*
+         * Check object id
+        */
+        if(!$object->getId())
+            return false;
 
-    	if(!$object->getConfig()->isRevControl())
-    	{
-    		if($this->log){
+        if(!$object->getConfig()->isRevControl())
+        {
+            if($this->log){
                 $msg = $object->getName().'::publish Cannot addVersion. Object is not under version control';
                 $this->log->log(LogLevel::ERROR, $msg);
             }
 
-    		return false;
-    	}
+            return false;
+        }
 
-    	/*
-    	 * Fire "BEFORE_ADD_VERSION" Event if event manager exists
-    	*/
-    	if($this->eventManager)
-    		$this->eventManager->fireEvent(Event\Manager::BEFORE_ADD_VERSION, $object);
+        /*
+         * Fire "BEFORE_ADD_VERSION" Event if event manager exists
+        */
+        if($this->eventManager)
+            $this->eventManager->fireEvent(Event\Manager::BEFORE_ADD_VERSION, $object);
 
-       /*
-    	* Create new revision
-    	*/
-    	$versNum = Model::factory($this->config['versionObject'])->newVersion($object);
+        /*
+         * Create new revision
+         */
+        $versNum = Model::factory($this->config['versionObject'])->newVersion($object);
 
-    	if(!$versNum)
-    		return false;
+        if(!$versNum)
+            return false;
 
-    	try{
+        try{
             $oldObject = Orm\Object::factory($object->getName() , $object->getId());
             /**
-    		 * Update object if not published
-    		 */
+             * Update object if not published
+             */
             if(!$oldObject->get('published')){
                 $data = $object->getData();
 
-    			foreach($data as $k => $v)
-    				if(!is_null($v))
-    					$oldObject->set($k , $v);
+                foreach($data as $k => $v)
+                    if(!is_null($v))
+                        $oldObject->set($k , $v);
 
             }
 
@@ -683,22 +699,22 @@ class Store
             $oldObject->set('editor_id' , $object->get('editor_id'));
             $oldObject->set('last_version', $versNum);
 
-            if(!$oldObject->save(false , $useTransaction))
+            if(!$oldObject->save($useTransaction))
                 throw new Exception('Cannot save object');
 
         }catch(Exception $e){
             if($this->log)
                 $this->log->log(LogLevel::ERROR, 'Cannot update unpublished object data '. $e->getMessage());
-    		return false;
-    	}
+            return false;
+        }
 
-    	/*
-    	 * Fire "AFTER_ADD_VERSION" Event if event manager exists
-    	 */
-    	if($this->eventManager)
-    		$this->eventManager->fireEvent(Event\Manager::AFTER_ADD_VERSION, $object);
+        /*
+         * Fire "AFTER_ADD_VERSION" Event if event manager exists
+         */
+        if($this->eventManager)
+            $this->eventManager->fireEvent(Event\Manager::AFTER_ADD_VERSION, $object);
 
-    	return  $versNum;
+        return  $versNum;
     }
 
     /**
@@ -723,42 +739,61 @@ class Store
             return false;
 
         if($this->eventManager)
-        	$this->eventManager->fireEvent(Event\Manager::BEFORE_DELETE, $object);
+            $this->eventManager->fireEvent(Event\Manager::BEFORE_DELETE, $object);
 
         $transact = $object->getConfig()->isTransact();
 
         $db = $this->getDbConnection($object);
 
-    	if($transact && $transaction)
-    		$db->beginTransaction();
+        if($transact && $transaction)
+            $db->beginTransaction();
 
         $fields = $objectConfig->getFieldsConfig();
 
         foreach ($fields as $field=>$conf) {
-            if($objectConfig->isMultiLink($field)){
-                if(!$this->_clearLinks($object, $field, $objectConfig->getLinkedObject($field))){
+            if($objectConfig->getField($field)->isMultiLink()){
+                if(!$this->_clearLinks($object, $field, $objectConfig->getField($field)->getLinkedObject())){
                     return false;
                 }
             }
         }
 
-        if($db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId()))
-        {
-        	$success= true;
-        } else{
+        try{
+            $db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId());
+            $success = true;
+        }catch (Exception $e){
+            if($this->log){
+                $this->log->log(LogLevel::ERROR,$object->getName().'::delete '.$e->getMessage());
+            }
+            $success = false;
+        }
+
+        try{
+            /*
+             * Fire "AFTER_UPDATE_BEFORE_COMMIT" Event if event manager exists
+             */
+            if($this->eventManager){
+                $this->eventManager->fireEvent(Event\Manager::AFTER_DELETE_BEFORE_COMMIT, $object);
+            }
+        }catch (Exception $e){
+            if($this->log){
+                $this->log->log(LogLevel::ERROR,$object->getName().'::delete '.$e->getMessage());
+            }
             $success = false;
         }
 
         if($transact && $transaction)
         {
-            if($success)
+            if($success){
                 $db->commit();
-            else
+            }else{
                 $db->rollBack();
+            }
         }
 
-        if($this->eventManager)
-        	$this->eventManager->fireEvent(Event\Manager::AFTER_DELETE, $object);
+        if($success && $this->eventManager){
+            $this->eventManager->fireEvent(Event\Manager::AFTER_DELETE, $object);
+        }
 
         return $success;
     }
@@ -783,32 +818,41 @@ class Store
         $objectModel = Model::factory($objectName);
         $tableName = $objectModel->table();
 
-    	if(empty($ids))
-    		return true;
+        if(empty($ids))
+            return true;
 
-    	$specialCase = Orm\Object::factory($objectName);
+        $specialCase = Orm\Object::factory($objectName);
 
-    	$db = $this->getDbConnection($specialCase);
+        $db = $this->getDbConnection($specialCase);
 
-	    $where = $db->quoteInto('`id` IN(?)', $ids);
+        $where = $db->quoteInto('`id` IN(?)', $ids);
 
-	    if($this->eventManager)
-	    {
-	       	foreach ($ids as $id)
-	       	{
-	       		$specialCase->setId($id);
-	       		$this->eventManager->fireEvent(Event\Manager::BEFORE_DELETE, $specialCase);
-	       	}
-	    }
+        if($this->eventManager)
+        {
+            foreach ($ids as $id)
+            {
+                $specialCase->setId($id);
+                $this->eventManager->fireEvent(Event\Manager::BEFORE_DELETE, $specialCase);
+            }
+        }
 
-	    if(!$db->delete($tableName, $where))
-	    	return false;
+        try{
+            $db->delete($tableName, $where);
+        }catch (Exception $e){
+            if($this->log){
+                $this->log->log(LogLevel::ERROR, 'ORM :: cannot delete'. $objectConfig->getName().' '.$e->getMessage());
+            }
+            return false;
+        }
 
-	    /*
-	     * Clear object links (links from object)
-	     */
-	    Model::factory($this->config['linksObject'])->clearLinksFor($objectName , $ids);
+        /*
+         * Clear object links (links from object)
+         */
+        Model::factory($this->config['linksObject'])->clearLinksFor($objectName , $ids);
 
+        /**
+         * @var \Model_Historylog $history
+         */
         $history = Model::factory($this->config['historyObject']);
         $userId = \Dvelum\App\Session\User::getInstance()->id;
 
@@ -816,19 +860,19 @@ class Store
          * Save history if required
          */
         if($objectConfig->hasHistory())
-         	foreach ($ids as $v)
-        		$history->log($userId, $v, \Model_Historylog::Delete , $tableName);
+            foreach ($ids as $v)
+                $history->log($userId, $v, \Model_Historylog::Delete , $tableName);
 
         if($this->eventManager)
         {
-        	/*
-        	 * Fire "AFTER_DELETE" event for each deleted object
-        	 */
-	        foreach ($ids as $id)
-	        {
-	        	$specialCase->setId($id);
-	        	$this->eventManager->fireEvent(Event\Manager::AFTER_DELETE, $specialCase);
-	        }
+            /*
+             * Fire "AFTER_DELETE" event for each deleted object
+             */
+            foreach ($ids as $id)
+            {
+                $specialCase->setId($id);
+                $this->eventManager->fireEvent(Event\Manager::AFTER_DELETE, $specialCase);
+            }
         }
         return true;
     }
