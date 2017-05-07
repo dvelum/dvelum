@@ -8,6 +8,7 @@ use Dvelum\Orm\Model;
 use Dvelum\App\Data;
 use Dvelum\App\Session;
 use Dvelum\Request;
+use Dvelum\Response;
 use Dvelum\Config;
 use Dvelum\App\Controller\EventManager;
 
@@ -38,10 +39,14 @@ class Controller extends App\Backend\Controller
      */
     protected $apiRequest;
 
-
-    public function __construct()
+    /**
+     * Controller constructor.
+     * @param Request $request
+     * @param Response $response
+     */
+    public function __construct(Request $request, Response $response)
     {
-        parent::__construct();
+        parent::__construct($request, $response);
 
         $this->apiRequest = $this->getApiRequest($this->request);
         $this->eventManager = new App\Controller\EventManager();

@@ -3,4 +3,4 @@
 /**
  * Backward compatibility
  */
-class Model{}
+class Model extends Dvelum\Orm\Model {}

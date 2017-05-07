@@ -21,6 +21,9 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Router;
 
+use Dvelum\Request;
+use Dvelum\Response;
+
 /**
  * Router interface
  */
@@ -28,6 +31,10 @@ interface RouterInterface
 {
     /**
      * Run action
+     * @param Request $request
+     * @param Response $response
+     * @throws \Exception
+     * @return void
      */
-    public function route();
+    public function route(Request $request , Response $response) :void;
 }

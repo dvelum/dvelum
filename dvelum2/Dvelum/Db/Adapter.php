@@ -109,7 +109,7 @@ class Adapter
      * @param $sql
      * @return array
      */
-    public function fetchRow($sql) : array
+    public function fetchRow($sql) : ?array
     {
         $statement = $this->adapter->createStatement();
         $statement->prepare($sql);
@@ -120,7 +120,6 @@ class Adapter
             $resultSet->initialize($result);
             return $resultSet->current();
         }
-
         return [];
     }
 

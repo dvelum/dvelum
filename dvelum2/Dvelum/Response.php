@@ -28,6 +28,8 @@ class Response
     const FORMAT_JSON = 'json';
 
     protected $format = self::FORMAT_HTML;
+
+    protected $buffer ='';
     /**
      * @return Response
      */
@@ -51,14 +53,25 @@ class Response
         \Response::redirect($location);
     }
 
+    /**
+     * Add string to response buffer
+     * @param string $string
+     */
     public function put(string $string) : void
     {
-        echo $string;
+        $this->buffer.= $string;
     }
 
+    /**
+     * Send response, finish request
+     */
     public function send() : void
     {
-        exit();
+        echo $this->buffer;
+
+        if(function_exists('fastcgi_finish_request')){
+            fastcgi_finish_request();
+        }
     }
 
     /**
@@ -139,6 +152,16 @@ class Response
      */
     public function notFound() : void
     {
-        header($_SERVER["SERVER_PROTOCOL"]."/1.0 404 Not Found");
+        $this->header($_SERVER["SERVER_PROTOCOL"]."/1.0 404 Not Found");
+    }
+
+    /**
+     * Send response header
+     * @param string $string
+     * @return void
+     */
+    public function header(string $string) : void
+    {
+        \header($string);
     }
 }

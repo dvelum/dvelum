@@ -7,6 +7,8 @@ use Dvelum\Orm\Model;
 use Dvelum\App\Session;
 use Dvelum\Lang;
 use Dvelum\View;
+use Dvelum\Request;
+use Dvelum\Response;
 
 class Controller extends App\Controller
 {
@@ -50,9 +52,14 @@ class Controller extends App\Controller
      */
     protected $user;
 
-    public function __construct()
+    /**
+     * Controller constructor.
+     * @param Request $request
+     * @param Response $response
+     */
+    public function __construct(Request $request, Response $response)
     {
-        parent::__construct();
+        parent::__construct($request, $response);
 
         $this->configBackend = Config::storage()->get('backend.php');
         $this->config = $this->getConfig();

@@ -23,6 +23,8 @@ namespace Dvelum\App\Router;
 
 use Dvelum\Config;
 use Dvelum\Lang;
+use Dvelum\Request;
+use Dvelum\Response;
 
 /**
  * Back office
@@ -31,13 +33,16 @@ class Backend extends \Dvelum\App\Router
 {
     /**
      * Route request to the Controller
+     * @param Request $request
+     * @param Response $response
+     * @throws \Exception
      * @return void
      */
-    public function route()
+    public function route(Request $request , Response $response) :void
     {
         $cfg = Config::storage()->get('backend.php');
 
-        $controller = $this->request->getPart(1);
+        $controller = $request->getPart(1);
         $controller = \Utils_String::formatClassName(\Filter::filterValue('pagecode', $controller));
 
         if(empty($controller)){
@@ -57,7 +62,7 @@ class Backend extends \Dvelum\App\Router
                 $this->response->error(Lang::lang()->get('WRONG_REQUEST') . ' ' . $this->request->getUri());
             }
         }
-        $this->runController($controller,  $this->request->getPart(2));
+        $this->runController($controller,  $request->getPart(2), $request, $response);
     }
 
     /**
@@ -67,6 +72,6 @@ class Backend extends \Dvelum\App\Router
     public function findUrl(string $module) : string
     {
         $cfg = Config::storage()->get('backend.php');
-        return $this->request->url(array($cfg['adminPath'] , $module),false);
+        return Request::factory()->url([$cfg['adminPath'] , $module],false);
     }
 }

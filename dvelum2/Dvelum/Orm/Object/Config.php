@@ -1012,7 +1012,7 @@ class Config
      * Get Access Control Adapter
      * @return Orm\Object\Acl | bool false
      */
-    public function getAcl() : Orm\Object\Acl
+    public function getAcl()
     {
         return $this->acl;
     }

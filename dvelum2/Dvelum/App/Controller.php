@@ -51,10 +51,15 @@ class Controller
      */
     protected $router;
 
-    public function __construct()
+    /**
+     * Controller constructor.
+     * @param Request $request
+     * @param Response $response
+     */
+    public function __construct(Request $request, Response $response)
     {
-        $this->request = Request::factory();
-        $this->response = Response::factory();
+        $this->request = $request;
+        $this->response = $response;
         $this->resource = Resource::factory();
         $this->appConfig = Config::storage()->get('main.php');
     }

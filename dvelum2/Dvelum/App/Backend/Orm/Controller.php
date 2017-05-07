@@ -10,6 +10,8 @@ use Dvelum\Orm\Model;
 use Dvelum\Lang;
 use Dvelum\View;
 use Dvelum\Template;
+use Dvelum\Request;
+use Dvelum\Response;
 
 class Controller extends \Dvelum\App\Backend\Controller implements \Router_Interface
 {
@@ -40,9 +42,14 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
     }
 
 
-    public function __construct()
+    /**
+     * Controller constructor.
+     * @param Request $request
+     * @param Response $response
+     */
+    public function __construct(Request $request, Response $response)
     {
-        parent::__construct();
+        parent::__construct($request, $response);
 
         /*
          * Set Orm Builder log paths

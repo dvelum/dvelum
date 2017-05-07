@@ -297,12 +297,14 @@ class Application
         $page = \Page::getInstance();
         $page->setTemplatesPath(self::$_templates);
 
+        $request = Request::factory();
+        $response = Response::factory();
         /*
          * Start routing
          */
         $router = new RouterBackend();
-        $router->route();
-        $controller = Request::factory()->getPart(1);
+        $router->route($request, $response);
+        $controller = $request->getPart(1);
 
         /*
          * Define frontend JS variables
@@ -337,7 +339,9 @@ class Application
             'theme' => $cfgBackend->get('theme')
         ));
 
-        \Response::put($template->render($page->getTemplatesPath() . 'layout.php'));
+        $response->put($template->render($page->getTemplatesPath() . 'layout.php'));
+
+        $response->send();
     }
 
     /**
@@ -356,12 +360,18 @@ class Application
         self::$_templates =  'public/';
         $page = \Page::getInstance();
         $page->setTemplatesPath(self::$_templates);
+
+        $request = Request::factory();
+        $response = Response::factory();
         /*
          * Start routing
          */
         $routerClass =  $this->config->get('frontend_router');
+
         $router = new $routerClass();
-        $router->route();
+        $router->route($request, $response);
+
+        $response->send();
     }
     /**
      * Close application, stop processing

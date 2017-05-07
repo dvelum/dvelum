@@ -23,6 +23,7 @@ namespace Dvelum\App;
 
 use Dvelum\Request;
 use Dvelum\Response;
+use Dvelum\Lang;
 
 /**
  * Base class for routing of requests
@@ -38,16 +39,13 @@ abstract class Router implements Router\RouterInterface
      */
     protected $response;
 
-    public function __construct()
-    {
-        $this->request = Request::factory();
-        $this->response = Response::factory();
-    }
-
     /**
      * Route request
+     * @param Request $request
+     * @param Response $response
+     * @return void
      */
-    abstract public function route();
+    abstract public function route(Request $request , Response $response) : void;
 
     /**
      * Calc url for module
@@ -60,14 +58,16 @@ abstract class Router implements Router\RouterInterface
      * Run controller
      * @param string $controller - controller class
      * @param string|boolean $action - action name
+     * @param Request $request
+     * @param Response $response
      * @return mixed
      */
-    public function runController(string $controller , $action = false)
+    public function runController(string $controller , $action = false, Request $request , Response $response)
     {
         if(!class_exists($controller))
             return false;
 
-        $controller = new $controller();
+        $controller = new $controller($request, $response);
         $controller->setRouter($this);
 
         if($controller instanceof Router\RouterInterface || $controller instanceof \Router_Interface){
@@ -79,7 +79,7 @@ abstract class Router implements Router\RouterInterface
         }
 
         if(!method_exists($controller , $action.'Action')) {
-            $this->response->error(Lang::lang()->get('WRONG_REQUEST').' ' . $this->request->getUri());
+            $response->error(Lang::lang()->get('WRONG_REQUEST').' ' . $request->getUri());
         }
 
         return $controller->{$action.'Action'}();
