@@ -70,9 +70,9 @@ class Application
 
     /**
      * The constructor accepts the main configuration object as an argument
-     * @param Config\Adapter $config
+     * @param Config\ConfigInterface $config
      */
-    public function __construct(Config\Adapter $config)
+    public function __construct(Config\ConfigInterface $config)
     {
         $this->config = $config;
     }
@@ -304,6 +304,13 @@ class Application
          */
         $router = new RouterBackend();
         $router->route($request, $response);
+
+
+        if($response->isSent()){
+            return;
+        }
+
+
         $controller = $request->getPart(1);
 
         /*

@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 /*
  * DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
  * Copyright (C) 2011-2016  Kirill A Egorov
@@ -17,16 +16,23 @@ declare(strict_types=1);
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
 
 namespace Dvelum\Config;
 /**
  * The Config_Abstract abstract class, which is used for implementing configuration adapters
+ *  + backward compatibility with Config_Abstract
  * @author Kirill A Egorov
  * @abstract
  * @package Config
  */
-class Adapter  extends \Config_Abstract implements \ArrayAccess , \Iterator
+class Adapter extends \Config_Abstract implements  ConfigInterface
 {
+    /**
+     * Parent config identifier
+     * @var mixed
+     */
+    protected $applyTo = null;
     /**
      * Config Data
      * @var array
@@ -44,6 +50,15 @@ class Adapter  extends \Config_Abstract implements \ArrayAccess , \Iterator
      * @param string $name - configuration identifier
      */
     public function __construct(string $name = '')
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * Set configuration identifier
+     * @param string $name
+     */
+    public function setName(string $name) : void
     {
         $this->name = $name;
     }
@@ -84,7 +99,7 @@ class Adapter  extends \Config_Abstract implements \ArrayAccess , \Iterator
      * @param string $key
      * @param mixed $value
      */
-    public function set(string $key , $value)
+    public function set(string $key , $value) : void
     {
         $this->data[$key] = $value;
     }
@@ -93,13 +108,15 @@ class Adapter  extends \Config_Abstract implements \ArrayAccess , \Iterator
      * Set property values using an array
      * @param array $data
      */
-    public function setData(array $data)
+    public function setData(array $data) : void
     {
-        if(empty($data))
+        if(empty($data)){
             return;
+        }
 
-        foreach ($data as $k=>$v)
+        foreach ($data as $k=>$v){
             $this->data[$k]=$v;
+        }
     }
 
     /**
@@ -109,8 +126,9 @@ class Adapter  extends \Config_Abstract implements \ArrayAccess , \Iterator
      */
     public function remove(string $key)
     {
-        if(isset($this->data[$key]))
+        if(isset($this->data[$key])){
             unset($this->data[$key]);
+        }
         return true;
     }
 
@@ -178,7 +196,7 @@ class Adapter  extends \Config_Abstract implements \ArrayAccess , \Iterator
     /**
      * Remove all parameters
      */
-    public function removeAll()
+    public function removeAll() : void
     {
         $this->data = array();
     }
@@ -189,5 +207,23 @@ class Adapter  extends \Config_Abstract implements \ArrayAccess , \Iterator
     public function getName() : string
     {
         return $this->name;
+    }
+
+    /**
+     * Get parent config identifier
+     * @return string|null
+     */
+    public function getParentId(): ?string
+    {
+        return $this->applyTo;
+    }
+
+    /**
+     * Set parent configuration identifier
+     * @param string $id
+     */
+    public function setParentId(string $id) : void
+    {
+        $this->applyTo = $id;
     }
 }

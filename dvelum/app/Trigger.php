@@ -27,9 +27,9 @@ class Trigger
 
     /**
      * Set application config
-     * @param Config\Adapter $config
+     * @param Config\ConfigInterface $config
      */
-    static public function setApplicationConfig(Config\Adapter $config)
+    static public function setApplicationConfig(Config\ConfigInterface  $config)
     {
         static::$applicationConfig = $config;
     }

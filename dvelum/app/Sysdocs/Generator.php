@@ -29,7 +29,7 @@ class Sysdocs_Generator
 	 */
 	protected $autoloaderPaths = [];
 
-	public function __construct(Config\Adapter $config)
+	public function __construct(Config\ConfigInterface $config)
 	{
 		$this->config = $config;
 		$this->vers = $config->get('gen_version');

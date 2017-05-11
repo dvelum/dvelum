@@ -17,7 +17,7 @@ class Auth
     protected  $request;
     protected  $appConfig;
 
-    public function __construct(Request $request, Config\Adapter $appConfig)
+    public function __construct(Request $request, Config\ConfigInterface $appConfig)
     {
         $this->request = $request;
         $this->appConfig = $appConfig;

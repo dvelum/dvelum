@@ -56,9 +56,9 @@ class Resource
 
     /**
      * Set configuration options
-     * @param Config\Adapter $config
+     * @param Config\ConfigInterface $config
      */
-    public function setConfig(Config\Adapter $config)
+    public function setConfig(Config\ConfigInterface $config)
     {
         $this->config = $config;
         if($this->config->offsetExists('cache')){

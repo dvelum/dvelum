@@ -17,9 +17,9 @@ class User_Auth_Ldap extends User_Auth_Abstract
 	private $bindStatus = false;
 
 	/**
-	 * @param Config\Adapter $config - auth provider config
+	 * @param Config\ConfigInterface $config - auth provider config
 	 */
-	public function __construct(Config\Adapter $config)
+	public function __construct(Config\ConfigInterface $config)
 	{
 		if(!extension_loaded('ldap'))
 			throw new Exception('Cannot find php-ldap extension!');

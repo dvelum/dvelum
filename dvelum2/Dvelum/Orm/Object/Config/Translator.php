@@ -20,6 +20,9 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Object\Config;
 
+use Dvelum\Config\ConfigInterface;
+use Dvelum\Config\Storage\StorageInterface;
+
 class Translator
 {
 	protected $mainConfig = '';
@@ -36,17 +39,26 @@ class Translator
 		$this->mainConfig = $configPath;
 	}
 
-	/**
-	 * Get object fields translation
-	 * @return \Config_Abstract | boolean false
-	 */
-	public function getTranslation()
+    /**
+     * Get object fields translation
+     * @return ConfigInterface
+     */
+	public function getTranslation() : ?ConfigInterface
 	{
 		if(!$this->translation){
 			$this->translation = \Lang::storage()->get($this->mainConfig, true, true);
 		}
 		return $this->translation;
 	}
+
+    /**
+     * Get translations storage
+     * @return StorageInterface
+     */
+	public function getStorage() : StorageInterface
+    {
+        return \Lang::storage();
+    }
 
 	/**
 	 * Get Main config path

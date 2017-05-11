@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum;
 
 use Dvelum\Config;
+use Dvelum\Orm\Exception;
 
 class Response
 {
@@ -30,6 +31,7 @@ class Response
     protected $format = self::FORMAT_HTML;
 
     protected $buffer ='';
+    protected $sent = false;
     /**
      * @return Response
      */
@@ -59,6 +61,9 @@ class Response
      */
     public function put(string $string) : void
     {
+        if($this->sent){
+            trigger_error('The response was already sent');
+        }
         $this->buffer.= $string;
     }
 
@@ -72,6 +77,7 @@ class Response
         if(function_exists('fastcgi_finish_request')){
             fastcgi_finish_request();
         }
+        $this->sent = true;
     }
 
     /**
@@ -163,5 +169,14 @@ class Response
     public function header(string $string) : void
     {
         \header($string);
+    }
+
+    /**
+     * Is sent
+     * @return bool
+     */
+    public function isSent() : bool
+    {
+        return $this->sent;
     }
 }

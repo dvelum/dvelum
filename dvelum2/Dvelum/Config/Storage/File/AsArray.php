@@ -1,21 +1,30 @@
 <?php
-/*
- * DVelum project http://code.google.com/p/dvelum/, https://github.com/k-samuel/dvelum , http://dvelum.net Copyright
- * (C) 2011-2016 Kirill A Egorov This program is free software: you can
- * redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version. This program is distributed
- * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details. You should have received
- * a copy of the GNU General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
-namespace Dvelum\Config;
+namespace Dvelum\Config\Storage\File;
 
-class Storage
+use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
+use Dvelum\Config\Storage\StorageInterface;
+
+class AsArray implements StorageInterface
 {
     /**
      * Runtime cache of configuration files
@@ -38,9 +47,10 @@ class Storage
      * @param string $localPath
      * @param boolean $useCache, optional
      * @param boolean $merge, optional merge with main config
-     * @return \Config_Abstract | false
+     * @throws \Exception
+     * @return ConfigInterface
      */
-    public function get(string $localPath , bool $useCache = true , bool $merge = true)
+    public function get(string $localPath , bool $useCache = true , bool $merge = true) : ConfigInterface
     {
         // storage config prohibits merging
         if($this->config['file_array']['apply_to'] === false)
@@ -86,12 +96,12 @@ class Storage
         }
 
         if($data === false)
-            return false;
+            throw new \Exception('Getting undefined config [' . $localPath . ']');
 
-        $object = new File\AsArray($this->config['file_array']['write'] . $localPath , false);
+        $object = new Config\File\AsArray($this->config['file_array']['write'] . $localPath , false);
 
         if($this->config['file_array']['apply_to']!==false && $merge)
-            $object->setApplyTo($this->config['file_array']['apply_to'] . $localPath );
+            $object->setParentId($this->config['file_array']['apply_to'] . $localPath );
 
         // fast data injection
         $link = & $object->dataLink();
@@ -105,12 +115,25 @@ class Storage
 
     /**
      * Create new config file
-     * @param $localPath
-     * @return boolean
+     * @param string $id
+     * @throws \Exception
+     * @return bool
      */
-    public function create($localPath) : bool
+    public function create(string $id) : bool
     {
-        return File\AsArray::create($this->getWrite() . $localPath);
+        $file = $this->getWrite() . $id;
+
+        $dir = dirname($file);
+        if(!file_exists($dir) && !@mkdir($dir,0755, true))
+            throw new \Exception('Cannot create '.$dir);
+
+        if(\File::getExt($file)!=='.php')
+            throw new \Exception('Invalid file name');
+
+        if(\Utils::exportArray($file, array())!==false)
+            return true;
+
+        return false;
     }
 
     /**
@@ -172,14 +195,14 @@ class Storage
         return false;
     }
 
-	/**
-	 * Get storage paths
-	 * @return array
-	 */
-	public function getPaths() : array
-	{
-		return $this->config['file_array']['paths'];
-	}
+    /**
+     * Get storage paths
+     * @return array
+     */
+    public function getPaths() : array
+    {
+        return $this->config['file_array']['paths'];
+    }
 
     /**
      * Add config path
@@ -201,14 +224,14 @@ class Storage
         \array_unshift($this->config['file_array']['paths'], $path);
     }
 
-	/**
-	 * Get write path
-	 * @return string
-	 */
-	public function getWrite() : string
-	{
-		return $this->config['file_array']['write'];
-	}
+    /**
+     * Get write path
+     * @return string
+     */
+    public function getWrite() : string
+    {
+        return $this->config['file_array']['write'];
+    }
 
     /**
      * Get src file path (to apply)
@@ -238,5 +261,50 @@ class Storage
         foreach($options as $k=>$v){
             $this->config[$k] = $v;
         }
+    }
+
+    /**
+     * Save configuration data
+     * @param ConfigInterface $config
+     * @return bool
+     */
+    public function save(ConfigInterface $config) : bool
+    {
+        $parentId = $config->getParentId();
+        $id = $config->getName();
+
+        $configData = $config->__toArray();
+
+
+        if(!empty($parentId) && \file_exists($parentId)) {
+            $src = include $parentId;
+            $data = [];
+            foreach($configData as $k=>$v){
+                if(!isset($src[$k]) || $src[$k]!=$v){
+                    $data[$k] = $v;
+                }
+            }
+        }else{
+            $data = $configData;
+        }
+
+        if(\file_exists($id)) {
+            if(!\is_writable($id))
+                return false;
+        } else {
+            $dir = dirname($id);
+
+            if(!\file_exists($dir)) {
+                if(!@mkdir($dir,0775,true))
+                    return false;
+            } elseif(!\is_writable($dir)) {
+                return false;
+            }
+        }
+        if(\Utils::exportArray($id, $data)!==false){
+            Config\Factory::cache();
+            return true;
+        }
+        return false;
     }
 }

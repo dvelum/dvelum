@@ -17,7 +17,7 @@ abstract class Adapter
 
     protected $lang;
 
-    public function __construct( Request $request , \Dvelum\Lang $lang,  Config\Adapter $config)
+    public function __construct( Request $request , \Dvelum\Lang $lang,  Config\ConfigInterface $config)
     {
         $this->lang = $lang;
         $this->request = $request;

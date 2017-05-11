@@ -64,22 +64,23 @@ class Builder
            'useForeignKeys' => static::$foreignKeys
         ]);
 
-//        return new Orm\Object\Builder\Generic\MySQL($config);
-
         $model = Model::factory($objectName);
         $platform = $model->getDbConnection()->getAdapter()->getPlatform();
 
-        switch ($platform->getName())
-        {
-            case 'MySQL' :
-                return new Builder\MySQL($config, $forceConfig);
-                break;
-            default :
+        $platform = $platform->getName();
+        $builderAdapter = static::class . '\\' . $platform;
 
-                die('here adapter');
-                //return new static($objectName, $forceConfig);
-                break;
+        if(class_exists($builderAdapter)){
+            return new Builder\MySQL($config, $forceConfig);
         }
+
+        $builderAdapter = static::class . '\\Generic\\' . $platform;
+
+        if(class_exists($builderAdapter)){
+            return new Builder\MySQL($config, $forceConfig);
+        }
+
+        throw new Orm\Exception('Undefined Platform');
     }
 
     public static $booleanTypes = [

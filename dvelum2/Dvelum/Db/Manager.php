@@ -29,14 +29,14 @@ class Manager implements \Db_Manager_Interface
     protected $dbConfigs = [];
 
     /**
-     * @var Config\Adapter
+     * @var Config\ConfigInterface
      */
     protected $appConfig;
 
     /**
-     * @param Config\Adapter $appConfig - Application config (main)
+     * @param Config\ConfigInterface $appConfig - Application config (main)
      */
-    public function __construct(Config\Adapter $appConfig)
+    public function __construct(Config\ConfigInterface $appConfig)
     {
         $this->appConfig = $appConfig;
     }
@@ -79,9 +79,9 @@ class Manager implements \Db_Manager_Interface
      * Get Db Connection config
      * @param string $name
      * @throws \Exception
-     * @return Config\Adapter
+     * @return Config\ConfigInterface
      */
-    public function getDbConfig(string $name) : Config\Adapter
+    public function getDbConfig(string $name) : Config\ConfigInterface
     {
         $workMode = $this->appConfig->get('development');
 

@@ -33,7 +33,7 @@ class Designer_Manager
      */
     protected $_designerConfig;
 
-    public function __construct(Config\Adapter $appConfig)
+    public function __construct(Config\ConfigInterface $appConfig)
     {
         $this->_appConfig = $appConfig;
         $this->_designerConfig = Config::storage()->get('designer.php');

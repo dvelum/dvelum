@@ -184,9 +184,9 @@ class Controller extends App\Controller
 
     /**
      * Get controller configuration
-     * @return Config\Adapter
+     * @return Config\ConfigInterface
      */
-    protected function getConfig() : Config\Adapter
+    protected function getConfig() : Config\ConfigInterface
     {
         return Config::storage()->get('backend/controller.php');
     }

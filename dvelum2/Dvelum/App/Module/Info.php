@@ -7,7 +7,7 @@ class Info
 {
     protected $appConfig;
 
-    public function __construct(Config\Adapter $appConfig)
+    public function __construct(Config\ConfigInterface $appConfig)
     {
         $this->appConfig = $appConfig;
     }

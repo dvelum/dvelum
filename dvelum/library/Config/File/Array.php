@@ -107,7 +107,7 @@ class Config_File_Array extends Config_File
 	 * Set main config file.
 	 * @param mixed $path
 	 */
-	public function setApplyTo($path){
+	public function setParentId($path){
 		$this->_applyTo = $path;
 	}
 }

@@ -76,10 +76,10 @@ class Lang
     /**
      * Add localization dictionary
      * @param string $name — localization name
-     * @param Config\Adapter $dictionary — configuration object
+     * @param Config\ConfigInterface  $dictionary — configuration object
      * @return void
      */
-    static public function addDictionary(string $name , Config\Adapter $dictionary)
+    static public function addDictionary(string $name , Config\ConfigInterface $dictionary)
     {
         self::$dictionaries[$name] = $dictionary;
     }
@@ -193,14 +193,14 @@ class Lang
 
     /**
      * Get configuration storage
-     * @return Config\Storage
+     * @return Config\Storage\StorageInterface
      */
-    static public function storage() : Config\Storage
+    static public function storage() : Config\Storage\StorageInterface
     {
         static $store = false;
 
         if(!$store){
-            $store = new Config\Storage();
+            $store = new Config\Storage\File\AsArray();
         }
 
         return $store;

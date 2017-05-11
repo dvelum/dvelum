@@ -41,6 +41,15 @@ class Factory
      */
     protected static $cache = false;
 
+    protected static $storageAdapter = '\\Dvelum\\Config\\Storage\\File\\AsArray';
+
+    static public function setStorageAdapter(string $class) : void
+    {
+        if(!class_exists($class)){
+            throw new \Exception('Undefined storage adapter '.$class);
+        }
+        self::$storageAdapter = $class;
+    }
     /**
      * Set cache adapter
      * @param \Cache_Interface $core
@@ -64,14 +73,14 @@ class Factory
      * @param integer $type -type of the object being created, Config class constant
      * @param string $name - identifier
      * @param boolean $useCache - optional , default true. Use cache if available
-     * @return Config\Adapter
+     * @return Config\ConfigInterface
      */
-    static public function config(int $type , string $name , bool $useCache = true) : Config\Adapter
+    static public function config(int $type , string $name , bool $useCache = true) : Config\ConfigInterface
     {
         $store = self::$store;
         $cache = self::$cache;
         if(!$store)
-            $store = self::_connectStore();
+            $store = self::connectLocalStore();
 
         $config = false;
         $configKey = $type . '_' . $name;
@@ -119,7 +128,7 @@ class Factory
     static public function resetCache() : void
     {
         if(is_null(self::$store))
-            self::_connectStore();
+            self::connectLocalStore();
 
         if(empty(self::$store))
             return;
@@ -137,7 +146,7 @@ class Factory
      * Instantiate storage
      * @return \Store
      */
-    static protected function _connectStore()
+    static protected function connectLocalStore()
     {
         self::$store = \Store::factory(\Store::Local , 'class_' . __CLASS__);
         return self::$store;
@@ -150,7 +159,7 @@ class Factory
      */
     static public function cache($key = false)
     {
-        if(! self::$cache)
+        if(!self::$cache)
             return;
 
         if($key === false)
@@ -171,14 +180,25 @@ class Factory
 
     /**
      * Get configuration storage
-     * @return Storage
+     * @param bool $force  - Reset runtime cache reload object, optional default false
+     * @return Storage\StorageInterface
      */
-    static public function storage() : Storage
+    static public function storage($force = false) : Config\Storage\StorageInterface
     {
         static $store = false;
 
+        if($force){
+            $store = false;
+        }
+
         if(!$store){
-            $store = new Storage();
+            /**
+             * @var Config\Storage\StorageInterface $store;
+             */
+            $store = new self::$storageAdapter();
+            if(!empty($config)){
+                $store->setConfig($config->__toArray());
+            }
         }
         return $store;
     }
@@ -186,9 +206,9 @@ class Factory
     /**
      * Create new config object
      * @param array $data
-     * @return Config\Adapter
+     * @return Config\ConfigInterface
      */
-    static public function create(array $data) : Config\Adapter
+    static public function create(array $data) : Config\ConfigInterface
     {
         $config = new Config\Adapter();
         $config->setData($data);

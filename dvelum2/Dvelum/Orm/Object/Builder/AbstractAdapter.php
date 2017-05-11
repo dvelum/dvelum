@@ -23,8 +23,10 @@ namespace Dvelum\Orm\Object\Builder;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Log;
+use Dvelum\Config;
 
-abstract class AbstractAdapter
+
+abstract class AbstractAdapter implements BuilderInterface
 {
     /**
      * @var array
@@ -66,9 +68,9 @@ abstract class AbstractAdapter
     abstract public function prepareKeysUpdate();
 
     /**
-     * @param \Dvelum\Config\Adapter $config
+     * @param Config\ConfigInterface $config
      */
-    public function __construct(\Dvelum\Config\Adapter $config)
+    public function __construct(Config\ConfigInterface $config)
     {
         $this->objectName = $config->get('objectName');
 
@@ -173,7 +175,7 @@ abstract class AbstractAdapter
      * @param boolean $addPrefix - optional append prefix, default false
      * @return boolean
      */
-    public function tableExists(string $name = '', bool $addPrefix = false) : bool
+    protected function tableExists(string $name = '', bool $addPrefix = false) : bool
     {
         if(empty($name))
             $name = $this->model->table();

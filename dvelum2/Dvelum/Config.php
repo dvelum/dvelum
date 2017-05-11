@@ -19,6 +19,8 @@
 
 namespace Dvelum;
 
+use Dvelum\Config as Cfg;
+
 /**
  * Class Config
  * @package Dvelum
@@ -26,13 +28,13 @@ namespace Dvelum;
  */
 class Config
 {
-    static public function storage()
+    static public function storage(Cfg\ConfigInterface $config = null) : Cfg\Storage\StorageInterface
     {
-        return \Dvelum\Config\Factory::storage();
+        return Cfg\Factory::storage($config);
     }
 
-    static public function factory($type, $name, $useCache = true)
+    static public function factory($type, $name, $useCache = true) : Cfg\ConfigInterface
     {
-        return \Dvelum\Config\Factory::config($type, $name, $useCache);
+        return Cfg\Factory::config($type, $name, $useCache);
     }
 }

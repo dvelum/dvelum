@@ -12,9 +12,9 @@ abstract class User_Auth_Abstract
 	protected $config = false;
 
 	/**
-	 * @param Config\Adapter $config - auth provider config
+	 * @param Config\ConfigInterface $config - auth provider config
 	 */
-	public function __construct(Config\Adapter $config)
+	public function __construct(Config\ConfigInterface $config)
 	{
 		$this->config = $config;
 	}

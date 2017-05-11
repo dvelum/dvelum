@@ -657,10 +657,8 @@ class Config
 
         $translation = self::$translator->getTranslation();
 
-        if($translation instanceof \Dvelum\Config\Adapter){
-            $translationsData = & $translation->dataLink();
-            $translationsData[$this->name]['title'] = $this->config->get('title');
-        }
+        $translationsData = & $translation->dataLink();
+        $translationsData[$this->name]['title'] = $this->config->get('title');
 
         foreach ($fields as $field =>& $cfg)
         {
@@ -673,10 +671,11 @@ class Config
         $config->set('indexes' , $indexes);
         $config->offsetUnset('title');
 
-        if($translation instanceof \Dvelum\Config\Adapter && !$translation->save())
+
+        if(!self::$translator->getStorage()->save($translation))
             return false;
 
-        return $config->save();
+        return Cfg::storage()->save($config);
     }
 
     /**

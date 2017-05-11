@@ -15,7 +15,7 @@ interface Db_Manager_Interface
      * Get DB connection config
      * @param string $name
      * @throws Exception
-     * @return Config\Adapter
+     * @return Config\ConfigInterface
      */
-    public function getDbConfig(string $name) : Config\Adapter;
+    public function getDbConfig(string $name) : Config\ConfigInterface;
 }

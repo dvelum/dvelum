@@ -26,7 +26,7 @@ use Dvelum\Orm\Model;
 
 class Orm
 {
-    static public function init(Config\Adapter $config, \Db_Manager $dbManager, string $language, \Cache_Interface $cache = null)
+    static public function init(Config\ConfigInterface $config, \Db_Manager $dbManager, string $language, \Cache_Interface $cache = null)
     {
         $eventManager = new \Eventmanager();
 

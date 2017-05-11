@@ -22,18 +22,18 @@ class Designer_Factory
 {
     /**
      * Load project
-     * @param Config\Adapter $designerConfig - designer config
+     * @param Config\ConfigInterface $designerConfig - designer config
      * @param string $projectFile - project file path
      * @return Designer_Project
      * @throws Exception
      */
-    static public function loadProject(Config\Adapter $designerConfig , $projectFile)
+    static public function loadProject(Config\ConfigInterface $designerConfig , $projectFile)
     {
         $storage = Designer_Storage::getInstance($designerConfig->get('storage') , $designerConfig);
         return $storage->load($projectFile);
     }
 
-    static public function importProject(Config\Adapter $designerConfig , $projectFile)
+    static public function importProject(Config\ConfigInterface $designerConfig , $projectFile)
     {
         $storage = Designer_Storage::getInstance($designerConfig->get('storage') , $designerConfig);
         return $storage->import($projectFile);
@@ -52,13 +52,13 @@ class Designer_Factory
     /**
      * Init layout from designer project
      * @property string $projectFile - designer project related path
-     * @property Config\Adapter $designerConfig
+     * @property Config\ConfigInterface $designerConfig
      * @property array $replace, optional
      * @property string | boolean $renderTo
      * @property string | boolean $moduleId
      * @todo cache the code
      */
-    static public function runProject($projectFile , Config\Adapter $designerConfig , $replace = array(), $renderTo = false, $moduleId = false)
+    static public function runProject($projectFile , Config\ConfigInterface $designerConfig , $replace = array(), $renderTo = false, $moduleId = false)
     {
         /**
          * @todo slow operation

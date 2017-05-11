@@ -446,7 +446,7 @@ class MySQL extends AbstractAdapter
      * @param bool $dropOnly
      * @return array
      */
-    public function prepareKeysUpdate($dropOnly = false) : array
+    public function prepareKeysUpdate(bool $dropOnly = false) : array
     {
         $updates = [];
         $curTable = $this->model->table();
