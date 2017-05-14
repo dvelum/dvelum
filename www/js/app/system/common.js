@@ -439,7 +439,13 @@ Ext.apply(Ext.form.field.VTypes, {
 		}
 		return true;
 	},
-	valuematchText: appLang.VALUENOTMATCH
+	valuematchText: appLang.VALUENOTMATCH,
+	pagecode:function(val, field){
+	    var exp = /^[a-zA-Z0-9_-]+$/;
+		return exp.test(val);
+	},
+	pagecodeText:appLang.URL_PAGECODE_MATCH,
+    pagecodeMask: /[a-z0-9_-]/i
 });
 
 /**

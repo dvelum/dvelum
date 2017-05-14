@@ -45,6 +45,9 @@ class Ext_Property_Panel extends Ext_Property_Container{
 	public $titleCollapse = self::Boolean;
 	public $titleRotation = self::String;
 	public $tools = self::Object;
+
+    // border layout
+    public $split = self::Boolean;
     
     static public $extend = 'Ext.panel.Panel';
     static public $xtype = 'panel';

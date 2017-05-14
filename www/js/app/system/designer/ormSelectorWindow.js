@@ -7,7 +7,7 @@
 Ext.define('designer.ormSelectorWindow',{
 	extend:'Ext.Window',
 	title:desLang.importOrm,
-	width:600,
+	width:700,
 	height:500,
 	objectsGrid:null,
 	fieldsGrid:null,
@@ -15,31 +15,41 @@ Ext.define('designer.ormSelectorWindow',{
 
 	initComponent:function(){
 
+		var store = Ext.create('Ext.data.Store',{
+			fields:[
+				{name:'name' , type:'string'},
+				{name:'title' , type:'string'}
+			],
+			proxy:{
+				url:app.createUrl([designer.controllerUrl ,'orm','list','']),
+				type:'ajax',
+				reader:{
+					type:'json',
+					idProperty:'name',
+					rootProperty:'data'
+				}
+			},
+			autoLoad:true,
+			sorters: [{
+				property : 'name',
+				direction: 'ASC'
+			}]
+		});
+
 		this.objectsGrid = Ext.create('Ext.grid.Panel',{
 			split:true,
 			title:desLang.objects,
 			region:'center',
 			columnLines:true,
-			store:Ext.create('Ext.data.Store',{
-				fields:[
-				        {name:'name' , type:'string'},
-				        {name:'title' , type:'string'}
-				],
-				proxy:{
-					url:app.createUrl([designer.controllerUrl ,'orm','list','']),
-					type:'ajax',
-					reader:{
-						type:'json',
-						idProperty:'name',
-						rootProperty:'data'
-					}
-				},
-				autoLoad:true,
-				sorters: [{
-	                  property : 'name',
-	                  direction: 'ASC'
-	            }]
-			}),
+			tbar:[
+				'->',
+				Ext.create('SearchPanel',{
+					fieldNames:['name','title'],
+					store:store,
+					local:true
+				})
+			],
+			store:store,
 			columns:[
 			         {
 			        	 text:desLang.name,
@@ -125,7 +135,12 @@ Ext.define('designer.ormSelectorWindow',{
 		];
 
 		this.items = [this.objectsGrid , this.fieldsGrid];
-		this.callParent(arguments);
+
+		this.callParent();
+
+        this.on('show',function(){
+            app.checkSize(this);
+        },this);
 	},
 	onSelect:function(){
 		var oSm = this.objectsGrid.getSelectionModel();

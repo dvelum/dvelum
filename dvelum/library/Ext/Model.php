@@ -250,10 +250,21 @@ class Ext_Model extends Ext_Object
 		if($namespace)
 			$name = $namespace.'.'.$this->getName();
 		else 
-			$name = $this->getName();			
+			$name = $this->getName();
 
-		 if(!empty($this->_fields) && $this->_config->isValidProperty('fields'))
-	        $this->fields = '['.implode(',',array_values($this->_fields)).']';
+        if(!empty($this->_fields) && $this->_config->isValidProperty('fields'))
+        {
+//            foreach ($this->_fields as $field)
+//            {
+//                if($field->getConfig()->isValidProperty('mapping') && strlen($field->mapping))
+//                {
+//                    $model = Ext_Code::appendNamespace($field->mapping);
+//                    $field->mapping = $model;
+//                }
+//            }
+            $this->fields = '['.implode(',',array_values($this->_fields)).']';
+        }
+
 			
 		$code = "\n".'Ext.define("'.$name.'",{'."\n".
 			"\t".'extend:"'.$this->_config->getExtends().'",'."\n".
@@ -267,9 +278,20 @@ class Ext_Model extends Ext_Object
 	 */
 	public function __toString()
 	{
+
 	    if(!empty($this->_fields) && $this->_config->isValidProperty('fields'))
-	        $this->fields = '['.implode(',',array_values($this->_fields)).']';
-	    
+	    {
+            foreach ($this->_fields as $field)
+            {
+                if($field->getConfig()->isValidProperty('mapping') && strlen($field->mapping))
+                {
+                    $model = Ext_Code::appendNamespace($field->mapping);
+                    $field->mapping = $model;
+                }
+            }
+
+            $this->fields = '['.implode(',',array_values($this->_fields)).']';
+        }
 		return parent::__toString();
 	}
 	/**

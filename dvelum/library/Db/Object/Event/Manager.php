@@ -20,6 +20,9 @@ abstract class Db_Object_Event_Manager{
 	const AFTER_UNPUBLISH = 'onAfterUnpublish';
 	const AFTER_PUBLISH = 'onAfterPublish';
 	const AFTER_UPDATE_BEFORE_COMMIT = 'onAfterUpdateBeforeCommit';
+	const AFTER_INSERT_BEFORE_COMMIT = 'onAfterInsertBeforeCommit';
+	const AFTER_DELETE_BEFORE_COMMIT = 'onAfterDeleteBeforeCommit';
+
 	/**
 	 * Find and run event triggers
 	 * Note that onBeforeDelete and onAfterDelete events provide "SpacialCase" empty Db_Object

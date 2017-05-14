@@ -47,13 +47,17 @@ class Model_Permissions extends Model
          if(!empty($userRights)){
              foreach ($userRights as $k=>$v){
                  foreach (self::$_fields as $field){
-                     if(isset($v[$field]) && $v[$field]){
-                         $data[$v['module']][$field] = true;
+                     if(isset($v[$field])) {
+                         if($v[$field]){
+                             $data[$v['module']][$field] = true;
+                         }elseif(!isset($data[$v['module']][$field])){
+                             $data[$v['module']][$field] = false;
+                         }
                      }
+
                  }
              }
          }
-         $data = array_merge($data , Utils::rekey('module', $userRights));
          return $data;
     }
 

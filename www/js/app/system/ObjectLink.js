@@ -36,6 +36,8 @@ Ext.define('app.objectLink.Field',{
         this.callParent(arguments);
     },
 
+    updateObjectTitle:true,
+
     initComponent:function(){
 
         var  me = this;
@@ -43,38 +45,33 @@ Ext.define('app.objectLink.Field',{
             anchor:"100%",
             readOnly :true,
             name:this.name,
-            listeners:{
-                focus:{
-                    fn:this.showSelectionWindow,
-                    scope:this
-                },
-                change:{
-                    fn:this.getObjectTitle,
-                    scope:this
-                }
-            }
+            allowBlank:this.allowBlank
         });
+
+        this.dataField.on('change', me.getObjectTitle, me);
+        this.dataField.on('focus', me.showSelectionWindow, me);
 
         this.dataFieldLabel = Ext.create('Ext.form.field.Text',{
             anchor:"100%",
             flex:1,
             value:"...",
             editable:false,
+            submitValue:false,
             //	cls:'d_objectLink_input',
             triggers: {
                 select: {
                     cls: 'x-form-search-trigger',
                     handler:me.showSelectionWindow,
                     tooltip:appLang.SELECT,
-                    scope:this
+                    scope:me
                 },
                 clear: {
                     cls: 'x-form-clear-trigger',
                     tooltip:appLang.RESET,
                     handler:function(){
-                        me.setValue("");
+                        me.setValue('');
                     },
-                    scope:this
+                    scope:me
                 }
             }
         });
@@ -92,6 +89,12 @@ Ext.define('app.objectLink.Field',{
 
         this.updateViewState();
     },
+    isValid:function(){
+        return this.dataField.isValid();
+    },
+    markInvalid:function(){
+        this.dataFieldLabel.markInvalid();
+    },
     showSelectionWindow:function(){
 
         if(this.readOnly || this.disabled){
@@ -107,15 +110,18 @@ Ext.define('app.objectLink.Field',{
             title:this.fieldLabel,
             extraParams:this.extraParams
         });
+
         win.on('itemSelected',function(record){
-            this.setValue(record.get('id'));
+            this.setRawData(record.get('id'),record.get('title'));
             this.fireEvent('completeEdit');
             win.close();
         },this);
+
         win.show();
         app.checkSize(win);
     },
     setValue:function(value){
+        this.updateObjectTitle = true;
         this.dataField.setValue(value);
         this.fireEvent('change' , this);
     },
@@ -123,18 +129,31 @@ Ext.define('app.objectLink.Field',{
         return this.dataField.getValue();
     },
     reset:function(){
+        this.updateObjectTitle = true;
         this.dataField.reset();
+        this.dataFieldLabel.reset();
         this.fireEvent('change' , this);
     },
-    isValid:function(){
-        return true;
+    setRawData:function(id,title){
+        this.dataField.setValue(id);
+        this.dataFieldLabel.setValue(title);
+        this.updateObjectTitle = false;
+        this.fireEvent('change' , this);
     },
-    getObjectTitle:function(){
+    setObjectTitle:function(title){
+        this.dataFieldLabel.setValue(title);
+        this.updateLayout();
+    },
+    getObjectTitle:function() {
         var me = this;
         var curValue = me.getValue();
 
         if(curValue == "" || curValue == 0){
-            me.dataFieldLabel.setValue('');
+            me.dataFieldLabel.setValue('...');
+            return;
+        }
+
+        if(!this.updateObjectTitle){
             return;
         }
 

@@ -806,12 +806,12 @@ class Model
     /**
      * Delete record
      * @param integer $recordId record ID
-     * @param boolean $log — log changes
+     * @return  boolean
      */
-    public function remove($recordId , $log = true)
+    public function remove($recordId)
     {
         $object = new Db_Object($this->_name , $recordId);
-        if(self::_getObjectsStore()->delete($object , $log))
+        if(self::_getObjectsStore()->delete($object))
             return true;
         else
             return false;
@@ -853,12 +853,25 @@ class Model
     }
 
     /**
-     * Add Like where couse for query
+     * Add search text
      * @param Db_Select | Zend_Db_Select $sql
      * @param string $query
      * @param string $alias - table name alias, optional
+     * @deprecated
      */
     protected function _queryAddQuery($sql , $query, $alias = false)
+    {
+        $this->queryAddSearchString($sql , $query, $alias);
+    }
+
+    /**
+     *  Add search text
+     * @param Db_Select | Zend_Db_Select $sql
+     * @param string $search
+     * @param string $alias - table name alias for search fields, optional
+     * @param string $mathchType - match template %[s]% or %[s] or [s]%, default %[s]%
+     */
+    public function queryAddSearchString($sql , $search, $alias = false, $mathchType='%[s]%')
     {
         if(!$alias){
             $alias = $this->table();
@@ -871,9 +884,11 @@ class Model
 
         $q = array();
 
+        $search = str_replace('[s]', $search, $mathchType);
+
         foreach($searchFields as $v)
         {
-            $q[] = $alias . "." . $v . " LIKE(". $this->_db->quote('%'.$query.'%').")";
+            $q[] = $alias . "." . $v . " LIKE(". $this->_db->quote($search).")";
         }
 
         $sql->where('('. implode(' OR ', $q).')');

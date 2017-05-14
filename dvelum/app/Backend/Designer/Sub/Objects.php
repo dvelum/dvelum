@@ -206,6 +206,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
             'Form_Checkboxgroup'=>'checkboxGroupIcon',
             'Form_Radiogroup'=>'radioGroupIcon',
             'Form_Field_Combobox'=>'comboboxFieldIcon',
+            'Form_Field_Tag'=>'tagIcon',
 
             'Button'=>'buttonIcon',
             'Button_Split'=>'buttonSplitIcon',

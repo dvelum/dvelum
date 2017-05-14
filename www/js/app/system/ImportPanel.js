@@ -74,7 +74,7 @@ Ext.define('app.import.Panel',{
 	 * Additional import form fields
 	 * @property {Array}
 	 */
-	importFormFields:[],
+	importFormFields:null,
 	/**
 	 * @property Ext.form.FieldSet,
 	 */
@@ -171,7 +171,7 @@ Ext.define('app.import.Panel',{
 							width:10
 						},
 						{
-							value:this.lang.click_column,
+							value: '<div style="text-align: center; font-size: 11px;width:100%"><div class="hint-label">'+ this.lang.hint + ':</div>' + this.lang.click_column+'</div>',
 							xtype:'displayfield',
 							name:'importlabel',
 							hidden:true
@@ -391,7 +391,7 @@ Ext.define('app.import.Panel',{
 			dataColumns.push({
 				header: header,
 				dataIndex: 'col'+i,
-				id:'col'+i,
+				itemId:'col'+i,
 				sortable: false,
 				menuDisabled: true,
 				width:140,
@@ -660,8 +660,7 @@ Ext.define('app.import.Panel',{
 		Ext.each(this.expectedColumns , function(record){
 			params['columns['+record.id+']'] = record.columnIndex;
 			if(record.columnIndex == -1){
-				if(record.required || this.visibleGroup == record.group){
-
+				if(record.required || (!Ext.isEmpty(this.visibleGroup) && this.visibleGroup == record.group)){
 					error = true;
 				}
 			}

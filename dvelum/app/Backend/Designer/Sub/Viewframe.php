@@ -97,7 +97,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 			foreach ($includes as $file)
 			{
 	            if(File::getExt($file) == '.css')
-			       $res->addCss($file , false);
+			       $res->addCss($file , 100);
 			    else
 				   $res->addJs($file , false, false);
 			}

@@ -20,19 +20,18 @@
         <blacklist>
             <directory suffix=".php">/usr/share/php</directory>
             <directory suffix=".php">../../test</directory>
-            <directory suffix=".php">../../www/system/library/Zend</directory>
-            <directory suffix=".php">../../www/system/library/Code/Js</directory>
-            <directory suffix=".php">../../www/system/packages</directory>
+            <directory suffix=".php">../../vendor</directory>
         </blacklist>
         <whitelist>
-            <directory suffix=".php">../../www/system/app</directory>
-            <directory suffix=".php">../../www/system/library</directory>
+            <directory suffix=".php">../../dvelum/app</directory>
+            <directory suffix=".php">../../dvelum/library</directory>
+            <directory suffix=".php">../../application/controllers</directory>
+            <directory suffix=".php">../../application/library</directory>
+            <directory suffix=".php">../../application/models</directory>
             <exclude>
                 <directory suffix=".phtml">./</directory>
                 <file>./bootstrap.php</file>
-				<directory suffix=".php">../../www/system/library/Zend</directory>
-            	<directory suffix=".php">../../www/system/library/Code/Js</directory>
-            	<directory suffix=".php">../../www/system/packages</directory>
+            	<directory suffix=".php">../../dvelum/library/Code/Js</directory>
             </exclude>
         </whitelist>
     </filter>

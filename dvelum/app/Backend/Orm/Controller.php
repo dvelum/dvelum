@@ -560,7 +560,7 @@ class Backend_Orm_Controller extends Backend_Controller
             Response::jsonError($this->_lang->FILL_FORM, array(array('id' => 'name', 'msg' => $this->_lang->SB_UNIQUE)));
         }
 
-        if(!is_dir($configDir) && !@mkdir($configDir, 0655, true)){
+        if(!is_dir($configDir) && !@mkdir($configDir, 0640, true)){
             Response::jsonError($this->_lang->CANT_WRITE_FS.' '.$configDir);
         }
 

@@ -4,15 +4,8 @@
  * @package Upload
  * @author Kirill Egorov
  */
-class Upload_File
+class Upload_File extends Upload_AbstractAdapter
 {
-    protected $_config;
-
-    public function __construct(array $config)
-    {
-        $this->_config = $config;
-    }
-
     /**
      * Upload file
      *
@@ -22,12 +15,18 @@ class Upload_File
      */
     public function upload(array $data , $path , $formUpload = true)
     {
-        if($data['error'])
+        $this->_error = '';
+
+        if($data['error']){
+            $this->_error = 'Server upload error';
             return false;
+        }
 
         if(isset($this->_config['max_file_size']) && ($this->_config['max_file_size'])){
-            if($data['size'] > $this->_config['max_file_size'])
+            if($data['size'] > $this->_config['max_file_size']){
+                $this->_error = 'File too large. Check max_file_size option';
                 return false;
+            }
         }
 
         $result = array(
@@ -42,8 +41,11 @@ class Upload_File
 
         $ext = File::getExt($name);
 
-        if(!in_array($ext , $this->_config['extensions']))
+        if(!in_array($ext , $this->_config['extensions'])){
+            $this->_error='File extension is not allowed';
             return false;
+        }
+
 
         $namePart = str_replace($ext , '' , $name);
 
@@ -68,6 +70,7 @@ class Upload_File
             $renameCount++;
             // limit iterations
             if($renameCount == 100){
+                $this->_error='Cannot rename file. Iterations limit';
                 return false;
             }
         }
@@ -78,13 +81,18 @@ class Upload_File
 
         if($formUpload)
         {
-            if(!@move_uploaded_file($data['tmp_name'] , $result['path']))
+            if(!move_uploaded_file($data['tmp_name'] , $result['path'])){
+                $this->_error='move_uploaded_file error';
                 return false;
+            }
+
         }
         else
         {
-            if(!@copy($data['tmp_name'] , $result['path']))
+            if(!copy($data['tmp_name'] , $result['path'])){
+                $this->_error='copy error';
                 return false;
+            }
         }
 
         $result['size'] = $data['size'];

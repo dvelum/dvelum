@@ -22,7 +22,7 @@ class FileTest extends PHPUnit_Framework_TestCase
     public function testRmdirRecursive()
     {
         $dir = './temp/unit/'.date('Y').'/'.date('m').'/'.date('d');
-        $this->assertTrue(mkdir($dir , 0777, true));
+        $this->assertTrue(mkdir($dir , 0664, true));
         $this->assertTrue((boolean)file_put_contents($dir.'/test.txt','test'));
         $this->assertTrue(File::rmdirRecursive('./temp/unit/'.date('Y'),true));
         $this->assertTrue(!file_exists('./temp/unit/'.date('Y')));

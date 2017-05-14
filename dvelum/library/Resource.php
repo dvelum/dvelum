@@ -119,7 +119,7 @@ class Resource
 	/**
 	 * Add css file to the contentent
 	 * @param string $file
-	 * @param integer $order
+	 * @param integer|bool $order
 	 */
 	public function addCss($file , $order = false)
 	{
@@ -127,8 +127,15 @@ class Resource
 			$file = substr($file, 1);
 
 		$hash = md5($file);
-		if($order === false)
-			$order = sizeof($this->_cssFiles);
+		if($order === false){
+            $order = 0;
+            foreach ($this->_cssFiles as $item){
+                if($item['order']> $order){
+                    $order = $item['order'];
+                }
+            }
+            $order ++;
+        }
 
 		if(!isset($this->_cssFiles[$hash]))
 			$this->_cssFiles[$hash] = array(
@@ -225,9 +232,15 @@ class Resource
 		/*
 		 * Raw files
 		 */
-		if(!empty($this->_rawFiles))
-			foreach($this->_rawFiles as $file)
-				$s .= '<script type="text/javascript" src="' . self::$_wwwRoot . $file . '"></script>' . "\n";
+        if(!empty($this->_rawFiles)){
+            foreach($this->_rawFiles as $file){
+                if(strpos($file,'http')==0){
+                    $s .= '<script type="text/javascript" src="' . $file . '"></script>' . "\n";
+                }else{
+                    $s .= '<script type="text/javascript" src="' . self::$_wwwRoot . $file . '"></script>' . "\n";
+                }
+            }
+        }
 
 		$s .=  $this->includeJsByTag($useMin , $compile , $tag);
 		/*

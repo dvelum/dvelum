@@ -124,6 +124,15 @@ class Ext_Object
 		$this->_listeners[$name] = $value;
 	}
 
+    /**
+     * Get event handlers
+     * @return array
+     */
+	public function getListeners()
+    {
+        return $this->_listeners;
+    }
+
 	/**
 	 * Add method
 	 * @param string $name
@@ -313,16 +322,17 @@ class Ext_Object
 
 		$listenersArray = array();
 
-		foreach ($this->_listeners as $k=>$v)
+		foreach ($this->_listeners as $name=>$code)
 		{
-			if($k==='handler' && $this->_config->isValidProperty('handler'))
+
+			if($name==='handler' && $this->_config->isValidProperty('handler'))
 			{
-				$this->_config->handler = $v;
+				$this->_config->handler = $code;
 				if($this->_config->isValidProperty('scope'))
 				  $this->_config->scope = 'this';
 
 			}else{
-				$listenersArray[] = "'".$k."':".$v;
+				$listenersArray[] = "'".$name."':".$code;
 			}
 		}
 		if(!empty($listenersArray))

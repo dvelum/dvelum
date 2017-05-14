@@ -450,3 +450,15 @@ div.module-target{
 #msg-div .msg p {
     margin: 0;
 }
+
+.hint-label {
+    background: #f67d12;
+    display: inline-block;
+    padding: 4px 6px;
+    color: #ffffff;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-right: 10px;
+    line-height: 1
+}

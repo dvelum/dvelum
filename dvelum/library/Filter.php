@@ -66,35 +66,37 @@ class Filter
 	 */
 	static public function filterValue($filter, $value)
 	{
-		$filter = strtolower ( $filter );
+		$filter = strtolower($filter);
 		switch ($filter) {
 			case 'array' :
-				if (! is_array ( $value ))
-					$value = array ($value );
+				if (!is_array($value))
+					$value = array($value);
 				break;
 			case 'bool' :
 			case 'boolean' :
-				$value = filter_var ( $value, FILTER_VALIDATE_BOOLEAN );
+				$value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
 				break;
 			case 'int' :
 			case 'integer' :
-				$value = intval ( $value );
+				$value = intval($value);
 				break;
 			case 'float' :
 			case 'decimal' :
 			case 'number' :
-				if(self::$_autoConvertFloatSeparator)
-					$value = str_replace(',', '.', $value);
-				$value = floatval ( $value );
+                $value = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND);
+                if(is_string($value) && self::$_autoConvertFloatSeparator){
+                    $value = str_replace(',', '.', $value);
+                }
+				$value = floatval($value);
 				break;
 			case 'str' :
 			case 'string' :
 			case 'text' :
-				$value = filter_var ( trim ( $value ), FILTER_SANITIZE_STRING );
+				$value = trim(filter_var($value, FILTER_SANITIZE_STRING));
 				break;
 			
 			case 'cleaned_string' :
-				$value = filter_var ( trim ( $value ), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+				$value = trim(filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
 				break;
 			
 			case 'email' :
@@ -102,7 +104,7 @@ class Filter
 				break;
 				
 			case 'url' :
-				$value = filter_var($value , FILTER_SANITIZE_URL);
+				$value = filter_var($value, FILTER_SANITIZE_URL);
 				break;
 				  
 			case 'raw' :
