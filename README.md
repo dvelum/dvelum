@@ -19,3 +19,16 @@ Old Version Downloads https://code.google.com/p/dvelum/downloads/list?can=1
 Official Site (ENG) http://dvelum.net
 
 Official Site (RU)  http://dvelum.ru
+
+------
+Branches
+
+master -  latest stable version (1.x)
+
+develop - latest development version (1.x)
+
+master_09 - latest stable version 0.9.x
+
+-----
+
+Dvelum 2.0 repository: https://github.com/dvelum/dvelum

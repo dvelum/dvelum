@@ -1,5 +1,5 @@
-DVelum 1.0.0 PROFESSIONAL WEB-DEVELOPMENT PLATFORM
-Copyright (C) 2011-2016,  Kirill A Egorov, Andrew Zamotaev, Sergey Leschenko
+DVelum 1.0.2 PROFESSIONAL WEB-DEVELOPMENT PLATFORM
+Copyright (C) 2011-2017,  Kirill A Egorov, Andrew Zamotaev, Sergey Leschenko
 http://dvelum.net/license.html
 
 This version of DVelum is licensed under the terms of the Open Source GPL 3.0 license. 
@@ -15,4 +15,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
+along with this program. If not, see <http://www.gnu.org/licenses/>
