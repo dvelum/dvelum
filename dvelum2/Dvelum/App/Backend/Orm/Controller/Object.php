@@ -21,6 +21,7 @@
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Orm\Manager;
+use Dvelum\App\Backend\Controller;
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -28,7 +29,7 @@ use Dvelum\Lang;
 use Dvelum\View;
 use Dvelum\Template;
 
-class Object extends \Dvelum\App\Backend\Controller
+class Object extends Controller
 {
     public function getModule()
     {

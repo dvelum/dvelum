@@ -31,6 +31,7 @@ abstract class AbstractAdapter extends Config\Adapter
 {
     public function __construct(string $name , bool $autoRead = true)
     {
+        parent::__construct($name);
         /*
          * Read config from file
          */

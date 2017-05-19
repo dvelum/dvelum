@@ -83,13 +83,15 @@ class Response
     /**
      * Send error message
      * @param string $message
+     * @param array $errors
      * @return void
      */
-    public function error($message) : void
+    public function error($message , array $errors = []) : void
     {
+        ob_clean();
         switch ($this->format){
             case self::FORMAT_JSON :
-                $message = json_encode(['success'=>false,'msg'=>$message]);
+                $message = json_encode(['success'=>false,'msg'=>$message,'errors'=>$errors]);
                 break;
             case self::FORMAT_HTML :
                 $this->notFound();

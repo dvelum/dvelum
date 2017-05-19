@@ -175,7 +175,7 @@ abstract class AbstractAdapter implements BuilderInterface
      * @param boolean $addPrefix - optional append prefix, default false
      * @return boolean
      */
-    protected function tableExists(string $name = '', bool $addPrefix = false) : bool
+    public function tableExists(string $name = '', bool $addPrefix = false) : bool
     {
         if(empty($name))
             $name = $this->model->table();

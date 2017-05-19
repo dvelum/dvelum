@@ -71,6 +71,15 @@ class Manager implements \Db_Manager_Interface
                     \Debug::addDbProfiler($profiler);
                 }
             }
+            /*
+             * Set transaction isolation level
+             */
+            if($cfg->offsetExists('transactionIsolationLevel')){
+                $level = $cfg->get('transactionIsolationLevel');
+                if(!empty($level) && $level!=='default'){
+                    $db->query('SET TRANSACTION ISOLATION LEVEL '.$level);
+                }
+            }
 
             $this->dbConnections[$workMode][$name] = $db;
         }

@@ -20,6 +20,7 @@
 
 namespace Dvelum\App\Backend\Orm\Controller;
 
+use Dvelum\App\Backend\Controller;
 use Dvelum\App\Backend\Orm\Manager;
 use Dvelum\Config;
 use Dvelum\Orm;
@@ -28,7 +29,7 @@ use Dvelum\Lang;
 use Dvelum\View;
 use Dvelum\Template;
 
-class Index extends \Dvelum\App\Backend\Controller
+class Index extends Controller
 {
     public function getModule()
     {

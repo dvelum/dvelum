@@ -18,7 +18,7 @@ Ext.define('app.orm.connections.Window',{
 	constructor: function(config) {
 		config = Ext.apply({
 			title: appLang.DB_CONNECTIONS,
-			width: 700,
+			width: 800,
 			height:300,
 			layout:'fit',
 			closeAction: 'destroy',
@@ -39,7 +39,8 @@ Ext.define('app.orm.connections.Window',{
 				{name:'username' , type:'string'},
 				{name:'dbname' , type:'string'},
 				{name:'host', type:'string'},
-				{name:'adapter', type:'string'}
+				{name:'adapter', type:'string'},
+                {name:'isolation', type:'string'}
 			],
 			proxy: {
 				type: 'ajax',
@@ -93,15 +94,13 @@ Ext.define('app.orm.connections.Window',{
 
 		this.dataGrid = Ext.create('Ext.grid.Panel',{
 			store: this.dataStore,
-			viewConfig:{
-				stripeRows:false
-			},
 			frame: false,
 			loadMask:true,
 			columnLines: true,
 			scrollable:true,
 			forceFit:true,
 			viewConfig:{
+                stripeRows:false,
 				enableTextSelection: true
 			},
 			tbar:[
@@ -156,6 +155,11 @@ Ext.define('app.orm.connections.Window',{
 					dataIndex: 'adapter',
 					align:'center'
 				},{
+                    sortable: true,
+                    text:appLang.TRANSACTION_ISOLATION_LEVEL,
+                    dataIndex: 'isolation',
+                    align:'center'
+                },{
 					width:30,
 					align:'center',
 					dataIndex:'system',
@@ -251,8 +255,6 @@ Ext.define('app.orm.connections.EditWindow',{
 	extend:'Ext.Window',
 
 	dataForm:null,
-	recordId:null,
-
 	controllerUrl:'',
 	devType:false,
 	recordId:false,
@@ -261,7 +263,7 @@ Ext.define('app.orm.connections.EditWindow',{
 		config = Ext.apply({
 			title: appLang.DB_CONNECTIONS,
 			width: 400,
-			height:430,
+			height:450,
 			layout:'fit',
 			modal:true,
 			closeAction: 'destroy',
@@ -275,7 +277,7 @@ Ext.define('app.orm.connections.EditWindow',{
 			bodyPadding:10,
 			fieldDefaults:{
 				anchor:'100%',
-				labelWidth:140
+				labelWidth:160
 			},
 			items:[
 
@@ -330,30 +332,6 @@ Ext.define('app.orm.connections.EditWindow',{
 							direction: 'ASC'
 						}]
 					})//adapterNamespace
-				}),Ext.create('Ext.form.field.ComboBox',{
-					xtype:'combo',
-					allowBlank:false,
-					name:'adapterNamespace',
-					fieldLabel:appLang.DB_ADAPTER_NAMESPACE,
-					queryMode:'local',
-					forceSelection:true,
-					displayField:'title',
-					valueField:'id',
-					value:'Db_Adapter',
-					store:Ext.create('Ext.data.Store',{
-						fields:[
-							{name:'id' , type:'string'},
-							{name:'title' , type:'string'}
-						],
-						data:[
-							{title:'DVelum (recomended)' , id:'Db_Adapter'},
-							{title:'Zend' , id:'Zend_Db_Adapter'}
-						],
-						sorters: [{
-							property : 'title',
-							direction: 'ASC'
-						}]
-					})
 				}),{
 					xtype:'textfield',
 					fieldLabel:appLang.USER,
@@ -366,7 +344,6 @@ Ext.define('app.orm.connections.EditWindow',{
 					fieldLabel:appLang.CHANGE_PASSWORD,
 					submitValue:true,
 					checked:true,
-					readOnly:true,
 					xtype:'checkbox',
 					listeners: {
 						change : {
@@ -392,7 +369,32 @@ Ext.define('app.orm.connections.EditWindow',{
 					vtype: 'password',
 					initialPassField: 'password',
 					allowBlank:false
-				}
+				},
+                Ext.create('Ext.form.field.ComboBox',{
+                    xtype:'combo',
+                    name:'transactionIsolationLevel',
+                    fieldLabel:appLang.TRANSACTION_ISOLATION_LEVEL,
+                    queryMode:'local',
+                    allowBlank:false,
+                    forceSelection:true,
+                    displayField:'title',
+                    valueField:'title',
+                    value:'default',
+                    store:Ext.create('Ext.data.Store',{
+                        fields:[{name:'title' , type:'string'}],
+                        data:[
+                            {title:'default'},
+                            {title:'READ UNCOMMITTED'},
+                            {title:'READ COMMITTED'},
+                            {title:'REPEATABLE READ'},
+                            {title:'SERIALIZABLE'}
+                        ],
+                        sorters: [{
+                            property : 'title',
+                            direction: 'ASC'
+                        }]
+                    })//adapterNamespace
+                }),
 			]
 		});
 
@@ -409,7 +411,7 @@ Ext.define('app.orm.connections.EditWindow',{
 				text:appLang.CANCEL,
 				scope:this,
 				handler:this.close
-			},
+			}
 		];
 
 		this.items = [this.dataForm];
@@ -437,7 +439,7 @@ Ext.define('app.orm.connections.EditWindow',{
 	/**
 	 * Permit or rapretit be empty password field
 	 * @param {Ext.form.field} field
-	 * @param boolean bool
+	 * @param bool bool
 	 */
 	denyBlankPassword:function(field, bool){
 		var handle = this.dataForm.getForm();

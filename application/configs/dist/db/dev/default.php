@@ -7,6 +7,7 @@ return array(
 	'charset'  => 'UTF8',
 	'prefix'   => 'dv_',
 	'adapter'  => 'Mysqli',
-	'adapterNamespace' => 'Db_Adapter'
+    'transactionIsolationLevel' => 'default',
+
 );
   

@@ -578,5 +578,6 @@
   'FILTER_OBJECTS' => 'Filter objects',
   'USER_PERMISSIONS' => 'User permissions',
   'PERMISSIONS' => 'Permissions',
-  'PAGECODE_MATCH' => 'This field should only contain letters, numbers and _ -'
+  'PAGECODE_MATCH' => 'This field should only contain letters, numbers and _ -',
+  'TRANSACTION_ISOLATION_LEVEL' => 'Transaction Isolation Level'
 );

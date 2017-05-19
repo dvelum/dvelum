@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm;
 
 use Dvelum\App\Backend\Orm\Manager;
+use Dvelum\App\Backend\Orm\Connections;
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -18,7 +19,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
     protected $routes = [
         'dictionary' => 'Backend_Orm_Dictionary',
         'dataview' => 'Backend_Orm_Dataview',
-        'connections' => 'Backend_Orm_Connections_Controller',
+        'connections' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Connections',
         'log' => 'Backend_Orm_Log',
         'object' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Object',
         'field' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Field',
@@ -189,9 +190,8 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
      */
     public function connectionsListAction()
     {
-        $manager = new \Backend_Orm_Connections_Manager($this->appConfig->get('db_configs'));
+        $manager = new Connections($this->appConfig->get('db_configs'));
         $list = $manager->getConnections(0);
-
         $data = [];
         if(!empty($list)) {
             foreach($list as $k=>$v) {

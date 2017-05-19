@@ -97,5 +97,5 @@ interface ConfigInterface extends \ArrayAccess , \Iterator
      * Set parent configuration identifier
      * @param string $id
      */
-    public function setParentId(string $id) :void;
+    public function setParentId(?string $id) :void;
 }

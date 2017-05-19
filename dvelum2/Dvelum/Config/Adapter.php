@@ -220,9 +220,9 @@ class Adapter extends \Config_Abstract implements  ConfigInterface
 
     /**
      * Set parent configuration identifier
-     * @param string $id
+     * @param string|null $id
      */
-    public function setParentId(string $id) : void
+    public function setParentId(?string $id) : void
     {
         $this->applyTo = $id;
     }

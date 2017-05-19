@@ -20,6 +20,7 @@
 
 namespace Dvelum\App\Backend\Orm\Controller;
 
+use Dvelum\App\Backend\Controller;
 use Dvelum\App\Backend\Orm\Manager;
 use Dvelum\Config;
 use Dvelum\Orm;
@@ -28,7 +29,7 @@ use Dvelum\Lang;
 use Dvelum\View;
 use Dvelum\Template;
 
-class Crypt extends \Dvelum\App\Backend\Controller
+class Crypt extends Controller
 {
     protected $encryptContainerPrefix = 'encrypt_';
     protected $decryptContainerPrefix = 'decrypt_';

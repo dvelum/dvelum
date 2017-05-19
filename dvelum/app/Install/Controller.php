@@ -281,7 +281,7 @@ class Install_Controller
             'password'       => Request::post('password', 'str', false),
             'dbname'         => Request::post('dbname', 'str', false),
             'driver'  => 'Mysqli',
-            'adapterNamespace' => 'Db_Adapter'
+            'transactionIsolationLevel' => 'default'
         );
 
         if ($port != 0)
