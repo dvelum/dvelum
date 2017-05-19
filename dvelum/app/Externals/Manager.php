@@ -1,5 +1,6 @@
 <?php
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm;
 use Dvelum\Autoloader;
 
@@ -46,7 +47,7 @@ class Externals_Manager
         return $manager;
     }
 
-    private function __construct(Config\ConfigInterface $config, Autoloader $autoloader)
+    private function __construct(ConfigInterface $config, Autoloader $autoloader)
     {
         $this->config = Config\Factory::storage()->get('external_modules.php');
         $this->autoloader = $autoloader;

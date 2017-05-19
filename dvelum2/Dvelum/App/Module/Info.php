@@ -2,12 +2,13 @@
 namespace Dvelum\App\Module;
 
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 class Info
 {
     protected $appConfig;
 
-    public function __construct(Config\ConfigInterface $appConfig)
+    public function __construct(ConfigInterface $appConfig)
     {
         $this->appConfig = $appConfig;
     }

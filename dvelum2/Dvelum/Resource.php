@@ -21,7 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum;
 
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 /**
  * Resources Class
@@ -56,9 +56,9 @@ class Resource
 
     /**
      * Set configuration options
-     * @param Config\ConfigInterface $config
+     * @param CConfigInterface $config
      */
-    public function setConfig(Config\ConfigInterface $config)
+    public function setConfig(ConfigInterface $config)
     {
         $this->config = $config;
         if($this->config->offsetExists('cache')){

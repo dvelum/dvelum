@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\Config;
 
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 /**
  * Configuration Object Factory
@@ -73,9 +74,9 @@ class Factory
      * @param integer $type -type of the object being created, Config class constant
      * @param string $name - identifier
      * @param boolean $useCache - optional , default true. Use cache if available
-     * @return Config\ConfigInterface
+     * @return ConfigInterface
      */
-    static public function config(int $type , string $name , bool $useCache = true) : Config\ConfigInterface
+    static public function config(int $type , string $name , bool $useCache = true) : ConfigInterface
     {
         $store = self::$store;
         $cache = self::$cache;
@@ -206,9 +207,9 @@ class Factory
     /**
      * Create new config object
      * @param array $data
-     * @return Config\ConfigInterface
+     * @return ConfigInterface
      */
-    static public function create(array $data) : Config\ConfigInterface
+    static public function create(array $data) : ConfigInterface
     {
         $config = new Config\Adapter();
         $config->setData($data);

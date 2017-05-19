@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace  Dvelum\Db;
 
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 class Manager implements \Db_Manager_Interface
 {
@@ -29,14 +30,14 @@ class Manager implements \Db_Manager_Interface
     protected $dbConfigs = [];
 
     /**
-     * @var Config\ConfigInterface
+     * @var ConfigInterface
      */
     protected $appConfig;
 
     /**
-     * @param Config\ConfigInterface $appConfig - Application config (main)
+     * @param ConfigInterface $appConfig - Application config (main)
      */
-    public function __construct(Config\ConfigInterface $appConfig)
+    public function __construct(ConfigInterface $appConfig)
     {
         $this->appConfig = $appConfig;
     }
@@ -79,9 +80,9 @@ class Manager implements \Db_Manager_Interface
      * Get Db Connection config
      * @param string $name
      * @throws \Exception
-     * @return Config\ConfigInterface
+     * @return ConfigInterface
      */
-    public function getDbConfig(string $name) : Config\ConfigInterface
+    public function getDbConfig(string $name) : ConfigInterface
     {
         $workMode = $this->appConfig->get('development');
 

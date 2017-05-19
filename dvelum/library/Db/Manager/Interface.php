@@ -1,5 +1,5 @@
 <?php
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Db;
 
 interface Db_Manager_Interface
@@ -15,7 +15,7 @@ interface Db_Manager_Interface
      * Get DB connection config
      * @param string $name
      * @throws Exception
-     * @return Config\ConfigInterface
+     * @return ConfigInterface
      */
-    public function getDbConfig(string $name) : Config\ConfigInterface;
+    public function getDbConfig(string $name) : ConfigInterface;
 }

@@ -16,7 +16,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 /**
  * Designer Factory Wrapper
  */
@@ -24,16 +24,16 @@ class Designer_Manager
 {
     /**
      * Application configuration
-     * @var Config\Adapter
+     * @var ConfigInterface
      */
     protected $_appConfig;
     /**
      * Designer configuration
-     * @var Config\Adapter
+     * @var ConfigInterface
      */
     protected $_designerConfig;
 
-    public function __construct(Config\ConfigInterface $appConfig)
+    public function __construct(ConfigInterface $appConfig)
     {
         $this->_appConfig = $appConfig;
         $this->_designerConfig = Config::storage()->get('designer.php');

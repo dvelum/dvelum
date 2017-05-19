@@ -1,7 +1,7 @@
 <?php
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 /**
  * Documentation generator
  * @author Kirill A Egorov, 2014
@@ -29,7 +29,7 @@ class Sysdocs_Generator
 	 */
 	protected $autoloaderPaths = [];
 
-	public function __construct(Config\ConfigInterface $config)
+	public function __construct(ConfigInterface $config)
 	{
 		$this->config = $config;
 		$this->vers = $config->get('gen_version');

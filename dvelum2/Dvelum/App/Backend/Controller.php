@@ -3,6 +3,7 @@ namespace Dvelum\App\Backend;
 
 use Dvelum\App;
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 use Dvelum\App\Session;
 use Dvelum\Lang;
@@ -14,7 +15,7 @@ class Controller extends App\Controller
 {
     /**
      * Controller configuration
-     * @var Config\Config
+     * @var ConfigInterface
      */
     protected $config;
     /**
@@ -184,9 +185,9 @@ class Controller extends App\Controller
 
     /**
      * Get controller configuration
-     * @return Config\ConfigInterface
+     * @return ConfigInterface
      */
-    protected function getConfig() : Config\ConfigInterface
+    protected function getConfig() : ConfigInterface
     {
         return Config::storage()->get('backend/controller.php');
     }

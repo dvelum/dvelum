@@ -1,7 +1,7 @@
 <?php
 namespace Dvelum\App\Form;
 
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Request;
 
 abstract class Adapter
@@ -17,7 +17,7 @@ abstract class Adapter
 
     protected $lang;
 
-    public function __construct( Request $request , \Dvelum\Lang $lang,  Config\ConfigInterface $config)
+    public function __construct( Request $request , \Dvelum\Lang $lang,  ConfigInterface $config)
     {
         $this->lang = $lang;
         $this->request = $request;

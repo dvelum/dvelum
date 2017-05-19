@@ -23,7 +23,7 @@ namespace Dvelum\Orm\Object\Builder;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Log;
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 
 abstract class AbstractAdapter implements BuilderInterface
@@ -68,9 +68,9 @@ abstract class AbstractAdapter implements BuilderInterface
     abstract public function prepareKeysUpdate();
 
     /**
-     * @param Config\ConfigInterface $config
+     * @param ConfigInterface $config
      */
-    public function __construct(Config\ConfigInterface $config)
+    public function __construct(ConfigInterface $config)
     {
         $this->objectName = $config->get('objectName');
 

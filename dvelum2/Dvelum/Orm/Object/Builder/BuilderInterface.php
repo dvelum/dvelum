@@ -18,7 +18,7 @@
  */
 
 namespace Dvelum\Orm\Object\Builder;
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 /**
  * interface BuilderInterface
@@ -27,9 +27,9 @@ use Dvelum\Config;
 interface BuilderInterface
 {
     /**
-     * @param Config\ConfigInterface $config
+     * @param ConfigInterface $config
      */
-    public function __construct(Config\ConfigInterface $config);
+    public function __construct(ConfigInterface $config);
 
     /**
      * Get error messages

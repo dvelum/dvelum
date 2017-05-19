@@ -28,12 +28,11 @@ use Dvelum\Autoload;
 use Dvelum\Request;
 use Dvelum\Resource;
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm;
-use Dvelum\Orm\Model;
 use Dvelum\Lang;
-use Dvelum\Log;
 use Dvelum\App\Router\Backend as RouterBackend;
-use Dvelum\App\BlockManager;
+
 
 /**
  * Application - is the main class that initializes system configuration
@@ -70,9 +69,9 @@ class Application
 
     /**
      * The constructor accepts the main configuration object as an argument
-     * @param Config\ConfigInterface $config
+     * @param ConfigInterface $config
      */
-    public function __construct(Config\ConfigInterface $config)
+    public function __construct(ConfigInterface $config)
     {
         $this->config = $config;
     }

@@ -4,7 +4,7 @@
  * @author Sergey Leschenko
  */
 
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 abstract class User_Auth_Abstract
 {
@@ -12,9 +12,9 @@ abstract class User_Auth_Abstract
 	protected $config = false;
 
 	/**
-	 * @param Config\ConfigInterface $config - auth provider config
+	 * @param ConfigInterface $config - auth provider config
 	 */
-	public function __construct(Config\ConfigInterface $config)
+	public function __construct(ConfigInterface $config)
 	{
 		$this->config = $config;
 	}

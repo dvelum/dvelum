@@ -1,5 +1,5 @@
 <?php
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm;
 
 /**
@@ -17,9 +17,9 @@ class User_Auth_Ldap extends User_Auth_Abstract
 	private $bindStatus = false;
 
 	/**
-	 * @param Config\ConfigInterface $config - auth provider config
+	 * @param ConfigInterface $config - auth provider config
 	 */
-	public function __construct(Config\ConfigInterface $config)
+	public function __construct(ConfigInterface $config)
 	{
 		if(!extension_loaded('ldap'))
 			throw new Exception('Cannot find php-ldap extension!');

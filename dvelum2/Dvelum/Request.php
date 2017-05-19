@@ -19,7 +19,7 @@
 
 namespace Dvelum;
 
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 /**
  * Class Request
@@ -54,9 +54,9 @@ class Request
 
     /**
      * Set configuration options
-     * @param Config\ConfigInterface $config
+     * @param ConfigInterface $config
      */
-    public function setConfig(Config\ConfigInterface $config)
+    public function setConfig(ConfigInterface $config)
     {
         $this->config = $config;
     }

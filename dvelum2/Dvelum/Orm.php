@@ -21,12 +21,12 @@ declare(strict_types=1);
 namespace Dvelum;
 
 use Dvelum\Orm\Exception;
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 
 class Orm
 {
-    static public function init(Config\ConfigInterface $config, \Db_Manager $dbManager, string $language, \Cache_Interface $cache = null)
+    static public function init(ConfigInterface $config, \Db_Manager $dbManager, string $language, \Cache_Interface $cache = null)
     {
         $eventManager = new \Eventmanager();
 

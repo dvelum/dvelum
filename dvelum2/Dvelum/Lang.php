@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum;
 
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 class Lang
 {
@@ -29,7 +29,7 @@ class Lang
 
     static protected $dictionaries = [];
     static protected $loaders = [];
-    static protected $defaultDictionary = null;
+    static protected $defaultDictionary = '';
 
 
     /**
@@ -76,7 +76,7 @@ class Lang
     /**
      * Add localization dictionary
      * @param string $name — localization name
-     * @param Config\ConfigInterface  $dictionary — configuration object
+     * @param ConfigInterface  $dictionary — configuration object
      * @return void
      */
     static public function addDictionary(string $name , Config\ConfigInterface $dictionary)

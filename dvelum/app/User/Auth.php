@@ -4,17 +4,17 @@
  * @author Sergey Leschenko
  */
 
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 class User_Auth
 {
 	/**
 	 * Factory method of User_Auth instantiation
-	 * @param Config\ConfigInterface $config — auth provider config
+	 * @param ConfigInterface $config — auth provider config
      * @throws \Exception
 	 * @return User_Auth_Abstract
 	 */
-	static public function factory(Config\ConfigInterface $config) : User_Auth_Abstract
+	static public function factory(ConfigInterface $config) : User_Auth_Abstract
 	{
 		$providerAdapter = $config->get('adapter');
 

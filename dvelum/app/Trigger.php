@@ -1,6 +1,7 @@
 <?php
 
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm;
 use Dvelum\App\Session\User;
 
@@ -27,9 +28,9 @@ class Trigger
 
     /**
      * Set application config
-     * @param Config\ConfigInterface $config
+     * @param ConfigInterface $config
      */
-    static public function setApplicationConfig(Config\ConfigInterface  $config)
+    static public function setApplicationConfig(ConfigInterface $config)
     {
         static::$applicationConfig = $config;
     }

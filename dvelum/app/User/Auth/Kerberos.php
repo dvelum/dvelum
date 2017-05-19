@@ -1,6 +1,6 @@
 <?php
 use Dvelum\Orm;
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 /**
  * User Auth provider for Kerberos.
  * @author Sergey Leschenko
@@ -8,9 +8,9 @@ use Dvelum\Config;
 class User_Auth_Kerberos extends User_Auth_Abstract
 {
 	/**
-	 * @param Config\ConfigInterface $config - auth provider config
+	 * @param ConfigInterface $config - auth provider config
 	 */
-	public function __construct(Config\ConfigInterface $config)
+	public function __construct(ConfigInterface $config)
 	{
 		if(!extension_loaded('krb5'))
 			throw new Exception('Cannot find php-krb5 extension!');

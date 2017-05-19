@@ -1,6 +1,6 @@
 <?php
 
-use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 
 class Backend_Localization_Manager
 {
@@ -23,9 +23,9 @@ class Backend_Localization_Manager
     protected $_langsPaths;
 
     /**
-     * @param Config\ConfigInterface  $appConfig
+     * @param ConfigInterface $appConfig
      */
-    public function __construct(Config\ConfigInterface  $appConfig)
+    public function __construct(ConfigInterface  $appConfig)
     {
         $this->_appConfig =  $appConfig;
         $this->_langsPaths = Lang::storage()->getPaths();

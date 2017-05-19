@@ -4,8 +4,8 @@ namespace Dvelum\App\Backend;
 
 use Dvelum\App;
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Request;
-use Dvelum\Orm\Model;
 
 class Auth
 {
@@ -17,7 +17,7 @@ class Auth
     protected  $request;
     protected  $appConfig;
 
-    public function __construct(Request $request, Config\ConfigInterface $appConfig)
+    public function __construct(Request $request, ConfigInterface $appConfig)
     {
         $this->request = $request;
         $this->appConfig = $appConfig;
