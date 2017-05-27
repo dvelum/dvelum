@@ -52,7 +52,12 @@ class Model
      * Db_Object config
      * @var Orm\Object\Config
      */
-    protected $objectConfig;
+    private $objectConfig = null;
+
+    /**
+     * @var Config\ConfigInterface
+     */
+    private $lightConfig = null;
 
     /**
      * Object / model name
@@ -156,31 +161,49 @@ class Model
      */
     protected function __construct(string $objectName)
     {
+        $ormConfig = Config\Factory::storage()->get('orm.php', true, false);
+
         $this->store = static::$defaults['dbObjectStore'];
         $this->name = strtolower($objectName);
         $this->cacheTime = static::$defaults['hardCacheTime'];
         $this->cache = static::$defaults['dataCache'];
         $this->dbManager = static::$defaults['defaultDbManager'];
+        $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php', true, false);
 
-        try{
-            $this->objectConfig = Orm\Object\Config::factory($this->name);
-        }catch (\Exception $e){
-            throw new \Exception('Object '. $objectName.' is not exists');
+        $conName = $this->lightConfig->get('connection');
+        $this->db = $this->dbManager->getDbConnection($conName);
+        if($this->lightConfig->offsetExists('slave_connection') && !empty($this->lightConfig->get('slave_connection'))){
+            $this->dbSlave = $this->dbSlave = $this->dbManager->getDbConnection($this->lightConfig->get('slave_connection'));
+        }else{
+            $this->dbSlave = $this->db;
         }
 
-        $conName = $this->objectConfig->get('connection');
-        $this->db = $this->dbManager->getDbConnection($conName);
-        $this->dbSlave = $this->dbManager->getDbConnection($this->objectConfig->get('slave_connection'));
-
-        if($this->objectConfig->hasDbPrefix())
+        if($this->lightConfig->get('use_db_prefix'))
             $this->dbPrefix = $this->dbManager->getDbConfig($conName)->get('prefix');
         else
             $this->dbPrefix = '';
 
-        $this->table = $this->objectConfig->get('table');
+        $this->table = $this->lightConfig->get('table');
 
         if(static::$defaults['errorLog'])
             $this->log = static::$defaults['errorLog'];
+    }
+
+    /**
+     * Lazy load of ORM\Object\Config
+     * @return Object\Config
+     * @throws \Exception
+     */
+    protected function getObjectConfig() : Orm\Object\Config
+    {
+        if(empty($this->objectConfig)){
+            try{
+                $this->objectConfig = Orm\Object\Config::factory($this->name);
+            }catch (\Exception $e){
+                throw new \Exception('Object '. $this->name .' is not exists');
+            }
+        }
+        return $this->objectConfig;
     }
 
     /**
@@ -347,7 +370,7 @@ class Model
     }
 
     /**
-     * Get the object data by the unique field using cache
+     * Get data record by field value using cache. Returns first occurrence
      * @param string $field - field name
      * @param string $value - field value
      * @return array
@@ -363,7 +386,7 @@ class Model
         if($data!==false)
             return $data;
 
-        $data = $this->getItemByUniqueField($field, $value);
+        $data = $this->getItemByField($field, $value);
 
         if($this->cache && $data)
             $this->cache->save($data ,$cacheKey);
@@ -373,7 +396,7 @@ class Model
 
     /**
      * Get object by unique field
-     *
+     * @deprecated
      * @param string $fieldName
      * @param string $value
      * @param mixed $fields - optional
@@ -382,13 +405,20 @@ class Model
      */
     public function getItemByUniqueField(string $fieldName , $value , $fields = '*')
     {
-        if(!$this->objectConfig->getField($fieldName)->isUnique()){
-            $eText = 'getItemByUniqueField field "'.$fieldName.'" ['.$this->objectConfig->getName().'] should be unique';
-            $this->logError($eText);
-            throw new \Exception($eText);
-        }
+        return $this->getItemByField($fieldName, $value, $fields);
+    }
+
+    /**
+     * Get Item by field value. Returns first occurrence
+     * @param string $fieldName
+     * @param $value
+     * @param string $fields
+     * @return array|null
+     */
+    public function getItemByField(string $fieldName, $value, $fields = '*')
+    {
         $sql = $this->dbSlave->select()->from($this->table() , $fields);
-        $sql->where($this->dbSlave->quoteIdentifier($fieldName).' = ?' , $value);
+        $sql->where($this->dbSlave->quoteIdentifier($fieldName).' = ?' , $value)->limit(1);
         return $this->dbSlave->fetchRow($sql);
     }
 
@@ -610,16 +640,21 @@ class Model
      */
     protected function clearFilters(array $filters)
     {
+        /**
+         * @todo refactor to light
+         */
+        //$config = $this->getObjectConfig();
+
         foreach ($filters as $field=>$val)
         {
-            if(!$val instanceof \Db_Select_Filter && !is_null($val) && (!is_array($val) && !strlen((string)$val)))
+            if(!($val instanceof \Db_Select_Filter) && !is_null($val) && (!is_array($val) && !strlen((string)$val)))
             {
                 unset($filters[$field]);
                 continue;
             }
 
-            if($this->objectConfig->fieldExists($field) && $this->objectConfig->getField($field)->isBoolean())
-                $filters[$field] = \Filter::filterValue(\Filter::FILTER_BOOLEAN, $val);
+//            if($config->fieldExists($field) && $config->getField($field)->isBoolean())
+//                $filters[$field] = \Filter::filterValue(\Filter::FILTER_BOOLEAN, $val);
         }
         return $filters;
     }
@@ -924,9 +959,19 @@ class Model
      * Get primary key name
      * @return string
      */
-    public function getPrimaryKey()
+    public function getPrimaryKey() : string
     {
-        return $this->objectConfig->getPrimaryKey();
+        $key = '';
+
+        if($this->lightConfig->offsetExists('primary_key')){
+            $key = $this->lightConfig->get('primary_key');
+        }
+
+        if(empty($key)){
+            return 'id';
+        }else{
+            return $key;
+        }
     }
 
     /**
@@ -936,16 +981,16 @@ class Model
      */
     public function setDbManager(\Db_Manager_Interface $manager) : void
     {
-        $conName = $this->objectConfig->get('connection');
+        $conName = $this->lightConfig->get('connection');
         $this->dbManager =  $manager;
         $this->db = $this->dbManager->getDbConnection($conName);
-        $this->dbSlave = $this->dbManager->getDbConnection($this->objectConfig->get('slave_connection'));
+        $this->dbSlave = $this->dbManager->getDbConnection($this->lightConfig->get('slave_connection'));
         $this->refreshTableInfo();
     }
 
     public function refreshTableInfo()
     {
-        $conName = $this->objectConfig->get('connection');
+        $conName = $this->lightConfig->get('connection');
         $this->db = $this->dbManager->getDbConnection($conName);
 
         if($this->objectConfig->hasDbPrefix())
@@ -953,7 +998,7 @@ class Model
         else
             $this->dbPrefix = '';
 
-        $this->table = $this->objectConfig->get('table');
+        $this->table = $this->lightConfig->get('table');
     }
 
     /**
@@ -1096,7 +1141,7 @@ class Model
     protected function getSearchFields()
     {
         if(is_null($this->searchFields)){
-            $this->searchFields = $this->objectConfig->getSearchFields();
+            $this->searchFields = $this->getObjectConfig()->getSearchFields();
         }
         return $this->searchFields;
     }

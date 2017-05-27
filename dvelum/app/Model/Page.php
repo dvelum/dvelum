@@ -159,7 +159,7 @@ class Model_Page extends Model
      */
     public function resetChilds($id)
     {
-    	$obj = Orm\Object::factory($this->_name, intval($id));
+    	$obj = Orm\Object::factory($this->name, intval($id));
 		$obj->set('parent_id', 0);
 		$obj->save();
     }

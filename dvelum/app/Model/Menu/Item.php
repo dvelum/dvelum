@@ -87,7 +87,7 @@ class Model_Menu_Item extends Model
      */
     public function updateLinks($objectId, $links)
     {  	
-    	$this->_db->delete($this->table() , 'menu_id = '.intval($objectId));
+    	$this->db->delete($this->table() , 'menu_id = '.intval($objectId));
     	
     	if(!empty($links))
     	{
