@@ -30,11 +30,11 @@ class Adapter
     }
 
     /**
-     * @return \Db_Select
+     * @return Select
      */
     public function select()
     {
-        $select = new \Db_Select();
+        $select = new Select();
         if($this->params['adapter'] === 'Mysqli'){
             $select->setMysqli($this->adapter->getDriver()->getConnection()->getResource());
         }

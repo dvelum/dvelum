@@ -35,9 +35,9 @@ class Object
 {
     /**
      * Error log adapter
-     * @var \Psr\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface| bool
      */
-    static protected $log = false;
+    protected $logger = false;
 
     protected $name;
 
@@ -101,6 +101,8 @@ class Object
         $this->model = Model::factory($name);
         $this->acl = $this->config->getAcl();
 
+        $this->logger = $this->model->getLogsAdapter();
+
         if($this->id){
             $this->checkCanRead();
             $this->loadData();
@@ -131,7 +133,7 @@ class Object
             {
                 foreach($fields as $field=>$linkType)
                 {
-                    if($this->config->isManyToManyLink($field)){
+                    if($this->config->getField($field)->isManyToManyLink()){
                         $relationsObject = $this->config->getRelationsObject($field);
                         $relationsData = Model::factory($relationsObject)->getList(
                             ['sort'=>'order_no', 'dir' =>'ASC'],
@@ -139,7 +141,7 @@ class Object
                             ['targetid']
                         );
                     }else{
-                        $linkedObject = $this->config->getLinkedObject($field);
+                        $linkedObject = $this->config->getField($field)->getLinkedObject();
                         $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
                         $linksModel = Model::factory($linksObject);
                         $relationsData = $linksModel->getList(
@@ -533,23 +535,23 @@ class Object
             }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$log)
-                    self::$log->log(LogLevel::ERROR , $e->getMessage());
+                if($this->logger)
+                    $this->logger->log(LogLevel::ERROR , $e->getMessage());
                 return false;
             }
         }
 
         $store  = $this->model->getStore();
 
-        if(self::$log)
-            $store->setLog(self::$log);
+        if($this->logger)
+            $store->setLog($this->logger);
 
         if($this->config->isReadOnly())
         {
             $text = 'ORM :: cannot save readonly object '. $this->config->getName();
             $this->errors[] = $text;
-            if(self::$log)
-                self::$log->log(LogLevel::ERROR, $text);
+            if($this->logger)
+                $this->logger->log(LogLevel::ERROR, $text);
             return false;
         }
 
@@ -566,8 +568,8 @@ class Object
         {
             $text = 'ORM :: Fields can not be empty. '.$this->getName().' ['.implode(',', $emptyFields).']';
             $this->errors[] = $text;
-            if(self::$log)
-                self::$log->log(LogLevel::ERROR, $text);
+            if($this->logger)
+                $this->logger->log(LogLevel::ERROR, $text);
             return false;
         }
 
@@ -581,8 +583,8 @@ class Object
                 $this->errors[] = $text;
             }
 
-            if(self::$log)
-                self::$log->log(LogLevel::ERROR, $this->getName() . ' ' . implode(', ' , $this->errors));
+            if($this->logger)
+                $this->logger->log(LogLevel::ERROR, $this->getName() . ' ' . implode(', ' , $this->errors));
 
             return false;
         }
@@ -612,8 +614,8 @@ class Object
             }
         }catch (Exception $e){
             $this->errors[] = $e->getMessage();
-            if(self::$log)
-                self::$log->log(LogLevel::ERROR, $e->getMessage());
+            if($this->logger)
+                $this->logger->log(LogLevel::ERROR, $e->getMessage());
             return false;
         }
     }
@@ -634,8 +636,8 @@ class Object
             }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$log)
-                    self::$log->log(LogLevel::ERROR, $e->getMessage());
+                if($this->logger)
+                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
@@ -835,15 +837,6 @@ class Object
     }
 
     /**
-     * Enable error log. Set log adapter
-     * @param \Log $log
-     */
-    static public function setLog(\Log $log)
-    {
-        self::$log = $log;
-    }
-
-    /**
      * Check for required fields
      * @return boolean|array
      */
@@ -921,15 +914,15 @@ class Object
             }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$log)
-                    self::$log->log(LogLevel::ERROR, $e->getMessage());
+                if($this->logger)
+                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
 
         $store  = $this->model->getStore();
-        if(self::$log)
-            $store->setLog(self::$log);
+        if($this->logger)
+            $store->setLog($this->logger);
 
         $this->publishedversion = 0;
         $this->published = false;
@@ -958,16 +951,16 @@ class Object
             }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$log)
-                    self::$log->log(LogLevel::ERROR, $e->getMessage());
+                if($this->logger)
+                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
 
         $store  = $this->model->getStore();
 
-        if(self::$log)
-            $store->setLog(self::$log);
+        if($this->logger)
+            $store->setLog($this->logger);
 
         if($version && $version !== $this->getVersion())
         {
@@ -978,8 +971,8 @@ class Object
             {
                 $this->errors[] = $e->getMessage();
 
-                if(self::$log)
-                    self::$log->log(LogLevel::ERROR, $e->getMessage());
+                if($this->logger)
+                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
@@ -1094,8 +1087,8 @@ class Object
             }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
 
-                if(self::$log)
-                    self::$log->log(LogLevel::ERROR, $e->getMessage());
+                if($this->logger)
+                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
                 return false;
             }
         }
@@ -1114,8 +1107,8 @@ class Object
 
         $store  = $this->model->getStore();
 
-        if(self::$log)
-            $store->setLog(self::$log);
+        if($this->logger)
+            $store->setLog($this->logger);
 
         $version = $store->addVersion($this , $useTransaction);
 

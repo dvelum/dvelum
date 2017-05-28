@@ -460,7 +460,7 @@ class Model
 
     /**
      * Add filters (where) to the query
-     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql | string
+     * @param Db\Select | string
      * @param array $filters  the key - the field name, value
      * @return void
      */
@@ -472,13 +472,12 @@ class Model
         foreach($filters as $k => $v)
         {
 
-            if($v instanceof  \Db_Select_Filter)
+            if($v instanceof Db\Select\Filter)
             {
                 $v->applyTo($this->db, $sql);
             }
             else
             {
-
                 if(is_array($v) && !empty($v))
                     $sql->where($this->db->quoteIdentifier($k) . ' IN(?)' , $v);
                 elseif (is_bool($v))
@@ -494,11 +493,11 @@ class Model
     /**
      * Add author selection join to the query.
      * Used with rev_control objects
-     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql
+     * @param Db\Select $sql
      * @param string $fieldAlias
      * @return void
      */
-    protected function queryAddAuthor($sql , $fieldAlias) : void
+    protected function queryAddAuthor(Db\Select $sql , string $fieldAlias) : void
     {
         $sql->joinLeft(
             array('u1' =>  Model::factory('User')->table()) ,
@@ -510,11 +509,11 @@ class Model
     /**
      * Add editor selection join to the query.
      * Used with rev_control objects
-     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql
+     * @param Db\Select $sql
      * @param string $fieldAlias
      * @return void
      */
-    protected function queryAddEditor($sql , $fieldAlias)  : void
+    protected function queryAddEditor(Db\Select $sql , $fieldAlias)  : void
     {
         $sql->joinLeft(
             array('u2' =>  Model::factory('User')->table()) ,
@@ -526,11 +525,11 @@ class Model
     /**
      * Add pagination parameters to a query
      * Used in CRUD-controllers for list pagination and sorting
-     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql
+     * @param Db\Select $sql
      * @param array $params — possible keys: start,limit,sort,dir
      * @return void
      */
-    static public function queryAddPagerParams($sql , $params) : void
+    static public function queryAddPagerParams(Db\Select $sql , $params) : void
     {
         if(isset($params['limit']) && !isset($params['start'])){
             $sql->limit(intval($params['limit']));
@@ -667,7 +666,7 @@ class Model
             $this->queryAddFilters($sql , $filters);
 
         if($author)
-            $this->queryAddAuthor($sql , $author);
+            $this->queryAddAuthor($sql , (string) $author);
 
         if($lastEditor)
             $this->queryAddEditor($sql , $lastEditor);
@@ -856,7 +855,7 @@ class Model
 
     /**
      * Add joins to the query
-     * @param \Db_Select | \Zend\Db\Sql\AbstractSql $sql
+     * @param Db\Select $sql
      * @param array $joins   - config for ZendDb join method:
      * array(
      * 		array(
@@ -867,7 +866,7 @@ class Model
      * 		)...
      * )
      */
-    protected function queryAddJoins($sql , array $joins)
+    protected function queryAddJoins(Db\Select $sql , array $joins)
     {
         foreach($joins as $config)
         {
@@ -890,25 +889,25 @@ class Model
     }
 
     /**
-     * @param $sql
+     * @param Db\Select $sql
      * @param array $joins
      * @deprecated
      */
-    protected function _queryAddJoins($sql , array $joins)
+    protected function _queryAddJoins(Db\Select $sql , array $joins)
     {
         $this->queryAddJoins($sql, $joins);
     }
 
     /**
      * Add Like where couse for query
-     * @param \Db_Select | \Zend\Db\Sql $sql
+     * @param Db\Select $sql
      * @param string $query
      * @param string $alias - table name alias, optional
      * @return void
      */
-    protected function queryAddQuery($sql , $query, $alias = false)  : void
+    protected function queryAddQuery(Db\Select $sql , $query, ?string $alias)  : void
     {
-        if(!$alias){
+        if(!empty($alias)){
             $alias = $this->table();
         }
 
@@ -928,11 +927,11 @@ class Model
     }
 
     /**
-     * @param $sql
-     * @param $query
-     * @param bool $alias
+     * @param Db\Select $sql
+     * @param string $query
+     * @param null|string $alias
      */
-    protected function _queryAddQuery($sql , $query, $alias = false)
+    protected function _queryAddQuery(Db\Select $sql , string $query, ?string $alias) : void
     {
         $this->queryAddQuery($sql , $query, $alias);
     }

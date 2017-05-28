@@ -23,6 +23,7 @@ namespace Dvelum\App;
 
 use Dvelum\Orm\Model;
 use Dvelum\Config;
+use \Page;
 
 class BlockManager
 {

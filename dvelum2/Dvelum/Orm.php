@@ -23,10 +23,11 @@ namespace Dvelum;
 use Dvelum\Orm\Exception;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
+use Dvelum\Db;
 
 class Orm
 {
-    static public function init(ConfigInterface $config, \Db_Manager $dbManager, string $language, \Cache_Interface $cache = null)
+    static public function init(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, \Cache_Interface $cache = null)
     {
         $eventManager = new \Eventmanager();
 
@@ -78,11 +79,9 @@ class Orm
 
                 $logOrmDb = new Log\Db('db_object_error_log' , $errorDb , $errorTable);
                 $logModelDb = new Log\Db('model' , $errorDb , $errorTable);
-                Orm\Object::setLog(new Log\Mixed($log, $logOrmDb));
                 Model::setDefaultLog(new Log\Mixed($log, $logModelDb));
                 $objectStore->setLog($logOrmDb);
             }else{
-                Orm\Object::setLog($log);
                 Model::setDefaultLog($log);
                 $objectStore->setLog($log);
             }

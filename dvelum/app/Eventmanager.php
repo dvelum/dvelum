@@ -15,9 +15,9 @@ class Eventmanager extends Orm\Object\Event\Manager
 
     /**
      * Set cache adapter
-     * @param Cache_Abstract $cache
+     * @param \Cache_Interface $cache
      */
-    public function setCache(Cache_Abstract $cache)
+    public function setCache(\Cache_Interface $cache)
     {
         $this->_cache = $cache;
     }

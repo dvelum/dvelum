@@ -17,6 +17,8 @@
  *
  */
 declare(strict_types=1);
+
+namespace Dvelum\Db;
 /**
  * Class for building SQL SELECT queries
  * Represents an implementation of the Zend_Db_select interface,
@@ -24,7 +26,7 @@ declare(strict_types=1);
  * Functionality is practically identical to that of Zend_Db_Select, so it is easy to use for those, who is familiar with the latter.
  * introduced in DVelum 0.9
  */
-class Db_Select
+class Select
 {
     const JOIN_INNER = 1;
     const JOIN_LEFT = 2;
@@ -33,7 +35,7 @@ class Db_Select
     public $localCache = true;
 
     /**
-     * @var Mysqli
+     * @var \Mysqli
      */
     protected $_mysqliConnection = false;
 
@@ -68,7 +70,7 @@ class Db_Select
     protected $_aliasCount = [];
 
     /**
-     * @param mysqli $connection
+     * @param \mysqli $connection
      */
     public function setMysqli(\mysqli $connection){
         $this->_mysqliConnection = $connection;
@@ -76,7 +78,7 @@ class Db_Select
 
     /**
      * Add a DISTINCT clause
-     * @return Db_Select
+     * @return self
      */
     public function distinct()
     {
@@ -88,7 +90,7 @@ class Db_Select
      * Add a FROM clause to the query
      * @param mixed $table string table name or array('alias'=>'tablename')
      * @param mixed $columns
-     * @return Db_Select
+     * @return self
      */
     public function from($table, $columns = "*") : self
     {
@@ -107,7 +109,7 @@ class Db_Select
      * Add a WHERE clause
      * @param string $condition
      * @param mixed $bind
-     * @return Db_Select
+     * @return self
      */
     public function where($condition, $bind = false)  : self
     {
@@ -122,7 +124,7 @@ class Db_Select
      * Add a OR WHERE clause to the query
      * @param string $condition
      * @param mixed $bind
-     * @return Db_Select
+     * @return self
      */
     public function orWhere($condition, $bind = false) : self
     {
@@ -137,7 +139,7 @@ class Db_Select
     /**
      * Add a GROUP clause to the query
      * @param mixed $fields string field name or array of field names
-     * @return Db_Select
+     * @return self
      */
     public function group($fields) : self
     {
@@ -157,7 +159,7 @@ class Db_Select
      * Add a HAVING clause to the query
      * @param string $condition
      * @param mixed $bind
-     * @return Db_Select
+     * @return self
      */
     public function having($condition, $bind = false) : self
     {
@@ -173,7 +175,7 @@ class Db_Select
      * Add a OR HAVING clause to the query
      * @param string $condition
      * @param mixed $bind
-     * @return Db_Select
+     * @return self
      */
     public function orHaving($condition, $bind = false) : self
     {
@@ -190,7 +192,7 @@ class Db_Select
      * @param string $table
      * @param mixed $cond
      * @param mixed $cols
-     * @return Db_Select
+     * @return self
      */
     public function join($table, $cond, $cols = '*') : self
     {
@@ -204,7 +206,7 @@ class Db_Select
      * @param mixed $table
      * @param mixed $cond
      * @param mixed $cols
-     * @return Db_Select
+     * @return self
      */
     public function joinInner($table, $cond, $cols = '*') : self
     {
@@ -218,7 +220,7 @@ class Db_Select
      * @param mixed $table
      * @param mixed $cond
      * @param mixed $cols
-     * @return Db_Select
+     * @return self
      */
     public function joinLeft($table, $cond, $cols = '*') : self
     {
@@ -232,7 +234,7 @@ class Db_Select
      * @param mixed $table
      * @param mixed $cond
      * @param mixed $cols
-     * @return Db_Select
+     * @return self
      */
     public function joinRight($table, $cond, $cols = '*') : self
     {
@@ -282,7 +284,7 @@ class Db_Select
      * Adding a LIMIT clause to the query
      * @param integer $count
      * @param mixed $offset - optional
-     * @return Db_Select
+     * @return self
      */
     public function limit($count, $offset = false) : self
     {
@@ -295,7 +297,7 @@ class Db_Select
      * Setting the limit and count by page number.
      * @param int $page Limit results to this page number.
      * @param int $rowCount Use this many rows per page.
-     * @return Db_Select This Db_Select object.
+     * @return self
      */
     public function limitPage($page, $rowCount) : self
     {
@@ -308,8 +310,8 @@ class Db_Select
     /**
      * Adding an ORDER clause to the query
      * @param mixed $spec
-     * @param boolean asIs optional
-     * @return Db_Select
+     * @param boolean $asIs optional
+     * @return self
      */
     public function order($spec, $asIs = false) : self
     {
@@ -347,7 +349,7 @@ class Db_Select
      * Makes the query SELECT FOR UPDATE.
      *
      * @param bool $flag Whether or not the SELECT is FOR UPDATE (default true).
-     * @return Db_Select
+     * @return self
      */
     public function forUpdate($flag = true) : self
     {

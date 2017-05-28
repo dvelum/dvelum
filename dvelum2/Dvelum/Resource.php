@@ -56,7 +56,7 @@ class Resource
 
     /**
      * Set configuration options
-     * @param CConfigInterface $config
+     * @param ConfigInterface $config
      */
     public function setConfig(ConfigInterface $config)
     {

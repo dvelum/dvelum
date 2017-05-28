@@ -23,8 +23,9 @@ namespace  Dvelum\Db;
 
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Db\ManagerInterface;
 
-class Manager implements \Db_Manager_Interface
+class Manager implements ManagerInterface
 {
     protected $dbConnections = [];
     protected $dbConfigs = [];

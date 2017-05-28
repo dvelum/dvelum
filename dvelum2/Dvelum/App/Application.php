@@ -29,6 +29,7 @@ use Dvelum\Request;
 use Dvelum\Resource;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Db;
 use Dvelum\Orm;
 use Dvelum\Lang;
 use Dvelum\App\Router\Backend as RouterBackend;
@@ -157,12 +158,10 @@ class Application
 
         if($cache)
         {
-            Resource::setCache($cache);
-            Template::setCache($cache);
+            View::setCache($cache);
             if($this->config->offsetExists('template_check_mtime'))
-                Template::checkMtime($this->config->get('template_check_mtime'));
+                View::checkMtime($this->config->get('template_check_mtime'));
         }
-
 
         $ormConfig = Config::storage()->get('orm.php');
         Orm::init($ormConfig, $dbManager, $lang, $cache);
@@ -232,7 +231,7 @@ class Application
 
     /**
      * Initialize Database connection
-     * @return \Db_Manager_Interface
+     * @return Db\ManagerInterface
      */
     protected function initDb()
     {
@@ -253,7 +252,7 @@ class Application
         /**
          * @todo handle connection error
          */
-        $conManager = new \Db_Manager($this->config);
+        $conManager = new Db\Manager($this->config);
         //        try{
         //            $dbConfig = $conManager->getDbConfig('default');
         //            $this->_db = $conManager->getDbConnection('default');
