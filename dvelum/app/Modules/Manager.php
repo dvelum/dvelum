@@ -86,19 +86,19 @@ class Modules_Manager
 
     /**
      * Get Module class
-     * @param string $name
-     * @return boolean false | string
+     * @param $name
+     * @return null|string
      */
-    public function getModuleController($name)
+    public function getModuleController($name) :?string
     {
         if(!$this->isValidModule($name))
-            return false;
+            return null;
 
         $cfg = $this->_config->get($name);
         if(isset($cfg['class']) && !empty($cfg['class']))
             return $cfg['class'];
         else
-            return '';
+            return null;
     }
 
     /**

@@ -162,7 +162,7 @@ class Request
        if(isset($this->_path[$index]) && !empty($this->_path[$index])) {
            return $this->_path[$index];
        } else {
-           return false;
+           return null;
        }
     }
 
