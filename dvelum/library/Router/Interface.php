@@ -9,5 +9,5 @@ interface Router_Interface
   /**
    * Run action
    */
-  public function route();
+  public function route(Request $request , Response $response);
 }

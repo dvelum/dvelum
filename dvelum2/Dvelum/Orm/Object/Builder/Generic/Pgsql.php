@@ -89,4 +89,14 @@ class Pgsql extends Builder\Generic
         'jsonb' => self::TYPE_TEXT,
         'xml' => self::TYPE_TEXT,
     ];
+
+    public function build(bool $buildKeys = true): bool
+    {
+        // TODO: Implement build() method.
+    }
+
+    public function buildForeignKeys($remove = true, $create = true): bool
+    {
+        // TODO: Implement buildForeignKeys() method.
+    }
 }

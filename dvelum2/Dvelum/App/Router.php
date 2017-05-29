@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App;
 
+use Dvelum\Orm\Exception;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Lang;
@@ -56,22 +57,27 @@ abstract class Router implements Router\RouterInterface
 
     /**
      * Run controller
-     * @param string $controller - controller class
-     * @param string|boolean $action - action name
+     * @param string $controller
+     * @param null|string $action
      * @param Request $request
      * @param Response $response
-     * @return mixed
+     * @throws \Exception
      */
-    public function runController(string $controller , $action = false, Request $request , Response $response)
+    public function runController(string $controller , ?string $action, Request $request , Response $response) : void
     {
-        if(!class_exists($controller))
-            return false;
+        if(!class_exists($controller)){
+            throw new \Exception('Undefined Controller: '. $controller);
+        }
 
+        /**
+         * @var \Dvelum\App\Controller $controller
+         */
         $controller = new $controller($request, $response);
         $controller->setRouter($this);
 
         if($controller instanceof Router\RouterInterface || $controller instanceof \Router_Interface){
-            return $controller->route();
+            $controller->route($request, $response);
+            return;
         }
 
         if(empty($action)){
@@ -82,6 +88,7 @@ abstract class Router implements Router\RouterInterface
             $response->error(Lang::lang()->get('WRONG_REQUEST').' ' . $request->getUri());
         }
 
-        return $controller->{$action.'Action'}();
+        $controller->{$action.'Action'}();
+        return;
     }
 }

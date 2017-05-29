@@ -821,5 +821,4 @@ class MySQL extends AbstractAdapter
 
         return true;
     }
-
 }

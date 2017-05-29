@@ -96,5 +96,15 @@ class MySQL extends Builder\Generic
             return false;
         }
     }
+
+    public function build(bool $buildKeys = true): bool
+    {
+        // TODO: Implement build() method.
+    }
+
+    public function buildForeignKeys($remove = true, $create = true): bool
+    {
+        // TODO: Implement buildForeignKeys() method.
+    }
 }
 

@@ -22,45 +22,40 @@ declare(strict_types=1);
 namespace Dvelum\App\Router;
 
 use Dvelum\App\Router;
-use Dvelum\Config;
-use Dvelum\Lang;
 use Dvelum\Request;
 use Dvelum\Response;
+use Dvelum\Config as Cfg;
 
-class Path extends Router
+class Config extends Router
 {
     protected $appConfig = false;
 
     public function __construct()
     {
         parent::__construct();
-        $this->appConfig = Config::storage()->get('main.php');
+        $this->appConfig = Cfg::storage()->get('main.php');
     }
 
     /**
      * Route request
      * @param Request $request
      * @param Response $response
-     * @throws \Exception
-     * @return void
      */
-    public function route(Request $request , Response $response) :void
+    public function route(Request $request , Response $response) : void
     {
         $controller = $request->getPart(0);
-        $controller = ucfirst(Filter::filterValue('pagecode' , $controller));
+        $pathCode = \Filter::filterValue('pagecode' , $controller);
+        $routes = Cfg::factory(Cfg\Factory::File_Array , $this->appConfig->get('frontend_modules'))->__toArray();
 
-        $controllerClass = 'Frontend_' . $controller . '_Controller';
+        if(isset($routes[$pathCode]) && class_exists($routes[$pathCode]['class']))
+            $controllerClass = $routes[$pathCode]['class'];
+        else
+            $controllerClass = 'Frontend_Index_Controller';
 
-        if($controller !== false && strlen($controller) && class_exists($controllerClass)) {
-            $controller = $controllerClass;
-        } else {
-            $controller = 'Frontend_Index_Controller';
-        }
-        $this->runController($controller , $request->getPart(1), $request, $response);
+        $this->runController($controllerClass , $request->getPart(1), $request, $response);
     }
 
     /**
-     * Run controller
      * @param string $controller
      * @param null|string $action
      * @param Request $request
@@ -68,14 +63,12 @@ class Path extends Router
      */
     public function runController(string $controller , ?string $action, Request $request , Response $response) : void
     {
-        if((strpos('Backend_' , $controller) === 0)) {
+        if((strpos('Backend_' , $controller) === 0)){
             $response->redirect('/');
             return;
         }
-
         parent::runController($controller, $action, $request, $response);
     }
-
 
     /**
      * Define url address to call the module
@@ -87,8 +80,8 @@ class Path extends Router
      * @param string $module- module name
      * @return string
      */
-    public function findUrl(string $module): string
+    public function findUrl(string $module) : string
     {
-        return '/' . $module;
+        return '/'.$module;
     }
 }

@@ -464,7 +464,7 @@ class Model
      * @param array $filters  the key - the field name, value
      * @return void
      */
-    public function queryAddFilters($sql , $filters)  : void
+    public function queryAddFilters(Db\Select $sql, $filters)  : void
     {
         if(!is_array($filters) || empty($filters))
             return;
@@ -529,7 +529,7 @@ class Model
      * @param array $params — possible keys: start,limit,sort,dir
      * @return void
      */
-    static public function queryAddPagerParams(Db\Select $sql , $params) : void
+    public function queryAddPagerParams(Db\Select $sql , $params) : void
     {
         if(isset($params['limit']) && !isset($params['start'])){
             $sql->limit(intval($params['limit']));
@@ -639,21 +639,17 @@ class Model
      */
     protected function clearFilters(array $filters)
     {
-        /**
-         * @todo refactor to light
-         */
-        //$config = $this->getObjectConfig();
-
+        $fields = $this->lightConfig->get('fields');
         foreach ($filters as $field=>$val)
         {
-            if(!($val instanceof \Db_Select_Filter) && !is_null($val) && (!is_array($val) && !strlen((string)$val)))
-            {
+            if(!($val instanceof Db\Select\Filter) && !is_null($val) && (!is_array($val) && !strlen((string)$val))) {
                 unset($filters[$field]);
                 continue;
             }
 
-//            if($config->fieldExists($field) && $config->getField($field)->isBoolean())
-//                $filters[$field] = \Filter::filterValue(\Filter::FILTER_BOOLEAN, $val);
+            if(isset($fields[$field]) && isset($fields[$field]['db_type']) &&  $fields[$field]['db_type'] === 'boolean'){
+                $filters[$field] = \Filter::filterValue(\Filter::FILTER_BOOLEAN, $val);
+            }
         }
         return $filters;
     }
@@ -675,7 +671,7 @@ class Model
             $this->queryAddQuery($sql , $query);
 
         if($params)
-            static::queryAddPagerParams($sql , $params);
+            $this->queryAddPagerParams($sql , $params);
 
         if(is_array($joins) && !empty($joins))
             $this->queryAddJoins($sql, $joins);
@@ -705,7 +701,7 @@ class Model
             $this->queryAddQuery($sql , $query);
 
         if($params)
-            static::queryAddPagerParams($sql , $params);
+            $this->queryAddPagerParams($sql , $params);
 
         if(is_array($joins) && !empty($joins))
             $this->queryAddJoins($sql, $joins);
@@ -793,7 +789,7 @@ class Model
                 $this->queryAddFilters($sql ,$this->clearFilters($filters));
 
             if($params)
-                static::queryAddPagerParams($sql , $params);
+                $this->queryAddPagerParams($sql , $params);
 
             if($query && strlen($query))
                 $this->queryAddQuery($sql , $query);
@@ -905,7 +901,7 @@ class Model
      * @param string $alias - table name alias, optional
      * @return void
      */
-    protected function queryAddQuery(Db\Select $sql , $query, ?string $alias)  : void
+    protected function queryAddQuery(Db\Select $sql , $query, ?string $alias = null)  : void
     {
         if(!empty($alias)){
             $alias = $this->table();

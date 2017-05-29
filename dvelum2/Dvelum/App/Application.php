@@ -371,8 +371,11 @@ class Application
         /*
          * Start routing
          */
-        $routerClass =  $this->config->get('frontend_router');
+        $routerClass =  '\\Dvelum\\App\\Router\\' . $this->config->get('frontend_router');
 
+        if(!class_exists($routerClass)){
+            $routerClass = $this->config->get('frontend_router');
+        }
         $router = new $routerClass();
         $router->route($request, $response);
 

@@ -13,8 +13,9 @@ use Dvelum\View;
 use Dvelum\Template;
 use Dvelum\Request;
 use Dvelum\Response;
+use Dvelum\App\Router\RouterInterface;
 
-class Controller extends \Dvelum\App\Backend\Controller implements \Router_Interface
+class Controller extends \Dvelum\App\Backend\Controller implements RouterInterface
 {
     protected $routes = [
         'dictionary' => 'Backend_Orm_Dictionary',
@@ -26,12 +27,12 @@ class Controller extends \Dvelum\App\Backend\Controller implements \Router_Inter
         'index' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Index',
     ];
 
-    public function route()
+    public function route(Request $request, Response $response) : void
     {
-        $action = $this->request->getPart(2);
+        $action = $request->getPart(2);
         if(isset($this->routes[$action])){
             $router = new \Dvelum\App\Router\Backend();
-            $router->runController($this->routes[$action], $this->request->getPart(3), $this->request, $this->response);
+            $router->runController($this->routes[$action], $request->getPart(3), $request, $response);
             return;
         }
 
