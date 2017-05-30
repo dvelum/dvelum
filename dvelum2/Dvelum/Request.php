@@ -1,6 +1,6 @@
 <?php
 /**
- *  DVelum project https://github.com/dvelum/dvelum
+ *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -15,22 +15,40 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
+declare(strict_types=1);
 
 namespace Dvelum;
 
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Filter;
 
 /**
- * Class Request
- * @todo refactor! it's temporary realization
+ * Request wrapper
+ * @author Kirill Yegorov 2008
  * @package Dvelum
  */
 class Request
 {
+    /**
+     * @var ConfigInterface $config
+     */
     protected $config;
 
-    protected $request;
+    /**
+     * @var string $uri
+     */
+    protected $uri;
+
+    /**
+     * Uri parts
+     * @var array
+     */
+    protected $parts = [];
+
+    protected $updatedGet = [];
+    protected $updatedPost = [];
 
     /**
      * @return Request
@@ -48,7 +66,54 @@ class Request
 
     private function __construct()
     {
-        $this->request = \Request::getInstance();
+        if(!isset($_SERVER['REQUEST_URI'])) {
+            $_SERVER['REQUEST_URI'] = '/';
+        }
+        $this->uri = $this->parseUri($_SERVER['REQUEST_URI']);
+        $this->parts = $this->detectParts($this->uri);
+    }
+
+    protected function parseUri(string $string) : string
+    {
+        if(strpos($string , '?')!==false) {
+            $string = substr($string , 0 , strpos($string , '?'));
+        }
+
+        $string = str_ireplace(array(
+            '.html' ,
+            '.php' ,
+            '.xml' ,
+            '.phtml' ,
+            '.json'
+        ) , '' , $string);
+
+        return preg_replace("/[^A-Za-z0-9_\.\-\/]/i" , '' , $string);
+    }
+
+
+    /**
+     * Explode request URI to parts
+     * @param string $uri
+     * @return array
+     */
+    protected function detectParts(string $uri) : array
+    {
+        $parts = [];
+
+        $wwwRoot = $this->wwwRoot();
+        $rootLen = strlen($wwwRoot);
+
+        if(substr($uri, 0 , $rootLen) === $wwwRoot) {
+            $uri = substr($uri, $rootLen);
+        }
+
+        $array = explode('/' , $uri);
+
+        for($i = 0, $sz = count($array); $i < $sz; $i++) {
+            $parts[] = $array[$i];
+        }
+
+        return $parts;
     }
 
 
@@ -72,67 +137,300 @@ class Request
     }
 
     /**
-     * @return array
+     * Get request part by index
+     * The query string is divided into parts by the delimiter defined by the
+     * method Request::setDelimiter are indexed with  0
+     * @param int $index — index of the part
+     * @return null|string
      */
+    public function getPart(int $index) : ?string
+    {
+        if(isset($this->parts[$index]) && !empty($this->parts[$index])) {
+            return $this->parts[$index];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get parameter transferred by the method $_GET
+     * @param string $name — parameter name
+     * @param string $type — the value type defining the way the data will be filtered.
+     * The ‘Filter’ chapter expands on the list of supported types. Here is the basic list:
+     * integer , boolean , float , string, cleaned_string , array и др.
+     * @param mixed $default — default value if the parameter is missing.
+     * @return mixed
+     */
+    public function get(string $name , string $type , $default)
+    {
+        if(isset($this->updatedGet[$name])) {
+            return Filter::filterValue($type , self::$_updatedGet[$name]);
+        }
+
+        if(!isset($_GET[$name])) {
+            return $default;
+        } else {
+            return Filter::filterValue($type , $_GET[$name]);
+        }
+    }
+
+   /**
+    * Get all parameters passed by the $_POST method in an array
+    * @return array
+    */
     public function postArray() : array
     {
-        return \Request::postArray();
+        return array_merge($_POST , $this->updatedPost);
     }
 
     /**
-     * @param $field
-     * @param $type
-     * @param $default
-     * @return mixed
+     * Get all parameters passed by the $_GET method in an array
+     * @return array
      */
-    public function post($field, $type, $default)
+    public function getArray() : array
     {
-        return \Request::post($field, $type, $default);
+        return array_merge($_GET , $this->updatedGet);
     }
 
     /**
-     * @param $field
-     * @param $type
-     * @param $default
+     * Get the parameter passed by $_POST method
+     * @param string $name — parameter name
+     * @param string $type —   the value type defining the way the data will be filtered.
+     * The ‘Filter’ chapter expands on the list of supported types. Here is the basic list:
+     * integer , boolean , float , string, cleaned_string , array и др.
+     * @param mixed $default — default value if  the parameter is missing.
      * @return mixed
      */
-    public function get($field, $type, $default)
+    public function post(string $name, string $type, $default)
     {
-        return \Request::post($field, $type, $default);
+        if (isset($this->updatedPost[$name])) {
+            return Filter::filterValue($type, $this->updatedPost[$name]);
+        }
+
+        if (!isset($_POST[$name])) {
+            return $default;
+        } else {
+            return Filter::filterValue($type, $_POST[$name]);
+        }
     }
 
-    public function getPart($index)
+    /**
+     * Build system request URL
+     * The method creates a string based on the defined parameter delimiter and
+     * the parameter values array
+     * @param array $parts — request parameters array
+     * @return string
+     */
+    public function url(array $parts) : string
     {
-        return $this->request->getPart($index);
+        return strtolower($this->wwwRoot() . implode( '/' , $parts));
     }
 
-    public function url(array $paths , $useExtension = true)
+    /**
+     * Process ExtJs Filters
+     * @param string $container
+     * @param string $method
+     * @return array
+     */
+    public function extFilters($container = 'storefilter' , $method = 'POST')
     {
-        return \Request::url($paths , $useExtension);
+        $result = [];
+
+        if($method == 'POST'){
+            $data = self::post($container, 'raw', []);
+        }else{
+            $data = self::get($container, 'raw', []);
+        }
+
+        if(is_string($data))
+            $data = json_decode($data , true);
+
+        if(empty($data))
+            return [];
+
+        $filter = new Filter\ExtJs();
+
+        return $filter->toDbSelect($data);
     }
 
-    public function extFilters()
+    /**
+     * Check if request is sent by XMLHttpRequest
+     * @return bool
+     */
+    public function isAjax() : bool
     {
-        return \Request::extFilters();
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public function isAjax()
+    /**
+     * Check if any POST requests have been sent
+     * @return bool
+     */
+    public function hasPost() : bool
     {
-        return\Request::isAjax();
+        if (empty($_POST) && empty($this->updatedPost)) {
+            return false;
+        }
+        return true;
     }
 
-    public function hasPost()
-    {
-        return \Request::hasPost();
-    }
 
+    /**
+     * Get cleaned request URL
+     * @return string
+     */
     public function getUri()
     {
-        return \Request::getInstance()->getUri();
+        return $this->uri;
     }
 
-    public function files()
+    /**
+     * Get the list of sent files
+     * @return array
+     */
+    public function files() : array
     {
-        return \Request::files();
+        if(!isset($_FILES) || empty($_FILES)) {
+            return [];
+        }
+
+        $result = [];
+
+        if(empty($_FILES)) {
+            return $result;
+        }
+
+        foreach($_FILES as $key => $data)
+        {
+            if(!isset($data['name'])) {
+                continue;
+            }
+
+            if(!is_array($data['name'])){
+                $result[$key] = $data;
+            } else {
+                foreach($data['name'] as $subKey => $subVal){
+                    $result[$key][$subKey] = [
+                        'name' => $data['name'][$subKey] ,
+                        'type' => $data['type'][$subKey] ,
+                        'tmp_name' => $data['tmp_name'][$subKey] ,
+                        'error' => $data['error'][$subKey] ,
+                        'size' => $data['size'][$subKey]
+                    ];
+                }
+
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Check HTTP_SCHEME for https
+     * @return bool
+     */
+    public function isHttps() : bool
+    {
+        static $scheme = false;
+
+        if($scheme === false){
+            $scheme = isset($_SERVER['HTTP_SCHEME']) ? $_SERVER['HTTP_SCHEME'] : (((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || 443 == $_SERVER['SERVER_PORT']) ? 'https' : 'http');
+        }
+
+        if($scheme ==='https'){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * Get web toot path
+     * @return string
+     */
+    public function wwwRoot() : string
+    {
+        $wwwRoot =  '/';
+
+        if($this->config instanceof ConfigInterface && $this->config->offsetExists('wwwRoot')){
+            $wwwRoot = $this->config->get('wwwRoot');
+        }
+
+        return $wwwRoot;
+    }
+
+    /**
+     * Get application base url
+     * @return string
+     */
+    public function baseUrl()
+    {
+        $protocol = 'http://';
+        if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+            $protocol = 'https://';
+        }
+
+        return $protocol . $_SERVER['HTTP_HOST'] . $this->wwwRoot();
+    }
+
+    /**
+     * Get parameter transferred by the method $_SERVER
+     * @param string $name — parameter name
+     * @param string $type — the value type defining the way the data will be filtered.
+     * The ‘Filter’ chapter expands on the list of supported types. Here is the basic list:
+     * integer , boolean , float , string, cleaned_string , array и др.
+     * @param mixed $default — default value if the parameter is missing.
+     * @return mixed
+     */
+    public function server($name, $type, $default)
+    {
+        if (!isset($_SERVER[$name])) {
+            return $default;
+        }
+
+        return Filter::filterValue($type, $_SERVER[$name]);
+    }
+
+    /**
+     * Redefine $_POST parameter
+     * @param string $name — parameter name
+     * @param mixed $value — parameter value
+     */
+    public function updatePost(string $name , $value) : void
+    {
+        $this->updatedPost[$name] = $value;
+    }
+
+    /**
+     * Set POST data
+     * @param array $data
+     */
+    public function setPostParams(array $data) : void
+    {
+        $this->updatedPost = $data;
+    }
+
+    /**
+     * Redefine $_GET parameter
+     * @param string $name — parameter name
+     * @param mixed $value — parameter value
+     */
+    public function updateGet($name , $value) : void
+    {
+        $this->updatedGet[$name] = $value;
+    }
+
+    /**
+     * Get request parts
+     * The query string is divided into parts by the delimiter "/" and indexed from 0
+     * @param int $offset, optional default 0 - index to start from
+     * @return array
+     */
+    public function getPathParts(int $offset = 0) : array
+    {
+        return array_slice($this->parts, $offset);
     }
 }

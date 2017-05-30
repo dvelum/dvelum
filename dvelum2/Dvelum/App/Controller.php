@@ -25,7 +25,6 @@ use Dvelum\Config;
 use Dvelum\Request;
 use Dvelum\Resource;
 use Dvelum\Response;
-use Dvelum\App\Router;
 
 class Controller
 {

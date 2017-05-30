@@ -4,7 +4,7 @@
  * Easily handles up to 25000-30000 sets of elements (less than 1 second to fill out)
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * Copyright (C) 2011  Kirill A Egorov
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +33,7 @@ class Tree
 	{
 		if(! $this->itemExists($id))
 			return false;
-		
+
 		$this->_items[$id]['order'] = $order;
 		return true;
 	}
@@ -81,21 +81,21 @@ class Tree
 	 */
 	public function addItem($id , $parent , $data , $order = false)
 	{
-		if($this->itemExists($id) || strval($id) === '0')
+		if($this->itemExists($id) || (string) $id === '0')
 			return false;
-		
+
 		if($order === false && isset($this->_childs[$parent]))
 			$order = sizeof($this->_childs[$parent]);
-		
+
 		$this->_items[$id] = array(
-				'id' => $id , 
-				'parent' => $parent , 
-				'data' => $data , 
+				'id' => $id ,
+				'parent' => $parent ,
+				'data' => $data ,
 				'order' => $order
 		);
 		if(! isset($this->_childs[$parent]))
 			$this->_childs[$parent] = array();
-		
+
 		$this->_childs[$parent][$id] = & $this->_items[$id];
 		return true;
 	}
@@ -108,9 +108,9 @@ class Tree
 	 */
 	public function updateItem($id , $data)
 	{
-		if(!$this->itemExists($id) || strval($id) === '0')
+		if(!$this->itemExists($id) || (string) $id === '0')
 			return false;
-		
+
 		$this->_items[$id]['data'] = $data;
 		return true;
 	}
@@ -179,13 +179,13 @@ class Tree
 	{
 		if(!isset($this->_childs[$id]) || empty($this->_childs[$id]))
 			return;
-		
+
 		$tmp = array();
-		
+
 		foreach($this->_childs[$id] as $key => &$dat)
 			$tmp[$dat['id']] = $dat['order'];
 		unset($dat);
-		
+
 		$this->_childs[$id] = array();
 		asort($tmp);
 
@@ -206,7 +206,7 @@ class Tree
 	{
 		if(! $this->hasChilds($id))
 			return array();
-		
+
 		return $this->_childs[$id];
 	}
 
@@ -219,32 +219,32 @@ class Tree
 	{
 		$item = $this->getItem($id);
 		$childs = $this->getChilds($id);
-		
+
 		if(!empty($childs))
 			foreach($childs as $k => &$v)
 				$this->_remove($v['id']);
-		
+
 		if(isset($this->_childs[$id]))
 			unset($this->_childs[$id]);
-		
+
 		$parent = $this->_items[$id]['parent'];
-		
+
 		if(! empty($this->_childs[$parent]) && isset($this->_childs[$parent][$id]))
 			unset($this->_childs[$parent][$id]);
-		
+
 		unset($this->_items[$id]);
 	}
 
 	/**
 	 * Get the parent node identifier by the child node identifier
 	 * @param string $id — child node identifier
-	 * @return mixed string or false 
+	 * @return mixed string or false
 	 */
 	public function getParentId($id)
 	{
 		if(! $this->itemExists($id))
 			return false;
-		
+
 		$data = $this->getItem($id);
 		return $data['parent'];
 	}
@@ -257,15 +257,15 @@ class Tree
 	 */
 	public function changeParent($id , $newParent)
 	{
-		if(!$this->itemExists($id) || (!$this->itemExists($newParent) && strval($newParent) !== '0') || strval($id)==strval($newParent))
+		if(!$this->itemExists($id) || (!$this->itemExists($newParent) && (string) $newParent !== '0') || (string) $id == (string) $newParent)
 			return false;
-		
+
 		$oldParent = $this->_items[$id]['parent'];
 		$this->_items[$id]['parent'] = $newParent;
-		
+
 		if(! empty($this->_childs[$oldParent]) && isset($this->_childs[$oldParent][$id]))
 			unset($this->_childs[$oldParent][$id]);
-		
+
 		$this->_childs[$newParent][$id] = & $this->_items[$id];
 		return true;
 	}
@@ -279,7 +279,7 @@ class Tree
 	{
 		if($this->itemExists($id))
 			$this->_remove($id);
-		
+
 		return true;
 	}
 
@@ -291,7 +291,7 @@ class Tree
 	{
 		return $this->_items;
 	}
-	
+
 	/**
 	 * Get list of parent nodes
 	 * @param mixed $id
@@ -302,16 +302,16 @@ class Tree
 	  $parents = array();
 	  if(!$this->itemExists($id))
 	    return array();
-	   
+
 	  while ($this->getParentId($id)) {
 	    $p = $this->getParentId($id);
 	    $parents[] = $p;
 	    $id = $p;
 	  }
-	   
+
 	  if(!empty($parents))
 	    $parents = array_reverse($parents);
-	   
+
 	  return $parents;
 	}
 }

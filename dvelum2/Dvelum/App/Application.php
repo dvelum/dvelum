@@ -109,11 +109,6 @@ class Application
         $dbManager = $this->initDb();
 
         /*
-         * Apply configs
-         */
-        \Filter::setDelimiter($this->config->get('urlDelimiter'));
-
-        /*
          * Init localization storage options
          */
         $langStorage = Lang::storage();
