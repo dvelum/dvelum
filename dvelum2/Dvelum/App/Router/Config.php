@@ -42,7 +42,7 @@ class Config extends Router
      */
     public function route(Request $request , Response $response) : void
     {
-        $frontConfig = Config::storage()->get('frontend.php');
+        $frontConfig = Cfg::storage()->get('frontend.php');
         $defaultController =  $frontConfig->get('default_controller');
 
         $controller = $request->getPart(0);
