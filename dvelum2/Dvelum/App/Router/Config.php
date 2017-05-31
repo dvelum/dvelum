@@ -42,6 +42,9 @@ class Config extends Router
      */
     public function route(Request $request , Response $response) : void
     {
+        $frontConfig = Config::storage()->get('frontend.php');
+        $defaultController =  $frontConfig->get('default_controller');
+
         $controller = $request->getPart(0);
         $pathCode = \Filter::filterValue('pagecode' , $controller);
         $routes = Cfg::factory(Cfg\Factory::File_Array , $this->appConfig->get('frontend_modules'))->__toArray();
@@ -49,7 +52,7 @@ class Config extends Router
         if(isset($routes[$pathCode]) && class_exists($routes[$pathCode]['class']))
             $controllerClass = $routes[$pathCode]['class'];
         else
-            $controllerClass = 'Frontend_Index_Controller';
+            $controllerClass = $defaultController;
 
         $this->runController($controllerClass , $request->getPart(1), $request, $response);
     }

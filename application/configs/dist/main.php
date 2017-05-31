@@ -110,13 +110,6 @@ return array(
      */
     'tmp' => $docRoot . '/data/temp/',
     /*
-     * the type of frontend router with two possible values:
-     * 'Router_Module' — using tree-like page structure  (‘Pages’ section of the back-office panel);
-     * 'Router_Path' — the router based on the file structure of client controllers.
-     * 'Router_Config' - using frontend modules configuration
-     */
-    'frontend_router' => 'Module', // 'Module','Path','Config'
-    /*
     * Use memcached
     */
     'use_cache' => false,

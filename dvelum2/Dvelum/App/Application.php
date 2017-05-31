@@ -365,11 +365,12 @@ class Application
 
         /*
          * Start routing
-         */
-        $routerClass =  '\\Dvelum\\App\\Router\\' . $this->config->get('frontend_router');
+        */
+        $frontConfig = Config::storage()->get('frontend.php');
+        $routerClass =  '\\Dvelum\\App\\Router\\' . $frontConfig->get('router');
 
         if(!class_exists($routerClass)){
-            $routerClass = $this->config->get('frontend_router');
+            $routerClass = $frontConfig->get('router');
         }
 
         $router = new $routerClass();

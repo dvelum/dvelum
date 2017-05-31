@@ -8,6 +8,8 @@ class Backend_Designer_Code
 	 */
 	static public function getControllerUrl($controllerName)
 	{
+        $frontConfig = Config::storage()->get('frontend.php');
+
 		$appCfg = Config::storage()->get('main.php');
 		$designerConfig = Config::storage()->get($appCfg->get('configs').'designer.php');
     	$templates = $designerConfig->get('templates');	
@@ -30,8 +32,9 @@ class Backend_Designer_Code
 			$url[] = $manager->getModuleName($controllerName);
 		}
 		elseif ($reflector->isSubclassOf('Frontend_Controller'))
-		{			
-			if($appCfg['frontend_router_type'] == 'module')
+		{
+		    $routerType = $frontConfig->get('router');
+			if($routerType == 'Module')
 			{		
 				$module = self::_moduleByClass($controllerName);
 				if($module!==false)
@@ -42,7 +45,7 @@ class Backend_Designer_Code
 				}
 					
 			}
-			elseif ($appCfg['frontend_router_type'] == 'path')
+			elseif ($routerType == 'Path')
 			{
 					$paths = explode('_',str_replace(array('Frontend_'), '', $controllerName));
 					$pathsCount = count($paths)-1;
@@ -51,7 +54,7 @@ class Backend_Designer_Code
 						
 					$url = array_merge($url , $paths);		
 			}
-			elseif($appCfg['frontend_router_type'] == 'config')
+			elseif($routerType == 'Config')
 			{
 			  $urlCode = self::_moduleByClass($controllerName);
 			  if($urlCode!==false){

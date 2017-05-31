@@ -304,7 +304,8 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     public function getStagingUrl(Orm\Object $object)
     {
-        $routerClass =  $this->_configMain->get('frontend_router');
+        $frontConfig = Config::storage()->get('frontend.php');
+        $routerClass =  $frontConfig->get('router');
         $frontendRouter = new $routerClass();
 
         $stagingUrl = $frontendRouter->findUrl(strtolower($object->getName()));
