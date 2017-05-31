@@ -88,7 +88,7 @@ class Response
      */
     public function error($message , array $errors = []) : void
     {
-        ob_clean();
+        @ob_clean();
         switch ($this->format){
             case self::FORMAT_JSON :
                 $message = json_encode(['success'=>false,'msg'=>$message,'errors'=>$errors]);
@@ -160,7 +160,9 @@ class Response
      */
     public function notFound() : void
     {
-        $this->header($_SERVER["SERVER_PROTOCOL"]."/1.0 404 Not Found");
+        if(isset($_SERVER["SERVER_PROTOCOL"])){
+            $this->header($_SERVER["SERVER_PROTOCOL"]."/1.0 404 Not Found");
+        }
     }
 
     /**

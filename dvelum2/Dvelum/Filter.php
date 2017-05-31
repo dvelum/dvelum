@@ -113,7 +113,7 @@ class Filter
                 $value = preg_replace("/[^A-Za-z0-9_@\.\-]/i", '', $value);
                 break;
             case 'pagecode' :
-                $value = preg_replace("/[^a-z0-9_-]/i", '', strtolower($value));
+                $value = preg_replace("/[^a-z0-9_-]/i", '', strtolower((string) $value));
                 $value = str_replace(' ', "-", $value);
                 break;
 

@@ -23,10 +23,10 @@ declare(strict_types=1);
 namespace Dvelum\App;
 
 use Dvelum\Response;
+use Dvelum\Resource;
 use Dvelum\View;
 use Dvelum\Autoload;
 use Dvelum\Request;
-use Dvelum\Resource;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Db;
@@ -139,7 +139,6 @@ class Application
             'wwwPath' => $this->config->get('wwwPath'),
             'cache'=> $cache
         ]));
-
 
         \Utils::setSalt($this->config->get('salt'));
         \Trigger::setApplicationConfig($this->config);
@@ -363,6 +362,7 @@ class Application
 
         $request = Request::factory();
         $response = Response::factory();
+
         /*
          * Start routing
          */
@@ -371,6 +371,7 @@ class Application
         if(!class_exists($routerClass)){
             $routerClass = $this->config->get('frontend_router');
         }
+
         $router = new $routerClass();
         $router->route($request, $response);
 

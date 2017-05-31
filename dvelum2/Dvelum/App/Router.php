@@ -21,7 +21,6 @@ declare(strict_types=1);
 
 namespace Dvelum\App;
 
-use Dvelum\Orm\Exception;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Lang;
@@ -86,6 +85,7 @@ abstract class Router implements Router\RouterInterface
 
         if(!method_exists($controller , $action.'Action')) {
             $response->error(Lang::lang()->get('WRONG_REQUEST').' ' . $request->getUri());
+            return;
         }
 
         $controller->{$action.'Action'}();

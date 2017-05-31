@@ -174,10 +174,10 @@ class Request
         }
     }
 
-   /**
-    * Get all parameters passed by the $_POST method in an array
-    * @return array
-    */
+    /**
+     * Get all parameters passed by the $_POST method in an array
+     * @return array
+     */
     public function postArray() : array
     {
         return array_merge($_POST , $this->updatedPost);
@@ -432,5 +432,15 @@ class Request
     public function getPathParts(int $offset = 0) : array
     {
         return array_slice($this->parts, $offset);
+    }
+
+    /**
+     * Set request URI
+     * @param string $uri
+     */
+    public function setUri($uri)
+    {
+        $this->uri = $this->parseUri($uri);
+        $this->parts = $this->detectParts($this->uri);
     }
 }

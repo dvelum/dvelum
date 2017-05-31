@@ -23,7 +23,7 @@ namespace Dvelum\App\Router;
 
 use Dvelum\App\Router;
 use Dvelum\Config;
-use Dvelum\Lang;
+use Dvelum\Filter;
 use Dvelum\Request;
 use Dvelum\Response;
 
@@ -33,7 +33,6 @@ class Path extends Router
 
     public function __construct()
     {
-        parent::__construct();
         $this->appConfig = Config::storage()->get('main.php');
     }
 
@@ -49,14 +48,24 @@ class Path extends Router
         $controller = $request->getPart(0);
         $controller = ucfirst(Filter::filterValue('pagecode' , $controller));
 
-        $controllerClass = 'Frontend_' . $controller . '_Controller';
+        if($controller !== false && strlen($controller)){
 
-        if($controller !== false && strlen($controller) && class_exists($controllerClass)) {
-            $controller = $controllerClass;
-        } else {
-            $controller = 'Frontend_Index_Controller';
+            $classNamespace1 = 'Frontend_' . $controller . '_Controller';
+            $classNamespace2 = 'Frontend\\' . $controller . '\\Controller';
+            $classNamespace3 = 'Dvelum\\App\\Frontend\\' . $controller . '\\Controller';
+
+            if(class_exists($classNamespace1)){
+                $controllerClass = $classNamespace1;
+            }elseif (class_exists($classNamespace2)){
+                $controllerClass = $classNamespace2;
+            }elseif (class_exists($classNamespace3)){
+                $controllerClass = $classNamespace3;
+            }else{
+                $controllerClass = 'Frontend\\Index\\Controller';
+            }
         }
-        $this->runController($controller , $request->getPart(1), $request, $response);
+
+        $this->runController($controllerClass , $request->getPart(1), $request, $response);
     }
 
     /**
@@ -68,7 +77,7 @@ class Path extends Router
      */
     public function runController(string $controller , ?string $action, Request $request , Response $response) : void
     {
-        if((strpos('Backend_' , $controller) === 0)) {
+        if((strpos('Backend_' , $controller) === 0) || strpos('\\Backend\\', $controller)!==false) {
             $response->redirect('/');
             return;
         }

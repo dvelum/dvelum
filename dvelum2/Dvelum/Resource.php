@@ -41,9 +41,9 @@ class Resource
     protected $cache = false;
 
     /**
-     * @return Resource
+     * @return self
      */
-    static public function factory()
+    static public function factory() : self
     {
         static $instance = null;
 
@@ -65,7 +65,7 @@ class Resource
             $this->cache = $this->config->get('cache');
         }
     }
-    
+
     protected $jsFiles = [];
     protected $rawFiles = [];
     protected $cssFiles = [];
@@ -74,7 +74,7 @@ class Resource
     protected $inlineJs = '';
 
     protected function __construct(){}
-    
+
 
     /**
      * Add javascript file to the contentent

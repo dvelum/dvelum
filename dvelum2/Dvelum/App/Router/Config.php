@@ -32,7 +32,6 @@ class Config extends Router
 
     public function __construct()
     {
-        parent::__construct();
         $this->appConfig = Cfg::storage()->get('main.php');
     }
 
