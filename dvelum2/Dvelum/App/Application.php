@@ -348,20 +348,22 @@ class Application
      */
     protected function routeFrontend()
     {
-        BlockManager::useHardCacheTime($this->config->get('blockmanager_use_hardcache_time'));
+        $request = Request::factory();
+        $response = Response::factory();
+
         if($this->config->get('maintenance')){
-            $tpl = new Template();
+            $tpl = new View();
             $tpl->set('msg' , Lang::lang()->get('MAINTENANCE'));
-            echo $tpl->render('public/error.php');
-            self::close();
+            $response->put($tpl->render('public/error.php'));
+            $response->send();
+            return;
         }
 
+        BlockManager::useHardCacheTime($this->config->get('blockmanager_use_hardcache_time'));
         self::$_templates =  'public/';
         $page = \Page::getInstance();
         $page->setTemplatesPath(self::$_templates);
 
-        $request = Request::factory();
-        $response = Response::factory();
 
         /*
          * Start routing
@@ -372,7 +374,9 @@ class Application
         if(!class_exists($routerClass)){
             $routerClass = $frontConfig->get('router');
         }
-
+        /**
+         * @var \Dvelum\App\Router $router
+         */
         $router = new $routerClass();
         $router->route($request, $response);
 
