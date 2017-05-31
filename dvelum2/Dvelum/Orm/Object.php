@@ -22,6 +22,7 @@ namespace Dvelum\Orm;
 
 use Dvelum\Config;
 use Dvelum\Orm\Model;
+use Dvelum\Service;
 use Psr\Log\LogLevel;
 use Dvelum\Orm\Exception;
 use Dvelum\App\Session\User;
@@ -67,7 +68,7 @@ class Object
      * System flag. Disable ACL create permissions check
      * @var bool
      */
-    static protected $disableAclCheck = false;
+    protected $disableAclCheck = false;
 
     /**
      * @var Model
@@ -107,10 +108,19 @@ class Object
             $this->checkCanRead();
             $this->loadData();
         }else{
-            if($this->acl && !static::$disableAclCheck) {
+            if($this->acl && !$this->disableAclCheck) {
                 $this->checkCanCreate();
             }
         }
+    }
+
+    /**
+     * Disable ACL create permissions check
+     * @param $bool $bool
+     */
+    public function disableAcl(bool $bool)
+    {
+        $this->disableAclCheck = $bool;
     }
 
     /**
@@ -170,7 +180,7 @@ class Object
      * @param array $data
      * @return void
      */
-    protected function setRawData(array $data) : void
+    public function setRawData(array $data) : void
     {
         unset($data[$this->primaryKey]);
         $iv = false;
@@ -295,7 +305,7 @@ class Object
      */
     public function setId($id) : void
     {
-        if($this->acl && !static::$disableAclCheck)
+        if($this->acl && !$this->disableAclCheck)
             $this->checkCanEdit();
 
         $this->id = (int) $id;
@@ -563,7 +573,7 @@ class Object
             }
         }
 
-        $emptyFields = $this->_hasRequired();
+        $emptyFields = $this->hasRequired();
         if($emptyFields!==true)
         {
             $text = 'ORM :: Fields can not be empty. '.$this->getName().' ['.implode(',', $emptyFields).']';
@@ -752,95 +762,23 @@ class Object
     }
 
     /**
-     * Factory method of object creation is preferable to use, cf. method  __construct() description
-     *
-     * @param string $name
-     * @param int|int[]|bool $id, optional default false
-     * @throws Exception
-     * @return self|self[]
+     * Bsckward compatibility
+     * @deprecated
      */
     static public function factory(string $name , $id = false)
     {
-        if(!is_array($id))
-            return new static($name, $id);
-
-        $list = [];
-        $model = Model::factory($name);
-        $data = $model->getItems($id);
-
-        static::$disableAclCheck = true;
-
-        $config = Object\Config::factory($name);
-
-        /*
-         * Load links info
+        /**
+         * @var Orm $service
          */
-        $links = $config->getLinks([Object\Config::LINK_OBJECT_LIST]);
-        $linksData = [];
-
-        if(!empty($links))
-        {
-            foreach($links as $object => $fields)
-            {
-                foreach($fields as $field=>$linkType)
-                {
-                    $fieldObject = $config->getField($field);
-                    if($fieldObject->isManyToManyLink()){
-                        $relationsObject = $config->getRelationsObject($field);
-                        $relationsData = Model::factory($relationsObject)->getList(
-                            ['sort'=>'order_no', 'dir' =>'ASC'],
-                            ['sourceid'=>$id],
-                            ['targetid','sourceid']
-                        );
-                    }else{
-                        $linkedObject = $fieldObject->getLinkedObject();
-                        $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
-                        $linksModel = Model::factory($linksObject);
-                        $relationsData = $linksModel->getList(
-                            ['sort'=>'order','dir'=>'ASC'],
-                            [
-                                'src' => $name,
-                                'srcid' => $id,
-                                'src_field' => $field,
-                                'target' => $linkedObject
-                            ],
-                            ['targetid','sourceid'=>'srcid']
-                        );
-                    }
-                    if(!empty($relationsData)){
-                        $linksData[$field] = \Utils::groupByKey('sourceid',$relationsData);
-                    }
-                }
-            }
-        }
-
-        foreach ($data as $item)
-        {
-            $o = static::factory($name);
-            /*
-             * Apply links info
-             */
-            if(!empty($linksData)){
-                foreach($linksData as $field => $source){
-                    if(isset($source[$item[$o->primaryKey]])){
-                        $item[$field] = \Utils::fetchCol('targetid' , $source[$item[$o->primaryKey]]);
-                    }
-                }
-            }
-
-            $o->setId($item[$o->primaryKey]);
-            $o->setRawData($item);
-            $list[$item[$o->primaryKey]] = $o;
-        }
-        static::$disableAclCheck = false;
-        return $list;
+        $service = Service::get('orm');
+        $service->object($name, $id);
     }
 
     /**
      * Check for required fields
      * @return boolean|array
      */
-    protected function _hasRequired()
+    protected function hasRequired()
     {
         $emptyFields = [];
         $fields = $this->getFields();

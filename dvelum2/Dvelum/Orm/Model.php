@@ -23,13 +23,28 @@ namespace Dvelum\Orm;
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Db;
-
+use Dvelum\Service;
 
 /**
  * Base class for data models
  */
 class Model
 {
+    /**
+     * @var Config\ConfigInterface
+     *
+        // Global (For all Models) Hard caching time
+        'hardCacheTime'  => 60,
+        // Default Cache_Interface
+        'dataCache' => false  ,
+        // Db object storage interface
+        'dbObjectStore'  => false,
+        // Default Connection manager
+        'defaultDbManager' => false,
+        // Default error log adapter
+        'errorLog' =>false
+     */
+    protected $settings;
     /**
      * DB Object Storage
      * @var Orm\Object\Store
@@ -89,18 +104,6 @@ class Model
      */
     static protected $dbConnection = false;
 
-    static protected $defaults = [
-        // Global (For all Models) Hard caching time
-        'hardCacheTime'  => 60,
-        // Default Cache_Interface
-        'dataCache' => false  ,
-        // Db object storage interface  @var Db_Objectstore
-        'dbObjectStore'  => false,
-        // Default Connection manager  @var Db_Manager_Interface
-        'defaultDbManager' => false,
-        // Default error log adapter  @var Log | false
-        'errorLog' =>false
-    ];
 
     /**
      * Connection manager
@@ -135,39 +138,26 @@ class Model
         return $this->dbPrefix;
     }
 
-    protected static $instances = [];
-
-    /**
-     * Set default configuration options
-     * @param array $defaults
-     */
-    static public function setDefaults(array $defaults)
-    {
-        self::$defaults = $defaults;
-    }
-
-    /**
-     * Get default Db Connection manager
-     * @return  Db\Manager
-     */
-    static public function getDefaultDbManager() : Db\Manager
-    {
-        return static::$defaults['defaultDbManager'];
-    }
-
     /**
      * @param string $objectName
      * @throws \Exception
      */
-    protected function __construct(string $objectName)
+    public function __construct(string $objectName, Config\ConfigInterface $settings)
     {
+        $this->settings = $settings;
         $ormConfig = Config\Factory::storage()->get('orm.php', true, false);
 
-        $this->store = static::$defaults['dbObjectStore'];
+        $this->store = $settings->get('dbObjectStore');
         $this->name = strtolower($objectName);
-        $this->cacheTime = static::$defaults['hardCacheTime'];
-        $this->cache = static::$defaults['dataCache'];
-        $this->dbManager = static::$defaults['defaultDbManager'];
+        $this->cacheTime = $settings->get('hardCacheTime');
+
+        if($settings->offsetExists('dataCache')){
+            $this->cache =  $settings->get('dataCache');
+        }else{
+            $this->cache = false;
+        }
+
+        $this->dbManager = $settings->get('defaultDbManager');
         $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php', true, false);
 
         $conName = $this->lightConfig->get('connection');
@@ -185,8 +175,8 @@ class Model
 
         $this->table = $this->lightConfig->get('table');
 
-        if(static::$defaults['errorLog'])
-            $this->log = static::$defaults['errorLog'];
+        if($settings->get('errorLog'))
+            $this->log = $settings->get('errorLog');
     }
 
     /**
@@ -282,26 +272,15 @@ class Model
      * Factory method of model instantiation
      * @param string $objectName — the name of the object in ORM
      * @return Model
+     * @deprecated
      */
     static public function factory(string $objectName) : Model
     {
-        $listName = strtolower($objectName);
-
-        if(isset(self::$instances[$listName]))
-            return self::$instances[$listName];
-
-        $objectName = implode('_' , array_map('ucfirst',explode('_', $objectName)));
-
-        /*
-         * Instantiate real or virtual model
+        /**
+         * @var Orm $service
          */
-        if(class_exists('Model_' . $objectName)){
-            $class = 'Model_' . $objectName;
-            self::$instances[$listName] = new $class($objectName);
-        }else{
-            self::$instances[$listName] = new static($objectName);
-        }
-        return self::$instances[$listName];
+        $service = Service::get('orm');
+        return $service->model($objectName);
     }
 
     /**

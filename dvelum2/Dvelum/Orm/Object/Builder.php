@@ -365,7 +365,7 @@ class Builder
         $db = $objectModel->getDbConnection();
         $tablePrefix = $objectModel->getDbPrefix();
 
-        $oConfigPath = Config::getConfigPath();
+        $oConfigPath = $this->objectConfig->getConfigPath();
         $configDir  = \Dvelum\Config::storage()->getWrite() . $oConfigPath;
 
         $fieldList = \Dvelum\Config::storage()->get('objects/relations/fields.php');

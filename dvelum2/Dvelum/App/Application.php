@@ -32,7 +32,9 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\Db;
 use Dvelum\Orm;
 use Dvelum\Lang;
+use Dvelum\Utils;
 use Dvelum\App\Router\Backend as RouterBackend;
+use Dvelum\Service;
 
 
 /**
@@ -47,11 +49,6 @@ class Application
     const MODE_TEST = 2;
     const MODE_INSTALL = 3;
 
-    /**
-     * @deprecated
-     * @var string
-     */
-    protected static $_templates = '';
     /**
      * Application config
      * @var Config\Adapter
@@ -79,11 +76,11 @@ class Application
 
     /**
      * Inject Auto-loader
-     * @param Autoload $al
+     * @param Autoload $autoloader
      */
-    public function setAutoloader(Autoload $al)
+    public function setAutoloader(Autoload $autoloader)
     {
-        $this->autoloader = $al;
+        $this->autoloader = $autoloader;
     }
 
     /**
@@ -140,7 +137,7 @@ class Application
             'cache'=> $cache
         ]));
 
-        \Utils::setSalt($this->config->get('salt'));
+        Utils::setSalt($this->config->get('salt'));
         \Trigger::setApplicationConfig($this->config);
 
         /*
@@ -157,13 +154,24 @@ class Application
                 View::checkMtime($this->config->get('template_check_mtime'));
         }
 
-        $ormConfig = Config::storage()->get('orm.php');
-        Orm::init($ormConfig, $dbManager, $lang, $cache);
+        Service::register('orm', function() use ($dbManager, $lang, $cache){
+            $orm = new Orm();
+            $orm->init(Config::storage()->get('orm.php'), $dbManager, $lang, $cache);
+            return $orm;
+        });
 
         /*
          * Prepare dictionaries
          */
-        \Dictionary::setConfigPath($this->config->get('dictionary_folder') . $this->config->get('language').'/');
+        Service::register('dictionary', function(){
+           $service = new Dictionary\Service();
+           $service->setConfig(
+               Config\Factory::create([
+                   'configPath'=>$this->config->get('dictionary_folder') . $this->config->get('language').'/'
+               ])
+           );
+           return $service;
+        });
 
         // init external modules
         $externalsCfg = $this->config->get('externals');
@@ -268,7 +276,7 @@ class Application
         $page = Request::factory()->getPart(0);
 
         if($page === $this->config->get('adminPath'))
-            $this->routeBackoffice();
+            $this->routeBackOffice();
         else
             $this->routeFrontend();
     }
@@ -276,7 +284,7 @@ class Application
     /**
      * Run backend application
      */
-    protected function routeBackoffice()
+    protected function routeBackOffice()
     {
         if($this->cache)
             BlockManager::setDefaultCache($this->cache);
@@ -284,10 +292,10 @@ class Application
         $cfgBackend = Config\Factory::storage()->get('backend.php');
 
 
-        self::$_templates = 'system/' . $cfgBackend->get('theme') . '/';
+        $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';
 
         $page = \Page::getInstance();
-        $page->setTemplatesPath(self::$_templates);
+        $page->setTemplatesPath($templatesPath);
 
         $request = Request::factory();
         $response = Response::factory();
@@ -301,7 +309,6 @@ class Application
         if($response->isSent()){
             return;
         }
-
 
         $controller = $request->getPart(1);
 
@@ -327,7 +334,7 @@ class Application
             'page' => $page,
             'urlPath' => $controller,
             'resource' => $res,
-            'path' => self::$_templates,
+            'path' => $templatesPath,
             'adminPath' => $this->config->get('adminPath'),
             'development' => $this->config->get('development'),
             'version' => Config::storage()->get('versions.php')->get('core'),
@@ -360,9 +367,9 @@ class Application
         }
 
         BlockManager::useHardCacheTime($this->config->get('blockmanager_use_hardcache_time'));
-        self::$_templates =  'public/';
+
         $page = \Page::getInstance();
-        $page->setTemplatesPath(self::$_templates);
+        $page->setTemplatesPath('public/');
 
 
         /*
@@ -384,6 +391,7 @@ class Application
     }
     /**
      * Close application, stop processing
+     * @deprecated
      */
     static public function close()
     {
@@ -392,6 +400,7 @@ class Application
 
     /**
      * Get path to templates
+     * @deprecated
      * @return string
      */
     static public function getTemplatesPath()

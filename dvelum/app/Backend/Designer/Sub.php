@@ -42,7 +42,12 @@ class Backend_Designer_Sub
 	{
 		$this->_configMain = Config::storage()->get('main.php');
 		$this->_lang = Lang::lang();
-		$this->_db = Model::getDefaultDbManager()->getDbConnection('default');
+        /**
+         * @var \Dvelum\Orm $service
+         */
+		$service = \Dvelum\Service::get('orm');
+		$this->_db = $service->getModelSettings()->get('defaultDbManager')->getDbConnection('default');
+
 		$this->_config = Config::storage()->get('designer.php');
 		$this->_session = Store_Session::getInstance('Designer');
 		$this->_storage = Designer_Storage::getInstance($this->_config->get('storage') , $this->_config);

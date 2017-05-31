@@ -21,6 +21,9 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Object;
 
+use Dvelum\App\Dictionary\Service;
+use Dvelum\Orm;
+
 /**
  * Db_Object Manager class
  * @package Db
@@ -48,7 +51,11 @@ class Manager
 
 			$list = array();
 
-			$cfgPath = Config::getConfigPath();
+            /**
+             * @var Orm $ormService
+             */
+			$ormService = Service::get('orm');
+			$cfgPath = $ormService->getConfigSettings()->get('configPath');
 
 			foreach($paths as $path)
 			{

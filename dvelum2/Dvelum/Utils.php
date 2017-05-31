@@ -2,17 +2,17 @@
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
- *  
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- *  
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum;
 
 use \Tree as Tree;
+
 /**
  * System Utils class Do not include into packages!
  * @author Kirill Yegorov 2011
@@ -37,7 +38,7 @@ class Utils
      * Define system hash salt
      * @param string $salt
      */
-    static public function setSalt(string $salt) : void
+    static public function setSalt(string $salt): void
     {
         self::$salt = $salt;
     }
@@ -50,14 +51,14 @@ class Utils
      * @throws \Exception
      * @return array
      */
-    static public function rekey(string $key , array $data) : array
+    static public function rekey(string $key, array $data): array
     {
         $result = array();
 
-        foreach($data as $k => $v)
-        {
-            if(! isset($v[$key]))
+        foreach ($data as $k => $v) {
+            if (!isset($v[$key])) {
                 throw new \Exception('Invalid key');
+            }
 
             $result[$v[$key]] = $v;
         }
@@ -72,13 +73,13 @@ class Utils
      * @throws \Exception
      * @return array
      */
-    static public function collectData(string $keyField , string $valueField , array $data) : array
+    static public function collectData(string $keyField, string $valueField, array $data): array
     {
         $result = [];
-        foreach($data as $k => $v)
-        {
-            if(! isset($v[$keyField]) || ! isset($v[$valueField]))
+        foreach ($data as $k => $v) {
+            if (!isset($v[$keyField]) || !isset($v[$valueField])) {
                 throw new \Exception('Invalid key');
+            }
             $result[$v[$keyField]] = $v[$valueField];
         }
         return $result;
@@ -91,18 +92,18 @@ class Utils
      * @throws \Exception
      * @return array
      */
-    static public function fetchCol(string $key , array $data) : array
+    static public function fetchCol(string $key, array $data): array
     {
         $result = [];
 
-        if(empty($data))
+        if (empty($data)) {
             return [];
+        }
 
-        foreach($data as $v)
-        {
-            if(is_object($v)){
+        foreach ($data as $v) {
+            if (is_object($v)) {
                 $result[] = $v->{$key};
-            }else{
+            } else {
                 $result[] = $v[$key];
             }
         }
@@ -113,19 +114,22 @@ class Utils
      * Group array by column, used for db results sorting
      * @param string $key
      * @param array $data
+     * @throws \Exception
      * @return array
      */
-    static public function groupByKey(string $key , array $data) : array
+    static public function groupByKey(string $key, array $data): array
     {
-        $result = array();
+        $result = [];
 
-        if(empty($data))
-            return array();
+        if (empty($data)) {
+            return [];
+        }
 
-        foreach($data as $v)
-        {
-            if(! isset($v[$key]))
-                trigger_error('Invalid key');
+        foreach ($data as $v) {
+            if (!isset($v[$key])) {
+                throw new \Exception('Invalid key ' . $key);
+            }
+
             $result[$v[$key]][] = $v;
         }
         return $result;
@@ -137,7 +141,7 @@ class Utils
      * @throws \Exception
      * @return string
      */
-    static public function hash(string $string) : string
+    static public function hash(string $string): string
     {
         return md5(md5($string . self::$salt . $string));
     }
@@ -147,7 +151,7 @@ class Utils
      * @param int $size
      * @return string
      */
-    static public function formatFileSize(int $size) : string
+    static public function formatFileSize(int $size): string
     {
         return Utils\Format::formatFileSize($size);
     }
@@ -157,7 +161,7 @@ class Utils
      * @param int $difference
      * @return string
      */
-    static public function formatTime(int $difference) : string
+    static public function formatTime(int $difference): string
     {
         return Utils\Format::formatTime($difference);
     }
@@ -174,12 +178,12 @@ class Utils
      * @param array $data
      * @return bool
      */
-    static public function exportArray(string $file , array $data) : bool
+    static public function exportArray(string $file, array $data): bool
     {
-        try{
-            file_put_contents($file , '<?php return ' . var_export($data , true) . '; ');
+        try {
+            file_put_contents($file, '<?php return ' . var_export($data, true) . '; ');
             return true;
-        }catch (\Error $e){
+        } catch (\Error $e) {
             return false;
         }
     }
@@ -196,7 +200,7 @@ class Utils
      * @param string $string
      * @return bool
      */
-    static public function exportCode(string $file, string $string) : bool
+    static public function exportCode(string $file, string $string): bool
     {
         try {
             file_put_contents($file, '<?php ' . $string);
@@ -211,7 +215,7 @@ class Utils
      * @param string $path
      * @return null|string
      */
-    static public function classFromPath(string $path) : ?string
+    static public function classFromPath(string $path): ?string
     {
         return Utils\Fs::classFromPath($path);
     }
@@ -222,7 +226,7 @@ class Utils
      * @param string $fileName
      * @return string
      */
-    static public function createCachePath(string $basePath , string $fileName) : string
+    static public function createCachePath(string $basePath, string $fileName): string
     {
         $extension = File::getExt($fileName);
 
@@ -231,16 +235,13 @@ class Utils
         $path = '';
         $count = 0;
         $parts = 0;
-        for($i = 0; $i < $len; $i++)
-        {
-            if($count == 4)
-            {
+        for ($i = 0; $i < $len; $i++) {
+            if ($count == 4) {
                 $path .= '/';
                 $count = 0;
                 $parts++;
             }
-            if($parts == 4)
-            {
+            if ($parts == 4) {
                 break;
             }
             $path .= $str[$i];
@@ -248,8 +249,8 @@ class Utils
         }
         $path = $basePath . $path;
 
-        if(!is_dir($path)){
-            mkdir($path , 0755 , true);
+        if (!is_dir($path)) {
+            mkdir($path, 0755, true);
         }
 
         return $path . $str . $extension;
@@ -260,17 +261,17 @@ class Utils
      * @param array $data
      * @return Tree
      */
-    static public function fileListToTree(array $data) : Tree
+    static public function fileListToTree(array $data): Tree
     {
         return Utils\Format::fileListToTree($data);
     }
 
     /**
      * Get random string
-     * @param integer $length- string length
+     * @param integer $length - string length
      * @return string
      */
-    static function getRandomString($length) : string
+    static function getRandomString($length): string
     {
         return Utils\Strings::getRandomString($length);
     }
@@ -279,53 +280,42 @@ class Utils
      * Check if operation system is windows
      * @return boolean
      */
-    static function isWindows() : bool
+    static function isWindows(): bool
     {
-        if(strtoupper(substr(PHP_OS , 0 , 3)) === 'WIN')
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     /**
      * Get user IP address
      * @return string
      */
-    static public function getClientIp() : string
+    static public function getClientIp(): string
     {
         $ip = 'Unknown';
 
-        if(isset($_SERVER['HTTP_X_REAL_IP']))
-        {
+        if (isset($_SERVER['HTTP_X_REAL_IP'])) {
             $ip = $_SERVER['HTTP_X_REAL_IP'];
-        }
-        elseif(isset($_ENV['HTTP_CLIENT_IP']) && strcasecmp($_ENV['HTTP_CLIENT_IP'] , 'unknown') !== 0)
-        {
+        } elseif (isset($_ENV['HTTP_CLIENT_IP']) && strcasecmp($_ENV['HTTP_CLIENT_IP'], 'unknown') !== 0) {
             $ip = $_ENV['HTTP_CLIENT_IP'];
-        }
-        elseif(isset($_SERVER['HTTP_CLIENT_IP']) && strcasecmp($_SERVER['HTTP_CLIENT_IP'] , 'unknown') !== 0)
-        {
+        } elseif (isset($_SERVER['HTTP_CLIENT_IP']) && strcasecmp($_SERVER['HTTP_CLIENT_IP'], 'unknown') !== 0) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
-        }
-        elseif(isset($_ENV['HTTP_X_FORWARDED_FOR']) && strcasecmp($_ENV['HTTP_X_FORWARDED_FOR'] , 'unknown') !== 0)
-        {
+        } elseif (isset($_ENV['HTTP_X_FORWARDED_FOR']) && strcasecmp($_ENV['HTTP_X_FORWARDED_FOR'], 'unknown') !== 0) {
             $ip = $_ENV['HTTP_X_FORWARDED_FOR'];
-        }
-        elseif(isset($_SERVER['HTTP_X_FORWARDED_FOR']) && strcasecmp($_SERVER['HTTP_X_FORWARDED_FOR'] , 'unknown') !== 0)
-        {
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && strcasecmp($_SERVER['HTTP_X_FORWARDED_FOR'],
+                'unknown') !== 0
+        ) {
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-        elseif(isset($_ENV['REMOTE_ADDR']) && strcasecmp($_ENV['REMOTE_ADDR'] , 'unknown') !== 0)
-        {
+        } elseif (isset($_ENV['REMOTE_ADDR']) && strcasecmp($_ENV['REMOTE_ADDR'], 'unknown') !== 0) {
             $ip = $_ENV['REMOTE_ADDR'];
-        }
-        elseif(isset($_SERVER['REMOTE_ADDR']) && strcasecmp($_SERVER['REMOTE_ADDR'] , 'unknown') !== 0)
-        {
+        } elseif (isset($_SERVER['REMOTE_ADDR']) && strcasecmp($_SERVER['REMOTE_ADDR'], 'unknown') !== 0) {
             $ip = $_SERVER['REMOTE_ADDR'];
         }
-        if(stristr($ip , ","))
-        {
-            $ip_arr = explode("," , $ip);
+        if (stristr($ip, ",")) {
+            $ip_arr = explode(",", $ip);
             $ip = $ip_arr[0];
         }
         return $ip;
@@ -338,9 +328,9 @@ class Utils
      * @param string $field
      * @return array
      */
-    static public function sortByField(array $data , string $field) : array
+    static public function sortByField(array $data, string $field): array
     {
-        foreach ($data as $id=>$item){
+        foreach ($data as $id => $item) {
             $index[$id] = $item[$field];
         }
 
@@ -348,7 +338,7 @@ class Utils
 
         $result = array();
 
-        foreach ($index as $id => $value){
+        foreach ($index as $id => $value) {
             $result[] = $data[$id];
         }
 
@@ -361,16 +351,16 @@ class Utils
      * @param string $property
      * @return  array
      */
-    static public function sortByProperty(array $list, string $property) : array
+    static public function sortByProperty(array $list, string $property): array
     {
-        foreach ($list as $id=>$item){
+        foreach ($list as $id => $item) {
             $index[$id] = $item->{$property};
         }
         asort($index);
 
         $result = [];
 
-        foreach ($index as $id => $value){
+        foreach ($index as $id => $value) {
             $result[] = $list[$id];
         }
 
@@ -384,8 +374,8 @@ class Utils
      * @param array $ids
      * @return string
      */
-    static public function listIntegers(array $ids) : string
+    static public function listIntegers(array $ids): string
     {
-        return implode(',' , array_map('intval' , array_unique($ids)));
+        return implode(',', array_map('intval', array_unique($ids)));
     }
 }
