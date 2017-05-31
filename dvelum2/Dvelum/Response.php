@@ -21,7 +21,7 @@ declare(strict_types=1);
 namespace Dvelum;
 
 use Dvelum\Config;
-use Dvelum\Orm\Exception;
+use \Exception as Exception;
 
 class Response
 {
