@@ -72,6 +72,10 @@ class Response
      */
     public function send() : void
     {
+        if($this->sent){
+            throw new Exception('Response already sent');
+        }
+
         echo $this->buffer;
 
         if(function_exists('fastcgi_finish_request')){
@@ -151,7 +155,6 @@ class Response
     public function json(array $data = []) : void
     {
         $this->put(json_encode($data));
-        $this->send();
     }
 
     /**
