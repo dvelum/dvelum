@@ -74,23 +74,23 @@ class Adapter
             /*
              *  Mysqli performance patch
              */
-//            if($this->params['adapter'] === 'Mysqli') {
-//                /**
-//                 * @var \mysqli_stmt $resource
-//                 */
-//                $resource = $result->getResource();
-//                /**
-//                 * @var \mysqli_result $result
-//                 */
-//                $result = $resource->get_result();
-//                if($result){
-//                    return $result->fetch_all(MYSQLI_ASSOC);
-//                }
-//                return [];
-//            }else{
+            if($this->params['adapter'] === 'Mysqli') {
+                /**
+                 * @var \mysqli_stmt $resource
+                 */
+                $resource = $result->getResource();
+                /**
+                 * @var \mysqli_result $result
+                 */
+                $result = $resource->get_result();
+                if($result){
+                    return $result->fetch_all(MYSQLI_ASSOC);
+                }
+                return [];
+            }else{
                 $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
                 return $resultSet->initialize($result)->toArray();
-//            }
+            }
         }
         return [];
     }
