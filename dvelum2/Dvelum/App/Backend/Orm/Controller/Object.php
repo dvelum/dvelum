@@ -24,6 +24,7 @@ use Dvelum\App\Backend\Orm\Manager;
 use Dvelum\App\Backend\Controller;
 use Dvelum\Config;
 use Dvelum\Orm;
+use Dvelum\Service;
 use Dvelum\Orm\Model;
 use Dvelum\Lang;
 use Dvelum\View;
@@ -377,7 +378,13 @@ class Object extends Controller
         //$db = Model::getGlobalDbConnection();
         $db = $connection;
         $tables = $db->listTables();
-        $oConfigPath = Orm\Object\Config::getConfigPath();
+
+        /**
+         * @var Orm
+         */
+        $ormService = Service::get('orm');
+
+        $oConfigPath =  $ormService->getSettings()->get('configPath');
         $configDir  = Config::storage()->getWrite() . $oConfigPath;
 
         $tableName = $data['table'];

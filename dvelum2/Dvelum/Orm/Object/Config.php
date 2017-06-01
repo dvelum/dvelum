@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Object;
 
 use Dvelum\Orm;
+use Dvelum\Service;
 use Dvelum\Config as Cfg;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Object\Config\Field;
@@ -46,11 +47,12 @@ class Config
      * Path to configs
      * @var string
      */
-    static protected $configPath = null;
+    protected $configPath = null;
 
-    static protected $_instances = [];
-
-    static protected $configs = [];
+    /**
+     * @var Cfg\ConfigInterface $settings
+     */
+    protected $settings;
 
     /**
      * @var Cfg\Adapter
@@ -89,7 +91,7 @@ class Config
      * Translation adapter
      * @var Orm\Object\Config\Translator
      */
-    static protected $translator = false;
+     protected $translator = false;
 
     /**
      * Translation flag
@@ -121,25 +123,29 @@ class Config
      */
     static public function getInstance($name , $force = false)
     {
-        return self::factory($name, $force);
+        /**
+         * @var Orm $service
+         */
+        $service = Service::get('orm');
+        return $service->config($name, $force);
     }
 
     /**
      * Instantiate data structure for the objects named $name
+     * Backward compatibility
      * @param string $name - object name
      * @param boolean $force - reload config
      * @return Orm\Object\Config
      * @throws Exception
+     * @deprecated
      */
     static public function factory(string $name , bool $force = false) : Orm\Object\Config
     {
-        $name = strtolower($name);
-
-        if($force || !isset(self::$_instances[$name])) {
-            self::$_instances[$name] = new static($name , $force);
-        }
-
-        return self::$_instances[$name];
+        /**
+         * @var Orm $service
+         */
+        $service = Service::get('orm');
+        return $service->config($name, $force);
     }
 
     /**
@@ -151,67 +157,45 @@ class Config
         $this->loadProperties();
     }
 
-    final private function __clone(){}
 
-    final private function __construct($name , $force = false)
+    public function __construct($name , $force = false, Cfg\ConfigInterface $settings)
     {
+        $this->settings = $settings;
         $this->name = strtolower($name);
 
         if(!self::configExists($name))
             throw new Exception('Undefined object config '. $name);
 
-        $this->config = Cfg\Factory::storage()->get(self::$configs[$name], !$force , false);
+        $path = $this->settings->get('configPath') . $name . '.php';
+
+        $this->config = Cfg\Factory::storage()->get($path, !$force , false);
         $this->loadProperties();
     }
 
-    /**
-     * Register external objects
-     * @param array $data
-     */
-    static public function registerConfigs(array $data)
-    {
-        foreach ($data  as $object=>$configPath)
-            self::$configs[strtolower($object)] = $configPath;
-    }
 
     /**
      * Object config existence check
      * @param string $name
      * @return boolean
+     * @deprecated
      */
     static public function configExists(string $name) : bool
     {
-        $name = strtolower($name);
-
-        if(isset(self::$configs[$name]))
-            return true;
-
-        if(\Dvelum\Config\Factory::storage()->exists(self::$configPath . $name .'.php'))
-        {
-            self::$configs[$name] = self::$configPath . $name .'.php';
-            return true;
-        }
-
-        return false;
+        /**
+         * @var Orm $service
+         */
+        $service = Service::get('orm');
+        return $service->configExists($name);
     }
 
-    /**
-     * Set config files path
-     * @param string $path
-     * @return void
-     */
-    static public function setConfigPath($path)
-    {
-        self::$configPath = $path;
-    }
 
     /**
      * Get config files path
      * @return string
      */
-    static public function getConfigPath()
+    public function getConfigPath() : string
     {
-        return self::$configPath;
+        return $this->configPath;
     }
 
     /**
@@ -243,8 +227,7 @@ class Config
             return;
 
         $dataLink = & $this->config->dataLink();
-        self::$translator->translate($this->name , $dataLink);
-
+        $this->translator->translate($this->name , $dataLink);
         $this->translated = true;
     }
 
@@ -258,7 +241,7 @@ class Config
         $pKeyName = $this->getPrimaryKey();
 
         $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
-            self::$configPath.'system/pk_field.php'
+            $this->settings->get('configPath').'system/pk_field.php'
         )->__toArray();
 
         /*

@@ -36,7 +36,12 @@ class Backend_Reports_Controller extends Backend_Controller
         $this->_storage = Db_Query_Storage::getInstance('file');
         $this->_session = Store_Session::getInstance('Reports');
 
-        $conManager = Model::getDefaultDbManager();
+        $service = \Dvelum\Service::get('orm');
+        /**
+         * @var \Dvelum\Db\Manager $conManager
+         */
+        $conManager = $service->getModelSettings()->get('defaultDbManager');
+
         $this->_db = $conManager->getDbConnection('default');
         $this->_reportsPath = Config::storage()->getWrite() .  $this->_configMain->get('report_configs');
     }

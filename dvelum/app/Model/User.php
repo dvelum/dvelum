@@ -51,29 +51,4 @@ class Model_User extends Model
 
         return $result;
     }
-
-    /**
-     * Find user avatar
-     * Will be used for sharding
-     * @param integer $userId
-     * @param string $userName
-     * @param string $avatarPath
-     * @param string $size - optional size tag
-     */
-    static public function findAvatar($userId , $userName , $avatarPath , $size = 'thumb'){
-    	if(!strlen($avatarPath))
-    		return '/media/user/avatar/unknown_user.png';
-
-    	return Model_Medialib::getImgPath($avatarPath, '.jpg', $size);
-    }
-    
-    /**
-     * Create confirmation code
-     * @param string $confirmDate
-     * @param string $email
-     */
-    public function getConfirmCode($confirmDate , $email)
-    {
-        return Utils::hash($confirmDate . $email);
-    }
 }
