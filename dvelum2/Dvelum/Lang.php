@@ -21,156 +21,86 @@ declare(strict_types=1);
 namespace Dvelum;
 
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Config\Storage\StorageInterface;
 
 class Lang
 {
-    protected $dictionary = false;
-    protected $dictionaryName = '';
+    protected $defaultDictionary = '';
 
-    static protected $dictionaries = [];
-    static protected $loaders = [];
-    static protected $defaultDictionary = '';
+    protected $storage = false;
 
+    protected $dictionaries = [];
+    protected $loaders = [];
 
-    /**
-     * @param string $name
-     */
-    protected function __construct(string $name)
-    {
-        $this->dictionaryName = $name;
-        if(isset(self::$dictionaries[$name]))
-            $this->dictionary = self::$dictionaries[$name];
-    }
-
-    /**
-     * Get current dictionary name
-     * @return string
-     */
-    public function getName() : string
-    {
-        return $this->dictionaryName;
-    }
 
     /**
      * Set default localization
      * @param string $name
      * @throws \Exception
      */
-    static public function setDefaultDictionary(string $name)
+    public function setDefaultDictionary(string $name): void
     {
-        if(!isset(self::$dictionaries[$name]) && !isset(self::$loaders[$name]))
-            throw new \Exception('Dictionary '.$name.' is not found');
+        if (!isset($this->dictionaries[$name]) && !isset($this->loaders[$name])) {
+            throw new \Exception('Dictionary ' . $name . ' is not found');
+        }
 
-        self::$defaultDictionary = $name;
+        $this->defaultDictionary = $name;
     }
 
     /**
      * Get default dictionary (lang)
      * @return string
      */
-    static public function getDefaultDictionary() :string
+    public function getDefaultDictionary(): string
     {
-        return self::$defaultDictionary;
+        return $this->defaultDictionary;
     }
 
     /**
      * Add localization dictionary
      * @param string $name — localization name
-     * @param ConfigInterface  $dictionary — configuration object
+     * @param ConfigInterface $dictionary — configuration object
      * @return void
      */
-    static public function addDictionary(string $name , Config\ConfigInterface $dictionary)
+    public function addDictionary(string $name, Config\ConfigInterface $dictionary): void
     {
-        self::$dictionaries[$name] = $dictionary;
+        $this->dictionaries[$name] = $dictionary;
     }
 
     /**
      * Add localization loader
      * @param string $name - dictionary name
      * @param mixed $src - dictionary source
-     * @param integer $type - Config constant
+     * @param int $type - Config constant
      */
-    static public function addDictionaryLoader(string $name , $src , $type = Config\Factory::File_Array)
+    public function addDictionaryLoader(string $name, $src, int $type = Config\Factory::File_Array): void
     {
-        self::$loaders[$name] = array('src'=> $src , 'type' =>$type);
+        $this->loaders[$name] = array('src' => $src, 'type' => $type);
     }
 
     /**
-     * Load dictionary data
-     * @param string $name
+     * Get localization dictionary by localization name or get default dictionary
+     * @param string $name optional,
+     * @throws \Exception
+     * @return Lang\Dictionary
      */
-    protected function loadDictionary(string $name) : void
+    public function getDictionary(?string $name = null): Lang\Dictionary
     {
-        if($this->dictionary)
-            return;
-
-        if(isset(self::$dictionaries[$name]))
-        {
-            $this->dictionary = self::$dictionaries[$name];
-            return;
+        if (empty($name)) {
+            $name = $this->defaultDictionary;
         }
 
-        if(isset(self::$loaders[$name]))
-        {
-            switch(self::$loaders[$name]['type']){
-                case Config\Factory::File_Array:
-                    self::$dictionaries[$name] = static::storage()->get(self::$loaders[$name]['src'] , true , true);
-                    $this->dictionary = self::$dictionaries[$name];
-                    break;
-            }
+        if (isset($this->dictionaries[$name])) {
+            return $this->dictionaries[$name];
         }
-    }
 
-    /**
-     * Get a localized string by dictionary key.
-     * If the necessary key is absent, the following value will be returned: «[key]»
-     * @param string $key
-     * @return string
-     */
-    public function get(string $key) : string
-    {
-        $this->loadDictionary($this->dictionaryName);
+        if (!isset($this->dictionaries[$name]) && !isset($this->loaders[$name])) {
+            throw new \Exception('Lang::lang Dictionary "' . $name . '" is not found');
+        }
 
-        if($this->dictionary->offsetExists($key))
-            return $this->dictionary->get($key);
-        else
-            return '[' . $key . ']';
-    }
+        $this->dictionaries[$name] = new Lang\Dictionary($name, $this->loaders[$name]);
 
-    public function __get($key)
-    {
-        return $this->get($key);
-    }
-
-    public function __isset($key)
-    {
-        $this->loadDictionary($this->dictionaryName);
-
-        return $this->dictionary->offsetExists($key);
-    }
-
-    /**
-     * Convert the localization dictionary to JSON
-     * @return string
-     */
-    public function getJson() : string
-    {
-        $this->loadDictionary($this->dictionaryName);
-        return \json_encode($this->dictionary->__toArray());
-    }
-
-    /**
-     * Convert the localization dictionary to JavaScript object
-     * @return string
-     */
-    public function getJsObject() : string
-    {
-        $this->loadDictionary($this->dictionaryName);
-        $items = array();
-        foreach($this->dictionary as $k => $v)
-            $items[] = $k . ':"' . $v . '"';
-
-        return \str_replace("\n","",'{' . implode(',' , $items) . '}');
+        return $this->dictionaries[$name];
     }
 
     /**
@@ -178,31 +108,41 @@ class Lang
      * get default dictionary
      * @param string $name optional,
      * @throws \Exception
-     * @return Lang
+     * @return Lang\Dictionary
+     * @deprecated
      */
-    static public function lang(string $name = '') : self
+    static public function lang(?string $name = null): Lang\Dictionary
     {
-        if(empty($name))
-            $name = self::$defaultDictionary;
-
-        if(!isset(self::$dictionaries[$name]) && !isset(self::$loaders[$name]))
-            throw new \Exception('Lang::lang Dictionary "'.$name.'" is not found');
-
-        return new self($name);
+        /**
+         * @var Lang $langService
+         */
+        $langService = Service::get('lang');
+        return $langService->getDictionary($name);
     }
 
     /**
      * Get configuration storage
-     * @return Config\Storage\StorageInterface
+     * @return StorageInterface
      */
-    static public function storage() : Config\Storage\StorageInterface
+    public function getStorage(): StorageInterface
     {
-        static $store = false;
-
-        if(!$store){
-            $store = new Config\Storage\File\AsArray();
+        if (!$this->storage) {
+            $this->storage = new Config\Storage\File\AsArray();
         }
+        return $this->storage;
+    }
 
-        return $store;
+    /**
+     * Get configuration storage
+     * @return StorageInterface
+     * @deprecated
+     */
+    static public function storage(): StorageInterface
+    {
+        /**
+         * @var Lang $langService
+         */
+        $langService = Service::get('lang');
+        return $langService->getStorage();
     }
 }

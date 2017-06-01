@@ -17,6 +17,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Lang;
+use Dvelum\Service;
 
 class Designer_Factory
 {
@@ -280,7 +282,11 @@ class Designer_Factory
         // include langs
         if(isset($projectConfig['langs']) && !empty($projectConfig['langs']))
         {
-            $language = Lang::getDefaultDictionary();
+            /**
+             * @var Lang $langService
+             */
+            $langService = Service::get('lang');
+            $language = $langService->getDefaultDictionary();
             $lansPath = $designerConfig->get('langs_path');
             $langsUrl = $designerConfig->get('langs_url');
 

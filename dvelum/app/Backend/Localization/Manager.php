@@ -2,6 +2,8 @@
 
 use Dvelum\Config\ConfigInterface;
 
+use Dvelum\Service;
+
 class Backend_Localization_Manager
 {
     /**
@@ -70,6 +72,8 @@ class Backend_Localization_Manager
      */
     public function getSubPackages($lang = false)
     {
+        $data = [];
+
         if(!$lang)
             $lang = $this->_indexLanguage;
 
@@ -93,7 +97,14 @@ class Backend_Localization_Manager
      */
     public function getSubDictionaries()
     {
-        $result = $this->getSubPackages(Lang::getDefaultDictionary());
+        /**
+         * @var Lang $langService
+         */
+        $langService = Service::get('lang');
+        $language = $langService->getDefaultDictionary();
+
+        $result = $this->getSubPackages($language);
+
         if(!empty($result)){
             foreach ($result as $k=>&$v){
                 $v = str_replace(array('/','\\'), '', $v);
@@ -493,11 +504,17 @@ class Backend_Localization_Manager
         $jsPath = $this->_appConfig->get('js_lang_path');;
         $langs = $this->getLangs(false);
 
+        /**
+         * @var Lang $langService
+         */
+        $langService = Service::get('lang');
+
         foreach ($langs as $lang)
         {
             $name = $lang;
             $dictionary = Lang::storage()->get( $lang .'.php');
-            Lang::addDictionary($name, $dictionary);
+
+            $langService->addDictionary($name, $dictionary);
 
             $filePath = $jsPath . $lang .'.js';
 

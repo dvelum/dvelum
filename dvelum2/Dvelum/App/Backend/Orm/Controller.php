@@ -14,6 +14,7 @@ use Dvelum\Template;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\App\Router\RouterInterface;
+use Dvelum\Service;
 
 class Controller extends \Dvelum\App\Backend\Controller implements RouterInterface
 {
@@ -75,7 +76,12 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         }
         //tooltips
         $lPath = $this->appConfig->get('language').'/orm.php';
-        Lang::addDictionaryLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
+
+        /**
+         * @var Lang $langService
+         */
+        $langService = Service::get('lang');
+        $langService->addDictionaryLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
 
         $this->resource->addInlineJs('
           var canPublish =  '.((integer)$this->moduleAcl->canPublish($this->module)).';

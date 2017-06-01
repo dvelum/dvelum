@@ -2,6 +2,7 @@
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
+use Dvelum\Service;
 
 class Backend_Externals_Controller extends Backend_Controller
 {
@@ -23,8 +24,12 @@ class Backend_Externals_Controller extends Backend_Controller
                 exit();
             }
         }
-        Lang::addDictionaryLoader('externals', $this->_configMain->get('language').'/externals.php' , Config\Factory::File_Array);
-        $this->externalsManager =  Externals_Manager::factory();
+        /**
+         * @var Lang $langService
+         */
+        $langService = Service::get('lang');
+        $langService->addDictionaryLoader('externals', $this->_configMain->get('language').'/externals.php' , Config\Factory::File_Array);
+        $this->externalsManager = Externals_Manager::factory();
     }
 
     /**

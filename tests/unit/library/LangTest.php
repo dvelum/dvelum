@@ -5,13 +5,17 @@ class LangTest extends TestCase
 {
 	public function testGet()
 	{
+        /**
+         * @var \Dvelum\Lang
+         */
+	    $langService = \Dvelum\Service::get('lang');
 		
 		$enDict = Lang::storage()->get('en.php');
 		$ruDict = Lang::storage()->get('ru.php');
-		
-		Lang::addDictionary('en', $enDict);
-		Lang::addDictionary('ru', $ruDict);
-		Lang::setDefaultDictionary('en');
+
+        $langService->addDictionary('en', $enDict);
+        $langService->addDictionary('ru', $ruDict);
+        $langService->setDefaultDictionary('en');
 		
 		$lang = Lang::lang();
 		

@@ -36,7 +36,6 @@ use Dvelum\Utils;
 use Dvelum\App\Router\Backend as RouterBackend;
 use Dvelum\Service;
 
-
 /**
  * Application - is the main class that initializes system configuration
  * settings. The system starts working with running an object of this class.
@@ -89,8 +88,9 @@ class Application
      */
     public function init()
     {
-        if($this->initialized)
+        if ($this->initialized) {
             return;
+        }
 
         date_default_timezone_set($this->config->get('timezone'));
 
@@ -106,20 +106,10 @@ class Application
         $dbManager = $this->initDb();
 
         /*
-         * Init localization storage options
-         */
-        $langStorage = Lang::storage();
-        $langStorage->setConfig(
-            Config\Factory::storage()->get('lang_storage.php')->__toArray()
-        );
-
-        /*
          * Init templates storage
          */
         $templateStorage = View::storage();
-        $templateStorage->setConfig(
-            Config\Factory::storage()->get('template_storage.php')->__toArray()
-        );
+        $templateStorage->setConfig(Config\Factory::storage()->get('template_storage.php')->__toArray());
 
         $request = Request::factory();
         $request->setConfig(Config\Factory::create([
@@ -134,7 +124,7 @@ class Application
             'jsCacheSysPath' => $this->config->get('jsCacheSysPath'),
             'wwwRoot' => $this->config->get('wwwRoot'),
             'wwwPath' => $this->config->get('wwwPath'),
-            'cache'=> $cache
+            'cache' => $cache
         ]));
 
         Utils::setSalt($this->config->get('salt'));
@@ -144,17 +134,27 @@ class Application
          * Init lang dictionary (Lazy Load)
          */
         $lang = $this->config->get('language');
-        Lang::addDictionaryLoader($lang ,  $lang . '.php' , Config\Factory::File_Array);
-        Lang::setDefaultDictionary($this->config->get('language'));
 
-        if($cache)
-        {
+        if ($cache) {
             View::setCache($cache);
-            if($this->config->offsetExists('template_check_mtime'))
+            if ($this->config->offsetExists('template_check_mtime')) {
                 View::checkMtime($this->config->get('template_check_mtime'));
+            }
         }
 
-        Service::register('orm', function() use ($dbManager, $lang, $cache){
+        /*
+         * Init localization service
+         */
+        Service::register('lang', function () use ($lang) {
+            $langService = new Lang();
+            $langService->addDictionaryLoader($lang, $lang . '.php', Config\Factory::File_Array);
+            $langService->setDefaultDictionary($lang);
+            $langStorage = $langService->getStorage();
+            $langStorage->setConfig(Config\Factory::storage()->get('lang_storage.php')->__toArray());
+            return $langService;
+        });
+
+        Service::register('orm', function () use ($dbManager, $lang, $cache) {
             $orm = new Orm();
             $orm->init(Config::storage()->get('orm.php'), $dbManager, $lang, $cache);
             return $orm;
@@ -163,27 +163,25 @@ class Application
         /*
          * Prepare dictionaries
          */
-        Service::register('dictionary', function(){
-           $service = new Dictionary\Service();
-           $service->setConfig(
-               Config\Factory::create([
-                   'configPath'=>$this->config->get('dictionary_folder') . $this->config->get('language').'/'
-               ])
-           );
-           return $service;
+        Service::register('dictionary', function () {
+            $service = new Dictionary\Service();
+            $service->setConfig(Config\Factory::create([
+                'configPath' => $this->config->get('dictionary_folder') . $this->config->get('language') . '/'
+            ]));
+            return $service;
         });
 
         // init external modules
         $externalsCfg = $this->config->get('externals');
-        if($externalsCfg['enabled']){
+        if ($externalsCfg['enabled']) {
             $this->initExternals();
         }
 
         $request = Request::factory();
         $response = Response::factory();
-        if($request->isAjax()){
+        if ($request->isAjax()) {
             $response->setFormat(Response::FORMAT_JSON);
-        }else{
+        } else {
             $response->setFormat(Response::FORMAT_HTML);
         }
 
@@ -200,11 +198,11 @@ class Application
         $externals = Config\Factory::storage()->get('external_modules.php');
 
         \Externals_Manager::setConfig([
-            'appConfig'=>$this->config,
-            'autoloader' =>$this->autoloader
+            'appConfig' => $this->config,
+            'autoloader' => $this->autoloader
         ]);
 
-        if($externals->getCount()){
+        if ($externals->getCount()) {
             \Externals_Manager::factory()->loadModules();
         }
     }
@@ -213,20 +211,24 @@ class Application
      * Initialize Cache connections
      * @return \Cache_Interface | null
      */
-    protected function initCache() : ?\Cache_Interface
+    protected function initCache(): ?\Cache_Interface
     {
-        if(!$this->config->get('use_cache'))
+        if (!$this->config->get('use_cache')) {
             return null;
+        }
 
         $cacheConfig = Config::storage()->get('cache.php')->__toArray();
         $cacheManager = new \Cache_Manager();
 
-        foreach($cacheConfig as $name => $cfg)
-            if($cfg['enabled'])
-                $cacheManager->connect($name , $cfg);
+        foreach ($cacheConfig as $name => $cfg) {
+            if ($cfg['enabled']) {
+                $cacheManager->connect($name, $cfg);
+            }
+        }
 
-        if($this->config->get('development'))
+        if ($this->config->get('development')) {
             \Debug::setCacheCores($cacheManager->getRegistered());
+        }
 
         return $cacheManager->get('data');
     }
@@ -275,10 +277,11 @@ class Application
         $this->init();
         $page = Request::factory()->getPart(0);
 
-        if($page === $this->config->get('adminPath'))
+        if ($page === $this->config->get('adminPath')) {
             $this->routeBackOffice();
-        else
+        } else {
             $this->routeFrontend();
+        }
     }
 
     /**
@@ -286,11 +289,11 @@ class Application
      */
     protected function routeBackOffice()
     {
-        if($this->cache)
+        if ($this->cache) {
             BlockManager::setDefaultCache($this->cache);
+        }
 
         $cfgBackend = Config\Factory::storage()->get('backend.php');
-
 
         $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';
 
@@ -305,8 +308,7 @@ class Application
         $router = new RouterBackend();
         $router->route($request, $response);
 
-
-        if($response->isSent()){
+        if ($response->isSent()) {
             return;
         }
 
@@ -317,10 +319,10 @@ class Application
          */
         $res = Resource::factory();
         $res->addInlineJs('
-            app.wwwRoot = "'.$this->config->get('wwwroot').'";
+            app.wwwRoot = "' . $this->config->get('wwwroot') . '";
         	app.admin = "' . $this->config->get('wwwroot') . $this->config->get('adminPath') . '";
         	app.delimiter = "' . $this->config->get('urlDelimiter') . '";
-        	app.root = "' . $this->config->get('wwwroot') .  $this->config->get('adminPath') . $this->config->get('urlDelimiter') . $controller . $this->config->get('urlDelimiter') . '";
+        	app.root = "' . $this->config->get('wwwroot') . $this->config->get('adminPath') . $this->config->get('urlDelimiter') . $controller . $this->config->get('urlDelimiter') . '";
         ');
 
         $modulesManager = new \Modules_Manager();
@@ -330,7 +332,7 @@ class Application
         $template = new View();
         $template->disableCache();
         $template->setProperties(array(
-            'wwwRoot'=>$this->config->get('wwwroot'),
+            'wwwRoot' => $this->config->get('wwwroot'),
             'page' => $page,
             'urlPath' => $controller,
             'resource' => $res,
@@ -358,9 +360,9 @@ class Application
         $request = Request::factory();
         $response = Response::factory();
 
-        if($this->config->get('maintenance')){
+        if ($this->config->get('maintenance')) {
             $tpl = new View();
-            $tpl->set('msg' , Lang::lang()->get('MAINTENANCE'));
+            $tpl->set('msg', Lang::lang()->get('MAINTENANCE'));
             $response->put($tpl->render('public/error.php'));
             $response->send();
             return;
@@ -371,14 +373,13 @@ class Application
         $page = \Page::getInstance();
         $page->setTemplatesPath('public/');
 
-
         /*
          * Start routing
         */
         $frontConfig = Config::storage()->get('frontend.php');
-        $routerClass =  '\\Dvelum\\App\\Router\\' . $frontConfig->get('router');
+        $routerClass = '\\Dvelum\\App\\Router\\' . $frontConfig->get('router');
 
-        if(!class_exists($routerClass)){
+        if (!class_exists($routerClass)) {
             $routerClass = $frontConfig->get('router');
         }
         /**
@@ -389,6 +390,7 @@ class Application
 
         $response->send();
     }
+
     /**
      * Close application, stop processing
      * @deprecated

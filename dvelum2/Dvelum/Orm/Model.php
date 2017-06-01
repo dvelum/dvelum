@@ -572,7 +572,7 @@ class Model
      * )
      * @return array
      */
-    public function find(?array $filters, ?array $params, ?string $query, ?array $fields, ?array $joins) : array
+    public function find(?array $filters = null, ?array $params = null, ?string $query = null, ?array $fields = null, ?array $joins = null) : array
     {
         if(empty($fields)){
             $fields = '*';
