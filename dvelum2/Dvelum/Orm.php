@@ -135,14 +135,14 @@ class Orm
                     $fieldObject = $config->getField($field);
                     if ($fieldObject->isManyToManyLink()) {
                         $relationsObject = $config->getRelationsObject($field);
-                        $relationsData = Model::factory($relationsObject)->getList([
+                        $relationsData = $this->model($relationsObject)->getList([
                             'sort' => 'order_no',
                             'dir' => 'ASC'
                         ], ['sourceid' => $id], ['targetid', 'sourceid']);
                     } else {
                         $linkedObject = $fieldObject->getLinkedObject();
-                        $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
-                        $linksModel = Model::factory($linksObject);
+                        $linksObject = $this->model($linkedObject)->getStore()->getLinksObjectName();
+                        $linksModel = $this->model($linksObject);
                         $relationsData = $linksModel->getList(['sort' => 'order', 'dir' => 'ASC'], [
                                 'src' => $name,
                                 'srcid' => $id,

@@ -137,7 +137,6 @@ class Config
      * @param boolean $force - reload config
      * @return Orm\Object\Config
      * @throws Exception
-     * @deprecated
      */
     static public function factory(string $name , bool $force = false) : Orm\Object\Config
     {
