@@ -26,5 +26,9 @@ return [
         'Psr\\Log'=>'./vendor/psr/log/Psr/Log',
         'Zend\\Stdlib' => './vendor/zendframework/zend-stdlib/src',
         'Zend\\Db' => './vendor/zendframework/zend-db/src'
+    ],
+    // Paths to be excluded from class map
+    'noMap' =>[
+
     ]
 ];

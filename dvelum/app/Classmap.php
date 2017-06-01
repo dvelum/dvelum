@@ -71,6 +71,19 @@ class Classmap
         {
             if(File::getExt($item) === '.php')
             {
+                if(!empty($this->autoloaderCfg['noMap'])){
+                    $found = false;
+                    foreach($this->autoloaderCfg['noMap'] as $excludePath){
+                        if(strpos($item, $excludePath)!==false){
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if($found){
+                        continue;
+                    }
+                }
+
                 $parts = explode('/', str_replace($exceptPath,'', substr($item,0,-4)));
                 $parts = array_map('ucfirst', $parts);
                 $class = implode('_', $parts);
