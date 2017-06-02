@@ -155,6 +155,7 @@ class Response
     public function json(array $data = []) : void
     {
         $this->put(json_encode($data));
+        $this->send();
     }
 
     /**

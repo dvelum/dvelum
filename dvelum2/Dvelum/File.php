@@ -54,7 +54,7 @@ class File
      * @param string $name
      * @return string
      */
-    static public function getExt($name)
+    static public function getExt(string $name) : string
     {
         return strrchr(strtolower($name), '.');
     }
@@ -64,7 +64,7 @@ class File
      * @param string $path
      * @return string
      */
-    static public function fillEndSep($path)
+    static public function fillEndSep(string $path) : string
     {
         $length = strlen($path);
         if(!$length || $path[$length - 1] !== self::$directorySeparator)

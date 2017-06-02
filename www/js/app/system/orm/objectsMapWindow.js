@@ -251,7 +251,7 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
      */
     loadData: function(){
         Ext.Ajax.request({
-            url: this.controllerUrl + 'getumldata',
+            url: this.controllerUrl + 'uml/loadMap',
             params: this.params,
             method: 'post',
             scope: this,
@@ -291,7 +291,7 @@ Ext.define('app.crud.orm.ObjectsMapWindow', {
         this.getEl().mask(appLang.SAVING);
 
         Ext.Ajax.request({
-            url: this.controllerUrl + 'saveumlmap',
+            url: this.controllerUrl + 'uml/saveMap',
             method: 'post',
             scope: this,
             params:{map:Ext.JSON.encode(map)},

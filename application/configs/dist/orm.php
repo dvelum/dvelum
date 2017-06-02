@@ -44,7 +44,7 @@ return [
     /*
      * ORM SQL logs path
      */
-    'orm_log_path' => $docRoot . '/data/logs/orm/',
+    'log_path' => $docRoot . '/data/logs/orm/',
     /*
      * ORM configs directory
      */
@@ -53,4 +53,8 @@ return [
      * Hard caching time (without validation) for frontend , seconds
      */
     'hard_cache' => 30,
+    /**
+     * UML Map data file
+     */
+    'uml_map_data' => 'umlMap.php'
 ];

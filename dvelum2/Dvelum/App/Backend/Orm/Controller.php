@@ -22,10 +22,11 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         'dictionary' => 'Backend_Orm_Dictionary',
         'dataview' => 'Backend_Orm_Dataview',
         'connections' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Connections',
-        'log' => 'Backend_Orm_Log',
+        'log' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Log',
         'object' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Object',
         'field' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Field',
         'index' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Index',
+        'uml' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Uml',
     ];
 
     public function route(Request $request, Response $response) : void
@@ -59,7 +60,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
          */
         $ormConfig = Config::storage()->get('orm.php');
         Orm\Object\Builder::writeLog($ormConfig['use_orm_build_log']);
-        Orm\Object\Builder::setLogsPath($ormConfig['orm_log_path']);
+        Orm\Object\Builder::setLogsPath($ormConfig['log_path']);
         Orm\Object\Builder::setLogPrefix($this->appConfig['development_version'].'_build_log.sql');
     }
 
