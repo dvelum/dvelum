@@ -281,7 +281,6 @@ class Model
      * Factory method of model instantiation
      * @param string $objectName — the name of the object in ORM
      * @return Model
-     * @deprecated
      */
     static public function factory(string $objectName): Model
     {
