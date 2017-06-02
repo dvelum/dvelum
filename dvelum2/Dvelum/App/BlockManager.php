@@ -23,40 +23,30 @@ namespace Dvelum\App;
 
 use Dvelum\Orm\Model;
 use Dvelum\Config;
+use Dvelum\Utils;
+
 use \Page;
 
 class BlockManager
 {
-    protected static $useHardCacheLifetime = false;
-    protected static $defaultCache = false;
-    protected static $instance;
+    /**
+     * @var bool $hardCache
+     */
+    protected $hardCache = false;
+    /**
+     * @var \Cache_Interface|bool  $cache
+     */
+    protected $cache = false;
+
+
     protected $map = [];
     protected $defaultMap = false;
     protected $pageId;
     protected $version;
     protected $hasNoCacheBlock = false;
 
-    /**
-     * @var \Cache_Interface
-     */
-    protected $cache = false;
     const DEFAULT_BLOCK = 'Block_Simple';
     const CACHE_KEY = 'blockmanager_data';
-
-    /**
-     * Set default cache adapter
-     * @param \Cache_Interface $cache
-     * @return void
-     */
-    static public function setDefaultCache(\Cache_Interface $cache) : void
-    {
-        self::$defaultCache = $cache;
-    }
-
-    public function __construct()
-    {
-        $this->cache = self::$defaultCache;
-    }
 
     /**
      * Set cache adapter for the current object
@@ -84,9 +74,9 @@ class BlockManager
      * @param boolean $flag
      * @return void
      */
-    static public function useHardCacheTime($flag) : void
+    public function useHardCacheTime($flag) : void
     {
-        self::$useHardCacheLifetime = $flag;
+        $this->hardCache = $flag;
     }
 
     /**
@@ -148,7 +138,7 @@ class BlockManager
             foreach($data as $place => $item) {
                 $this->map[$place] = '';
                 if(!empty($item)){
-                    $this->map[$place] = array_map(array($this , 'renderBlock') , $item);
+                    $this->map[$place] = array_map([$this , 'renderBlock'], $item);
                 }
             }
         }
@@ -163,8 +153,8 @@ class BlockManager
          */
         if(!$this->hasNoCacheBlock)
         {
-            if(self::$useHardCacheLifetime) {
-                $this->cache->save($this->map , $mapKey , Config::storage()->get('orm.php')->get('hardcache'));
+            if($this->hardCache) {
+                $this->cache->save($this->map , $mapKey , Config::storage()->get('orm.php')->get('hard_cache'));
             } else {
                 $this->cache->save($this->map , $mapKey);
             }
@@ -259,8 +249,8 @@ class BlockManager
 
         if($class::cacheable && $this->cache)
         {
-            if(self::$useHardCacheLifetime) {
-                $this->cache->save($html , $cacheKey , Config::storage()->get('orm.php')->get('hardcache'));
+            if($this->hardCache) {
+                $this->cache->save($html , $cacheKey , Config::storage()->get('orm.php')->get('hard_cache'));
             } else {
                 $this->cache->save($html , $cacheKey);
             }
@@ -420,7 +410,7 @@ class BlockManager
         if(empty($blockItems))
             return;
 
-        $blockIds = \Utils::fetchCol('id' , $blockItems);
+        $blockIds = Utils::fetchCol('id' , $blockItems);
         $blockMapping = Model::factory('Blockmapping');
 
         $pageBlocks = $blockMapping->getList(
@@ -440,7 +430,7 @@ class BlockManager
         /*
          * Reset block config for pages
          */
-        $pages = array_unique(\Utils::fetchCol('page_id' , $pageBlocks));
+        $pages = array_unique(Utils::fetchCol('page_id' , $pageBlocks));
 
         foreach($pages as $id)
         {
@@ -452,7 +442,7 @@ class BlockManager
         }
         unset($pages);
 
-        $sortedPageBlocks = \Utils::groupByKey('block_id' , $pageBlocks);
+        $sortedPageBlocks = Utils::groupByKey('block_id' , $pageBlocks);
         $pagesModel = Model::factory('Page');
         $defaultMapped = $pagesModel->getPagesWithDefaultMap();
 

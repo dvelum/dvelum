@@ -44,12 +44,6 @@ class Config
     const RELATION_MANY_TO_MANY = 'many_to_many';
 
     /**
-     * Path to configs
-     * @var string
-     */
-    protected $configPath = null;
-
-    /**
      * @var Cfg\ConfigInterface $settings
      */
     protected $settings;
@@ -161,6 +155,7 @@ class Config
     {
         $this->settings = $settings;
         $this->name = strtolower($name);
+        $this->translator = $settings->get('translator');
 
         if(!self::configExists($name))
             throw new Exception('Undefined object config '. $name);
@@ -194,7 +189,7 @@ class Config
      */
     public function getConfigPath() : string
     {
-        return $this->configPath;
+        return $this->settings->get('configPath');
     }
 
     /**
@@ -286,7 +281,7 @@ class Config
     protected function getVcFields() : array
     {
         if(!isset(self::$vcFields))
-            self::$vcFields = Cfg\Factory::storage()->get(self::$configPath.'vc/vc_fields.php')->__toArray();
+            self::$vcFields = Cfg\Factory::storage()->get($this->settings->get('configPath').'vc/vc_fields.php')->__toArray();
 
         return self::$vcFields;
     }
@@ -298,10 +293,10 @@ class Config
     protected function getEncryptionFields() : array
     {
         if(!isset(self::$cryptFields))
-            self::$cryptFields = Cfg\Factory::storage()->get(self::$configPath.'enc/fields.php')->__toArray();
+            self::$cryptFields = Cfg\Factory::storage()->get($this->settings->get('configPath').'enc/fields.php')->__toArray();
 
         if(!isset(self::$encConfig))
-            self::$encConfig = Cfg\Factory::storage()->get(self::$configPath.'enc/config.php')->__toArray();
+            self::$encConfig = Cfg\Factory::storage()->get($this->settings->get('configPath').'enc/config.php')->__toArray();
 
         return self::$cryptFields;
     }
@@ -637,7 +632,7 @@ class Config
 
         $config = clone $this->config;
 
-        $translation = self::$translator->getTranslation();
+        $translation = $this->translator->getTranslation();
 
         $translationsData = & $translation->dataLink();
         $translationsData[$this->name]['title'] = $this->config->get('title');
@@ -654,7 +649,7 @@ class Config
         $config->offsetUnset('title');
 
 
-        if(!self::$translator->getStorage()->save($translation))
+        if(!$this->translator->getStorage()->save($translation))
             return false;
 
         return Cfg::storage()->save($config);
@@ -975,18 +970,18 @@ class Config
      * @param Config\Translator $translator
      * @return void
      */
-    static public function setTranslator(Config\Translator $translator) :void
+    public function setTranslator(Config\Translator $translator) :void
     {
-        self::$translator = $translator;
+        $this->translator = $translator;
     }
 
     /**
      * Get Translation adapter
      * @return Config\Translator
      */
-    static public function getTranslator() : Config\Translator
+    public function getTranslator() : Config\Translator
     {
-        return self::$translator;
+        return $this->translator;
     }
 
     /**

@@ -25,13 +25,23 @@ use Dvelum\App\Backend\Controller;
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Service;
-use Dvelum\Orm\Model;
-use Dvelum\Lang;
-use Dvelum\View;
-use Dvelum\Template;
+use Dvelum\Request;
+use Dvelum\Response;
 
 class Object extends Controller
 {
+    /**
+     * @var Orm $ormService
+     */
+    protected $ormService;
+
+    public function __construct(Request $request, Response $response)
+    {
+        parent::__construct($request, $response);
+        $this->ormService = Service::get('orm');
+    }
+
+
     public function getModule()
     {
         return 'Orm';
@@ -62,9 +72,10 @@ class Object extends Controller
         }
 
         try {
-            $obj = Orm\Object::factory($name);
+            $obj = $this->ormService->object($name);
         } catch (\Exception $e){
             $this->response->error($this->lang->get('CANT_GET_VALIDATE_INFO'));
+            return;
         }
 
         $builder = Orm\Object\Builder::factory($name);
@@ -101,7 +112,10 @@ class Object extends Controller
         $template->tableName = $obj->getTable();
         $template->lang = $this->lang;
 
-        $msg = $template->render(\Dvelum\App\Application::getTemplatesPath() . 'orm_validate_msg.php');
+        $cfgBackend = Config\Factory::storage()->get('backend.php');
+        $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';
+
+        $msg = $template->render($templatesPath . 'orm_validate_msg.php');
 
         $this->response->success([],array('text'=>$msg,'nothingToDo'=>false));
     }
@@ -142,6 +156,7 @@ class Object extends Controller
             $objectConfig = Orm\Object\Config::factory($object);
         }catch (\Exception $e){
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
         }
 
         $builder = Orm\Object\Builder::factory($object);

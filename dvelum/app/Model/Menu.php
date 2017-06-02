@@ -1,103 +1,100 @@
 <?php
-
 use Dvelum\Orm\Model;
 
 class Model_Menu extends Model
 {
-
     public function resetCachedMenuLinks($menuId)
     {
-        if($this->cache)
-            $this->cache->remove($this->getCacheKey(array('links' , $menuId)));
+        if ($this->cache) {
+            $this->cache->remove($this->getCacheKey(array('links', $menuId)));
+        }
     }
 
     public function getCachedMenuLinks($menuId)
     {
-
         $menuRecord = $this->getCachedItem($menuId);
 
-        if(! $menuRecord)
+        if (!$menuRecord) {
             return array();
+        }
 
         $list = false;
 
-        if($this->cache)
-        {
-            $cacheKey = $this->getCacheKey(array('links' , $menuId));
+        if ($this->cache) {
+            $cacheKey = $this->getCacheKey(array('links', $menuId));
             $list = $this->cache->load($cacheKey);
         }
 
-        if($list !== false)
+        if ($list !== false) {
             return $list;
+        }
 
         $itemModel = Model::factory('Menu_Item');
-        $list = $itemModel->getList(
-            array(
-                'sort' => 'order' ,
-                'dir' => 'ASC'
-            ) , array(
+        $list = $itemModel->getList(array(
+            'sort' => 'order',
+            'dir' => 'ASC'
+        ), array(
             'menu_id' => $menuRecord['id']
-        ) , array(
-                'order' ,
-                'page_id' ,
-                'published' ,
-                'title' ,
-                'parent_id' ,
-                'tree_id' ,
-                'url' ,
-                'resource_id' ,
+        ), array(
+                'order',
+                'page_id',
+                'published',
+                'title',
+                'parent_id',
+                'tree_id',
+                'url',
+                'resource_id',
                 'link_type'
-            )
-        );
+            ));
 
-        if(empty($list))
-            return array();
+        if (empty($list)) {
+            return [];
+        }
 
-        $this->_addUrls($list);
+        $list = $this->_addUrls($list);
 
-        if($this->cache)
-            $this->cache->save($list , $cacheKey);
+        if ($this->cache) {
+            $this->cache->save($list, $cacheKey);
+        }
 
         return $list;
     }
 
-    protected function _addUrls(& $menuItems)
+    protected function _addUrls(array $menuItems) : array
     {
         $codes = Model::factory('Page')->getCachedCodes();
         $resourceIds = array();
         $resourcesData = array();
 
-        foreach($menuItems as $k => &$v)
-        {
-            if(isset($codes[$v['page_id']]))
-
+        foreach ($menuItems as $k => &$v) {
+            if (isset($codes[$v['page_id']])) {
                 $v['page_code'] = $codes[$v['page_id']];
-            else
+            } else {
                 $v['page_code'] = '';
+            }
 
-            if($v['link_type'] === 'resource')
+            if ($v['link_type'] === 'resource') {
                 $resourceIds[] = $v['resource_id'];
+            }
         }
         unset($v);
 
-        if(! empty($resourceIds))
-        {
+        if (!empty($resourceIds)) {
             $resourceIds = array_unique($resourceIds);
-            $data = Model::factory('Medialib')->getItems($resourceIds , array('id' , 'path'));
+            $data = Model::factory('Medialib')->getItems($resourceIds, array('id', 'path'));
 
-            if(!empty($data))
-                $resourcesData = Utils::rekey('id' , $data);
+            if (!empty($data)) {
+                $resourcesData = Utils::rekey('id', $data);
+            }
         }
 
-        foreach($menuItems as $k => &$v)
-        {
+        foreach ($menuItems as $k => &$v) {
             $v['link_url'] = '';
-            switch($v['link_type'])
-            {
+            switch ($v['link_type']) {
                 case 'page' :
-                    if($v['page_code'] == 'index'){
+                    if ($v['page_code'] == 'index') {
                         $v['link_url'] = Request::url(['']);
-                    }else{
+                    } else {
                         $v['link_url'] = Request::url([$v['page_code']]);
                     }
                     break;
@@ -105,14 +102,17 @@ class Model_Menu extends Model
                     $v['link_url'] = $v['url'];
                     break;
                 case 'resource' :
-                    if(isset($resourcesData[$v['resource_id']]))
+                    if (isset($resourcesData[$v['resource_id']])) {
                         $v['link_url'] = Model_Medialib::addWebRoot($resourcesData[$v['resource_id']]['path']);
+                    }
                     break;
                 case 'nolink' :
-                        $v['link_url'] = false;
+                    $v['link_url'] = false;
                     break;
             }
         }
         unset($v);
+
+        return $menuItems;
     }
 }

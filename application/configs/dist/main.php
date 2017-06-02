@@ -146,7 +146,7 @@ return array(
      *  allows to reduce the cache time of dynamic blocks;
      *  is used if there are not enough triggers for cache invalidation
      */
-    'blockmanager_use_hardcache_time' => false,
+    'blockmanager_hard_cache' => false,
     /*
      * www root
      */

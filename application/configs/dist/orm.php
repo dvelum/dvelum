@@ -52,5 +52,5 @@ return [
     /*
      * Hard caching time (without validation) for frontend , seconds
      */
-    'hardcache' => 30,
+    'hard_cache' => 30,
 ];

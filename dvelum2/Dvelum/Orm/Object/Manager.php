@@ -21,7 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Object;
 
-use Dvelum\App\Dictionary\Service;
+use Dvelum\Service;
 use Dvelum\Orm;
 
 /**

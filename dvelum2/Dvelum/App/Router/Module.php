@@ -28,6 +28,7 @@ use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Orm\Model;
 use Dvelum\App\BlockManager;
+use Dvelum\Service as ServiceLocator;
 
 /**
  * Back office
@@ -65,10 +66,8 @@ class Module extends Router
             return;
         }
 
-
         $cacheManager = new \Cache_Manager();
         $cache = $cacheManager->get('data');
-        $blockManager = false;
 
         if($vers)
         {
@@ -83,9 +82,6 @@ class Module extends Router
                 $vers = false;
             }
         }
-
-        if(!$vers && $cache)
-            Blockmanager::setDefaultCache($cache);
 
         if($pageData['published'] == false && ! $showRevision){
             $response->redirect('/');
@@ -111,10 +107,14 @@ class Module extends Router
             }
         }
 
-        if(!$vers && $cache)
-            Blockmanager::setDefaultCache($cache);
+        /**
+         * @var BlockManager $blockManager
+         */
+        $blockManager = ServiceLocator::get('blockmanager');
 
-        $blockManager = new Blockmanager();
+        if($vers){
+            $blockManager->disableCache();
+        }
 
         if($page->show_blocks)
             $blockManager->init($page->id , $page->default_blocks , $vers);
@@ -130,10 +130,10 @@ class Module extends Router
      * @param Request $request
      * @param Response $response
      * @param \Page $page
-     * @param Blockmanager $blockManager
+     * @param BlockManager $blockManager
      * @return void
      */
-    public function showPage(\Page $page , Blockmanager $blockManager, Request $request , Response $response) : void
+    public function showPage(\Page $page , BlockManager $blockManager, Request $request , Response $response) : void
     {
         header('Content-Type: text/html; charset=utf-8');
 

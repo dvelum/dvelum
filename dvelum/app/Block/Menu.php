@@ -25,7 +25,7 @@ class Block_Menu extends Block
 	
 	protected function _collectData()
 	{
-		$this->data = Model::factory('Menu')->getCachedMenuLinks($this->_config['menu_id']);
+		return Model::factory('Menu')->getCachedMenuLinks($this->_config['menu_id']);
 	}
 	/**
 	 * (non-PHPdoc)
@@ -33,19 +33,19 @@ class Block_Menu extends Block
 	 */
 	public function render()
 	{
-		$this->_collectData();
+		$data = $this->_collectData();
 
 		$tpl = new View();
         $tpl->setData(array(
             'config' => $this->_config,
             'place' => $this->_config['place'],
-            'menuData' => $this->data
+            'menuData' => $data
         ));
 
         if(static::dependsOnPage){
             $tpl->set('page' , \Page::getInstance());
             $tpl->set('pagesTree' , Model::factory('Page')->getTree());
-        }		
-		return $tpl->render($this->_template);
+        }
+        return $tpl->render('public/'. $this->_template);
 	}
 }

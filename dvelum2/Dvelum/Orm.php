@@ -62,7 +62,7 @@ class Orm
         $objectStore->setEventManager($eventManager);
 
         $this->modelSettings = Config\Factory::create([
-            'hardCacheTime' => $config->get('hardcache'),
+            'hardCacheTime' => $config->get('hard_cache'),
             'dataCache' => $cache,
             'dbObjectStore' => $objectStore,
             'defaultDbManager' => $dbManager,

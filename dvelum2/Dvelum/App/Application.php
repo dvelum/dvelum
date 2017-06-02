@@ -143,7 +143,7 @@ class Application
         }
 
         /*
-         * Init localization service
+         * Register Localization service
          */
         Service::register('lang', function () use ($lang) {
             $langService = new Lang();
@@ -154,6 +154,9 @@ class Application
             return $langService;
         });
 
+        /*
+         *  Register ORM service
+         */
         Service::register('orm', function () use ($dbManager, $lang, $cache) {
             $orm = new Orm();
             $orm->init(Config::storage()->get('orm.php'), $dbManager, $lang, $cache);
@@ -161,7 +164,7 @@ class Application
         });
 
         /*
-         * Prepare dictionaries
+         * Register Dictionary service
          */
         Service::register('dictionary', function () {
             $service = new Dictionary\Service();
@@ -169,6 +172,23 @@ class Application
                 'configPath' => $this->config->get('dictionary_folder') . $this->config->get('language') . '/'
             ]));
             return $service;
+        });
+
+        /**
+         * Register BlockManager Service
+         */
+        Service::register('blockmanager', function() use ($cache){
+             $blockManager = new BlockManager();
+
+             if($cache){
+                 $blockManager->setCache($cache);
+             }
+
+             if($this->config->get('blockmanager_hard_cache')){
+                 $blockManager->useHardCacheTime(true);
+             }
+
+             return $blockManager;
         });
 
         // init external modules
@@ -289,12 +309,7 @@ class Application
      */
     protected function routeBackOffice()
     {
-        if ($this->cache) {
-            BlockManager::setDefaultCache($this->cache);
-        }
-
         $cfgBackend = Config\Factory::storage()->get('backend.php');
-
         $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';
 
         $page = \Page::getInstance();
@@ -368,8 +383,6 @@ class Application
             return;
         }
 
-        BlockManager::useHardCacheTime($this->config->get('blockmanager_use_hardcache_time'));
-
         $page = \Page::getInstance();
         $page->setTemplatesPath('public/');
 
@@ -398,15 +411,5 @@ class Application
     static public function close()
     {
         exit();
-    }
-
-    /**
-     * Get path to templates
-     * @deprecated
-     * @return string
-     */
-    static public function getTemplatesPath()
-    {
-        return self::$_templates;
     }
 }
