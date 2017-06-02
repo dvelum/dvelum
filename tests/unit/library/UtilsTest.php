@@ -109,4 +109,12 @@ class UtilsTest extends TestCase
 		$this->assertEquals('Store_Session4' , Utils::classFromPath('../Store/Session4.php'));	
 		$this->assertEquals(false , Utils::classFromPath('Store/Session/'));
 	}
+
+    public function testRoundUp()
+    {
+        $this->assertEquals(12.13 , Utils::roundUp(12.123, 2));
+        $this->assertEquals(12.1 , Utils::roundUp(12.003, 1));
+        $this->assertEquals(12.124 , Utils::roundUp(12.1234, 3));
+        $this->assertEquals(12.123 , Utils::roundUp(12.123, 3));
+    }
 }

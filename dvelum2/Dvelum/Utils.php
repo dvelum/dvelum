@@ -378,4 +378,17 @@ class Utils
     {
         return implode(',', array_map('intval', array_unique($ids)));
     }
+
+    /**
+     * Round float up
+     * @param float|int $number
+     * @param int $precision - expected precision
+     * @return float|int
+     */
+    static public function roundUp($number, int $precision)
+    {
+        $precision++;
+        $fig = (int) str_pad('1', $precision, '0');
+        return (ceil($number * $fig) / $fig);
+    }
 }
