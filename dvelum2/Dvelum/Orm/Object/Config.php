@@ -417,6 +417,20 @@ class Config
     }
 
     /**
+     * Get object fields
+     * @return Config\Field[]
+     */
+    public function getFields() : array
+    {
+        $result = [];
+        $config = $this->getFieldsConfig();
+        foreach ($config as $name=>$cfg){
+            $result[$name] = $this->getField($name);
+        }
+        return $result;
+    }
+
+    /**
      * Get the configuration of system fields
      * @return array
      */

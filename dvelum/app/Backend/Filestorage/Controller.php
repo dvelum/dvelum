@@ -54,7 +54,11 @@ class Backend_Filestorage_Controller extends Dvelum\App\Backend\Api\Controller
             return;
         }
 
-        $userData = Model::factory('User')->getList(false , array('id'=>$userIds) , array('id','name'));
+        $userData = Model::factory('User')
+                    ->query()
+                    ->filters(['id'=>$userIds])
+                    ->fields(['id','name'])
+                    ->fetchAll();
 
         if(!empty($userData)){
             $userData = \Utils::rekey('id' , $userData);

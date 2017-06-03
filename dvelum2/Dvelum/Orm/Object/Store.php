@@ -231,7 +231,7 @@ class Store
      * @param boolean $transaction - optional, default false
      * @return bool
      */
-    public function unpublish(Orm\Object $object , $transaction = true)
+    public function unpublish(Orm\ObjectInterface $object , $transaction = true)
     {
         if($object->getConfig()->isReadOnly())
         {

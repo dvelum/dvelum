@@ -117,9 +117,22 @@ class Adapter
         return [];
     }
 
-    public function fetchCol()
+    public function fetchCol($sql)
     {
-        throw new \Exception('not implemented');
+        $statement = $this->adapter->createStatement();
+        $statement->prepare($sql);
+
+        $result = $statement->execute();
+        $result = [];
+        if ($result instanceof ResultInterface && $result->isQueryResult()) {
+            $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
+            $resultSet->initialize($result);
+            foreach ($resultSet as $item){
+                $result[] = $item[0];
+            }
+            return $result;
+        }
+        return [];
     }
 
     public function fetchOne($sql)

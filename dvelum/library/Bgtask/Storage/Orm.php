@@ -145,7 +145,7 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
       */
      public function isLive($pid)
      {
-     	if($this->_objectModel->getCount(array('id'=>$pid)))
+     	if($this->_objectModel->query()->filters(['id'=>$pid])->getCount())
      		return true;
      		
      	return false;

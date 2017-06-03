@@ -1,59 +1,101 @@
 <?php
+
 namespace Dvelum\App\Data;
 
-use Dvelum\App;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\App\Session\User;
 
 class Api
 {
+    /**
+     * @var Api\Request
+     */
     protected $apiRequest;
-    protected $fields;
+    /**
+     * @var array
+     */
+    protected $fields = [];
+
+    /**
+     * @var User
+     */
     protected $user;
 
+    /**
+     * @var Model\Query
+     */
+    protected $dataQuery;
 
-    public function __construct(App\Data\Api\Request $request , \User $user)
+    public function __construct(Api\Request $request, User $user)
     {
         $this->apiRequest = $request;
         $this->user = $user;
+
+        $object = $this->apiRequest->getObjectName();
+        $ormObjectConfig = Orm\Object\Config::factory($object);
+        $model = Model::factory($object);
+
+        $this->dataQuery = $model->query()
+            ->params($this->apiRequest->getPagination())
+            ->filters($this->apiRequest->getFilters())
+            ->search($this->apiRequest->getQuery());
     }
 
     public function getList()
     {
-        $object = $this->apiRequest->getObject();
-
-        $ormObjectConfig = Orm\Object\Config::factory($object);
-
-        if($ormObjectConfig->isRevControl())
-        {
-            return Model::factory($object)->getListVc(
-                $this->apiRequest->getPagination(),
-                $this->apiRequest->getFilters(),
-                $this->apiRequest->getQuery(),
-                '*',
-                'user',
-                'updater'
-            );
+        if(empty($this->fields)){
+            $fields = $this->getDefaultFields();
+        }else{
+            $fields = $this->fields;
         }
-        else
-        {
-            return Model::factory($object)->getList(
-                $this->apiRequest->getPagination(),
-                $this->apiRequest->getFilters(),
-                '*',
-                false,
-                $this->apiRequest->getQuery()
-            );
-        }
+        return  $this->dataQuery->fields($fields)->fetchAll();
     }
 
-    public function getCount()
+    public function getCount() : int
     {
-        $object = $this->apiRequest->getObject();
+        return  $this->dataQuery->getCount();
+    }
 
-        return Model::factory($object)->getCount(
-            $this->apiRequest->getFilters(),
-            $this->apiRequest->getQuery()
-        );
+    /**
+     * Set fields to be fetched
+     * @param array $fields
+     */
+    public function setFields(array $fields) : void
+    {
+        $this->fields = $fields;
+    }
+
+    /**
+     * Get list of fields to be fetched
+     * @return array
+     */
+    public function getFields() : array
+    {
+        if(empty($this->fields)){
+            return $this->getDefaultFields();
+        }
+        return $this->fields;
+    }
+
+    /**
+     * Get default field list
+     * @return array
+     */
+    protected function getDefaultFields() : array
+    {
+        $result = [];
+        $objectName = $this->apiRequest->getObjectName();
+        $config = Orm\Object\Config::factory($objectName);
+
+        $fields = $config->getFields();
+        foreach($fields as $k=>$v)
+        {
+            if($v->isText() || $v->isMultiLink()){
+                continue;
+            }
+            $result[] = $v->getName();
+        }
+        return $result;
     }
 }

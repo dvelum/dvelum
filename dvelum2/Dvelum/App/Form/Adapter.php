@@ -3,6 +3,8 @@ namespace Dvelum\App\Form;
 
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Request;
+use Dvelum\Lang;
+use Dvelum\App\Form;
 
 abstract class Adapter
 {
@@ -11,13 +13,13 @@ abstract class Adapter
     protected $errors = [];
 
     /**
-     * @var Config $config
+     * @var ConfigInterface $config
      */
     protected $config;
 
     protected $lang;
 
-    public function __construct( Request $request , \Dvelum\Lang $lang,  ConfigInterface $config)
+    public function __construct(Request $request , Lang\Dictionary $lang,  ConfigInterface $config)
     {
         $this->lang = $lang;
         $this->request = $request;
@@ -32,7 +34,7 @@ abstract class Adapter
      * Get list of errors
      * @return Form\Error[]
      */
-    public function getErrors()
+    public function getErrors() :array
     {
         return $this->errors;
     }

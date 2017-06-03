@@ -4,7 +4,7 @@ use Dvelum\Orm\Model;
 
 class Trigger_Page extends Trigger
 {
-	public function onAfterAdd(Orm\Object $object)
+	public function onAfterAdd(Orm\ObjectInterface $object)
 	{
 		parent::onAfterAdd($object);	
 		$this->clearBlockCache($object->getId());
@@ -18,7 +18,7 @@ class Trigger_Page extends Trigger
 		$this->clearItemCache($object->code ,$object->getId());	
 	}
 	
-	public function onAfterDelete(Orm\Object $object)
+	public function onAfterDelete(Orm\ObjectInterface $object)
 	{
 		parent::onAfterDelete($object);
 			

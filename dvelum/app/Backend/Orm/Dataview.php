@@ -123,9 +123,9 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 
 	public function listAction()
 	{
-		$object = Request::post('object', 'string', false);
-		$query = Request::post('search', 'string', false);
-		$params = Request::post('pager', 'array', array());
+		$object = Request::post('object', 'string', null);
+		$query = Request::post('search', 'string', null);
+		$params = Request::post('pager', 'array', null);
 
 		if(!$object || !Orm\Object\Config::configExists($object))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
@@ -158,12 +158,12 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 		}
 
 		$model = Model::factory($object);
-		$count = $model->getCount(false , $query , false);
+		$count = $model->query()->search($query)->getCount();
 		$data = array();
 
 		if($count)
 		{
-			$data = $model->getList($params , false , $fields , false , $query);
+			$data = $model->query()->params($params)->fields($fields)->search($query)->fetchAll();
 
             $fieldsToShow = array_keys($cfg->getLinks(
                 [

@@ -90,7 +90,7 @@ class Controller extends App\Controller implements Router\RouterInterface
     protected function authorize()
     {
         $userId = $this->cronConfig['user_id'];
-        if($this->cronConfig['user_id'] && Model::factory('User')->getCount(array('id'=>$userId))){
+        if($this->cronConfig['user_id'] && Model::factory('User')->query()->filters(['id'=>$userId])->getCount()){
             $curUser = \User::getInstance();
             $curUser->setId($userId);
             $curUser->setAuthorized();

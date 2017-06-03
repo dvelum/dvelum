@@ -24,7 +24,7 @@
             'id' => 'Blocks',
             'dev' => false,
             'active' => true,
-            'class' => 'Backend_Blocks_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Blocks\\Controller',
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/blocks.png',

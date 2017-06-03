@@ -27,6 +27,7 @@ use Dvelum\Orm\Model;
 use Dvelum\App\Data;
 use Dvelum\App\Session;
 use Dvelum\App\Controller\EventManager;
+use Dvelum\Orm\ObjectInterface;
 
 abstract class Backend_Controller_Crud extends Backend_Controller
 {
@@ -54,8 +55,6 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * @var array
      */
     protected $_listLinks = [];
-
-    protected $_linkedInfoSeparator = '; ';
 
     /**
      * @var Data\Api\Request
@@ -221,11 +220,11 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * The provided data is necessary for the RelatedGridPanel component,
      * which is used for visual representation of relationship management.
      * @param string $fieldName
-     * @param Db_Object $object
+     * @param ObjectInterface $object
      * @param string $targetObjectName
      * @return array
      */
-    protected function _collectLinksData($fieldName, Orm\Object $object , $targetObjectName)
+    protected function _collectLinksData($fieldName, ObjectInterface $object , $targetObjectName)
     {
         $result = [];
 
@@ -333,7 +332,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * @param Orm\Object $object
      * @return void
      */
-    public function insertObject(\Db_Object  $object)
+    public function insertObject(ObjectInterface  $object)
     {
         if(!$recId = $object->save())
             Response::jsonError($this->_lang->CANT_CREATE);
@@ -347,7 +346,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * closes the application
      * @param \Db_Object  $object
      */
-    public function updateObject(\Db_Object  $object)
+    public function updateObject(ObjectInterface  $object)
     {
         if(!$object->save())
             Response::jsonError($this->_lang->CANT_EXEC);
@@ -362,8 +361,8 @@ abstract class Backend_Controller_Crud extends Backend_Controller
     {
         $object = Request::post('object', 'string', false);
         $filter = Request::post('filter' , 'array' , []);
-        $pager = Request::post('pager' , 'array' , array());
-        $query = Request::post('search' , 'string' , false);
+        $pager = Request::post('pager' , 'array' , []);
+        $query = Request::post('search' , 'string' , null);
         $filter = array_merge($filter , Request::extFilters());
 
         if($object === false || !Orm\Object\Config::configExists($object))
@@ -395,11 +394,12 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         else
             $fields = array('id'=>$primaryKey);
 
-        $count = $model->getCount(false , $query ,false);
+        $dataQuery = $model->query()->filters($filter)->params($pager)->search($query)->fields($fields);
+        $count = $dataQuery->getCount();
         $data = array();
         if($count)
         {
-            $data = $model->getList($pager, $filter, $fields , false , $query);
+            $data = $dataQuery->fetchAll();
 
             if(!empty($data))
             {
@@ -490,128 +490,5 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $this->objectTitleAction();
     }
 
-    /**
-     * Add related objects info into getList results
-     * @param Orm\Object\Config $cfg
-     * @param array $fieldsToShow  list of link fields to process ( key - result field, value - object field)
-     * object field will be used as result field for numeric keys
-     * @param array & $data rows from  Model::getList result
-     * @param string $pKey - name of Primary Key field in $data
-     * @throws Exception
-     */
-    protected function addLinkedInfo(\Db_Object_Config $cfg, array $fieldsToShow, array  & $data, $pKey)
-    {
-        $fieldsToKeys = [];
-        foreach($fieldsToShow as $key=>$val){
-            if(is_numeric($key)){
-                $fieldsToKeys[$val] = $val;
-            }else{
-                $fieldsToKeys[$val] = $key;
-            }
-        }
 
-        $links = $cfg->getLinks(
-            [
-                Orm\Object\Config::LINK_OBJECT,
-                Orm\Object\Config::LINK_OBJECT_LIST,
-                Orm\Object\Config::LINK_DICTIONARY
-            ],
-            false
-        );
-
-        foreach($fieldsToShow as $resultField => $objectField)
-        {
-            if(!isset($links[$objectField]))
-                throw new Exception($objectField.' is not Link');
-        }
-
-        foreach ($links as $field=>$config)
-        {
-            if(!isset($fieldsToKeys[$field])){
-                unset($links[$field]);
-            }
-        }
-
-        $rowIds = Utils::fetchCol($pKey , $data);
-        $rowObjects = Orm\Object::factory($cfg->getName() , $rowIds);
-        $listedObjects = [];
-
-        foreach($rowObjects as $object)
-        {
-            foreach ($links as $field=>$config)
-            {
-                if($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY){
-                    continue;
-                }
-
-                if(!isset($listedObjects[$config['object']])){
-                    $listedObjects[$config['object']] = [];
-                }
-
-                $oVal = $object->get($field);
-
-                if(!empty($oVal))
-                {
-                    if(!is_array($oVal)){
-                        $oVal = [$oVal];
-                    }
-                    $listedObjects[$config['object']] = array_merge($listedObjects[$config['object']], array_values($oVal));
-                }
-            }
-        }
-
-        foreach($listedObjects as $object => $ids){
-            $listedObjects[$object] = Db_Object::factory($object, array_unique($ids));
-        }
-
-        foreach ($data as &$row)
-        {
-            if(!isset($rowObjects[$row[$pKey]]))
-                continue;
-
-            foreach ($links as $field => $config)
-            {
-                $list = [];
-                $rowObject = $rowObjects[$row[$pKey]];
-                $value = $rowObject->get($field);
-
-                if(!empty($value))
-                {
-                    if($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY)
-                    {
-                        $dictionary = Dictionary::factory($config['object']);
-                        if($dictionary->isValidKey($value)){
-                            $row[$fieldsToKeys[$field]] = $dictionary->getValue($value);
-                        }
-                        continue;
-                    }
-
-                    if(!is_array($value))
-                        $value = [$value];
-
-                    foreach($value as $oId)
-                    {
-                        if(isset($listedObjects[$config['object']][$oId])){
-                            $list[] = $this->linkedInfoObjectRenderer($rowObject, $field, $listedObjects[$config['object']][$oId]);
-                        }else{
-                            $list[] = '[' . $oId . '] ('.$this->_lang->get('DELETED').')';
-                        }
-                    }
-                }
-                $row[$fieldsToKeys[$field]] =  implode($this->_linkedInfoSeparator, $list);
-            }
-        }unset($row);
-    }
-
-    /**
-     * String representation of related object for addLinkedInfo method
-     * @param Orm\Object $rowObject
-     * @param string $field
-     * @param Orm\Object $relatedObject
-     * @return string
-     */
-    protected function linkedInfoObjectRenderer(Orm\Object $rowObject, $field, Orm\Object $relatedObject)
-    {
-        return $relatedObject->getTitle();
-    }
 }

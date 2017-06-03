@@ -84,9 +84,9 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
     protected function _getList()
     {
 
-        $pager = Request::post('pager' , 'array' , array());
-        $filter = Request::post('filter' , 'array' , array());
-        $query = Request::post('search' , 'string' , false);
+        $pager = Request::post('pager' , 'array' , null);
+        $filter = Request::post('filter' , 'array' , null);
+        $query = Request::post('search' , 'string' , null);
         $filter = array_merge($filter , Request::extFilters());
 
         if($this->_user->onlyOwnRecords($this->_module)){
@@ -111,7 +111,13 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
         }
 
-        return ['data'=> $data, 'count'=> $dataModel->getCount($filter , $query)];
+        return [
+            'data'=> $data,
+            'count'=> $dataModel->query()
+                                ->filters($filter)
+                                ->search($query)
+                                ->getCount()
+        ];
     }
 
     /**
@@ -323,7 +329,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::insertObject()
      */
-    public function insertObject(\Db_Object $object)
+    public function insertObject(ObjectInterface $object)
     {
         $object->published = false;
         $object->author_id = User::getInstance()->id;
@@ -353,7 +359,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::updateObject()
      */
-    public function updateObject(\Db_Object  $object)
+    public function updateObject(ObjectInterface  $object)
     {
         $author = $object->get('author_id');
         if(empty($author)){
@@ -384,7 +390,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * and closes the application.
      * @param Db_Object $object
      */
-    public function unpublishObject(\Db_Object $object)
+    public function unpublishObject(ObjectInterface $object)
     {
         if(!$object->get('published'))
             Response::jsonError($this->_lang->NOT_PUBLISHED);

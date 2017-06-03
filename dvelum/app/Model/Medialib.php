@@ -63,9 +63,9 @@ class Model_Medialib extends Model
     /**
      * Delete item from library
      * @param integer $id
-     * @return boolean
+     * @return bool
      */
-    public function remove(int $id) : bool
+    public function remove($id) : bool
     {
         if(!$id)
             return false;

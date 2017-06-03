@@ -99,13 +99,6 @@ class Model
     protected $dbPrefix = '';
 
     /**
-     * Global (For all Models) db connection
-     * @var Db\Adapter
-     */
-    static protected $dbConnection = false;
-
-
-    /**
      * Connection manager
      * @var \Db_Manager_Interface
      */
@@ -128,7 +121,6 @@ class Model
      * @var array | false
      */
     protected $searchFields = null;
-
 
     /**
      * Get DB table prefix
@@ -159,15 +151,12 @@ class Model
             $this->cache = false;
         }
         // backward compatibility
-        $this->_cache =  & $this->cache;
+        $this->_cache =  &$this->cache;
 
         $this->dbManager = $settings->get('defaultDbManager');
 
-        $this->lightConfig = Config\Factory::storage()->get(
-            $ormConfig->get('object_configs') . $this->name . '.php',
-            true,
-            false
-        );
+        $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php',
+            true, false);
 
         $conName = $this->lightConfig->get('connection');
         $this->db = $this->dbManager->getDbConnection($conName);
@@ -195,7 +184,7 @@ class Model
      * @return Object\Config
      * @throws \Exception
      */
-    protected function getObjectConfig(): Orm\Object\Config
+    public function getObjectConfig(): Orm\Object\Config
     {
         if (empty($this->objectConfig)) {
             try {
@@ -211,7 +200,7 @@ class Model
      * Get Object Storage
      * @return Orm\Object\Store
      */
-    protected function _getObjectsStore(): Orm\Object\Store
+    protected function getObjectsStore(): Orm\Object\Store
     {
         return $this->store;
     }
@@ -329,9 +318,18 @@ class Model
      */
     final public function getItem($id, $fields = '*')
     {
-        $sql = $this->dbSlave->select()->from($this->table(), $fields);
-        $sql->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' = ' . intval($id));
-        return $this->dbSlave->fetchRow($sql);
+        $primaryKey = $this->getPrimaryKey();
+        $result = $this->query()
+                    ->filters([
+                        $primaryKey  => $id
+                    ])
+                    ->fields($fields)
+                    ->fetchRow();
+
+        if(empty($result)){
+            $result = false;
+        }
+        return $result;
     }
 
     /**
@@ -390,20 +388,6 @@ class Model
     }
 
     /**
-     * Get object by unique field
-     * @deprecated
-     * @param string $fieldName
-     * @param string $value
-     * @param mixed $fields - optional
-     * @throws \Exception
-     * @return array
-     */
-    public function getItemByUniqueField(string $fieldName, $value, $fields = '*')
-    {
-        return $this->getItemByField($fieldName, $value, $fields);
-    }
-
-    /**
      * Get Item by field value. Returns first occurrence
      * @param string $fieldName
      * @param $value
@@ -438,9 +422,8 @@ class Model
         }
 
         if ($data === false) {
-            $sql = $this->dbSlave->select()
-                ->from($this->table(), $fields)
-                ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . \Utils::listIntegers($ids) . ')');
+            $sql = $this->dbSlave->select()->from($this->table(),
+                    $fields)->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . \Utils::listIntegers($ids) . ')');
             $data = $this->dbSlave->fetchAll($sql);
 
             if (!$data) {
@@ -456,423 +439,12 @@ class Model
     }
 
     /**
-     * Add filters (where) to the query
-     * @param Db\Select | string
-     * @param array $filters the key - the field name, value
-     * @return void
+     * Create Model\Query
+     * @return Model\Query
      */
-    public function queryAddFilters(Db\Select $sql, $filters): void
+    public function query(): Model\Query
     {
-        if (!is_array($filters) || empty($filters)) {
-            return;
-        }
-
-        foreach ($filters as $k => $v) {
-
-            if ($v instanceof Db\Select\Filter) {
-                $v->applyTo($this->db, $sql);
-            } else {
-                if (is_array($v) && !empty($v)) {
-                    $sql->where($this->db->quoteIdentifier($k) . ' IN(?)', $v);
-                } elseif (is_bool($v)) {
-                    $sql->where($this->db->quoteIdentifier($k) . ' = ' . intval($v));
-                } elseif ((is_string($v) && strlen($v)) || is_numeric($v)) {
-                    $sql->where($this->db->quoteIdentifier($k) . ' =?', $v);
-                } elseif (is_null($v)) {
-                    $sql->where($this->db->quoteIdentifier($k) . ' IS NULL');
-                }
-            }
-        }
-    }
-
-    /**
-     * Add author selection join to the query.
-     * Used with rev_control objects
-     * @param Db\Select $sql
-     * @param string $fieldAlias
-     * @return void
-     */
-    protected function queryAddAuthor(Db\Select $sql, string $fieldAlias): void
-    {
-        $sql->joinLeft(
-            array('u1' => Model::factory('User')->table()),
-            'author_id = u1.id',
-            array($fieldAlias => 'u1.name')
-        );
-    }
-
-    /**
-     * Add editor selection join to the query.
-     * Used with rev_control objects
-     * @param Db\Select $sql
-     * @param string $fieldAlias
-     * @return void
-     */
-    protected function queryAddEditor(Db\Select $sql, $fieldAlias): void
-    {
-        $sql->joinLeft(
-            array('u2' => Model::factory('User')->table()),
-            'editor_id = u2.id',
-            array($fieldAlias => 'u2.name')
-        );
-    }
-
-    /**
-     * Add pagination parameters to a query
-     * Used in CRUD-controllers for list pagination and sorting
-     * @param Db\Select $sql
-     * @param array $params — possible keys: start,limit,sort,dir
-     * @return void
-     */
-    public function queryAddPagerParams(Db\Select $sql, $params): void
-    {
-        if (isset($params['limit']) && !isset($params['start'])) {
-            $sql->limit(intval($params['limit']));
-        } elseif (isset($params['start']) && isset($params['limit'])) {
-            $sql->limit(intval($params['limit']), intval($params['start']));
-        }
-
-        if (!empty($params['sort']) && !empty($params['dir'])) {
-
-            if (is_array($params['sort']) && !is_array($params['dir'])) {
-                $sort = array();
-
-                foreach ($params['sort'] as $key => $field) {
-                    if (!is_int($key)) {
-                        $order = trim(strtolower($field));
-                        if ($order == 'asc' || $order == 'desc') {
-                            $sort[$key] = $order;
-                        }
-                    } else {
-                        $sort[$field] = $params['dir'];
-                    }
-                }
-                $sql->order($sort);
-            } else {
-                $sql->order(array($params['sort'] => $params['dir']));
-            }
-        }
-    }
-
-    /**
-     * Get a list of records
-     * @param array|null $filters - optional filters (where) the key - the field name, value
-     * @param array|null $params - optional parameters array('start'=>0,'limit'=>10,'sort'=>'fieldname','dir'=>'DESC')
-     * @param string|null $query - optional string for search
-     * @param array|null $fields - optional  list of fields to retrieve
-     * it is necessary to remember that hard cache gets invalidated only at the end of its life cycle (configs / main.php),
-     * is used in case update triggers can’t be applied
-     * @param array|null $joins - optional, inclusion config for Zend_Select:
-     * array(
-     *          array(
-     *                'joinType'=> joinLeft/left, joinRight/right, joinInner/inner
-     *                'table' => array / string
-     *                'fields => array / string
-     *                'condition'=> string
-     *          )...
-     * )
-     * @return array
-     */
-    public function find(?array $filters = null, ?array $params = null, ?string $query = null, ?array $fields = null, ?array $joins = null) : array
-    {
-        if(empty($fields)){
-            $fields = '*';
-        }
-
-        $sql = $this->dbSlave->select()->from($this->table(), $fields);
-
-        if (!empty($filters)) {
-            $this->queryAddFilters($sql, $this->clearFilters($filters));
-        }
-
-        if (!empty($params)) {
-            $this->queryAddPagerParams($sql, $params);
-        }
-
-        if (!empty($query)) {
-            $this->queryAddQuery($sql, $query);
-        }
-
-        if (!empty($joins)) {
-            $this->queryAddJoins($sql, $joins);
-        }
-
-        $data = $this->dbSlave->fetchAll($sql);
-
-        if (!$data) {
-            $data = [];
-        }
-
-        return $data;
-    }
-
-    /**
-     * Get a number of objects (rows in a table)
-     * @param array|bool $filters — optional - filters (where) the key - the field name, value
-     * @param string|bool $query - optional - search query — search query
-     * @param boolean $useCache — use hard cache
-     * it is necessary to remember that hard cache gets invalidated only at the end of its life cycle (configs / main.php),
-     * is used in case update triggers can’t be applied
-     * @return int
-     */
-    public function getCount($filters = false, $query = false, $useCache = false)
-    {
-        $cParams = '';
-        $data = false;
-        if ($useCache && $this->cache) {
-            if ($filters) {
-                $cParams .= serialize($filters);
-            }
-
-            if ($query) {
-                $cParams .= $query;
-            }
-
-            $cacheKey = $this->getCacheKey(array('count', $cParams));
-            $data = $this->cache->load($cacheKey);
-        }
-
-        if ($data === false) {
-            $sql = $this->dbSlave->select();
-            $sql->from($this->table(), array('count' => 'COUNT(*)'));
-
-            $this->queryAddFilters($sql, $filters);
-
-            if ($query && strlen($query)) {
-                $this->queryAddQuery($sql, $query);
-            }
-
-            $data = $this->dbSlave->fetchOne($sql);
-
-            if ($useCache && $this->cache) {
-                $this->cache->save($data, $cacheKey, self::$defaults['hardCacheTime']);
-            }
-
-        }
-        return $data;
-    }
-
-    /**
-     * Get a list of records (is used by CRUD_VC controllers)
-     * @param array|bool $params - parameters array('start'=>0,'limit'=>10,'sort'=>'fieldname','dir'=>'DESC')
-     * @param array|bool $filters - filters
-     * @param string|bool $query — optional string for search
-     * @param mixed $fields — optional list of fields
-     * @param string|bool $author - optional key for storing entry author id
-     * @param string|bool $lastEditor - optional key  for storing the last editor’s ID
-     * @param array|bool $joins - optional, inclusion config for Zend_Select:
-     * array(
-     *          array(
-     *                'joinType'=> joinLeft/left, joinRight/right, joinInner/inner
-     *                'table' => array / string
-     *                'fields => array / string
-     *                'condition'=> string
-     *          )...
-     * )
-     * @return array
-     */
-    public function getListVc($params = false, $filters = false, $query = false, $fields = '*', $author = false, $lastEditor = false, $joins = false): array {
-        if (is_array($filters) && !empty($filters)) {
-            $filters = $this->clearFilters($filters);
-        }
-
-        if ($this->dbSlave === Model::factory('User')->getSlaveDbConnection()) {
-            return $this->getListVcLocal($params, $filters, $query, $fields, $author, $lastEditor, $joins);
-        } else {
-            return $this->getListVcRemote($params, $filters, $query, $fields, $author, $lastEditor, $joins);
-        }
-    }
-
-    /**
-     * Prepare filter values , clean empty filters
-     * @param array $filters
-     * @return array
-     */
-    protected function clearFilters(array $filters)
-    {
-        $fields = $this->lightConfig->get('fields');
-        foreach ($filters as $field => $val) {
-            if (!($val instanceof Db\Select\Filter) && !is_null($val) && (!is_array($val) && !strlen((string)$val))) {
-                unset($filters[$field]);
-                continue;
-            }
-
-            if (isset($fields[$field]) && isset($fields[$field]['db_type']) && $fields[$field]['db_type'] === 'boolean') {
-                $filters[$field] = \Filter::filterValue(\Filter::FILTER_BOOLEAN, $val);
-            }
-        }
-        return $filters;
-    }
-
-    protected function getListVcLocal($params = false, $filters = false, $query = false, $fields = '*', $author = false, $lastEditor = false, $joins = false) :array
-    {
-        $sql = $this->dbSlave->select()->from($this->table(), $fields);
-
-        if ($filters) {
-            $this->queryAddFilters($sql, $filters);
-        }
-
-        if ($author) {
-            $this->queryAddAuthor($sql, (string)$author);
-        }
-
-        if ($lastEditor) {
-            $this->queryAddEditor($sql, $lastEditor);
-        }
-
-        if ($query && strlen($query)) {
-            $this->queryAddQuery($sql, $query);
-        }
-
-        if ($params) {
-            $this->queryAddPagerParams($sql, $params);
-        }
-
-        if (is_array($joins) && !empty($joins)) {
-            $this->queryAddJoins($sql, $joins);
-        }
-
-        return $this->dbSlave->fetchAll($sql);
-    }
-
-    protected function getListVcRemote($params = false, $filters = false, $query = false, $fields = '*', $author = false, $lastEditor = false, $joins = false) : array
-    {
-        if ($fields !== '*') {
-            if ($author) {
-                if (!in_array('author_id', $fields, true)) {
-                    $fields[] = 'author_id';
-                }
-            }
-
-            if ($lastEditor) {
-                if (!in_array('editor_id', $fields, true)) {
-                    $fields[] = 'editor_id';
-                }
-            }
-        }
-
-        $sql = $this->dbSlave->select()->from($this->table(), $fields);
-
-        if ($filters) {
-            $this->queryAddFilters($sql, $filters);
-        }
-
-        if ($query && strlen($query)) {
-            $this->queryAddQuery($sql, $query);
-        }
-
-        if ($params) {
-            $this->queryAddPagerParams($sql, $params);
-        }
-
-        if (is_array($joins) && !empty($joins)) {
-            $this->queryAddJoins($sql, $joins);
-        }
-
-        $data = $this->dbSlave->fetchAll($sql);
-
-        if (!$author && !$lastEditor) {
-            return $data;
-        }
-
-        $ids = array();
-
-        foreach ($data as $row) {
-            if ($author) {
-                $ids[] = $row['author_id'];
-            }
-
-            if ($lastEditor) {
-                $ids[] = $row['editor_id'];
-            }
-        }
-
-        if (!empty($ids)) {
-            array_unique($ids);
-            $usersData = Model::factory('User')->getList(false, array('id' => $ids), array('id', 'name'));
-            if (!empty($usersData)) {
-                $usersData = \Utils::rekey('id', $usersData);
-            }
-        }
-
-        foreach ($data as $key => &$row) {
-            if ($author) {
-                if (isset($usersData[$row['author_id']])) {
-                    $row[$author] = $usersData[$row['author_id']]['name'];
-                } else {
-                    $row[$author] = '';
-                }
-            }
-
-            if ($lastEditor) {
-                if (isset($usersData[$row['editor_id']])) {
-                    $row[$lastEditor] = $usersData[$row['editor_id']]['name'];
-                } else {
-                    $row[$lastEditor] = '';
-                }
-            }
-        }
-        return $data;
-    }
-
-    /**
-     * Get a list of records
-     * @param array|boolean $params - optional parameters array('start'=>0,'limit'=>10,'sort'=>'fieldname','dir'=>'DESC')
-     * @param array|boolean $filters - optional filters (where) the key - the field name, value
-     * @param array|string $fields - optional  list of fields to retrieve
-     * @param boolean $useCache - use hard cache
-     * @param string|boolean $query - optional string for search (since 0.9)
-     * it is necessary to remember that hard cache gets invalidated only at the end of its life cycle (configs / main.php),
-     * is used in case update triggers can’t be applied
-     * @param array|boolean $joins - optional, inclusion config for Zend_Select:
-     * array(
-     *          array(
-     *                'joinType'=> joinLeft/left, joinRight/right, joinInner/inner
-     *                'table' => array / string
-     *                'fields => array / string
-     *                'condition'=> string
-     *          )...
-     * )
-     * @return array
-     */
-    public function getList($params = false, $filters = false, $fields = '*', $useCache = false, $query = false, $joins = false) {
-        $data = false;
-
-        if ($useCache && $this->cache) {
-            $cacheKey = $this->getCacheKey(array('list', serialize(func_get_args())));
-            $data = $this->cache->load($cacheKey);
-        }
-
-        if ($data === false) {
-            $sql = $this->dbSlave->select()->from($this->table(), $fields);
-
-            if (is_array($filters) && !empty($filters)) {
-                $this->queryAddFilters($sql, $this->clearFilters($filters));
-            }
-
-            if ($params) {
-                $this->queryAddPagerParams($sql, $params);
-            }
-
-            if ($query && strlen($query)) {
-                $this->queryAddQuery($sql, $query);
-            }
-
-            if (is_array($joins) && !empty($joins)) {
-                $this->queryAddJoins($sql, $joins);
-            }
-
-            $data = $this->dbSlave->fetchAll($sql);
-
-            if (!$data) {
-                $data = array();
-            }
-
-            if ($useCache && $this->cache) {
-                $this->cache->save($data, $cacheKey, $this->cacheTime);
-            }
-        }
-        return $data;
+        return new Model\Query($this);
     }
 
     /**
@@ -904,98 +476,23 @@ class Model
 
     /**
      * Delete record
-     * @param int $recordId record ID
-     * @return  boolean
+     * @param mixed $recordId record ID
+     * @return bool
      */
-    public function remove(int $recordId): bool
+    public function remove($recordId): bool
     {
-        $object = Orm\Object::factory($this->name, $recordId);
-        if (self::_getObjectsStore()->delete($object)) {
+        try {
+            $object = Orm\Object::factory($this->name, $recordId);
+        } catch (\Exception $e) {
+            $this->logError('Remove record ' . $recordId . ' : ' . $e->getMessage());
+            return false;
+        }
+
+        if ($this->getObjectsStore()->delete($object)) {
             return true;
         } else {
             return false;
         }
-    }
-
-    /**
-     * Add joins to the query
-     * @param Db\Select $sql
-     * @param array $joins - config for ZendDb join method:
-     * array(
-     *        array(
-     *            'joinType'=>   jonLeft/left , jonRight/right , joinInner/inner
-     *            'table' => array / string
-     *            'fields => array / string
-     *            'condition'=> string
-     *        )...
-     * )
-     */
-    protected function queryAddJoins(Db\Select $sql, array $joins)
-    {
-        foreach ($joins as $config) {
-            switch ($config['joinType']) {
-                case 'joinLeft' :
-                case 'left':
-                    $sql->joinLeft($config['table'], $config['condition'], $config['fields']);
-                    break;
-                case 'joinRight' :
-                case 'right':
-                    $sql->joinRight($config['table'], $config['condition'], $config['fields']);
-                    break;
-                case 'joinInner':
-                case 'inner':
-                    $sql->joinInner($config['table'], $config['condition'], $config['fields']);
-                    break;
-            }
-        }
-    }
-
-    /**
-     * @param Db\Select $sql
-     * @param array $joins
-     * @deprecated
-     */
-    protected function _queryAddJoins(Db\Select $sql, array $joins)
-    {
-        $this->queryAddJoins($sql, $joins);
-    }
-
-    /**
-     * Add Like where couse for query
-     * @param Db\Select $sql
-     * @param string $query
-     * @param string $alias - table name alias, optional
-     * @return void
-     */
-    protected function queryAddQuery(Db\Select $sql, $query, ?string $alias = null): void
-    {
-        if (!empty($alias)) {
-            $alias = $this->table();
-        }
-
-        $searchFields = $this->getSearchFields();
-
-        if (empty($searchFields)) {
-            return;
-        }
-
-        $q = array();
-
-        foreach ($searchFields as $v) {
-            $q[] = $alias . "." . $v . " LIKE(" . $this->db->quote('%' . $query . '%') . ")";
-        }
-
-        $sql->where('(' . implode(' OR ', $q) . ')');
-    }
-
-    /**
-     * @param Db\Select $sql
-     * @param string $query
-     * @param null|string $alias
-     */
-    protected function _queryAddQuery(Db\Select $sql, string $query, ?string $alias): void
-    {
-        $this->queryAddQuery($sql, $query, $alias);
     }
 
     /**
@@ -1009,12 +506,9 @@ class Model
      */
     public function checkUnique(int $recordId, string $fieldName, $fieldValue): bool
     {
-        return !(boolean)$this->dbSlave->fetchOne(
-            $this->dbSlave->select()
-                ->from($this->table(), array('count' => 'COUNT(*)'))
-                ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' != ?', $recordId)
-                ->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?', $fieldValue)
-        );
+        return !(boolean)$this->dbSlave->fetchOne($this->dbSlave->select()->from($this->table(),
+                array('count' => 'COUNT(*)'))->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' != ?',
+                $recordId)->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?', $fieldValue));
     }
 
     /**
@@ -1097,107 +591,9 @@ class Model
     }
 
     /**
-     * Insert multiple rows (not safe but fast)
-     * @param array $data
-     * @param int $chunkSize
-     * @param boolean $ignore - optional default false
-     * @return boolean
-     */
-    public function multiInsert(array $data, int $chunkSize = 300, bool $ignore = false): bool
-    {
-        if (empty($data)) {
-            return true;
-        }
-
-        $chunks = array_chunk($data, $chunkSize);
-
-        $keys = array_keys($data[key($data)]);
-
-        foreach ($keys as &$key) {
-            $key = $this->db->quoteIdentifier($key);
-        }
-        unset($key);
-
-        $keys = implode(',', $keys);
-
-        foreach ($chunks as $rowset) {
-            foreach ($rowset as &$row) {
-                foreach ($row as &$colValue) {
-                    if (is_bool($colValue)) {
-                        $colValue = intval($colValue);
-                    } elseif (is_null($colValue)) {
-                        $colValue = 'NULL';
-                    } else {
-                        $colValue = $this->db->quote($colValue);
-                    }
-                }
-                unset($colValue);
-                $row = implode(',', $row);
-            }
-            unset($row);
-
-            $sql = 'INSERT ';
-
-            if ($ignore) {
-                $sql .= 'IGNORE ';
-            }
-
-            $sql .= 'INTO ' . $this->table() . ' (' . $keys . ') ' . "\n" . ' VALUES ' . "\n" . '(' . implode(')' . "\n" . ',(',
-                    array_values($rowset)) . ') ' . "\n" . '';
-
-            try {
-                $this->db->query($sql);
-            } catch (\Exception $e) {
-                $this->logError('multiInsert: ' . $e->getMessage());
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Insert single record on duplicate key update
-     * @param $data
-     * @return boolean
-     */
-    public function insertOnDuplicateKeyUpdate($data)
-    {
-        $keys = array_keys($data);
-
-        foreach ($keys as &$val) {
-            $val = $this->db->quoteIdentifier($val);
-        }
-        unset($val);
-
-        $values = array_values($data);
-        foreach ($values as &$val) {
-            $val = $this->db->quote($val);
-        }
-        unset($val);
-
-        $sql = 'INSERT INTO ' . $this->db->quoteIdentifier($this->table()) . ' (' . implode(',',
-                $keys) . ') VALUES (' . implode(',', $values) . ') ON DUPLICATE KEY UPDATE ';
-
-        $updates = [];
-        foreach ($keys as $key) {
-            $updates[] = $key . ' = VALUES(' . $key . ') ';
-        }
-
-        $sql .= implode(', ', $updates) . ';';
-
-        try {
-            $this->db->query($sql);
-            return true;
-        } catch (\Exception $e) {
-            $this->logError($e->getMessage() . ' SQL: ' . $sql);
-            return false;
-        }
-    }
-
-    /**
      * Get list of search fields (get from ORM)
      */
-    protected function getSearchFields()
+    public function getSearchFields()
     {
         if (is_null($this->searchFields)) {
             $this->searchFields = $this->getObjectConfig()->getSearchFields();
@@ -1224,17 +620,38 @@ class Model
         $this->searchFields = null;
     }
 
+    /**
+     * Get Orm\Object config array
+     * @return Config\ConfigInterface
+     */
+    public function getLightConfig(): Config\ConfigInterface
+    {
+        return $this->lightConfig;
+    }
 
     /**
-     * Clear runtime cache
-     * @param $name , Object name
-     * @return void
+     * @return bool|\Cache_Interface
      */
-    static public function removeInstance($name): void
+    public function getCacheAdapter()
     {
-        $name = strtolower($name);
-        if (isset(static::$instances[$name])) {
-            unset(static::$instances[$name]);
+        return $this->cache;
+    }
+
+    public function getCacheTime()
+    {
+        return $this->cacheTime;
+    }
+
+    public function __call($name, $arguments)
+    {
+        static $deprecatedFunctions = false;
+        if(empty($deprecatedFunctions)){
+            $deprecatedFunctions = new Model\Deprecated($this);
+        }
+
+        if(method_exists($deprecatedFunctions, $name)){
+           // trigger_error('Deprecated method call'. get_called_class().'::'.$name,E_USER_NOTICE);
+            return call_user_func_array([$deprecatedFunctions,$name], $arguments);
         }
     }
 }

@@ -1,4 +1,24 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+declare(strict_types=1);
+
 namespace Dvelum\App\Backend;
 
 use Dvelum\App;
@@ -62,7 +82,7 @@ class Controller extends App\Controller
     {
         parent::__construct($request, $response);
 
-        $this->configBackend = Config::storage()->get('backend.php');
+        $this->backofficeConfig = Config::storage()->get('backend.php');
         $this->config = $this->getConfig();
         $this->module = $this->getModule();
         $this->objectName = $this->getObjectName();
@@ -102,7 +122,7 @@ class Controller extends App\Controller
        /*
         * Check CSRF token
         */
-        if($this->configBackend->get('use_csrf_token') && $this->request->hasPost()) {
+        if($this->backofficeConfig->get('use_csrf_token') && $this->request->hasPost()) {
            $this->validateCsrfToken();
         }
 
@@ -128,6 +148,7 @@ class Controller extends App\Controller
             $this->response->error($this->lang->get('CANT_MODIFY'));
         }
     }
+
     /**
      * Check delete permissions
      */
@@ -138,13 +159,23 @@ class Controller extends App\Controller
         }
     }
 
+    /**
+     * Check publish permissions
+     */
+    protected function checkCanPublish()
+    {
+        if(!$this->moduleAcl->canPublish($this->module)){
+            $this->response->error($this->lang->get('CANT_PABLISH'));
+        }
+    }
+
 
     protected function validateCsrfToken()
     {
         $csrf = new \Security_Csrf();
         $csrf->setOptions([
-            'lifetime' => $this->configBackend->get('use_csrf_token_lifetime'),
-            'cleanupLimit' => $this->configBackend->get('use_csrf_token_garbage_limit')
+            'lifetime' => $this->backofficeConfig->get('use_csrf_token_lifetime'),
+            'cleanupLimit' => $this->backofficeConfig->get('use_csrf_token_garbage_limit')
         ]);
 
         if(!$csrf->checkHeader() && !$csrf->checkPost()){
@@ -156,7 +187,7 @@ class Controller extends App\Controller
     {
         $moduleManager = new \Modules_Manager();
 
-        if(in_array($this->module, $this->configBackend->get('system_controllers'),true) || $this->module == 'index'){
+        if(in_array($this->module, $this->backofficeConfig->get('system_controllers'),true) || $this->module == 'index'){
             return;
         }
 
@@ -194,9 +225,9 @@ class Controller extends App\Controller
 
     /**
      * Get module name of the current class
-     * @return string
+     * @return null|string
      */
-    public function getModule()
+    public function getModule() : ?string
     {
         $manager = new \Modules_Manager();
         return $manager->getControllerModule(get_called_class());
@@ -286,7 +317,7 @@ class Controller extends App\Controller
     {
         $template = new View();
         $template->set('wwwRoot' , $this->appConfig->get('wwwroot'));
-        $this->response->put($template->render('system/'.$this->configBackend->get('theme') . '/login.php'));
+        $this->response->put($template->render('system/'.$this->backofficeConfig->get('theme') . '/login.php'));
         $this->response->send();
     }
 

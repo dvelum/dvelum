@@ -183,6 +183,8 @@ class User
 	{
 	    if ($this->_authChecked){
             return true;
+        }else{
+	        return false;
         }
 	}
 

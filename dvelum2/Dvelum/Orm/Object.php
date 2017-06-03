@@ -92,7 +92,7 @@ class Object implements ObjectInterface
      * @param bool|int $id - optional
      * @throws Exception
      */
-    public function __construct($name, $id = false)
+    public function __construct(string $name, $id = false)
     {
         $this->name = strtolower($name);
         $this->id = $id;
@@ -118,7 +118,7 @@ class Object implements ObjectInterface
      * Disable ACL create permissions check
      * @param $bool $bool
      */
-    public function disableAcl(bool $bool)
+    public function disableAcl(bool $bool) : void
     {
         $this->disableAclCheck = $bool;
     }
@@ -331,7 +331,7 @@ class Object implements ObjectInterface
      * @param string $name
      * @return bool
      */
-    public function fieldExists($name) : bool
+    public function fieldExists(string $name) : bool
     {
         return $this->config->fieldExists($name);
     }
@@ -342,7 +342,7 @@ class Object implements ObjectInterface
      * @param string $field - field name
      * @return string
      */
-    public function getLinkedObject($field) : string
+    public function getLinkedObject(string $field) : string
     {
         return $this->config->getField($field)->getLinkedObject();
     }
@@ -489,7 +489,7 @@ class Object implements ObjectInterface
      * @throws Exception
      * @return mixed
      */
-    public function get($name)
+    public function get(string $name)
     {
         if($this->acl)
             $this->checkCanRead();
@@ -660,7 +660,7 @@ class Object implements ObjectInterface
      * @param array $data
      * @return array
      */
-    public function serializeLinks($data) : array
+    public function serializeLinks(array $data) : array
     {
         foreach ($data as $k=>$v)
         {
@@ -673,11 +673,10 @@ class Object implements ObjectInterface
 
     /**
      * Validate unique fields, object field groups
-     * Returns array of errors  or null .
-     * @property boolean $new
-     * @return mixed array | null
+     * Returns array of errors or null .
+     * @return  array | null
      */
-    public function validateUniqueValues()
+    public function validateUniqueValues(): ?array
     {
         $uniqGroups = [];
 
@@ -806,7 +805,7 @@ class Object implements ObjectInterface
      * Get errors
      * @return array
      */
-    public function getErrors()
+    public function getErrors() : array
     {
         return $this->errors;
     }
@@ -843,11 +842,11 @@ class Object implements ObjectInterface
 
     /**
      * Unpublish VC object
-     * @param boolean $log  - log changes
-     * @param boolean $useTransaction — using a transaction when changing data is optional.
-     * @return boolean
+     * @param bool $log  - log changes
+     * @param bool $useTransaction — using a transaction when changing data is optional.
+     * @return bool
      */
-    public function unpublish($log = true , $useTransaction = true)
+    public function unpublish($log = true , $useTransaction = true) : bool
     {
         if($this->acl){
             try{
@@ -879,12 +878,12 @@ class Object implements ObjectInterface
     /**
      * Publish VC object
      * @param bool|int $version - optional, default current version
-     * @param boolean $log - log changes
-     * @param boolean $useTransaction — using a transaction when changing data is optional.
+     * @param bool $log - log changes
+     * @param bool $useTransaction — using a transaction when changing data is optional.
      * @return bool
      * @throws Exception
      */
-    public function publish($version = false , $log = true , $useTransaction = true)
+    public function publish($version = false , $log = true , $useTransaction = true): bool
     {
         if($this->acl){
             try{
@@ -931,20 +930,20 @@ class Object implements ObjectInterface
 
     /**
      * Get loaded version
-     * @return integer
+     * @return int
      */
-    public function getVersion()
+    public function getVersion() : int
     {
         return $this->version;
     }
 
     /**
      * Load version
-     * @param integer $vers
-     * @return boolean
+     * @param int $vers
+     * @return void
      * @throws Exception
      */
-    public function loadVersion($vers)
+    public function loadVersion(int $vers) :void
     {
         $this->rejectChanges();
         $versionObject  = $this->model->getStore()->getVersionObjectName();
@@ -997,17 +996,17 @@ class Object implements ObjectInterface
     /**
      * Reject changes
      */
-    public function rejectChanges()
+    public function rejectChanges() : void
     {
         $this->updates = [];
     }
 
     /**
      * Save object as new version
-     * @param boolean $useTransaction — using a transaction when changing data is optional.
-     * @return boolean
+     * @param bool $useTransaction — using a transaction when changing data is optional.
+     * @return bool
      */
-    public function saveVersion($useTransaction = true)
+    public function saveVersion(bool $useTransaction = true) : bool
     {
         if(!$this->config->isRevControl()){
             return $this->save($useTransaction);
@@ -1039,7 +1038,7 @@ class Object implements ObjectInterface
             $this->published = false;
             $this->author_id = User::getInstance()->getId();
 
-            if(!$this->save(true , $useTransaction))
+            if(!$this->save($useTransaction))
                 return false;
         }
 
@@ -1091,10 +1090,10 @@ class Object implements ObjectInterface
 
     /**
      * Check DB object class
-     * @param $name
-     * @return boolean
+     * @param string $name
+     * @return bool
      */
-    public function isInstanceOf($name)
+    public function isInstanceOf(string $name):bool
     {
         $name = strtolower($name);
         return $name === $this->getName();

@@ -68,7 +68,7 @@ class Backend_Mediacategory_Controller extends Dvelum\App\Backend\Api\Controller
            $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
 
-        $childCount = Model::factory('Mediacategory')->getCount(array('parent_id'=>$id));
+        $childCount = Model::factory('Mediacategory')->query()->filters(['parent_id'=>$id])->getCount();
         if($childCount)
            $this->response->error($this->lang->get('REMOVE_CHILDREN'));
 

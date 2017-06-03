@@ -1,5 +1,22 @@
 <?php
-use Dvelum\Orm;
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 use Dvelum\Config;
 use Dvelum\Orm\Model;
 
@@ -18,15 +35,21 @@ class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc
 
     public function listAction()
     {           	
-        $pager = Request::post('pager', 'array', array());
-        $query = Request::post('search', 'string', false);
+        $pager = Request::post('pager', 'array', []);
+        $query = Request::post('search', 'string', null);
      
-        $result = array('success'=>true, 'count'=>0, 'data'=>array());
-    
+        $result = ['success'=>true, 'count'=>0, 'data'=>[]];
+
+        /**
+         * @var Model_Blocks $dataModel
+         */
         $dataModel = Model::factory('Blocks');
+        /**
+         * @var Model_Vc $vc
+         */
         $vc = Model::factory('Vc');
         
-        $fields = array(
+        $fields = [
             'id' ,
             'title',
             'date_created',
@@ -36,19 +59,39 @@ class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc
         	'is_system',
         	'sys_name',
         	'params'
-        );
+        ];
 
-        $filters = false;
+        $filters = [];
 
-        if($this->_user->onlyOwnRecords($this->_module)){
+        if($this->_user->getModuleAcl()->onlyOwnRecords($this->_module)){
             $filters['author_id'] = $this->_user->getId();
         }
 
-        $data = $dataModel->getListVc($pager , $filters, $query, $fields, 'user','updater');
-        
-        if(empty($data))
-            Response::jsonArray($result);
-    
+        $dataQuery = $dataModel->query()
+                                ->params($pager)
+                                ->filters($filters)
+                                ->search($query)
+                                ->fields($fields);
+
+        $dataCount = $dataQuery->getCount();
+
+        if(!$dataCount){
+            $this->response->success($result);
+            return;
+        }
+
+        $data = $dataQuery->fetchAll();
+
+        $this->addLinkedInfo(
+            $dataModel->getObjectConfig(),
+            [
+                'user' => 'author_id',
+                'updater'=>  'editor_id'
+            ],
+            $data,
+            $dataModel->getPrimaryKey()
+        );
+
         $ids = array(); 
         foreach ($data as $k=>$v)
             $ids[] = $v['id'];
@@ -66,10 +109,11 @@ class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc
         
         $result = array(
             'success'=>true,
-            'count'=>$dataModel->getCount(array('is_system'=>0) , $query),
+            'count'=>$dataCount,
             'data'=>$data
         );
-        Response::jsonArray($result);
+
+        $this->response->json($result);
     }
     
  	/**
@@ -104,7 +148,8 @@ class Backend_Blocks_Controller extends Backend_Controller_Crud_Vc
     public function menulistAction()
     {
     	$menuModel = Model::factory('menu');
-    	$list = $menuModel->getList(false,false, array('id' , 'title'));
+    	$fields = ['id', 'title'];
+    	$list = $menuModel->query()->fields($fields)->fetchAll();
     	
     	if(!empty($list))
     		$list = array_values($list);

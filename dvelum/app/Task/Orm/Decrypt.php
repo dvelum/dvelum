@@ -60,7 +60,7 @@ class Task_Orm_Decrypt extends Bgtask_Abstract
         );
 
         $model = Model::factory($object);
-        $count = Model::factory($object)->getCount($filter);
+        $count = Model::factory($object)->query()->filters($filter)->getCount();
 
         $this->setTotalCount($count);
 

@@ -1,6 +1,6 @@
 <?php
 /**
- *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -15,33 +15,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
-declare(strict_types=1);
 
-namespace Dvelum\App\Router;
+namespace Dvelum\App\Backend\Api;
 
-use Dvelum\Request;
-use Dvelum\Response;
-
-/**
- * Router interface
- */
-interface RouterInterface
+class OwnerException extends \Exception
 {
-    /**
-     * Run action
-     * @param Request $request
-     * @param Response $response
-     * @throws \Exception
-     * @return void
-     */
-    public function route(Request $request , Response $response) :void;
 
-    /**
-     * Find url
-     * @param string $module
-     * @return string
-     */
-    public function findUrl(string $module): string;
 }

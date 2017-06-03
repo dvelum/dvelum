@@ -1,5 +1,8 @@
 <?php
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
+use Dvelum\Service;
+use Dvelum\Lang;
 /**
  * Frontend modules manager
  */
@@ -39,13 +42,17 @@ class Modules_Manager
     /**
      * Get Modules menu localization
      * @param $lang
-     * @return Config_Abstract|false
+     * @return ConfigInterface|false
      * @throws Exception
      */
-    public function getLocale($lang)
+    public function getLocale($lang) : ConfigInterface
     {
         $configPath = $this->_appConfig->get($this->_mainconfigKey);
-        return Lang::storage()->get($lang.'/modules/'.basename($configPath));
+        /**
+         * @var Lang $langService
+         */
+        $langService = Service::get('lang');
+        return $langService->getStorage()->get($lang.'/modules/'.basename($configPath));
     }
 
     /**
@@ -114,9 +121,9 @@ class Modules_Manager
     /**
      * Get module name for controller
      * @param string $controller
-     * @return boolean false | string
+     * @return null | string
      */
-    public function getControllerModule($controller)
+    public function getControllerModule($controller): ?string
     {
         if(!self::$_classRoutes){
             $config = $this->_config->__toArray();
@@ -126,7 +133,7 @@ class Modules_Manager
         }
 
         if(!isset(self::$_classRoutes[$controller]))
-            return false;
+            return null;
         else
             return self::$_classRoutes[$controller];
     }

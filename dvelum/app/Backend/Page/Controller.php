@@ -260,7 +260,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         $conf = $config->__toArray();
         $items = array();
 
-        if(isset($conf['items']) && !empty($config['items']))
+        if(isset($conf['items']) && !empty($conf['items']))
         {
             foreach ($conf['items'] as $k=>$v){
                 $v['code'] = $k;

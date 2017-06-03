@@ -23,11 +23,14 @@ class Backend_Acl_Controller extends Backend_Controller
      */
     public function grouplistAction()
     {
-        $data = Model::factory('Group')->getListVc(false , false , false , array(
-            'id' ,
-            'title' ,
-            'system'
-        ));
+        $data = Model::factory('Group')
+                ->query()
+                ->fields([
+                    'id' ,
+                    'title' ,
+                    'system'
+                ])->fetchAll();
+
         Response::jsonSuccess($data);
     }
     /**

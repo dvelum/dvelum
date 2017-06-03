@@ -35,14 +35,14 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
 	 */
 	public function listAction()
 	{		
-		$data = Model::factory('Menu')->getList(
-			array(
-				'sort' => 'title',
-				'dir' => 'ASC'
-			),
-			false,
-			array('id','code','title')
-		);
+		$data = Model::factory('Menu')->query()
+            ->params([
+                'sort' => 'title',
+                'dir' => 'ASC'
+            ])
+            ->fields(['id','code','title'])
+            ->fetchAll();
+
 		Response::jsonSuccess($data);
 	}
 	
@@ -92,9 +92,7 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
     public function pagelistAction()
     {
     	 $pagesModel = Model::factory('Page');
-    	 $data = $pagesModel->getList(false,false,array('id','title'=>'page_title'));
-    	 if(empty($data))
-    	 	$data = array();
+    	 $data = $pagesModel->query()->fields(['id','title'=>'page_title'])->fetchAll();
     	 Response::jsonSuccess($data);   	 
     }
     
@@ -102,7 +100,7 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
  	 * (non-PHPdoc)
  	 * @see Backend_Controller_Crud::insertObject()
  	 */
-    public function insertObject(Orm\Object $object)
+    public function insertObject(Orm\ObjectInterface $object)
     {  
          if(!$recId = $object->save())
              Response::jsonError($this->_lang->CANT_CREATE);
@@ -127,7 +125,7 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::updateObject()
      */
-    public function updateObject(Orm\Object $object)
+    public function updateObject(Orm\ObjectInterface $object)
     {                            
         if(!$object->save())
            Response::jsonError($this->_lang->CANT_EXEC); 

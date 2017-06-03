@@ -9,7 +9,6 @@ class Request
     protected $pagination;
     protected $query;
     protected $filters;
-
     protected $config;
 
     public function __construct(\Dvelum\Request $request)
@@ -17,7 +16,7 @@ class Request
         $this->config = Config::storage()->get('api/request.php');
         $this->pagination = $request->post($this->config->get('paginationParam')  , 'array' , []);
         $this->filters = array_merge($request->post($this->config->get('filterParam')  , 'array' , []), $request->extFilters());
-        $this->query = $request->post($this->config->get('searchParam')  , 'string' , '');
+        $this->query = $request->post($this->config->get('searchParam')  , 'string' , null);
         $this->object = $request->post($this->config->get('objectParam') , 'string' , '');
     }
 
@@ -44,12 +43,12 @@ class Request
         unset($this->filters[$key]);
     }
 
-    public function setObject($name)
+    public function setObjectName(string $name)
     {
         $this->object = $name;
     }
 
-    public function getObject()
+    public function getObjectName() : string
     {
         return $this->object;
     }

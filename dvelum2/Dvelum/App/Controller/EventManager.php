@@ -8,6 +8,8 @@ class EventManager
 
     const BEFORE_LIST = 'before_list';
     const AFTER_LIST = 'after_list';
+    const BEFORE_LOAD = 'before_load';
+    const AFTER_LOAD = 'after_load';
 
     /**
      * @param string $event

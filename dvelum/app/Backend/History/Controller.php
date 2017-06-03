@@ -31,8 +31,16 @@ class Backend_History_Controller extends Backend_Controller
 
         $filter['object'] = $o->getName();
 
-        $history= Model::factory('Historylog');
-        $data = $history->getListVc($pager , $filter, false, array('date','type','id'),'user_name');
+        $history = Model::factory('Historylog');
+
+        $data = $history->query()
+                        ->filters($filter)
+                        ->params($pager)
+                        ->fields(['date','type','id'])
+                        ->fetchAll();
+
+        $objectConfig = Orm\Object\Config::factory('Historylog');
+        $this->addLinkedInfo($objectConfig,['user_name'=>'user_id'], $data, $objectConfig->getPrimaryKey());
 
         if(!empty($data))
         {
@@ -42,6 +50,6 @@ class Backend_History_Controller extends Backend_Controller
                     $v['type'] = Model_Historylog::$actions[$v['type']];
             }unset($v);
         }
-        Response::jsonSuccess($data , array('count'=>$history->getCount($filter )));
+        Response::jsonSuccess($data , ['count'=>$history->query()->filters($filter)->getCount()]);
     }
 }

@@ -8,9 +8,9 @@ class Backend_User_Auth_Controller extends Backend_Controller_Crud
 
     protected function _getList()
     {
-        $pager = Request::post('pager' , 'array' , []);
-        $filter = Request::post('filter' , 'array' , []);
-        $query = Request::post('search' , 'string' , false);
+        $pager = Request::post('pager' , 'array' , null);
+        $filter = Request::post('filter' , 'array' , null);
+        $query = Request::post('search' , 'string' , null);
         $filter = array_merge($filter , Request::extFilters());
 
         $dataModel = Model::factory($this->_objectName);
@@ -36,6 +36,12 @@ class Backend_User_Auth_Controller extends Backend_Controller_Crud
             }
             $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
         }
-        return ['data' =>$data , 'count'=> $dataModel->getCount($filter , $query)];
+        return [
+            'data' =>$data ,
+            'count'=> $dataModel->query()
+                                ->filters($filter)
+                                ->search($query)
+                                ->getCount()
+        ];
     }
 }

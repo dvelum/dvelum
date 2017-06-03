@@ -51,7 +51,7 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
         $primaryKey = $objectConfig->getPrimaryKey();
 
         $model = Model::factory($object);
-        $count = Model::factory($object)->getCount(array($ivField=>null));
+        $count = Model::factory($object)->query()->filters([$ivField=>null])->getCount();
         $this->setTotalCount($count);
 
         if(!$count)
