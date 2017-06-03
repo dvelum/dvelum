@@ -529,7 +529,7 @@ class Select
         }
 
         if($this->_mysqliConnection){
-            return "'" . $this->_mysqliConnection->real_escape_string($value) . "'";
+            return "'" . $this->_mysqliConnection->real_escape_string((string)$value) . "'";
         }else{
             return "'" . addcslashes($value, "\000\\'\"\032\n\r") . "'";
         }
@@ -541,7 +541,7 @@ class Select
 
         $data = '';
 
-        // perfomance patch
+        // performance patch
         if ($this->localCache) {
             if (is_array($table))
                 $hash = md5(serialize($table));

@@ -304,18 +304,26 @@ class File
             \RecursiveIteratorIterator::SELF_FIRST
         );
 
-        foreach ( $iterator as $item) {
-            if ($item->isDir()) {
-                $subDir =  $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
-                if(!is_dir($subDir) && !@mkdir($subDir, 0755)){
-                    return false;
-                }
-            } else {
-                if(!@copy($item, $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName())){
-                    return false;
+        try{
+            foreach ($iterator as $item) {
+                /**
+                 * @var \SplFileInfo $item
+                 */
+                if ($item->isDir()) {
+                    $subDir =  $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
+                    if(!is_dir($subDir) && !mkdir($subDir, 0755)){
+                        return false;
+                    }
+                } else {
+                    if(!copy($item->__toString(), $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName())){
+                        return false;
+                    }
                 }
             }
+        }catch (\Error $e){
+            return false;
         }
+
         return true;
     }
 

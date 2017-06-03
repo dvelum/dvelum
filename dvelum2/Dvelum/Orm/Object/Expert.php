@@ -2,6 +2,7 @@
 
 namespace Dvelum\Orm\Object;
 
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 
 /**
@@ -134,9 +135,8 @@ class Expert
 	 */
 	static protected function _getMultiLinks($objectName , $objectId)
 	{
-		$configMain = Config::storage()->get('main.php');
-
-		$linksModel = Model::factory($configMain->get('orm_links_object'));
+		$ormConfig = Config::storage()->get('orm.php');
+		$linksModel = Model::factory($ormConfig->get('links_object'));
 		$db = $linksModel->getDbConnection();
 		$linkTable = $linksModel->table();
 

@@ -1,6 +1,4 @@
 <?php
-use Dvelum\Orm;
-use Dvelum\Orm\Model;
 use Dvelum\Config;
 use Dvelum\Service;
 
@@ -28,7 +26,8 @@ class Backend_Externals_Controller extends Backend_Controller
          * @var Lang $langService
          */
         $langService = Service::get('lang');
-        $langService->addDictionaryLoader('externals', $this->_configMain->get('language').'/externals.php' , Config\Factory::File_Array);
+
+        $langService->addLoader('externals', $this->_configMain->get('language').'/externals.php' , Config\Factory::File_Array);
         $this->externalsManager = Externals_Manager::factory();
     }
 
@@ -65,7 +64,7 @@ class Backend_Externals_Controller extends Backend_Controller
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }
 
-        if(!$this->externalsManager->install($id , true)) {
+        if(!$this->externalsManager->install($id)) {
             $errors = $this->externalsManager->getErrors();
             Response::jsonError($this->_lang->get('CANT_EXEC').' '.implode(', ', $errors));
         }

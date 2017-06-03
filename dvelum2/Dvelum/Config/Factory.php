@@ -209,9 +209,9 @@ class Factory
      * @param array $data
      * @return ConfigInterface
      */
-    static public function create(array $data) : ConfigInterface
+    static public function create(array $data, ?string $name = null) : ConfigInterface
     {
-        $config = new Config\Adapter();
+        $config = new Config\Adapter($name);
         $config->setData($data);
         return $config;
     }

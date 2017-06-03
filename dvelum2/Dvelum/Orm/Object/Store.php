@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Object;
 
 use Dvelum\Orm;
+use Dvelum\Db;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
 use Dvelum\Orm\Exception;
@@ -95,9 +96,9 @@ class Store
 
     /**
      * @param Orm\Object $object
-     * @return \Db_Adapter
+     * @return Db\Adapter
      */
-    protected function getDbConnection(Orm\Object $object) : \Db_Adapter
+    protected function getDbConnection(Orm\Object $object) : Db\Adapter
     {
         return Model::factory($object->getName())->getDbConnection();
     }

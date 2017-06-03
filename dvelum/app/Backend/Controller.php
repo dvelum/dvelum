@@ -69,6 +69,8 @@ abstract class Backend_Controller extends \Controller
      */
     protected $eventManager;
 
+
+
     public function __construct()
     {
         parent::__construct();
@@ -80,6 +82,11 @@ abstract class Backend_Controller extends \Controller
         $this->_configBackend = Config::storage()->get('backend.php');
         $this->_cache = $cacheManager->get('data');
         $this->response = \Dvelum\Response::factory();
+
+        $frontConfig = Config::storage()->get('frontend.php');
+
+        //backward compatibility
+        $this->_configMain->set('frontend_router', 'Router_'.$frontConfig->get('router'));
 
         $this->initSession();
     }

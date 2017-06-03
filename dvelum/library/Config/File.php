@@ -26,9 +26,9 @@
  abstract class Config_File extends Config_Abstract
  {
      protected $writePath;
+
      public function __construct($name , $autoRead = true)
      {
-         parent::__construct($name);
          $this->writePath = $name;
          /*
           * Read config from file
@@ -57,7 +57,7 @@
       * @param $path
       */
      public function setWritePath($path){
-         $this->writePath = writePath;
+         $this->writePath = $path;
      }
 
      /**
@@ -66,6 +66,11 @@
       */
      public function getWritePath(){
          return $this->writePath;
+     }
+
+     public function __toArray()
+     {
+         return $this->_data;
      }
 
 }

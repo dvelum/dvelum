@@ -2,6 +2,7 @@
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
+use Dvelum\Orm\ObjectInterface;
 
 class Backend_Page_Controller extends Backend_Controller_Crud_Vc
 {
@@ -170,10 +171,10 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
 
     /**
      * Find staging URL
-     * @param Orm\Object $obj
+     * @param ObjectInterface $obj
      * @return string
      */
-    public function getStagingUrl(Orm\Object $obj)
+    public function getStagingUrl(ObjectInterface $obj)
     {
         return Request::url(array($obj->code));
     }
@@ -182,7 +183,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
      * (non-PHPdoc)
      * @see Backend_Controller_Crud_Vc::_loadData()
      */
-    protected function _loadData(Orm\Object $object , $version)
+    protected function _loadData(ObjectInterface $object , $version)
     {
         $data = parent::_loadData($object, $version);
 
@@ -204,9 +205,10 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         }
 
         $conf = $config->__toArray();
+
         $items = array();
 
-        if(isset($conf['items']) && !empty($config['items']))
+        if(isset($conf['items']) && !empty($conf['items']))
         {
             foreach ($conf['items'] as $k=>$v)
             {

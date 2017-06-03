@@ -20,6 +20,7 @@
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\Orm\ObjectInterface;
 
 abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 {
@@ -40,9 +41,9 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
     /**
      * Check object owner
-     * @param Orm\Object $object
+     * @param \Db_Object  $object
      */
-    protected function _checkOwner(Orm\Object $object)
+    protected function _checkOwner(ObjectInterface $object)
     {
         if(!$object->getConfig()->isRevControl()){
             return;
@@ -82,6 +83,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     protected function _getList()
     {
+
         $pager = Request::post('pager' , 'array' , array());
         $filter = Request::post('filter' , 'array' , array());
         $query = Request::post('search' , 'string' , false);
@@ -97,7 +99,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $data = $dataModel->getListVc($pager , $filter , $query , $this->_listFields , 'user' , 'updater');
 
         if(empty($data))
-            return [];
+            return ['data' => [], 'count'=>0];
 
         $ids = Utils::fetchCol('id' , $data);
 
@@ -108,16 +110,17 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             }
             $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
         }
+
         return ['data'=> $data, 'count'=> $dataModel->getCount($filter , $query)];
     }
 
     /**
      * Get the object data ready to be sent
-     * @param Orm\Object $object
+     * @param \Db_Object $object
      * @param integer $version
      * @return array
      */
-    protected function _loadData(Orm\Object $object , $version)
+    protected function _loadData(ObjectInterface $object , $version)
     {
         $id = $object->getId();
         $vc = Model::factory('Vc');
@@ -175,7 +178,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
         if($id){
             try{
-                $obj = Orm\Object::factory($this->_objectName , $id);
+                $obj = \Db_Object::factory($this->_objectName , $id);
             }catch(Exception $e){
                 Model::factory($this->_objectName)->logError($e->getMessage());
                 return [];
@@ -299,10 +302,10 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * Define the object data preview page URL
      * (needs to be redefined in the child class
      * as per the application structure)
-     * @param Orm\Object $object
+     * @param ObjectInterface $object
      * @return string
      */
-    public function getStagingUrl(Orm\Object $object)
+    public function getStagingUrl(ObjectInterface $object)
     {
         $frontConfig = Config::storage()->get('frontend.php');
         $routerClass =  $frontConfig->get('router');
@@ -320,7 +323,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::insertObject()
      */
-    public function insertObject(Orm\Object $object)
+    public function insertObject(\Db_Object $object)
     {
         $object->published = false;
         $object->author_id = User::getInstance()->id;
@@ -350,7 +353,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::updateObject()
      */
-    public function updateObject(Orm\Object $object)
+    public function updateObject(\Db_Object  $object)
     {
         $author = $object->get('author_id');
         if(empty($author)){
@@ -381,7 +384,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * and closes the application.
      * @param Db_Object $object
      */
-    public function unpublishObject(Orm\Object $object)
+    public function unpublishObject(\Db_Object $object)
     {
         if(!$object->get('published'))
             Response::jsonError($this->_lang->NOT_PUBLISHED);

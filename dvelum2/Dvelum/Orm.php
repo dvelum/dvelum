@@ -55,9 +55,9 @@ class Orm
          * Prepare Db object storage
          */
         $objectStore = new Orm\Object\Store(array(
-            'linksObject' => $config->get('orm_links_object'),
-            'historyObject' => $config->get('orm_history_object'),
-            'versionObject' => $config->get('orm_version_object'),
+            'linksObject' => $config->get('links_object'),
+            'historyObject' => $config->get('history_object'),
+            'versionObject' => $config->get('version_object'),
         ));
         $objectStore->setEventManager($eventManager);
 

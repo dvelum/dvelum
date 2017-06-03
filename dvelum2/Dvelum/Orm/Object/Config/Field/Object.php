@@ -69,7 +69,7 @@ class Object extends \Dvelum\Orm\Object\Config\Field
             if(!is_int($value)){
                 return false;
             }
-            return Orm\Object::objectExists($this->config['linkconfig']['object'], $value);
+            return Orm\Object::objectExists($this->config['link_config']['object'], $value);
         }
 
         return true;

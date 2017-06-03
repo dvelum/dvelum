@@ -2,7 +2,9 @@
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm;
-use Dvelum\Autoloader;
+use Dvelum\Autoload;
+use Dvelum\File;
+use Dvelum\Lang;
 
 class Externals_Manager
 {
@@ -21,7 +23,7 @@ class Externals_Manager
      */
     protected $config;
     /**
-     * @var Autoloader
+     * @var Autoload
      */
     protected $autoloader;
 
@@ -41,13 +43,13 @@ class Externals_Manager
     static public function factory()
     {
         static $manager = false;
-        if(!$manager){
+        if (!$manager) {
             $manager = new static(static::$defaultConfig['appConfig'], static::$defaultConfig['autoloader']);
         }
         return $manager;
     }
 
-    private function __construct(ConfigInterface $config, Autoloader $autoloader)
+    private function __construct(ConfigInterface $config, Autoload $autoloader)
     {
         $this->config = Config\Factory::storage()->get('external_modules.php');
         $this->autoloader = $autoloader;
@@ -63,36 +65,33 @@ class Externals_Manager
         $externalsCfg = $this->appConfig->get('externals');
         $path = $externalsCfg['path'];
 
-        if(!is_dir($path)){
+        if (!is_dir($path)) {
             return true;
         }
 
-        $vendors =  \File::scanFiles($path, false, false, File::Dirs_Only);
+        $vendors = \File::scanFiles($path, false, false, File::Dirs_Only);
 
         $hasNew = false;
-        if(!empty($vendors))
-        {
-            foreach($vendors as $vendorPath)
-            {
-                $modules = \File::scanFiles($vendorPath, false, false, File::Dirs_Only);
-                if(empty($modules)){
+        if (!empty($vendors)) {
+            foreach ($vendors as $vendorPath) {
+                $modules = File::scanFiles($vendorPath, false, false, File::Dirs_Only);
+                if (empty($modules)) {
                     continue;
                 }
 
                 $vendor = basename($vendorPath);
-                foreach($modules as $modulePath)
-                {
-                    if(!file_exists($modulePath.'/config.php')){
+                foreach ($modules as $modulePath) {
+                    if (!file_exists($modulePath . '/config.php')) {
                         continue;
                     }
 
                     $module = basename($modulePath);
-                    $moduleId = strtolower($vendor.'_'.$module);
-                    if(!$this->config->offsetExists($moduleId)){
-                        $this->config->set($moduleId,[
-                            'enabled'=> false,
-                            'installed' =>false,
-                            'path'=>$modulePath
+                    $moduleId = strtolower($vendor . '_' . $module);
+                    if (!$this->config->offsetExists($moduleId)) {
+                        $this->config->set($moduleId, [
+                            'enabled' => false,
+                            'installed' => false,
+                            'path' => $modulePath
                         ]);
                         $hasNew = true;
                     }
@@ -100,10 +99,10 @@ class Externals_Manager
             }
         }
 
-        if($hasNew){
-            if(!$this->config->save()){
+        if ($hasNew) {
+            if (!Config::storage()->save($this->config)) {
                 $writePath = Config\Factory::storage()->getWrite();
-                $this->errors[] = \Lang::lang()->get('CANT_WRITE_FS').' '.$writePath.'external_modules.php';
+                $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $writePath . 'external_modules.php';
                 return false;
             };
         }
@@ -119,7 +118,7 @@ class Externals_Manager
     {
         $modules = $this->config->__toArray();
 
-        if(empty($modules)){
+        if (empty($modules)) {
             return;
         }
 
@@ -127,73 +126,72 @@ class Externals_Manager
         $configPaths = [];
         $langPaths = [];
 
-        foreach($modules as $index => $config)
-        {
-            if(!$config['enabled']){
+        foreach ($modules as $index => $config) {
+            if (!$config['enabled']) {
                 continue;
             }
 
             $path = File::fillEndSep($config['path']);
-            $modCfg = require $path.'/config.php';
+            $modCfg = require $path . '/config.php';
 
-            if(!empty($modCfg['autoloader'])){
-                foreach($modCfg['autoloader'] as $classPath){
+            if (!empty($modCfg['autoloader'])) {
+                foreach ($modCfg['autoloader'] as $classPath) {
                     $autoLoadPaths[] = str_replace('./', $path, $classPath);
                 }
             }
 
-            if(!empty($modCfg['locales'])){
-                $langPaths[] = str_replace(['./','//'], [$path,''], $modCfg['locales'].'/');
+            if (!empty($modCfg['locales'])) {
+                $langPaths[] = str_replace(['./', '//'], [$path, ''], $modCfg['locales'] . '/');
             }
 
-            if(!empty($modCfg['configs'])){
-                $configPaths[] = str_replace(['./','//'], [$path,''], $modCfg['configs'].'/');
+            if (!empty($modCfg['configs'])) {
+                $configPaths[] = str_replace(['./', '//'], [$path, ''], $modCfg['configs'] . '/');
             }
 
-            if(!empty($modCfg['templates'])){
-                $configPaths[] = str_replace(['./','//'], [$path,''], $modCfg['templates'].'/');
+            if (!empty($modCfg['templates'])) {
+                $configPaths[] = str_replace(['./', '//'], [$path, ''], $modCfg['templates'] . '/');
             }
 
         }
         // Add autoloader paths
-        if(!empty($autoLoadPaths)){
+        if (!empty($autoLoadPaths)) {
             $autoloaderConfig = Config::storage()->get('autoloader.php');
             $autoloaderCfg = $autoloaderConfig->__toArray();
             $newСhain = $autoloaderCfg['priority'];
 
-            foreach($autoLoadPaths as $path){
+            foreach ($autoLoadPaths as $path) {
                 $newСhain[] = $path;
             }
 
-            foreach ($autoloaderCfg['paths'] as $path){
-                if(!in_array($path,$newСhain,true)){
+            foreach ($autoloaderCfg['paths'] as $path) {
+                if (!in_array($path, $newСhain, true)) {
                     $newСhain[] = $path;
                 }
             }
             $autoloaderCfg['paths'] = $newСhain;
             // update autoloader paths
-            $this->autoloader->setConfig(['paths'=>$newСhain]);
+            $this->autoloader->setConfig(['paths' => $newСhain]);
             // update main configuration
             $autoloaderConfig->setData($autoloaderCfg);
         }
         // Add Config paths
-        if(!empty($configPaths)){
+        if (!empty($configPaths)) {
             $storage = Config::storage();
-            foreach($configPaths as $path){
+            foreach ($configPaths as $path) {
                 $storage->prependPath($path);
             }
         }
         // Add localization paths
-        if(!empty($langPaths)){
+        if (!empty($langPaths)) {
             $langStorage = Lang::storage();
-            foreach($langPaths as $path){
+            foreach ($langPaths as $path) {
                 $langStorage->addPath($path);
             }
         }
         // Add Templates paths
-        if(!empty($configPaths)){
+        if (!empty($configPaths)) {
             $templateStorage = Template::storage();
-            foreach($configPaths as $path){
+            foreach ($configPaths as $path) {
                 $templateStorage->addPath($path);
             }
         }
@@ -218,9 +216,9 @@ class Externals_Manager
         $list = $this->config->__toArray();
         $result = [];
 
-        foreach($list as $code=>$config) {
+        foreach ($list as $code => $config) {
             $path = $config['path'];
-            $mod = require $path.'/config.php';
+            $mod = require $path . '/config.php';
             $mod['enabled'] = $config['enabled'];
             $mod['installed'] = $config['installed'];
             $result[] = $mod;
@@ -234,7 +232,7 @@ class Externals_Manager
         $modInfo = $this->config->get($id);
 
         $path = $modInfo['path'];
-        $mod = require $path.'/config.php';
+        $mod = require $path . '/config.php';
 
         $data = array_merge($modInfo, $mod);
         return $data;
@@ -259,13 +257,12 @@ class Externals_Manager
     {
         $modInfo = $this->getModule($id);
         $path = File::fillEndSep($modInfo['path']);
-        if(!empty($modInfo['resources']))
-        {
-            $resources = str_replace(['./','//'], [$path,''], $modInfo['resources'].'/');
+        if (!empty($modInfo['resources'])) {
+            $resources = str_replace(['./', '//'], [$path, ''], $modInfo['resources'] . '/');
 
-            if(is_dir($resources)){
-                if(!File::copyDir($resources, $this->externalsConfig['resources_path'].$id)){
-                    $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$this->externalsConfig['resources_path'].$id;
+            if (is_dir($resources)) {
+                if (!File::copyDir($resources, $this->externalsConfig['resources_path'] . $id)) {
+                    $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->externalsConfig['resources_path'] . $id;
                     return false;
                 }
             }
@@ -275,10 +272,10 @@ class Externals_Manager
         $modConf['installed'] = true;
         $modConf['enabled'] = true;
 
-        $this->config->set($id , $modConf);
+        $this->config->set($id, $modConf);
 
-        if(!$this->config->save()){
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$this->config->getWritePath();
+        if (!Config::storage()->save($this->config)) {
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->config->getWritePath();
             return false;
         }
 
@@ -295,52 +292,48 @@ class Externals_Manager
         $modConf = $this->getModule($id);
 
         // build objects
-        if(!empty($modConf['objects']))
-        {
-            foreach($modConf['objects'] as $object)
-            {
-                try{
+        if (!empty($modConf['objects'])) {
+            foreach ($modConf['objects'] as $object) {
+                try {
                     $objectCfg = Orm\Object\Config::factory($object);
-                    if(!$objectCfg->isLocked() && !$objectCfg->isReadOnly()){
-                        $builder = new Orm\Object\Builder($object);
-                        if(!$builder->build()){
+                    if (!$objectCfg->isLocked() && !$objectCfg->isReadOnly()) {
+                        $builder = Orm\Object\Builder::factory($object);
+                        if (!$builder->build()) {
                             $errors = $builder->getErrors();
-                            if(!empty($errors) && is_array($errors)){
+                            if (!empty($errors) && is_array($errors)) {
                                 $this->errors[] = implode(', ', $errors);
                             }
                         }
                     }
-                }catch (Exception $e){
+                } catch (Exception $e) {
                     $this->errors[] = $e->getMessage();
                 }
             }
 
-            if(!empty($this->errors)){
+            if (!empty($this->errors)) {
                 return false;
             }
         }
 
-        if(isset($modConf['post-install']))
-        {
+        if (isset($modConf['post-install'])) {
             $class = $modConf['post-install'];
 
-            if(!class_exists($class)){
+            if (!class_exists($class)) {
                 $this->errors[] = $class . ' class not found';
                 return false;
             }
 
             $installer = new $class;
 
-            if(!$installer instanceof Externals_Installer){
-                $this->errors[] = 'Class ' .  $class . ' is not instance of Externals_Installer';
+            if (!$installer instanceof Externals_Installer) {
+                $this->errors[] = 'Class ' . $class . ' is not instance of Externals_Installer';
             }
 
-            $modConfig = new Config_Simple($modConf['id'].'_config');
-            $modConfig->setData($modConf);
+            $modConfig = Config\Factory::create($modConf, $modConf['id'] . '_config');
 
-            if(!$installer->install($this->appConfig, $modConfig)){
+            if (!$installer->install($this->appConfig, $modConfig)) {
                 $errors = $installer->getErrors();
-                if(!empty($errors) && is_array($errors)){
+                if (!empty($errors) && is_array($errors)) {
                     $this->errors[] = implode(', ', $errors);
                     return false;
                 }
@@ -348,9 +341,9 @@ class Externals_Manager
         }
         // build JS lang
         $langManager = new Backend_Localization_Manager($this->appConfig);
-        try{
+        try {
             $langManager->compileLangFiles();
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
             return false;
         }
@@ -368,63 +361,59 @@ class Externals_Manager
 
         // Remove config record
         $this->config->remove($id);
-        if(!$this->config->save()){
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$this->config->getWritePath();
+        if (!$this->config->save()) {
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->config->getWritePath();
             return false;
         }
 
         // Remove resources
-        if(!empty($modConf['resources']))
-        {
-            $installedResources = $this->externalsConfig['resources_path'].$id;
+        if (!empty($modConf['resources'])) {
+            $installedResources = $this->externalsConfig['resources_path'] . $id;
 
-            if(is_dir($installedResources)){
-                if(!File::rmdirRecursive($installedResources, true)){
-                    $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$installedResources;
+            if (is_dir($installedResources)) {
+                if (!File::rmdirRecursive($installedResources, true)) {
+                    $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $installedResources;
                     return false;
                 }
             }
         }
         // Remove Db_Object tables
-        if(!empty($modConf['objects']) && $modConf['enabled'])
-        {
-            foreach($modConf['objects'] as $object)
-            {
-                try{
+        if (!empty($modConf['objects']) && $modConf['enabled']) {
+            foreach ($modConf['objects'] as $object) {
+                try {
                     $objectCfg = Orm\Object\Config::factory($object);
-                    if(!$objectCfg->isLocked() && !$objectCfg->isReadOnly()){
+                    if (!$objectCfg->isLocked() && !$objectCfg->isReadOnly()) {
                         $builder = new Orm\Object\Builder($object);
-                        if(!$builder->remove()){
+                        if (!$builder->remove()) {
                             $this->errors[] = $builder->getErrors();
                         }
                     }
-                }catch (Exception $e){
+                } catch (Exception $e) {
                     $this->errors[] = $e->getMessage();
                 }
             }
         }
 
-        if(isset($modConf['post-install']) && $modConf['enabled'])
-        {
+        if (isset($modConf['post-install']) && $modConf['enabled']) {
             $class = $modConf['post-install'];
 
-            if(!class_exists($class)){
+            if (!class_exists($class)) {
                 $this->errors[] = $class . ' class not found';
                 return false;
             }
 
             $installer = new $class;
 
-            if(!$installer instanceof Externals_Installer){
-                $this->errors[] = 'Class ' .  $class . ' is not instance of Externals_Installer';
+            if (!$installer instanceof Externals_Installer) {
+                $this->errors[] = 'Class ' . $class . ' is not instance of Externals_Installer';
             }
 
-            $modConfig = new Config_Simple($modConf['id'].'_config');
+            $modConfig = new Config_Simple($modConf['id'] . '_config');
             $modConfig->setData($modConf);
 
-            if(!$installer->uninstall($this->appConfig, $modConfig)){
+            if (!$installer->uninstall($this->appConfig, $modConfig)) {
                 $errors = $installer->getErrors();
-                if(!empty($errors) && is_array($errors)){
+                if (!empty($errors) && is_array($errors)) {
                     $this->errors[] = implode(', ', $errors);
                     return false;
                 }
@@ -432,16 +421,16 @@ class Externals_Manager
         }
 
         // Remove module src
-        if(is_dir($modConf['path'])){
-            if(!File::rmdirRecursive($modConf['path'], true)){
-                $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') .' ' . $modConf['path'];
+        if (is_dir($modConf['path'])) {
+            if (!File::rmdirRecursive($modConf['path'], true)) {
+                $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $modConf['path'];
                 return false;
             }
         }
 
-        if(empty($this->errors)){
+        if (empty($this->errors)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -456,10 +445,10 @@ class Externals_Manager
     {
         $modConf = $this->config->get($id);
         $modConf['enabled'] = $flag;
-        $this->config->set($id , $modConf);
+        $this->config->set($id, $modConf);
 
-        if(!$this->config->save()){
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS').' '.$this->config->getWritePath();
+        if (!$this->config->save()) {
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->config->getWritePath();
             return false;
         }
         return true;

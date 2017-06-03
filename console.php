@@ -50,7 +50,7 @@ $configStorage->setConfig(Config::storage()->get('config_storage.php')->__toArra
  * Connecting main configuration file
  */
 $config = Config::storage()->get('main.php');
-$config->set('frontend_router', 'Router_Path');
+$config->set('frontend_router', 'Path');
 $_SERVER['DOCUMENT_ROOT'] = $config->get('wwwpath');
 
 /*

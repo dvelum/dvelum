@@ -71,7 +71,7 @@ class Module extends Router
 
         if($vers)
         {
-            $user = User::getInstance();
+            $user = \User::getInstance();
             if($user->isAuthorized() && $user->isAdmin())
             {
                 $pageData = array_merge($pageData , Model::factory('Vc')->getData('page' , $pageData['id'] , $vers));
@@ -91,19 +91,19 @@ class Module extends Router
         $page = \Page::getInstance();
 
         foreach($pageData as $k => $v)
-            $page->$k = $v;
+            $page->{$k} = $v;
 
         /**
          * Check if controller attached
          */
         if(strlen($page->func_code))
         {
-            $fModules = Config::factory(Config::File_Array , $this->appConfig->get('frontend_modules'));
+            $fModules = Config::factory(Config\Factory::File_Array , $this->appConfig->get('frontend_modules'));
 
             if($fModules->offsetExists($page->func_code))
             {
                 $controllerConfig = $fModules->get($page->func_code);
-                $this->runController($controllerConfig['class'] , $this->_request->getPart(1), $request, $response);
+                $this->runController($controllerConfig['class'] , $request->getPart(1), $request, $response);
             }
         }
 
@@ -174,7 +174,7 @@ class Module extends Router
 
         $this->moduleRoutes = array();
 
-        $cacheManager = new Cache_Manager();
+        $cacheManager = new \Cache_Manager();
         $cache = $cacheManager->get('data');
 
         if(! $cache || ! $list = $cache->load(self::CACHE_KEY_ROUTES))

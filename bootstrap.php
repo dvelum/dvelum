@@ -92,11 +92,16 @@ $autoloader->setConfig($autoloaderCfg);
 /*
  * Installation mode
  */
-if($config->get('development') === 3 && strpos($_SERVER['REQUEST_URI'],'install')!==false){
-    $controller = new Install_Controller();
-    $controller->setAutoloader($autoloader);
-    $controller->run();
-    exit;
+if($config->get('development') === 3){
+    if(strpos($_SERVER['REQUEST_URI'],'install')!==false){
+        $controller = new Install_Controller();
+        $controller->setAutoloader($autoloader);
+        $controller->run();
+        exit;
+    }else{
+        echo 'DVelum software is not installed';
+        exit;
+    }
 }
 
 /*
@@ -105,11 +110,6 @@ if($config->get('development') === 3 && strpos($_SERVER['REQUEST_URI'],'install'
 if($config->get('use_composer_autoload') && file_exists(__DIR__ . '/vendor/autoload.php')){
     require __DIR__ . '/vendor/autoload.php';
 }
-
-/**
- * @deprecated
- */
-Registry::set('main', $config, 'config');
 
 /*
  * Starting the application

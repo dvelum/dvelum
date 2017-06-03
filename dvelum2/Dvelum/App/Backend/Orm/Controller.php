@@ -82,7 +82,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
          * @var Lang $langService
          */
         $langService = Service::get('lang');
-        $langService->addDictionaryLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
+        $langService->addLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
 
         $this->resource->addInlineJs('
           var canPublish =  '.((integer)$this->moduleAcl->canPublish($this->module)).';

@@ -22,6 +22,7 @@ namespace Dvelum;
 
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Config\Storage\StorageInterface;
+use Dvelum\Service;
 
 class Lang
 {
@@ -59,12 +60,29 @@ class Lang
     /**
      * Add localization dictionary
      * @param string $name — localization name
-     * @param ConfigInterface $dictionary — configuration object
+     * @param Lang\Dictionary $dictionary — configuration object
      * @return void
      */
-    public function addDictionary(string $name, Config\ConfigInterface $dictionary): void
+    public function addDictionary(string $name, Lang\Dictionary $dictionary): void
     {
         $this->dictionaries[$name] = $dictionary;
+    }
+
+    /**
+     * Add localization loader
+     * Backward compatibility
+     * @param string $name - dictionary name
+     * @param mixed $src - dictionary source
+     * @param int $type - Config constant
+     * @deprecated
+     */
+    static public function addDictionaryLoader(string $name, $src, int $type = Config\Factory::File_Array): void
+    {
+        /**
+         * @var Lang $langService
+         */
+        $langService = Service::get('lang');
+        $langService->addLoader($name, $src, $type);
     }
 
     /**
@@ -73,7 +91,7 @@ class Lang
      * @param mixed $src - dictionary source
      * @param int $type - Config constant
      */
-    public function addDictionaryLoader(string $name, $src, int $type = Config\Factory::File_Array): void
+    public function addLoader(string $name, $src, int $type = Config\Factory::File_Array): void
     {
         $this->loaders[$name] = array('src' => $src, 'type' => $type);
     }
@@ -109,7 +127,6 @@ class Lang
      * @param string $name optional,
      * @throws \Exception
      * @return Lang\Dictionary
-     * @deprecated
      */
     static public function lang(?string $name = null): Lang\Dictionary
     {
@@ -135,7 +152,6 @@ class Lang
     /**
      * Get configuration storage
      * @return StorageInterface
-     * @deprecated
      */
     static public function storage(): StorageInterface
     {

@@ -128,7 +128,6 @@ class Application
         ]));
 
         Utils::setSalt($this->config->get('salt'));
-        \Trigger::setApplicationConfig($this->config);
 
         /*
          * Init lang dictionary (Lazy Load)
@@ -147,7 +146,7 @@ class Application
          */
         Service::register('lang', function () use ($lang) {
             $langService = new Lang();
-            $langService->addDictionaryLoader($lang, $lang . '.php', Config\Factory::File_Array);
+            $langService->addLoader($lang, $lang . '.php', Config\Factory::File_Array);
             $langService->setDefaultDictionary($lang);
             $langStorage = $langService->getStorage();
             $langStorage->setConfig(Config\Factory::storage()->get('lang_storage.php')->__toArray());

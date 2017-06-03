@@ -49,7 +49,7 @@ class Dictionary extends \Dvelum\Orm\Object\Config\Field
         }
 
         if(!empty($value)){
-            $dictionary = \Dictionary::factory($this->config['linkconfig']['object']);
+            $dictionary = \Dictionary::factory($this->config['link_config']['object']);
             if(!$dictionary->isValidKey($value)){
                 $this->validationError = 'Invalid dictionary value';
                 return false;

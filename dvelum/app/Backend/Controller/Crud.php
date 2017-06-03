@@ -191,7 +191,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             return [];
 
         try{
-            $obj = Orm\Object::factory($this->_objectName , $id);
+            $obj = Db_Object::factory($this->_objectName , $id);
         }catch(Exception $e){
             Model::factory($this->_objectName)->logError($e->getMessage());
             return [];
@@ -333,7 +333,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * @param Orm\Object $object
      * @return void
      */
-    public function insertObject(Orm\Object $object)
+    public function insertObject(\Db_Object  $object)
     {
         if(!$recId = $object->save())
             Response::jsonError($this->_lang->CANT_CREATE);
@@ -345,9 +345,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * Update ORM object data
      * Sends JSON reply in the result and
      * closes the application
-     * @param Orm\Object $object
+     * @param \Db_Object  $object
      */
-    public function updateObject(Orm\Object $object)
+    public function updateObject(\Db_Object  $object)
     {
         if(!$object->save())
             Response::jsonError($this->_lang->CANT_EXEC);
@@ -499,7 +499,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * @param string $pKey - name of Primary Key field in $data
      * @throws Exception
      */
-    protected function addLinkedInfo(Orm\Object\Config $cfg, array $fieldsToShow, array  & $data, $pKey)
+    protected function addLinkedInfo(\Db_Object_Config $cfg, array $fieldsToShow, array  & $data, $pKey)
     {
         $fieldsToKeys = [];
         foreach($fieldsToShow as $key=>$val){
@@ -561,7 +561,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         }
 
         foreach($listedObjects as $object => $ids){
-            $listedObjects[$object] = Orm\Object::factory($object, array_unique($ids));
+            $listedObjects[$object] = Db_Object::factory($object, array_unique($ids));
         }
 
         foreach ($data as &$row)

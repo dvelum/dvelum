@@ -68,7 +68,7 @@ class ObjectList extends Field
         }
 
         if(!empty($value[0])) {
-            return Orm\Object::objectExists($this->config['linkconfig']['object'], $value);
+            return Orm\Object::objectExists($this->config['link_config']['object'], $value);
         }
         return true;
     }

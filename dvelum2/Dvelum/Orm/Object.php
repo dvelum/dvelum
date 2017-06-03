@@ -32,7 +32,7 @@ use Dvelum\App\Session\User;
  * @author Kirill Egorov 2011-2017  DVelum project
  * @package Dvelum\Orm
  */
-class Object
+class Object implements ObjectInterface
 {
     /**
      * Error log adapter
@@ -762,8 +762,11 @@ class Object
     }
 
     /**
-     * Bsckward compatibility
-     * @deprecated
+     * Factory method of object creation is preferable to use, cf. method  __construct() description
+     * @param string $name
+     * @param int|int[]|bool $id , optional default false
+     * @throws Exception
+     * @return Object|Object[]
      */
     static public function factory(string $name , $id = false)
     {
@@ -771,7 +774,7 @@ class Object
          * @var Orm $service
          */
         $service = Service::get('orm');
-        $service->object($name, $id);
+        return $service->object($name, $id);
     }
 
     /**

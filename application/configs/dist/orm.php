@@ -8,15 +8,15 @@ return [
     /*
     * ORM system object used as links storage
     */
-    'orm_links_object' => 'Links',
+    'links_object' => 'Links',
     /*
      * ORM system object used as history storage
      */
-    'orm_history_object' => 'Historylog',
+    'history_object' => 'Historylog',
     /*
     * ORM system object used as version storage
     */
-    'orm_version_object' => 'Vc',
+    'version_object' => 'Vc',
     /*
      * Db_Object for error log
      */

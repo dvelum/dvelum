@@ -47,9 +47,9 @@ class Adapter extends \Config_Abstract implements  ConfigInterface
 
     /**
      * Constructor
-     * @param string $name - configuration identifier
+     * @param string|null $name - configuration identifier
      */
-    public function __construct(string $name = '')
+    public function __construct(?string $name = null)
     {
         $this->name = $name;
     }

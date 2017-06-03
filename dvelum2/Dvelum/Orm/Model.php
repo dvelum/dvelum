@@ -158,6 +158,8 @@ class Model
         } else {
             $this->cache = false;
         }
+        // backward compatibility
+        $this->_cache =  & $this->cache;
 
         $this->dbManager = $settings->get('defaultDbManager');
 
@@ -702,7 +704,8 @@ class Model
         return $filters;
     }
 
-    protected function getListVcLocal($params = false, $filters = false, $query = false, $fields = '*', $author = false, $lastEditor = false, $joins = false) {
+    protected function getListVcLocal($params = false, $filters = false, $query = false, $fields = '*', $author = false, $lastEditor = false, $joins = false) :array
+    {
         $sql = $this->dbSlave->select()->from($this->table(), $fields);
 
         if ($filters) {
@@ -732,7 +735,8 @@ class Model
         return $this->dbSlave->fetchAll($sql);
     }
 
-    protected function getListVcRemote($params = false, $filters = false, $query = false, $fields = '*', $author = false, $lastEditor = false, $joins = false) {
+    protected function getListVcRemote($params = false, $filters = false, $query = false, $fields = '*', $author = false, $lastEditor = false, $joins = false) : array
+    {
         if ($fields !== '*') {
             if ($author) {
                 if (!in_array('author_id', $fields, true)) {

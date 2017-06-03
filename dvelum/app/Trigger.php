@@ -1,8 +1,7 @@
 <?php
-
 use Dvelum\Config;
-use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 use Dvelum\App\Session\User;
 
 /**
@@ -11,29 +10,31 @@ use Dvelum\App\Session\User;
  */
 class Trigger
 {
-	/**
+    /**
+     * @var Config\ConfigInterface $ormConfig
+     */
+    protected $ormConfig;
+
+    /**
+     * @var Config\ConfigInterface $appConfig
+     */
+    protected $appConfig;
+
+    public function __construct()
+    {
+        $this->appConfig = Config::storage()->get('main.php');
+        $this->ormConfig = Config::storage()->get('orm.php');
+    }
+
+    /**
 	 * @var Cache_Abstract | false
 	 */
 	protected $_cache = false;
-
-    /**
-     * @var Config_Abstract
-     */
-    static protected $applicationConfig;
 
 	public function setCache(Cache_Abstract $cache)
 	{
 		$this->_cache = $cache;
 	}
-
-    /**
-     * Set application config
-     * @param ConfigInterface $config
-     */
-    static public function setApplicationConfig(ConfigInterface $config)
-    {
-        static::$applicationConfig = $config;
-    }
 
 	protected function _getItemCacheKey(Orm\Object $object)
 	{
@@ -50,7 +51,7 @@ class Trigger
 	public function onAfterAdd(Orm\Object $object)
 	{
         $config = $object->getConfig();
-        $logObject = static::$applicationConfig->get('orm_history_object');
+        $logObject = $this->ormConfig->get('history_object');
 
         if($config->hasHistory())
         {
@@ -91,7 +92,7 @@ class Trigger
 	public function onAfterDelete(Orm\Object $object)
 	{
         $config = $object->getConfig();
-        $logObject = static::$applicationConfig->get('orm_history_object');
+        $logObject = $this->ormConfig->get('history_object');
 
         if($object->getConfig()->hasHistory())
         {
@@ -124,7 +125,7 @@ class Trigger
 	public function onAfterUpdateBeforeCommit(Orm\Object $object)
 	{
         $config = $object->getConfig();
-        $logObject = static::$applicationConfig->get('orm_history_object');
+        $logObject = $this->ormConfig->get('history_object');
 
         if($object->getConfig()->hasHistory() && $object->hasUpdates())
         {
@@ -162,7 +163,7 @@ class Trigger
     public function onAfterPublish(Orm\Object $object)
     {
         $config = $object->getConfig();
-        $logObject = static::$applicationConfig->get('orm_history_object');
+        $logObject = $this->ormConfig->get('history_object');
 
         if($object->getConfig()->hasHistory())
         {
@@ -182,7 +183,7 @@ class Trigger
         }
 
         $config = $object->getConfig();
-        $logObject = static::$applicationConfig->get('orm_history_object');
+        $logObject = $this->ormConfig->get('history_object');
 
         Model::factory($logObject)->log(
             User::getInstance()->getId(),
@@ -199,7 +200,7 @@ class Trigger
         }
 
         $config = $object->getConfig();
-        $logObject = static::$applicationConfig->get('orm_history_object');
+        $logObject = $this->ormConfig->get('history_object');
 
         Model::factory($logObject)->log(
             User::getInstance()->getId() ,

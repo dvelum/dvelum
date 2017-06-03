@@ -512,9 +512,8 @@ class Backend_Localization_Manager
         foreach ($langs as $lang)
         {
             $name = $lang;
-            $dictionary = Lang::storage()->get( $lang .'.php');
 
-            $langService->addDictionary($name, $dictionary);
+            $langService->addLoader($name, $lang .'.php', Dvelum\Config\Factory::File_Array);
 
             $filePath = $jsPath . $lang .'.js';
 
