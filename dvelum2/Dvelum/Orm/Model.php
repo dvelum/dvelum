@@ -644,14 +644,16 @@ class Model
 
     public function __call($name, $arguments)
     {
-        static $deprecatedFunctions = false;
-        if(empty($deprecatedFunctions)){
-            $deprecatedFunctions = new Model\Deprecated($this);
+        static $deprecatedFunctions = [];
+
+        $objectName = $this->getObjectName();
+        if(!isset($deprecatedFunctions[$objectName])){
+            $deprecatedFunctions[$objectName] = new Model\Deprecated($this);
         }
 
-        if(method_exists($deprecatedFunctions, $name)){
+        if(method_exists($deprecatedFunctions[$objectName], $name)){
            // trigger_error('Deprecated method call'. get_called_class().'::'.$name,E_USER_NOTICE);
-            return call_user_func_array([$deprecatedFunctions,$name], $arguments);
+            return call_user_func_array([$deprecatedFunctions[$objectName],$name], $arguments);
         }
     }
 }

@@ -376,7 +376,6 @@ abstract class Backend_Controller extends Controller
     }
     /**
      * Get module name of the current class
-     *
      * @return string
      */
     public function getModule()

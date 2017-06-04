@@ -200,6 +200,7 @@ class Model_Page extends Model
     		return $codes;
 
     	$codes = $this->getList(false,false,array('id' , 'code'));
+
     	if(!empty($codes))
     		$codes = Utils::collectData('id', 'code', $codes);
 		else

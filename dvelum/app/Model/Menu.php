@@ -47,6 +47,7 @@ class Model_Menu extends Model
                 'link_type'
             ));
 
+
         if (empty($list)) {
             return [];
         }

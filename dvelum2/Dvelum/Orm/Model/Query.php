@@ -293,11 +293,10 @@ class Query
     {
         $sql =  $this->db->select();
 
-
         if (!empty($this->tableAlias)) {
-            $sql->from($this->table, $this->fields);
-        } else {
             $sql->from([$this->tableAlias => $this->table], $this->fields);
+        } else {
+            $sql->from($this->table, $this->fields);
         }
 
         if(!empty($this->filters))
