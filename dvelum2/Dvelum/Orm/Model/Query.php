@@ -139,7 +139,7 @@ class Query
 
     /**
      * Apply query filters
-     * @param Query $sql
+     * @param Db\Select $sql
      * @param array $filters
      * @return void
      */
@@ -167,7 +167,7 @@ class Query
 
     /**
      * Apply Search
-     * @param Query $sql
+     * @param Db\Select $sql
      * @param string $query
      * @param string $queryType
      * @return void
@@ -206,7 +206,7 @@ class Query
 
     /**
      * Apply query params (sorting and pagination)
-     * @param Query $sql
+     * @param Db\Select $sql
      * @param array $params
      */
     public function applyParams(Db\Select $sql, array $params): void
@@ -330,6 +330,7 @@ class Query
 
     /**
      * Fetch all records
+     * @return array
      */
     public function fetchAll() : array
     {
@@ -340,6 +341,10 @@ class Query
         }
     }
 
+    /**
+     * Fetch one
+     * @return mixed
+     */
     public function fetchOne()
     {
         try{
@@ -350,7 +355,7 @@ class Query
     }
 
     /**
-     * Fetach first result row
+     * Fetch first result row
      */
     public function fetchRow() : array
     {
