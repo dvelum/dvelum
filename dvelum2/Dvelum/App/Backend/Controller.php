@@ -225,12 +225,17 @@ class Controller extends App\Controller
 
     /**
      * Get module name of the current class
-     * @return null|string
+     * @throws \Exception
+     * @return string
      */
-    public function getModule() : ?string
+    public function getModule() : string
     {
         $manager = new \Modules_Manager();
-        return $manager->getControllerModule(get_called_class());
+        $module =  $manager->getControllerModule(get_called_class());
+        if(empty($module)){
+            throw new \Exception('Undefined module');
+        }
+        return $module;
     }
 
     /**

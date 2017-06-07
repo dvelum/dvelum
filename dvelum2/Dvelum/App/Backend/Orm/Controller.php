@@ -301,4 +301,13 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         exit;
     }
 
+    /**
+     * Find url
+     * @param string $module
+     * @return string
+     */
+    public function findUrl(string $module): string
+    {
+        return '';
+    }
 }

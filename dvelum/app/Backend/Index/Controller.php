@@ -9,7 +9,7 @@ use Dvelum\Config;
 
 class Backend_Index_Controller extends Dvelum\App\Backend\Controller
 {
-    public function getModule() :?string
+    public function getModule() : string
     {
         return 'index';
     }
