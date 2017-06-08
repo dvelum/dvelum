@@ -28,7 +28,7 @@ use Dvelum\File;
 
 class Log extends Controller
 {
-    public function getModule()
+    public function getModule(): string
     {
         return 'Orm';
     }

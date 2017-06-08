@@ -28,7 +28,7 @@ class Uml extends Controller
 {
     protected $mapConfig = 'umlMap.php';
 
-    public function getModule()
+    public function getModule(): string
     {
         return 'Orm';
     }

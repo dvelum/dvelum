@@ -270,4 +270,14 @@ class Controller extends App\Controller implements Router\RouterInterface
         }
         $this->response->send();
     }
+
+    /**
+     * Find url
+     * @param string $module
+     * @return string
+     */
+    public function findUrl(string $module): string
+    {
+        return '';
+    }
 }

@@ -34,7 +34,7 @@ class Crypt extends Controller
     protected $encryptContainerPrefix = 'encrypt_';
     protected $decryptContainerPrefix = 'decrypt_';
 
-    public function getModule()
+    public function getModule(): string
     {
         return 'Orm';
     }

@@ -41,7 +41,7 @@ class Connections extends \Dvelum\App\Backend\Controller
      */
     protected $connections;
 
-    public function getModule()
+    public function getModule(): string
     {
         return 'Orm';
     }

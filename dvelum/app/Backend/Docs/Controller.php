@@ -20,4 +20,13 @@ class Backend_Docs_Controller extends Backend_Controller implements  RouterInter
      * @see Backend_Controller::indexAction()
      */
     public function indexAction(){}
+    /**
+     * Find url
+     * @param string $module
+     * @return string
+     */
+    public function findUrl(string $module): string
+    {
+        return '';
+    }
 }

@@ -31,7 +31,7 @@ use Dvelum\Template;
 
 class Index extends Controller
 {
-    public function getModule()
+    public function getModule(): string
     {
         return 'Orm';
     }
