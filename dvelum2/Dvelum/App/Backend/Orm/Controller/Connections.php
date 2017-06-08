@@ -16,6 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\{
@@ -61,8 +62,11 @@ class Connections extends \Dvelum\App\Backend\Controller
     {
         $devType = $this->request->post('devType', 'int', false);
 
-        if($devType === false || !$this->connections->typeExists($devType))
+        if($devType === false || !$this->connections->typeExists($devType)){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' undefined devType');
+            return;
+        }
+
 
         $connections = $this->connections->getConnections($devType);
         $data = [];
@@ -94,14 +98,18 @@ class Connections extends \Dvelum\App\Backend\Controller
     {
         $id = $this->request->post('id', 'string', false);
 
-        if($id === false)
+        if($id === false){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' undefined id');
+            return;
+        }
+
 
         try{
             $this->connections->removeConnection($id);
         }
         catch (\Exception $e){
             $this->response->error($e->getMessage());
+            return;
         }
 
         $this->response->success();
@@ -112,17 +120,26 @@ class Connections extends \Dvelum\App\Backend\Controller
         $id = $this->request->post('id', 'string', false);
         $devType = $this->request->post('devType', 'int', false);
 
-        if($id === false)
+        if($id === false){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' undefined id');
+            return;
+        }
 
-        if($devType === false || !$this->connections->typeExists($devType))
+
+        if($devType === false || !$this->connections->typeExists($devType)){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' undefined devType');
+            return;
+        }
+
 
 
         $data = $this->connections->getConnection($devType , $id);
 
-        if(!$data)
+        if(!$data){
             $this->response->error($this->lang->get('CANT_LOAD'));
+            return;
+        }
+
 
         $data = $data->__toArray();
         $data['id'] = $id;
@@ -147,8 +164,11 @@ class Connections extends \Dvelum\App\Backend\Controller
         $port = $this->request->post('port', 'int', false);
         $prefix = $this->request->post('prefix', 'string', '');
 
-        if($devType === false)
+        if($devType === false){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
 
         /*
          * INPUT FIX
@@ -159,12 +179,17 @@ class Connections extends \Dvelum\App\Backend\Controller
         if($oldId === false || empty($oldId))
         {
             $cfg = $this->connections->getConfig();
-            foreach ($cfg as $type=>$data)
-                if($this->connections->connectionExists($type , $id))
+            foreach ($cfg as $type=>$data){
+                if($this->connections->connectionExists($type , $id)){
                     $this->response->error($this->lang->get('FILL_FORM') , array('id'=>$this->lang->get('SB_UNIQUE')));
+                    return;
+                }
+            }
 
-            if(!$this->connections->createConnection($id))
+            if(!$this->connections->createConnection($id)){
                 $this->response->error($this->lang->get('CANT_CREATE'));
+                return;
+            }
 
             $con = $this->connections->getConnection($devType, $id);
         }
@@ -173,19 +198,27 @@ class Connections extends \Dvelum\App\Backend\Controller
             if($oldId!==$id)
             {
                 $cfg = $this->connections->getConfig();
-                foreach ($cfg as $type=>$data)
-                    if($this->connections->connectionExists($type , $id))
-                        $this->response->error($this->lang->FILL_FORM , array('id'=>$this->lang->SB_UNIQUE));
+                foreach ($cfg as $type=>$data){
+                    if($this->connections->connectionExists($type , $id)){
+                        $this->response->error($this->lang->get('FILL_FORM') , array('id'=>$this->lang->get('SB_UNIQUE')));
+                        return;
+                    }
+                }
             }
 
-            if(!$this->connections->connectionExists($devType, $id) && $oldId===$id)
+            if(!$this->connections->connectionExists($devType, $id) && $oldId===$id){
                 $this->response->error($this->lang->get('WRONG_REQUEST'));
+                return;
+            }
 
             $con = $this->connections->getConnection($devType, $oldId);
         }
 
-        if(!$con)
+        if(!$con){
             $this->response->error($this->lang->get('CANT_CREATE'));
+            return;
+        }
+
 
         if($setpass)
             $con->set('password', $pass);
@@ -211,11 +244,14 @@ class Connections extends \Dvelum\App\Backend\Controller
 
         if(!$storage->save($con)){
             $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ' . $con->getName());
+            return;
         }
 
         if($oldId !==false && $oldId!==$id){
-            if(!$this->connections->renameConnection($oldId, $id))
+            if(!$this->connections->renameConnection($oldId, $id)){
                 $this->response->error($this->lang->get('CANT_WRITE_FS'));
+                return;
+            }
         }
         $this->response->success();
     }
@@ -234,8 +270,11 @@ class Connections extends \Dvelum\App\Backend\Controller
         $adapter = $this->request->post('adapter', 'string', false);
         $adapterNamespace = $this->request->post('adapterNamespace', 'string', false);
 
-        if($devType === false)
+        if($devType === false){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
 
         $config = array(
             'username' => $user,
@@ -253,9 +292,11 @@ class Connections extends \Dvelum\App\Backend\Controller
         if($id!==false && $id!=='false' && !$updatePwd)
         {
             $oldCfg = $this->connections->getConnection($devType, $id);
-            if(!$oldCfg)
-                $this->response->error($this->lang->get('WRONG_REQUEST') .' invalid file');
 
+            if(!$oldCfg){
+                $this->response->error($this->lang->get('WRONG_REQUEST') .' invalid file');
+                return;
+            }
             $config['password']	 = $oldCfg->get('password');
         }
 
@@ -274,12 +315,17 @@ class Connections extends \Dvelum\App\Backend\Controller
         $connectionId = $this->request->post('connId', 'string', false);
         $connectionType = $this->request->post('type', 'integer', false);
 
-        if($connectionId === false || $connectionType===false)
+        if($connectionId === false || $connectionType===false){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
         $cfg = $this->connections->getConnection($connectionType, $connectionId);
-        if(!$cfg)
+        if(!$cfg){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
 
         $cfg = $cfg->__toArray();
 
@@ -287,7 +333,8 @@ class Connections extends \Dvelum\App\Backend\Controller
             $db = Zend_Db::factory($cfg['adapter'] , $cfg);
             $db->query('SET NAMES ' . $cfg['charset']);
         }catch (\Exception $e){
-            $this->response->error($this->lang->CANT_CONNECT.' '.$e->getMessage());
+            $this->response->error($this->lang->get('CANT_CONNECT').' '.$e->getMessage());
+            return;
         }
 
 
@@ -296,8 +343,8 @@ class Connections extends \Dvelum\App\Backend\Controller
             $list = $db->listTables();
         }catch (\Exception $e){
             $this->response->error($e->getMessage());
+            return;
         }
-
 
         foreach($list as $v)
             $data[] = array('id'=>$v,'title'=>$v);
@@ -311,13 +358,19 @@ class Connections extends \Dvelum\App\Backend\Controller
         $connectionType = $this->request->post('type', 'integer', false);
         $table = $this->request->post('table','string',false);
 
-        if($connectionId === false || $connectionType===false || $table===false)
+        if($connectionId === false || $connectionType===false || $table===false){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
 
         $cfg = $this->connections->getConnection($connectionType, $connectionId);
 
-        if(!$cfg)
+        if(!$cfg){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
 
 
         $cfg = $cfg->__toArray();
@@ -326,6 +379,7 @@ class Connections extends \Dvelum\App\Backend\Controller
             $db->query('SET NAMES ' . $cfg['charset']);
         }catch (\Exception $e){
             $this->response->error($this->lang->CANT_CONNECT.' '.$e->getMessage());
+            return;
         }
 
         $data = array();
@@ -342,13 +396,19 @@ class Connections extends \Dvelum\App\Backend\Controller
         $connectionId = $this->request->post('connId', 'string', false);
         $connectionType = $this->request->post('type', 'integer', false);
 
-        if($connectionId === false || $connectionType===false)
+        if($connectionId === false || $connectionType===false){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
 
         $cfg = $this->connections->getConnection($connectionType, $connectionId);
 
-        if(!$cfg)
+        if(!$cfg){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
 
         $cfg = $cfg->__toArray();
         try{
@@ -405,13 +465,21 @@ class Connections extends \Dvelum\App\Backend\Controller
         $connectionType = $this->request->post('type', 'integer', false);
         $table = $this->request->post('table', 'string' , false);
 
-        if($connectionId === false || $connectionType===false || $table === false)
+        $errors = null;
+
+        if($connectionId === false || $connectionType===false || $table === false){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
 
         $cfg = $this->connections->getConnection($connectionType, $connectionId);
 
-        if(!$cfg)
+        if(!$cfg){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
 
         $cfg = $cfg->__toArray();
         try{
@@ -421,6 +489,7 @@ class Connections extends \Dvelum\App\Backend\Controller
             $tables = $db->listTables();
         }catch (\Exception $e){
             $this->response->error($this->lang->get('CANT_CONNECT').' '.$e->getMessage());
+            return;
         }
 
         $import = new Import();
@@ -435,6 +504,7 @@ class Connections extends \Dvelum\App\Backend\Controller
                 $errors = '';
 
             $this->response->error( $this->lang->get('DB_CANT_CONNECT_TABLE'). ' '. $this->lang->get('DB_MSG_UNIQUE_PRIMARY'). ' ' . $errors);
+            return;
         }
 
         $manager = new Manager();
@@ -449,8 +519,11 @@ class Connections extends \Dvelum\App\Backend\Controller
                 $alphabet = \Utils_String::alphabetEn();
 
                 while ($manager->objectExists($newObjectName)){
-                    if(!isset($alphabet[$k]))
+                    if(!isset($alphabet[$k])){
                         $this->response->error('Can not create unique object name' . $errors);
+                        return;
+                    }
+
                     $newObjectName.= $alphabet[$k];
                     $k++;
                 }
@@ -470,17 +543,20 @@ class Connections extends \Dvelum\App\Backend\Controller
                 $errors = '';
 
             $this->response->error($this->lang->get('DB_CANT_CONNECT_TABLE').' ' . $errors);
+            return;
         }else{
             $path = $this->appConfig->get('object_configs').$newObjectName.'.php';
 
             if(!Config::storage()->create($path)){
                 $this->response->error($this->lang->get('CANT_WRITE_FS') .' '. $path);
+                return;
             }
 
             $cfg = Config::storage()->get($path,true,true);
             $cfg->setData($config);
             if(!$cfg->save()){
                 $this->response->error($this->lang->get('CANT_WRITE_FS') .' '. $path);
+                return;
             }
         }
         $this->response->success();

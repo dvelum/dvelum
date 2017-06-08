@@ -17,17 +17,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Controller;
 use Dvelum\App\Backend\Orm\Manager;
-use Dvelum\Config;
 use Dvelum\Orm;
-use Dvelum\Orm\Model;
-use Dvelum\Lang;
-use Dvelum\View;
-use Dvelum\Template;
+use Dvelum\Orm\Exception;
+
 
 class Field extends Controller
 {
@@ -38,7 +35,6 @@ class Field extends Controller
 
     public function indexAction(){}
 
-
     /**
      * Save field configuration options
      */
@@ -46,31 +42,44 @@ class Field extends Controller
     {
         $this->checkCanEdit();
 
-        $manager = new Backend_Orm_Manager();
+        $manager = new Manager();
 
         $object = $this->request->post('objectName', 'string', false);
         $objectField = $this->request->post('objectField', 'string', false);
         $name = $this->request->post('name', 'string', false);
 
-        if(!$object)
-            $this->response->error($this->lang->WRONG_REQUEST);
+        if(!$object){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
-        if(!$name)
-            $this->response->error($this->lang->FILL_FORM , array(array('id'=>'name','msg'=>$this->lang->CANT_BE_EMPTY)));
+        if(!$name){
+            $this->response->error(
+                $this->lang->get('FILL_FORM') , [
+                    [
+                        'id'=>'name',
+                        'msg'=>$this->lang->get('CANT_BE_EMPTY')
+                    ]
+                ]);
+            return;
+        }
 
         try{
             /**
-             * @var Db_Object_Config
+             * @var Orm\Object\Config
              */
             $objectCfg = Orm\Object\Config::factory($object);
         }catch (Exception $e){
-            $this->response->error($this->lang->WRONG_REQUEST .' code 2');
+            $this->response->error($this->lang->get('WRONG_REQUEST') .' code 2');
+            return;
         }
 
         $oFields = array_keys($objectCfg->getFieldsConfig());
 
-        if($objectField !== $name && in_array($name, $oFields , true))
-            $this->response->error($this->lang->FILL_FORM , array(array('id'=>'name','msg'=>$this->lang->SB_UNIQUE)));
+        if($objectField !== $name && in_array($name, $oFields , true)){
+            $this->response->error($this->lang->get('FILL_FORM') , [['id'=>'name','msg'=>$this->lang->get('SB_UNIQUE')]]);
+            return;
+        }
 
         $unique = $this->request->post('unique', 'str', '');
         $newConfig = array();
@@ -106,13 +115,17 @@ class Field extends Controller
             else
             {
                 $linkedObject = $this->request->post('object', 'string', false);
-                if(!$linkedObject)
-                    $this->response->error($this->lang->FILL_FORM , array(array('id'=>'object','msg'=>$this->lang->CANT_BE_EMPTY)));
+
+                if(!$linkedObject){
+                    $this->response->error($this->lang->get('FILL_FORM') , [['id'=>'object','msg'=>$this->lang->get('CANT_BE_EMPTY')]]);
+                    return;
+                }
 
                 try {
                     $cf = Orm\Object\Config::factory($linkedObject);
                 }catch(Exception $e){
-                    $this->response->error($this->lang->FILL_FORM , array(array('id'=>'object','msg'=>$this->lang->INVALID_VALUE)));
+                    $this->response->error($this->lang->get('FILL_FORM') , [['id'=>'object','msg'=>$this->lang->get('INVALID_VALUE')]]);
+                    return;
                 }
                 $newConfig['link_config']['object'] = $linkedObject;
 
@@ -159,8 +172,12 @@ class Field extends Controller
              * Process std field
              */
             $newConfig['db_type'] = $this->request->post('db_type', 'str', 'false');
-            if(!$newConfig['db_type'])
-                $this->response->error($this->lang->FILL_FORM , array(array('id'=>'db_type','msg'=>$this->lang->CANT_BE_EMPTY)));
+
+            if(!$newConfig['db_type']){
+                $this->response->error($this->lang->get('FILL_FORM') , [['id'=>'db_type','msg'=>$this->lang->get('CANT_BE_EMPTY')]]);
+                return;
+            }
+
 
             if($newConfig['db_type']=='bool' || $newConfig['db_type']=='boolean'){
                 /*
@@ -209,7 +226,7 @@ class Field extends Controller
                     $newConfig['db_isNull'] = true;
             }
             else{
-                $this->response->error($this->lang->FILL_FORM , array(array('id'=>'db_type','msg'=>$this->lang->INVALID_VALUE)));
+                $this->response->error($this->lang->get('FILL_FORM') , [['id'=>'db_type','msg'=>$this->lang->get('INVALID_VALUE')]]);
             }
 
             if(!$setDefault){
@@ -227,24 +244,28 @@ class Field extends Controller
 
             switch ($renameResult)
             {
-                case Backend_Orm_Manager::ERROR_EXEC:
-                    $this->response->error($this->lang->CANT_EXEC);
+                case Manager::ERROR_EXEC:
+                    $this->response->error($this->lang->get('CANT_EXEC'));
+                    return;
                     break;
-                case Backend_Orm_Manager::ERROR_FS_LOCALISATION:
-                    $this->response->error($this->lang->CANT_WRITE_FS . ' ('.$this->lang->LOCALIZATION_FILE.')');
+                case Manager::ERROR_FS_LOCALISATION:
+                    $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ('.$this->lang->get('LOCALIZATION_FILE').')');
+                    return;
                     break;
             }
 
         } else{
             $objectCfg->setFieldConfig($name, $newConfig);
-            $objectCfg->fixConfig();
         }
         if($objectCfg->save()){
+            /**
+             * @todo refactor
+             */
             $builder = Orm\Object\Builder($object);
             $builder->build();
             $this->response->success();
         }else{
-            $this->response->error($this->lang->CANT_WRITE_FS);
+            $this->response->error($this->lang->get('CANT_WRITE_FS'));
         }
     }
 
@@ -258,7 +279,7 @@ class Field extends Controller
         $object =  $this->request->post('object', 'string', false);
         $field =   $this->request->post('name', 'string', false);
 
-        $manager = new Backend_Orm_Manager();
+        $manager = new Manager();
         $result = $manager->removeField($object, $field);
 
         switch ($result)
@@ -266,18 +287,22 @@ class Field extends Controller
             case 0 :
                 $this->response->success();
                 break;
-            case Backend_Orm_Manager::ERROR_INVALID_FIELD:
-            case Backend_Orm_Manager::ERROR_INVALID_OBJECT:
+            case Manager::ERROR_INVALID_FIELD:
+            case Manager::ERROR_INVALID_OBJECT:
                 $this->response->error($this->lang->get('WRONG_REQUEST'));
+
                 break;
-            case Backend_Orm_Manager::ERROR_FS_LOCALISATION:
+            case Manager::ERROR_FS_LOCALISATION:
                 $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ('.$this->lang->get('LOCALIZATION_FILE').')');
+
                 break;
-            case Backend_Orm_Manager::ERROR_FS:
+            case Manager::ERROR_FS:
                 $this->response->error($this->lang->get('CANT_WRITE_FS'));
+
                 break;
             default:
                 $this->response->error($this->lang->get('CANT_EXEC'));
+
         }
     }
 
@@ -289,15 +314,18 @@ class Field extends Controller
         $object = $this->request->post('object', 'string',false);
         $field = $this->request->post('field', 'string',false);
 
-        if(!$object || !$field)
+        if(!$object || !$field){
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
+        }
 
         $manager = new Manager();
         $result = $manager->getFieldConfig($object , $field);
 
-        if(!$result)
+        if(!$result){
             $this->response->error($this->lang->get('INVALID_VALUE'));
-
-        $this->response->success($result);
+        }else{
+            $this->response->success($result);
+        }
     }
 }

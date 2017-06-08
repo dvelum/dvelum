@@ -17,17 +17,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Controller;
-use Dvelum\App\Backend\Orm\Manager;
-use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
-use Dvelum\Lang;
-use Dvelum\View;
-use Dvelum\Template;
+
 
 class Crypt extends Controller
 {
@@ -53,6 +49,7 @@ class Crypt extends Controller
 
         if(!$object || !Orm\Object\Config::configExists($object)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         $container = $this->decryptContainerPrefix . $object;
@@ -96,6 +93,7 @@ class Crypt extends Controller
 
         if(!$object || !Orm\Object\Config::configExists($object)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         $container = $this->encryptContainerPrefix . $object;

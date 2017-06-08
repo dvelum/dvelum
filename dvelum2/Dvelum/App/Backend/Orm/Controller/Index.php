@@ -17,17 +17,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Controller;
 use Dvelum\App\Backend\Orm\Manager;
-use Dvelum\Config;
 use Dvelum\Orm;
-use Dvelum\Orm\Model;
-use Dvelum\Lang;
-use Dvelum\View;
-use Dvelum\Template;
 
 class Index extends Controller
 {
@@ -53,16 +48,21 @@ class Index extends Controller
         $unique = $this->request->post('unique', 'boolean', false);
         $fulltext =$this->request->post('fulltext', 'boolean', false);
 
-        if(!$object)
+        if(!$object){
             $this->response->error($this->lang->get('WRONG_REQUEST').' code 1');
+            return;
+        }
 
-        if(!$name)
+        if(!$name){
             $this->response->error($this->lang->get('FILL_FORM') , [['id'=>'name','msg'=>$this->lang->get('CANT_BE_EMPTY')]]);
+            return;
+        }
 
         try{
             $objectCfg = Orm\Object\Config::factory($object);
         }catch (\Exception $e){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' code 2');
+            return;
         }
 
         $indexData = array(
@@ -74,8 +74,10 @@ class Index extends Controller
 
         $indexes = $objectCfg->getIndexesConfig();
 
-        if($index !== $name && array_key_exists((string)$name, $indexes))
+        if($index !== $name && array_key_exists((string)$name, $indexes)){
             $this->response->error($this->lang->get('FILL_FORM') , [['id'=>'name','msg'=>$this->lang->get('SB_UNIQUE')]]);
+            return;
+        }
 
         if($index!=$name)
             $objectCfg->removeIndex($index);
@@ -98,13 +100,16 @@ class Index extends Controller
         $object =  $this->request->post('object', 'string', false);
         $index =   $this->request->post('name', 'string', false);
 
-        if(!$object || !$index)
+        if(!$object || !$index){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
         try{
             $objectCfg = Orm\Object\Config::factory($object);
         }catch (\Exception $e){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' code 2');
+            return;
         }
 
         $objectCfg->removeIndex($index);
@@ -123,8 +128,10 @@ class Index extends Controller
         $object = $this->request->post('object', 'string',false);
         $index = $this->request->post('index', 'string',false);
 
-        if(!$object || !$index)
+        if(!$object || !$index){
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
+        }
 
         $manager = new Manager();
         $indexConfig = $manager->getIndexConfig($object, $index);

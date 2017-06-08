@@ -90,7 +90,7 @@ class Controller extends App\Controller
         $this->initSession();
     }
 
-    protected function initSession()
+    protected function initSession() : bool
     {
         $auth = new App\Backend\Auth($this->request, $this->appConfig);
 
@@ -98,6 +98,7 @@ class Controller extends App\Controller
             $auth->logout();
             if(!$this->request->isAjax()){
                 $this->response->redirect($this->request->url([$this->appConfig->get('adminPath')]));
+                return false;
             }
         }
 
@@ -107,9 +108,10 @@ class Controller extends App\Controller
         {
             if($this->request->isAjax()){
                 $this->response->error($this->lang->get('MSG_AUTHORIZE'));
+                return false;
             }else{
                 $this->loginAction();
-                return;
+                return true;
             }
         }
         $this->moduleAcl = $this->user->getModuleAcl();
@@ -117,60 +119,83 @@ class Controller extends App\Controller
         /*
          * Check is valid module requested
          */
-        $this->validateModule();
+        if(!$this->validateModule()){
+            return false;
+        }
 
        /*
         * Check CSRF token
         */
         if($this->backofficeConfig->get('use_csrf_token') && $this->request->hasPost()) {
-           $this->validateCsrfToken();
+           if(!$this->validateCsrfToken()){
+               return false;
+           }
         }
 
-        $this->checkCanView();
+        if(!$this->checkCanView()){
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Check view permissions
+     * @return bool
      */
-    protected function checkCanView()
+    protected function checkCanView() : bool
     {
         if(!$this->moduleAcl->canView($this->module)){
             $this->response->error($this->lang->get('CANT_VIEW'));
+            return false;
         }
+        return true;
     }
 
     /**
      * Check edit permissions
+     * @return bool
      */
-    protected function checkCanEdit()
+    protected function checkCanEdit() : bool
     {
         if(!$this->moduleAcl->canEdit($this->module)){
             $this->response->error($this->lang->get('CANT_MODIFY'));
+            return false;
         }
+        return true;
     }
 
     /**
      * Check delete permissions
+     * @return bool
      */
-    protected function checkCanDelete()
+    protected function checkCanDelete() : bool
     {
         if(!$this->moduleAcl->canDelete($this->module)){
             $this->response->error($this->lang->get('CANT_DELETE'));
+            return false;
         }
+        return true;
     }
 
     /**
      * Check publish permissions
+     * @return bool
      */
-    protected function checkCanPublish()
+    protected function checkCanPublish() : bool
     {
         if(!$this->moduleAcl->canPublish($this->module)){
             $this->response->error($this->lang->get('CANT_PABLISH'));
+            return false;
         }
+        return true;
     }
 
-
-    protected function validateCsrfToken()
+    /**
+     * Validate CSRF security token
+     * @return bool
+     */
+    protected function validateCsrfToken() : bool
     {
         $csrf = new \Security_Csrf();
         $csrf->setOptions([
@@ -180,36 +205,48 @@ class Controller extends App\Controller
 
         if(!$csrf->checkHeader() && !$csrf->checkPost()){
             $this->response->error($this->lang->get('MSG_NEED_CSRF_TOKEN'));
+            return false;
         }
+        return true;
     }
 
-    protected function validateModule()
+    protected function validateModule() : bool
     {
         $moduleManager = new \Modules_Manager();
 
         if(in_array($this->module, $this->backofficeConfig->get('system_controllers'),true) || $this->module == 'index'){
-            return;
+            return true;
         }
 
         /*
          * Redirect for undefined module
          */
-        if(!$moduleManager->isValidModule($this->module))
+        if(!$moduleManager->isValidModule($this->module)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return false;
+        }
+
 
         $moduleCfg = $moduleManager->getModuleConfig($this->module);
 
         /*
          * disabled module
          */
-        if($moduleCfg['active'] == false)
+        if($moduleCfg['active'] == false){
             $this->response->error($this->lang->get('CANT_VIEW'));
+            return false;
+        }
+
 
         /*
          * dev module at production
          */
-        if($moduleCfg['dev'] && ! $this->appConfig['development'])
+        if($moduleCfg['dev'] && ! $this->appConfig['development']){
             $this->response->error($this->lang->get('CANT_VIEW'));
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -325,7 +362,4 @@ class Controller extends App\Controller
         $this->response->put($template->render('system/'.$this->backofficeConfig->get('theme') . '/login.php'));
         $this->response->send();
     }
-
-
-
 }

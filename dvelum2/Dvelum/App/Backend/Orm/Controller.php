@@ -141,8 +141,10 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         $names = $this->request->post('names', 'array', false);
 
-        if(empty($names))
+        if(empty($names)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
         $flag = false;
 

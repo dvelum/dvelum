@@ -74,6 +74,10 @@ abstract class Router implements Router\RouterInterface
         $controller = new $controller($request, $response);
         $controller->setRouter($this);
 
+        if($response->isSent()){
+            return;
+        }
+
         if($controller instanceof Router\RouterInterface || $controller instanceof \Router_Interface){
             $controller->route($request, $response);
             return;

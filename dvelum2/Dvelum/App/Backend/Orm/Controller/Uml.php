@@ -132,8 +132,10 @@ class Uml extends Controller
 
         $map = $this->request->post('map', 'raw', '');
 
-        if(!strlen($map))
+        if(!strlen($map)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
         $data = json_decode($map , true);
 

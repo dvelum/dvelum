@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Orm\Manager;
@@ -62,6 +62,7 @@ class Object extends Controller
 
         if (!$name) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         $objectConfig = Orm\Object\Config::factory($name);
@@ -71,6 +72,7 @@ class Object extends Controller
         if ($acl) {
             if (!$acl->can(Orm\Object\Acl::ACCESS_CREATE, $name) || !$acl->can(Orm\Object\Acl::ACCESS_VIEW, $name)) {
                 $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
+                return;
             }
         }
 
@@ -102,6 +104,7 @@ class Object extends Controller
 
         if (empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects)) {
             $this->response->success([], ['nothingToDo' => true]);
+            return;
         }
 
         $template = new \Dvelum\View();
@@ -134,16 +137,19 @@ class Object extends Controller
 
         if (!$name) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         if (!Orm\Object\Config::configExists($name)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         $builder = Orm\Object\Builder::factory($name);
 
         if (!$builder->build() || !$builder->buildForeignKeys()) {
             $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(',', $builder->getErrors()));
+            return;
         }
 
         $this->response->success();
@@ -158,6 +164,7 @@ class Object extends Controller
 
         if (!$object) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
         }
 
         try {
@@ -213,12 +220,14 @@ class Object extends Controller
 
         if (!$object) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
         }
 
         try {
             $objectConfig = Orm\Object\Config::factory($object);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
         }
 
         $indexCfg = $objectConfig->getIndexesConfig();
@@ -244,6 +253,7 @@ class Object extends Controller
 
         if (!$objectName) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         try {
@@ -253,6 +263,7 @@ class Object extends Controller
             }
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         $manager = new Manager();
@@ -289,6 +300,7 @@ class Object extends Controller
 
         if ($object === false) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
         }
 
         try {
@@ -429,6 +441,7 @@ class Object extends Controller
         if (in_array($tableName, $tables, true)) {
             $this->response->error($this->lang->get('FILL_FORM'),
                 array(array('id' => 'table', 'msg' => $this->lang->get('SB_UNIQUE'))));
+            return;
         }
 
         if (file_exists($configDir . strtolower($name) . '.php')) {
@@ -438,6 +451,7 @@ class Object extends Controller
 
         if (!is_dir($configDir) && !@mkdir($configDir, 0655, true)) {
             $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ' . $configDir);
+            return;
         }
 
         /*
@@ -462,6 +476,7 @@ class Object extends Controller
 
             if (!$cfg->save()) {
                 $this->response->error($this->lang->get('CANT_WRITE_FS'));
+                return;
             }
 
             /*
@@ -470,8 +485,9 @@ class Object extends Controller
             $builder = Orm\Object\Builder::factory($name);
             $builder->build();
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->response->error($this->lang->get('CANT_EXEC') . 'code 2');
+            return;
         }
         $this->response->success();
     }
@@ -483,10 +499,12 @@ class Object extends Controller
 
         if (!is_writable($dataDir)) {
             $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ' . $dataDir);
+            return;
         }
 
         if (file_exists($objectConfigPath) && !is_writable($objectConfigPath)) {
             $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ' . $objectConfigPath);
+            return;
         }
 
         /*
@@ -500,6 +518,7 @@ class Object extends Controller
             $config = Orm\Object\Config::factory($name);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
         }
 
         $builder = Orm\Object\Builder::factory($name);
@@ -511,10 +530,12 @@ class Object extends Controller
             if ($builder->tableExists($data['table'], true)) {
                 $this->response->error($this->lang->get('FILL_FORM'),
                     array(array('id' => 'table', 'msg' => $this->lang->get('SB_UNIQUE'))));
+                return;
             }
 
             if (!$builder->renameTable($data['table'])) {
                 $this->response->error($this->lang->get('CANT_RENAME_TABLE'));
+                return;
             }
         }
 
@@ -544,6 +565,7 @@ class Object extends Controller
 
         if (!$config->save()) {
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
+            return;
         }
 
         $this->response->success();
@@ -558,18 +580,19 @@ class Object extends Controller
         if (file_exists($newFileName)) {
             $this->response->error($this->lang->get('FILL_FORM'),
                 array(array('id' => 'name', 'msg' => $this->lang->get('SB_UNIQUE'))));
+            return;
         }
 
-        $manager = new Backend_Orm_Manager();
+        $manager = new Manager();
         $renameResult = $manager->renameObject($this->appConfig['object_configs'], $oldName, $newName);
 
         switch ($renameResult) {
             case 0:
                 break;
-            case Backend_Orm_Manager::ERROR_FS:
+            case Manager::ERROR_FS:
                 $this->response->error($this->lang->get('CANT_WRITE_FS'));
                 break;
-            case Backend_Orm_Manager::ERROR_FS_LOCALISATION:
+            case Manager::ERROR_FS_LOCALISATION:
                 $this->response->error($this->lang->get('CANT_WRITE_FS') . ' (' . $this->lang->LOCALIZATION_FILE . ')');
                 break;
             default:
@@ -577,7 +600,8 @@ class Object extends Controller
         }
         /*
          * Clear cache
+         * @todo refactor
          */
-        Config::resetCache();
+        //Config::resetCache();
     }
 }
