@@ -10,7 +10,7 @@ use Dvelum\Config;
 
 class Backend_Mediacategory_Controller extends Dvelum\App\Backend\Api\Controller
 {
-    public function getModule()
+    public function getModule() : string
     {
         return 'Medialib';
     }
