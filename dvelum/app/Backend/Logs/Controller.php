@@ -23,7 +23,7 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
             ),Db_Select_Filter::BETWEEN);
         }
 
-        $data = $history->getList($filter, $pager, null, ['date','type','id','object','user_id','record_id']);
+        $data = $history->getList($pager, $filter, ['date','type','id','object','user_id','record_id']);
 
 		if(!empty($data))
 		{
