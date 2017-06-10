@@ -11,7 +11,7 @@ class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
     public function initListeners()
     {
         $apiRequest = $this->apiRequest;
-        $apiRequest->setObject($this->getObjectName());
+        $apiRequest->setObjectName($this->getObjectName());
 
         $this->eventManager->on(EventManager::BEFORE_LIST, function(\Dvelum\App\Controller\Event $event) use ($apiRequest){
             $category = $apiRequest->getFilter('category');

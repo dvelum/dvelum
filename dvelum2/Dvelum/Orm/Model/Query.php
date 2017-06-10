@@ -338,6 +338,7 @@ class Query
             return $this->model->getDbConnection()->fetchAll($this->__toString());
         }catch (\Exception $e){
             $this->model->logError($e->getMessage());
+            return [];
         }
     }
 
@@ -363,6 +364,7 @@ class Query
             return $this->model->getDbConnection()->fetchRow($this->__toString());
         }catch (\Exception $e){
             $this->model->logError($e->getMessage());
+            return [];
         }
     }
 
@@ -376,6 +378,7 @@ class Query
             return $this->model->getDbConnection()->fetchCol($this->__toString());
         }catch (\Exception $e){
             $this->model->logError($e->getMessage());
+            return [];
         }
     }
 
