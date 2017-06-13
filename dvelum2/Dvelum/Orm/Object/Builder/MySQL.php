@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Object\Builder;
 
 use Dvelum\Orm;
+use Dvelum\Orm\Object\Config;
 use Dvelum\Orm\Object\Builder;
 
 /**
@@ -168,7 +169,7 @@ class MySQL extends AbstractAdapter
     public function prepareColumnUpdates() : array
     {
         $config = $this->objectConfig->__toArray();
-        $updates = array();
+        $updates = [];
 
         if(! $this->tableExists())
             $fields = [];
@@ -529,7 +530,7 @@ class MySQL extends AbstractAdapter
      * @param boolean $create - optional use create table mode
      * @return string
      */
-    protected function _prepareIndex($index , array $config , $create = false)
+    protected function prepareIndex($index , array $config , $create = false)
     {
         if(isset($config['primary']) && $config['primary'])
         {
@@ -575,7 +576,7 @@ class MySQL extends AbstractAdapter
      * @param Orm\Object\Config\Field $field
      * @return string
      */
-    protected function _proppertySql($name , Orm\Object\Config\Field $field) : string
+    protected function getPropertySql($name , Orm\Object\Config\Field $field) : string
     {
         $property = new Orm\Object\Field\Property($name);
         $property->setData($field->__toArray());
@@ -589,9 +590,7 @@ class MySQL extends AbstractAdapter
      */
     protected function _sqlCreate()
     {
-        $config = Config::factory($this->objectName);
-
-        $fields = $config->get('fields');
+        $fields = $this->objectConfig->get('fields');
 
         $sql = ' CREATE TABLE  `' . $this->model->table() . '` (';
 
@@ -601,9 +600,9 @@ class MySQL extends AbstractAdapter
        * Add columns
        */
         foreach($fields as $k => $v)
-            $sql .= $this->_proppertySql($k , $v) . ' ,  ' . "\n";
+            $sql .= $this->getPropertySql($k , $this->objectConfig->getField($k)) . ' ,  ' . "\n";
 
-        $indexes = $this->_createIndexes();
+        $indexes = $this->createIndexes();
 
         /*
          * Add indexes
@@ -611,7 +610,7 @@ class MySQL extends AbstractAdapter
         if(! empty($indexes))
             $sql .= ' ' . implode(', ' , $indexes);
 
-        $sql .= "\n" . ') ENGINE=' . $config->get('engine') . '  DEFAULT CHARSET=utf8 ;';
+        $sql .= "\n" . ') ENGINE=' . $this->objectConfig->get('engine') . '  DEFAULT CHARSET=utf8 ;';
 
         return $sql;
     }
@@ -666,7 +665,7 @@ class MySQL extends AbstractAdapter
         /*
          * Update comands
          */
-        $cmd = array();
+        $cmd = [];
 
         if(! empty($colUpdates))
         {
@@ -679,10 +678,10 @@ class MySQL extends AbstractAdapter
                         $cmd[] = "\n" . 'DROP `' . $info['name'] . '`';
                         break;
                     case 'add' :
-                        $cmd[] = "\n" . 'ADD ' . $this->_proppertySql($info['name'] , $fieldsConfig[$info['name']]);
+                        $cmd[] = "\n" . 'ADD ' . $this->getPropertySql($info['name'] , $this->objectConfig->getField($info['name']));
                         break;
                     case 'change' :
-                        $cmd[] = "\n" . 'CHANGE `' . $info['name'] . '`  ' . $this->_proppertySql($info['name'] , $fieldsConfig[$info['name']]);
+                        $cmd[] = "\n" . 'CHANGE `' . $info['name'] . '`  ' . $this->getPropertySql($info['name'] , $this->objectConfig->getField($info['name']));
                         break;
                 }
             }
@@ -703,7 +702,7 @@ class MySQL extends AbstractAdapter
                             $cmd[] = "\n" . 'DROP INDEX `' . $info['name'] . '`';
                         break;
                     case 'add' :
-                        $cmd[] = $this->_prepareIndex($info['name'] , $indexConfig[$info['name']]);
+                        $cmd[] = $this->prepareIndex($info['name'] , $indexConfig[$info['name']]);
                         break;
                 }
             }

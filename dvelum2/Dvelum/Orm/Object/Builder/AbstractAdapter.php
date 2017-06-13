@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Object\Builder;
 
 use Dvelum\Orm;
+use Dvelum\Orm\Object\Config;
 use Dvelum\Orm\Model;
 use Dvelum\Log;
 use Dvelum\Config\ConfigInterface;
@@ -63,6 +64,11 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     protected $useForeignKeys = false;
 
+    /**
+     * @var Model
+     */
+    protected $model;
+
     abstract public function prepareColumnUpdates();
     abstract public function prepareIndexUpdates();
     abstract public function prepareKeysUpdate();
@@ -103,7 +109,6 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     public function getBrokenLinks() : array
     {
-        $brokenFields = [];
         $links = $this->objectConfig->getLinks();
 
         if(empty($links)){
@@ -113,7 +118,7 @@ abstract class AbstractAdapter implements BuilderInterface
         $brokenFields = [];
         foreach($links as $o => $fieldList)
         {
-            if(!Orm\Object\Config::configExists($o))
+            if(!Config::configExists($o))
             {
                 foreach($fieldList as $field => $cfg)
                 {
@@ -160,7 +165,6 @@ abstract class AbstractAdapter implements BuilderInterface
 
     /**
      * Get Existing Columns
-     *
      * @return \Zend\Db\Metadata\Object\TableObject
      */
     protected function getExistingColumns()
@@ -212,7 +216,7 @@ abstract class AbstractAdapter implements BuilderInterface
             foreach($fields as $fieldName=>$linkType)
             {
                 $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
-                if(!Orm\Object\Config::configExists($relationObjectName)) {
+                if(!Config::configExists($relationObjectName)) {
                     return false;
                 }
             }
