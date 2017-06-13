@@ -22,9 +22,13 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Object\Builder;
 
+use Dvelum\Config as Cfg;
 use Dvelum\Orm;
+use Dvelum\Orm\Exception;
 use Dvelum\Orm\Object\Config;
 use Dvelum\Orm\Object\Builder;
+use Dvelum\Lang;
+
 
 /**
  * Advanced MySQL Builder
@@ -392,7 +396,6 @@ class MySQL extends AbstractAdapter
          * Get indexes from object config
          */
         $configIndexes = $this->objectConfig->getIndexesConfig();
-        $cmd = array();
 
         /*
          * Get indexes for Foreign Keys
@@ -573,10 +576,11 @@ class MySQL extends AbstractAdapter
 
     /**
      * Get property SQL query
+     * @param string $name
      * @param Orm\Object\Config\Field $field
      * @return string
      */
-    protected function getPropertySql($name , Orm\Object\Config\Field $field) : string
+    protected function getPropertySql(string $name , Orm\Object\Config\Field $field) : string
     {
         $property = new Orm\Object\Field\Property($name);
         $property->setData($field->__toArray());
@@ -588,14 +592,14 @@ class MySQL extends AbstractAdapter
      * @throws \Exception
      * @return string
      */
-    protected function _sqlCreate()
+    protected function sqlCreate()
     {
         $fields = $this->objectConfig->get('fields');
 
         $sql = ' CREATE TABLE  `' . $this->model->table() . '` (';
 
         if(empty($fields))
-            throw new \Exception('_sqlCreate :: empty properties');
+            throw new \Exception('sqlCreate :: empty properties');
         /*
        * Add columns
        */
@@ -607,12 +611,27 @@ class MySQL extends AbstractAdapter
         /*
          * Add indexes
          */
-        if(! empty($indexes))
+        if(!empty($indexes))
             $sql .= ' ' . implode(', ' , $indexes);
 
         $sql .= "\n" . ') ENGINE=' . $this->objectConfig->get('engine') . '  DEFAULT CHARSET=utf8 ;';
 
         return $sql;
+    }
+
+    /**
+     * Build indexes for "create" query
+     * @return array - sql parts
+     */
+    protected function createIndexes()
+    {
+        $cmd = [];
+        $configIndexes = $this->objectConfig->getIndexesConfig();
+
+        foreach($configIndexes as $index => $config)
+            $cmd[] = $this->prepareIndex($index , $config , true);
+
+        return $cmd;
     }
 
 
@@ -637,7 +656,7 @@ class MySQL extends AbstractAdapter
             $sql = '';
             try
             {
-                $sql = $this->_sqlCreate();
+                $sql = $this->sqlCreate();
                 $this->db->query($sql);
                 $this->logSql($sql);
                 if($buildKeys)
@@ -667,9 +686,8 @@ class MySQL extends AbstractAdapter
          */
         $cmd = [];
 
-        if(! empty($colUpdates))
+        if(!empty($colUpdates))
         {
-            $fieldsConfig = $this->objectConfig->getFieldsConfig();
             foreach($colUpdates as $info)
             {
                 switch($info['action'])
@@ -771,7 +789,6 @@ class MySQL extends AbstractAdapter
             return false;
         }
 
-        $keysUpdates = array();
         $cmd = array();
 
         if($this->useForeignKeys)
@@ -819,5 +836,150 @@ class MySQL extends AbstractAdapter
         }
 
         return true;
+    }
+
+    /**
+     * Create Orm\Object`s for relations
+     * @throw Exception
+     * @param array $list
+     * @return bool
+     */
+    protected function updateRelations(array $list) : bool
+    {
+        $lang = Lang::lang();
+        $usePrefix = true;
+        $connection = $this->objectConfig->get('connection');
+
+        $db = $this->model->getDbConnection();
+        $tablePrefix = $this->model->getDbPrefix();
+
+        $oConfigPath = Cfg::storage()->get('orm.php')->get('configPath');
+        $configDir  = Cfg::storage()->getWrite() . $oConfigPath;
+
+        $fieldList = Cfg::storage()->get('objects/relations/fields.php');
+        $indexesList = Cfg::storage()->get('objects/relations/indexes.php');
+
+        if(empty($fieldList))
+            throw new Exception('Cannot get relation fields: ' . 'objects/relations/fields.php');
+
+        if(empty($indexesList))
+            throw new Exception('Cannot get relation indexes: ' . 'objects/relations/indexes.php');
+
+        $fieldList= $fieldList->__toArray();
+        $indexesList = $indexesList->__toArray();
+
+        $fieldList['source_id']['link_config']['object'] = $this->objectName;
+
+
+        foreach($list as $fieldName=>$info)
+        {
+            $newObjectName = $info['name'];
+            $tableName = $newObjectName;
+
+            $linkedObject = $this->objectConfig->getField($fieldName)->getLinkedObject();
+
+            $fieldList['target_id']['link_config']['object'] = $linkedObject;
+
+            $objectData = [
+                'parent_object' => $this->objectName,
+                'connection'=>$connection,
+                'use_db_prefix'=>$usePrefix,
+                'disable_keys' => false,
+                'locked' => false,
+                'readonly' => false,
+                'primary_key' => 'id',
+                'table' => $newObjectName,
+                'engine' => 'InnoDB',
+                'rev_control' => false,
+                'link_title' => 'id',
+                'save_history' => false,
+                'system' => true,
+                'fields' => $fieldList,
+                'indexes' => $indexesList,
+            ];
+
+            $tables = $db->listTables();
+
+            if($usePrefix){
+                $tableName = $tablePrefix . $tableName;
+            }
+
+            if(in_array($tableName, $tables ,true)){
+                $this->errors[] = $lang->get('INVALID_VALUE').' Table Name: '.$tableName .' '.$lang->get('SB_UNIQUE');
+                return false;
+            }
+
+            if(file_exists($configDir . strtolower($newObjectName).'.php')){
+                $this->errors[] = $lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE');
+                return false;
+            }
+
+
+            if(!is_dir($configDir) && !@mkdir($configDir, 0755, true)){
+                $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
+                return false;
+            }
+
+            /*
+             * Write object config
+             */
+            $newConfig = Cfg\Factory::config(Cfg\Factory::File_Array, $configDir. $newObjectName . '.php', false);
+            if(!$newConfig || Cfg::storage()->save($newConfig)){
+                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php';
+                return false;
+            }
+
+            $cfg = Cfg::storage()->get($oConfigPath. strtolower($newObjectName).'.php' , false , false);
+
+            $cfg->setData($objectData);
+            Cfg::storage()->save($cfg);
+
+
+            $cfg = Config::factory($newObjectName);
+            $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->objectName.' & '.$linkedObject);
+
+            if(!Cfg::storage()->save($cfg)){
+                $this->errors[] = $lang->get('CANT_WRITE_FS');
+                return false;
+            }
+
+            /*
+             * Build database
+            */
+            return $this->build(true);
+        }
+    }
+
+    /**
+     * Rename database table
+     *
+     * @param string $newName - new table name (without prefix)
+     * @return boolean
+     * @throws Exception
+     */
+    public function renameTable($newName)
+    {
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
+        {
+            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
+            return false;
+        }
+
+        $sql = 'RENAME TABLE `' . $this->model->table() . '` TO `' . $this->model->getDbPrefix() . $newName . '` ;';
+
+        try
+        {
+            $this->db->query($sql);
+            $this->logSql($sql);
+            $this->objectConfig->getConfig()->set('table' , $newName);
+            $this->model->refreshTableInfo();
+            return true;
+        }
+        catch(Exception $e)
+        {
+            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+            return false;
+
+        }
     }
 }

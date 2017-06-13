@@ -299,15 +299,20 @@ abstract class AbstractAdapter implements BuilderInterface
     public function hasBrokenLinks()
     {
         $links = $this->objectConfig->getLinks();
-        $brokenFields = array();
+        $brokenFields = [];
+
         if(!empty($links))
         {
-            $brokenFields = array();
-            foreach($links as $o => $fieldList)
-                if(! Orm\Object\Config::configExists($o))
+            $brokenFields = [];
+            foreach($links as $o => $fieldList){
+                if(!Config::configExists($o)){
                     foreach($fieldList as $field => $cfg)
                         $brokenFields[$field] = $o;
+                }
+
+            }
         }
+
         if(empty($brokenFields))
             return false;
         else

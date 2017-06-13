@@ -429,7 +429,7 @@ class Object extends Controller
          */
         $ormService = Service::get('orm');
 
-        $oConfigPath = $ormService->getSettings()->get('configPath');
+        $oConfigPath = $ormService->getConfigSettings()->get('configPath');
         $configDir = Config::storage()->getWrite() . $oConfigPath;
 
         $tableName = $data['table'];
@@ -457,7 +457,10 @@ class Object extends Controller
         /*
          * Write object config
          */
-        if (!Config\File\AsArray::create($configDir . $name . '.php')) {
+        $newConfig = Config\Factory::config(Config\Factory::File_Array, $configDir . $name . '.php');
+        $newConfig->setData([]);
+
+        if (!Config::storage()->save($newConfig)){
             $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ' . $configDir . $name . '.php');
         }
 
@@ -465,10 +468,10 @@ class Object extends Controller
         /*
          * Add fields config
          */
-        $data['fields'] = array();
+        $data['fields'] = [];
 
         $cfg->setData($data);
-        $cfg->save();
+        Config::storage()->save($cfg);
 
         try {
             $cfg = Orm\Object\Config::factory($name);
