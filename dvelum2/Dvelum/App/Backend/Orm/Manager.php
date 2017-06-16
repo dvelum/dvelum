@@ -210,7 +210,7 @@ class Manager
 		}catch (\Exception $e){
 			return self::ERROR_INVALID_OBJECT;
 		}
-		
+
 		if(!$objectCfg->fieldExists($fieldName))
 			return self::ERROR_INVALID_FIELD;
 		
@@ -224,7 +224,8 @@ class Manager
 		$localisationKey = strtolower($objectName);
 		foreach ($localisations as $file)
 		{
-			$cfg = Lang::storage()->get($file);
+		    $langStorage = Lang::storage();
+			$cfg = $langStorage->get($file);
 			if($cfg->offsetExists($localisationKey))
 			{
 				$cfgArray = $cfg->get($localisationKey);
@@ -232,7 +233,7 @@ class Manager
 				{
 					unset($cfgArray['fields'][$fieldName]);
 					$cfg->set($localisationKey, $cfgArray);
-					if(!$cfg->save()){
+					if(!$langStorage->save($cfg)){
 						return self::ERROR_FS_LOCALISATION;
 					}
 				}

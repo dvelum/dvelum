@@ -261,7 +261,7 @@ class Field extends Controller
             /**
              * @todo refactor
              */
-            $builder = Orm\Object\Builder($object);
+            $builder = Orm\Object\Builder::factory($object);
             $builder->build();
             $this->response->success();
         }else{
@@ -272,7 +272,7 @@ class Field extends Controller
     /**
      * Delete object field
      */
-    public function deleteFieldAction()
+    public function deleteAction()
     {
         $this->checkCanDelete();
 

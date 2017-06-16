@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Object;
 
+use Dvelum\Config as Cfg;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Zend\Db\Sql\Ddl;
@@ -51,15 +52,18 @@ class Builder
 
         $adapter = 'Builder_Generic';
 
-        $config = \Dvelum\Config::factory(\Dvelum\Config\Factory::Simple, $adapter);
+        $config = Cfg::factory(\Dvelum\Config\Factory::Simple, $adapter);
 
         $log = false;
         if(static::$writeLog){
             $log = new \Dvelum\Log\File\Sql(static::$logsPath . $objectConfig->get('connection') . '-' . static::$logPrefix . '-build.log');
         }
 
+        $ormConfig = Cfg::storage()->get('orm.php');
+
         $config->setData([
            'objectName' => $objectName,
+           'configPath' =>  $ormConfig->get('object_configs'),
            'log' => $log,
            'useForeignKeys' => static::$foreignKeys
         ]);

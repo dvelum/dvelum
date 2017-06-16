@@ -69,6 +69,11 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     protected $model;
 
+    /**
+     * @var string $configPath
+     */
+    protected $configPath;
+
     abstract public function prepareColumnUpdates();
     abstract public function prepareIndexUpdates();
     abstract public function prepareKeysUpdate();
@@ -78,6 +83,7 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     public function __construct(ConfigInterface $config)
     {
+        $this->configPath = $config->get('configPath');
         $this->objectName = $config->get('objectName');
 
         if($config->offsetExists('log') && $config->get('log') instanceof Log\File){

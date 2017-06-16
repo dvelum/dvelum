@@ -840,7 +840,7 @@ class MySQL extends AbstractAdapter
 
     /**
      * Create Orm\Object`s for relations
-     * @throw Exception
+     * @throws Exception
      * @param array $list
      * @return bool
      */
@@ -853,9 +853,7 @@ class MySQL extends AbstractAdapter
         $db = $this->model->getDbConnection();
         $tablePrefix = $this->model->getDbPrefix();
 
-        $oConfigPath = Cfg::storage()->get('orm.php')->get('configPath');
-        $configDir  = Cfg::storage()->getWrite() . $oConfigPath;
-
+        $configDir  = Cfg::storage()->getWrite() . $this->configPath;
         $fieldList = Cfg::storage()->get('objects/relations/fields.php');
         $indexesList = Cfg::storage()->get('objects/relations/indexes.php');
 
@@ -929,7 +927,7 @@ class MySQL extends AbstractAdapter
                 return false;
             }
 
-            $cfg = Cfg::storage()->get($oConfigPath. strtolower($newObjectName).'.php' , false , false);
+            $cfg = Cfg::storage()->get($this->configPath . strtolower($newObjectName).'.php' , false , false);
 
             $cfg->setData($objectData);
             Cfg::storage()->save($cfg);
