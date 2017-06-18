@@ -138,20 +138,20 @@ class Orm
                         $relationsData = $this->model($relationsObject)->getList([
                             'sort' => 'order_no',
                             'dir' => 'ASC'
-                        ], ['sourceid' => $id], ['targetid', 'sourceid']);
+                        ], ['source_id' => $id], ['target_id', 'source_id']);
                     } else {
                         $linkedObject = $fieldObject->getLinkedObject();
                         $linksObject = $this->model($linkedObject)->getStore()->getLinksObjectName();
                         $linksModel = $this->model($linksObject);
                         $relationsData = $linksModel->getList(['sort' => 'order', 'dir' => 'ASC'], [
                                 'src' => $name,
-                                'srcid' => $id,
+                                'src_id' => $id,
                                 'src_field' => $field,
                                 'target' => $linkedObject
-                            ], ['targetid', 'sourceid' => 'srcid']);
+                            ], ['target_id', 'source_id' => 'src_id']);
                     }
                     if (!empty($relationsData)) {
-                        $linksData[$field] = Utils::groupByKey('sourceid', $relationsData);
+                        $linksData[$field] = Utils::groupByKey('source_id', $relationsData);
                     }
                 }
             }
@@ -167,7 +167,7 @@ class Orm
             if (!empty($linksData)) {
                 foreach ($linksData as $field => $source) {
                     if (isset($source[$item[$primaryKey]])) {
-                        $item[$field] = Utils::fetchCol('targetid', $source[$item[$primaryKey]]);
+                        $item[$field] = Utils::fetchCol('target_id', $source[$item[$primaryKey]]);
                     }
                 }
             }

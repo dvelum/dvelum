@@ -147,8 +147,8 @@ class Object implements ObjectInterface
                         $relationsObject = $this->config->getRelationsObject($field);
                         $relationsData = Model::factory($relationsObject)->getList(
                             ['sort'=>'order_no', 'dir' =>'ASC'],
-                            ['sourceid'=>$this->id],
-                            ['targetid']
+                            ['source_id'=>$this->id],
+                            ['target_id']
                         );
                     }else{
                         $linkedObject = $this->config->getField($field)->getLinkedObject();
@@ -158,15 +158,15 @@ class Object implements ObjectInterface
                             ['sort'=>'order','dir'=>'ASC'],
                             [
                                 'src' => $this->name,
-                                'srcid' => $this->id,
+                                'src_id' => $this->id,
                                 'src_field' =>$field,
                                 'target' => $linkedObject
                             ],
-                            ['targetid']
+                            ['target_id']
                         );
                     }
                     if(!empty($relationsData)){
-                        $data[$field] = \Utils::fetchCol('targetid',$relationsData);
+                        $data[$field] = \Utils::fetchCol('target_id',$relationsData);
                     }
                 }
             }
