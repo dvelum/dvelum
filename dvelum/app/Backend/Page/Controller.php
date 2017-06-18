@@ -436,7 +436,9 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
         if(!empty($childIds))
             Response::jsonError($this->_lang->REMOVE_CHILDREN);
 
-        if($this->_configMain->get('vc_clear_on_delete'))
+        $ormConfig = Config::storage()->get('orm');
+
+        if($ormConfig->get('vc_clear_on_delete'))
             Model::factory('Vc')->removeItemVc($this->_objectName , $id);
 
         if(!$object->delete()){

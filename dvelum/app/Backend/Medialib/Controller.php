@@ -7,7 +7,6 @@ use Dvelum\App\Controller\EventManager;
 
 class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
 {
-
     public function initListeners()
     {
         $apiRequest = $this->apiRequest;
@@ -16,10 +15,9 @@ class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
         $this->eventManager->on(EventManager::BEFORE_LIST, function(\Dvelum\App\Controller\Event $event) use ($apiRequest){
             $category = $apiRequest->getFilter('category');
             if(empty($category)){
-                $apiRequest->resetFilter('category');
+                $apiRequest->addFilter('category', null);
             }
         });
-
         $this->eventManager->on(EventManager::AFTER_LIST,[$this, 'prepareList']);
     }
 
@@ -75,15 +73,19 @@ class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
 
         $uploader = new Upload($mediaCfg->__toArray());
 
-        if(empty($files))
+        if(empty($files)){
             $this->response->error($this->lang->get('NOT_UPLOADED'));
+            return;
+        }
 
         $uploaded = $uploader->start($files, $path);
 
-        if(empty($uploaded))
+        if(empty($uploaded)){
             $this->response->error($this->lang->get('NOT_UPLOADED'));
+            return;
+        }
 
-        $data = array();
+        $data = [];
 
         foreach ($uploaded as $k=>&$v)
         {
@@ -125,6 +127,9 @@ class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
             $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
 
+        /**
+         * @var Model_Medialib $mediaModel
+         */
         $mediaModel = Model::factory('Medialib');
         $item = $mediaModel->getItem($id);
 
@@ -202,8 +207,9 @@ class Backend_Medialib_Controller extends Dvelum\App\Backend\Api\Controller
     {
         $id = $this->request->post('id','integer',false);
 
-        if(!$id)
-            $this->response->error();
+        if(!$id){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+        }
 
         $item = Model::factory('Medialib')->getItem($id);
 

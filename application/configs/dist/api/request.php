@@ -1,7 +1,7 @@
 <?php
 return[
     'objectParam' => 'object',
-    'filterParam' => 'filters',
+    'filterParam' => 'filter',
     'paginationParam' => 'pager',
     'searchParam'=>'search',
     'idParam' => 'id',

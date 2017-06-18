@@ -108,7 +108,7 @@ return array(
     /*
      * Temporary files directory
      */
-    'tmp' => $docRoot . '/data/temp/',
+    'tmp' => $docRoot . '/temp/',
     /*
     * Use memcached
     */

@@ -25,7 +25,6 @@ use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\App\Data;
-use Dvelum\App\Session;
 use Dvelum\App\Controller\EventManager;
 use Dvelum\Orm\ObjectInterface;
 
@@ -316,7 +315,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         if($acl && !$acl->canDelete($object))
             Response::jsonError($this->_lang->CANT_DELETE);
 
-        if($this->_configMain->get('vc_clear_on_delete'))
+        $ormConfig = Config::storage()->get('orm');
+
+        if($ormConfig>get('vc_clear_on_delete'))
             Model::factory('Vc')->removeItemVc($this->_objectName , $id);
 
         if(!$object->delete())
@@ -489,6 +490,4 @@ abstract class Backend_Controller_Crud extends Backend_Controller
     {
         $this->objectTitleAction();
     }
-
-
 }
