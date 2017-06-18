@@ -868,7 +868,6 @@ class MySQL extends AbstractAdapter
 
         $fieldList['source_id']['link_config']['object'] = $this->objectName;
 
-
         foreach($list as $fieldName=>$info)
         {
             $newObjectName = $info['name'];
@@ -912,7 +911,6 @@ class MySQL extends AbstractAdapter
                 return false;
             }
 
-
             if(!is_dir($configDir) && !@mkdir($configDir, 0755, true)){
                 $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
                 return false;
@@ -921,17 +919,12 @@ class MySQL extends AbstractAdapter
             /*
              * Write object config
              */
-            $newConfig = Cfg\Factory::config(Cfg\Factory::File_Array, $configDir. $newObjectName . '.php', false);
+            $newConfig = Cfg\Factory::create($objectData, $configDir. $newObjectName . '.php');
+
             if(!$newConfig || Cfg::storage()->save($newConfig)){
                 $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php';
                 return false;
             }
-
-            $cfg = Cfg::storage()->get($this->configPath . strtolower($newObjectName).'.php' , false , false);
-
-            $cfg->setData($objectData);
-            Cfg::storage()->save($cfg);
-
 
             $cfg = Config::factory($newObjectName);
             $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->objectName.' & '.$linkedObject);
