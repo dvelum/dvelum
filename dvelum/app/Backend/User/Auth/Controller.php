@@ -9,8 +9,9 @@ class Backend_User_Auth_Controller extends Backend_Controller_Crud
     protected function _getList()
     {
         $pager = Request::post('pager' , 'array' , null);
-        $filter = Request::post('filter' , 'array' , null);
+        $filter = Request::post('filter' , 'array' , []);
         $query = Request::post('search' , 'string' , null);
+
         $filter = array_merge($filter , Request::extFilters());
 
         $dataModel = Model::factory($this->_objectName);

@@ -227,8 +227,7 @@ class Backend_Externals_Controller extends Backend_Controller
            return false;
         }
 
-        $config = new Config_Simple('externals_client');
-        $config->setData($repoList[$repo]);
+        $config = \Dvelum\Config\Factory::create($repoList[$repo]);
 
         $client = new Externals_Client($config);
         $client->setLanguage($this->_configMain->get('language'));

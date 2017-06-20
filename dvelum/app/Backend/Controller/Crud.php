@@ -119,6 +119,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         }
 
         $result = $this->_getList();
+        if(empty($result)){
+            $result = ['data'=>[],'count'=>0];
+        }
 
         $eventData = new stdClass();
         $eventData->data = $result['data'];

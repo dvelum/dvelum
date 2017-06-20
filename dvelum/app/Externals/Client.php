@@ -1,12 +1,13 @@
 <?php
-
+use Dvelum\Lang\Dictionary as Lang;
+use Dvelum\Config\ConfigInterface;
 /**
  * Add-ons repository client
  */
 class Externals_Client
 {
     /**
-     * @var Config_Abstract
+     * @var ConfigInterface
      */
     protected $config;
     /**
@@ -18,7 +19,7 @@ class Externals_Client
      */
     protected $lang;
 
-    public function __construct(Config_Abstract $repoConfig)
+    public function __construct(ConfigInterface $repoConfig)
     {
         $this->config = $repoConfig;
     }

@@ -58,24 +58,34 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
             Response::jsonSuccess(array());
               
         try{
+            /**
+             * @var Dvelum\Orm\ObjectInterface $obj
+             */
             $obj = Orm\Object::factory($this->_objectName, $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC);
         }
-               
+
         $data = $obj->getData();
                 
         /*
-         * Prepare  mltilink properties
+         * Prepare  multi link properties
          */      
         $fields = $obj->getFields();
-        foreach($fields as $field){
-            if($field=='id' || empty($data[$field]))
+
+        foreach($fields as $field)
+        {
+            if($field=='id' || empty($data[$field])){
                 continue;
-            $linkObject = $obj->getLinkedObject($field);
-            if($linkObject !== false)
+            }
+
+            $objectField = $obj->getConfig()->getField($field);
+
+            if($objectField->isObjectLink() || $objectField->isMultiLink()){
+                $linkObject = $obj->getLinkedObject($field);
                 $data[$field] = array_values($this->_collectLinksData($data[$field] ,$linkObject));
-        } 
+            }
+        }
         $data['id'] = $obj->getId();
         
         $menuItemModel = Model::factory('menu_item');
