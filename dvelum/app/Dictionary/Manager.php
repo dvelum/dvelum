@@ -249,7 +249,7 @@ class Dictionary_Manager
 
         $this->resetCache();
         $this->rebuildIndex($name);
-        $this->mergeLocales($name,$this->_language);
+        $this->mergeLocales($name, $this->_language);
         return true;
     }
 
@@ -261,11 +261,14 @@ class Dictionary_Manager
     public function rebuildIndex($name)
     {
         $dict = Dictionary::factory($name);
-        $index = Config::storage()->get($this->_baseDir . 'index/' . $name . '.php', false, false);
+        $storage = Config::storage();
+
+        $filePath = $this->_baseDir . 'index/' . $name . '.php';
+        $index = $storage->get($filePath, false, false);
 
         $index->removeAll();
         $index->setData(array_keys($dict->getData()));
-        $index->save();
+        $storage->save($index);
 
         return true;
     }
@@ -278,7 +281,9 @@ class Dictionary_Manager
      */
     public function mergeLocales($name, $baseLocale)
     {
-        $baseDict = Config::storage()->get($this->_baseDir . $baseLocale . '/' . $name . '.php', false, false);
+        $storage = Config::storage();
+
+        $baseDict = $storage->get($this->_baseDir . $baseLocale . '/' . $name . '.php', false, false);
 
         $locManager = new Backend_Localization_Manager($this->_appConfig);
 
@@ -287,12 +292,16 @@ class Dictionary_Manager
             if($locale == $baseLocale)
                 continue;
 
-            $dict = Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false);
-            if($dict === false){
-                if(!$this->create($name , $locale) || ! $dict=Config::storage()->get($this->_baseDir . $locale . '/' . $name . '.php', false, false)){
+
+            $localPath = $this->_baseDir . $locale . '/' . $name . '.php';
+
+            if(!$storage->exists($localPath)){
+                if(!$this->create($name , $locale) || ! $dict=$storage->get($localPath, false, false)){
                     return false;
                 }
             }
+
+            $dict = $storage->get($localPath, false, false);
 
             // Add new records from base dictionary and remove redundant records from current
             $mergedData = array_merge(
@@ -304,8 +313,7 @@ class Dictionary_Manager
 
             $dict->removeAll();
             $dict->setData($mergedData);
-
-            $dict->save();
+            $storage->save($dict);
         }
 
         return true;

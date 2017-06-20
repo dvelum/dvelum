@@ -151,6 +151,7 @@ class Controller extends App\Backend\Controller
                 return;
             }
         }
+
         /**
          * @var Model
          */
@@ -158,12 +159,14 @@ class Controller extends App\Backend\Controller
         $rc = $objectCfg->isRevControl();
 
         if($objectCfg->isRevControl())
-            $fields = array('id'=>$primaryKey, 'published');
+            $fields = ['id'=>$primaryKey, 'published'];
         else
-            $fields = array('id'=>$primaryKey);
+            $fields = ['id'=>$primaryKey];
 
         $count = $model->query()->search($query)->getCount();
-        $data = array();
+        $data = [];
+
+
         if($count)
         {
             $data = $model->query()
@@ -176,26 +179,29 @@ class Controller extends App\Backend\Controller
             if(!empty($data))
             {
                 $objectIds = \Utils::fetchCol('id' , $data);
+
                 try{
                     $objects = Orm\Object::factory($object ,$objectIds);
                 }catch (\Exception $e){
                     Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
                     $this->response->error($this->lang->get('CANT_EXEC'));
+                    return;
                 }
 
                 foreach ($data as &$item)
                 {
-                    if(!$rc)
+                    if(!$rc){
                         $item['published'] = true;
-
+                    }
 
                     $item['deleted'] = false;
 
                     if(isset($objects[$item['id']])){
                         $o = $objects[$item['id']];
                         $item['title'] = $o->getTitle();
-                        if($rc)
+                        if($rc){
                             $item['published'] = $o->get('published');
+                        }
                     }else{
                         $item['title'] = $item['id'];
                     }
@@ -203,6 +209,7 @@ class Controller extends App\Backend\Controller
                 }unset($item);
             }
         }
+
         $this->response->success($data, ['count'=>$count]);
     }
 

@@ -161,6 +161,7 @@ class File implements DictionaryInterface
      */
     public function save() : bool
     {
-        return $this->data->save();
+        $storage = Config::storage();
+        return $storage->save($this->data);
     }
 }
