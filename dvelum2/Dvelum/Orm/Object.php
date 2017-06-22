@@ -757,7 +757,7 @@ class Object implements ObjectInterface
      */
     public function getTitle() : string
     {
-        return $this->model->getTitle($this);
+        return (string)$this->model->getTitle($this);
     }
 
     /**
