@@ -56,6 +56,12 @@ class Auth
                 sleep(1);
                 $user = $this->login($login, $pass , $provider);
 
+                // Trying fallback provider if it set
+                if(!$user->isAuthorized() && !empty($this->appConfig->get('fallback_auth_provider'))){
+                    $provider = $this->appConfig->get('fallback_auth_provider');
+                    $user = $this->login($login , $pass , $provider);
+                }
+
                 if($user->isAuthorized()){
                     $ses = \Store::factory(\Store::Session);
                     $ses->set('auth' , true);
