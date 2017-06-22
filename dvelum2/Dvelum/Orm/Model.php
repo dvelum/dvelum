@@ -453,7 +453,7 @@ class Model
      * @return mixed|string - object title
      * @throws \Exception
      */
-    public function getTitle(Orm\Object $object) : string
+    public function getTitle(Orm\ObjectInterface $object) : string
     {
         $objectConfig = $object->getConfig();
         $title = $objectConfig->getLinkTitle();
