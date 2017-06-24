@@ -2,7 +2,8 @@
 /**
  * Should be called from backend controller
  */
-use Dvelum\Orm;
+use Dvelum\Service;
+
 class Backend_Orm_Dataview_Editor extends Backend_Controller_Crud
 {
     public function __construct()
@@ -13,17 +14,16 @@ class Backend_Orm_Dataview_Editor extends Backend_Controller_Crud
 
     public function getModule()
     {
-        $dataObject = Request::post('d_object', 'string', false);
-
-        if(!$dataObject || !Orm\Object\Config::configExists($dataObject))
-            Response::jsonError($this->_lang->WRONG_REQUEST);
-
-        return ucfirst($dataObject);
+        return 'Orm';
     }
 
     public function getObjectName()
     {
-        return $this->getModule();
+        $dataObject = Request::post('d_object', 'string', false);
+        if(!$dataObject || !Service::get('orm')->configExists($dataObject))
+            Response::jsonError($this->_lang->WRONG_REQUEST);
+
+        return ucfirst($dataObject);
     }
 
 
