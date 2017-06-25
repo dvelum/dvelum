@@ -449,7 +449,7 @@ class Model
 
     /**
      * Get object title
-     * @param Orm\Object $object - object for getting title
+     * @param Orm\ObjectInterface $object - object for getting title
      * @return mixed|string - object title
      * @throws \Exception
      */

@@ -79,7 +79,7 @@ abstract class Controller extends Backend\Api\Controller
             $projectData['isDesigner'] = true;
             $modulesManager = new \Modules_Manager();
             $modulesList = $modulesManager->getList();
-            $projectData['title'] = (isset($modulesList[$this->_module])) ? $modulesList[$moduleName]['title'] : '';
+            $projectData['title'] = (isset($modulesList[$this->module])) ? $modulesList[$moduleName]['title'] : '';
         }
         else
         {

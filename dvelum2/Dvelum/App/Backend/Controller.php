@@ -85,8 +85,9 @@ class Controller extends App\Controller
         $this->backofficeConfig = Config::storage()->get('backend.php');
         $this->config = $this->getConfig();
         $this->module = $this->getModule();
-        $this->objectName = $this->getObjectName();
         $this->lang = Lang::lang();
+        $this->objectName = $this->getObjectName();
+
         $this->initSession();
     }
 

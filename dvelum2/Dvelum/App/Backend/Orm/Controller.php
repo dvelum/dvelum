@@ -20,7 +20,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 {
     protected $routes = [
         'dictionary' => 'Backend_Orm_Dictionary',
-        'dataview' => 'Backend_Orm_Dataview',
+        'dataview' => 'Dvelum\\App\\Backend\\Orm\\Controller\\DataView',
         'connections' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Connections',
         'log' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Log',
         'object' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Object',

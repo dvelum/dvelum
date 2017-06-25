@@ -171,7 +171,6 @@ class Config
      * Object config existence check
      * @param string $name
      * @return boolean
-     * @deprecated
      */
     static public function configExists(string $name) : bool
     {

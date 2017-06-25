@@ -110,7 +110,7 @@ Ext.define('app.crud.orm.ObjectField',{
 		me.dataFieldLabel.getEl().mask(appLang.LOADING);
 		
 		Ext.Ajax.request({
-			url:this.controllerUrl + 'otitle',
+			url:this.controllerUrl + 'objectTitle',
 			method: 'post',
 			params:{
 				object:this.objectName,

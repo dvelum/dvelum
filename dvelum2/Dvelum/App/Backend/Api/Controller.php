@@ -228,11 +228,15 @@ class Controller extends App\Backend\Controller
         $object = $this->request->post('object','string', false);
         $id = $this->request->post('id', 'string', false);
 
-        if(!$object || !Orm\Object\Config::configExists($object))
+        if(!$object || !Orm\Object\Config::configExists($object)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
-        if(!in_array(strtolower($object), $this->canViewObjects , true))
+        if(!in_array(strtolower($object), $this->canViewObjects , true)){
             $this->response->error($this->lang->get('CANT_VIEW'));
+            return;
+        }
 
         $objectConfig = Orm\Object\Config::factory($object);
         // Check ACL permissions
@@ -240,6 +244,7 @@ class Controller extends App\Backend\Controller
         if($acl){
             if(!$acl->can(Orm\Object\Acl::ACCESS_VIEW , $object)){
                 $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
+                return;
             }
         }
 
@@ -304,7 +309,7 @@ class Controller extends App\Backend\Controller
         if(!empty($this->listLinks))
         {
             $objectConfig = Orm\Object\Config::factory($this->objectName);
-            if(!in_array($objectConfig->getPrimaryKey(),'',true)){
+            if(empty($objectConfig->getPrimaryKey())){
                 throw new \Exception('listLinks requires primary key for object '.$objectConfig->getName());
             }
             $this->addLinkedInfo($objectConfig, $this->listLinks, $data, $objectConfig->getPrimaryKey());

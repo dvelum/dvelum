@@ -54,7 +54,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 			url:this.controllerUrl + 'viewconfig',
 			method: 'post',
 			params:{
-				object:this.objectName
+				d_object:this.objectName
 			},
 			scope:this,
 	 		success: function(response, request) {
@@ -82,11 +82,10 @@ Ext.define('app.crud.orm.DataViewWindow', {
 		    	url:this.controllerUrl + 'list',
 		    	directionParam:"pager[dir]",
 	            limitParam:"pager[limit]",
-	            simpleSortMode:true,
 	            sortParam:"pager[sort]",
 	            startParam:"pager[start]",
 		    	extraParams:{
-		    		object:this.objectName
+		    		d_object:this.objectName
 		    	},
 		        reader: {
 		        	type:'json',
@@ -196,10 +195,10 @@ Ext.define('app.crud.orm.DataViewWindow', {
 			var me = this;
 			me.getEl().mask(appLang.LOADING);
 			Ext.Ajax.request({
-				url:this.controllerUrl + 'editorconfig',
+				url:this.controllerUrl + 'editorConfig',
 				method: 'post',
 				params:{
-					object:this.objectName
+					d_object:this.objectName
 				},
 				scope:this,
 		 		success: function(response, request) {
@@ -285,7 +284,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 				items:fields,
 				dataItemId:id,
 				primaryKey:this.primaryKey,
-				controllerUrl:this.controllerUrl + app.createUrl(['editorvc','']),
+				controllerUrl:this.controllerUrl,
 				canEdit:!this.readOnly,
 				canDelete:!this.readOnly,
 				canPublish:!this.readOnly,
@@ -309,7 +308,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 				primaryKey:this.primaryKey,
 				items:fields,
 				objectName:this.objectName,
-				controllerUrl:this.controllerUrl + app.createUrl(['editor','']),
+				controllerUrl:this.controllerUrl,
 				listeners:{
 					dataSaved:{
 						fn:function(){
