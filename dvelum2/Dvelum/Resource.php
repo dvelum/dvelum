@@ -292,7 +292,7 @@ class Resource
 
         $cacheFile = \Utils::createCachePath($this->config->get('jsCacheSysPath'), $validHash . '.js');
 
-        $cachedUrl = \str_replace($this->config->get('jsCacheSysPath'), $this->config->get('jsCacheSysPath') , $cacheFile);
+        $cachedUrl = \str_replace($this->config->get('jsCacheSysPath'), $this->config->get('jsCacheSysUrl') , $cacheFile);
 
         if(file_exists($cacheFile))
             return $cachedUrl;
