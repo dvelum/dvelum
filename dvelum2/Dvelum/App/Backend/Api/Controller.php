@@ -378,7 +378,7 @@ class Controller extends App\Backend\Controller
             $this->response->error($this->lang->get('CANT_DELETE'));
         }
 
-        $ormConfig = Config::storage()->get('orm');
+        $ormConfig = Config::storage()->get('orm.php');
 
         if($ormConfig->get('vc_clear_on_delete')){
             /**
