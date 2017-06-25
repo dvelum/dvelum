@@ -280,26 +280,6 @@ class DataView extends ApiController
         ]);
     }
 
-
-/*
-    public function otitleAction()
-    {
-        $object = Request::post('object', 'string', false);
-        $id = Request::post('id', 'string', false);
-
-        if (!$object || !Orm\Object\Config::configExists($object)) {
-            Response::jsonError($this->_lang->WRONG_REQUEST);
-        }
-
-        try {
-            $o = Orm\Object::factory($object, $id);
-            Response::jsonSuccess(array('title' => $o->getTitle()));
-        } catch (Exception $e) {
-            Model::factory($object)->logError('Cannot get title for ' . $object . ':' . $id);
-            Response::jsonError($this->_lang->get('CANT_EXEC'));
-        }
-    }
- */
     public function checkCanEdit(): bool
     {
         return true;
