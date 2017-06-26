@@ -254,6 +254,7 @@ class Controller extends App\Backend\Controller
         }catch (\Exception $e){
             Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
             $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
         }
     }
 
@@ -270,6 +271,7 @@ class Controller extends App\Backend\Controller
     {
         if(!$this->eventManager->fireEvent(EventManager::BEFORE_LIST, new \stdClass())){
             $this->response->error($this->eventManager->getError());
+            return;
         }
 
         $result = $this->getList();
@@ -280,6 +282,7 @@ class Controller extends App\Backend\Controller
 
         if(!$this->eventManager->fireEvent(EventManager::AFTER_LIST, $eventData)){
             $this->response->error($this->eventManager->getError());
+            return;
         }
 
         $this->response->success(
@@ -381,6 +384,7 @@ class Controller extends App\Backend\Controller
         $acl = $object->getAcl();
         if($acl && !$acl->canDelete($object)){
             $this->response->error($this->lang->get('CANT_DELETE'));
+            return;
         }
 
         $ormConfig = Config::storage()->get('orm.php');
@@ -393,8 +397,10 @@ class Controller extends App\Backend\Controller
             $vcModel->removeItemVc($this->objectName , $id);
         }
 
-        if(!$object->delete())
+        if(!$object->delete()){
             $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
+        }
 
         $this->response->success();
     }
@@ -488,7 +494,7 @@ class Controller extends App\Backend\Controller
             return;
         }
         try{
-           $result = $this->getData();
+            $result = $this->getData();
         }catch (OwnerException $e){
             $this->response->error($this->lang->get('CANT_ACCESS'));
             return;
@@ -867,7 +873,7 @@ class Controller extends App\Backend\Controller
 
         if(!$object->publish()){
             $this->response->error($this->lang->get('CANT_EXEC'));
-            return false;
+            return;
         }
         $this->response->success();
     }
