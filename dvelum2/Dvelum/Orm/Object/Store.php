@@ -7,7 +7,7 @@ use Dvelum\Orm;
 use Dvelum\Db;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
-use Dvelum\Orm\Exception;
+use \Exception as Exception;
 use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
 
