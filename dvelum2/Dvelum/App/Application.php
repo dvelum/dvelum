@@ -22,19 +22,21 @@ declare(strict_types=1);
 
 namespace Dvelum\App;
 
-use Dvelum\Response;
-use Dvelum\Resource;
-use Dvelum\View;
-use Dvelum\Autoload;
-use Dvelum\Request;
-use Dvelum\Config;
-use Dvelum\Config\ConfigInterface;
-use Dvelum\Db;
-use Dvelum\Orm;
-use Dvelum\Lang;
-use Dvelum\Utils;
-use Dvelum\App\Router\Backend as RouterBackend;
-use Dvelum\Service;
+use Dvelum\{
+    Request,
+    Response,
+    Resource,
+    View,
+    Autoload,
+    Config,
+    Config\ConfigInterface,
+    Db,
+    Orm,
+    Lang,
+    Utils,
+    Service
+};
+
 
 /**
  * Application - is the main class that initializes system configuration
@@ -319,7 +321,7 @@ class Application
         /*
          * Start routing
          */
-        $router = new RouterBackend();
+        $router = new Router\Backend();
         $router->route($request, $response);
 
         if (!$response->isSent()) {
