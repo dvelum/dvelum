@@ -385,7 +385,7 @@ class Controller extends App\Controller
             app.wwwRoot = "' . $wwwRoot . '";
         	app.admin = "' . $this->request->url([$adminPath]) . '";
         	app.delimiter = "' . $urlDelimiter . '";
-        	app.root = "' . $this->request->url([$adminPath, $controllerCode]) . '";
+        	app.root = "' . $this->request->url([$adminPath, $controllerCode,'']) . '";
         ');
 
         $modulesManager = new \Modules_Manager();
@@ -410,6 +410,6 @@ class Controller extends App\Controller
             'theme' => $this->backofficeConfig->get('theme')
         ));
 
-        $this->response->put($template->render($page->getTemplatesPath() . 'layout.php'));
+        $this->response->put($template->render($templatesPath . 'layout.php'));
     }
 }

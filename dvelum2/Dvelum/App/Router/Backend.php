@@ -56,7 +56,7 @@ class Backend extends \Dvelum\App\Router
             $controller = $manager->getModuleController($controller);
 
             if(empty($controller)) {
-                $this->response->error(Lang::lang()->get('WRONG_REQUEST') . ' ' . $this->request->getUri());
+                $response->error(Lang::lang()->get('WRONG_REQUEST') . ' ' . $request->getUri());
                 return;
             }
         }

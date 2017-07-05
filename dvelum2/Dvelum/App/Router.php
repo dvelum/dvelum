@@ -80,19 +80,18 @@ abstract class Router implements Router\RouterInterface
 
         if($controller instanceof Router\RouterInterface || $controller instanceof \Router_Interface){
             $controller->route($request, $response);
-            return;
-        }
+        }else{
 
-        if(empty($action)){
-            $action = 'index';
-        }
+            if(empty($action)){
+                $action = 'index';
+            }
 
-        if(!method_exists($controller , $action.'Action')) {
-            $response->error(Lang::lang()->get('WRONG_REQUEST').' ' . $request->getUri());
-            return;
+            if(!method_exists($controller , $action.'Action')) {
+                $response->error(Lang::lang()->get('WRONG_REQUEST').' ' . $request->getUri());
+                return;
+            }
+            $controller->{$action.'Action'}();
         }
-
-        $controller->{$action.'Action'}();
 
         if(!$response->isSent() && method_exists($controller,'showPage')){
             $controller->showPage();
