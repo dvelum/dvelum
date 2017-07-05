@@ -93,6 +93,11 @@ abstract class Router implements Router\RouterInterface
         }
 
         $controller->{$action.'Action'}();
+
+        if(!$response->isSent() && method_exists($controller,'showPage')){
+            $controller->showPage();
+        }
+
         return;
     }
 }

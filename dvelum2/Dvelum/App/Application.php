@@ -65,6 +65,11 @@ class Application
     protected $initialized = false;
 
     /**
+     * @var Autoload
+     */
+    protected $autoloader;
+
+    /**
      * The constructor accepts the main configuration object as an argument
      * @param ConfigInterface $config
      */
@@ -198,6 +203,7 @@ class Application
 
         $request = Request::factory();
         $response = Response::factory();
+
         if ($request->isAjax()) {
             $response->setFormat(Response::FORMAT_JSON);
         } else {
@@ -308,12 +314,6 @@ class Application
      */
     protected function routeBackOffice()
     {
-        $cfgBackend = Config\Factory::storage()->get('backend.php');
-        $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';
-
-        $page = \Page::getInstance();
-        $page->setTemplatesPath($templatesPath);
-
         $request = Request::factory();
         $response = Response::factory();
         /*
@@ -322,48 +322,9 @@ class Application
         $router = new RouterBackend();
         $router->route($request, $response);
 
-        if ($response->isSent()) {
-            return;
+        if (!$response->isSent()) {
+            $response->send();
         }
-
-        $controller = $request->getPart(1);
-
-        /*
-         * Define frontend JS variables
-         */
-        $res = Resource::factory();
-        $res->addInlineJs('
-            app.wwwRoot = "' . $this->config->get('wwwroot') . '";
-        	app.admin = "' . $this->config->get('wwwroot') . $this->config->get('adminPath') . '";
-        	app.delimiter = "' . $this->config->get('urlDelimiter') . '";
-        	app.root = "' . $this->config->get('wwwroot') . $this->config->get('adminPath') . $this->config->get('urlDelimiter') . $controller . $this->config->get('urlDelimiter') . '";
-        ');
-
-        $modulesManager = new \Modules_Manager();
-        /*
-         * Load template
-         */
-        $template = new View();
-        $template->disableCache();
-        $template->setProperties(array(
-            'wwwRoot' => $this->config->get('wwwroot'),
-            'page' => $page,
-            'urlPath' => $controller,
-            'resource' => $res,
-            'path' => $templatesPath,
-            'adminPath' => $this->config->get('adminPath'),
-            'development' => $this->config->get('development'),
-            'version' => Config::storage()->get('versions.php')->get('core'),
-            'lang' => $this->config->get('language'),
-            'modules' => $modulesManager->getList(),
-            'userModules' => Session\User::factory()->getModuleAcl()->getAvailableModules(),
-            'useCSRFToken' => $cfgBackend->get('use_csrf_token'),
-            'theme' => $cfgBackend->get('theme')
-        ));
-
-        $response->put($template->render($page->getTemplatesPath() . 'layout.php'));
-
-        $response->send();
     }
 
     /**
@@ -377,13 +338,10 @@ class Application
         if ($this->config->get('maintenance')) {
             $tpl = new View();
             $tpl->set('msg', Lang::lang()->get('MAINTENANCE'));
-            $response->put($tpl->render('public/error.php'));
+            $response->put($tpl->render('public/maintenance.php'));
             $response->send();
             return;
         }
-
-        $page = \Page::getInstance();
-        $page->setTemplatesPath('public/');
 
         /*
          * Start routing
@@ -400,7 +358,9 @@ class Application
         $router = new $routerClass();
         $router->route($request, $response);
 
-        $response->send();
+        if (!$response->isSent()) {
+            $response->send();
+        }
     }
 
     /**

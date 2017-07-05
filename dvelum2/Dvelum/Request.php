@@ -164,7 +164,7 @@ class Request
     public function get(string $name , string $type , $default)
     {
         if(isset($this->updatedGet[$name])) {
-            return Filter::filterValue($type , self::$_updatedGet[$name]);
+            return Filter::filterValue($type , $this->updatedGet[$name]);
         }
 
         if(!isset($_GET[$name])) {

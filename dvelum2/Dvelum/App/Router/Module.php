@@ -137,6 +137,9 @@ class Module extends Router
     {
         header('Content-Type: text/html; charset=utf-8');
 
+        $page = \Page::getInstance();
+        $page->setTemplatesPath('public/');
+
         $template = new View();
         $template->disableCache();
         $template->setProperties(array(

@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Router;
 
 use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
 use Dvelum\Lang;
 use Dvelum\Request;
 use Dvelum\Response;
@@ -40,21 +41,18 @@ class Backend extends \Dvelum\App\Router
      */
     public function route(Request $request , Response $response) :void
     {
-        $cfg = Config::storage()->get('backend.php');
+        $configBackend = Config::storage()->get('backend.php');
 
-        $controller = $request->getPart(1);
-        $controller = \Utils_String::formatClassName(\Filter::filterValue('pagecode', $controller));
+        $controllerCode = $request->getPart(1);
+        $controller = \Dvelum\Utils\Strings::formatClassName(\Filter::filterValue('pagecode', $controllerCode));
 
         if(empty($controller)){
             $controller = 'Index';
         }
 
-        if(in_array('Backend_' . $controller . '_Controller', $cfg->get('system_controllers')))
-        {
+        if(in_array('Backend_' . $controller . '_Controller', $configBackend->get('system_controllers'))) {
             $controller = 'Backend_' . $controller . '_Controller';
-        }
-        else
-        {
+        } else {
             $manager = new \Modules_Manager();
             $controller = $manager->getModuleController($controller);
 
@@ -63,6 +61,7 @@ class Backend extends \Dvelum\App\Router
                 return;
             }
         }
+
         $this->runController($controller,  $request->getPart(2), $request, $response);
     }
 

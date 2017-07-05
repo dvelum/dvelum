@@ -29,6 +29,7 @@ use Dvelum\App\Session;
 use Dvelum\Lang;
 use Dvelum\View;
 use Dvelum\Request;
+use Dvelum\Resource;
 use Dvelum\Response;
 
 class Controller extends App\Controller
@@ -362,5 +363,53 @@ class Controller extends App\Controller
         $template->set('wwwRoot' , $this->appConfig->get('wwwroot'));
         $this->response->put($template->render('system/'.$this->backofficeConfig->get('theme') . '/login.php'));
         $this->response->send();
+    }
+
+    public function showPage()
+    {
+        $controllerCode = $this->request->getPart(1);
+        $templatesPath = 'system/' . $this->backofficeConfig->get('theme') . '/';
+
+        $page = \Page::getInstance();
+        $page->setTemplatesPath($templatesPath);
+
+        $wwwRoot = $this->appConfig->get('wwwroot');
+        $adminPath = $this->appConfig->get('adminPath');
+        $urlDelimiter = $this->appConfig->get('urlDelimiter');
+
+        /*
+         * Define frontend JS variables
+         */
+        $res = Resource::factory();
+        $res->addInlineJs('
+            app.wwwRoot = "' . $wwwRoot . '";
+        	app.admin = "' . $this->request->url([$adminPath]) . '";
+        	app.delimiter = "' . $urlDelimiter . '";
+        	app.root = "' . $this->request->url([$adminPath, $controllerCode]) . '";
+        ');
+
+        $modulesManager = new \Modules_Manager();
+        /*
+         * Load template
+         */
+        $template = new View();
+        $template->disableCache();
+        $template->setProperties(array(
+            'wwwRoot' => $this->appConfig->get('wwwroot'),
+            'page' => $page,
+            'urlPath' => $controllerCode,
+            'resource' => $res,
+            'path' => $templatesPath,
+            'adminPath' => $this->appConfig->get('adminPath'),
+            'development' => $this->appConfig->get('development'),
+            'version' => Config::storage()->get('versions.php')->get('core'),
+            'lang' => $this->appConfig->get('language'),
+            'modules' => $modulesManager->getList(),
+            'userModules' => Session\User::factory()->getModuleAcl()->getAvailableModules(),
+            'useCSRFToken' => $this->backofficeConfig->get('use_csrf_token'),
+            'theme' => $this->backofficeConfig->get('theme')
+        ));
+
+        $this->response->put($template->render($page->getTemplatesPath() . 'layout.php'));
     }
 }

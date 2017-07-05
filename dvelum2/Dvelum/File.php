@@ -113,7 +113,7 @@ class File
         }
         catch(\Exception $e)
         {
-            throw new Exception('You tried to read nonexistent dir: ' . $path );
+            throw new \Exception('You tried to read nonexistent dir: ' . $path );
         }
 
         $changeSep = false;
@@ -230,12 +230,12 @@ class File
      * @param string $source
      * @return array
      */
-    static public function getZipItemsList($source)
+    static public function getZipItemsList(string $source) : array
     {
         $zip = new \ZipArchive();
 
         if($zip->open($source) !== true)
-            return false;
+            return [];
 
         $zipSize = $zip->numFiles - 1;
 
@@ -252,9 +252,9 @@ class File
      * Recursively remove files and dirs from given $pathname
      * @param string $pathname
      * @param bool $removeParentDir
-     * @return boolean
+     * @return bool
      */
-    static public function rmdirRecursive($pathname , $removeParentDir = false)
+    static public function rmdirRecursive(string $pathname ,bool $removeParentDir = false) : bool
     {
         $filesDirs = self::scanFiles($pathname , false , true , File::Files_Dirs , RecursiveIteratorIterator::CHILD_FIRST);
 
@@ -289,7 +289,7 @@ class File
      * @param string $dest
      * @return bool
      */
-    static public function copyDir($source, $dest)
+    static public function copyDir(string $source, string $dest) : bool
     {
         if(!is_dir($dest)){
             if(!@mkdir($dest, 0755, true)){
@@ -334,7 +334,7 @@ class File
      * @param string $localRoot - optional
      * @return bool
      */
-    static public function copyFiles($destPath , $files , $localRoot = '')
+    static public function copyFiles(string $destPath , $files , $localRoot = '') : bool
     {
         if(!file_exists($destPath))
             if(!mkdir($destPath, 0775))

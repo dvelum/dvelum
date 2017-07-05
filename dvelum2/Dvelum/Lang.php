@@ -20,9 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum;
 
-use Dvelum\Config\ConfigInterface;
 use Dvelum\Config\Storage\StorageInterface;
-use Dvelum\Service;
 
 class Lang
 {
@@ -32,7 +30,6 @@ class Lang
 
     protected $dictionaries = [];
     protected $loaders = [];
-
 
     /**
      * Set default localization
