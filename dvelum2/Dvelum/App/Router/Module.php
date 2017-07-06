@@ -23,12 +23,11 @@ namespace Dvelum\App\Router;
 
 use Dvelum\App\Router;
 use Dvelum\Config;
-use Dvelum\View;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Orm\Model;
-use Dvelum\App\BlockManager;
-use Dvelum\Service as ServiceLocator;
+use Dvelum\App\Session\User;
+
 
 /**
  * Back office
@@ -37,12 +36,14 @@ class Module extends Router
 {
     const CACHE_KEY_ROUTES = 'Frontend_Routes';
     
-    protected $appConfig = false;
+    protected $appConfig;
+    protected $frontendConfig;
     protected $moduleRoutes;
 
     public function __construct()
     {
         $this->appConfig = Config::storage()->get('main.php');
+        $this->frontendConfig = Config::storage()->get('frontend.php');
     }
 
     /**
@@ -52,7 +53,7 @@ class Module extends Router
      */
     public function route(Request $request , Response $response) : void
     {
-        $vers = $request->get('vers' , 'int' , false);
+        $pageVersion = $request->get('vers' , 'int' , false);
         $showRevision = false;
         $pageCode = $request->getPart(0);
 
@@ -69,17 +70,12 @@ class Module extends Router
         $cacheManager = new \Cache_Manager();
         $cache = $cacheManager->get('data');
 
-        if($vers)
+        if($pageVersion)
         {
-            $user = \User::getInstance();
-            if($user->isAuthorized() && $user->isAdmin())
-            {
+            $user = User::getInstance();
+            if($user->isAuthorized() && $user->isAdmin()){
                 $pageData = array_merge($pageData , Model::factory('Vc')->getData('page' , $pageData['id'] , $vers));
                 $showRevision = true;
-            }
-            else
-            {
-                $vers = false;
             }
         }
 
@@ -105,52 +101,9 @@ class Module extends Router
                 $controllerConfig = $fModules->get($page->func_code);
                 $this->runController($controllerConfig['class'] , $request->getPart(1), $request, $response);
             }
+        }else{
+            $this->runController($this->frontendConfig->get('default_controller') , null, $request, $response);
         }
-
-        /**
-         * @var BlockManager $blockManager
-         */
-        $blockManager = ServiceLocator::get('blockmanager');
-
-        if($vers){
-            $blockManager->disableCache();
-        }
-
-        if($page->show_blocks)
-            $blockManager->init($page->id , $page->default_blocks , $vers);
-
-        $this->showPage($page , $blockManager, $request, $response);
-    }
-
-    /**
-     * Show Page.
-     * Running this method initiates rendering of templates and sending of HTML
-     * data.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param \Page $page
-     * @param BlockManager $blockManager
-     * @return void
-     */
-    public function showPage(\Page $page , BlockManager $blockManager, Request $request , Response $response) : void
-    {
-        header('Content-Type: text/html; charset=utf-8');
-
-        $page = \Page::getInstance();
-        $page->setTemplatesPath('public/');
-
-        $template = new View();
-        $template->disableCache();
-        $template->setProperties(array(
-            'development' => $this->appConfig->get('development') ,
-            'page' => $page ,
-            'path' => $page->getThemePath() ,
-            'blockManager' => $blockManager ,
-            'resource' => \Dvelum\Resource::factory(),
-            'pagesTree' => Model::factory('Page')->getTree()
-        ));
-        $response->put($template->render($page->getThemePath().'layout.php'));
     }
 
     /**

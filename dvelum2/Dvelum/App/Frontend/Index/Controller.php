@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Frontend\Index;
 use Dvelum\App;
 
-class Controller extends App\Controller
+class Controller extends App\Frontend\Controller
 {
     public function indexAction()
     {
