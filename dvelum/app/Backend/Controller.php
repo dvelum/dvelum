@@ -586,4 +586,53 @@ abstract class Backend_Controller extends Controller
         }
         return $projectData;
     }
+
+    public function showPage()
+    {
+        $request = Request::getInstance();
+        $controllerCode = $request->getPart(1);
+        $templatesPath = 'system/' . $this->_configBackend->get('theme') . '/';
+
+        $page = \Page::getInstance();
+        $page->setTemplatesPath($templatesPath);
+
+        $wwwRoot = $this->_configMain->get('wwwroot');
+        $adminPath = $this->_configMain->get('adminPath');
+        $urlDelimiter = $this->_configMain->get('urlDelimiter');
+
+        /*
+         * Define frontend JS variables
+         */
+        $res = Resource::getInstance();
+        $res->addInlineJs('
+            app.wwwRoot = "' . $wwwRoot . '";
+        	app.admin = "' . $request->url([$adminPath]) . '";
+        	app.delimiter = "' . $urlDelimiter . '";
+        	app.root = "' . $request->url([$adminPath, $controllerCode,'']) . '";
+        ');
+
+        $modulesManager = new \Modules_Manager();
+        /*
+         * Load template
+         */
+        $template = new Template();
+        $template->disableCache();
+        $template->setProperties(array(
+            'wwwRoot' => $this->_configMain->get('wwwroot'),
+            'page' => $page,
+            'urlPath' => $controllerCode,
+            'resource' => $res,
+            'path' => $templatesPath,
+            'adminPath' => $this->_configMain->get('adminPath'),
+            'development' => $this->_configMain->get('development'),
+            'version' => Config::storage()->get('versions.php')->get('core'),
+            'lang' => $this->_configMain->get('language'),
+            'modules' => $modulesManager->getList(),
+            'userModules' => User::factory()->getModuleAcl()->getAvailableModules(),
+            'useCSRFToken' => $this->_configBackend->get('use_csrf_token'),
+            'theme' => $this->_configBackend->get('theme')
+        ));
+
+        Response::put($template->render($templatesPath . 'layout.php'));
+    }
 }
