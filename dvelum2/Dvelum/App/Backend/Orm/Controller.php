@@ -45,6 +45,10 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         }
     }
 
+    public function getModule(): string
+    {
+        return 'Orm';
+    }
 
     /**
      * Controller constructor.
