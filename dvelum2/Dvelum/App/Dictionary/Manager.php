@@ -97,9 +97,9 @@ class Manager
             $files = File::scanFiles($path . $this->baseDir . 'index/', array('.php'), false, File::Files_Only);
 
             if (!empty($files)) {
-                foreach ($files as $path) {
-                    $name = substr(basename($path), 0, -4);
-                    $list[$name] = $path;
+                foreach ($files as $itemPath) {
+                    $name = substr(basename($itemPath), 0, -4);
+                    $list[$name] = $itemPath;
                 }
             }
         }
@@ -151,9 +151,9 @@ class Manager
      * Rename dictionary
      * @param string $oldName
      * @param string $newName
-     * @return boolean
+     * @return bool
      */
-    public function rename($oldName, $newName)
+    public function rename(string $oldName, string $newName) : bool
     {
         $dirs = File::scanFiles($this->path . $this->baseDir, false, false, File::Dirs_Only);
 
@@ -179,9 +179,9 @@ class Manager
     /**
      * Check if dictionary exists
      * @param string $name
-     * @return boolean
+     * @return bool
      */
-    public function isValidDictionary($name)
+    public function isValidDictionary(string $name) : bool
     {
         /*
          * Check local cache
@@ -200,9 +200,9 @@ class Manager
     /**
      * Remove dictionary
      * @param string $name
-     * @return boolean
+     * @return bool
      */
-    public function remove($name)
+    public function remove(string $name) : bool
     {
         $dirs = File::scanFiles($this->path . $this->baseDir, false, false, File::Dirs_Only);
 
@@ -227,7 +227,7 @@ class Manager
     /**
      * Reset cache
      */
-    public function resetCache()
+    public function resetCache() : void
     {
         if (!$this->cache) {
             return;
@@ -239,14 +239,19 @@ class Manager
 
     /**
      * Get data hash (all dictionaries data)
+     * @return string
      */
-    public function getDataHash()
+    public function getDataHash() : string
     {
-        if ($this->cache && $hash = $this->cache->load(self::CACHE_KEY_DATA_HASH)) {
-            return $hash;
+        if ($this->cache){
+            $hash = $this->cache->load(self::CACHE_KEY_DATA_HASH);
+            if(!empty($hash) && is_string($hash)){
+                return $hash;
+            }
         }
 
         $s = '';
+
         $list = $this->getList();
 
         if (!empty($list)) {
@@ -304,9 +309,9 @@ class Manager
     /**
      * Rebuild dictionary index
      * @param string $name
-     * @return boolean
+     * @return bool
      */
-    public function rebuildIndex($name)
+    public function rebuildIndex($name) : bool
     {
         $dict = \Dictionary::factory($name);
         $storage = Config::storage();
@@ -325,9 +330,9 @@ class Manager
      * Sync localized versions of dictionaries using base dictionary as a reference list of records
      * @param string $name
      * @param string $baseLocale
-     * @return boolean
+     * @return bool
      */
-    public function mergeLocales($name, $baseLocale)
+    public function mergeLocales($name, $baseLocale) : bool
     {
         $storage = Config::storage();
 
