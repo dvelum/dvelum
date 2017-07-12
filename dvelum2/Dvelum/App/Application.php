@@ -34,7 +34,8 @@ use Dvelum\{
     Orm,
     Lang,
     Utils,
-    Service
+    Service,
+    Cache\CacheInterface
 };
 
 
@@ -236,16 +237,16 @@ class Application
 
     /**
      * Initialize Cache connections
-     * @return \Cache_Interface | null
+     * @return CacheInterface | null
      */
-    protected function initCache(): ?\Cache_Interface
+    protected function initCache(): ? CacheInterface
     {
         if (!$this->config->get('use_cache')) {
             return null;
         }
 
         $cacheConfig = Config::storage()->get('cache.php')->__toArray();
-        $cacheManager = new \Cache_Manager();
+        $cacheManager = new Cache\Manager();
 
         foreach ($cacheConfig as $name => $cfg) {
             if ($cfg['enabled']) {

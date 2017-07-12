@@ -20,6 +20,8 @@ Downloads https://sourceforge.net/projects/dvelum/files/
 
 Old Version Downloads https://code.google.com/p/dvelum/downloads/list?can=1
 
+DVelum 0.x/1.x Repo https://github.com/k-samuel/dvelum
+
 Official Site (ENG) http://dvelum.net
 
 Official Site (RU)  http://dvelum.ru
