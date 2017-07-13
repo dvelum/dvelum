@@ -32,8 +32,9 @@ interface CacheInterface
      * @param mixed $data
      * @param string $key
      * @param integer|bool $lifetime - optional
+     * @return bool
      */
-    public function save($data, string $key, $lifetime = false);
+    public function save($data, string $key, $lifetime = false) : bool ;
 
     /**
      * Load cached variable
@@ -44,19 +45,20 @@ interface CacheInterface
 
     /**
      * Clear cache
+     * @return bool
      */
-    public function clean();
+    public function clean() : bool;
 
     /**
      * Remove cached variable
      * @param string $key
-     * @return boolean
+     * @return bool
      */
-    public function remove(string $key);
+    public function remove(string $key) : bool;
 
     /**
      * Get statistics for cache operation
      * @return array
      */
-    public function getOperationsStat();
+    public function getOperationsStat() : array;
 }

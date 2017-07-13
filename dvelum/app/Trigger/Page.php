@@ -10,7 +10,7 @@ class Trigger_Page extends Trigger
 		$this->clearBlockCache($object->getId());
 	}
 	
-	public function onAfterUpdate(Orm\Object $object)
+	public function onAfterUpdate(Orm\ObjectInterface $object)
 	{
 		parent::onAfterUpdate($object);
 			

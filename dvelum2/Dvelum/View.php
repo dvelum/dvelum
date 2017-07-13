@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum;
 
-use Dvelum\Config\Storage;
+use Dvelum\Cache\CacheInterface;
 
 /**
  * View class
@@ -60,9 +60,9 @@ class View
 
     /**
      * Set the template cache manager (system method)
-     * @param \Cache_Interface $manager
+     * @param CacheInterface $manager
      */
-    static public function setCache(\Cache_Interface $manager)
+    static public function setCache(CacheInterface $manager)
     {
         self::$defaultCache = $manager;
     }

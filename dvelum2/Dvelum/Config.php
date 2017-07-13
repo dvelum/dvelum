@@ -1,7 +1,7 @@
 <?php
 /**
- * DVelum project https://github.com/dvelum/dvelum
- *  Copyright (C) 2011-2017  Kirill Yegorov
+* DVelum project https://github.com/dvelum/dvelum
+*  Copyright (C) 2011-2017  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
