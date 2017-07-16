@@ -316,7 +316,7 @@ class Model
      * @param array|string $fields — optional — the list of fields to retrieve
      * @return array|false
      */
-    final public function getItem($id, $fields = '*')
+    final public function getItem($id, $fields = ['*'])
     {
         $primaryKey = $this->getPrimaryKey();
         $result = $this->query()

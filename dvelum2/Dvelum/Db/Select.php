@@ -28,52 +28,52 @@ namespace Dvelum\Db;
  */
 class Select
 {
-    const JOIN_INNER = 1;
-    const JOIN_LEFT = 2;
-    const JOIN_RIGHT = 3;
+    const JOIN_INNER = 'inner';
+    const JOIN_LEFT = 'left';
+    const JOIN_RIGHT = 'right';
 
     public $localCache = true;
 
     /**
-     * @var \Mysqli
+     * @var Adapter $dbAdapter
      */
-    protected $_mysqliConnection = false;
+    protected $dbAdapter = false;
 
-    protected $_distinct = false;
+    protected $distinct = false;
 
-    protected $_from,
-        $_where,
-        $_join,
-        $_group,
-        $_having,
-        $_limit,
-        $_order,
-        $_orWhere,
-        $_orHaving,
-        $_forUpdate;
+    protected $from,
+        $where,
+        $join,
+        $group,
+        $having,
+        $limit,
+        $order,
+        $orWhere,
+        $orHaving,
+        $forUpdate;
 
-    protected $_assembleOrder = [
-        '_getDistinct' => '_distinct',
-        '_getFrom' => '_from',
-        '_getJoins' => '_join',
-        '_getWhere' => '_where',
-        '_getOrWhere' => '_orWhere',
-        '_getGroup' => '_group',
-        '_getHaving' => '_having',
-        '_getOrHaving' => '_orHaving',
-        '_getOrder' => '_order',
-        '_getLimit' => '_limit',
-        '_getForUpdate' => '_forUpdate'
+    protected $assembleOrder = [
+        '_getDistinct' => 'distinct',
+        '_getFrom' => 'from',
+        '_getJoins' => 'join',
+        '_getWhere' => 'where',
+        'getOrWhere' => 'orWhere',
+        'getGroup' => 'group',
+        'getHaving' => 'having',
+        'getOrHaving' => 'orHaving',
+        'getOrder' => 'order',
+        'getLimit' => 'limit',
+        'getForUpdate' => 'forUpdate'
 
     ];
 
-    protected $_aliasCount = [];
+    protected $aliasCount = [];
 
     /**
-     * @param \mysqli $connection
+     * @param Adapter $adapter
      */
-    public function setMysqli(\mysqli $connection){
-        $this->_mysqliConnection = $connection;
+    public function setDbAdapter(Adapter $adapter){
+        $this->dbAdapter = $adapter;
     }
 
     /**
@@ -82,7 +82,7 @@ class Select
      */
     public function distinct()
     {
-        $this->_distinct = true;
+        $this->distinct = true;
         return $this;
     }
 
@@ -96,12 +96,22 @@ class Select
     {
         if (!is_array($columns)) {
             if ($columns !== '*')
-                $columns = $this->_convertColumnsString($columns);
+                $columns = $this->convertColumnsString($columns);
             else
                 $columns = [$columns];
         }
 
-        $this->_from = ['table' => $table, 'columns' => $columns];
+        $this->from = ['table' => $table, 'columns' => $columns];
+        return $this;
+    }
+
+    /**
+     * Set columns
+     * @param array $columns
+     * @return self
+     */
+    public function columns(array $columns) : self{
+        $this->from['columns'] = $columns;
         return $this;
     }
 
@@ -113,10 +123,10 @@ class Select
      */
     public function where($condition, $bind = false)  : self
     {
-        if (!is_array($this->_where))
-            $this->_where = array();
+        if (!is_array($this->where))
+            $this->where = array();
 
-        $this->_where[] = array('condition' => $condition, 'bind' => $bind);
+        $this->where[] = array('condition' => $condition, 'bind' => $bind);
         return $this;
     }
 
@@ -128,10 +138,10 @@ class Select
      */
     public function orWhere($condition, $bind = false) : self
     {
-        if (!is_array($this->_orWhere))
-            $this->_orWhere = array();
+        if (!is_array($this->orWhere))
+            $this->orWhere = array();
 
-        $this->_orWhere[] = array('condition' => $condition, 'bind' => $bind);
+        $this->orWhere[] = array('condition' => $condition, 'bind' => $bind);
 
         return $this;
     }
@@ -143,14 +153,14 @@ class Select
      */
     public function group($fields) : self
     {
-        if (!is_array($this->_group))
-            $this->_group = array();
+        if (!is_array($this->group))
+            $this->group = array();
 
         if (!is_array($fields))
             $fields = explode(',', $fields);
 
         foreach ($fields as $field)
-            $this->_group[] = $field;
+            $this->group[] = $field;
 
         return $this;
     }
@@ -163,10 +173,10 @@ class Select
      */
     public function having($condition, $bind = false) : self
     {
-        if (!is_array($this->_having))
-            $this->_having = array();
+        if (!is_array($this->having))
+            $this->having = array();
 
-        $this->_having[] = array('condition' => $condition, 'bind' => $bind);
+        $this->having[] = array('condition' => $condition, 'bind' => $bind);
 
         return $this;
     }
@@ -179,10 +189,10 @@ class Select
      */
     public function orHaving($condition, $bind = false) : self
     {
-        if (!is_array($this->_orHaving))
-            $this->_orHaving = array();
+        if (!is_array($this->orHaving))
+            $this->orHaving = array();
 
-        $this->_orHaving[] = array('condition' => $condition, 'bind' => $bind);
+        $this->orHaving[] = array('condition' => $condition, 'bind' => $bind);
 
         return $this;
     }
@@ -192,11 +202,12 @@ class Select
      * @param string $table
      * @param mixed $cond
      * @param mixed $cols
+     * @param string $type
      * @return self
      */
-    public function join($table, $cond, $cols = '*') : self
+    public function join($table, $cond, $cols = '*', string $type ='inner') : self
     {
-        $this->joinInner($table, $cond, $cols);
+        $this->addJoin($table, $cond, $cols, $type);
 
         return $this;
     }
@@ -206,11 +217,12 @@ class Select
      * @param mixed $table
      * @param mixed $cond
      * @param mixed $cols
+     * @deprecated
      * @return self
      */
     public function joinInner($table, $cond, $cols = '*') : self
     {
-        $this->_addJoin(self::JOIN_INNER, $table, $cond, $cols);
+        $this->addJoin( $table, $cond, $cols, self::JOIN_INNER);
 
         return $this;
     }
@@ -220,11 +232,12 @@ class Select
      * @param mixed $table
      * @param mixed $cond
      * @param mixed $cols
+     * @deprecated
      * @return self
      */
     public function joinLeft($table, $cond, $cols = '*') : self
     {
-        $this->_addJoin(self::JOIN_LEFT, $table, $cond, $cols);
+        $this->addJoin($table, $cond, $cols, self::JOIN_LEFT);
 
         return $this;
     }
@@ -234,30 +247,38 @@ class Select
      * @param mixed $table
      * @param mixed $cond
      * @param mixed $cols
+     * @deprecated
      * @return self
      */
     public function joinRight($table, $cond, $cols = '*') : self
     {
-        $this->_addJoin(self::JOIN_RIGHT, $table, $cond, $cols);
+        $this->addJoin($table, $cond, $cols, self::JOIN_RIGHT);
 
         return $this;
     }
 
-    protected function _addJoin($type, $table, $cond, $cols) : self
+    /**
+     * @param $table
+     * @param $cond
+     * @param $cols
+     * @param string $type
+     * @return Select
+     */
+    protected function addJoin($table, $cond, $cols, string $type) : self
     {
         if (!is_array($table) || is_int(key($table))) {
             if (is_array($table))
                 $table = $table[key($table)];
 
-            if (!isset($this->_aliasCount[$table]))
-                $this->_aliasCount[$table] = 0;
+            if (!isset($this->aliasCount[$table]))
+                $this->aliasCount[$table] = 0;
 
             $tableAlias = $table;
 
-            if ($this->_aliasCount[$table])
-                $tableAlias = $table . '_' . $this->_aliasCount[$table];
+            if ($this->aliasCount[$table])
+                $tableAlias = $table . '_' . $this->aliasCount[$table];
 
-            $this->_aliasCount[$table]++;
+            $this->aliasCount[$table]++;
 
             $table = array($tableAlias => $table);
         } else {
@@ -267,29 +288,40 @@ class Select
 
         if (!is_array($cols)) {
             if ($cols !== '*')
-                $cols = $this->_convertColumnsString($cols);
+                $cols = $this->convertColumnsString($cols);
             else
                 $cols = array($cols);
         }
 
-        if (!is_array($this->_join))
-            $this->_join = array();
+        if (!is_array($this->join))
+            $this->join = array();
 
-        $this->_join[] = array('type' => $type, 'table' => $table, 'condition' => $cond, 'columns' => $cols);
+        $this->join[] = array('type' => $type, 'table' => $table, 'condition' => $cond, 'columns' => $cols);
 
         return $this;
     }
 
     /**
      * Adding a LIMIT clause to the query
-     * @param integer $count
+     * @param int $count
      * @param mixed $offset - optional
      * @return self
      */
-    public function limit($count, $offset = false) : self
+    public function limit(int $count, $offset = false) : self
     {
-        $this->_limit = ['count' => $count, 'offset' => $offset];
+        $this->limit = ['count' => $count, 'offset' => $offset];
 
+        return $this;
+    }
+
+    /**
+     * Adding offset
+     * @param $offset
+     * @return self
+     */
+    public function offset($offset) : self
+    {
+        $this->limit['offset'] = $offset;
         return $this;
     }
 
@@ -303,7 +335,7 @@ class Select
     {
         $page = ($page > 0) ? $page : 1;
         $rowCount = ($rowCount > 0) ? $rowCount : 1;
-        $this->_limit = array('count' => (int)$rowCount, 'offset' => (int)$rowCount * ($page - 1));
+        $this->limit = array('count' => (int)$rowCount, 'offset' => (int)$rowCount * ($page - 1));
         return $this;
     }
 
@@ -316,7 +348,7 @@ class Select
     public function order($spec, $asIs = false) : self
     {
         if ($asIs) {
-            $this->_order = array($spec);
+            $this->order = array($spec);
             return $this;
         }
 
@@ -341,7 +373,7 @@ class Select
                 }
             }
         }
-        $this->_order = $result;
+        $this->order = $result;
         return $this;
     }
 
@@ -353,7 +385,7 @@ class Select
      */
     public function forUpdate($flag = true) : self
     {
-        $this->_forUpdate = $flag;
+        $this->forUpdate = $flag;
         return $this;
     }
 
@@ -365,7 +397,7 @@ class Select
     public function assemble() : string
     {
         $sql = 'SELECT ';
-        foreach ($this->_assembleOrder as $method => $data)
+        foreach ($this->assembleOrder as $method => $data)
             if (!empty($this->$data))
                 $sql = $this->$method($sql);
         return $sql . ';';
@@ -374,7 +406,7 @@ class Select
 
     protected function _getDistinct($sql) : string
     {
-        if ($this->_distinct)
+        if ($this->distinct)
             $sql .= 'DISTINCT ';
 
         return $sql;
@@ -382,14 +414,14 @@ class Select
 
     protected function _getFrom($sql) : string
     {
-        $columns = $this->_tableFieldsList($this->_from['table'], $this->_from['columns']);
+        $columns = $this->tableFieldsList($this->from['table'], $this->from['columns']);
         $tables = array();
 
-        $tables[] = $this->_tableAlias($this->_from['table']);
+        $tables[] = $this->tableAlias($this->from['table']);
 
-        if (!empty($this->_join))
-            foreach ($this->_join as $config)
-                $columns = array_merge($columns, $this->_tableFieldsList($config['table'], $config['columns']));
+        if (!empty($this->join))
+            foreach ($this->join as $config)
+                $columns = array_merge($columns, $this->tableFieldsList($config['table'], $config['columns']));
 
         $sql .= implode(', ', $columns) . ' FROM ' . implode(', ', $tables);
 
@@ -398,13 +430,13 @@ class Select
 
     protected function _getJoins($sql)
     {
-        foreach ($this->_join as $item)
-            $sql .= $this->_compileJoin($item);
+        foreach ($this->join as $item)
+            $sql .= $this->compileJoin($item);
 
         return $sql;
     }
 
-    protected function _compileJoin(array $config) : string
+    protected function compileJoin(array $config) : string
     {
         $str = '';
         //type, table , condition
@@ -420,18 +452,18 @@ class Select
                 break;
         }
 
-        $str .= $this->_tableAlias($config['table']) . ' ON ' . $config['condition'];
+        $str .= $this->tableAlias($config['table']) . ' ON ' . $config['condition'];
         return $str;
     }
 
     protected function _getWhere($sql) : string
     {
-        $where = $this->_prepareWhere($this->_where);
+        $where = $this->prepareWhere($this->where);
 
         return $sql . ' WHERE (' . implode(' AND ', $where) . ')';
     }
 
-    protected function _prepareWhere($list) : array
+    protected function prepareWhere($list) : array
     {
         $where = [];
 
@@ -444,11 +476,11 @@ class Select
                     $list = [];
 
                     foreach ($item['bind'] as $listValue)
-                        $list[] = $this->_quote($listValue);
+                        $list[] = $this->quote($listValue);
 
                     $item['bind'] = implode(',', $list);
                 } else {
-                    $item['bind'] = $this->_quote($item['bind']);
+                    $item['bind'] = $this->quote($item['bind']);
                 }
 
                 $where[] = str_replace('?', $item['bind'], $item['condition']);
@@ -457,48 +489,48 @@ class Select
         return $where;
     }
 
-    protected function _getOrWhere($sql) : string
+    protected function getOrWhere($sql) : string
     {
-        $where = $this->_prepareWhere($this->_orWhere);
+        $where = $this->prepareWhere($this->orWhere);
         return $sql . ' OR (' . implode(' ) OR ( ', $where) . ')';
     }
 
-    protected function _getHaving($sql) : string
+    protected function getHaving($sql) : string
     {
-        $having = $this->_prepareWhere($this->_having);
+        $having = $this->prepareWhere($this->having);
         return $sql . ' HAVING (' . implode(' AND ', $having) . ')';
     }
 
-    protected function _getOrHaving($sql) : string
+    protected function getOrHaving($sql) : string
     {
-        $having = $this->_prepareWhere($this->_orHaving);
+        $having = $this->prepareWhere($this->orHaving);
         return $sql . ' OR (' . implode(' ) OR ( ', $having) . ')';
     }
 
-    protected function _getGroup($sql) : string
+    protected function getGroup($sql) : string
     {
-        foreach ($this->_group as &$item)
+        foreach ($this->group as &$item)
             $item = $this->quoteIdentifier($item);
 
-        return $sql . ' GROUP BY ' . implode(',', $this->_group);
+        return $sql . ' GROUP BY ' . implode(',', $this->group);
     }
 
-    protected function _getOrder($sql) : string
+    protected function getOrder($sql) : string
     {
-        return $sql . ' ORDER BY ' . implode(',', $this->_order);
+        return $sql . ' ORDER BY ' . implode(',', $this->order);
     }
 
-    protected function _getLimit($sql) : string
+    protected function getLimit($sql) : string
     {
-        if ($this->_limit['offset'])
-            return $sql . ' LIMIT ' . intval($this->_limit['offset']) . ',' . $this->_limit['count'];
+        if ($this->limit['offset'])
+            return $sql . ' LIMIT ' . intval($this->limit['offset']) . ',' . $this->limit['count'];
         else
-            return $sql . ' LIMIT ' . $this->_limit['count'];
+            return $sql . ' LIMIT ' . $this->limit['count'];
     }
 
-    protected function _getForUpdate($sql) : string
+    protected function getForUpdate($sql) : string
     {
-        if ($this->_forUpdate) {
+        if ($this->forUpdate) {
             return $sql . ' FOR UPDATE';
         } else {
             return $sql;
@@ -520,7 +552,7 @@ class Select
      * @param string $value Raw string
      * @return string Quoted string
      */
-    protected function _quote($value) : string
+    protected function quote($value) : string
     {
         if (is_int($value)) {
             return (string) $value;
@@ -528,14 +560,18 @@ class Select
             return sprintf('%F', $value);
         }
 
-        if($this->_mysqliConnection){
-            return "'" . $this->_mysqliConnection->real_escape_string((string)$value) . "'";
+        if($this->dbAdapter){
+            return $this->dbAdapter->quote((string)$value);
         }else{
-            return "'" . addcslashes($value, "\000\\'\"\032\n\r") . "'";
+            trigger_error(
+                'Attempting to quote a value in ' . get_class($this) .
+                ' without extension/driver support can introduce security vulnerabilities in a production environment'
+            );
+            return '\'' . addcslashes((string) $value, "\x00\n\r\\'\"\x1a") . '\'';
         }
     }
 
-    protected function _tableAlias($table) : string
+    protected function tableAlias($table) : string
     {
         static $cache = [];
 
@@ -572,7 +608,7 @@ class Select
     /**
      * @return array
      */
-    protected function _tableFieldsList($table, array $columns) : array
+    protected function tableFieldsList($table, array $columns) : array
     {
         static $cache = [];
 
@@ -627,7 +663,7 @@ class Select
         return $result;
     }
 
-    protected function _convertColumnsString($str)
+    protected function convertColumnsString($str)
     {
         $items = explode(',', $str);
         return array_map('trim', $items);

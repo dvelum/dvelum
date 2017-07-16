@@ -54,9 +54,7 @@ class Adapter
     public function select()
     {
         $select = new Select();
-        if($this->params['adapter'] === 'Mysqli'){
-            $select->setMysqli($this->adapter->getDriver()->getConnection()->getResource());
-        }
+        $select->setDbAdapter($this);
         return $select;
     }
 

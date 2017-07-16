@@ -23,7 +23,6 @@ namespace Dvelum\Orm\Model;
 use Dvelum\Db\Adapter;
 use Dvelum\Db;
 use Dvelum\Db\Select\Filter;
-use Dvelum\Orm\Exception;
 use Dvelum\Orm\Model;
 
 class Query
@@ -44,7 +43,7 @@ class Query
     protected $searchType = self::SEARCH_TYPE_CONTAINS;
     protected $filters = null;
     protected $params = null;
-    protected $fields = '*';
+    protected $fields = ['*'];
     protected $joins = null;
     protected $table = null;
     protected $tableAlias = null;
@@ -88,6 +87,7 @@ class Query
 
     /**
      * @param string $query
+     * @param string $queryType
      * @return Query
      */
     public function search(?string $query, ?string $queryType = self::SEARCH_TYPE_CONTAINS): Query
@@ -143,23 +143,22 @@ class Query
      * @param array $filters
      * @return void
      */
-    public function applyFilters(Db\Select $sql, array $filters) : void
+    public function applyFilters(Db\Select $sql, array $filters): void
     {
         $filters = $this->clearFilters($filters);
 
-        foreach ($filters as $k => $v)
-        {
+        foreach ($filters as $k => $v) {
             if ($v instanceof Filter) {
                 $v->applyTo($this->db, $sql);
             } else {
                 if (is_array($v) && !empty($v)) {
-                    $sql->where( $this->db->quoteIdentifier($k) . ' IN(?)', $v);
+                    $sql->where($this->db->quoteIdentifier($k) . ' IN(?)', $v);
                 } elseif (is_bool($v)) {
-                    $sql->where( $this->db->quoteIdentifier($k) . ' = ' . intval($v));
+                    $sql->where($this->db->quoteIdentifier($k) . ' = ' . intval($v));
                 } elseif ((is_string($v) && strlen($v)) || is_numeric($v)) {
-                    $sql->where( $this->db->quoteIdentifier($k) . ' =?', $v);
+                    $sql->where($this->db->quoteIdentifier($k) . ' =?', $v);
                 } elseif (is_null($v)) {
-                    $sql->where( $this->db->quoteIdentifier($k) . ' IS NULL');
+                    $sql->where($this->db->quoteIdentifier($k) . ' IS NULL');
                 }
             }
         }
@@ -172,22 +171,21 @@ class Query
      * @param string $queryType
      * @return void
      */
-    public function applySearch(Db\Select $sql, $query, string $queryType) : void
+    public function applySearch(Db\Select $sql, $query, string $queryType): void
     {
         $searchFields = $this->model->getSearchFields();
 
-        if(!empty($searchFields))
-        {
-            if(empty($this->tableAlias)) {
+        if (!empty($searchFields)) {
+            if (empty($this->tableAlias)) {
                 $alias = $this->table;
-            }else{
+            } else {
                 $alias = $this->tableAlias;
             }
 
             $q = [];
 
             foreach ($searchFields as $v) {
-                switch ($queryType){
+                switch ($queryType) {
                     case self::SEARCH_TYPE_CONTAINS:
                         $q[] = $alias . "." . $v . " LIKE(" . $this->db->quote('%' . $query . '%') . ")";
                         break;
@@ -209,18 +207,19 @@ class Query
      * @param Db\Select $sql
      * @param array $params
      */
-    public function applyParams(Db\Select $sql, array $params): void
+    public function applyParams($sql, array $params): void
     {
-        if (isset($params['limit']) && !isset($params['start'])) {
+        if (isset($params['limit'])) {
             $sql->limit(intval($params['limit']));
-        } elseif (isset($params['start']) && isset($params['limit'])) {
-            $sql->limit(intval($params['limit']), intval($params['start']));
+        }
+
+        if (isset($params['start'])) {
+            $sql->offset(intval($params['start']));
         }
 
         if (!empty($params['sort']) && !empty($params['dir'])) {
             if (is_array($params['sort']) && !is_array($params['dir'])) {
-                $sort = array();
-
+                $sort = [];
                 foreach ($params['sort'] as $key => $field) {
                     if (!is_int($key)) {
                         $order = trim(strtolower($field));
@@ -243,21 +242,22 @@ class Query
      * @param Db\Select $sql
      * @param array $joins
      */
-    public function applyJoins(Db\Select $sql, array $joins)
+    public function applyJoins($sql, array $joins)
     {
         foreach ($joins as $config) {
             switch ($config['joinType']) {
+
                 case 'joinLeft' :
                 case 'left':
-                    $sql->joinLeft($config['table'], $config['condition'], $config['fields']);
+                    $sql->join($config['table'], $config['condition'], $config['fields'], Db\Select::JOIN_LEFT);
                     break;
                 case 'joinRight' :
                 case 'right':
-                    $sql->joinRight($config['table'], $config['condition'], $config['fields']);
+                    $sql->join($config['table'], $config['condition'], $config['fields'], Db\Select::JOIN_RIGHT);
                     break;
                 case 'joinInner':
                 case 'inner':
-                    $sql->joinInner($config['table'], $config['condition'], $config['fields']);
+                    $sql->join($config['table'], $config['condition'], $config['fields'], Db\Select::JOIN_INNER);
                     break;
             }
         }
@@ -268,7 +268,7 @@ class Query
      * @param array $filters
      * @return array
      */
-    public function clearFilters(array $filters) : array
+    public function clearFilters(array $filters): array
     {
         $fields = $this->model->getLightConfig()->get('fields');
         foreach ($filters as $field => $val) {
@@ -291,21 +291,21 @@ class Query
      */
     public function sql(): Db\Select
     {
-        $sql =  $this->db->select();
+        $sql = $this->db->select();
 
         if (!empty($this->tableAlias)) {
-            $sql->from([$this->tableAlias => $this->table], $this->fields);
+            $sql->from([$this->tableAlias => $this->table]);
         } else {
-            $sql->from($this->table, $this->fields);
+            $sql->from($this->table);
         }
 
-        if(!empty($this->filters))
-        {
+        $sql->columns($this->fields);
+
+        if (!empty($this->filters)) {
             $this->applyFilters($sql, $this->filters);
         }
 
-        if(!empty($this->search))
-        {
+        if (!empty($this->search)) {
             $this->applySearch($sql, $this->search, $this->searchType);
         }
 
@@ -323,20 +323,20 @@ class Query
     /**
      * @return string
      */
-    public function __toString() : string
+    public function __toString(): string
     {
-       return $this->sql()->__toString();
+        return $this->sql()->__toString();
     }
 
     /**
      * Fetch all records
      * @return array
      */
-    public function fetchAll() : array
+    public function fetchAll(): array
     {
-        try{
+        try {
             return $this->model->getDbConnection()->fetchAll($this->__toString());
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
             return [];
         }
@@ -344,25 +344,26 @@ class Query
 
     /**
      * Fetch one
-     * @return mixed
+     * @return array
      */
-    public function fetchOne()
+    public function fetchOne(): array
     {
-        try{
+        try {
             return $this->model->getDbConnection()->fetchOne($this->__toString());
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
+            return [];
         }
     }
 
     /**
      * Fetch first result row
      */
-    public function fetchRow() : array
+    public function fetchRow(): array
     {
-        try{
+        try {
             return $this->model->getDbConnection()->fetchRow($this->__toString());
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
             return [];
         }
@@ -372,11 +373,11 @@ class Query
      * Fetch column
      * @return array
      */
-    public function fetchCol() : array
+    public function fetchCol(): array
     {
-        try{
+        try {
             return $this->model->getDbConnection()->fetchCol($this->__toString());
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
             return [];
         }
@@ -386,7 +387,7 @@ class Query
      * Count the number of rows that satisfy the filters
      * @return int
      */
-    public function getCount() : int
+    public function getCount(): int
     {
         $joins = $this->joins;
         $filters = $this->filters;
@@ -402,7 +403,7 @@ class Query
         }
 
         $sqlQuery = new Model\Query($this->model);
-        $sqlQuery->fields(['count' => 'COUNT(*)'])->filters($filters)->search($query)->joins($joins);
+        $sqlQuery->fields(['count' => 'COUNT(*)'])->filters($filters)->search($query, $searchType)->joins($joins);
 
         $data = $sqlQuery->fetchOne($sqlQuery->__toString());
         if (empty($data)) {
