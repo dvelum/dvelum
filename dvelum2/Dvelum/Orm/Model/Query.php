@@ -344,15 +344,15 @@ class Query
 
     /**
      * Fetch one
-     * @return array
+     * @return mixed
      */
-    public function fetchOne(): array
+    public function fetchOne()
     {
         try {
             return $this->model->getDbConnection()->fetchOne($this->__toString());
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
-            return [];
+            return null;
         }
     }
 
