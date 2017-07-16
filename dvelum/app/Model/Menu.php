@@ -10,7 +10,7 @@ class Model_Menu extends Model
         }
     }
 
-    public function getCachedMenuLinks($menuId)
+    public function getCachedMenuLinks($menuId) : array
     {
         $menuRecord = $this->getCachedItem($menuId);
 
@@ -30,12 +30,16 @@ class Model_Menu extends Model
         }
 
         $itemModel = Model::factory('Menu_Item');
-        $list = $itemModel->getList(array(
-            'sort' => 'order',
-            'dir' => 'ASC'
-        ), array(
-            'menu_id' => $menuRecord['id']
-        ), array(
+
+        $list = $itemModel->query()
+            ->params([
+                'sort' => 'order',
+                'dir' => 'ASC'
+            ])
+            ->filters([
+                'menu_id' => $menuRecord['id']
+            ])
+            ->fields([
                 'order',
                 'page_id',
                 'published',
@@ -45,7 +49,8 @@ class Model_Menu extends Model
                 'url',
                 'resource_id',
                 'link_type'
-            ));
+            ])
+            ->fetchAll();
 
 
         if (empty($list)) {

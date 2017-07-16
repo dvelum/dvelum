@@ -181,6 +181,9 @@ class BlockManager
             if($data!==false)
                 return $data;
         }
+        /**
+         * @var \Model_Blocks $blocksModel
+         */
         $blocksModel = Model::factory('Blocks');
 
         $data = $blocksModel->getPageBlocks($mapPageId , $version);

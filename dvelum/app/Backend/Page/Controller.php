@@ -35,7 +35,7 @@ class Backend_Page_Controller extends Backend_Controller_Crud_Vc
     public function treeListAction()
     {
         $pagesModel = Model::factory('Page');
-        Response::jsonArray($pagesModel->getTreeList( array( 'id','parent_id','published','code')));
+        Response::jsonArray($pagesModel->getTreeList(['id','parent_id','published','code']));
     }
 
     /**
