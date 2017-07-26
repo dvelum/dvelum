@@ -150,6 +150,11 @@ class Model
         } else {
             $this->cache = false;
         }
+
+        if($settings->offsetExists('defaultLog')){
+            $this->log = $settings->get('defaultLog');
+        }
+
         // backward compatibility
         $this->_cache =  &$this->cache;
 

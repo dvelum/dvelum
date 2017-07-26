@@ -24,8 +24,12 @@ namespace Dvelum\App\Backend\Api;
 use Dvelum\{
     Request, Response, Config, App, Orm, Service, Utils
 };
-use Dvelum\Orm\{ObjectInterface, Model};
-use Dvelum\App\{Data,Session,Dictionary};
+use Dvelum\Orm\{
+    ObjectInterface, Model
+};
+use Dvelum\App\{
+    Data, Session, Dictionary
+};
 use Dvelum\App\Controller\EventManager;
 
 class Controller extends App\Backend\Controller
@@ -87,17 +91,19 @@ class Controller extends App\Backend\Controller
     /**
      *  Event listeners can be defined here
      */
-    public function initListeners(){}
+    public function initListeners()
+    {
+    }
 
     /**
      * @param Data\Api\Request $request
      * @param Session\User $user
      * @return Data\Api
      */
-    protected function getApi(Data\Api\Request $request, Session\User $user) : Data\Api
+    protected function getApi(Data\Api\Request $request, Session\User $user): Data\Api
     {
         $api = new Data\Api($request, $user);
-        if(!empty($this->listFields)){
+        if (!empty($this->listFields)) {
             $api->setFields($this->listFields);
         }
         return $api;
@@ -107,7 +113,7 @@ class Controller extends App\Backend\Controller
      * @param Request $request
      * @return Data\Api\Request
      */
-    protected function getApiRequest(Request $request) : Data\Api\Request
+    protected function getApiRequest(Request $request): Data\Api\Request
     {
         $request = new Data\Api\Request($request);
         $request->setObjectName($this->getObjectName());
@@ -120,22 +126,21 @@ class Controller extends App\Backend\Controller
     public function linkedListAction()
     {
         $object = $this->request->post('object', 'string', false);
-        $filter = $this->request->post('filter' , 'array' , []);
-        $pager = $this->request->post('pager' , 'array' , []);
-        $query = $this->request->post('search' , 'string' , null);
+        $filter = $this->request->post('filter', 'array', []);
+        $pager = $this->request->post('pager', 'array', []);
+        $query = $this->request->post('search', 'string', null);
 
-        $filter = array_merge($filter , $this->request->extFilters());
+        $filter = array_merge($filter, $this->request->extFilters());
 
-        if($object === false || !Orm\Object\Config::configExists($object)){
+        if ($object === false || !Orm\Object\Config::configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        if(!in_array(strtolower($object), $this->canViewObjects , true)){
+        if (!in_array(strtolower($object), $this->canViewObjects, true)) {
             $this->response->error($this->lang->get('CANT_VIEW'));
             return;
         }
-
 
         $objectCfg = Orm\Object\Config::factory($object);
         $primaryKey = $objectCfg->getPrimaryKey();
@@ -145,8 +150,8 @@ class Controller extends App\Backend\Controller
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
 
-        if($acl){
-            if(!$acl->can(Orm\Object\Acl::ACCESS_VIEW , $object)){
+        if ($acl) {
+            if (!$acl->can(Orm\Object\Acl::ACCESS_VIEW, $object)) {
                 $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
                 return;
             }
@@ -158,59 +163,52 @@ class Controller extends App\Backend\Controller
         $model = Model::factory($object);
         $rc = $objectCfg->isRevControl();
 
-        if($objectCfg->isRevControl())
-            $fields = ['id'=>$primaryKey, 'published'];
-        else
-            $fields = ['id'=>$primaryKey];
+        if ($objectCfg->isRevControl()) {
+            $fields = ['id' => $primaryKey, 'published'];
+        } else {
+            $fields = ['id' => $primaryKey];
+        }
 
         $count = $model->query()->search($query)->getCount();
         $data = [];
 
+        if ($count) {
+            $data = $model->query()->filters($filter)->params($pager)->fields($fields)->search($query)->fetchAll();
 
-        if($count)
-        {
-            $data = $model->query()
-                            ->filters($filter)
-                            ->params($pager)
-                            ->fields($fields)
-                            ->search($query)
-                            ->fetchAll();
+            if (!empty($data)) {
+                $objectIds = \Utils::fetchCol('id', $data);
 
-            if(!empty($data))
-            {
-                $objectIds = \Utils::fetchCol('id' , $data);
-
-                try{
-                    $objects = Orm\Object::factory($object ,$objectIds);
-                }catch (\Exception $e){
-                    Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
+                try {
+                    $objects = Orm\Object::factory($object, $objectIds);
+                } catch (\Exception $e) {
+                    Model::factory($object)->logError('linkedlistAction ->' . $e->getMessage());
                     $this->response->error($this->lang->get('CANT_EXEC'));
                     return;
                 }
 
-                foreach ($data as &$item)
-                {
-                    if(!$rc){
+                foreach ($data as &$item) {
+                    if (!$rc) {
                         $item['published'] = true;
                     }
 
                     $item['deleted'] = false;
 
-                    if(isset($objects[$item['id']])){
+                    if (isset($objects[$item['id']])) {
                         $o = $objects[$item['id']];
                         $item['title'] = $o->getTitle();
-                        if($rc){
+                        if ($rc) {
                             $item['published'] = $o->get('published');
                         }
-                    }else{
+                    } else {
                         $item['title'] = $item['id'];
                     }
 
-                }unset($item);
+                }
+                unset($item);
             }
         }
 
-        $this->response->success($data, ['count'=>$count]);
+        $this->response->success($data, ['count' => $count]);
     }
 
     /**
@@ -220,20 +218,21 @@ class Controller extends App\Backend\Controller
     {
         $this->objectTitleAction();
     }
+
     /**
      * Get object title
      */
     public function objectTitleAction()
     {
-        $object = $this->request->post('object','string', false);
+        $object = $this->request->post('object', 'string', false);
         $id = $this->request->post('id', 'string', false);
 
-        if(!$object || !Orm\Object\Config::configExists($object)){
+        if (!$object || !Orm\Object\Config::configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        if(!in_array(strtolower($object), $this->canViewObjects , true)){
+        if (!in_array(strtolower($object), $this->canViewObjects, true)) {
             $this->response->error($this->lang->get('CANT_VIEW'));
             return;
         }
@@ -241,8 +240,8 @@ class Controller extends App\Backend\Controller
         $objectConfig = Orm\Object\Config::factory($object);
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
-        if($acl){
-            if(!$acl->can(Orm\Object\Acl::ACCESS_VIEW , $object)){
+        if ($acl) {
+            if (!$acl->can(Orm\Object\Acl::ACCESS_VIEW, $object)) {
                 $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
                 return;
             }
@@ -250,9 +249,9 @@ class Controller extends App\Backend\Controller
 
         try {
             $o = Orm\Object::factory($object, $id);
-            $this->response->success(array('title'=>$o->getTitle()));
-        }catch (\Exception $e){
-            Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);
+            $this->response->success(array('title' => $o->getTitle()));
+        } catch (\Exception $e) {
+            Model::factory($object)->logError('Cannot get title for ' . $object . ':' . $id);
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -269,7 +268,7 @@ class Controller extends App\Backend\Controller
      */
     public function listAction()
     {
-        if(!$this->eventManager->fireEvent(EventManager::BEFORE_LIST, new \stdClass())){
+        if (!$this->eventManager->fireEvent(EventManager::BEFORE_LIST, new \stdClass())) {
             $this->response->error($this->eventManager->getError());
             return;
         }
@@ -280,15 +279,12 @@ class Controller extends App\Backend\Controller
         $eventData->data = $result['data'];
         $eventData->count = $result['count'];
 
-        if(!$this->eventManager->fireEvent(EventManager::AFTER_LIST, $eventData)){
+        if (!$this->eventManager->fireEvent(EventManager::AFTER_LIST, $eventData)) {
             $this->response->error($this->eventManager->getError());
             return;
         }
 
-        $this->response->success(
-            $eventData->data,
-            ['count'=>$eventData->count]
-        );
+        $this->response->success($eventData->data, ['count' => $eventData->count]);
     }
 
     /**
@@ -303,22 +299,21 @@ class Controller extends App\Backend\Controller
 
         $count = $api->getCount();
 
-        if(!$count){
-            return ['data'=>[],'count'=>0];
+        if (!$count) {
+            return ['data' => [], 'count' => 0];
         }
 
         $data = $api->getList();
 
-        if(!empty($this->listLinks))
-        {
+        if (!empty($this->listLinks)) {
             $objectConfig = Orm\Object\Config::factory($this->objectName);
-            if(empty($objectConfig->getPrimaryKey())){
-                throw new \Exception('listLinks requires primary key for object '.$objectConfig->getName());
+            if (empty($objectConfig->getPrimaryKey())) {
+                throw new \Exception('listLinks requires primary key for object ' . $objectConfig->getName());
             }
             $this->addLinkedInfo($objectConfig, $this->listLinks, $data, $objectConfig->getPrimaryKey());
         }
 
-        return ['data' =>$data , 'count'=> $count];
+        return ['data' => $data, 'count' => $count];
     }
 
 
@@ -330,11 +325,12 @@ class Controller extends App\Backend\Controller
      */
     public function editAction()
     {
-        $id = $this->request->post('id' , 'integer' , false);
-        if(! $id)
+        $id = $this->request->post('id', 'integer', false);
+        if (!$id) {
             $this->createAction();
-        else
+        } else {
             $this->updateAction();
+        }
     }
 
     /**
@@ -367,37 +363,37 @@ class Controller extends App\Backend\Controller
     public function deleteAction()
     {
         $this->checkCanDelete();
-        $id = $this->request->post('id' , 'integer' , false);
+        $id = $this->request->post('id', 'integer', false);
 
-        if(!$id){
+        if (!$id) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        try{
-            $object =  Orm\Object::factory($this->objectName , $id);
-        }catch(\Exception $e){
+        try {
+            $object = Orm\Object::factory($this->objectName, $id);
+        } catch (\Exception $e) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
         $acl = $object->getAcl();
-        if($acl && !$acl->canDelete($object)){
+        if ($acl && !$acl->canDelete($object)) {
             $this->response->error($this->lang->get('CANT_DELETE'));
             return;
         }
 
         $ormConfig = Config::storage()->get('orm.php');
 
-        if($ormConfig->get('vc_clear_on_delete')){
+        if ($ormConfig->get('vc_clear_on_delete')) {
             /**
              * @var \Model_Vc $vcModel
              */
             $vcModel = Model::factory('Vc');
-            $vcModel->removeItemVc($this->objectName , $id);
+            $vcModel->removeItemVc($this->objectName, $id);
         }
 
-        if(!$object->delete()){
+        if (!$object->delete()) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -414,12 +410,28 @@ class Controller extends App\Backend\Controller
      */
     public function insertObject(Orm\Object $object)
     {
-        if(!$recId = $object->save()){
-            $this->response->error($this->lang->get('CANT_EXEC'));
-            return;
-        }
+        if ($object->getConfig()->isRevControl()) {
+            if (!$object->saveVersion()) {
+                $this->response->error($this->lang->get('CANT_CREATE'));
+                return;
+            }
 
-        $this->response->success(['id' => $recId]);
+            $stagingUrl = $this->getStagingUrl($object);
+
+            $this->response->success([
+                'id' => $object->getId(),
+                'version' => $object->getVersion(),
+                'published' => $object->get('published'),
+                'staging_url' => $stagingUrl
+            ]);
+
+        } else {
+            if (!$recId = $object->save()) {
+                $this->response->error($this->lang->get('CANT_EXEC'));
+                return;
+            }
+            $this->response->success(['id' => $recId]);
+        }
     }
 
     /**
@@ -430,12 +442,38 @@ class Controller extends App\Backend\Controller
      */
     public function updateObject(Orm\Object $object)
     {
-        if(!$object->save()){
-            $this->response->error($this->lang->get('CANT_EXEC'));
-            return;
-        }
+        if ($object->getConfig()->isRevControl()) {
+            $author = $object->get('author_id');
+            if (empty($author)) {
+                $object->set('author_id', $this->user->getId());
+            } else {
+                if (!$this->checkOwner($object)) {
+                    $this->response->error($this->lang->get('CANT_ACCESS'));
+                    return;
+                }
+            }
 
-        $this->response->success(['id' => $object->getId()]);
+            if (!$object->saveVersion()) {
+                $this->response->error($this->lang->get('CANT_CREATE'));
+                return;
+            }
+
+            $stagingUrl = $this->getStagingUrl($object);
+
+            $this->response->success([
+                'id' => $object->getId(),
+                'version' => $object->getVersion(),
+                'staging_url' => $this->getStagingUrl($object),
+                'published_version' => $object->get('published_version'),
+                'published' => $object->get('published')
+            ]);
+        } else {
+            if (!$object->save()) {
+                $this->response->error($this->lang->get('CANT_EXEC'));
+                return;
+            }
+            $this->response->success(['id' => $object->getId()]);
+        }
     }
 
     /**
@@ -452,30 +490,24 @@ class Controller extends App\Backend\Controller
         /**
          * @var App\Form\Adapter $form
          */
-        $form = new $formCfg['adapter'](
-            $this->request,
-            $this->lang,
-            $adapterConfig
-        );
+        $form = new $formCfg['adapter']($this->request, $this->lang, $adapterConfig);
 
-        if(!$form->validateRequest())
-        {
+        if (!$form->validateRequest()) {
             $errors = $form->getErrors();
             $formMessages = [$this->lang->get('FILL_FORM')];
             $fieldMessages = [];
             /**
              * @var App\Form\Error $item
              */
-            foreach ($errors as $item)
-            {
+            foreach ($errors as $item) {
                 $field = $item->getField();
-                if(empty($field)){
+                if (empty($field)) {
                     $formMessages[] = $item->getMessage();
-                }else{
+                } else {
                     $fieldMessages[$field] = $item->getMessage();
                 }
             }
-            $this->response->error(implode('; <br>', $formMessages) , $fieldMessages);
+            $this->response->error(implode('; <br>', $formMessages), $fieldMessages);
         }
         return $form->getData();
     }
@@ -489,19 +521,19 @@ class Controller extends App\Backend\Controller
     {
         $objectName = $this->getObjectName();
 
-        if(!$this->eventManager->fireEvent(EventManager::BEFORE_LOAD, new \stdClass())){
+        if (!$this->eventManager->fireEvent(EventManager::BEFORE_LOAD, new \stdClass())) {
             $this->response->error($this->eventManager->getError());
             return;
         }
-        try{
+        try {
             $result = $this->getData();
-        }catch (OwnerException $e){
+        } catch (OwnerException $e) {
             $this->response->error($this->lang->get('CANT_ACCESS'));
             return;
-        }catch (LoadException $e){
+        } catch (LoadException $e) {
             $this->response->error($this->lang->get('CANT_LOAD'));
             return;
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -509,58 +541,56 @@ class Controller extends App\Backend\Controller
         $eventData = new \stdClass();
         $eventData->data = $result;
 
-        if(!$this->eventManager->fireEvent(EventManager::AFTER_LOAD, $eventData)){
+        if (!$this->eventManager->fireEvent(EventManager::AFTER_LOAD, $eventData)) {
             $this->response->error($this->eventManager->getError());
             return;
         }
 
-        if(empty($eventData->data)){
+        if (empty($eventData->data)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
-        }else{
+        } else {
             $this->response->success($eventData->data);
             return;
         }
     }
 
     /**
-     * Prepare data for loaddataAction
+     * Prepare data for loadDataAction
      * @return array
      * @throws \Exception
      */
     protected function getData()
     {
-        $id = $this->request->post('id' , 'int' , false);
+        $id = $this->request->post('id', 'int', false);
         $objectName = $this->getObjectName();
         $objectConfig = Orm\Object\Config::factory($objectName);
 
-        if(!$id){
+        if (!$id) {
             return [];
         }
 
-        try{
+        try {
             /**
              * @var $obj Orm\Object
              */
-            $obj = Orm\Object::factory($objectName , $id);
-        }catch(\Exception $e){
+            $obj = Orm\Object::factory($objectName, $id);
+        } catch (\Exception $e) {
             Model::factory($objectName)->logError($e->getMessage());
             return [];
         }
 
-
-        if($objectConfig->isRevControl())
-        {
-            if(!$this->checkOwner($obj)){
+        if ($objectConfig->isRevControl()) {
+            if (!$this->checkOwner($obj)) {
                 throw new OwnerException($this->lang->get('CANT_ACCESS'));
             }
             /**
              * @var \Model_Vc $vc
              */
             $vc = Model::factory('Vc');
-            $version = $this->request->post('version' , 'int' , 0);
-            if(!$version){
-                $version = $vc->getLastVersion($objectName , $id);
+            $version = $this->request->post('version', 'int', 0);
+            if (!$version) {
+                $version = $vc->getLastVersion($objectName, $id);
             }
 
             try {
@@ -576,21 +606,19 @@ class Controller extends App\Backend\Controller
             $data['published'] = $obj->get('published');
             $data['staging_url'] = $this->getStagingUrl($obj);
 
-        }else{
+        } else {
             $data = $obj->getData();
             $data['id'] = $obj->getId();
         }
-
-
 
         /*
          * Prepare object list properties
          */
         $linkedObjects = $obj->getConfig()->getLinks([Orm\Object\Config::LINK_OBJECT_LIST]);
 
-        foreach($linkedObjects as $linkObject => $fieldCfg){
-            foreach($fieldCfg as $field => $linkCfg){
-                $data[$field] = $this->collectLinksData($field , $obj , $linkObject);
+        foreach ($linkedObjects as $linkObject => $fieldCfg) {
+            foreach ($fieldCfg as $field => $linkCfg) {
+                $data[$field] = $this->collectLinksData($field, $obj, $linkObject);
             }
         }
         $data['id'] = $obj->getId();
@@ -600,74 +628,68 @@ class Controller extends App\Backend\Controller
     /**
      * Add related objects info into getList results
      * @param Orm\Object\Config $cfg
-     * @param array $fieldsToShow  list of link fields to process ( key - result field, value - object field)
+     * @param array $fieldsToShow list of link fields to process ( key - result field, value - object field)
      * object field will be used as result field for numeric keys
      * @param array & $data rows from  Model::getList result
      * @param string $pKey - name of Primary Key field in $data
      * @throws \Exception
      */
-    protected function addLinkedInfo(Orm\Object\Config $cfg, array $fieldsToShow, array  & $data, $pKey)
+    protected function addLinkedInfo(Orm\Object\Config $cfg, array $fieldsToShow, array & $data, $pKey)
     {
         $fieldsToKeys = [];
-        foreach($fieldsToShow as $key=>$val){
-            if(is_numeric($key)){
+        foreach ($fieldsToShow as $key => $val) {
+            if (is_numeric($key)) {
                 $fieldsToKeys[$val] = $val;
-            }else{
+            } else {
                 $fieldsToKeys[$val] = $key;
             }
         }
 
-        $links = $cfg->getLinks(
-            [
-                Orm\Object\Config::LINK_OBJECT,
-                Orm\Object\Config::LINK_OBJECT_LIST,
-                Orm\Object\Config::LINK_DICTIONARY
-            ],
-            false
-        );
+        $links = $cfg->getLinks([
+            Orm\Object\Config::LINK_OBJECT,
+            Orm\Object\Config::LINK_OBJECT_LIST,
+            Orm\Object\Config::LINK_DICTIONARY
+        ], false);
 
-        foreach($fieldsToShow as $resultField => $objectField)
-        {
-            if(!isset($links[$objectField]))
-                throw new \Exception($objectField.' is not Link');
+        foreach ($fieldsToShow as $resultField => $objectField) {
+            if (!isset($links[$objectField])) {
+                throw new \Exception($objectField . ' is not Link');
+            }
         }
 
-        foreach ($links as $field=>$config)
-        {
-            if(!isset($fieldsToKeys[$field])){
+        foreach ($links as $field => $config) {
+            if (!isset($fieldsToKeys[$field])) {
                 unset($links[$field]);
             }
         }
 
-        $rowIds = Utils::fetchCol($pKey , $data);
-        $rowObjects = Orm\Object::factory($cfg->getName() , $rowIds);
+        $rowIds = Utils::fetchCol($pKey, $data);
+        $rowObjects = Orm\Object::factory($cfg->getName(), $rowIds);
         $listedObjects = [];
 
-        foreach($rowObjects as $object)
-        {
-            foreach ($links as $field=>$config)
-            {
-                if($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY){
+        foreach ($rowObjects as $object) {
+            foreach ($links as $field => $config) {
+                if ($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY) {
                     continue;
                 }
 
-                if(!isset($listedObjects[$config['object']])){
+                if (!isset($listedObjects[$config['object']])) {
                     $listedObjects[$config['object']] = [];
                 }
 
                 $oVal = $object->get($field);
 
-                if(!empty($oVal))
-                {
-                    if(!is_array($oVal)){
+                if (!empty($oVal)) {
+                    if (!is_array($oVal)) {
                         $oVal = [$oVal];
                     }
-                    $listedObjects[$config['object']] = array_merge($listedObjects[$config['object']], array_values($oVal));
+                    $listedObjects[$config['object']] = array_merge($listedObjects[$config['object']],
+                        array_values($oVal));
                 }
             }
         }
 
-        foreach($listedObjects as $object => $ids){
+        foreach ($listedObjects as $object => $ids) {
             $listedObjects[$object] = Orm\Object::factory($object, array_unique($ids));
         }
 
@@ -676,43 +698,42 @@ class Controller extends App\Backend\Controller
          */
         $dictionaryService = Service::get('dictionary');
 
-        foreach ($data as &$row)
-        {
-            if(!isset($rowObjects[$row[$pKey]]))
+        foreach ($data as &$row) {
+            if (!isset($rowObjects[$row[$pKey]])) {
                 continue;
+            }
 
-            foreach ($links as $field => $config)
-            {
+            foreach ($links as $field => $config) {
                 $list = [];
                 $rowObject = $rowObjects[$row[$pKey]];
                 $value = $rowObject->get($field);
 
-                if(!empty($value))
-                {
-                    if($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY)
-                    {
+                if (!empty($value)) {
+                    if ($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY) {
                         $dictionary = $dictionaryService->get($config['object']);
-                        if($dictionary->isValidKey($value)){
+                        if ($dictionary->isValidKey($value)) {
                             $row[$fieldsToKeys[$field]] = $dictionary->getValue($value);
                         }
                         continue;
                     }
 
-                    if(!is_array($value))
+                    if (!is_array($value)) {
                         $value = [$value];
+                    }
 
-                    foreach($value as $oId)
-                    {
-                        if(isset($listedObjects[$config['object']][$oId])){
-                            $list[] = $this->linkedInfoObjectRenderer($rowObject, $field, $listedObjects[$config['object']][$oId]);
-                        }else{
-                            $list[] = '[' . $oId . '] ('.$this->lang->get('DELETED').')';
+                    foreach ($value as $oId) {
+                        if (isset($listedObjects[$config['object']][$oId])) {
+                            $list[] = $this->linkedInfoObjectRenderer($rowObject, $field,
+                                $listedObjects[$config['object']][$oId]);
+                        } else {
+                            $list[] = '[' . $oId . '] (' . $this->lang->get('DELETED') . ')';
                         }
                     }
                 }
-                $row[$fieldsToKeys[$field]] =  implode($this->linkedInfoSeparator, $list);
+                $row[$fieldsToKeys[$field]] = implode($this->linkedInfoSeparator, $list);
             }
-        }unset($row);
+        }
+        unset($row);
     }
 
     /**
@@ -727,31 +748,29 @@ class Controller extends App\Backend\Controller
      * @param string $targetObjectName
      * @return array
      */
-    protected function collectLinksData($fieldName, ObjectInterface $object , $targetObjectName)
+    protected function collectLinksData($fieldName, ObjectInterface $object, $targetObjectName)
     {
         $result = [];
 
         $data = $object->get($fieldName);
 
-        if(!empty($data))
-        {
+        if (!empty($data)) {
             /**
              * @var Orm\Object[] $list
              */
-            $list = Orm\Object::factory($targetObjectName , $data);
+            $list = Orm\Object::factory($targetObjectName, $data);
 
             $isVc = Orm\Object\Config::factory($targetObjectName)->isRevControl();
-            foreach($data as $id)
-            {
-                if(isset($list[$id])){
+            foreach ($data as $id) {
+                if (isset($list[$id])) {
                     $result[] = [
                         'id' => $id,
                         'deleted' => 0,
                         'title' => $list[$id]->getTitle(),
-                        'published' => $isVc?$list[$id]->get('published'):1
+                        'published' => $isVc ? $list[$id]->get('published') : 1
                     ];
 
-                }else{
+                } else {
                     $result[] = [
                         'id' => $id,
                         'deleted' => 1,
@@ -778,12 +797,12 @@ class Controller extends App\Backend\Controller
 
     /**
      * Check object owner
-     * @param ObjectInterface  $object
+     * @param ObjectInterface $object
      * @return bool
      */
-    protected function checkOwner(ObjectInterface $object) : bool
+    protected function checkOwner(ObjectInterface $object): bool
     {
-        if($this->moduleAcl->onlyOwnRecords($this->getModule()) && $object->get('author_id') !== $this->user->getId()){
+        if ($this->moduleAcl->onlyOwnRecords($this->getModule()) && $object->get('author_id') !== $this->user->getId()) {
             return false;
         }
         return true;
@@ -796,12 +815,12 @@ class Controller extends App\Backend\Controller
      * @param ObjectInterface $object
      * @return string
      */
-    public function getStagingUrl(ObjectInterface $object) : string
+    public function getStagingUrl(ObjectInterface $object): string
     {
         $frontConfig = Config::storage()->get('frontend.php');
 
-        $routerClass =  '\\Dvelum\\App\\Router\\' . $frontConfig->get('router');
-        if(!class_exists($routerClass)){
+        $routerClass = '\\Dvelum\\App\\Router\\' . $frontConfig->get('router');
+        if (!class_exists($routerClass)) {
             $routerClass = $frontConfig->get('router');
         }
         /**
@@ -811,10 +830,11 @@ class Controller extends App\Backend\Controller
 
         $stagingUrl = $frontendRouter->findUrl(strtolower($object->getName()));
 
-        if(!strlen($stagingUrl))
+        if (!strlen($stagingUrl)) {
             return $this->request->url(['/']);
+        }
 
-        return $this->request->url([$stagingUrl,'item',$object->getId()]);
+        return $this->request->url([$stagingUrl, 'item', $object->getId()]);
     }
 
     /**
@@ -827,51 +847,51 @@ class Controller extends App\Backend\Controller
         $objectName = $this->getObjectName();
         $objectConfig = Orm\Object\Config::factory($objectName);
 
-        if(!$objectConfig->isRevControl()){
+        if (!$objectConfig->isRevControl()) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
         $this->checkCanPublish();
 
-        $id = $this->request->post('id' , 'integer' , false);
-        $vers = $this->request->post('vers' , 'integer' , false);
+        $id = $this->request->post('id', 'integer', false);
+        $vers = $this->request->post('vers', 'integer', false);
 
-        if(!$id || !$vers){
+        if (!$id || !$vers) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        try{
+        try {
             /**
              * @var Orm\Object $object
              */
-            $object = Orm\Object::factory($objectName , $id);
-        }catch(\Exception $e){
-            $this->response->error($this->lang->get('CANT_EXEC' . ' ' .  $e->getMessage()));
+            $object = Orm\Object::factory($objectName, $id);
+        } catch (\Exception $e) {
+            $this->response->error($this->lang->get('CANT_EXEC' . ' ' . $e->getMessage()));
             return;
         }
 
-        if(!$this->checkOwner($object)){
+        if (!$this->checkOwner($object)) {
             $this->response->error($this->lang->get('CANT_ACCESS'));
             return;
         }
 
         $acl = $object->getAcl();
 
-        if($acl && !$acl->canPublish($object)){
+        if ($acl && !$acl->canPublish($object)) {
             $this->response->error($this->lang->get('CANT_PUBLISH'));
             return;
         }
 
-        try{
+        try {
             $object->loadVersion($vers);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             $this->response->error($this->lang->get('VERSION_INCOPATIBLE'));
             return;
         }
 
-        if(!$object->publish()){
+        if (!$object->publish()) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }

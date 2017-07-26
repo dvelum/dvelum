@@ -642,7 +642,6 @@ class Store
      */
     public function addVersion(Orm\Object $object , $useTransaction = true)
     {
-
         if($object->getConfig()->isReadOnly())
         {
             if($this->log){

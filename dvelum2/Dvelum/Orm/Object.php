@@ -573,13 +573,29 @@ class Object implements ObjectInterface
             }
         }
 
+        if($this->config->isRevControl())
+        {
+            if(!$this->getId()){
+                $this->set('date_created', date('Y-m-d H:i:s'));
+                $this->set('date_updated', date('Y-m-d H:i:s'));
+                $this->set('published' , false);
+                $this->set('author_id',  User::getInstance()->getId());
+            }else{
+                $this->set('date_updated', date('Y-m-d H:i:s'));
+                $this->set('editor_id',  User::getInstance()->getId());
+            }
+        }
+
+
         $emptyFields = $this->hasRequired();
         if($emptyFields!==true)
         {
             $text = 'ORM :: Fields can not be empty. '.$this->getName().' ['.implode(',', $emptyFields).']';
             $this->errors[] = $text;
+
             if($this->logger)
                 $this->logger->log(LogLevel::ERROR, $text);
+
             return false;
         }
 
@@ -587,45 +603,34 @@ class Object implements ObjectInterface
 
         if(!empty($values))
         {
-            foreach($values as $k => $v)
-            {
+            foreach($values as $k => $v) {
                 $text = 'The Field value should be unique '.$k . ':' . $v;
                 $this->errors[] = $text;
             }
 
-            if($this->logger)
+            if($this->logger){
                 $this->logger->log(LogLevel::ERROR, $this->getName() . ' ' . implode(', ' , $this->errors));
+            }
 
             return false;
         }
 
         try {
             if(!$this->getId()){
-
-                if($this->config->isRevControl()){
-                    $this->set('date_created', date('Y-m-d H:i:s'));
-                    $this->set('date_updated', date('Y-m-d H:i:s'));
-                    $this->set('author_id',  User::getInstance()->getId());
-                }
-
                 $id = $store->insert($this , $useTransaction);
                 $this->setId($id);
-                $this->commitChanges();
-                return (integer) $id;
             } else {
-
-                if($this->config->isRevControl()){
-                    $this->set('date_updated', date('Y-m-d H:i:s'));
-                    $this->set('editor_id',  User::getInstance()->getId());
-                }
                 $id = (int) $store->update($this , $useTransaction);
-                $this->commitChanges();
-                return $id;
             }
-        }catch (Exception $e){
+
+            $this->commitChanges();
+            return $id;
+
+        }catch (\Exception $e){
             $this->errors[] = $e->getMessage();
-            if($this->logger)
+            if($this->logger){
                 $this->logger->log(LogLevel::ERROR, $e->getMessage());
+            }
             return false;
         }
     }
@@ -946,7 +951,7 @@ class Object implements ObjectInterface
     public function loadVersion(int $vers) :void
     {
         $this->rejectChanges();
-        $versionObject  = $this->model->getStore()->getVersionObjectName();
+        $versionObject = $this->model->getStore()->getVersionObjectName();
 
         /**
          * @var \Model_Vc $vc
@@ -1035,9 +1040,6 @@ class Object implements ObjectInterface
 
         if(!$this->getId())
         {
-            $this->published = false;
-            $this->author_id = User::getInstance()->getId();
-
             if(!$this->save($useTransaction))
                 return false;
         }
@@ -1047,13 +1049,14 @@ class Object implements ObjectInterface
 
         $store  = $this->model->getStore();
 
-        if($this->logger)
+        if($this->logger){
             $store->setLog($this->logger);
+        }
 
         $version = $store->addVersion($this , $useTransaction);
 
         if($version){
-            $this->set('version', $version);
+            $this->version = $version;
             $this->commitChanges();
             return true;
         }else{

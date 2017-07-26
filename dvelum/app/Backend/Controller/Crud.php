@@ -348,7 +348,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * Update ORM object data
      * Sends JSON reply in the result and
      * closes the application
-     * @param \Db_Object  $object
+     * @param ObjectInterface  $object
      */
     public function updateObject(ObjectInterface  $object)
     {

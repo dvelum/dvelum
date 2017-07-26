@@ -144,7 +144,7 @@
             'id' => 'Page',
             'dev' => false,
             'active' => true,
-            'class' => 'Backend_Page_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Page\\Controller',
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/pages.png',

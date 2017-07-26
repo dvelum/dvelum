@@ -38,6 +38,17 @@ class Request
         $this->filters[$key] = $val;
     }
 
+    /**
+     * Set sorter
+     * @param string $field
+     * @param string $direction
+     */
+    public function addSort(string $field, string $direction = 'ASC'): void
+    {
+        $this->pagination['sort'] = $field;
+        $this->pagination['dir'] = $direction;
+    }
+
     public function resetFilter($key)
     {
         unset($this->filters[$key]);

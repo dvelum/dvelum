@@ -156,12 +156,17 @@ Ext.define('app.crud.page.Window',{
                     name:"func_code",
                     width: 250,
                     xtype:"combo",
+                    triggers:{
+                        clear: {
+                            cls: "x-form-clear-trigger",
+                            tooltip:appLang.RESET,
+                            handler:function(field){
+                                field.reset();
+                            }
+                        }
+                    },
                     store:Ext.create('Ext.data.Store',{
                         model:app.comboStringModel,
-                        /*proxy:{
-                         type:'json',
-                         simpleSortMode:true
-                         },*/
                         sorters:[ {
                             property: 'title',
                             direction: 'ASC' // or 'DESC' (case sensitive for local sorting)
@@ -366,12 +371,9 @@ Ext.define('app.crud.page.Panel',{
             }
         });
 
-
         var columnsConfig = [];
 
-
-        if(this.canEdit)
-        {
+        if(this.canEdit) {
             columnsConfig.push(
                 {
                     xtype:'actioncolumn',
@@ -391,7 +393,6 @@ Ext.define('app.crud.page.Panel',{
                     ]
                 });
         }
-
 
         columnsConfig.push({
             sortable: true,
