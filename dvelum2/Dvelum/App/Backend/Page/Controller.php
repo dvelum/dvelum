@@ -193,7 +193,7 @@ class Controller extends Backend\Ui\Controller
         $newParent = $this->request->post('newparent','integer',false);
         $order = $this->request->post('order', 'array' , array());
 
-        if(!$id || !strlen($newParent) || empty($order)){
+        if(!$id || !strlen((string)$newParent) || empty($order)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
 
@@ -451,46 +451,34 @@ class Controller extends Backend\Ui\Controller
 //        Response::jsonSuccess();
 //    }
 //
-//    /**
-//     * (non-PHPdoc)
-//     * @see Backend_Controller_Crud::deleteAction()
-//     */
-//    public function deleteAction()
-//    {
-//        $this->_checkCanDelete();
-//
-//        $id = Request::post('id','integer', false);
-//
-//        if(!$id)
-//            Response::jsonError($this->_lang->WRONG_REQUEST);
-//
-//        try{
-//            $object = Orm\Object::factory($this->_objectName , $id);
-//        }catch(Exception $e){
-//            Response::jsonError($this->_lang->WRONG_REQUEST);
-//        }
-//
-//        $acl = $object->getAcl();
-//        if($acl && !$acl->canDelete($object))
-//            Response::jsonError($this->_lang->CANT_DELETE);
-//
-//        $childIds = Model::factory('Page')->getList(false,array('parent_id'=>$id),array('id'));
-//        if(!empty($childIds))
-//            Response::jsonError($this->_lang->REMOVE_CHILDREN);
-//
-//        $ormConfig = Config::storage()->get('orm');
-//
-//        if($ormConfig->get('vc_clear_on_delete'))
-//            Model::factory('Vc')->removeItemVc($this->_objectName , $id);
-//
-//        if(!$object->delete()){
-//            Response::jsonError($this->_lang->CANT_EXEC);
-//        }
-//
-//        Model::factory('Blockmapping')->clearMap($id);
-//        Response::jsonSuccess();
-//    }
-//
+    /**
+     * Delete object
+     * Sends JSON reply in the result and
+     * closes the application
+     */
+    public function deleteAction()
+    {
+        $id = $this->request->post('id', 'integer', false);
+
+        if (!$id) {
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+        if(!$this->checkCanDelete()){
+            return;
+        }
+
+        $childIds = Model::factory('Page')->query()->filters(['parent_id'=>$id])->fields(['id'])->fetchAll();
+
+        if(!empty($childIds)){
+            $this->response->error($this->lang->get('REMOVE_CHILDREN'));
+            return;
+        }
+
+        parent::deleteAction();
+    }
+
     /**
      * Get themes list
      */

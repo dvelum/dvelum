@@ -340,7 +340,9 @@ class Controller extends App\Backend\Controller
      */
     public function createAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
         $this->insertObject($this->getPostedData($this->objectName));
     }
 
@@ -351,7 +353,9 @@ class Controller extends App\Backend\Controller
      */
     public function updateAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
         $this->updateObject($this->getPostedData($this->objectName));
     }
 
@@ -362,7 +366,9 @@ class Controller extends App\Backend\Controller
      */
     public function deleteAction()
     {
-        $this->checkCanDelete();
+        if(!$this->checkCanDelete()){
+            return;
+        }
         $id = $this->request->post('id', 'integer', false);
 
         if (!$id) {
@@ -371,6 +377,9 @@ class Controller extends App\Backend\Controller
         }
 
         try {
+            /**
+             * @var Orm\ObjectInterface $object
+             */
             $object = Orm\Object::factory($this->objectName, $id);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -382,6 +391,12 @@ class Controller extends App\Backend\Controller
             $this->response->error($this->lang->get('CANT_DELETE'));
             return;
         }
+
+        if ($object->getConfig()->isRevControl() && !$this->checkOwner($object)) {
+            $this->response->error($this->lang->get('CANT_DELETE'));
+            return;
+        }
+
 
         $ormConfig = Config::storage()->get('orm.php');
 
@@ -852,7 +867,9 @@ class Controller extends App\Backend\Controller
             return;
         }
 
-        $this->checkCanPublish();
+        if(!$this->checkCanPublish()){
+            return;
+        }
 
         $id = $this->request->post('id', 'integer', false);
         $vers = $this->request->post('vers', 'integer', false);
@@ -896,6 +913,79 @@ class Controller extends App\Backend\Controller
             return;
         }
         $this->response->success();
+    }
+
+    /**
+     * Unpublish object
+     * Sends JSON reply in the result
+     * and closes the application.
+     */
+    public function unpublishAction()
+    {
+        $objectName = $this->getObjectName();
+        $objectConfig = Orm\Object\Config::factory($objectName);
+
+        if (!$objectConfig->isRevControl()) {
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+        $id = $this->request->post('id', 'integer', false);
+
+        if (!$id) {
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+        if(!$this->checkCanPublish()){
+            return;
+        }
+
+        try{
+            /**
+             * @var Orm\ObjectInterface $object
+             */
+            $object = Orm\Object::factory($objectName , $id);
+        }catch(\Exception $e){
+            $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
+        }
+
+        if(!$this->checkOwner($object)){
+            return;
+        }
+
+        $acl = $object->getAcl();
+        if($acl && !$acl->canPublish($object)){
+            $this->response->error($this->lang->get('CANT_PUBLISH'));
+            return;
+        }
+
+        if($this->unpublishObject($object)){
+            $this->response->success();
+        }
+    }
+
+    /**
+     * Unpublish object
+     * Sends JSON reply in the result
+     * and closes the application.
+     * @param ObjectInterface $object
+     * @return bool
+     */
+    public function unpublishObject(ObjectInterface $object) : bool
+    {
+        if(!$object->get('published')){
+            $this->response->error($this->lang->get('NOT_PUBLISHED'));
+            return false;
+        }
+
+        if(!$object->unpublish()){
+            $this->response->error($this->lang->get('CANT_EXEC'));
+            return false;
+        }
+
+        return true;
     }
 
 }

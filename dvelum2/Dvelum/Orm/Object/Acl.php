@@ -2,6 +2,7 @@
 
 namespace Dvelum\Orm\Object;
 
+use Dvelum\Orm\ObjectInterface;
 use Dvelum\Orm\Object;
 
 abstract class Acl
@@ -22,38 +23,38 @@ abstract class Acl
 
     /**
      * Check create permissions
-     * @param Object $object
+     * @param ObjectInterface $object
      * @return boolean
      */
-    abstract public function canCreate(Object $object);
+    abstract public function canCreate(ObjectInterface $object);
 
     /**
      * Check update permissions
-     * @param Object $object
+     * @param ObjectInterface $object
      * @return boolean
      */
-    abstract public function canEdit(Object $object);
+    abstract public function canEdit(ObjectInterface $object);
 
     /**
      * Check delete permissions
-     * @param Object $object
+     * @param ObjectInterface $object
      * @return boolean
      */
-    abstract public function canDelete(Object $object);
+    abstract public function canDelete(ObjectInterface $object);
 
     /**
      * Check publish permissions
-     * @param Object $object
+     * @param ObjectInterface $object
      * @return boolean
      */
-    abstract public function canPublish(Object $object);
+    abstract public function canPublish(ObjectInterface $object);
 
     /**
      * Check read permissions
-     * @param Object $object
+     * @param ObjectInterface $object
      * @return boolean
      */
-    abstract public function canRead(Object $object);
+    abstract public function canRead(ObjectInterface $object);
 
     /**
      * Set current User

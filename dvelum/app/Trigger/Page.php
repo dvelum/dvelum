@@ -23,7 +23,8 @@ class Trigger_Page extends Trigger
 		parent::onAfterDelete($object);
 			
 		$this->clearBlockCache($object->getId());
-		$this->clearItemCache($object->code ,$object->getId());	
+		$this->clearItemCache($object->code ,$object->getId());
+        Model::factory('Blockmapping')->clearMap($object->getId());
 	}
 	
 	public function clearItemCache($code , $id)
@@ -39,8 +40,8 @@ class Trigger_Page extends Trigger
 		$bm->invalidatePageMap($id);
 		$this->_cache->remove(Router_Module::CACHE_KEY_ROUTES);
 	}
-	
-	public function clearBlockCache($pageId)
+
+    public function clearBlockCache($pageId)
 	{
 		if($this->_cache){
 			$bm =  new \Dvelum\App\BlockManager();

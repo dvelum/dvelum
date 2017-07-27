@@ -212,6 +212,7 @@ class Store
              */
             if($this->eventManager)
                 $this->eventManager->fireEvent(Event\Manager::AFTER_UPDATE_BEFORE_COMMIT, $object);
+
             $object->commitChanges();
 
             return true;

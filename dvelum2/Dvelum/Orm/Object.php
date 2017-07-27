@@ -869,7 +869,7 @@ class Object implements ObjectInterface
         if($this->logger)
             $store->setLog($this->logger);
 
-        $this->publishedversion = 0;
+        $this->published_version = 0;
         $this->published = false;
         $this->date_updated = date('Y-m-d H:i:s');
         /**
