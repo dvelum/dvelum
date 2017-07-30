@@ -362,95 +362,119 @@ class Controller extends Backend\Ui\Controller
         }
         return $result;
     }
-//
-//    /**
-//     * Publish page
-//     */
-//    public function publishAction()
-//    {
-//        $id = Request::post('id','integer', false);
-//        $vers = Request::post('vers' , 'integer' , false);
-//
-//        if(!$id || !$vers)
-//            Response::jsonError($this->_lang->WRONG_REQUEST);
-//
-//        if(!User::getInstance()->canPublish($this->_module))
-//            Response::jsonError($this->_lang->CANT_PUBLISH);
-//
-//        try{
-//            $object = Orm\Object::factory($this->_objectName , $id);
-//        }catch(Exception $e){
-//            Response::jsonError($this->_lang->CANT_EXEC);
-//        }
-//
-//        $acl = $object->getAcl();
-//        if($acl && !$acl->canPublish($object))
-//            Response::jsonError($this->_lang->CANT_PUBLISH);
-//
-//        $vc= Model::factory('Vc');
-//
-//        $data = $vc->getData($this->_objectName , $id , $vers);
-//
-//        /*
-//         * Do not publish some data
-//         * parent_id and order_no can be changed outside of version control
-//         */
-//        $publishException = array('id' , 'order_no' , 'parent_id');
-//        foreach ($publishException as $field)
-//            if(array_key_exists($field, $data))
-//                unset($data[$field]);
-//
-//        if(empty($data))
-//            Response::jsonError($this->_lang->CANT_EXEC);
-//
-//        $objectConfig = $object->getConfig();
-//
-//        foreach ($data as $k=>$v)
-//        {
-//            if($object->fieldExists($k))
-//            {
-//                if($objectConfig->isMultiLink($k) && !empty($v))
-//                    $v = array_keys($v);
-//                try{
-//                    $object->set($k , $v);
-//                }catch (Exception $e){
-//                    Response::jsonError($this->_lang->VERSION_INCOPATIBLE);
-//                }
-//            }
-//        }
-//
-//        if(isset($data['blocks']) && strlen($data['blocks'])){
-//            $blocks = unserialize($data['blocks']);
-//            if(empty($blocks))
-//                $blocks = array();
-//
-//            if(!Model::factory('Blocks')->setMapping($id , $blocks))
-//                Response::jsonError($this->_lang->CANT_EXEC.' code 2');
-//        }
-//
-//        $object->set('published_version' , $vers);
-//        $object->set('published', true);
-//
-//        if($vers == 1 || empty($object->date_published))
-//            $object->set('date_published' , date('Y-m-d H:i:s'));
-//
-//        if(!$object->save(false))
-//            Response::jsonError($this->_lang->CANT_EXEC);
-//
-//
-//        if($objectConfig->hasHistory())
-//        {
-//            $hl = Model::factory('Historylog');
-//            $hl->log(
-//                User::getInstance()->id,
-//                $object->getId(),
-//                Model_Historylog::Publish ,
-//                $object->getTable()
-//            );
-//        }
-//        Response::jsonSuccess();
-//    }
-//
+
+    /**
+     * Publish page
+     */
+    public function publishAction()
+    {
+        $id = $this->request->post('id','integer', false);
+        $vers = $this->request->post('vers' , 'integer' , false);
+
+        if(!$id || !$vers){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+
+        if(!$this->user->getModuleAcl()->canPublish($this->getModule())){
+            $this->response->error($this->lang->get('CANT_PUBLISH'));
+            return;
+        }
+
+        try{
+            /**
+             * @var Orm\ObjectInterface $object
+             */
+            $object = Orm\Object::factory($this->getObjectName() , $id);
+        }catch(\Exception $e){
+            $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
+        }
+
+        $acl = $object->getAcl();
+        if($acl && !$acl->canPublish($object)){
+            $this->response->error($this->lang->get('CANT_PUBLISH'));
+            return;
+        }
+        /**
+         * @var \Model_Vc $vc
+         */
+        $vc = Model::factory('Vc');
+
+        $data = $vc->getData($this->getObjectName() , $id , $vers);
+
+        /*
+         * Do not publish some data
+         * parent_id and order_no can be changed outside of version control
+         */
+        $publishException = array('id' , 'order_no' , 'parent_id');
+        foreach ($publishException as $field)
+            if(array_key_exists($field, $data))
+                unset($data[$field]);
+
+        if(empty($data)){
+            $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
+        }
+
+        $objectConfig = $object->getConfig();
+
+        foreach ($data as $k=>$v)
+        {
+            if($object->fieldExists($k))
+            {
+                if($objectConfig->getField($k)->isMultiLink() && !empty($v))
+                    $v = array_keys($v);
+                try{
+                    $object->set($k , $v);
+                }catch (\Exception $e){
+                    $this->response->error($this->lang->get('VERSION_INCOPATIBLE'));
+                    return;
+                }
+            }
+        }
+
+        if(isset($data['blocks']) && strlen($data['blocks'])){
+            $blocks = unserialize($data['blocks']);
+            if(empty($blocks)){
+                $blocks = [];
+            }
+
+            if(!Model::factory('Blocks')->setMapping($id , $blocks)){
+                $this->response->error($this->lang->get('CANT_EXEC') . ' code 2');
+                return;
+            }
+        }
+
+        $object->set('published_version' , $vers);
+        $object->set('published', true);
+
+        if($vers == 1 || empty($object->get('date_published'))){
+            $object->set('date_published' , date('Y-m-d H:i:s'));
+        }
+
+        if(!$object->save(false)){
+            $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
+        }
+
+        if($objectConfig->hasHistory())
+        {
+            /**
+             * @var \Model_Historylog $hl
+             */
+            $hl = Model::factory('Historylog');
+            $hl->log(
+                $this->user->getId(),
+                $object->getId(),
+                \Model_Historylog::Publish ,
+                $object->getTable()
+            );
+        }
+        $this->response->success();
+    }
+
     /**
      * Delete object
      * Sends JSON reply in the result and
@@ -590,36 +614,36 @@ class Controller extends Backend\Ui\Controller
         $blockManager->invalidateDefaultMap();
         $this->response->success();
     }
-//
-//    /**
-//     * Get desktop module info
-//     */
-//    protected function desktopModuleInfo()
-//    {
-//        $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
-//        $moduleCfg = $modulesConfig->get($this->_module);
-//
-//        $projectData = [];
-//        $projectData['includes']['js'][] =  '/js/app/system/BlocksPanel.js';
-//        $projectData['includes']['js'][] = '/js/app/system/Page.js';
-//
-//        /*
-//         * Get module codes
-//         */
-//        $moduleManager = new Modules_Manager_Frontend();
-//        $fModules = Config::factory(Config::File_Array, $this->_configMain->get('frontend_modules'));
-//        $funcList = [['id'=>'','title'=>'---']];
-//        foreach ($moduleManager->getList() as $config){
-//            $funcList[] = array('id'=>$config['code']  , 'title'=>$config['title']);
-//        }
-//        $projectData['includes']['js'][] = Resource::getInstance()->cacheJs('var aFuncCodes = '.json_encode($funcList).';');
-//
-//        /*
-//         * Module bootstrap
-//         */
-//        if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
-//            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
-//
-//        return $projectData;
-//    }
+
+    /**
+     * Get desktop module info
+     */
+    protected function desktopModuleInfo()
+    {
+        $modulesConfig = Config::storage()->get($this->appConfig->get('backend_modules'));
+        $moduleCfg = $modulesConfig->get($this->getModule());
+
+        $projectData = [];
+        $projectData['includes']['js'][] =  '/js/app/system/BlocksPanel.js';
+        $projectData['includes']['js'][] = '/js/app/system/Page.js';
+
+        /*
+         * Get module codes
+         */
+        $moduleManager = new \Modules_Manager_Frontend();
+        $fModules = Config::storage()->get($this->appConfig->get('frontend_modules'));
+        $funcList = [];
+        foreach ($moduleManager->getList() as $config){
+            $funcList[] =['id'=>$config['code']  , 'title'=>$config['title']];
+        }
+        $projectData['includes']['js'][] = $this->resource->cacheJs('var aFuncCodes = '.json_encode($funcList).';');
+
+        /*
+         * Module bootstrap
+         */
+        if(file_exists($this->appConfig->get('jsPath').'app/system/desktop/' . strtolower($this->getModule()) . '.js'))
+            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->getModule()) .'.js';
+
+        return $projectData;
+    }
 }
