@@ -118,7 +118,7 @@ class Dictionary extends Controller
     /**
      * Update dictionary records
      */
-    public function updaterecordsAction()
+    public function updateRecordsAction()
     {
         if(!$this->checkCanEdit()){
             return;
@@ -148,7 +148,7 @@ class Dictionary extends Controller
     /**
      * Remove dictionary record
      */
-    public function removerecordsAction()
+    public function removeRecordsAction()
     {
         $dictionaryName = strtolower($this->request->post('dictionary','string',false));
         $name = $this->request->post('name','string',false);

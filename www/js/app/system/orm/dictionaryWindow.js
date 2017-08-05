@@ -367,6 +367,7 @@ Ext.define('app.crud.orm.DictionaryWindow', {
 	addDictionaryRec:function(){
 		var r = Ext.create('app.crud.orm.DictionaryRecordModel');
 		var pos  = this.recordsStore.getCount();
+		pos++;
         r.set({key:'new',value:'empty','id':pos},{dirty: true});
 
     	this.recordsStore.insert(pos, r);

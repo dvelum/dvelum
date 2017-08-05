@@ -19,7 +19,7 @@ use Dvelum\Service;
 class Controller extends \Dvelum\App\Backend\Controller implements RouterInterface
 {
     protected $routes = [
-        'dictionary' => 'Backend_Orm_Dictionary',
+        'dictionary' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Dictionary',
         'dataview' => 'Dvelum\\App\\Backend\\Orm\\Controller\\DataView',
         'connections' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Connections',
         'log' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Log',
