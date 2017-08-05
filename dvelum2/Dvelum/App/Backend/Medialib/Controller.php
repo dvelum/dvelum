@@ -87,7 +87,9 @@ class Controller extends Backend\Ui\Controller
             $uploadCategory = null;
         }
 
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $docRoot = $this->appConfig->get('wwwPath');
         /**
@@ -148,7 +150,9 @@ class Controller extends Backend\Ui\Controller
      */
     public function cropAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $id = $this->request->post('id', 'integer', false);
         $x = $this->request->post('x', 'integer', false);
@@ -185,7 +189,10 @@ class Controller extends Backend\Ui\Controller
      */
     public function removeAction()
     {
-        $this->checkCanDelete();
+        if(!$this->checkCanDelete()){
+            return;
+        }
+
         $id = $this->request->post('id', 'integer', false);
 
         if (!$id) {
@@ -205,7 +212,10 @@ class Controller extends Backend\Ui\Controller
      */
     public function updateAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
+
         $id = $this->request->post('id', 'integer', false);
 
         if (!$id) {

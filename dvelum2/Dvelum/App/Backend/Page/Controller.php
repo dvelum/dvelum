@@ -187,7 +187,9 @@ class Controller extends Backend\Ui\Controller
      */
     public function sortPagesAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $id = $this->request->post('id','integer',false);
         $newParent = $this->request->post('newparent','integer',false);
@@ -376,9 +378,7 @@ class Controller extends Backend\Ui\Controller
             return;
         }
 
-
-        if(!$this->user->getModuleAcl()->canPublish($this->getModule())){
-            $this->response->error($this->lang->get('CANT_PUBLISH'));
+        if(!$this->checkCanPublish()){
             return;
         }
 
@@ -397,6 +397,12 @@ class Controller extends Backend\Ui\Controller
             $this->response->error($this->lang->get('CANT_PUBLISH'));
             return;
         }
+
+        if (!$this->checkOwner($object)) {
+            $this->response->error($this->lang->get('CANT_ACCESS'));
+            return;
+        }
+
         /**
          * @var \Model_Vc $vc
          */
