@@ -40,7 +40,9 @@ class Field extends Controller
      */
     public function saveAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $manager = new Manager();
 
@@ -274,7 +276,9 @@ class Field extends Controller
      */
     public function deleteAction()
     {
-        $this->checkCanDelete();
+        if(!$this->checkCanDelete()){
+            return;
+        }
 
         $object =  $this->request->post('object', 'string', false);
         $field =   $this->request->post('name', 'string', false);

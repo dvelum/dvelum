@@ -131,7 +131,9 @@ class Object extends Controller
      */
     public function buildAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $name = $this->request->post('name', 'string', false);
 
@@ -246,7 +248,9 @@ class Object extends Controller
      */
     public function removeAction()
     {
-        $this->checkCanDelete();
+        if(!$this->checkCanDelete()){
+            return;
+        }
 
         $objectName = $this->request->post('objectName', 'string', false);
         $deleteTable = $this->request->post('delete_table', \Filter::FILTER_BOOLEAN, false);
@@ -325,7 +329,9 @@ class Object extends Controller
      */
     public function saveAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $recordId = $this->request->post('record_id', 'string', '0');
         $revControl = $this->request->post('rev_control', 'boolean', false);

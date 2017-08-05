@@ -128,7 +128,9 @@ class Uml extends Controller
      */
     public function saveMapAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $map = $this->request->post('map', 'raw', '');
 

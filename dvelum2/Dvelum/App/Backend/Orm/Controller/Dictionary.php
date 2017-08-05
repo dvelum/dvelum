@@ -39,7 +39,9 @@ class Dictionary extends Controller
      */
     public function updateAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
         
         $id = $this->request->post('id','string',false);
         $name = strtolower($this->request->post('name','string',false));
@@ -65,7 +67,11 @@ class Dictionary extends Controller
     public function removeAction()
     {
         $manager = Manager::factory();
-        $this->checkCanDelete();
+
+        if(!$this->checkCanDelete()){
+            return;
+        }
+
         $name = strtolower($this->request->post('name','string',false));
         if(empty($name))
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -114,7 +120,10 @@ class Dictionary extends Controller
      */
     public function updaterecordsAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
+
         $dictionaryName = strtolower($this->request->post('dictionary','string',false));
         $data = $this->request->post('data','raw',false);
         $data = json_decode($data, true);

@@ -141,7 +141,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
      */
     public function buildAllAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $names = $this->request->post('names', 'array', false);
 

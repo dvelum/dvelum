@@ -39,7 +39,9 @@ class Index extends Controller
      */
     public function saveIndexAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $object =  $this->request->post('object', 'string', false);
         $index =   $this->request->post('index', 'string', false);
@@ -95,7 +97,9 @@ class Index extends Controller
      */
     public function deleteIndexAction()
     {
-        $this->checkCanDelete();
+        if(!$this->checkCanDelete()){
+            return;
+        }
 
         $object =  $this->request->post('object', 'string', false);
         $index =   $this->request->post('name', 'string', false);
