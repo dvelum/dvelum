@@ -159,7 +159,7 @@ class Request
     */
     public function getPart($index)
     {
-       if(isset($this->_path[$index]) && !empty($this->_path[$index])) {
+       if(isset($this->_path[$index]) && strlen($this->_path[$index])) {
            return $this->_path[$index];
        } else {
            return false;
