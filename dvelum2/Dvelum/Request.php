@@ -145,7 +145,7 @@ class Request
      */
     public function getPart(int $index) : ?string
     {
-        if(isset($this->parts[$index]) && !empty($this->parts[$index])) {
+        if(isset($this->parts[$index]) && strlen($this->parts[$index])) {
             return $this->parts[$index];
         } else {
             return null;
