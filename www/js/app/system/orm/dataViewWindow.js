@@ -354,7 +354,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
             method: 'post',
             params: {
                 'id':itemId,
-                'object':this.objectName
+                'd_object':this.objectName
             },
             success: function(response, request) {
                 response =  Ext.JSON.decode(response.responseText);
