@@ -1,22 +1,24 @@
 <?php
+use Dvelum\Config\ConfigInterface;
+
 abstract class Externals_Installer
 {
     protected $errors = [];
     /**
      * Run module post-install actions
-     * @param Config_Abstract $applicationConfig
-     * @param Config_Abstract $moduleConfig
+     * @param ConfigInterface $applicationConfig
+     * @param ConfigInterface $moduleConfig
      * @return boolean - success flag
      */
-    abstract public function install(Config_Abstract $applicationConfig, Config_Abstract $moduleConfig);
+    abstract public function install(ConfigInterface $applicationConfig, ConfigInterface $moduleConfig);
 
     /**
      * Run module post-uninstall actions
-     * @param Config_Abstract $applicationConfig
-     * @param Config_Abstract $moduleConfig
+     * @param ConfigInterface $applicationConfig
+     * @param ConfigInterface $moduleConfig
      * @return boolean - success flag
      */
-    abstract public function uninstall(Config_Abstract $applicationConfig, Config_Abstract $moduleConfig);
+    abstract public function uninstall(ConfigInterface $applicationConfig, ConfigInterface $moduleConfig);
 
     /**
      * Get installation errors
