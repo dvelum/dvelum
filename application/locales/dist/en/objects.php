@@ -256,19 +256,7 @@
                     'create' => 'create',
                 ),
         ),
-    'filestorage' =>
-        array (
-            'title' => 'Filestorage',
-            'fields' =>
-                array (
-                    'path' => 'File path',
-                    'date' => 'Upload date',
-                    'ext' => 'File extension',
-                    'size' => 'File size',
-                    'user_id' => 'User ID',
-                    'name' => 'File name',
-                ),
-        ),
+
     'sysdocs_class' =>
         array (
             'title' => 'DVelum documentation. Class',

@@ -1,1 +1,0 @@
-this.childObjects.dateFilter.reset();

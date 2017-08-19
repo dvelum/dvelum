@@ -59,16 +59,7 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/error_log.png',
         ),
-    'Filestorage' =>
-        array (
-            'id' => 'Filestorage',
-            'dev' => false,
-            'active' => true,
-            'class' => 'Backend_Filestorage_Controller',
-            'designer' => '/system/filestorage.designer.dat',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/filestorage.png',
-        ),
+
     'Logs' =>
         array (
             'dev' => false,

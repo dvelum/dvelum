@@ -24,6 +24,7 @@ use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Db;
 use Dvelum\Service;
+use Psr\Log\LoggerInterface;
 
 /**
  * Base class for data models
@@ -574,9 +575,9 @@ class Model
 
     /**
      * Get logs Adapter
-     * @return \Log
+     * @return LoggerInterface
      */
-    public function getLogsAdapter()
+    public function getLogsAdapter() : LoggerInterface
     {
         return $this->log;
     }

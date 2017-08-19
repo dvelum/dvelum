@@ -7,7 +7,6 @@
   'Orm' =>  'Data objects (ORM)',
   'Docs' => 'Documentation',
   'Error_Log' =>  'Error Log',
-  'Filestorage' => 'Filestorage',
   'Logs' =>  'History Log',
   'Designer' =>  'Layout designer',
   'Localization' => 'Localization',
