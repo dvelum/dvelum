@@ -93,7 +93,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 		            idProperty:"id",
 					rootProperty:"data",
 	                totalProperty:"count"	
-		        },
+		        }
 		    },
 		    autoLoad: true
 		});
@@ -130,6 +130,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
             cols.push(
                 {
                     xtype:'actioncolumn',
+					align:'center',
                     width:30,
                     items:[
                         {
@@ -345,8 +346,9 @@ Ext.define('app.crud.orm.DataViewWindow', {
      * Delete record
      */
     deleteItem : function(itemId){
-        if(!Ext.isNumeric(itemId))
+        if(!Ext.isNumeric(itemId)){
             return false;
+		}
         var me = this;
         Ext.Ajax.request({
             url: this.controllerUrl + 'delete',
@@ -365,6 +367,5 @@ Ext.define('app.crud.orm.DataViewWindow', {
                 }
             }
         });
-    },
-
+    }
 });
