@@ -89,12 +89,15 @@ class Orm
              */
             if (!empty($config->get('error_log_object'))) {
                 $errorModel = $this->model($config->get('error_log_object'));
+                $errorModel->setLog($log);
                 $errorTable = $errorModel->table();
                 $errorDb = $errorModel->getDbConnection();
 
                 $logOrmDb = new Log\Db('db_object_error_log', $errorDb, $errorTable);
                 $logModelDb = new Log\Db('model', $errorDb, $errorTable);
-                $this->modelSettings->set('defaultLog', new Log\Mixed($log, $logModelDb));
+                $logDb = new Log\Mixed($log, $logModelDb);
+                $this->modelSettings->set('defaultLog', $logDb);
+                $errorModel->setLog($logDb);
                 $objectStore->setLog($logOrmDb);
             } else {
                 $this->modelSettings->set('defaultLog', $log);
@@ -253,7 +256,6 @@ class Orm
         }
 
         $objectName = implode('_', array_map('ucfirst', explode('_', $objectName)));
-
         /*
          * Instantiate real or virtual model
          */
