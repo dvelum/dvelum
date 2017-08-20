@@ -441,7 +441,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 					columns:2,
 					fieldLabel: appLang.FIELD_TYPE,
 					items: [
-						{
+						/*{
 							boxLabel:'Integer',
                             name: 'type',
                             inputValue:'integer',
@@ -573,14 +573,13 @@ Ext.define('app.crud.orm.FieldWindow', {
                                 render:{fn:this.initTooltip,scope:this}
 
                             }
-                        },
-						// {
-						// 	boxLabel: appLang.FILED_STD,
-						// 	name: 'type',
-						// 	inputValue: '',
-						// 	checked: true,
-
-						// },
+                        },*/
+						 {
+						 	boxLabel: appLang.FILED_STD,
+							name: 'type',
+						 	inputValue: '',
+						 	checked: true
+						 },
 						{
 							boxLabel: appLang.LINK,
 							name: 'type',
