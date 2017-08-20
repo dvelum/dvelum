@@ -57,7 +57,7 @@ class Controller extends Backend\Ui\Controller
     {
         $data = &$event->getData()->data;
 
-        $wwwRoot = $this->appConfig->get('wwwroot');
+        $wwwRoot = $this->appConfig->get('wwwRoot');
 
         if (!empty($data)) {
             foreach ($data as $k => &$v) {

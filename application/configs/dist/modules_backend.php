@@ -125,7 +125,7 @@
             'id' => 'Modules',
             'dev' => true,
             'active' => true,
-            'class' => 'Backend_Modules_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Modules\\Controller',
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/modules.png',

@@ -80,7 +80,7 @@ return array(
     /**
      * Backend controllers  dir
      */
-    'backend_controllers_dir' => 'Backend',
+    'backend_controllers_dir' => 'App/Backend',
     /**
      * Frontend controllers  dir
      */
@@ -88,11 +88,11 @@ return array(
     /**
      * Local controllers path
      */
-    'local_controllers' => './application/controllers/',
+    'local_controllers' => './application/src/',
     /**
      * Local models path
      */
-    'local_models' => './application/models/',
+    'local_models' => './application/src/',
     /*
      * Frontend modules config file
      */

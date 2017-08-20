@@ -463,8 +463,7 @@ class Object extends Controller
         /*
          * Write object config
          */
-        $newConfig = Config\Factory::config(Config\Factory::File_Array, $configDir . $name . '.php');
-        $newConfig->setData([]);
+        $newConfig = Config\Factory::create([], $configDir . $name . '.php');
 
         if (!Config::storage()->save($newConfig)){
             $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ' . $configDir . $name . '.php');

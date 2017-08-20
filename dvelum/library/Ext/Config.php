@@ -118,6 +118,12 @@ class Ext_Config
 		return $this->_data[$name] = $value;
 	}
 
+	public function setValues(array $data){
+	    foreach ($data as $k=>$v){
+	        $this->__set($k,$v);
+        }
+    }
+
 	/**
 	 * Set valid properties from config
 	 * @param array $data

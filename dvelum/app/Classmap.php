@@ -14,7 +14,7 @@ class Classmap
      */
     protected $autoloaderCfg = [];
 
-    public function __construct(Config_Abstract $appConfig)
+    public function __construct(\Dvelum\Config\ConfigInterface $appConfig)
     {
         $this->appConfig = $appConfig;
         $this->autoloaderCfg = Config::storage()->get('autoloader.php')->__toArray();

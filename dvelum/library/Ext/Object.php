@@ -105,6 +105,10 @@ class Ext_Object
 		$this->_config->$name = $value;
 	}
 
+    public function setValues(array $data){
+       $this->_config->setValues($data);
+    }
+
 	/**
 	 * Get object Config
 	 * @return Ext_Config

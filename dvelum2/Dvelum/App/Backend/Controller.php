@@ -298,12 +298,15 @@ class Controller extends App\Controller
 	        var canDelete = ' . intval($this->moduleAcl->canDelete($this->module)) . ';
 	    ');
 
-        $objectConfig = \Dvelum\Orm\Object\Config::factory($this->getObjectName());
+        $objectName = $this->getObjectName();
+        if(!empty($objectName)){
+            $objectConfig = \Dvelum\Orm\Object\Config::factory($this->getObjectName());
 
-        if($objectConfig->isRevControl()){
-            $this->resource->addInlineJs('
-	        var canPublish = ' . intval($this->moduleAcl->canPublish($this->module)) . ';
-	    ');
+            if($objectConfig->isRevControl()){
+                $this->resource->addInlineJs('
+                    var canPublish = ' . intval($this->moduleAcl->canPublish($this->module)) . ';
+                ');
+            }
         }
 
         $this->includeScripts();
@@ -373,7 +376,7 @@ class Controller extends App\Controller
         $page = \Page::getInstance();
         $page->setTemplatesPath($templatesPath);
 
-        $wwwRoot = $this->appConfig->get('wwwroot');
+        $wwwRoot = $this->appConfig->get('wwwRoot');
         $adminPath = $this->appConfig->get('adminPath');
         $urlDelimiter = $this->appConfig->get('urlDelimiter');
 

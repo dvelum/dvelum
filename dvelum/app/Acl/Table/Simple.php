@@ -70,7 +70,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canCreate()
      */
-    public function canCreate(Orm\Object $object)
+    public function canCreate(Orm\ObjectInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_CREATE);
     }
@@ -78,7 +78,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canEdit()
      */
-    public function canEdit(Orm\Object $object)
+    public function canEdit(Orm\ObjectInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_EDIT);
     }
@@ -86,7 +86,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canDelete()
      */
-    public function canDelete(Orm\Object $object)
+    public function canDelete(Orm\ObjectInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_DELETE);
     }
@@ -94,7 +94,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canPublish()
      */
-    public function canPublish(Orm\Object $object)
+    public function canPublish(Orm\ObjectInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_PUBLISH);
     }
@@ -102,7 +102,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canRead()
      */
-    public function canRead(Orm\Object $object)
+    public function canRead(Orm\ObjectInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_VIEW);
     }
@@ -112,7 +112,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * @param string $permissionType - permission type
      * @return boolean
      */
-    protected function _checkPermission(Orm\Object $object , $permissionType)
+    protected function _checkPermission(Orm\ObjectInterface $object , $permissionType)
     {
         return $this->can($permissionType , $object->getName());
     }

@@ -43,10 +43,10 @@ class Designer_Factory
 
     /**
      * Get storage
-     * @param array $designerConfig
+     * @param ConfigInterface $designerConfig
      * @return Designer_Storage_Adapter_Abstract
      */
-    static public function getStorage($designerConfig)
+    static public function getStorage(ConfigInterface $designerConfig)
     {
         return Designer_Storage::getInstance($designerConfig->get('storage') , $designerConfig);
     }
