@@ -39,7 +39,7 @@
         "zendframework/zend-db": "^2.8",
         "psr/log": "^1.0",
         "dvelum/extjs": "6.2.0",
-        "dvelum/filestorage":">=1.0.0"
+        "dvelum/module-filestorage":">=1.0.0"
     },
     "extra": {
         "installer-types": ["js-library","dvelum-module"],
