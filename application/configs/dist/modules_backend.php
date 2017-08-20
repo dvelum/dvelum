@@ -140,16 +140,6 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/pages.png',
         ),
-    'Reports' =>
-        array (
-            'id' => 'Reports',
-            'dev' => false,
-            'active' => true,
-            'class' => 'Backend_Reports_Controller',
-            'designer' => '',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/reports.png',
-        ),
     'User' =>
         array (
             'id' => 'User',
