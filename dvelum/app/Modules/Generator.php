@@ -624,7 +624,7 @@ class Modules_Generator
       */
       $controllerDir =  $this->appConfig->get('local_controllers') . $this->appConfig->get('backend_controllers_dir') . '/' . str_replace('_' , '/' , $objectName);
       $this->_createControllerFile($controllerDir , $controllerContent);
-      @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
+      @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php', 0775);
 
 
       /*
