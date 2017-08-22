@@ -47,22 +47,5 @@
             "www/js/lib/{$name}": ["type:js-library"],
             "modules/{$vendor}/{$name}":["type:dvelum-module"]
         }
-    },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "type":"js-library",
-                "name": "dvelum/extjs",
-                "version": "6.2.0",
-                "dist": {
-                    "url": "https://github.com/dvelum/extjs/archive/6.2.0.zip",
-                    "type": "zip"
-                },
-                "require": {
-                    "oomphinc/composer-installers-extender": "^1.1"
-                }
-            }
-        }
-    ]
+    }
 }
