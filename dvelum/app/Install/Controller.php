@@ -60,11 +60,12 @@ class Install_Controller
         /*
          * Set localization storage options
          */
-        Lang::storage()->setConfig(Config::storage()->get('lang_storage.php')->__toArray());
+        //Lang::storage()->setConfig(Config::storage()->get('lang_storage.php')->__toArray());
         /*
          * Set template storage options
          */
         View::storage()->setConfig(Config::storage()->get('template_storage.php')->__toArray());
+
     }
 
     public function setAutoloader(Dvelum\Autoload $autoloader)
@@ -81,6 +82,20 @@ class Install_Controller
             $this->lang = $lang;
         else
             $this->lang = 'en';
+
+
+        $lang = $this->lang;
+        /*
+         * Register Localization service
+         */
+        \Dvelum\Service::register('lang', function () use ($lang) {
+            $langService = new Lang();
+            $langService->addLoader($lang, $lang . '.php', Config\Factory::File_Array);
+            $langService->setDefaultDictionary($lang);
+            $langStorage = $langService->getStorage();
+            $langStorage->setConfig(Config\Factory::storage()->get('lang_storage.php')->__toArray());
+            return $langService;
+        });
 
         $this->localization = Lang::storage()->get($this->lang  . '/install.php');
 
@@ -164,8 +179,8 @@ class Install_Controller
         /**
          * Check for php version
          */
-        $data['items'][0]['title'] = $this->localization->get('PHP_V') . ' >= 7.0.0';
-        if (version_compare(PHP_VERSION, '7.0.0', '<')) {
+        $data['items'][0]['title'] = $this->localization->get('PHP_V') . ' >= 7.1.0';
+        if (version_compare(PHP_VERSION, '7.1.0', '<')) {
             $data['items'][0]['success'] = false;
             $data['items'][0]['error'] = $this->localization->get('UR_PHP_V') . ' ' . PHP_VERSION;
         } else
@@ -192,11 +207,11 @@ class Install_Controller
                 'accessType'=>'required',
                 'msg'=>false
             ],
-            [
-                'name' => 'mcrypt',
-                'accessType'=>'allowed',
-                'msg'=>$this->localization->get('WARNING')
-            ],
+//            [
+//                'name' => 'mcrypt',
+//                'accessType'=>'allowed',
+//                'msg'=>$this->localization->get('WARNING')
+//            ],
             [
                 'name'=>'json',
                 'accessType'=>'required',
@@ -214,7 +229,7 @@ class Install_Controller
                 'accessType'=>'required'
             ),
             array(
-                'path'=>'data/temp',
+                'path'=>'temp',
                 'accessType'=>'required'
             ),
             array(
@@ -317,13 +332,14 @@ class Install_Controller
 
                 $params['prefix'] = $prefix;
                 $params['charset'] = 'UTF8';
-
+                $storage = Config::storage();
                 foreach($configs as $item)
                 {
+
                     $cfg = Config::storage()->get($item , false, false);
                     $cfg->setData($params);
 
-                    if (!$cfg->save())
+                    if (!$storage->save($cfg))
                         throw new Exception();
                 }
 
@@ -356,7 +372,7 @@ class Install_Controller
         {
             $dbObjectBuilder = Orm\Object\Builder::factory($name);
             if(!$dbObjectBuilder->build())
-                $buildErrors[] = $name;
+                $buildErrors[] = $name; // . ': '.$dbObjectBuilder->getErrors()."<br>".PHP_EOL;
         }
 
         // install documentation
@@ -455,14 +471,16 @@ class Install_Controller
             'wwwroot' => $this->wwwRoot
         );
 
-        $mainCfg = Config::storage()->get('main.php' , false , false);
-        $writePath = $mainCfg->getWritePath();
+        $mainCfgStorage = Config::storage();
+        $mainCfg = $mainCfgStorage->get('main.php' , false , false);
+        $ormCfg = $mainCfgStorage->get('orm.php');
+        $writePath = $mainCfgStorage->getWrite();
 
         if(!is_dir(dirname($writePath)) && !@mkdir($writePath , 0755, true)){
             Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.dirname($writePath));
         }
 
-        if(!Utils::exportArray($writePath , $mainConfig))
+        if(!Utils::exportArray($writePath . 'main.php' , $mainConfig))
             Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.$writePath);
 
 
@@ -477,15 +495,15 @@ class Install_Controller
             'iv_field' => 'enc_key'
         );
 
-        $encFields = Config::storage()->get($mainCfg->get('object_configs').'/enc/config.php', false , false);
+        $encFields = Config::storage()->get($ormCfg->get('object_configs').'/enc/config.php', false , false);
         $encFields->setData($encConfig);
 
-        if(!$encFields->save())
-            Response::jsonError($this->localization->get('CANT_WRITE_FS') . ' '.$encFields->getWritePath());
-
+        if(!$mainCfgStorage->save($encFields))
+            Response::jsonError($this->localization->get('CANT_WRITE_FS') . ' ' . $mainCfgStorage->getWrite());
 
         $mainConfig = Config::storage()->get('main.php', false ,true);
-        Registry::set('main', $mainConfig , 'config');
+
+       // Registry::set('main', $mainConfig , 'config');
 
         /*
          * Starting the application
@@ -534,6 +552,32 @@ class Install_Controller
                 $model->getDbConnection()->delete($model->table());
             }
 
+            // Add user. User cannot be created using ORM it causes HistoryLog error
+            $userModel = Model::factory('User');
+            $db = $userModel->getDbConnection();
+            try{
+                $db->beginTransaction();
+                $db->insert($userModel->table(),[
+                    'name' =>'Admin',
+                    'login' => $adminName,
+                    'pass' => password_hash($adminPass , PASSWORD_DEFAULT),
+                    'enabled' => true,
+                    'admin' => true,
+                    'registration_date' => date('Y-m-d H:i:s'),
+                    'confirmation_code' => md5(date('Y-m-d H:i:s')),
+                    'group_id' => null,
+                    'confirmed' => true,
+                    'avatar' => '',
+                    'registration_ip' => $_SERVER['REMOTE_ADDR'],
+                    'last_ip' => $_SERVER['REMOTE_ADDR'],
+                    'confirmation_date' =>date('Y-m-d H:i:s')
+                ]);
+                $userId = $db->lastInsertId($userModel->table());
+                $db->commit();
+            }catch (Exception $e){
+                return false;
+            }
+
             // Add group
             $group = Orm\Object::factory('Group');
             $group->setValues(array(
@@ -543,28 +587,12 @@ class Install_Controller
             $group->save(true, false);
             $groupId = $group->getId();
 
-            // Add user
-            $user = Orm\Object::factory('user');
-
-            $user->setValues(array(
-                    'name' =>'Admin',
-                    'login' => $adminName,
-                    'pass' => password_hash($adminPass , PASSWORD_DEFAULT),
-                    'enabled' => true,
-                    'admin' => true,
-                    'registration_date' => date('Y-m-d H:i:s'),
-                    'confirmation_code' => md5(date('Y-m-d H:i:s')),
-                    'group_id' => $groupId,
-                    'confirmed' => true,
-                    'avatar' => '',
-                    'registration_ip' => $_SERVER['REMOTE_ADDR'],
-                    'last_ip' => $_SERVER['REMOTE_ADDR'],
-                    'confirmation_date' =>date('Y-m-d H:i:s')
-                )
-            );
-            $userId = $user->save(false, false);
-            if(!$userId)
+            // Set user group
+            try{
+                $db->update($userModel->table(),['group_id'=>$groupId],'id = '.$userId);
+            }catch (Exception $e){
                 return false;
+            }
 
             // Add permissions
             $permissionsModel = Model::factory('Permissions');

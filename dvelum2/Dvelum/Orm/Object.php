@@ -414,17 +414,17 @@ class Object implements ObjectInterface
         // Validate value using special validator
         // Skip validation if value is null and object field can be null
         if ($validator && (!$field->isNull() || !is_null($value)) && !call_user_func_array([$validator, 'validate'], [$value])){
-            throw new Exception('Invalid value for field ' . $name);
+            throw new Exception('Invalid value for field ' . $name. ' ('.$this->getName().')');
         }
 
         $value = $field->filter($value);
         if(!$field->validate($value)){
-            throw new Exception('Invalid value for field '. $name.'. '.$field->getValidationError());
+            throw new Exception('Invalid value for field '. $name.'. '.$field->getValidationError(). ' ('.$this->getName().')');
         }
 
         if(isset($propConf['db_len']) && $propConf['db_len']){
             if($propConf['db_type'] == 'bit' && (strlen($value) > $propConf['db_len'] || strlen($value) < $propConf['db_len']))
-                throw new Exception('Invalid length for bit value ['.$name.']');
+                throw new Exception('Invalid length for bit value ['.$name.']  ('.$this->getName().')');
         }
 
         if(isset($this->data[$name]))
