@@ -84,9 +84,11 @@ class Externals_Manager
                     if (!file_exists($modulePath . '/config.php')) {
                         continue;
                     }
+                    $mConfig = include $modulePath . '/config.php';
 
                     $module = basename($modulePath);
-                    $moduleId = strtolower($vendor . '_' . $module);
+                    $moduleId = $mConfig['id'];
+
                     if (!$this->config->offsetExists($moduleId)) {
                         $this->config->set($moduleId, [
                             'enabled' => false,
@@ -361,8 +363,9 @@ class Externals_Manager
 
         // Remove config record
         $this->config->remove($id);
-        if (!$this->config->save()) {
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->config->getWritePath();
+        $storage = Config::storage();
+        if (!$storage->save($this->config)) {
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $storage->getWritePath();
             return false;
         }
 
@@ -383,7 +386,7 @@ class Externals_Manager
                 try {
                     $objectCfg = Orm\Object\Config::factory($object);
                     if (!$objectCfg->isLocked() && !$objectCfg->isReadOnly()) {
-                        $builder = new Orm\Object\Builder($object);
+                        $builder = Orm\Object\Builder::factory($object);
                         if (!$builder->remove()) {
                             $this->errors[] = $builder->getErrors();
                         }
@@ -408,8 +411,7 @@ class Externals_Manager
                 $this->errors[] = 'Class ' . $class . ' is not instance of Externals_Installer';
             }
 
-            $modConfig = new Config_Simple($modConf['id'] . '_config');
-            $modConfig->setData($modConf);
+            $modConfig = Dvelum\Config\Factory::create($modConf,$modConf['id'] . '_config');
 
             if (!$installer->uninstall($this->appConfig, $modConfig)) {
                 $errors = $installer->getErrors();
@@ -447,8 +449,9 @@ class Externals_Manager
         $modConf['enabled'] = $flag;
         $this->config->set($id, $modConf);
 
-        if (!$this->config->save()) {
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->config->getWritePath();
+        $storage = Config::storage();
+        if (!$storage->save($this->config)) {
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $storage->getWritePath();
             return false;
         }
         return true;
