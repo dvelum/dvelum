@@ -198,7 +198,7 @@ return array(
             [
                 'id' => 'dvelum_official',
                 'title' => 'DVelum official',
-                'url' => 'https://addons.dvelum.net/api/modules/'
+                'url' => 'https://addons.dvelum.net/api_v2/modules/'
             ]
         ]
     ],
