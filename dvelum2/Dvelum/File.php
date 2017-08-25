@@ -257,7 +257,7 @@ class File
      */
     static public function rmdirRecursive(string $pathname ,bool $removeParentDir = false) : bool
     {
-        $filesDirs = self::scanFiles($pathname , false , true , File::Files_Dirs , RecursiveIteratorIterator::CHILD_FIRST);
+        $filesDirs = self::scanFiles($pathname , false , true , File::Files_Dirs , \RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach($filesDirs as $v)
         {
