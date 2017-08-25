@@ -80,4 +80,10 @@ interface BuilderInterface
      * @return boolean
      */
     public function buildForeignKeys($remove = true , $create = true) : bool;
+
+    /**
+     * Remove object
+     * @return bool
+     */
+    public function remove():bool;
 }

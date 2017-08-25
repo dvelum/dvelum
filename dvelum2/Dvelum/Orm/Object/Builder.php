@@ -44,6 +44,7 @@ class Builder
     /**
      * @param string $objectName
      * @param bool $forceConfig
+     * @throws Orm\Exception
      * @return Builder\AbstractAdapter
      */
     static public function factory(string $objectName, bool $forceConfig = true) : Builder\AbstractAdapter
@@ -320,38 +321,7 @@ class Builder
         }
     }
 
-    /**
-     * Remove object
-     * @return boolean
-     */
-    public function remove()
-    {
-        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly()){
-            $this->errors[] = 'Can not remove locked object table ' . $this->objectConfig->getName();
-            return false;
-        }
 
-        try
-        {
-            $model = Model::factory($this->objectName);
-
-            if(!$this->tableExists())
-                return true;
-
-            $db = $model->getDbConnection();
-
-            $ddl = new Ddl\DropTable($model->table());
-            $sql = $db->sql()->buildSqlString($ddl);
-            $db->query($sql);
-            $this->logSql($sql);
-            return true;
-        }
-        catch(\Exception $e)
-        {
-            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
-            return false;
-        }
-    }
 
     /**
      * Create Db_Object`s for relations

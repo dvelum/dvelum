@@ -25,6 +25,7 @@ use Dvelum\Orm\Object\Config;
 use Dvelum\Orm\Model;
 use Dvelum\Log;
 use Dvelum\Config\ConfigInterface;
+use Zend\Db\Sql\Ddl;
 
 
 abstract class AbstractAdapter implements BuilderInterface
@@ -323,5 +324,38 @@ abstract class AbstractAdapter implements BuilderInterface
             return false;
         else
             return $brokenFields;
+    }
+
+    /**
+     * Remove object
+     * @return bool
+     */
+    public function remove() : bool
+    {
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly()){
+            $this->errors[] = 'Can not remove locked object table ' . $this->objectConfig->getName();
+            return false;
+        }
+
+        try
+        {
+            $model = Model::factory($this->objectName);
+
+            if(!$this->tableExists())
+                return true;
+
+            $db = $model->getDbConnection();
+
+            $ddl = new Ddl\DropTable($model->table());
+            $sql = $db->sql()->buildSqlString($ddl);
+            $db->query($sql);
+            $this->logSql($sql);
+            return true;
+        }
+        catch(\Exception $e)
+        {
+            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+            return false;
+        }
     }
 }
