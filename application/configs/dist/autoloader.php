@@ -3,8 +3,8 @@
 return [
     // PSR-0 autoload paths
     'paths' => [
-        './application/src',
-        './application/library',
+        './application/src/app',
+        './application/src/library',
         './dvelum/app',
         './dvelum/library',
         './dvelum2'

@@ -78,21 +78,21 @@ return array(
      */
     'backend_modules' => 'modules_backend.php',
     /**
-     * Backend controllers  dir
+     * Backend controllers directories
      */
-    'backend_controllers_dir' => 'App/Backend',
+    'backend_controllers_dirs' => ['App/Backend','Backend'],
     /**
-     * Frontend controllers  dir
+     * Frontend controllers directories
      */
-    'frontend_controllers_dir' => 'Frontend',
+    'frontend_controllers_dirs' => ['App/Frontend', 'Frontend'],
     /**
      * Local controllers path
      */
-    'local_controllers' => './application/src/',
+    'local_controllers' => './application/src/app',
     /**
      * Local models path
      */
-    'local_models' => './application/src/',
+    'local_models' => './application/src/app',
     /*
      * Frontend modules config file
      */

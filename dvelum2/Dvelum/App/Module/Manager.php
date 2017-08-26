@@ -41,6 +41,10 @@ class Manager
      * @var ConfigInterface
      */
     protected $modulesLocale;
+    /**
+     * @var Config\Storage\StorageInterface
+     */
+    protected $localeStorage;
 
     static protected $classRoutes = false;
 
@@ -57,7 +61,8 @@ class Manager
         }
 
         $locale = Lang::lang()->getName();
-        $this->modulesLocale = Lang::storage()->get($locale.'/modules/'.basename($configPath));
+        $this->localeStorage = Lang::storage();
+        $this->modulesLocale = $this->localeStorage->get($locale.'/modules/'.basename($configPath));
     }
 
     /**
@@ -200,7 +205,7 @@ class Manager
         if($this->modulesLocale->offsetExists($name))
             $this->modulesLocale->remove($name);
 
-        if(!Lang::storage()->save($this->modulesLocale))
+        if(!$this->localeStorage->save($this->modulesLocale))
             return false;
 
         return $this->save();
@@ -219,7 +224,7 @@ class Manager
         $ret = $this->save();
         if($ret && isset($config['title'])){
             $this->modulesLocale->set($config['id'], $config['title']);
-            if(!Lang::storage()->save($this->modulesLocale)){
+            if(!$this->localeStorage->save($this->modulesLocale)){
                 return false;
             }
         }
@@ -242,7 +247,7 @@ class Manager
         if(isset($data['title']))
         {
             $this->modulesLocale->set($data['id'] , $data['title']);
-            if(!$this->modulesLocale->save()){
+            if(!$this->localeStorage->save($this->modulesLocale)){
                 return false;
             }
             unset($data['title']);
@@ -283,13 +288,14 @@ class Manager
     public function getControllers() : array
     {
         $backendConfig = Config::storage()->get('backend.php');
-        $autoloadCfg = $this->appConfig->get('autoloader');
+        $autoloadCfg = Config::storage()->get('autoloader.php');
         $systemControllers = $backendConfig->get('system_controllers');
 
         $paths = $autoloadCfg['paths'];
-        $dir = $this->appConfig->get('backend_controllers_dir');
 
-        $data = array();
+        $dirs = $this->appConfig->get('backend_controllers_dirs');
+
+        $data = [];
 
         foreach($paths as $path)
         {
@@ -302,18 +308,24 @@ class Manager
 
                 foreach($folders as $item)
                 {
-                    if(!is_dir($item.'/'.$dir)){
-                        continue;
+                    foreach ($dirs as $dir){
+                        if(!is_dir($item.'/'.$dir)){
+                            continue;
+                        }
+                        $prefix = str_replace('/','_',ucfirst(basename($item)).'_'.$dir.'_');
+                        $this->findControllers($item.'/'.$dir, $systemControllers, $data , $prefix);
                     }
-                    $this->findControllers($item.'/'.$dir, $systemControllers, $data , ucfirst(basename($item)).'_'.$dir.'_');
                 }
             }else{
-                if(!is_dir($path.'/'.$dir)){
-                    continue;
-                }
-                $this->findControllers($path.'/'.$dir,$systemControllers, $data, $dir.'_');
-            }
 
+                foreach ($dirs as $dir) {
+                    if (!is_dir($path . '/' . $dir)) {
+                        continue;
+                    }
+                    $prefix = str_replace('/','_', $dir . '_');
+                    $this->findControllers($path . '/' . $dir, $systemControllers, $data, $prefix);
+                }
+            }
         }
         return array_values($data);
     }
@@ -340,20 +352,22 @@ class Manager
             {
                 $name = str_replace($path.'/', '', $item.'/Controller.php');
                 $name = $classPrefix . Utils::classFromPath($name);
-
+                $namespaceName = '\\'.str_replace('_','\\',$name);
                 /*
                  * Skip system controller
                  */
-                if(in_array($name, $skipList , true))
+                if(in_array($name, $skipList , true) || in_array($namespaceName, $skipList , true))
                     continue;
 
-                $result[$name] = array('id'=>$name,'title'=>$name);
+                if(class_exists($name)){
+                    $result[$name] = ['id'=>$name,'title'=>$name];
+                }elseif(class_exists($namespaceName)){
+                    $result[$namespaceName] = ['id'=>$namespaceName,'title'=>$namespaceName];
+                }
             }
-
             $this->findControllers($item, $skipList, $result, $classPrefix);
         }
     }
-
 
     /**
      * Get list of controllers without modules

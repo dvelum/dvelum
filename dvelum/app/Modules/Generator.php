@@ -142,7 +142,8 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
       /*
        * Create controller
       */
-      $controllerDir = $this->appConfig->get('local_controllers') . $this->appConfig->get('backend_controllers_dir') . '/' . str_replace('_' , '/' , $name);
+      $acceptedControllerDirs = $this->appConfig->get('backend_controllers_dirs');
+      $controllerDir = $this->appConfig->get('local_controllers') . $acceptedControllerDirs[0] . '/' . str_replace('_' , '/' , $name);
       $controllerFile = $this->_createControllerFile($controllerDir , $controllerContent);
 
       /*
@@ -570,7 +571,8 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud
       /*
        * Create controller
       */
-      $controllerDir =  $this->appConfig->get('local_controllers') . $this->appConfig->get('backend_controllers_dir') . '/' . str_replace('_' , '/' , $name);
+      $acceptedControllerDirs = $this->appConfig->get('backend_controllers_dirs');
+      $controllerDir =  $this->appConfig->get('local_controllers') . $acceptedControllerDirs[0] . '/' . str_replace('_' , '/' , $name);
       $this->_createControllerFile($controllerDir , $controllerContent);
       @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
 
