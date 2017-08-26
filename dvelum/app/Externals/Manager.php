@@ -277,7 +277,7 @@ class Externals_Manager
         $this->config->set($id, $modConf);
 
         if (!Config::storage()->save($this->config)) {
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->config->getWritePath();
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->config->getWrite();
             return false;
         }
 
@@ -365,7 +365,7 @@ class Externals_Manager
         $this->config->remove($id);
         $storage = Config::storage();
         if (!$storage->save($this->config)) {
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $storage->getWritePath();
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $storage->getWrite();
             return false;
         }
 
@@ -451,7 +451,7 @@ class Externals_Manager
 
         $storage = Config::storage();
         if (!$storage->save($this->config)) {
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $storage->getWritePath();
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $storage->getWrite();
             return false;
         }
         return true;
