@@ -119,14 +119,17 @@ class Adapter
     {
         $statement = $this->adapter->createStatement();
         $statement->prepare($sql);
-
         $result = $statement->execute();
-        $result = [];
+
         if ($result instanceof ResultInterface && $result->isQueryResult()) {
             $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
             $resultSet->initialize($result);
+            $result = [];
             foreach ($resultSet as $item){
-                $result[] = $item[0];
+                foreach ($item as $index => $v){
+                    $result[] = $v;
+                    break;
+                }
             }
             return $result;
         }
