@@ -1,1 +1,0 @@
-this.fireEvent('dataSaved' , this.childObjects.textEditorText.getValue());

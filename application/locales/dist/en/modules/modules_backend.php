@@ -5,7 +5,6 @@
   'Cache' =>  'Cache Info',
   'Packages' => 'Code Packages',
   'Orm' =>  'Data objects (ORM)',
-  'Docs' => 'Documentation',
   'Error_Log' =>  'Error Log',
   'Logs' =>  'History Log',
   'Designer' =>  'Layout designer',

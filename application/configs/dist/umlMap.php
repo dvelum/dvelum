@@ -38,11 +38,6 @@
       'x' => 778,
       'y' => 548,
     ),
-    'sysdocs_file' => 
-    array (
-      'x' => 1270,
-      'y' => 281,
-    ),
     'medialib' => 
     array (
       'x' => 591,
@@ -52,11 +47,6 @@
     array (
       'x' => 452,
       'y' => 336,
-    ),
-    'sysdocs_class_method' => 
-    array (
-      'x' => 1716,
-      'y' => 255,
     ),
     'links' => 
     array (
@@ -68,20 +58,10 @@
       'x' => 1014,
       'y' => 484,
     ),
-    'sysdocs_class_property' => 
-    array (
-      'x' => 1476,
-      'y' => 512,
-    ),
     'permissions' => 
     array (
       'x' => 1004,
       'y' => 6,
-    ),
-    'sysdocs_localization' => 
-    array (
-      'x' => 1485,
-      'y' => 100,
     ),
     'vc' => 
     array (
@@ -92,11 +72,6 @@
     array (
       'x' => 697,
       'y' => 321,
-    ),
-    'sysdocs_class_method_param' => 
-    array (
-      'x' => 1709,
-      'y' => 513,
     ),
     'bgtask_signal' => 
     array (

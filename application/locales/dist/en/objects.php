@@ -256,113 +256,6 @@
                     'create' => 'create',
                 ),
         ),
-
-    'sysdocs_class' =>
-        array (
-            'title' => 'DVelum documentation. Class',
-            'fields' =>
-                array (
-                    'description' => 'Description (in code)',
-                    'itemType' => 'Item type',
-                    'fileId' => 'File ID',
-                    'parentId' => 'Parent ID',
-                    'vers' => 'Version',
-                    'name' => 'Name',
-                    'namespace' => 'Namespace',
-                    'deprecated' => 'Deprecated',
-                    'hid' => 'Histrory ID',
-                    'abstract' => 'Is Abstract?',
-                    'fileHid' => 'File hid',
-                    'implements' => 'Implements',
-                    'extends' => 'Extends',
-                ),
-        ),
-    'sysdocs_class_method' =>
-        array (
-            'title' => 'DVelum documentation. Method',
-            'fields' =>
-                array (
-                    'classId' => 'Class Id',
-                    'name' => 'Name',
-                    'deprecated' => 'Deprecated',
-                    'description' => 'Description (in code)',
-                    'throws' => 'Throws',
-                    'hid' => 'History ID',
-                    'abstract' => 'Is Abstract?',
-                    'static' => 'Is Static?',
-                    'visibility' => 'Visibility',
-                    'vers' => 'Vesrion',
-                    'returnType' => 'Return type',
-                    'classHid' => 'Class Hid',
-                    'final' => 'Final',
-                    'inherited' => 'Inherited',
-                    'returnsReference' => 'Returns Reference',
-                ),
-        ),
-    'sysdocs_class_property' =>
-        array (
-            'title' => 'DVelum documentation. Property',
-            'fields' =>
-                array (
-                    'deprecated' => 'Deprecated',
-                    'hid' => 'History ID',
-                    'vers' => 'Version',
-                    'name' => 'Name',
-                    'description' => 'Description (in code)',
-                    'const' => 'Constant',
-                    'static' => 'Static',
-                    'visibility' => 'Visibility',
-                    'type' => 'Value type',
-                    'classId' => 'Class ID',
-                    'constValue' => 'Constant Value',
-                    'classHid' => 'Class Hid',
-                    'inherited' => 'Inherited',
-                ),
-        ),
-    'sysdocs_localization' =>
-        array (
-            'title' => 'DVelum documentation. Localization',
-            'fields' =>
-                array (
-                    'lang' => 'Language',
-                    'field' => 'Field',
-                    'object_id' => 'Object ID',
-                    'value' => 'Value',
-                    'vers' => 'Version',
-                    'object_class' => 'Object Class',
-                    'hid' => 'Hash Code',
-                ),
-        ),
-    'sysdocs_file' =>
-        array (
-            'title' => 'DVelum documentation. File',
-            'fields' =>
-                array (
-                    'path' => 'File path',
-                    'isDir' => 'Is Dir',
-                    'name' => 'Name',
-                    'vers' => 'Version',
-                    'hid' => 'History ID',
-                    'parentId' => 'Parent ID',
-                ),
-        ),
-    'sysdocs_class_method_param' =>
-        array (
-            'title' => 'DVelum documentation. Class method param',
-            'fields' =>
-                array (
-                    'methodId' => 'Method ID',
-                    'hid' => 'History ID',
-                    'name' => 'Name',
-                    'vers' => 'Version',
-                    'index' => 'Sequence number',
-                    'default' => 'Default value',
-                    'isRef' => 'Argument passed by reference',
-                    'description' => 'Description (in code)',
-                    'methodHid' => 'Method Hid',
-                    'optional' => 'Optional',
-                ),
-        ),
     'error_log' =>
         array (
             'title' => 'Error log',
@@ -385,4 +278,4 @@
                     'config' => 'Configuration',
                 ),
         ),
-); 
+);

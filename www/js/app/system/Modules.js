@@ -320,7 +320,7 @@ Ext.define('app.crud.modules.backendView',{
 
         var itemTpl = new Ext.XTemplate(
             '<tpl for=".">',
-            '<div class="module-wrap">',
+            '<div class="module-wrap" data-qtip="{title}">',
             '<div class="tools" align="right">',
             '<img class="modulesBtn" action-type="edit" src="'+app.wwwRoot+'i/system/edit.png" data-qtip="'+appLang.EDIT+'">',
             '<tpl if="dist == false">',
@@ -328,7 +328,6 @@ Ext.define('app.crud.modules.backendView',{
             '</tpl>',
             '</div>',
             '<div class="title">{title}</div>',
-            '<span class="controller">{class}</span>',
             '<div class="icon"><img src="{iconUrl}" title="{title:htmlEncode}"></div>',
             '</div>',
             '</tpl>'
