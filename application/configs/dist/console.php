@@ -9,6 +9,4 @@ return [
     'buildJs' =>'Console_Js_Lang'  ,
     // Clear memory tables used for Background tasks
     'clearMemory' =>'Console_Clear_Memory',
-    // Generate documentation
-    'genDocs' =>'Console_Docs_Generate',
 ];
