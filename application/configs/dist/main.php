@@ -88,11 +88,11 @@ return array(
     /**
      * Local controllers path
      */
-    'local_controllers' => './application/src/app',
+    'local_controllers' => './application/classes/app',
     /**
      * Local models path
      */
-    'local_models' => './application/src/app',
+    'local_models' => './application/classes/app',
     /*
      * Frontend modules config file
      */

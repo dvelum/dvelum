@@ -76,10 +76,13 @@ class View
         self::$checkMTime = $flag;
     }
 
-    public function __construct()
+    public function __construct(?array $data = null)
     {
         $this->cache = self::$defaultCache;
         $this->storage = self::storage();
+        if(isset($data) && is_array($data)){
+            $this->data = $data;
+        }
     }
     /**
      * Template Render

@@ -289,16 +289,22 @@ class Controller extends Backend\Ui\Controller
             return;
         }
 
-
         $item = Model::factory('Medialib')->getItem($id);
 
         if (empty($item)) {
             $this->response->success(array('exists' => false));
         }
 
-        if ($item['type'] == 'image') {
-            $icon = \Model_Medialib::getImgPath($item['path'], $item['ext'], 'thumbnail', true) . '?m=' . date('ymdhis',
-                    strtotime($item['modified']));
+        if ($item['type'] == 'image')
+        {
+            $stamp = 1;
+
+            if(!empty($item['modified'])) {
+                $stamp = date('ymdhis', strtotime($item['modified']));
+            }
+
+            $icon = \Model_Medialib::getImgPath($item['path'], $item['ext'], 'thumbnail', true). '?m=' . $stamp;
+
         } else {
             $icon = $this->appConfig->get('wwwroot') . 'i/unknown.png';
         }

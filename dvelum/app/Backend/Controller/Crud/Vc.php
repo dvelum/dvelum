@@ -83,10 +83,10 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     protected function _getList()
     {
-
-        $pager = Request::post('pager' , 'array' , null);
-        $filter = Request::post('filter' , 'array' , null);
+        $pager = Request::post('pager' , 'array' , []);
+        $filter = Request::post('filter' , 'array' , []);
         $query = Request::post('search' , 'string' , null);
+
         $filter = array_merge($filter , Request::extFilters());
 
         if($this->_user->onlyOwnRecords($this->_module)){
