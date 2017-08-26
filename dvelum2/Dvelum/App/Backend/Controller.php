@@ -94,7 +94,7 @@ class Controller extends App\Controller
 
     protected function initSession() : bool
     {
-        $auth = new App\Backend\Auth($this->request, $this->appConfig);
+        $auth = new App\Auth($this->request, $this->appConfig);
 
         if($this->request->get('logout' , 'boolean' , false)){
             $auth->logout();

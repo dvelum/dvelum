@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Frontend;
 
 use Dvelum\{
-    App, Config, Config\ConfigInterface, Request, Response, Service, Orm\Model, Resource, View
+    App, Config, Config\ConfigInterface, Lang, Request, Response, Service, Orm\Model, Resource, View
 };
 
 class Controller extends App\Controller
@@ -31,10 +31,15 @@ class Controller extends App\Controller
      * @var ConfigInterface
      */
     protected $frontendConfig;
+    /**
+     * @var Lang
+     */
+    protected $lang;
 
     public function __construct(Request $request, Response $response)
     {
         $this->frontendConfig = Config::storage()->get('frontend.php');
+        $this->lang = Lang::lang();
         parent::__construct($request, $response);
     }
 

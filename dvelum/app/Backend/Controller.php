@@ -109,7 +109,7 @@ abstract class Backend_Controller extends Controller
 
     protected function initSession()
     {
-        $auth = new App\Backend\Auth($this->request, $this->_configMain);
+        $auth = new App\Auth($this->request, $this->_configMain);
         if($this->request->get('logout' , 'boolean' , false)){
             $auth->logout();
             if(!$this->request->isAjax()){
