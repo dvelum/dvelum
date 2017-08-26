@@ -27,7 +27,8 @@ return [
         'Zend\\Db' => './vendor/zendframework/zend-db/src',
         'Zend\\Mail' => './vendor/zendframework/zend-mail/src',
         'Zend\\Mime' => './vendor/zendframework/zend-mime/src',
-        'Zend\\Validator' => './vendor/zendframework/zend-validator/src'
+        'Zend\\Validator' => './vendor/zendframework/zend-validator/src',
+        'Zend\\Loader' => './vendor/zendframework/zend-loader/src'
     ],
     // Paths to be excluded from class map
     'noMap' =>[

@@ -198,6 +198,22 @@ class Application
              return $blockManager;
         });
 
+        /**
+         * Register Mail Transport Service
+         */
+        Service::register('MailTransport', function(){
+            $cfg = Config::storage()->get('mail_trasport.php')->__toArray();
+            /**
+             * @var \Zend\Mail\Transport\TransportInterface $transport
+             */
+            $transport  = new $cfg['adapter'];
+            if(!empty($cfg['config']['optionsAdapter']) && !empty($cfg['config']['options']) && method_exists($transport,'setOptions')){
+                $transport->setOptions(new $cfg['config']['optionsAdapter']($cfg['config']['options']));
+            }
+
+            return $transport;
+        });
+
         // init external modules
         $externalsCfg = $this->config->get('externals');
         if ($externalsCfg['enabled']) {
