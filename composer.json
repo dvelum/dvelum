@@ -37,6 +37,7 @@
         "composer/installers": "~1.0",
         "oomphinc/composer-installers-extender": "^1.1",
         "zendframework/zend-db": "^2.8",
+        "zendframework/zend-mail": "^2.8",
         "psr/log": "^1.0",
         "dvelum/extjs": "6.2.0"
     },

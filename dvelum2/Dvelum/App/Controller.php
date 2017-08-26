@@ -25,6 +25,7 @@ use Dvelum\Config;
 use Dvelum\Request;
 use Dvelum\Resource;
 use Dvelum\Response;
+use Dvelum\App\Router\RouterInterface;
 
 class Controller
 {
@@ -46,7 +47,7 @@ class Controller
     protected $resource;
 
     /**
-     * @var \Router_Interface
+     * @var RouterInterface
      */
     protected $router;
 
