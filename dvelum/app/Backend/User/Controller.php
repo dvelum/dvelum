@@ -16,6 +16,7 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
         $id = $this->request->post('id', 'integer', false);
         if (!$id) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
         }
 
         try {
@@ -101,6 +102,7 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
 
         if ($user && $group) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         if ($group) {
@@ -153,12 +155,14 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
 
         if (!$userId) {
             $this->response->success();
+            return;
         }
 
         $userInfo = Model::factory('User')->getCachedItem($userId);
 
         if (!$userInfo) {
             $this->response->success([]);
+            return;
         }
 
         $permissionsModel = Model::factory('Permissions');
@@ -213,7 +217,9 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
      */
     public function savePermissionsAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $data = $this->request->post('data', 'raw', false);
         $groupId = $this->request->post('group_id', 'int', false);
@@ -221,27 +227,33 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
 
         if (empty($data) || !$groupId) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         if (!Model::factory('Permissions')->updateGroupPermissions($groupId, $data)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
         }
         $this->response->success();
     }
 
     public function saveIndividualPermissionsAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
         $data = $this->request->post('data', 'raw', false);
         $userId = $this->request->post('user_id', 'int', false);
         $data = json_decode($data, true);
 
         if (empty($data) || !$userId) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         if (!Model::factory('Permissions')->updateUserPermissions($userId, $data)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
         }
         $this->response->success();
     }
@@ -251,16 +263,22 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
      */
     public function addGroupAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $title = $this->request->post('name', 'str', false);
         if ($title === false) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
+        /**
+         * @var Model_Group $gModel
+         */
         $gModel = Model::factory('Group');
         if ($gModel->addGroup($title)) {
-            $this->response->success(array());
+            $this->response->success([]);
         } else {
             $this->response->error($this->lang->get('CANT_EXEC'));
         }
@@ -271,17 +289,20 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
      */
     public function removeGroupAction()
     {
-        $this->checkCanDelete();
+        if(!$this->checkCanDelete()){
+            return;
+        }
 
         $id = $this->request->post('id', 'int', false);
         if (!$id) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         $gModel = Model::factory('Group');
         $pModel = Model::factory('Permissions');
         if ($gModel->removeGroup($id) && $pModel->removeGroup($id)) {
-            $this->response->success(array());
+            $this->response->success([]);
         } else {
             $this->response->error($this->lang->get('CANT_EXEC'));
         }
@@ -292,12 +313,14 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
      */
     public function userSaveAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
 
         $pass = $this->request->post('pass', 'string', false);
 
         if ($pass) {
-            Request::updatePost('pass', password_hash($pass, PASSWORD_DEFAULT));
+            $this->request->updatePost('pass', password_hash($pass, PASSWORD_DEFAULT));
         }
 
         $object = $this->getPostedData($this->module);
@@ -320,8 +343,9 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
             $object->last_ip = $ip;
         }
 
-        if (!$recId = $object->save()) {
+        if (!$object->save()) {
             $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
         }
 
         $this->response->success();
@@ -332,16 +356,20 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
      */
     public function removeUserAction()
     {
-        $this->checkCanDelete();
+        if(!$this->checkCanDelete()){
+            return;
+        }
 
         $id = $this->request->post('id', 'int', false);
 
         if (!$id) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
-        if (User::getInstance()->getId() == $id) {
+        if ($this->user->getId() == $id) {
             $this->response->error($this->lang->get('CANT_DELETE_OWN_PROFILE'));
+            return;
         }
 
         if (Model::factory('User')->remove($id)) {
@@ -361,6 +389,7 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
 
         if (!$value) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
         }
 
         if (Model::factory('User')->checkUnique($id, 'login', $value)) {
@@ -380,6 +409,7 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
 
         if (empty($value) || !Validator_Email::validate($value)) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
+            return;
         }
 
         if (Model::factory('User')->checkUnique($id, 'email', $value)) {
