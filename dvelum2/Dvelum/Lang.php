@@ -71,7 +71,6 @@ class Lang
      * @param string $name - dictionary name
      * @param mixed $src - dictionary source
      * @param int $type - Config constant
-     * @deprecated
      */
     static public function addDictionaryLoader(string $name, $src, int $type = Config\Factory::File_Array): void
     {
