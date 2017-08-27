@@ -1,8 +1,12 @@
 <?php
+/**
+ * Class Resource
+ * Backward compatibility
+ * @deprecated
+ */
 class Resource
 {
     /**
-     * Backward compatibility
      * @return \Dvelum\Resource
      */
 	public static function getInstance()

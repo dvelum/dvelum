@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class Registry
+ * @deprecated
+ */
 class Registry
 {
 	static protected $_data = array();

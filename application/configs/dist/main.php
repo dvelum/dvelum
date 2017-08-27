@@ -100,7 +100,7 @@ return array(
     /*
      * Blocks path
      */
-    'blocks' => 'Block/',
+    'blocks' => ['Block/','App/Block','Dvelum/App/Block'],
     /*
      * Dictionary directory
      */

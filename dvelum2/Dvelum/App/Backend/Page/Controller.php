@@ -637,7 +637,7 @@ class Controller extends Backend\Ui\Controller
          * Get module codes
          */
         $moduleManager = new \Modules_Manager_Frontend();
-        $fModules = Config::storage()->get($this->appConfig->get('frontend_modules'));
+       // $fModules = Config::storage()->get($this->appConfig->get('frontend_modules'));
         $funcList = [];
         foreach ($moduleManager->getList() as $config){
             $funcList[] =['id'=>$config['code']  , 'title'=>$config['title']];

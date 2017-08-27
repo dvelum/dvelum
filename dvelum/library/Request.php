@@ -19,6 +19,7 @@
 /**
  * Request wrapper
  * @author Kirill Egorov 2008
+ * @deprecated
  */
 class Request
 {

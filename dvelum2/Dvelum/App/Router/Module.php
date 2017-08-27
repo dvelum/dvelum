@@ -28,14 +28,13 @@ use Dvelum\Response;
 use Dvelum\Orm\Model;
 use Dvelum\App\Session\User;
 
-
 /**
  * Back office
  */
 class Module extends Router
 {
     const CACHE_KEY_ROUTES = 'Frontend_Routes';
-    
+
     protected $appConfig;
     protected $frontendConfig;
     protected $moduleRoutes;
@@ -51,18 +50,19 @@ class Module extends Router
      * @param Request $request
      * @param Response $response
      */
-    public function route(Request $request , Response $response) : void
+    public function route(Request $request, Response $response): void
     {
-        $pageVersion = $request->get('vers' , 'int' , false);
+        $pageVersion = $request->get('vers', 'int', false);
         $showRevision = false;
         $pageCode = $request->getPart(0);
 
-        if(!is_string($pageCode) || !strlen($pageCode))
+        if (!is_string($pageCode) || !strlen($pageCode)) {
             $pageCode = 'index';
+        }
 
-        $pageData = Model::factory('Page')->getCachedItemByField('code' , $pageCode);
+        $pageData = Model::factory('Page')->getCachedItemByField('code', $pageCode);
 
-        if(empty($pageData)){
+        if (empty($pageData)) {
             $response->redirect('/');
             return;
         }
@@ -70,39 +70,37 @@ class Module extends Router
         $cacheManager = new \Cache_Manager();
         $cache = $cacheManager->get('data');
 
-        if($pageVersion)
-        {
+        if ($pageVersion) {
             $user = User::getInstance();
-            if($user->isAuthorized() && $user->isAdmin()){
-                $pageData = array_merge($pageData , Model::factory('Vc')->getData('page' , $pageData['id'] , $vers));
+            if ($user->isAuthorized() && $user->isAdmin()) {
+                $pageData = array_merge($pageData,
+                    Model::factory('Vc')->getData('page', $pageData['id'], $pageVersion));
                 $showRevision = true;
             }
         }
 
-        if($pageData['published'] == false && ! $showRevision){
+        if ($pageData['published'] == false && !$showRevision) {
             $response->redirect('/');
         }
 
-
         $page = \Page::getInstance();
 
-        foreach($pageData as $k => $v)
+        foreach ($pageData as $k => $v) {
             $page->{$k} = $v;
+        }
 
         /**
          * Check if controller attached
          */
-        if(strlen($page->func_code))
-        {
-            $fModules = Config::factory(Config\Factory::File_Array , $this->appConfig->get('frontend_modules'));
+        if (strlen($page->func_code)) {
+            $fModules = Config::factory(Config\Factory::File_Array, $this->appConfig->get('frontend_modules'));
 
-            if($fModules->offsetExists($page->func_code))
-            {
+            if ($fModules->offsetExists($page->func_code)) {
                 $controllerConfig = $fModules->get($page->func_code);
-                $this->runController($controllerConfig['class'] , $request->getPart(1), $request, $response);
+                $this->runController($controllerConfig['class'], $request->getPart(1), $request, $response);
             }
-        }else{
-            $this->runController($this->frontendConfig->get('default_controller') , null, $request, $response);
+        } else {
+            $this->runController($this->frontendConfig->get('default_controller'), null, $request, $response);
         }
     }
 
@@ -113,48 +111,48 @@ class Module extends Router
      * @param Request $request
      * @param Response $response
      */
-    public function runController(string $controller , ?string $action, Request $request , Response $response) : void
+    public function runController(string $controller, ?string $action, Request $request, Response $response): void
     {
-        if((strpos('Backend_' , $controller) === 0)) {
+        if ((strpos('Backend_', $controller) === 0)) {
             $response->redirect('/');
             return;
         }
 
-        parent::runController($controller, $action,  $request, $response);
+        parent::runController($controller, $action, $request, $response);
     }
 
     protected function getModulesRoutes()
     {
-        if(isset($this->moduleRoutes))
+        if (isset($this->moduleRoutes)) {
             return $this->moduleRoutes;
+        }
 
         $this->moduleRoutes = array();
 
         $cacheManager = new \Cache_Manager();
         $cache = $cacheManager->get('data');
 
-        if(! $cache || ! $list = $cache->load(self::CACHE_KEY_ROUTES))
-        {
+        if (!$cache || !$list = $cache->load(self::CACHE_KEY_ROUTES)) {
             $pageModel = Model::factory('Page');
             $db = $pageModel->getDbConnection();
-            $sql = $db->select()
-                ->from($pageModel->table() , array(
-                    'code' ,
+            $sql = $db->select()->from($pageModel->table(), array(
+                    'code',
                     'func_code'
-                ))
-                ->where('`published` = 1')
-                ->where('`func_code` !="" ');
+                ))->where('`published` = 1')->where('`func_code` !="" ');
             $list = $db->fetchAll($sql);
-            if($cache)
-                $cache->save($list , self::CACHE_KEY_ROUTES);
+            if ($cache) {
+                $cache->save($list, self::CACHE_KEY_ROUTES);
+            }
         }
 
-        if(!empty($list))
-            foreach($list as $item)
+        if (!empty($list)) {
+            foreach ($list as $item) {
                 $this->moduleRoutes[$item['func_code']] = $item['code'];
-
+            }
+        }
         return $this->moduleRoutes;
     }
+
     /**
      * Define url address to call the module
      * The method locates the url of the published page with the attached
@@ -162,16 +160,18 @@ class Module extends Router
      * specified in the passed argument.
      * Thus, there is no need to know the exact page URL.
      *
-     * @param string $module- module name
+     * @param string $module - module name
      * @return string
      */
-    public function findUrl(string$module):string
+    public function findUrl(string $module): string
     {
-        if(!isset($this->moduleRoutes))
+        if (!isset($this->moduleRoutes)) {
             $this->getModulesRoutes();
+        }
 
-        if(!isset($this->moduleRoutes[$module]))
+        if (!isset($this->moduleRoutes[$module])) {
             return '';
+        }
 
         return $this->moduleRoutes[$module];
     }

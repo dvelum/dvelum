@@ -3,6 +3,7 @@
 /**
  * Class Config
  * Backward compatibility
+ * @deprecated
  */
 class Config extends \Dvelum\Config{
     const Simple = 0;

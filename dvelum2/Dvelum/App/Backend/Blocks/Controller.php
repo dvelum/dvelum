@@ -50,21 +50,25 @@ class Controller extends Backend\Ui\Controller
      */
     public function classListAction()
     {
-        $blocksPath = $this->appConfig['blocks'];
+        $blockPaths = $this->appConfig['blocks'];
         $filePath = Config::storage()->get('autoloader.php');
         $filePath = $filePath['paths'];
 
         $classes = [];
         foreach($filePath as $path)
         {
-            if(is_dir($path.'/'.$blocksPath))
+            foreach ($blockPaths as $itemPath)
             {
-                $files = File::scanFiles($path.'/'.$blocksPath , array('.php'), true , File::Files_Only);
-                foreach ($files as $k=>$file)
+                if(is_dir($path.'/'.$itemPath))
                 {
-                    $class = Utils::classFromPath(str_replace($path, '',$file));
-                    if($class != 'Block_Abstract')
-                        $classes[$class] = ['id'=>$class,'title'=>$class];
+                    $files = File::scanFiles($path.'/'.$itemPath , ['.php'], true , File::Files_Only);
+                    foreach ($files as $k=>$file)
+                    {
+                        $class = Utils::classFromPath(str_replace($path, '',$file), true);
+                        if(!empty($class) && stripos($class, 'abstract') === false){
+                            $classes[$class] = ['id'=>$class,'title'=>$class];
+                        }
+                    }
                 }
             }
         }

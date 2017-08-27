@@ -128,7 +128,6 @@ class BlockManager
         else
             $data = $this->getBlocksMap($this->pageId , $this->version);
 
-
         $this->map = [];
 
         if(!empty($data)) {
@@ -143,25 +142,22 @@ class BlockManager
             }
         }
 
-        // no cache
-        if(!$this->cache) {
-            return;
-        }
-
-        /*
-         * Cache rendered HTML
-         */
-        if(!$this->hasNoCacheBlock)
-        {
-            if($this->hardCache) {
-                $this->cache->save($this->map , $mapKey , Config::storage()->get('orm.php')->get('hard_cache'));
-            } else {
-                $this->cache->save($this->map , $mapKey);
+        if($this->cache){
+            /*
+             * Cache rendered HTML
+             */
+            if(!$this->hasNoCacheBlock)
+            {
+                if($this->hardCache) {
+                    $this->cache->save($this->map , $mapKey , Config::storage()->get('orm.php')->get('hard_cache'));
+                } else {
+                    $this->cache->save($this->map , $mapKey);
+                }
             }
-        }
-        else
-        {
-            $this->cache->remove($mapKey);
+            else
+            {
+                $this->cache->remove($mapKey);
+            }
         }
     }
 
@@ -245,7 +241,7 @@ class BlockManager
 
         $blockObject = new $class($config);
 
-        if(!$blockObject instanceof \Block)
+        if(!($blockObject instanceof \Block) && !($blockObject instanceof \Dvelum\App\Block\AbstractAdapter))
             trigger_error('Invalid block class');
 
         $html = $blockObject->render();

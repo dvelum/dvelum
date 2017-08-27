@@ -27,9 +27,10 @@ class Fs
     /**
      * Create class name from file path
      * @param string $path
+     * @param bool $check
      * @return null|string
      */
-    static public function classFromPath(string $path) : ?string
+    static public function classFromPath(string $path, bool $check = false) : ?string
     {
         // windows path hack
         $path = str_replace('\\','/', $path);
@@ -47,6 +48,51 @@ class Fs
         elseif(strpos($path , '/') === 0)
             $path = substr($path, 1);
 
-        return implode('_' , array_map('ucfirst',explode('/', $path)));
+        $result = implode('_' , array_map('ucfirst',explode('/', $path)));
+
+        if($check && !class_exists($result)){
+            $result = '\\' . str_replace('_','\\', $result);
+            if(!class_exists($result)){
+                return null;
+            }
+        }
+        return $result;
+    }
+
+
+    /**
+     * Create path for cache file
+     * @param string $basePath
+     * @param string $fileName
+     * @return string
+     */
+    static public function createCachePath(string $basePath, string $fileName): string
+    {
+        $extension = File::getExt($fileName);
+
+        $str = md5($fileName);
+        $len = strlen($str);
+        $path = '';
+        $count = 0;
+        $parts = 0;
+        for ($i = 0; $i < $len; $i++) {
+            if ($count == 4) {
+                $path .= '/';
+                $count = 0;
+                $parts++;
+            }
+            if ($parts == 4) {
+                break;
+            }
+            $path .= $str[$i];
+            $count++;
+        }
+        $path = $basePath . $path;
+
+        if (!is_dir($path)) {
+            mkdir($path, 0755, true);
+        }
+
+        return $path . $str . $extension;
     }
 }
