@@ -87,8 +87,11 @@ abstract class Router implements Router\RouterInterface
             }
 
             if(!method_exists($controller , $action.'Action')) {
-                $response->error(Lang::lang()->get('WRONG_REQUEST').' ' . $request->getUri());
-                return;
+                $action = 'index';
+                if(!method_exists($controller , $action.'Action')) {
+                     $response->error(Lang::lang()->get('WRONG_REQUEST').' ' . $request->getUri());
+                     return;
+                }
             }
             $controller->{$action.'Action'}();
         }

@@ -12,7 +12,8 @@ class Model_Mediacategory extends Model
   public function getCategoriesTree()
   {
     $categoryModel = Model::factory('Mediacategory');
-    $data = $categoryModel->getList();
+    //$data = $categoryModel->getList();
+    $data = $categoryModel->query()->fetchAll();
     $tree = new Tree();
   
     if(!empty($data))

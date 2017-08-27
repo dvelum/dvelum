@@ -26,7 +26,7 @@ class Backend_Designer_Controller extends Backend_Controller
 		'/js/lib/CodeMirror/mode/javascript/javascript.js',
 
 
-		'/js/lib/ext_ux/TreeCellEditing.js',
+		//'/js/lib/ext_ux/TreeCellEditing.js',
 		//'/js/lib/ext_ux/RowExpander.js',
 	);
 	/**

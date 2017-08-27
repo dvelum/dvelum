@@ -329,7 +329,7 @@ class Deprecated
      * @return array
      * @deprecated
      */
-    public function getList($params = false, $filters = false, $fields = '*', $useCache = false, $query = false, $joins = false)
+    public function getList($params = false, $filters = false, $fields = ['*'], $useCache = false, $query = false, $joins = false)
     {
         $data = false;
         $cache = $this->model->getCacheAdapter();
