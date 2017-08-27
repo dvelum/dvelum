@@ -58,7 +58,7 @@ class Externals_Client
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_SSL_VERIFYPEER =>  0,
-            CURLOPT_SSL_VERIFYHOST =>   0,
+            CURLOPT_SSL_VERIFYHOST =>  2,
             CURLOPT_FOLLOWLOCATION =>  1,
             CURLOPT_HEADER =>  0,
             CURLOPT_HTTPHEADER =>  ['Content-Type: application/json'],
