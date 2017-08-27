@@ -295,16 +295,40 @@ class Externals_Manager
 
         // build objects
         if (!empty($modConf['objects'])) {
+
+            $builders = [];
             foreach ($modConf['objects'] as $object) {
                 try {
                     $objectCfg = Orm\Object\Config::factory($object);
                     if (!$objectCfg->isLocked() && !$objectCfg->isReadOnly()) {
                         $builder = Orm\Object\Builder::factory($object);
-                        if (!$builder->build()) {
+                        $builders[] = $builder;
+                        if (!$builder->build(false)) {
                             $errors = $builder->getErrors();
                             if (!empty($errors) && is_array($errors)) {
                                 $this->errors[] = implode(', ', $errors);
                             }
+                        }
+                    }
+                } catch (Exception $e) {
+                    $this->errors[] = $e->getMessage();
+                }
+            }
+
+            if (!empty($this->errors)) {
+                return false;
+            }
+
+            foreach($builders as $builder)
+            {
+                try {
+                    /**
+                     * @var Orm\Object\Builder\BuilderInterface $builder
+                     */
+                    if (!$builder->buildForeignKeys()) {
+                        $errors = $builder->getErrors();
+                        if (!empty($errors) && is_array($errors)) {
+                            $this->errors[] = implode(', ', $errors);
                         }
                     }
                 } catch (Exception $e) {

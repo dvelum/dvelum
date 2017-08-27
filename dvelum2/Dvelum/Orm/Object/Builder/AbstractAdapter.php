@@ -270,11 +270,29 @@ abstract class AbstractAdapter implements BuilderInterface
         {
             foreach($data as $item)
             {
-                $keyName = md5(implode(':' , $item));
+                $keyName = $this->createForeignKeyName($item);
                 $keys[$keyName] = $item;
             }
         }
         return $keys;
+    }
+
+    /**
+     * Generate index name  for constraint key
+     * Mysql limits with 64 chars
+     * @param  array $item
+     * @return string
+     */
+    public function createForeignKeyName(array $item): string
+    {
+        $key = $item['curDb'].'.'.$item['curTable'].'.'.$item['curField'] .
+               '-' .
+                $item['toDb'].'.'.$item['toTable'].'.'.$item['toField'];
+
+        if(mb_strlen($key,'utf-8') > 64){
+            $key = md5($key);
+        }
+        return $key;
     }
 
     /**

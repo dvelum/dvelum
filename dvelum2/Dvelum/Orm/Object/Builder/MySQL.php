@@ -637,10 +637,10 @@ class MySQL extends AbstractAdapter
 
     /**
      * Create / alter db table
-     * @param bool $buildKeys
+     * @param bool $buildForeignKeys
      * @return boolean
      */
-    public function build(bool $buildKeys = true) : bool
+    public function build(bool $buildForeignKeys = true) : bool
     {
         $this->errors = array();
         if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
@@ -659,7 +659,7 @@ class MySQL extends AbstractAdapter
                 $sql = $this->sqlCreate();
                 $this->db->query($sql);
                 $this->logSql($sql);
-                if($buildKeys)
+                if($buildForeignKeys)
                     return $this->buildForeignKeys();
                 else
                     return true;
@@ -678,7 +678,7 @@ class MySQL extends AbstractAdapter
         /*
          * Remove invalid foreign keys
          */
-        if($buildKeys && ! $this->buildForeignKeys(true , false))
+        if($buildForeignKeys && ! $this->buildForeignKeys(true , false))
             return false;
 
         /*
@@ -747,7 +747,7 @@ class MySQL extends AbstractAdapter
                 $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->model->table() . '` ' . implode(',' , $cmd) . ';';
                 $this->db->query($sql);
                 $this->logSql($sql);
-                if($buildKeys)
+                if($buildForeignKeys)
                     return $this->buildForeignKeys(false , true);
                 else
                     return true;
