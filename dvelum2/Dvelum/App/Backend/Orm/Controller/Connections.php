@@ -96,13 +96,16 @@ class Connections extends \Dvelum\App\Backend\Controller
 
     public function removeAction()
     {
+        if(!$this->checkCanEdit()){
+            return;
+        }
+
         $id = $this->request->post('id', 'string', false);
 
         if($id === false){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' undefined id');
             return;
         }
-
 
         try{
             $this->connections->removeConnection($id);
@@ -149,6 +152,10 @@ class Connections extends \Dvelum\App\Backend\Controller
 
     public function saveAction()
     {
+        if(!$this->checkCanEdit()){
+            return;
+        }
+
         $oldId = $this->request->post('oldid', 'string', false);
         $id = $this->request->post('id', 'string', false);
         $devType = $this->request->post('devType', 'int', false);
@@ -461,6 +468,10 @@ class Connections extends \Dvelum\App\Backend\Controller
 
     public function connectobjectAction()
     {
+        if(!$this->checkCanEdit()){
+            return;
+        }
+
         $connectionId = $this->request->post('connId', 'string', false);
         $connectionType = $this->request->post('type', 'integer', false);
         $table = $this->request->post('table', 'string' , false);

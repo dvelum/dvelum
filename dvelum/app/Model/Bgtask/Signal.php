@@ -9,6 +9,6 @@ class Model_Bgtask_Signal extends Model
 	 * @return void
 	 */
 	public function clearSignals($pid){
-		$this->_db->delete($this->table() , '`pid` = ' . intval($pid));
+		$this->db->delete($this->table() , '`pid` = ' . intval($pid));
 	}
 }

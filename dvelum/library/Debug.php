@@ -206,9 +206,11 @@ class Debug
 		$str .= '<b>Queries:</b> ' . $totalCount. '<br>' . '<b>Queries time:</b> ' . number_format($totalTime, 5) . 'sec.<br>';
 		if($options['sql'])
 		{
-			if(!empty($profiles))
-				foreach($profiles as $queryProfile)
-					$str .= '<span style="color:blue;font-size: 11px;">'.number_format($queryProfile['elapse'],5).'s. </span><span style="font-size: 11px;color:green;">'. $queryProfile['sql']."</span><br>\n";
+			if(!empty($profiles)){
+                foreach($profiles as $queryProfile){
+                    $str .= '<span style="color:blue;font-size: 11px;">'.number_format($queryProfile['elapse'],5).'s. </span><span style="font-size: 11px;color:green;">'. $queryProfile['sql']."</span><br>\n";
+                }
+            }
 		}
 		$str .= "<br>\n";
 
