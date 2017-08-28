@@ -561,6 +561,7 @@
   'COMPLETED' => 'Завершено',
   'ERROR' => 'Ошибка',
   'ENC_KEY' => 'Ключ шифрования',
+  'ENC_IV' => 'Вектор шифрования',
   'ACL_ACCESS_DENIED' => 'Доступ запрещен (ACL)',
   'GENERATE_MODULE' => 'Сгенерировать модуль',
   'RELATIONSHIP_TYPE' => 'Тип связи',

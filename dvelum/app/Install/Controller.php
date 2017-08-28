@@ -207,11 +207,11 @@ class Install_Controller
                 'accessType'=>'required',
                 'msg'=>false
             ],
-//            [
-//                'name' => 'mcrypt',
-//                'accessType'=>'allowed',
-//                'msg'=>$this->localization->get('WARNING')
-//            ],
+            [
+               'name' => 'openssl',
+               'accessType'=>'allowed',
+               'msg'=>$this->localization->get('WARNING')
+            ],
             [
                 'name'=>'json',
                 'accessType'=>'required',

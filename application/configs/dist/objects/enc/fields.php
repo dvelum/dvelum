@@ -1,8 +1,8 @@
 <?php
 return array(
-    'enc_key'=>array(
+    'enc_iv'=>array(
         'type' => '',
-        'title' => 'ENC_KEY',
+        'title' => 'ENC_IV',
         'db_type' => 'varchar',
         'db_default' => false,
         'db_len' => 255,

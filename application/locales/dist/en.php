@@ -559,6 +559,7 @@
   'COMPLETED' => 'Completed',
   'ERROR' => 'Error',
   'ENC_KEY' => 'Encryption key',
+  'ENC_IV' => 'Encryption vector',
   'ACL_ACCESS_DENIED' => 'Access denied by access control list (ACL)',
   'GENERATE_MODULE' => 'Generate module',
   'RELATIONSHIP_TYPE' => 'Relationship type',
