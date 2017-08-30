@@ -7,7 +7,7 @@
  * 2 - Wrong URI
  * 3 - Application Error
  */
-if (isset($_SERVER['argc']) && $_SERVER['argc']!==2 ){
+if (isset($_SERVER['argc']) && $_SERVER['argc'] < 2 ){
     exit(1);
 }
 
