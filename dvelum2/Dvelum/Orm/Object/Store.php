@@ -533,25 +533,26 @@ class Store
         $ivField = $objectConfig->getIvField();
         $encFields = $objectConfig->getEncryptedFields();
 
-        $iv = base64_decode($object->get($ivField));
+        $iv = (string) $object->get($ivField);
+        $cryptService = $objectConfig->getCryptService();
 
         /*
-         * Re encode all fields if IV changed
+         * Re encrypt all fields if IV changed
          */
         if(isset($data[$ivField]))
         {
             foreach ($encFields as $field){
-                $data[$field] = $objectConfig->encrypt($object->get($field), $iv);
+                $data[$field] = $cryptService->encrypt($object->get($field), $iv);
             }
         }
         /*
-         * Encode values
+         * Encrypt values
          */
         else
         {
             foreach ($data as $field => &$value){
                 if(in_array($field , $encFields , true)){
-                    $value = $objectConfig->encrypt($value, $iv);
+                    $value = $cryptService->encrypt($value, $iv);
                 }
             }unset($value);
         }

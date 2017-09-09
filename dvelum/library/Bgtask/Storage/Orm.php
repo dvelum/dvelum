@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 /**
  * 
  * ORM based tasks storage

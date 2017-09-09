@@ -21,24 +21,28 @@ declare(strict_types=1);
 
 namespace Dvelum\Security;
 
+use Dvelum\Config\ConfigInterface;
+
 /**
  * Simple encryption class
  * Uses Base64 storage format for keys and data
  * @package Dvelum\Security
  */
-class Crypt
+class CryptService implements CryptServiceInterface
 {
-    private $chipper;
-    private $hash;
-    private $error;
+    private $chipper = 'aes-256-ctr';
+    private $hash = 'sha256';
+    private $privateKey = null;
+    private $error ='';
+
+    public function __construct(ConfigInterface $config)
+    {
+        $this->chipper = $config->get('chipper');
+        $this->hash = $config->get('hash');
+        $this->privateKey = $config->get('key');
+    }
 
     private $privateKeyOptions = null;
-
-    public function __construct(string $chipper = 'aes-256-ctr', string $hash = 'sha256')
-    {
-        $this->chipper = $chipper;
-        $this->hash = $hash;
-    }
 
     /**
      * Verify that encryption works, all dependencies are installed
@@ -73,7 +77,7 @@ class Crypt
     }
 
     /**
-     * Set prive key generator options
+     * Set private key generator options
      * @param array $options
      * @return void
      */
@@ -114,15 +118,14 @@ class Crypt
     /**
      * Encrypt a string.
      * @param string $string - string to encrypt.
-     * @param string $key - encryption key.
      * @param string $base64Vector - base64 encoded initialization vector
      * @throws \Exception
      * @return string - base64 encoded encryption result
      */
-    public function encrypt(string $string, string $key, string $base64Vector) : string
+    public function encrypt(string $string, string $base64Vector) : string
     {
         $iv = base64_decode($base64Vector);
-        $keyHash = openssl_digest($key, $this->hash, true);
+        $keyHash = openssl_digest($this->privateKey, $this->hash, true);
         $encrypted = openssl_encrypt($string, $this->chipper, $keyHash, OPENSSL_RAW_DATA, $iv);
 
         if($encrypted === false){
@@ -135,16 +138,15 @@ class Crypt
     /**
      * Decrypt a string.
      * @param string $string - base64 encoded encrypted string to decrypt.
-     * @param string $key - encryption key.
      * @param string $base64Vector - base64 encoded initialization vector
      * @throws \Exception
      * @return string - the decrypted string.
      */
-    public function decryptString(string $string, string $key, string $base64Vector) :string
+    public function decrypt(string $string, string $base64Vector) :string
     {
         $iv = base64_decode($base64Vector);
         $src = base64_decode($string);
-        $keyHash = openssl_digest($key, $this->hash, true);
+        $keyHash = openssl_digest($this->privateKey, $this->hash, true);
         $res = openssl_decrypt($src, $this->chipper, $keyHash, OPENSSL_RAW_DATA, $iv);
 
         if ($res === false) {

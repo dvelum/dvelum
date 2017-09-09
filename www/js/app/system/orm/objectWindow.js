@@ -1101,7 +1101,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 
 			var win = Ext.create('app.crud.orm.taskStatusWindow',{
 				title: '"'+objectTitle+ '" '+appLang.ENCRYPT_DATA,
-				controllerUrl:app.crud.orm.Actions.taskStat,
+				controllerUrl:app.crud.orm.Actions.encTaskStat,
 				extraParams:{
 					'object':objectName,
 					'type':'encrypt'
@@ -1147,7 +1147,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 
 			var win = Ext.create('app.crud.orm.taskStatusWindow',{
 				title: '"'+objectTitle+ '" '+appLang.DECRYPT_DATA,
-				controllerUrl:app.crud.orm.Actions.taskStat,
+				controllerUrl:app.crud.orm.Actions.encTaskStat,
 				extraParams:{
 					'object':this.objectName,
 					'type':'decrypt'

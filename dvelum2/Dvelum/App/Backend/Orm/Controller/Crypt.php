@@ -42,9 +42,11 @@ class Crypt extends Controller
     /**
      * Decrypt object data (background)
      */
-    public function decryptDataAction()
+    public function decryptAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
         $object = $this->request->post('object' , 'string' , false);
 
         if(!$object || !Orm\Object\Config::configExists($object)){
@@ -60,21 +62,21 @@ class Crypt extends Controller
 
         //disable profiling in dev mode
         if($this->appConfig->get('development')) {
-            $taskModel->getDbConnection()->getProfiler()->setEnabled(false);
-            $signalModel->getDbConnection()->getProfiler()->setEnabled(false);
-            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
+            //$taskModel->getDbConnection()->getProfiler()->setEnabled(false);
+            //$signalModel->getDbConnection()->getProfiler()->setEnabled(false);
+            //$objectModel->getDbConnection()->getProfiler()->setEnabled(false);
         }
 
-        $logger =  new Bgtask_Log_File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
+        $logger =  new \Bgtask_Log_File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
 
-        $bgStorage = new Bgtask_Storage_Orm($taskModel , $signalModel);
-        $tm = Bgtask_Manager::getInstance();
+        $bgStorage = new \Bgtask_Storage_Orm($taskModel , $signalModel);
+        $tm = \Bgtask_Manager::getInstance();
         $tm->setStorage($bgStorage);
         $tm->setLogger($logger);
 
         // Start encryption task
         $tm->launch(
-            Bgtask_Manager::LAUNCHER_SIMPLE,
+            \Bgtask_Manager::LAUNCHER_SIMPLE,
             'Task_Orm_Decrypt' ,
             array(
                 'object'=>$object,
@@ -86,9 +88,12 @@ class Crypt extends Controller
     /**
      * Encrypt object data (background)
      */
-    public function encryptDataAction()
+    public function encryptAction()
     {
-        $this->checkCanEdit();
+        if(!$this->checkCanEdit()){
+            return;
+        }
+
         $object = $this->request->post('object' , 'string' , false);
 
         if(!$object || !Orm\Object\Config::configExists($object)){
@@ -104,26 +109,74 @@ class Crypt extends Controller
 
         //disable profiling in dev mode
         if($this->appConfig->get('development')) {
-            $taskModel->getDbConnection()->getProfiler()->setEnabled(false);
-            $signalModel->getDbConnection()->getProfiler()->setEnabled(false);
-            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
+//            $taskModel->getDbConnection()->getProfiler()->setEnabled(false);
+//            $signalModel->getDbConnection()->getProfiler()->setEnabled(false);
+//            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
         }
 
-        $logger =  new Bgtask_Log_File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
+        $logger =  new \Bgtask_Log_File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
 
-        $bgStorage = new Bgtask_Storage_Orm($taskModel , $signalModel);
-        $tm = Bgtask_Manager::getInstance();
+        $bgStorage = new \Bgtask_Storage_Orm($taskModel , $signalModel);
+        $tm = \Bgtask_Manager::getInstance();
         $tm->setStorage($bgStorage);
         $tm->setLogger($logger);
 
         // Start encryption task
         $tm->launch(
-            Bgtask_Manager::LAUNCHER_SIMPLE,
+            \Bgtask_Manager::LAUNCHER_SIMPLE,
             'Task_Orm_Encrypt' ,
             array(
                 'object'=>$object,
                 'session_container'=>$container
             )
         );
+    }
+
+    /**
+     * Check background process status
+     */
+    public function taskStatAction()
+    {
+        $object = $this->request->post('object' , 'string' , false);
+        $type = $this->request->post('type' , 'string' , false);
+
+        if(!$object || ! $type) {
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+        switch($type){
+            case 'encrypt':
+                $container = $this->encryptContainerPrefix . $object;
+                break;
+            case 'decrypt':
+                $container = $this->decryptContainerPrefix . $object;
+                break;
+            default:
+                $this->response->error($this->lang->get('WRONG_REQUEST'));
+                return;
+        }
+
+        $session = \Store_Session::getInstance();
+
+        if(!$session->keyExists($container)){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+        $pid = $session->get($container);
+        $taskModel = Model::factory('bgtask');
+        $statusData = $taskModel->getItem($pid);
+
+        if(empty($statusData)){
+            $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
+        }
+
+        $this->response->success([
+            'status' =>  $statusData['status'],
+            'op_total' =>  $statusData['op_total'],
+            'op_finished' =>  $statusData['op_finished']
+        ]);
     }
 }

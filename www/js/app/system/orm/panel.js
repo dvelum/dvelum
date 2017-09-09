@@ -116,8 +116,8 @@ Ext.define('app.crud.orm.Main',{
 			// crypt
             encryptData:		app.createUrl([this.controllerUrl + 'crypt','encrypt']),
             decryptData:		app.createUrl([this.controllerUrl + 'crypt','decrypt']),
-
-            taskStat:			this.controllerUrl  + 'taskstat'
+			// crypt task
+            encTaskStat:		app.createUrl([this.controllerUrl + 'crypt','taskstat'])
         };
 
 		this.tbar = [];

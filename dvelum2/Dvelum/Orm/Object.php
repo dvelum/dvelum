@@ -187,8 +187,9 @@ class Object implements ObjectInterface
 
         if($this->config->hasEncrypted()){
             $ivField = $this->config->getIvField();
-            if(isset($data[$ivField]) && !empty($data[$ivField]))
-                $iv = base64_decode($data[$ivField]);
+            if(isset($data[$ivField]) && !empty($data[$ivField])){
+                $iv = $data[$ivField];
+            }
         }
 
         foreach($data as $field => &$value)
@@ -203,8 +204,9 @@ class Object implements ObjectInterface
             }
 
             if($fieldObject->isEncrypted()){
-                if(!empty($iv)){
-                    $value = $this->config->decrypt($value, $iv);
+                $value = (string) $value;
+                if(is_string($iv) && strlen($value) && strlen($iv)){
+                    $value = $this->config->getCryptService()->decrypt($value, $iv);
                 }
             }
         }
@@ -569,7 +571,7 @@ class Object implements ObjectInterface
             $ivField = $this->config->getIvField();
             $ivData = $this->get($ivField);
             if(empty($ivData)){
-                $this->set($ivField , base64_encode($this->config->createIv()));
+                $this->set($ivField , $this->config->getCryptService()->createVector());
             }
         }
 
@@ -971,8 +973,9 @@ class Object implements ObjectInterface
         $iv = false;
         if($this->config->hasEncrypted()){
             $ivField = $this->config->getIvField();
-            if(isset($data[$ivField]) && !empty($data[$ivField]))
-                $iv = base64_decode($data[$ivField]);
+            if(isset($data[$ivField]) && !empty($data[$ivField])){
+                $iv = $data[$ivField];
+            }
         }
 
         foreach($data as $k => $v)
@@ -982,8 +985,9 @@ class Object implements ObjectInterface
                 try{
 
                     if($this->config->getField($k)->isEncrypted()){
-                        if(!empty($iv)){
-                            $v = $this->config->decrypt($v, $iv);
+                        $v = (string) $v;
+                        if(is_string($iv) && strlen($v) && strlen($iv)){
+                            $v = $this->config->getCryptService()->decrypt($v, $iv);
                         }
                     }
 
@@ -1021,7 +1025,7 @@ class Object implements ObjectInterface
             $ivField = $this->config->getIvField();
             $ivData = $this->get($ivField);
             if(empty($ivData)){
-                $this->set($ivField , base64_encode($this->config->createIv()));
+                $this->set($ivField , $this->config->getCryptService()->createVector());
             }
         }
 

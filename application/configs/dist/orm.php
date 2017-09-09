@@ -53,8 +53,14 @@ return [
      * Hard caching time (without validation) for frontend , seconds
      */
     'hard_cache' => 30,
-    /**
+    /*
      * UML Map data file
      */
-    'uml_map_data' => 'umlMap.php'
+    'uml_map_data' => 'umlMap.php',
+    /*
+     * Encrypted object vector field
+     */
+    'iv_field'=>'enc_iv'
+
+
 ];

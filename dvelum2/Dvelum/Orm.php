@@ -26,6 +26,7 @@ use Dvelum\Orm\{
 };
 
 use Dvelum\Db;
+use Dvelum\Security\CryptServiceInterface;
 use Dvelum\Utils;
 use Dvelum\Config;
 
@@ -42,6 +43,10 @@ class Orm
      * @var ConfigInterface
      */
     protected $modelSettings;
+    /**
+     * @var CryptServiceInterface;
+     */
+    private $cryptService;
 
     public function init(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, \Cache_Interface $cache = null)
     {
@@ -79,7 +84,8 @@ class Orm
         $this->configSettings = Config\Factory::create([
             'configPath' => $config->get('object_configs'),
             'translator' => $translator,
-            'useForeignKeys' => $config->get('foreign_keys')
+            'useForeignKeys' => $config->get('foreign_keys'),
+            'ivField'=> $config->get('iv_field'),
         ]);
 
         if ($config->get('db_object_error_log')) {
@@ -104,6 +110,8 @@ class Orm
                 $objectStore->setLog($log);
             }
         }
+
+        $this->cryptService =  new \Dvelum\Security\CryptService( Config::storage()->get('crypt.php'));
     }
 
     /**
@@ -195,7 +203,10 @@ class Orm
         $name = strtolower($name);
 
         if ($force || !isset($this->configObjects[$name])) {
-            $this->configObjects[$name] = new Object\Config($name, $force, $this->configSettings);
+            $config = new Object\Config($name, $force, $this->configSettings);
+            $config->setCryptService($this->cryptService);
+
+            $this->configObjects[$name] = $config;
         }
 
         return $this->configObjects[$name];

@@ -27,6 +27,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         'field' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Field',
         'index' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Index',
         'uml' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Uml',
+        'crypt' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Crypt',
     ];
 
     public function route(Request $request, Response $response) : void

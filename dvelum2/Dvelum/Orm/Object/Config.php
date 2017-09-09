@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Object;
 
 use Dvelum\Orm;
+use Dvelum\Security\CryptServiceInterface;
 use Dvelum\Service;
 use Dvelum\Config as Cfg;
 use Dvelum\Orm\Model;
@@ -106,6 +107,11 @@ class Config
      * @var Acl
      */
     protected $acl = false;
+
+    /**
+     * @var CryptServiceInterface
+     */
+    private $cryptService = null;
 
     /**
      * Instantiate data structure for the objects named $name
@@ -1034,47 +1040,14 @@ class Config
         return $fields;
     }
 
+
     /**
      * Get public key field
-     * @return string|null
-     */
-    public function getIvField() : ?string
-    {
-        if(!isset(self::$encConfig))
-            return null;
-
-        return self::$encConfig['iv_field'];
-    }
-
-    /**
-     * Decrypt value
-     * @param $value
-     * @param $iv - public key
      * @return string
      */
-    public function decrypt($value , $iv) : string
+    public function getIvField() : string
     {
-        return \Utils_String::decrypt($value , self::$encConfig['key'] , $iv);
-    }
-
-    /**
-     * Encrypt value
-     * @param $value
-     * @param $iv  - public key
-     * @return string
-     */
-    public function encrypt($value, $iv) : string
-    {
-        return \Utils_String::encrypt($value , self::$encConfig['key'] , $iv);
-    }
-
-    /**
-     * Create public key
-     * @return string
-     */
-    public function createIv()
-    {
-        return \Utils_String::createEncryptIv();
+        return $this->settings->get('ivField');
     }
 
     /**
@@ -1209,5 +1182,23 @@ class Config
         }
 
         return $field;
+    }
+
+    /**
+     * Set encryption service adapter
+     * @param CryptServiceInterface $service
+     */
+    public function setCryptService(CryptServiceInterface $service) : void
+    {
+        $this->cryptService = $service;
+    }
+
+    /**
+     * Get encryption service adapter
+     * @return CryptServiceInterface
+     */
+    public function getCryptService() : CryptServiceInterface
+    {
+        return $this->cryptService;
     }
 }
