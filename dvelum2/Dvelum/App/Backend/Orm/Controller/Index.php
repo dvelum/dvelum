@@ -37,7 +37,7 @@ class Index extends Controller
      * Save Object indexes
      * @todo validate index columns, check if they exists in config
      */
-    public function saveIndexAction()
+    public function saveAction()
     {
         if(!$this->checkCanEdit()){
             return;
@@ -95,7 +95,7 @@ class Index extends Controller
     /**
      * Delete object index
      */
-    public function deleteIndexAction()
+    public function deleteAction()
     {
         if(!$this->checkCanDelete()){
             return;

@@ -18,7 +18,7 @@
  */
 
 namespace Dvelum\Orm\Object;
-
+use Dvelum\Db;
 /**
  * Import component, experimental class
  * @package ORM
@@ -37,11 +37,11 @@ class Import
     
     /**
      * Find PRIMARY KEY
-     * @param \Db_Adapter $db
+     * @param Db\Adapter $db
      * @param string $table
      * @return array | boolean (false)
      */
-    public function findPrimaryKey(\Db_Adapter $db , string $table)
+    public function findPrimaryKey(Db\Adapter $db , string $table)
     {
         $fields = $db->describeTable($table);
         $primary = false;
@@ -60,7 +60,7 @@ class Import
      * @param string $table
      * @return boolean
      */
-    public function isValidPrimaryKey(\Db_Adapter $db , string $table)
+    public function isValidPrimaryKey(Db\Adapter $db , string $table)
     {     
         $primary = $this->findPrimaryKey($db, $table);
 
@@ -91,7 +91,7 @@ class Import
      * @throws Exception
      * @return array
      */
-    public function createConfigByTable(\Db_Adapter $dbAdapter , string $tableName , $adapterPrefix = false)
+    public function createConfigByTable(Db\Adapter $dbAdapter , string $tableName , $adapterPrefix = false)
     {
         $config = array();
         
