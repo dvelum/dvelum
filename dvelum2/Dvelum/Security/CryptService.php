@@ -23,6 +23,7 @@ namespace Dvelum\Security;
 
 use Dvelum\Config\ConfigInterface;
 
+
 /**
  * Simple encryption class
  * Uses Base64 storage format for keys and data
@@ -33,6 +34,7 @@ class CryptService implements CryptServiceInterface
     private $chipper = 'aes-256-ctr';
     private $hash = 'sha256';
     private $privateKey = null;
+    private $privateKeyData = null;
     private $error ='';
 
     public function __construct(ConfigInterface $config)
@@ -125,7 +127,7 @@ class CryptService implements CryptServiceInterface
     public function encrypt(string $string, string $base64Vector) : string
     {
         $iv = base64_decode($base64Vector);
-        $keyHash = openssl_digest($this->privateKey, $this->hash, true);
+        $keyHash = openssl_digest($this->getPrivateKey(), $this->hash, true);
         $encrypted = openssl_encrypt($string, $this->chipper, $keyHash, OPENSSL_RAW_DATA, $iv);
 
         if($encrypted === false){
@@ -146,12 +148,29 @@ class CryptService implements CryptServiceInterface
     {
         $iv = base64_decode($base64Vector);
         $src = base64_decode($string);
-        $keyHash = openssl_digest($this->privateKey, $this->hash, true);
+        $keyHash = openssl_digest($this->getPrivateKey(), $this->hash, true);
         $res = openssl_decrypt($src, $this->chipper, $keyHash, OPENSSL_RAW_DATA, $iv);
 
         if ($res === false) {
             throw new \Exception('Decryption failed: ' . openssl_error_string());
         }
         return $res;
+    }
+
+    /**
+     * Get private key
+     * @throws \Exception
+     * @return string
+     */
+    protected function getPrivateKey() : string
+    {
+        if(is_null($this->privateKeyData)){
+            if(file_exists($this->privateKey)){
+                $this->privateKeyData = file_get_contents($this->privateKey);
+            }else{
+                throw new \Exception('Private key file is not exists '.$this->privateKey);
+            }
+        }
+        return $this->privateKeyData;
     }
 }
