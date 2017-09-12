@@ -52,25 +52,25 @@ APC example:
 				)
  */
 return array(
-	 	// Frontend data cache
-		'data'=>array(
-				'enabled'=>1,
-				'backend' => array(
-						'name' => 'Cache_Memcached',
-						'options' => array(
-								'compression' => 1,
-								'normalizeKeys'=>1,
-								'defaultLifeTime'=> 604800, // 7 days
-								'keyPrefix'=>'dv_dat',
-							    'persistent_key' => 'dv_cache_',
-								'servers'=>array(
-										array(
-												'host' => 'localhost',
-												'port' => 11211,
-												'weight' => 1,
-										)
-								)
-						)
-				)
-		)
+    // Frontend data cache
+    'data' => array(
+        'enabled' => 1,
+        'backend' => array(
+            'name' => '\\Dvelum\\Cache\\Memcached',
+            'options' => array(
+                'compression' => 1,
+                'normalizeKeys' => 1,
+                'defaultLifeTime' => 604800, // 7 days
+                'keyPrefix' => 'dv_dat',
+                'persistent_key' => 'dv_cache_',
+                'servers' => array(
+                    array(
+                        'host' => 'localhost',
+                        'port' => 11211,
+                        'weight' => 1,
+                    )
+                )
+            )
+        )
+    )
 );

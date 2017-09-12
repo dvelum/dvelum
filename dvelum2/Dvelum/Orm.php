@@ -19,7 +19,7 @@
 declare(strict_types=1);
 
 namespace Dvelum;
-
+use Dvelum\Cache\CacheInterface;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\{
     Object, Model, Exception
@@ -48,7 +48,7 @@ class Orm
      */
     private $cryptService;
 
-    public function init(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, \Cache_Interface $cache = null)
+    public function init(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, CacheInterface $cache = null)
     {
         $eventManager = new \Eventmanager();
 

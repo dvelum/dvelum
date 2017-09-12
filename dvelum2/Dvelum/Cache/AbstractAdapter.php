@@ -58,7 +58,7 @@ abstract class AbstractAdapter
     {
         $key = $this->keyPrefix . $key;
 
-        if(!empty($this->options['normalizeKeys']))
+        if(!empty($this->settings['normalizeKeys']))
             $key = $this->normalize($key);
 
         return $key;
