@@ -42,7 +42,7 @@ Ext.define('SearchPanel', {
      * Default field label
      * @property string
      */
-    fieldLabel: appLang.SEARCH + ':',
+    fieldLabel: null,
     /**
      * Hide field label
      */
@@ -58,7 +58,8 @@ Ext.define('SearchPanel', {
             frame: false,
             style: {
                 border: 0
-            }
+            },
+            fieldLabel:appLang.SEARCH + ':'
         }, config || {});
 
         this.callParent(arguments);
@@ -69,7 +70,7 @@ Ext.define('SearchPanel', {
         this.resetButton = Ext.create('Ext.Button', {
             iconCls: 'deleteIcon',
             flat: false,
-            tooltip: appLang.RESET_SEARCH,
+            tooltip: appLang.RESET,
             listeners: {
                 'click': {
                     fn: function () {
