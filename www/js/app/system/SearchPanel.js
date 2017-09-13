@@ -135,6 +135,10 @@ Ext.define('SearchPanel', {
             return;
         }
 
+        if(query.length < this.minChars){
+            return;
+        }
+
         if (this.local) {
             this.clearFilter();
             this.store.filter({fn: this.isSearched, scope: this});
