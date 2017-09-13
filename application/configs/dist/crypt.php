@@ -1,7 +1,7 @@
 <?php
 return [
-     // Private key (test key!)
-    'key'=>'otNEFAsRK74qMtRmD8wctXGZUhbu7LZd',
+     // Private key path
+    'key'=>DVELUM_ROOT . '/data/key/pkey.key',
     // encryption chipper
     'chipper'=> 'aes-256-ctr',
     // encryption hash algorithm

@@ -3,4 +3,4 @@
  * Backward compatibility
  * @deprecated
  */
-interface Cache_Interface extends Dvelum\Cache\CacheInterface{}
+interface Cache_Interface extends \Dvelum\Cache\CacheInterface{}

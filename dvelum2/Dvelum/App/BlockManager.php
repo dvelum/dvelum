@@ -24,6 +24,7 @@ namespace Dvelum\App;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
 use Dvelum\Utils;
+use Dvelum\Cache\CacheInterface;
 
 use \Page;
 
@@ -50,10 +51,10 @@ class BlockManager
 
     /**
      * Set cache adapter for the current object
-     * @param \Cache_Interface $cache
+     * @param CacheInterface $cache
      * @return void
      */
-    public function setCache(\Cache_Interface $cache) : void
+    public function setCache(CacheInterface $cache) : void
     {
         $this->cache = $cache;
     }

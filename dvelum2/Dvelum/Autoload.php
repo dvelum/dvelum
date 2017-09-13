@@ -110,14 +110,16 @@ class Autoload
          */
         if(!empty($this->classMap) && isset($this->classMap[$class]))
         {
-            require_once $this->classMap[$class];
+            try{
+                require_once $this->classMap[$class];
+            }catch (\Throwable $e){
+                return false;
+            }
 
             if($this->debug){
                 $this->debugData[] = $class;
             }
             return true;
-        }else{
-         //   echo $class."<br>";
         }
 
         foreach ($this->loaders as $loader)
@@ -145,8 +147,12 @@ class Autoload
         foreach($this->paths as $path)
         {
             if(file_exists($path . DIRECTORY_SEPARATOR . $file)) {
-                require_once $path . DIRECTORY_SEPARATOR . $file;
-                return true;
+                try{
+                    require_once $path . DIRECTORY_SEPARATOR . $file;
+                    return true;
+                }catch (\Throwable $e){
+                    return false;
+                }
             }
         }
         return false;
@@ -166,14 +172,17 @@ class Autoload
                 $filePath = str_replace([$prefix,'\\'], [$path,'/'], $class).'.php';
                 if(file_exists($filePath))
                 {
-                    require_once $filePath;
-                    return true;
+                    try{
+                        require_once $filePath;
+                        return true;
+                    }catch (\Throwable $e){
+                        return false;
+                    }
                 }
             }
         }
         return false;
     }
-
 
     /**
      * Load class map

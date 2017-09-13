@@ -29,6 +29,8 @@ class Backend_Externals_Controller extends Backend_Controller
 
         $langService->addLoader('externals', $this->_configMain->get('language').'/externals.php' , Config\Factory::File_Array);
         $this->externalsManager = Externals_Manager::factory();
+
+        $this->externalsManager->scan();
     }
 
     /**
@@ -37,8 +39,6 @@ class Backend_Externals_Controller extends Backend_Controller
     public function listAction()
     {
         $result = [];
-
-        $this->externalsManager->scan();
 
         if($this->externalsManager->hasModules()){
             $result = $this->externalsManager->getModules();

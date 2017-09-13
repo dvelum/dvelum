@@ -8,6 +8,7 @@
  */
 
 use Dvelum\Orm;
+use Dvelum\Cache\CacheInterface;
 
 class Eventmanager extends Orm\Object\Event\Manager
 {
@@ -15,9 +16,9 @@ class Eventmanager extends Orm\Object\Event\Manager
 
     /**
      * Set cache adapter
-     * @param \Cache_Interface $cache
+     * @param CacheInterface $cache
      */
-    public function setCache(\Cache_Interface $cache)
+    public function setCache(CacheInterface $cache)
     {
         $this->_cache = $cache;
     }

@@ -54,7 +54,7 @@ class Manager
      * Remove cache adapter
      * @param string $name
      */
-    public function unregister(string $name)
+    public function remove(string $name)
     {
         if(!isset(self::$connections[$name]))
             return;

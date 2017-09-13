@@ -100,14 +100,14 @@ class Externals_Manager
                 }
             }
         }
-
-        if ($hasNew) {
-            if (!Config::storage()->save($this->config)) {
-                $writePath = Config\Factory::storage()->getWrite();
-                $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $writePath . 'external_modules.php';
-                return false;
-            };
-        }
+//
+//        if ($hasNew) {
+//            if (!Config::storage()->save($this->config)) {
+//                $writePath = Config\Factory::storage()->getWrite();
+//                $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $writePath . 'external_modules.php';
+//                return false;
+//            };
+//        }
 
         return true;
     }

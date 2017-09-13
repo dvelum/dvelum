@@ -237,6 +237,10 @@ class Install_Controller
                 'accessType'=>'required'
             ),
             array(
+                'path'=>'data/key',
+                'accessType'=>'required'
+            ),
+            array(
                 'path'=>$this->wwwPath . 'js/lang',
                 'accessType'=>'required'
             ),
@@ -371,68 +375,21 @@ class Install_Controller
         foreach ($objects as $name)
         {
             $dbObjectBuilder = Orm\Object\Builder::factory($name);
-            if(!$dbObjectBuilder->build())
+            if(!$dbObjectBuilder->build(false))
                 $buildErrors[] = $name; // . ': '.$dbObjectBuilder->getErrors()."<br>".PHP_EOL;
         }
 
-        // install documentation
-        if($this->session->get('install_docs')){
-            $this->installDocs();
+        foreach ($objects as $name)
+        {
+            $dbObjectBuilder = Orm\Object\Builder::factory($name);
+            if(!$dbObjectBuilder->buildForeignKeys())
+                $buildErrors[] = $name; // . ': '.$dbObjectBuilder->getErrors()."<br>".PHP_EOL;
         }
 
         if(!empty($buildErrors))
             Response::jsonError($this->localization->get('BUILD_ERR') . ' ' . implode(', ', $buildErrors));
         else
             Response::jsonSuccess('', array('msg'=>$this->localization->get('DB_DONE')));
-    }
-
-    /**
-     * Install documentation
-     * @throws Exception
-     */
-    public function installDocs()
-    {
-        $installCfg = Config::storage()->get('install.php');
-        $dataPath = $installCfg->get('dumpdir');
-        $objectList = $installCfg->get('objects');
-        $chunkSize = $installCfg->get('chunk_size');
-
-        foreach($objectList as $object=>$fields)
-        {
-            $filePath = $dataPath.$object.'.csv';
-
-            if(!file_exists($filePath)){
-                Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR') .' '. $this->localization->get('IMPORT_ERR').' '.$filePath);
-            }
-
-            $model =  Model::factory($object);
-            $db = $model->getDbConnection();
-            $csvHandler = fopen($filePath , 'r');
-            $rows = [];
-            while(($row = fgetcsv($csvHandler , 0,';','"'))!==false)
-            {
-                foreach($row as $k=>&$v){
-                    if($v==='NULL'){
-                        $v = null;
-                    }
-                }unset($v);
-                if(count($rows) < $chunkSize){
-                    $rows[] = array_combine($fields , $row);
-                }else{
-                    if(!$model->multiInsert($rows , $chunkSize)){
-                        Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR'));
-                    }
-                    $rows = [];
-                }
-
-            }
-            if(!empty($rows)){
-                if(!$model->multiInsert($rows , $chunkSize)){
-                    Response::jsonError($this->localization->get('INSTALL_DOCS_ERROR'));
-                }
-            }
-            fclose($csvHandler);
-        }
     }
 
     public function setuserpassAction()
@@ -484,26 +441,20 @@ class Install_Controller
             Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.$writePath);
 
 
-        if(extension_loaded('mcrypt')){
-            $key = base64_encode(mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_CAST_256, MCRYPT_MODE_CFB),MCRYPT_DEV_RANDOM));
+        if(extension_loaded('openssl')){
+            $service = new \Dvelum\Security\CryptService($mainCfgStorage->get('crypt.php'));
+            $key = $service->createPrivateKey();
         }else{
             $key = md5(uniqid(md5(time())));
         }
 
-        $encConfig = array(
-            'key' =>  $key,
-            'iv_field' => 'enc_key'
-        );
+        $cryptConfig = $mainCfgStorage->get('crypt.php');
 
-        $encFields = Config::storage()->get($ormCfg->get('object_configs').'/enc/config.php', false , false);
-        $encFields->setData($encConfig);
-
-        if(!$mainCfgStorage->save($encFields))
-            Response::jsonError($this->localization->get('CANT_WRITE_FS') . ' ' . $mainCfgStorage->getWrite());
+        if(!file_put_contents($cryptConfig->get('key'), $key)){
+            Response::jsonError($this->localization->get('CANT_WRITE_FS') . ' ' . $cryptConfig->get('key'));
+        }
 
         $mainConfig = Config::storage()->get('main.php', false ,true);
-
-       // Registry::set('main', $mainConfig , 'config');
 
         /*
          * Starting the application

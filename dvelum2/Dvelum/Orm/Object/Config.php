@@ -65,10 +65,6 @@ class Config
      * @var array
      */
     static protected $cryptFields;
-    /**
-     * @var Cfg\Adapter
-     */
-    static protected $encConfig;
 
     /**
      * @var string $name
@@ -299,9 +295,6 @@ class Config
     {
         if(!isset(self::$cryptFields))
             self::$cryptFields = Cfg\Factory::storage()->get($this->settings->get('configPath').'enc/fields.php')->__toArray();
-
-        if(!isset(self::$encConfig))
-            self::$encConfig = Cfg\Factory::storage()->get($this->settings->get('configPath').'enc/config.php')->__toArray();
 
         return self::$cryptFields;
     }
