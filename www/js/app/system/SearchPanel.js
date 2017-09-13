@@ -47,6 +47,10 @@ Ext.define('SearchPanel', {
      * Hide field label
      */
     hideLabel: false,
+    /**
+     * The minimum number of characters the user must type before search starts
+     */
+    minChars: 1,
 
     constructor: function (config) {
 
