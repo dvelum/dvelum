@@ -332,6 +332,7 @@ class Ext_Object
 			if($name==='handler' && $this->_config->isValidProperty('handler'))
 			{
 				$this->_config->handler = $code;
+
 				if($this->_config->isValidProperty('scope'))
 				  $this->_config->scope = 'this';
 
@@ -340,7 +341,7 @@ class Ext_Object
 			}
 		}
 		if(!empty($listenersArray))
-			$this->_config->listeners = "{\n\t\t".implode(",\n\t\t", $listenersArray)."\n\t}\n";
+			$this->_config->listeners = "{\n\t".implode(",\n\t", $listenersArray)."\n}";
 	}
 
 	/**

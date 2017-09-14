@@ -67,15 +67,15 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 						$column['data']->projectColId = $column['id'];
 
 				$object->addListener('columnresize','{
-							 fn:function( ct, column, width,eOpts){
-								app.application.onGridColumnResize("'.$name.'", ct, column, width, eOpts);
-							 }
+                     fn:function( ct, column, width,eOpts){
+                        app.application.onGridColumnResize("'.$name.'", ct, column, width, eOpts);
+                     }
 				}');
 
 				$object->addListener('columnmove','{
-							fn:function(ct, column, fromIdx, toIdx, eOpts){
-								app.application.onGridColumnMove("'.$name.'", ct, column, fromIdx, toIdx, eOpts);
-							}
+                    fn:function(ct, column, fromIdx, toIdx, eOpts){
+                        app.application.onGridColumnMove("'.$name.'", ct, column, fromIdx, toIdx, eOpts);
+                    }
 				}');
 			}
 		}

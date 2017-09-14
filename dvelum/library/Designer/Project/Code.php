@@ -106,11 +106,17 @@ class Designer_Project_Code
      */
     protected function appendStoreNs(Ext_Object $object)
     {
-        $store = trim($object->store);
-        if(strpos($store , Designer_Project_Code::$NEW_INSTANCE_TOKEN) !==false){
-            $object->store = 'Ext.create("'.Ext_Code::appendNamespace(trim(str_replace(Designer_Project_Code::$NEW_INSTANCE_TOKEN, '', $store))).'",{})';
-        }elseif (strlen($store)){
-            $object->store = Ext_Code::appendRunNamespace($store);
+        $store = $object->store;
+
+        if($store instanceof Ext_Helper_Store){
+            $object->store = (string) $object->store;
+        }else{
+            $store = trim($store);
+            if(strpos($store , Designer_Project_Code::$NEW_INSTANCE_TOKEN) !==false){
+                $object->store = 'Ext.create("'.Ext_Code::appendNamespace(trim(str_replace(Designer_Project_Code::$NEW_INSTANCE_TOKEN, '', $store))).'",{})';
+            }elseif (strlen($store)){
+                $object->store = Ext_Code::appendRunNamespace($store);
+            }
         }
     }
 

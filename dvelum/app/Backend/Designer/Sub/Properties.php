@@ -33,6 +33,9 @@ class Backend_Designer_Sub_Properties extends Backend_Designer_Sub
         if(isset($properties['menu']))
             unset($properties['menu']);
 
+        if(isset($properties['store']))
+            $properties['store'] = '';
+
         Response::jsonSuccess($properties);
     }
     /**

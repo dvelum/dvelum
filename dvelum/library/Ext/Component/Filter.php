@@ -58,27 +58,28 @@ class Ext_Component_Filter extends Ext_Object
 
 		$object = $this->getObject();
 
+		$ident = "\n\t\t\t";
+
 		if(strlen($store) && strlen($field) && $autoFilter)
 		{
-                $listener = 'function(fld){
-                ';
+                $listener = 'function(fld){'. $ident .' var store = '.$store.';';
 
 
                     if($local)
                     {
-                        $listener.= $store.'.filter("'.$field.'" , fld.getValue());';
+                        $listener.= $ident .'store.filter("'.$field.'" , fld.getValue());';
                     }
                     else
                     {
                         if($this->_viewObject->isValidProperty('multiSelect') && $this->_viewObject->multiSelect){
-                            $listener.= $store.'.proxy.setExtraParam("filter['.$field.'][]" , fld.getValue());';
+                            $listener.= $ident .' store.proxy.setExtraParam("filter['.$field.'][]" , fld.getValue());';
                         }else{
-                            $listener.= $store.'.proxy.setExtraParam("filter['.$field.']" , fld.getValue());';
+                            $listener.= $ident .' store.proxy.setExtraParam("filter['.$field.']" , fld.getValue());';
                         }
-                        $listener.= $store.'.loadPage(1);';
+                        $listener.= $ident .' store.loadPage(1);';
                     }
 
-            $listener.= "\n".'}';
+            $listener.= "\n\t".'}';
 
                 if($this->_viewObject->getClass() == 'Form_Field_Combobox') {
                     $object->addListener('select', $listener);
