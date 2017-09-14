@@ -163,6 +163,7 @@ var desLang = {
 
 		properties:'Properties',
 		property:'Property',
+		propertyType:'Property type',
 		passwordConfirm:'Password Confirmation',
 		params:'Params',
 		projectConfig:'Project Config',

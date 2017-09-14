@@ -225,4 +225,80 @@ class Backend_Designer_Sub_Properties extends Backend_Designer_Sub
         Response::jsonSuccess();
     }
 
+    public function storeLoadAction()
+    {
+        $this->_checkLoaded();
+        $object = $this->_getObject();
+        $data = [];
+
+        $store = $object->store;
+
+        if(empty($store) || is_string($store))
+        {
+            if(strpos($store, Designer_Project_Code::$NEW_INSTANCE_TOKEN)!==false){
+                $data = [
+                    'type'=> 'instance',
+                    'store' => trim(str_replace(Designer_Project_Code::$NEW_INSTANCE_TOKEN, '',$store))
+                ];
+            }else{
+                $data = [
+                    'type'=> 'store',
+                    'store' => $store
+                ];
+            }
+
+        }
+        elseif($store instanceof Ext_Helper_Store)
+        {
+            $data = [
+                'type'=> $store->getType(),
+            ];
+            switch($store->getType()){
+                case Ext_Helper_Store::TYPE_STORE:
+                    $data['store'] = $store->getValue();
+                    break;
+                case Ext_Helper_Store::TYPE_INSTANCE:
+                    $data['instance'] = $store->getValue();
+                    break;
+                case Ext_Helper_Store::TYPE_JSCODE:
+                    $data['call'] = $store->getValue();
+                    break;
+            }
+        }
+        Response::jsonSuccess($data);
+    }
+
+    public function storeSaveAction()
+    {
+        $this->_checkLoaded();
+        $object = $this->_getObject();
+
+        $storeHelper = new Ext_Helper_Store();
+
+        $type =  Request::post('type','string',false);
+
+        if(!in_array($type , $storeHelper->getTypes() , true)){
+            Response::jsonError($this->_lang->get('FILL_FORM') , array('type'=>$this->_lang->get('INVALID_VALUE')));
+        }
+
+        $storeHelper->setType($type);
+
+        switch($type){
+            case Ext_Helper_Store::TYPE_STORE:
+                $storeHelper->setValue(Request::post('store' , Filter::FILTER_RAW , ''));
+                break;
+            case Ext_Helper_Store::TYPE_INSTANCE:
+                $storeHelper->setValue(Request::post('instance' , Filter::FILTER_RAW , ''));
+                break;
+            case Ext_Helper_Store::TYPE_JSCODE:
+                $storeHelper->setValue(Request::post('call' , Filter::FILTER_RAW , ''));
+                break;
+
+        }
+
+        $object->store = $storeHelper;
+        $this->_storeProject();
+        Response::jsonSuccess();
+    }
+
 }

@@ -195,19 +195,31 @@ Ext.define('designer.properties.Panel', {
                     allowBlank: true
                 })
             },
-            'store': {
-                editor: Ext.create('Ext.form.field.ComboBox', {
-                    typeAhead: true,
-                    triggerAction: 'all',
-                    selectOnTab: true,
-                    labelWidth: 80,
-                    forceSelection: false,
-                    queryMode: 'remote',
-                    displayField: 'title',
-                    valueField: 'id',
-                    store: storesStore
-                })
+            // 'store': {
+            //     editor: Ext.create('Ext.form.field.ComboBox', {
+            //         typeAhead: true,
+            //         triggerAction: 'all',
+            //         selectOnTab: true,
+            //         labelWidth: 80,
+            //         forceSelection: false,
+            //         queryMode: 'remote',
+            //         displayField: 'title',
+            //         valueField: 'id',
+            //         store: storesStore
+            //     })
+            // },
+            'store':{
+                editor: Ext.create('Ext.form.field.Text', {
+                    listeners: {
+                        focus: {
+                            fn: me.showStoreWindow,
+                            scope: me
+                        }
+                    }
+                }),
+                renderer:function(v){return '...';}
             },
+
             // 'mapping':{
             //     editor:Ext.create('Ext.form.field.ComboBox',{
             //         typeAhead: true,
@@ -784,5 +796,22 @@ Ext.define('designer.properties.Panel', {
         Ext.defer(function () {
             win.show().toFront();
         }, 50);
-    }
+    },
+    showStoreWindow:function(){
+        var listStore = app.designer.createStoresList(false);
+        var instanceStore = app.designer.createStoresList(true);
+
+        var win = Ext.create('designer.store.PropertyWindow',{
+            title:desLang.store,
+            modal:true,
+            objectName : this.objectName,
+            columnId: this.extraParams.id,
+            controllerUrl:this.controllerUrl,
+            storesStore:listStore,
+            instancesStore:instanceStore
+        });
+        Ext.defer(function () {
+            win.show().toFront();
+        }, 50);
+    },
 });

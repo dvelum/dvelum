@@ -1390,6 +1390,16 @@ Ext.define('designer.application',{
 		store.proxy.setExtraParam('instances' , true);
 		return store;
 	},
+    /**
+	  Get storage for "store" selector
+     * @returns {Ext.data.Store}
+     */
+	createStoresList:function(includeInstances){
+        var store = this.projectItems.createStore('store_selection');
+        store.proxy.setExtraParam('stores' , !includeInstances);
+        store.proxy.setExtraParam('instances' , includeInstances);
+        return store;
+	},
 	/**
 	 * Get storage of project menus
 	 * @returns {Ext.data.Store}

@@ -16,7 +16,8 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
     public function listAction()
     {
         $this->_checkLoaded();
-        $acceptedTypes = array('visual','stores','models','menu');
+        $acceptedTypes = array('visual','stores','models','menu','store_selection');
+
         $type = Request::post('type', 'string', false);
         $project = $this->_getProject();
 
@@ -25,6 +26,39 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 
         switch ($type)
         {
+            case  'store_selection':
+                $addStores = Request::post('instances', Filter::FILTER_BOOLEAN, false);
+                $addInstances = Request::post('instances', Filter::FILTER_BOOLEAN, false);
+                $stores = $project->getStores();
+
+                $list = [];
+
+                $cfg = $project->getConfig();
+
+                if(!empty($stores))
+                {
+                    foreach($stores as $object)
+                    {
+                        $name = $object->getName();
+                        $title = $name;
+                        $class = $object->getClass();
+
+                        if($class === 'Data_Store_Tree')
+                            $title.= ' (Tree)';
+
+                        // append instance token
+                        if($addInstances && $object->isExtendedComponent()){
+                            $list[] = array('id'=>$name, 'title'=>$name, 'objClass'=>$cfg['namespace'] .'.' . $name);
+                        }
+
+                        if($addStores){
+                            $list[] = array('id'=>$name, 'title'=>$title , 'objClass'=>$class);
+                        }
+                    }
+                }
+                Response::jsonSuccess($list);
+
+                break;
 
             case 'stores' :
                 $addInstances = Request::post('instances', Filter::FILTER_BOOLEAN, false);

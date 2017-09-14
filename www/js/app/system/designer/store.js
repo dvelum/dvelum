@@ -338,7 +338,6 @@ Ext.define('designer.store.fieldsWindow',{
     extend:'Ext.Window',
     width:600,
     height:500,
-    layout:'fit',
     modal:true,
     title:desLang.fields,
     dataGrid:null,
@@ -967,5 +966,211 @@ Ext.define('designer.store.rootWindow',{
     {
         this.fireEvent('dataSaved',this.dataGrid.getSource());
         this.close();
+    }
+});
+
+
+
+Ext.define('designer.store.PropertyWindow',{
+    extend: 'Ext.Window',
+    layout: 'fit',
+    objectName : '',
+    columnId: '',
+    controllerUrl:'',
+    width:400,
+    height:500,
+    maximizable:true,
+    modal:true,
+    storesStore:null,
+    instancesStore:null,
+
+    initComponent:function(){
+        var me = this;
+
+        this.storesStore.load();
+        this.instancesStore.load();
+        this.storeSelect = Ext.create('Ext.form.field.ComboBox',{
+            typeAhead: true,
+            triggerAction: 'all',
+            selectOnTab: true,
+            forceSelection:true,
+            queryMode:'local',
+            displayField:'title',
+            valueField:'id',
+            fieldLabel:desLang.store,
+            store: this.storesStore,
+            hidden:true,
+            name:'store'
+        });
+
+        this.instanceSelect = Ext.create('Ext.form.field.ComboBox',{
+            typeAhead: true,
+            triggerAction: 'all',
+            selectOnTab: true,
+            forceSelection:true,
+            queryMode:'local',
+            displayField:'title',
+            valueField:'id',
+            fieldLabel:desLang.instanceOf + ' ' + desLang.store ,
+            store: this.instancesStore,
+            hidden:true,
+            name:'instance'
+        });
+
+        this.callEditor = Ext.create('designer.codeEditor',{
+            readOnly:false,
+            showSaveBtn:false,
+            hidden:true,
+            flex:1,
+            anchor:'100%',
+            hideLabel:true,
+            sourceCode:'',
+            name:'call',
+            extraKeys: {
+                "Ctrl-Space": function(cm) {
+                    CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+                },
+                "Ctrl-S": function(cm) {me.saveData();},
+                "Ctrl-Z": function(cm) {me.callEditor.undoAction();},
+                "Ctrl-Y": function(cm) {me.callEditor.redoAction();},
+                "Shift-Ctrl-Z": function(cm) {me.callEditor.redoAction();}
+            }
+        });
+
+        this.typeBox = Ext.create('Ext.form.field.ComboBox',{
+            fieldLabel:desLang.propertyType,
+            name:'type',
+            forceSelection:true,
+            displayField:'title',
+            valueField:'id',
+            allowBlank:false,
+            store:Ext.create('Ext.data.Store',{
+                model:'app.comboStringModel',
+                data:[
+                    {id:'store',title:desLang.store},
+                    {id:'instance',title:desLang.instanceOf},
+                    {id:'jscall',title:desLang.jsCall}
+                ]
+            }),
+            queryMode:'local',
+            listeners:{
+                change:{
+                    fn:this.onTypeSelected,
+                    scope:this
+
+                }
+            }
+        });
+
+        this.dataForm = Ext.create('Ext.form.Panel',{
+            bodyCls:'formBody',
+            layout:{
+                type: 'vbox',
+                align : 'stretch',
+                pack  : 'start'
+            },
+            bodyPadding:4,
+            fieldDefaults:{
+                labelWidth:120,
+                labelAlign:'right'
+            },
+            items:[
+                this.typeBox,
+                this.callEditor,
+                this.storeSelect,
+                this.instanceSelect
+            ]
+        });
+
+        this.items = [this.dataForm];
+
+        this.buttons = [
+            {
+                text:desLang.save,
+                scope:this,
+                handler:this.saveData
+            },
+            {
+                text:desLang.cancel,
+                scope:this,
+                handler:this.close
+            }
+        ];
+
+        this.callParent();
+        this.loadData();
+    },
+    onTypeSelected:function(combo,v){
+
+        this.callEditor.hide();
+        this.storeSelect.hide();
+        this.instanceSelect.hide();
+
+        switch(v){
+            case 'instance':
+                this.instanceSelect.show();
+                break;
+            case 'jscall':
+                this.callEditor.show();
+                break;
+            case 'store':
+            default :
+                this.storeSelect.show();
+                break;
+        }
+    },
+    loadData:function(){
+        var form = this.dataForm.getForm();
+        var me = this;
+        //   form.waitMsgTarget = me.getEl();
+        form.load({
+            waitMsg:desLang.loading,
+            url:this.controllerUrl + 'storeload',
+            method:'post',
+            params: {
+                'object':this.objectName,
+            },
+            success: function(form, action)
+            {
+                if(action.result.success) {
+                    if(!Ext.isEmpty(action.result.data.call)){
+                        me.callEditor.setValue(action.result.data.call);
+                    }
+                    if(!Ext.isEmpty(action.result.data.code)){
+                        me.editor.setValue(action.result.data.code);
+                    }
+                    me.fireEvent('dataLoaded' ,action.result);
+                } else {
+                    Ext.Msg.alert(desLang.message, action.result.msg).toFront();
+                    me.close();
+                }
+            },
+            failure: app.formFailure
+        });
+    },
+    saveData:function(){
+        var me = this;
+        var form = this.dataForm.getForm();
+
+        form.submit({
+            clientValidation: true,
+            method:'post',
+            url:this.controllerUrl + 'storesave',
+            params:{
+                'object':this.objectName,
+                'call': this.callEditor.getValue()
+            },
+            waitMsg:appLang.SAVING,
+            success: function(form, action)
+            {
+                if(!action.result.success){
+                    Ext.Msg.alert(appLang.MESSAGE, action.result.msg);
+                    return;
+                }
+                me.fireEvent('dataSaved');
+                me.close();
+            },
+            failure: app.formFailure
+        });
     }
 });

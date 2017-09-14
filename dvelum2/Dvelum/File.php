@@ -57,7 +57,11 @@ class File
      */
     static public function getExt(string $name) : string
     {
-        return strrchr(strtolower($name), '.');
+        $ext = strrchr(strtolower($name), '.');
+        if(empty($ext)){
+            $ext = '';
+        }
+        return $ext;
     }
 
     /**
