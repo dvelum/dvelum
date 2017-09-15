@@ -528,7 +528,7 @@ Ext.define('app.contentWindow',{
 	{
 		var handle = this;
 		var form = this.editForm.getForm();
-		// form.waitMsgTarget = this.editForm.getEl();
+        form.waitMsgTarget = this.getEl();
 		form.load({
 			waitMsg:appLang.LOADING,
 			url:this.controllerUrl + 'loaddata',
@@ -677,17 +677,24 @@ Ext.define('app.contentWindow',{
 		this.extraParams[name] = value;
 	},
 	destroy:function(){
+        this.rightPanel = null;
 	    var toDestroy  = [
 	        this.rightPanel,
             this.eastPanel,
             this.historyPanel,
             this.revisionPanel,
-            this.contentTabs,
-            this.contentPanel
+            this.contentPanel,
+            this.contentTabs
         ];
 
         Ext.Array.each(toDestroy, function (item) {
             if(item && item.destroy){
+                item.destroy();
+            }
+        });
+
+        Ext.Array.each(this.linkedComponents,function(item){
+            if(item.destroy){
                 item.destroy();
             }
         });

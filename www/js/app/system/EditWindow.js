@@ -461,6 +461,13 @@ Ext.define('app.editWindow',{
                 item.destroy();
             }
         });
+
+        Ext.Array.each(this.linkedComponents,function(item){
+            if(item.destroy){
+                item.destroy();
+            }
+        });
+
         toDestroy = null;
         this.callParent(arguments);
     }

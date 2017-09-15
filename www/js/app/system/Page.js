@@ -39,6 +39,24 @@ Ext.define('app.crud.page.Window',{
             canEdit:this.canEdit
         });
 
+        this.themeStore = Ext.create('Ext.data.Store',{
+            model:app.comboStringModel,
+            data:Ext.clone(app.crud.page.themes),
+            sorters:[ {
+                property: 'title',
+                direction: 'ASC' // or 'DESC' (case sensitive for local sorting)
+            }]
+        });
+
+        this.fnStore = Ext.create('Ext.data.Store',{
+            model:app.comboStringModel,
+            sorters:[ {
+                property: 'title',
+                direction: 'ASC' // or 'DESC' (case sensitive for local sorting)
+            }],
+            data:aFuncCodes
+        });
+
         this.mainTab = Ext.create('Ext.Panel',{
             title:appLang.GENERAL,
             frame:false,
@@ -119,14 +137,7 @@ Ext.define('app.crud.page.Window',{
                     fieldLabel:appLang.THEME,
                     name:"theme",
                     xtype:"combo",
-                    store:Ext.create('Ext.data.Store',{
-                        model:app.comboStringModel,
-                        data:Ext.clone(app.crud.page.themes),
-                        sorters:[ {
-                            property: 'title',
-                            direction: 'ASC' // or 'DESC' (case sensitive for local sorting)
-                        }]
-                    }),
+                    store:this.themeStore,
                     listeners:{
                         select:{
                             fn:function(cmp){
@@ -165,14 +176,7 @@ Ext.define('app.crud.page.Window',{
                             }
                         }
                     },
-                    store:Ext.create('Ext.data.Store',{
-                        model:app.comboStringModel,
-                        sorters:[ {
-                            property: 'title',
-                            direction: 'ASC' // or 'DESC' (case sensitive for local sorting)
-                        }],
-                        data:aFuncCodes
-                    })
+                    store:this.fnStore
                 }
             ]});
 
@@ -239,6 +243,19 @@ Ext.define('app.crud.page.Window',{
             }
         });
 
+    },
+    destroy:function(){
+        this.fnStore.destroy();
+        this.textPanel.destroy();
+        this.blocksPanel.destroy();
+        this.mainTab.destroy();
+        this.themeStore.destroy();
+        Ext.Array.each(this.linkedComponents,function(item){
+           if(item.destroy){
+               item.destroy();
+           }
+        });
+        this.callParent(arguments);
     }
 });
 

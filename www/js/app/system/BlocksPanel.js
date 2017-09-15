@@ -331,5 +331,11 @@ Ext.define('app.blocksPanel',{
 				Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
 			}
 		});
-	}
+	},
+    destroy:function(){
+        this.itemsStore.destroy();
+        this.itemsList.destroy();
+        this.placesContainer.destroy();
+        this.callParent(arguments);
+    }
 });

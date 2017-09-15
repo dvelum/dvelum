@@ -128,5 +128,9 @@ Ext.define('app.medialib.HtmlPanel',{
 	},
 	getValue:function(){
 	    return this.textEditor.getValue();
-	}
+	},
+	destroy:function(){
+        this.textEditor.destroy();
+        this.callParent(arguments);
+    }
 });
