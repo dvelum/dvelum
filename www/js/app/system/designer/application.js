@@ -1227,11 +1227,14 @@ Ext.define('designer.application',{
 			oldSearch = this.activePropertyPanel.getSearchText();
 			oldEvent = this.activePropertyPanel.getEventsSearchText();
 			oldMethod = this.activePropertyPanel.getMethodsSearchText();
-            this.activePropertyPanel.destroy();
 		}
 
-		this.activePropertyPanel = null;
 		this.propertiesPanel.removeAll(true);
+
+        if(this.activePropertyPanel){
+            this.activePropertyPanel.destroy();
+        }
+
 		var panelClass = null;
 
 		if(objectClass === 'Designer_Project_Container'){
@@ -1349,7 +1352,10 @@ Ext.define('designer.application',{
 			}
 		});
 
+		this.propertiesPanel.suspendEvents(true);
 		this.propertiesPanel.add(this.activePropertyPanel);
+        this.propertiesPanel.resumeEvents();
+
 	},
 	/**
 	 * Refresh view

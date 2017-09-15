@@ -220,7 +220,11 @@ Ext.define('designer.methodsPanel',{
 	 * @return string
 	 */
 	getSearchText:function(){
-		return this.searchField.getValue();
+	    if(this.searchField){
+            return this.searchField.getValue();
+        }else{
+	        return '';
+        }
 	},
 	/**
 	 * Set search filter

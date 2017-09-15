@@ -309,7 +309,11 @@ Ext.define('designer.eventsPanel',{
 	 * @param {string} text
 	 */
 	setSearchText:function(text){
-		this.searchField.setValue(text);
+        if(this.searchField){
+            return this.searchField.getValue();
+        }else{
+            return '';
+        }
 	},
 	destroy:function(){
 	    this.addButton.destroy();

@@ -625,7 +625,7 @@ Ext.define('designer.properties.Panel', {
     },
     /**
      * Set search filter for properties
-     * @param string text
+     * @param {string} text
      */
     setSearchText: function (text) {
         if (this.searchPanel) {
@@ -634,7 +634,7 @@ Ext.define('designer.properties.Panel', {
     },
     /**
      * Set search filter for events
-     * @param string text
+     * @param {string} text
      */
     setEventsSearchText: function (text) {
         if (this.eventsPanel) {
@@ -643,7 +643,7 @@ Ext.define('designer.properties.Panel', {
     },
     /**
      * Set search filter fpr methods
-     * @param string text
+     * @param {string} text
      */
     setMethodsSearchText: function (text) {
         if (this.methodsPanel) {
@@ -673,7 +673,7 @@ Ext.define('designer.properties.Panel', {
         return '';
     },
     onChange: function (source, recordId, value, oldValue, eOpts) {
-        if (value == oldValue){
+        if (value === oldValue){
             return;
         }
 
@@ -715,7 +715,7 @@ Ext.define('designer.properties.Panel', {
             }
         });
     },
-    resetSerchField: function () {
+    resetSearchField: function () {
         this.searchPanel.searchField.reset();
     },
     /**
@@ -828,7 +828,6 @@ Ext.define('designer.properties.Panel', {
         }, 50);
     },
     destroy:function(){
-        this.dataGrid.getStore().destroy();
         this.dataGrid.destroy();
         this.searchPanel.destroy();
         if(this.methodsPanel){
