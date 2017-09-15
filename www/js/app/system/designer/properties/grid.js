@@ -209,5 +209,9 @@ Ext.define('designer.properties.Grid',{
 			},
 			failure: app.formFailure
 		});
-	}
+	},
+    destroy:function(){
+        this.advancedForm.destroy();
+        this.callParent(arguments);
+    }
 });

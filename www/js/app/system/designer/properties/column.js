@@ -9,8 +9,6 @@ Ext.define('designer.properties.GridColumn',{
 	initComponent:function(){
 		
 		var me = this;
-
-
         this.renderersStore = Ext.create('Ext.data.Store',{
             model:'app.comboStringModel',
             proxy: {
@@ -146,5 +144,9 @@ Ext.define('designer.properties.GridColumn',{
         Ext.defer(function () {
             win.show().toFront();
         }, 50);
+    },
+    destroy:function(){
+        this.renderersStore.destroy();
+        this.callParent(arguments);
     }
 });    

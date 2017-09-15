@@ -269,5 +269,9 @@ Ext.define('designer.properties.Field',{
 				 }
 			 }			 
 		 }).show();
-	}
+	},
+    destroy:function(){
+        this.setupForm.destroy();
+        this.callParent(arguments);
+    }
 });
