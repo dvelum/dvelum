@@ -91,7 +91,6 @@ Ext.define('designer.properties.Panel', {
 
         this.extraParams.object = this.objectName;
 
-        var storesStore = app.designer.getStoreSelector();
         var menuStore = app.designer.getMenuStore();
 
         this.objectNames = {};
@@ -846,6 +845,6 @@ Ext.define('designer.properties.Panel', {
                 item.editor.destroy();
             }
         });
-        this.callParent(arguments)
+        this.callParent(arguments);
     }
 });

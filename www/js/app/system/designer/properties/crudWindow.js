@@ -37,7 +37,7 @@ Ext.define('designer.properties.CrudWindow',{
 	},	
 	/**
 	 * Import selected fields
-	 * @param string object
+	 * @param {string} object
 	 * @param {array} fields
 	 */
 	importFields:function(object , fields){

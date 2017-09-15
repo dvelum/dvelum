@@ -276,7 +276,6 @@ Ext.define('designer.application',{
 			iconCls:'viewInterfaceIcon',
 			text:desLang.layout,
 			showType:'loaded',
-			scope:this,
 			enableToggle:true,
 			pressed:true,
 			toggleGroup:'viewTypeGroup',
@@ -932,7 +931,7 @@ Ext.define('designer.application',{
 	},
 	/**
 	 * Load project
-	 * @param string name
+	 * @param {string} name
 	 */
 	loadProject:function(name){
 		var me = this;
@@ -1213,9 +1212,10 @@ Ext.define('designer.application',{
 	},
 	/**
 	 * Show object properties Panel
-	 * @param string objectName
-	 * @param string objectClass
-	 * @param string objectTitle
+	 * @param {string} objectName
+	 * @param {string} objectClass
+	 * @param {string} objectTitle
+     * @param {bool} isInstance
 	 */
 	showProperties:function(objectName , objectClass , objectTitle , isInstance){
 
@@ -1227,15 +1227,16 @@ Ext.define('designer.application',{
 			oldSearch = this.activePropertyPanel.getSearchText();
 			oldEvent = this.activePropertyPanel.getEventsSearchText();
 			oldMethod = this.activePropertyPanel.getMethodsSearchText();
+            this.activePropertyPanel.destroy();
 		}
+
 		this.activePropertyPanel = null;
 		this.propertiesPanel.removeAll(true);
 		var panelClass = null;
 
-		if(objectClass == 'Designer_Project_Container'){
+		if(objectClass === 'Designer_Project_Container'){
 			return;
 		}
-
 
 		if(!isInstance){
 			switch (objectClass) {
@@ -1275,7 +1276,7 @@ Ext.define('designer.application',{
 					panelClass = 'designer.properties.MediaItem';
 					break;
 				default    :
-					if (objectClass.indexOf('Field_', 0) != -1 || objectClass == 'Form_Checkboxgroup') {
+					if (objectClass.indexOf('Field_', 0) !== -1 || objectClass === 'Form_Checkboxgroup') {
 						panelClass = 'designer.properties.Field';
 					} else {
 						panelClass = 'designer.properties.Panel';
@@ -1302,7 +1303,7 @@ Ext.define('designer.application',{
 					fn:function(field){
 						me.refreshCodeframe();
 						if(!Ext.isEmpty(field)){
-							if(field == 'isExtended'){
+							if(field === 'isExtended'){
 								this.methodsEditor.getStore().load();
 							}
 						}

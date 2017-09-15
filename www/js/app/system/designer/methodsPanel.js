@@ -18,7 +18,6 @@ Ext.define('designer.methodsPanel',{
 	objectName:'',
 	controllerUrl:'',
 	columnLines:true,
-	searchField:null,
 	addButton:null,
 	autoLoadData:true,
 	extraParams:null,
@@ -86,7 +85,7 @@ Ext.define('designer.methodsPanel',{
 		    	        	 tooltip:desLang.edit,
 		    	        	 scope:this,
 		    	        	 iconCls:'editIcon',
-		    	        	 handler:function(grid, rowIndex, colIndex){
+		    	        	 handler:function(grid, rowIndex){
 				        		 var rec = grid.getStore().getAt(rowIndex);
 				        		 this.editMethod(rec);
 				        	 }
@@ -107,7 +106,7 @@ Ext.define('designer.methodsPanel',{
 				         {
 				        	 iconCls:'deleteIcon',
 				        	 tooltip:desLang.removeAction,
-				        	 handler:function(grid, rowIndex, colIndex){
+				        	 handler:function(grid, rowIndex){
 				        		 var rec = grid.getStore().getAt(rowIndex);
 				        		 this.removeMethod(rec);
 				        	 },
@@ -118,7 +117,7 @@ Ext.define('designer.methodsPanel',{
 			  }  	
 		];
 		
-		this.on('celldblclick', function(table,  td,  cellIndex,  record,  tr, rowIndex, e, eOpts ){
+		this.on('celldblclick', function(table,  td,  cellIndex,  record){
 			this.editMethod(record);
 		},this);
 		
@@ -129,7 +128,7 @@ Ext.define('designer.methodsPanel',{
 	 */
 	addMethod:function(){
 		 Ext.MessageBox.prompt(appLang.MESSAGE , desLang.enterMethodName,function(btn , methodName){
-			 if(btn !='ok'){
+			 if(btn !=='ok'){
 				 return;
 			 }
 			 var params = Ext.clone(this.extraParams);			
@@ -142,7 +141,7 @@ Ext.define('designer.methodsPanel',{
 				 	method: 'post',
 				 	scope:this,
 				 	params:params,
-				    success: function(response, request) {
+				    success: function(response) {
 				 		response =  Ext.JSON.decode(response.responseText);
 				 		if(!response.success){	 			
 				 			Ext.Msg.alert(appLang.MESSAGE,response.msg);
@@ -152,7 +151,7 @@ Ext.define('designer.methodsPanel',{
 				 			scope:this,
 				 			callback:function(){
 				 				var index = store.findExact('method' , methodName);
-				 				if(index !=-1){
+				 				if(index !==-1){
 				 					this.editMethod(store.getAt(index));
 				 				}
 				 			}
@@ -167,7 +166,7 @@ Ext.define('designer.methodsPanel',{
 	},
    /**
 	* Remove method
-	* @param {Ext.data.Record}
+	* @param {Ext.data.Model} record
 	*/ 
 	removeMethod:function(record){		
 		var params = Ext.clone(this.extraParams);			
@@ -177,7 +176,7 @@ Ext.define('designer.methodsPanel',{
 		 	method: 'post',
 		 	scope:this,
 		 	params:params,
-		    success: function(response, request) {
+		    success: function(response) {
 		 		response =  Ext.JSON.decode(response.responseText);
 		 		if(!response.success){	 			
 		 			Ext.Msg.alert(appLang.MESSAGE,response.msg);
@@ -194,7 +193,7 @@ Ext.define('designer.methodsPanel',{
 	},
    /**
 	* Edit method
-	* @param {Ext.data.Record}
+	* @param {Ext.data.Model} record
 	*/ 
 	editMethod:function(record)
 	{
@@ -225,13 +224,15 @@ Ext.define('designer.methodsPanel',{
 	},
 	/**
 	 * Set search filter
-	 * @param string text
+	 * @param {string} text
 	 */
 	setSearchText:function(text){
 		this.searchField.setValue(text);
 	},
     destroy:function(){
+		this.searchField.destroy();
         this.store.destroy();
+        this.addButton.destroy();
         this.callParent(arguments);
     }
 });

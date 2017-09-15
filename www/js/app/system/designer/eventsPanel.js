@@ -152,6 +152,7 @@ Ext.define('designer.eventsPanel',{
 		this.on('celldblclick', function(table,  td,  cellIndex,  record,  tr, rowIndex, e, eOpts ){
 			this.editEvent(record);
 		},this);
+
 		this.callParent();
 	},
 	removeEvent:function(record){
@@ -207,7 +208,7 @@ Ext.define('designer.eventsPanel',{
 	},
 	/**
 	 * Can edit localEvents
-	 * @param boolean value
+	 * @param {boolean} value
 	 */
 	setCanEditLocalEvents:function(value){
 		if(value === this.canEditLocalEvents ){
@@ -260,7 +261,7 @@ Ext.define('designer.eventsPanel',{
 	addLocalEvent:function(){
 
 		Ext.MessageBox.prompt(appLang.MESSAGE , desLang.enterEventName,function(btn , eventName){
-			if(btn !='ok'){
+			if(btn !=='ok'){
 				return;
 			}
 			var params = Ext.clone(this.extraParams);
@@ -283,7 +284,7 @@ Ext.define('designer.eventsPanel',{
 						scope:this,
 						callback:function(){
 							var index = store.findExact('event' , eventName);
-							if(index !=-1){
+							if(index !==-1){
 								this.editEvent(store.getAt(index));
 							}
 						}
@@ -305,13 +306,15 @@ Ext.define('designer.eventsPanel',{
 	},
 	/**
 	 * Set search filter
-	 * @param string text
+	 * @param {string} text
 	 */
 	setSearchText:function(text){
 		this.searchField.setValue(text);
 	},
 	destroy:function(){
+	    this.addButton.destroy();
         this.store.destroy();
+        this.searchField.destroy();
         this.callParent(arguments);
     }
 });

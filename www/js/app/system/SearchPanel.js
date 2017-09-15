@@ -174,7 +174,7 @@ Ext.define('SearchPanel', {
         return this.searchField.getValue();
     },
     destroy: function () {
-        this.searchField .destroy();
+        this.searchField.destroy();
         this.resetButton.destroy();
         this.callParent(arguments);
     }

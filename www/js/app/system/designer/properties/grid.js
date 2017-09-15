@@ -168,7 +168,6 @@ Ext.define('designer.properties.Grid',{
 			url:app.createUrl([designer.controllerUrl ,'grid','loadadvanced']),
 			params:{object:this.objectName}
 		});
-
 	},
 	showFiltersWindow:function(){
 		Ext.create('designer.grid.filters.Window',{
