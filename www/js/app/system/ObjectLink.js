@@ -8,175 +8,175 @@ Ext.ns('app.objectLink');
  * @param fld
  *
  */
-Ext.define('app.objectLink.Field',{
-    extend:'Ext.form.FieldContainer',
-    alias:'widget.objectlinkfield',
-    dataField:null,
-    controllerUrl:'?',
-    objectName:'',
-    value:"",
-    name:'',
-    fieldLabel:'',
-    layout:'fit',
-    readOnly:false,
-    allowBlank:true,
+Ext.define('app.objectLink.Field', {
+    extend: 'Ext.form.FieldContainer',
+    alias: 'widget.objectlinkfield',
+    dataField: null,
+    controllerUrl: '?',
+    objectName: '',
+    value: "",
+    name: '',
+    fieldLabel: '',
+    layout: 'fit',
+    readOnly: false,
+    allowBlank: true,
     /**
      * Extra params for requests
      * @property {Object}
      */
-    extraParams:null,
-    ajaxActions:{
-        title:'otitle',
-        list:'linkedlist'
+    extraParams: null,
+    ajaxActions: {
+        title: 'otitle',
+        list: 'linkedlist'
     },
-    constructor: function(config) {
+    constructor: function (config) {
         config = Ext.apply({
-            extraParams:{}
+            extraParams: {}
         }, config || {});
         this.callParent(arguments);
     },
 
-    updateObjectTitle:true,
+    updateObjectTitle: true,
 
-    initComponent:function(){
+    initComponent: function () {
 
-        var  me = this;
-        this.dataField = Ext.create('Ext.form.field.Hidden',{
-            anchor:"100%",
-            readOnly :true,
-            name:this.name,
-            allowBlank:this.allowBlank
+        var me = this;
+        this.dataField = Ext.create('Ext.form.field.Hidden', {
+            anchor: "100%",
+            readOnly: true,
+            name: this.name,
+            allowBlank: this.allowBlank
         });
 
         this.dataField.on('change', me.getObjectTitle, me);
         this.dataField.on('focus', me.showSelectionWindow, me);
 
-        this.dataFieldLabel = Ext.create('Ext.form.field.Text',{
-            anchor:"100%",
-            flex:1,
-            value:"...",
-            editable:false,
-            submitValue:false,
+        this.dataFieldLabel = Ext.create('Ext.form.field.Text', {
+            anchor: "100%",
+            flex: 1,
+            value: "...",
+            editable: false,
+            submitValue: false,
             //	cls:'d_objectLink_input',
             triggers: {
                 select: {
                     cls: 'x-form-search-trigger',
-                    handler:me.showSelectionWindow,
-                    tooltip:appLang.SELECT,
-                    scope:me
+                    handler: me.showSelectionWindow,
+                    tooltip: appLang.SELECT,
+                    scope: me
                 },
                 clear: {
                     cls: 'x-form-clear-trigger',
-                    tooltip:appLang.RESET,
-                    handler:function(){
+                    tooltip: appLang.RESET,
+                    handler: function () {
                         me.setValue('');
                     },
-                    scope:me
+                    scope: me
                 }
             }
         });
-        this.items = [this.dataFieldLabel , this.dataField ];
+        this.items = [this.dataFieldLabel, this.dataField];
 
         this.callParent();
 
-        this.on('disable' , function(){
+        this.on('disable', function () {
             this.updateViewState();
-        },this);
+        }, this);
 
-        this.on('enable' , function(){
+        this.on('enable', function () {
             this.updateViewState();
-        },this);
+        }, this);
 
         this.updateViewState();
     },
-    isValid:function(){
+    isValid: function () {
         return this.dataField.isValid();
     },
-    markInvalid:function(){
+    markInvalid: function () {
         this.dataFieldLabel.markInvalid();
     },
-    showSelectionWindow:function(){
+    showSelectionWindow: function () {
 
-        if(this.readOnly || this.disabled){
+        if (this.readOnly || this.disabled) {
             return false;
         }
 
         var win = Ext.create('app.objectLink.SelectWindow', {
-            width:600,
-            height:500,
-            selectMode:true,
-            objectName:this.objectName,
-            controllerUrl:this.controllerUrl + this.ajaxActions.list,
-            title:this.fieldLabel,
-            extraParams:this.extraParams
+            width: 600,
+            height: 500,
+            selectMode: true,
+            objectName: this.objectName,
+            controllerUrl: this.controllerUrl + this.ajaxActions.list,
+            title: this.fieldLabel,
+            extraParams: this.extraParams
         });
 
-        win.on('itemSelected',function(record){
-            this.setRawData(record.get('id'),record.get('title'));
+        win.on('itemSelected', function (record) {
+            this.setRawData(record.get('id'), record.get('title'));
             this.fireEvent('completeEdit');
             win.close();
-        },this);
+        }, this);
 
         win.show();
         app.checkSize(win);
     },
-    setValue:function(value){
+    setValue: function (value) {
         this.updateObjectTitle = true;
         this.dataField.setValue(value);
-        this.fireEvent('change' , this);
+        this.fireEvent('change', this);
     },
-    getValue:function(){
+    getValue: function () {
         return this.dataField.getValue();
     },
-    reset:function(){
+    reset: function () {
         this.updateObjectTitle = true;
         this.dataField.reset();
         this.dataFieldLabel.reset();
-        this.fireEvent('change' , this);
+        this.fireEvent('change', this);
     },
-    setRawData:function(id,title){
+    setRawData: function (id, title) {
         this.dataField.setValue(id);
         this.dataFieldLabel.setValue(title);
         this.updateObjectTitle = false;
-        this.fireEvent('change' , this);
+        this.fireEvent('change', this);
     },
-    setObjectTitle:function(title){
+    setObjectTitle: function (title) {
         this.dataFieldLabel.setValue(title);
         this.updateLayout();
     },
-    getObjectTitle:function() {
+    getObjectTitle: function () {
         var me = this;
         var curValue = me.getValue();
 
-        if(curValue == "" || curValue == 0){
+        if (curValue == "" || curValue == 0) {
             me.dataFieldLabel.setValue('...');
             return;
         }
 
-        if(!this.updateObjectTitle){
+        if (!this.updateObjectTitle) {
             return;
         }
 
         me.dataFieldLabel.setValue(appLang.LOADING);
 
         Ext.Ajax.request({
-            url:this.controllerUrl + this.ajaxActions.title,
+            url: this.controllerUrl + this.ajaxActions.title,
             method: 'post',
-            params:Ext.apply({
-                object:this.objectName,
-                id:curValue
-            },this.extraParams),
-            scope:this,
-            success: function(response, request) {
-                response =  Ext.JSON.decode(response.responseText);
-                if(!response.success){
-                    Ext.Msg.alert(appLang.MESSAGE , response.msg);
-                } else{
+            params: Ext.apply({
+                object: this.objectName,
+                id: curValue
+            }, this.extraParams),
+            scope: this,
+            success: function (response, request) {
+                response = Ext.JSON.decode(response.responseText);
+                if (!response.success) {
+                    Ext.Msg.alert(appLang.MESSAGE, response.msg);
+                } else {
                     me.dataFieldLabel.setValue(response.data.title);
                     me.updateLayout();
                 }
             },
-            failure:function(){
+            failure: function () {
                 me.dataFieldLabel.setText('');
                 app.ajaxFailure(arguments);
             }
@@ -188,7 +188,7 @@ Ext.define('app.objectLink.Field',{
      * @param string value
      * @return void
      */
-    setExtraParam:function(name , value){
+    setExtraParam: function (name, value) {
         this.extraParams[name] = value;
     },
     /**
@@ -196,57 +196,62 @@ Ext.define('app.objectLink.Field',{
      * @param Boolean readOnly
      * @return void
      */
-    setReadOnly:function(readOnly){
+    setReadOnly: function (readOnly) {
         this.readOnly = readOnly;
         this.updateViewState();
     },
-    updateViewState:function(){
-        if(this.disabled){
+    updateViewState: function () {
+        if (this.disabled) {
             this.dataFieldLabel.getTrigger('select').hide();
             this.dataFieldLabel.getTrigger('clear').hide();
         }
-        else{
-            if(this.readOnly){
+        else {
+            if (this.readOnly) {
                 this.dataFieldLabel.getTrigger('select').hide();
                 this.dataFieldLabel.getTrigger('clear').hide();
-            }else{
+            } else {
                 this.dataFieldLabel.getTrigger('select').show();
-                if(this.allowBlank){
+                if (this.allowBlank) {
                     this.dataFieldLabel.getTrigger('clear').show();
                 }
             }
         }
+    },
+    destroy: function () {
+        this.dataField.destroy();
+        this.dataFieldLabel.destroy();
+        this.callParent(arguments);
     }
 });
 
 
-Ext.define('app.objectLink.SelectWindow',{
-    extend:'app.selectWindow',
-    controllerUrl:'?',
-    objectName:'',
-    fieldName:'',
-    singleSelect:true,
+Ext.define('app.objectLink.SelectWindow', {
+    extend: 'app.selectWindow',
+    controllerUrl: '?',
+    objectName: '',
+    fieldName: '',
+    singleSelect: true,
     /**
      * Extra params for requests
      * @property {Object}
      */
-    extraParams:null,
+    extraParams: null,
 
-    constructor: function(config) {
+    constructor: function (config) {
         config = Ext.apply({
-            extraParams:{}
+            extraParams: {}
         }, config || {});
         this.callParent(arguments);
     },
 
-    initComponent:function(){
+    initComponent: function () {
 
-        this.dataStore =  Ext.create('Ext.data.Store',{
-            fields:[
-                {name:'id' , type:'integer'},
-                {name:'title' , type:'string'},
-                {name:'published' , type:'boolean'},
-                {name:'deleted' , type:'boolean'}
+        this.dataStore = Ext.create('Ext.data.Store', {
+            fields: [
+                {name: 'id', type: 'integer'},
+                {name: 'title', type: 'string'},
+                {name: 'published', type: 'boolean'},
+                {name: 'deleted', type: 'boolean'}
             ],
             proxy: {
                 type: 'ajax',
@@ -257,64 +262,64 @@ Ext.define('app.objectLink.SelectWindow',{
                     totalProperty: 'count',
                     idProperty: 'id'
                 },
-                startParam:'pager[start]',
-                limitParam:'pager[limit]',
-                sortParam:'pager[sort]',
-                directionParam:'pager[dir]',
-                extraParams:Ext.apply({
-                    'object':this.objectName
-                },this.extraParams),
+                startParam: 'pager[start]',
+                limitParam: 'pager[limit]',
+                sortParam: 'pager[sort]',
+                directionParam: 'pager[dir]',
+                extraParams: Ext.apply({
+                    'object': this.objectName
+                }, this.extraParams),
                 simpleSortMode: true
             },
-            autoLoad:true,
+            autoLoad: true,
             pageSize: 25,
             remoteSort: true
         });
 
-        this.searchField = Ext.create('SearchPanel',{
-            store:this.dataStore,
-            local:false,
-            fieldNames:['title']
+        this.searchField = Ext.create('SearchPanel', {
+            store: this.dataStore,
+            local: false,
+            fieldNames: ['title']
         });
 
 
-        this.dataPanel = Ext.create('Ext.grid.Panel',{
-            viewConfig:{
-                stripeRows:true
+        this.dataPanel = Ext.create('Ext.grid.Panel', {
+            viewConfig: {
+                stripeRows: true
             },
             frame: false,
-            loadMask:true,
+            loadMask: true,
             columnLines: true,
-            scrollable:true,
-            store:this.dataStore,
-            tbar:[
-                '->' , this.searchField
+            scrollable: true,
+            store: this.dataStore,
+            tbar: [
+                '->', this.searchField
             ],
-            bbar : Ext.create("Ext.PagingToolbar", {
-                store : this.dataStore,
-                displayInfo : true,
-                displayMsg : appLang.DISPLAYING_RECORDS + " {0} - {1} " + appLang.OF + " {2}",
-                emptyMsg : appLang.NO_RECORDS_TO_DISPLAY
+            bbar: Ext.create("Ext.PagingToolbar", {
+                store: this.dataStore,
+                displayInfo: true,
+                displayMsg: appLang.DISPLAYING_RECORDS + " {0} - {1} " + appLang.OF + " {2}",
+                emptyMsg: appLang.NO_RECORDS_TO_DISPLAY
             }),
-            columns:[
+            columns: [
                 {
                     dataIndex: 'published',
                     text: appLang.STATUS,
-                    width:50,
-                    align:'center',
-                    renderer:function(value, metaData, record, rowIndex, colIndex, store){
-                        if(record.get('deleted')){
+                    width: 50,
+                    align: 'center',
+                    renderer: function (value, metaData, record, rowIndex, colIndex, store) {
+                        if (record.get('deleted')) {
                             metaData.attr = 'style="background-color:#000000;white-space:normal;"';
-                            return '<img src="'+app.wwwRoot+'i/system/trash.png" data-qtip="'+appLang.INSTANCE_DELETED+'" >';
-                        }else{
+                            return '<img src="' + app.wwwRoot + 'i/system/trash.png" data-qtip="' + appLang.INSTANCE_DELETED + '" >';
+                        } else {
                             return app.publishRenderer(value, metaData, record, rowIndex, colIndex, store);
                         }
                     }
                 },
                 {
-                    dataIndex:'title',
-                    text:appLang.TITLE,
-                    flex:1
+                    dataIndex: 'title',
+                    text: appLang.TITLE,
+                    flex: 1
                 }
             ]
         });
@@ -327,37 +332,37 @@ Ext.define('app.objectLink.SelectWindow',{
      * @param string value
      * @return void
      */
-    setExtraParam:function(name , value){
+    setExtraParam: function (name, value) {
         this.extraParams[name] = value;
     }
 });
 
-Ext.define('app.objectLink.Panel',{
-    extend:'app.relatedGridPanel',
-    alias:'widget.objectlinkpanel',
-    name:'',
-    objectName:'',
-    controllerUrl:'',
+Ext.define('app.objectLink.Panel', {
+    extend: 'app.relatedGridPanel',
+    alias: 'widget.objectlinkpanel',
+    name: '',
+    objectName: '',
+    controllerUrl: '',
 
-    initComponent:function(){
+    initComponent: function () {
         this.fieldName = this.name;
         this.callParent(arguments);
-        this.on('addItemCall', this.showSelectWindow , this);
+        this.on('addItemCall', this.showSelectWindow, this);
     },
-    showSelectWindow:function(){
+    showSelectWindow: function () {
         var win = Ext.create('app.objectLink.SelectWindow', {
-            width:600,
-            height:500,
-            selectMode:true,
-            objectName:this.objectName,
-            controllerUrl:this.controllerUrl + 'linkedlist',
-            title:this.fieldLabel,
-            extraParams:this.extraParams
+            width: 600,
+            height: 500,
+            selectMode: true,
+            objectName: this.objectName,
+            controllerUrl: this.controllerUrl + 'linkedlist',
+            title: this.fieldLabel,
+            extraParams: this.extraParams
         });
-        win.on('itemSelected',function(record){
+        win.on('itemSelected', function (record) {
             this.addRecord(record);
             this.fireEvent('completeEdit');
-        },this);
+        }, this);
         win.show();
         app.checkSize(win);
     },
@@ -367,7 +372,7 @@ Ext.define('app.objectLink.Panel',{
      * @param string value
      * @return void
      */
-    setExtraParam:function(name , value){
+    setExtraParam: function (name, value) {
         this.extraParams[name] = value;
     }
 });

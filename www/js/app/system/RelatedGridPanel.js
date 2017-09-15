@@ -251,5 +251,10 @@ Ext.define('app.relatedGridPanel',{
 		this.add(this.dataGrid);
 		this.gridRendered = true;
 		this.gridReadOnly = this.readOnly;
-	}
+	},
+    destroy: function () {
+        this.dataStore.destroy();
+        this.addButton.destroy();
+        this.callParent(arguments);
+    }
 });

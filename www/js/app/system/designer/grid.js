@@ -97,7 +97,12 @@ Ext.define('designer.grid.exportFieldsWin',{
 				Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
 			}
 		});
-	}
+	},
+    destroy: function () {
+        this.dataStore.destroy();
+        this.dataGrid.destroy();
+        this.callParent(arguments);
+    }
 });
 
 
@@ -217,5 +222,11 @@ Ext.define('designer.grid.filterOptionsWindow',{
 		});
 		this.fireEvent('dataChanged', 'options', Ext.encode(options), true);
 		this.close();
-	}
+	},
+    destroy: function () {
+        this.dataStore.destroy();
+        this.dataGrid.destroy();
+        this.cellEditing.destroy();
+        this.callParent(arguments);
+    }
 });

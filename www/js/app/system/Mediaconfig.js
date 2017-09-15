@@ -237,6 +237,10 @@ Ext.define('app.crud.mediaconfig.Main',{
             controllerUrl:this.controllerUrl
         });
         win.show();
+    },
+    destroy: function () {
+        this.dataStore.destroy();
+        this.callParent(arguments);
     }
 });
 

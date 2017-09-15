@@ -172,5 +172,10 @@ Ext.define('SearchPanel', {
     },
     getValue: function () {
         return this.searchField.getValue();
+    },
+    destroy: function () {
+        this.searchField .destroy();
+        this.resetButton.destroy();
+        this.callParent(arguments);
     }
 });

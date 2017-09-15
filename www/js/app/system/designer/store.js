@@ -399,11 +399,9 @@ Ext.define('designer.store.fieldsWindow',{
         });
 
         this.propertiesPanel =  Ext.create('designer.properties.dataField',{
-            title:'',
             controllerUrl: app.createUrl([designer.controllerUrl ,'datafield','']),
             objectName:this.objectName,
             autoLoadData:false,
-            width:380,
             autoLoad:false,
             title:desLang.properties,
             layout:'fit',
@@ -649,6 +647,13 @@ Ext.define('designer.store.fieldsWindow',{
         } , this);
 
         win.show();
+    },
+    destroy: function () {
+        this.dataStore.destroy();
+        this.dataGrid.destroy();
+        this.cellEditing.destroy();
+        this.propertiesPanel.destroy();
+        this.callParent(arguments);
     }
 });
 
@@ -921,6 +926,12 @@ Ext.define('designer.store.proxyWindow',{
                 Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
             }
         });
+    },
+    destroy: function () {
+        this.dataGrid.getStore().destroy();
+        this.dataGrid.destroy();
+        this.proxyPropertiesContainer();
+        this.callParent(arguments);
     }
 });
 /**
@@ -966,6 +977,10 @@ Ext.define('designer.store.rootWindow',{
     {
         this.fireEvent('dataSaved',this.dataGrid.getSource());
         this.close();
+    },
+    destroy: function () {
+        this.dataGrid.destroy();
+        this.callParent(arguments);
     }
 });
 
@@ -1172,5 +1187,13 @@ Ext.define('designer.store.PropertyWindow',{
             },
             failure: app.formFailure
         });
+    },
+    destroy: function () {
+        this.storeSelect.destroy();
+        this.instanceSelect.destroy();
+        this.callEditor.destroy();
+        this.typeBox.destroy();
+        this.dataForm.destroy();
+        this.callParent(arguments);
     }
 });

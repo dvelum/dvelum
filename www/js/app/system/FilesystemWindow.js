@@ -37,7 +37,11 @@ Ext.define('app.FilesystemTree',{
 		});
 		this.callParent();
 		this.on('show',function(){app.checkSize(this);});
-	}
+	},
+    destroy: function () {
+        this.store.destroy();
+        this.callParent(arguments);
+    }
 	
 });
 
@@ -205,5 +209,9 @@ Ext.define('app.filesystemWindow',{
 			       }
 			 });
 		 });
-	}
+	},
+    destroy: function () {
+        this.fileTree.destroy();
+        this.callParent(arguments);
+    }
 });
