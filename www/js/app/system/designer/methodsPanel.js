@@ -18,7 +18,6 @@ Ext.define('designer.methodsPanel',{
 	objectName:'',
 	controllerUrl:'',
 	columnLines:true,
-	searchField:null,
 	addButton:null,
 	autoLoadData:true,
 	extraParams:null,
@@ -229,6 +228,11 @@ Ext.define('designer.methodsPanel',{
 	 */
 	setSearchText:function(text){
 		this.searchField.setValue(text);
-	}
+	},
+    destroy:function(){
+        this.store.destroy();
+        this.callParent(arguments);
+    }
+
 });
 
