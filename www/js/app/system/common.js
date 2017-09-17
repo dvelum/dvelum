@@ -395,16 +395,18 @@ app.progressRenderer = function(value, metaData, record, rowIndex, colIndex, sto
  * @param {Object} eOpts - The options object passed to Ext.util.Observable.addListener.
  */
 app.storeException = function(proxy, response, operation, eOpts){
-	if(response.responseText === null){
-		Ext.Msg.alert(appLang.MESSAGE, appLang.INVALID_RESPONSE);
-	}
-
-	var resp =  Ext.JSON.decode(response.responseText);
-	if(resp.msg != null){
-		Ext.Msg.alert(appLang.MESSAGE, resp.msg);
-	}else{
-		Ext.Msg.alert(appLang.MESSAGE, appLang.INVALID_RESPONSE);
-	}
+    if(response.aborted){
+        return;
+    }
+    if(response.responseText === null){
+        Ext.Msg.alert(appLang.MESSAGE, appLang.INVALID_RESPONSE);
+    }
+    var resp =  Ext.JSON.decode(response.responseText);
+    if(resp && resp.msg != null){
+        Ext.Msg.alert(appLang.MESSAGE, resp.msg);
+    }else{
+        Ext.Msg.alert(appLang.MESSAGE, appLang.INVALID_RESPONSE);
+    }
 };
 
 /**

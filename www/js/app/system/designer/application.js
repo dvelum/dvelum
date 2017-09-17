@@ -1228,10 +1228,10 @@ Ext.define('designer.application',{
 			oldEvent = this.activePropertyPanel.getEventsSearchText();
 			oldMethod = this.activePropertyPanel.getMethodsSearchText();
 		}
+		this.propertiesPanel.removeAll(true, true);
 
-		this.propertiesPanel.removeAll(true);
-
-        if(this.activePropertyPanel){
+		if(this.activePropertyPanel){
+            this.activePropertyPanel.clearListeners();
             this.activePropertyPanel.destroy();
         }
 
@@ -1412,7 +1412,7 @@ Ext.define('designer.application',{
 	 * @returns {Ext.data.Store}
 	 */
 	getMenuStore:function(){
-		return this.projectItems.menuStore;
+		return this.projectItems.createStore('menu');
 	},
 	/**
 	 * Get storage of project models

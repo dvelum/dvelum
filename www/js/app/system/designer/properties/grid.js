@@ -210,6 +210,10 @@ Ext.define('designer.properties.Grid',{
 		});
 	},
     destroy:function(){
+		// Ext.each(this.getLayoutItems(),function(item){
+		//     console.log(item);
+		// 	item.destroy();
+		// });
         this.advancedForm.destroy();
         this.callParent(arguments);
     }

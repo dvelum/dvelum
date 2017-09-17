@@ -80,8 +80,6 @@ Ext.define('designer.properties.Panel', {
 
     constructor: function () {
         this.extraParams = {};
-       // this.customEditors = {};
-       // this.customRenderers = {};
         this.sourceConfig = {};
         this.callParent(arguments);
     },
@@ -439,7 +437,7 @@ Ext.define('designer.properties.Panel', {
             hideLabel: true
         });
 
-        var showCodeBtn = Ext.create('Ext.Button', {
+        this.showCodeBtn = Ext.create('Ext.Button', {
             scope: me,
             iconCls: 'jsIcon',
             handler: me.showCode,
@@ -452,7 +450,7 @@ Ext.define('designer.properties.Panel', {
             split: true,
             scrollable: true,
             title: this.mainConfigTitle,
-            tbar: [this.searchPanel, '->', showCodeBtn],
+            tbar: [this.searchPanel, '->', this.showCodeBtn],
             sourceConfig: this.sourceConfig,
             //customEditors:this.customEditors,
             customRenderers: this.customRenderers,
@@ -522,9 +520,8 @@ Ext.define('designer.properties.Panel', {
         } else {
             this.items = [this.dataGrid];
         }
-
+        itemsList = null;
         this.callParent();
-
 
         /*
         this.on('scrollershow', function (scroller) {
@@ -538,7 +535,6 @@ Ext.define('designer.properties.Panel', {
         if (this.autoLoadData) {
             this.loadProperties();
         }
-
     },
     /**
      * reload object events
@@ -568,7 +564,7 @@ Ext.define('designer.properties.Panel', {
      * Load object properties
      */
     loadProperties: function () {
-        Ext.Ajax.request({
+        this.loadRequest = Ext.Ajax.request({
             url: this.controllerUrl + 'list',
             method: 'post',
             scope: this,
@@ -587,15 +583,15 @@ Ext.define('designer.properties.Panel', {
                     }
                     this.dataGrid.setSource(response.data);
                     this.dataGrid.getStore().sort('name', 'ASC');
-                   // this.dataGrid.doLayout();
                     this.fireEvent('afterLoad', response);
                 } else {
                     this.dataGrid.setSource({});
-                   // this.dataGrid.doLayout();
                 }
             },
-            failure: function () {
-                Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
+            failure: function (response) {
+                if(response && !response.aborted){
+                    Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
+                }
             }
         });
     },
@@ -828,12 +824,18 @@ Ext.define('designer.properties.Panel', {
         }, 50);
     },
     destroy:function(){
+        this.showCodeBtn.destroy();
+        this.loadRequest.abort();
+        this.loadRequest.destroy();
+        this.dataGrid.clearListeners();
         this.dataGrid.destroy();
         this.searchPanel.destroy();
         if(this.methodsPanel){
+            this.methodsPanel.clearListeners();
             this.methodsPanel.destroy();
         }
         if(this.eventsPanel){
+            this.eventsPanel.clearListeners();
             this.eventsPanel.destroy();
         }
         Ext.Object.each(this.sourceConfig,function(index, item){
@@ -844,6 +846,7 @@ Ext.define('designer.properties.Panel', {
                 item.editor.destroy();
             }
         });
+        this.removeAll(true, true);
         this.callParent(arguments);
     }
 });
