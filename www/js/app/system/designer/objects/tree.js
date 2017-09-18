@@ -124,7 +124,7 @@ Ext.define('designer.objects.Tree',{
 
 		this.treePanel.addListener('itemclick',function(view, record, element , index , e , eOpts){
 			this.fireEvent('itemSelected' , record.get('id') , record.get('objClass'), record.get('text') , record.get('isInstance'));
-		},this,{buffer:400});
+		},this);
 
 		this.collapseBtn = Ext.create('Ext.Button',{
 			icon:app.wwwRoot + 'i/system/collapse-tree.png',

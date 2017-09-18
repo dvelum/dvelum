@@ -1291,6 +1291,7 @@ Ext.define('designer.application',{
 		}
 
 		var me = this;
+        this.propertiesPanel.suspendEvents(true);
 
 		this.propertiesPanel.setTitle('<span style="color:blue">'+objectTitle+' </span> ' + desLang.properties);
 
@@ -1352,7 +1353,7 @@ Ext.define('designer.application',{
 			}
 		});
 
-		this.propertiesPanel.suspendEvents(true);
+
 		this.propertiesPanel.add(this.activePropertyPanel);
         this.propertiesPanel.resumeEvents();
 
