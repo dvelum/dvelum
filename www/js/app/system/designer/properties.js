@@ -825,8 +825,10 @@ Ext.define('designer.properties.Panel', {
     },
     destroy:function(){
         this.showCodeBtn.destroy();
-        this.loadRequest.abort();
-        this.loadRequest.destroy();
+        if(this.loadRequest && this.loadRequest.destroy){
+            this.loadRequest.abort();
+            this.loadRequest.destroy();
+        }
         this.dataGrid.clearListeners();
         this.dataGrid.destroy();
         this.searchPanel.destroy();
