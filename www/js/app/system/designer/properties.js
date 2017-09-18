@@ -557,7 +557,7 @@ Ext.define('designer.properties.Panel', {
      * Load object properties
      */
     loadProperties: function () {
-        Ext.Ajax.request({
+        this.loadRequest = Ext.Ajax.request({
             url: this.controllerUrl + 'list',
             method: 'post',
             scope: this,
@@ -800,7 +800,8 @@ Ext.define('designer.properties.Panel', {
         }, 50);
     },
     destroy:function(){
-        this.dataGrid.getStore().destroy();
+        this.loadRequest.abort();
+        this.loadRequest.destroy();
         this.dataGrid.destroy();
         this.searchPanel.destroy();
         if(this.methodsPanel){

@@ -230,9 +230,9 @@ Ext.define('designer.methodsPanel',{
 		this.searchField.setValue(text);
 	},
     destroy:function(){
+		this.searchField.destroy();
         this.store.destroy();
         this.callParent(arguments);
     }
-
 });
 
