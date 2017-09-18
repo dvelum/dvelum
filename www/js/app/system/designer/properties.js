@@ -800,8 +800,10 @@ Ext.define('designer.properties.Panel', {
         }, 50);
     },
     destroy:function(){
-        this.loadRequest.abort();
-        this.loadRequest.destroy();
+        if(this.loadRequest && this.loadRequest.destroy){
+            this.loadRequest.abort();
+            this.loadRequest.destroy();
+        }
         this.dataGrid.destroy();
         this.searchPanel.destroy();
         if(this.methodsPanel){
