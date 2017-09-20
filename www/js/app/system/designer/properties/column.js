@@ -34,7 +34,7 @@ Ext.define('designer.properties.GridColumn',{
             }]
         });
 
-		var summaryEditor = Ext.create('Ext.form.field.ComboBox',{		
+		var summaryEditor = Ext.create('Ext.form.field.ComboBox',{
 			typeAhead: true,
 		    triggerAction: 'all',
 		    selectOnTab: true,
@@ -146,5 +146,9 @@ Ext.define('designer.properties.GridColumn',{
         Ext.defer(function () {
             win.show().toFront();
         }, 50);
+    },
+	destroy:function(){
+        this.renderersStore.destroy();
+        this.callParent(arguments);
     }
 });    

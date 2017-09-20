@@ -305,7 +305,26 @@ class Backend_Orm_Dataview extends Backend_Controller_Crud
 		$router->runController('Backend_Orm_Dataview_Editor_Vc' , $request->getPart(4));
 	}
 
-	public function otitleAction()
+    public function deleteAction()
+    {
+        $request = Request::getInstance();
+
+        $object = Request::post('d_object','string', false);
+
+        if(!$object || !Db_Object_Config::configExists($object)){
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+        }
+
+        $config = Db_Object_Config::getInstance($object);
+        $router = new Backend_Router();
+        if($config->isRevControl()){
+            $router->runController('Backend_Orm_Dataview_Editor' , 'delete');
+        }else{
+            $router->runController('Backend_Orm_Dataview_Editor_Vc' , 'delete');
+        }
+    }
+
+    public function otitleAction()
 	{
 		$object = Request::post('object','string', false);
 		$id = Request::post('id', 'string', false);

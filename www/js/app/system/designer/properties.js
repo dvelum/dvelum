@@ -1,5 +1,21 @@
 Ext.ns('designer.properties');
 
+Ext.define('designer.properties.idStringModel',{
+    extend: 'Ext.data.Model',
+    idProperty:'id',
+   fields:[
+       {name:'id', type:'string'}
+   ]
+});
+
+Ext.define('designer.properties.nameTitleModel',{
+    extend: 'Ext.data.Model',
+    idProperty:'name',
+    fields:[
+        {name:'name', type:'string'},
+        {name:'title', type:'string'}
+    ]
+});
 /**
  * Properties editor base
  *
@@ -79,6 +95,7 @@ Ext.define('designer.properties.Panel', {
 
         this.objectNames = {};
 
+
         this.sourceConfig = Ext.apply({
 
             'region': {
@@ -89,7 +106,7 @@ Ext.define('designer.properties.Panel', {
                     anchor: '100%',
                     queryMode: 'local',
                     store: Ext.create('Ext.data.ArrayStore', {
-                        fields: ['id'],
+                        model:'designer.properties.idStringModel',
                         data: this.regionData
                     }),
                     valueField: 'id',
@@ -107,7 +124,7 @@ Ext.define('designer.properties.Panel', {
                     anchor: '100%',
                     queryMode: 'local',
                     store: Ext.create('Ext.data.ArrayStore', {
-                        fields: ['id'],
+                        model:'designer.properties.idStringModel',
                         data: this.layoutData
                     }),
                     valueField: 'id',
@@ -123,7 +140,7 @@ Ext.define('designer.properties.Panel', {
                     anchor: '100%',
                     queryMode: 'local',
                     store: Ext.create('Ext.data.ArrayStore', {
-                        fields: ['id'],
+                        model:'designer.properties.idStringModel',
                         data: this.dockData
                     }),
                     valueField: 'id',
@@ -139,7 +156,7 @@ Ext.define('designer.properties.Panel', {
                     anchor: '100%',
                     queryMode: 'local',
                     store: Ext.create('Ext.data.ArrayStore', {
-                        fields: ['id'],
+                        model:'designer.properties.idStringModel',
                         data: this.alignData
                     }),
                     valueField: 'id',
@@ -155,7 +172,7 @@ Ext.define('designer.properties.Panel', {
                     anchor: '100%',
                     queryMode: 'local',
                     store: Ext.create('Ext.data.ArrayStore', {
-                        fields: ['id'],
+                        model:'designer.properties.idStringModel',
                         data: this.alignData
                     }),
                     valueField: 'id',
@@ -171,7 +188,7 @@ Ext.define('designer.properties.Panel', {
                     anchor: '100%',
                     queryMode: 'local',
                     store: Ext.create('Ext.data.ArrayStore', {
-                        fields: ['id'],
+                        model:'designer.properties.idStringModel',
                         data: this.labelAlignData
                     }),
                     valueField: 'id',
@@ -187,7 +204,7 @@ Ext.define('designer.properties.Panel', {
                     anchor: '100%',
                     queryMode: 'local',
                     store: Ext.create('Ext.data.ArrayStore', {
-                        fields: ['id'],
+                        model:'designer.properties.idStringModel',
                         data: this.iconAlignData
                     }),
                     valueField: 'id',
@@ -385,10 +402,7 @@ Ext.define('designer.properties.Panel', {
                                 rootProperty: 'data'
                             }
                         },
-                        fields: [
-                            {name: 'name', type: 'string'},
-                            {name: 'title', type: 'string'}
-                        ],
+                        model:'designer.properties.nameTitleModel',
                         autoLoad: true,
                         listeners: {
                             scope: me,
@@ -543,7 +557,7 @@ Ext.define('designer.properties.Panel', {
      * Load object properties
      */
     loadProperties: function () {
-        Ext.Ajax.request({
+        this.loadRequest = Ext.Ajax.request({
             url: this.controllerUrl + 'list',
             method: 'post',
             scope: this,
@@ -784,5 +798,28 @@ Ext.define('designer.properties.Panel', {
         Ext.defer(function () {
             win.show().toFront();
         }, 50);
+    },
+    destroy:function(){
+        if(this.loadRequest && this.loadRequest.destroy){
+            this.loadRequest.abort();
+            this.loadRequest.destroy();
+        }
+        this.dataGrid.destroy();
+        this.searchPanel.destroy();
+        if(this.methodsPanel){
+            this.methodsPanel.destroy();
+        }
+        if(this.eventsPanel){
+            this.eventsPanel.destroy();
+        }
+        Ext.Object.each(this.sourceConfig,function(index, item){
+            if(item.editor && item.editor.destroy){
+                if(item.getStore){
+                    item.getStore().destroy();
+                }
+                item.editor.destroy();
+            }
+        });
+        this.callParent(arguments)
     }
 });

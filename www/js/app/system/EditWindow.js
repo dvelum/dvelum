@@ -446,5 +446,29 @@ Ext.define('app.editWindow',{
 	 */
 	setExtraParam:function(name , value){
 		this.extraParams[name] = value;
-	}
+	},
+    destroy:function(){
+        var toDestroy  = [
+            this.rightPanel,
+            this.eastPanel,
+            this.historyPanel,
+            this.contentTabs,
+            this.contentPanel
+        ];
+
+        Ext.Array.each(toDestroy, function (item) {
+            if(item && item.destroy){
+                item.destroy();
+            }
+        });
+
+        Ext.Array.each(this.linkedComponents,function(item){
+            if(item.destroy){
+                item.destroy();
+            }
+        });
+
+        toDestroy = null;
+        this.callParent(arguments);
+    }
 });

@@ -93,8 +93,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 		            idProperty:"id",
 					rootProperty:"data",
 	                totalProperty:"count"	
-		        },
-		        simpleSortMode: true
+		        }
 		    },
 		    autoLoad: true
 		});
@@ -126,7 +125,28 @@ Ext.define('app.crud.orm.DataViewWindow', {
 			cols.push(item);
 		});
 
-		var tBar = [];
+        if(!this.selectMode)
+        {
+            cols.push(
+                {
+                    xtype:'actioncolumn',
+					align:'center',
+                    width:30,
+                    items:[
+                        {
+                            iconCls:'deleteIcon',
+                            scope:this,
+                            tooltip:appLang.DELETE,
+                            handler:function(grid, rowIndex, colIndex){
+                                var rec = grid.getStore().getAt(rowIndex);
+                                this.deleteItem(rec.get('id'));
+                            }
+                        }
+                    ]
+                });
+        }
+
+        var tBar = [];
 		
 		if(!this.selectMode && !this.readOnly)
 		{
@@ -321,5 +341,31 @@ Ext.define('app.crud.orm.DataViewWindow', {
 			});
 		}
 		win.show();
-	}
+	},
+    /**
+     * Delete record
+     */
+    deleteItem : function(itemId){
+        if(!Ext.isNumeric(itemId)){
+            return false;
+		}
+        var me = this;
+        Ext.Ajax.request({
+            url: this.controllerUrl + 'delete',
+            waitMsg:appLang.PROCESSING,
+            method: 'post',
+            params: {
+                'id':itemId,
+                'd_object':this.objectName
+            },
+            success: function(response, request) {
+                response =  Ext.JSON.decode(response.responseText);
+                if(response.success){
+                    me.dataStore.load();
+                }else{
+                    Ext.MessageBox.alert(appLang.MESSAGE,response.msg);
+                }
+            }
+        });
+    }
 });

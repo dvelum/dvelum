@@ -248,6 +248,17 @@ class Ext_Object
 			           "\t".'},'."\n";
             }
 
+            if(!isset($this->_methods['destroy'])){
+                $code .= "\t".'destroy:function(){'."\n".
+                    "\t\t".'Ext.Object.each(this.childObjects,function(index, item){'."\n".
+                    "\t\t".'    if(item.destroy){'."\n".
+                    "\t\t".'        item.destroy();'."\n".
+                    "\t\t".'    }'."\n".
+                    "\t\t".' });'."\n".
+                    "\t\t".'this.callParent(arguments);'."\n".
+                    "\t".'},'."\n";
+            }
+
 	   $code .="\t".'addDesignerItems:function(){'."\n".
 			    "\t\t".'var me = this;'."\n";
 

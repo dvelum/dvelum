@@ -223,7 +223,11 @@ Ext.define('designer.properties.FieldTypeWindow',{
    	        },
    	        failure: app.formFailure
    	    });
-	}
+	},
+    destroy:function(){
+        this.setupForm.destroy();
+        this.callParent(arguments);
+    }
 });
 	
 

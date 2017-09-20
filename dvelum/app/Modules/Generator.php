@@ -11,6 +11,8 @@ class Modules_Generator
     */
    protected $appConfig;
 
+   protected $linkedFieldPostfix = '_title';
+
    public $tabTypes = array('Component_Field_System_Medialibhtml' , 'Component_Field_System_Related', 'Component_Field_System_Objectslist');
 
    public function __construct(){
@@ -44,15 +46,14 @@ class Modules_Generator
       return $dir . '/' . 'Controller.php';
   }
 
-
   public function createVcModule($object , $projectFile)
   {
       $lang = Lang::lang();
 
       //prepare class name
-      $name = Utils_String::formatClassName($object);
+      $objectName = Utils_String::formatClassName($object);
 
-      $jsName = str_replace('_','', $name);
+      $jsName = str_replace('_','', $objectName);
       $runNamespace = 'app'.$jsName.'Application';
       $classNamespace = 'app'.$jsName.'Components';
 
@@ -73,7 +74,7 @@ class Modules_Generator
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
+          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -88,7 +89,7 @@ class Modules_Generator
       $dataFields = array();
       foreach($objectConfig->getFieldsConfig(true) as $key => $item)
       {
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
+          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) || $objectConfig->isMultiLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -99,8 +100,8 @@ class Modules_Generator
       }
 
       array_unshift($objectFields , $objectConfig->getPrimaryKey());
-
-      $linksToShow = array_keys($objectConfig->getLinks(
+      $linksToShow = [];
+      $links = array_keys($objectConfig->getLinks(
           [
               Db_Object_Config::LINK_OBJECT,
               Db_Object_Config::LINK_OBJECT_LIST,
@@ -109,29 +110,36 @@ class Modules_Generator
           false
       ));
 
-      foreach($linksToShow as $k=>$v){
-          if($objectConfig->isSystem($v)){
-              unset($linksToShow[$v]);
+      $additionalModelFields = [];
+
+      foreach($links as $k=>$v){
+          if(!$objectConfig->isSystemField($v)){
+              $linksToShow[$v . $this->linkedFieldPostfix] = $v;
+              if($objectConfig->isObjectLink($v) || $objectConfig->isMultiLink($v)){
+                  $additionalModelFields[$v] = $v . $this->linkedFieldPostfix;
+              }
           }
       }
 
-      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc{' . "\n" .
-      '	 protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n" ;
+      $linkToField = array_flip($linksToShow);
+
+      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $objectName . '_Controller extends Backend_Controller_Crud_Vc{' . "\n" .
+          ' protected $_listFields = ' . var_export($dataFields , true). ';' . "\n";
 
       if(!empty($linksToShow)) {
-          $controllerContent .= '	 protected $_listLinks = ["' . implode('","', $linksToShow) . '"];' . "\n";
+          $controllerContent.= ' protected $_listLinks = ' . var_export($linksToShow , true) . ';' . "\n";
       }else{
           $controllerContent.= '	 protected $_listLinks = [];' . "\n" ;
       }
 
       $controllerContent.=
-      '  protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];' . "\n" .
+          ' protected $_canViewObjects = ' . var_export($linkedObjects , true) . ';' . "\n" .
       '}';
 
       /*
        * Create controller
       */
-      $controllerDir = $this->appConfig->get('local_controllers') . $this->appConfig->get('backend_controllers_dir') . '/' . str_replace('_' , '/' , $name);
+      $controllerDir = $this->appConfig->get('local_controllers') . $this->appConfig->get('backend_controllers_dir') . '/' . str_replace('_' , '/' , $objectName);
       $controllerFile = $this->_createControllerFile($controllerDir , $controllerContent);
 
       /*
@@ -162,13 +170,34 @@ class Modules_Generator
 
       $storeFields = array_merge($storeFields , Backend_Designer_Import::checkImportORMFields($object ,  $dataFields));
 
-      $urlTemplates =  $this->designerConfig->get('templates');
+      foreach ($storeFields as $itemObject){
+          /**
+           * @var Ext_Object $object
+           */
+          $name = $itemObject->name;
+          if(isset($linkToField[$name])){
+              $storeFields[] =  Ext_Factory::object('Data_Field',array(
+                  'name'=> $linkToField[$name],
+                  'type' => 'string'
+              ));
+          }
+      }
+      // Add fields for linked lists
+      if(!empty($additionalModelFields)){
+          foreach ($additionalModelFields as $dataIndex){
+              $storeFields[] =  Ext_Factory::object('Data_Field',array(
+                  'name'=> $dataIndex,
+                  'type' => 'string'
+              ));
+          }
+      }
 
+      $urlTemplates =  $this->designerConfig->get('templates');
 
       $controllerUrl = Request::url(array($urlTemplates['adminpath'] , $object , '') , false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , 'list'));
 
-      $modelName = $name.'Model';
+      $modelName = str_replace('_','',$objectName).'Model';
       $model = Ext_Factory::object('Model');
       $model->setName($modelName);
       $model->idProperty = $primaryKey;
@@ -220,8 +249,25 @@ class Modules_Generator
 
       $eventManager->setEvent('dataGrid', 'itemdblclick', 'this.showEditWindow(record.get("id"));');
 
-      $objectFieldList = Backend_Designer_Import::checkImportORMFields($object , $objectFields);
+      $column = Ext_Factory::object('Grid_Column_Action');
+      $column->text = '';
+      $column->setName($dataGrid->getName().'_pre_actions');
+      $column->align = 'center';
+      $column->width = 40;
 
+      $editButton = Ext_Factory::object('Grid_Column_Action_Button');
+      $editButton->setName($dataGrid->getName().'_actions_edit');
+      $editButton->text = '';
+      $editButton->icon = '[%wroot%]i/system/edit.png';
+      $editButton->tooltip = '[js:] appLang.EDIT_ITEM';
+      $editButton->isDisabled = 'function(){return !this.canEdit;}';
+
+      $eventManager->setEvent($editButton->getName(), 'handler', 'this.showEditWindow(grid.getStore().getAt(rowIndex).get("id"));');
+
+      $column->addAction($editButton->getName() ,$editButton);
+      $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+
+      $objectFieldList = Backend_Designer_Import::checkImportORMFields($object , $objectFields);
 
       $publishedRec = new stdClass();
       $publishedRec->name = 'published';
@@ -240,6 +286,10 @@ class Modules_Generator
 
       foreach($objectFieldList as $fieldConfig)
       {
+          // skip object link column (will be set with $additionalModelFields)
+          if($objectConfig->isObjectLink($fieldConfig->name)){
+              continue;
+          }
 
           switch($fieldConfig->type){
             case 'boolean':
@@ -313,6 +363,21 @@ class Modules_Generator
           }
 
           $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+      }
+
+
+      // Add fields for linked lists
+      if(!empty($additionalModelFields)){
+          foreach ($additionalModelFields as $field=>$dataIndex){
+              $column = Ext_Factory::object('Grid_Column');
+              $column->setName($dataIndex);
+              $column->dataIndex = $dataIndex;
+              $column->sortable = false;
+              $column->itemId = $dataIndex;
+              $cfg = $objectConfig->getFieldConfig($field);
+              $column->text = $cfg['title'];
+              $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+          }
       }
 
       $column = Ext_Factory::object('Grid_Column_Action');
@@ -470,9 +535,9 @@ class Modules_Generator
       $lang = Lang::lang();
 
       //prepare class name
-      $name = Utils_String::formatClassName($object);
+      $objectName = Utils_String::formatClassName($object);
 
-      $jsName = str_replace('_','', $name);
+      $jsName = str_replace('_','', $objectName);
       $runNamespace = 'app'.$jsName.'Application';
       $classNamespace = 'app'.$jsName.'Components';
 
@@ -494,7 +559,7 @@ class Modules_Generator
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
+          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -508,7 +573,7 @@ class Modules_Generator
       $dataFields = array();
       foreach($objectConfig->getFieldsConfig(true) as $key => $item)
       {
-          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true))
+          if(in_array($item['db_type'] , Db_Object_Builder::$textTypes , true) || $objectConfig->isMultiLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -518,8 +583,8 @@ class Modules_Generator
       }
 
       array_unshift($objectFields , $primaryKey);
-
-      $linksToShow = array_keys($objectConfig->getLinks(
+      $linksToShow = [];
+      $links = array_keys($objectConfig->getLinks(
           [
               Db_Object_Config::LINK_OBJECT,
               Db_Object_Config::LINK_OBJECT_LIST,
@@ -528,32 +593,38 @@ class Modules_Generator
           false
       ));
 
-      foreach($linksToShow as $k=>$v){
-          if($objectConfig->isSystem($v)){
-              unset($linksToShow[$v]);
+      $additionalModelFields = [];
+
+      foreach($links as $k=>$v){
+          if(!$objectConfig->isSystemField($v)){
+              $linksToShow[$v . $this->linkedFieldPostfix] = $v;
+              if($objectConfig->isObjectLink($v) || $objectConfig->isMultiLink($v)){
+                  $additionalModelFields[$v] = $v . $this->linkedFieldPostfix;
+              }
           }
       }
+      $linkToField = array_flip($linksToShow);
 
-      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $name . '_Controller extends Backend_Controller_Crud{' . "\n" .
-      ' protected $_listFields = ["' . implode('","' , $dataFields) . '"];' . "\n";
+      $controllerContent = '<?php ' . "\n" . 'class Backend_' . $objectName . '_Controller extends Backend_Controller_Crud{' . "\n" .
+      ' protected $_listFields = ' . var_export($dataFields , true). ';' . "\n";
 
 
       if(!empty($linksToShow)){
-          $controllerContent.= ' protected $_listLinks = ["' . implode('","' , $linksToShow) . '"];' . "\n";
+          $controllerContent.= ' protected $_listLinks = ' . var_export($linksToShow , true) . ';' . "\n";
       }else{
           $controllerContent.= ' protected $_listLinks = [];' . "\n";
       }
 
       $controllerContent.=
-      ' protected $_canViewObjects = ["' . implode('","' , $linkedObjects) . '"];' . "\n" .
+      ' protected $_canViewObjects = ' . var_export($linkedObjects , true) . ';' . "\n" .
       '} ';
 
       /*
        * Create controller
       */
-      $controllerDir =  $this->appConfig->get('local_controllers') . $this->appConfig->get('backend_controllers_dir') . '/' . str_replace('_' , '/' , $name);
+      $controllerDir =  $this->appConfig->get('local_controllers') . $this->appConfig->get('backend_controllers_dir') . '/' . str_replace('_' , '/' , $objectName);
       $this->_createControllerFile($controllerDir , $controllerContent);
-      @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
+      @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php', 0775);
 
 
       /*
@@ -568,8 +639,29 @@ class Modules_Generator
       */
       $eventManager = $project->getEventManager();
 
-
       $storeFields = Backend_Designer_Import::checkImportORMFields($object , $dataFields);
+
+      foreach ($storeFields as $itemObject){
+          /**
+           * @var Ext_Object $object
+           */
+          $name = $itemObject->name;
+          if(isset($linkToField[$name])){
+             $storeFields[] =  Ext_Factory::object('Data_Field',array(
+                 'name'=> $linkToField[$name],
+                 'type' => 'string'
+             ));
+          }
+      }
+      // Add fields for linked lists
+      if(!empty($additionalModelFields)){
+          foreach ($additionalModelFields as $dataIndex){
+              $storeFields[] =  Ext_Factory::object('Data_Field',array(
+                  'name'=> $dataIndex,
+                  'type' => 'string'
+              ));
+          }
+      }
 
       $urlTemplates =  $this->designerConfig->get('templates');
 
@@ -577,7 +669,7 @@ class Modules_Generator
       $controllerUrl = Request::url(array($urlTemplates['adminpath'] ,  $object , ''),false);
       $storeUrl = Request::url(array($urlTemplates['adminpath'] , $object , 'list'));
 
-      $modelName = $name.'Model';
+      $modelName = str_replace('_','',$objectName).'Model';
       $model = Ext_Factory::object('Model');
       $model->setName($modelName);
       $model->idProperty = $primaryKey;
@@ -590,7 +682,6 @@ class Modules_Generator
       $dataStore->setName('dataStore');
       $dataStore->autoLoad = true;
       $dataStore->model = $modelName;
-     // $dataStore->addFields($storeFields);
 
       $dataProxy = Ext_Factory::object('Data_Proxy_Ajax');
       $dataProxy->type = 'ajax';
@@ -635,8 +726,30 @@ class Modules_Generator
 
       if(!empty($objectFieldList))
       {
+          $column = Ext_Factory::object('Grid_Column_Action');
+          $column->text = '';
+          $column->setName($dataGrid->getName().'_pre_actions');
+          $column->align = 'center';
+          $column->width = 40;
+
+          $editButton = Ext_Factory::object('Grid_Column_Action_Button');
+          $editButton->setName($dataGrid->getName().'_actions_edit');
+          $editButton->text = '';
+          $editButton->icon = '[%wroot%]i/system/edit.png';
+          $editButton->tooltip = '[js:] appLang.EDIT_ITEM';
+          $editButton->isDisabled = 'function(){return !this.canEdit;}';
+
+          $eventManager->setEvent($editButton->getName(), 'handler', 'this.showEditWindow(grid.getStore().getAt(rowIndex).get("id"));');
+
+          $column->addAction($editButton->getName() ,$editButton);
+          $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+
           foreach($objectFieldList as $fieldConfig)
           {
+              // skip object link column (will be set with $additionalModelFields)
+              if($objectConfig->isObjectLink($fieldConfig->name)){
+                  continue;
+              }
 
               switch($fieldConfig->type){
                 case 'boolean':
@@ -683,6 +796,20 @@ class Modules_Generator
               }
 
               $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+          }
+
+          // Add fields for linked lists
+          if(!empty($additionalModelFields)){
+              foreach ($additionalModelFields as $field=>$dataIndex){
+                  $column = Ext_Factory::object('Grid_Column');
+                  $column->setName($dataIndex);
+                  $column->dataIndex = $dataIndex;
+                  $column->sortable = false;
+                  $column->itemId = $dataIndex;
+                  $cfg = $objectConfig->getFieldConfig($field);
+                  $column->text = $cfg['title'];
+                  $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+              }
           }
 
           $column = Ext_Factory::object('Grid_Column_Action');

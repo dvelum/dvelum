@@ -92,5 +92,10 @@ Ext.define('designer.properties.FilterComponent',{
 		},this);
 		
 		this.add(this.fieldProperties);
-	}
+	},
+	destroy:function(){
+        this.fieldsStore.destroy();
+        this.fieldProperties.destroy();
+        this.callParent(arguments);
+    }
 });    

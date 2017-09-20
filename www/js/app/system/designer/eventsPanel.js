@@ -309,5 +309,9 @@ Ext.define('designer.eventsPanel',{
 	 */
 	setSearchText:function(text){
 		this.searchField.setValue(text);
+	},
+	destroy:function(){
+        this.store.destroy();
+		this.callParent(arguments);
 	}
 });
