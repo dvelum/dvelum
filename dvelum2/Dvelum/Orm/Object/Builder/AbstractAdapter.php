@@ -370,10 +370,49 @@ abstract class AbstractAdapter implements BuilderInterface
             $this->logSql($sql);
             return true;
         }
-        catch(\Exception $e)
+        catch(\Throwable $e)
         {
             $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
         }
     }
+
+    /**
+     * Rename object field
+     * @param string $oldName
+     * @param string $newName
+     * @return bool
+     */
+    public function renameField($oldName , $newName) : bool
+    {
+        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
+        {
+            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
+            return false;
+        }
+
+        $fieldConfig = $this->objectConfig->getFieldConfig($newName);
+
+        $sql = ' ALTER TABLE ' . $this->model->table() . ' CHANGE `' . $oldName . '` ' . $this->getPropertySql($newName , $fieldConfig);
+
+        try
+        {
+            $this->db->query($sql);
+            $this->logSql($sql);
+            return true;
+        }
+        catch(\Throwable $e)
+        {
+            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
+            return false;
+        }
+    }
+
+   /**
+     * Get property SQL query
+     * @param string $name
+     * @param Orm\Object\Config\Field $field
+     * @return string
+     */
+    abstract protected function getPropertySql(string $name , Orm\Object\Config\Field $field) : string;
 }

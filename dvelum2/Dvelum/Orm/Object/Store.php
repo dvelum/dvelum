@@ -6,7 +6,6 @@ namespace Dvelum\Orm\Object;
 use Dvelum\Orm;
 use Dvelum\Db;
 use Dvelum\Orm\Model;
-use Dvelum\Config;
 use \Exception as Exception;
 use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
@@ -95,20 +94,20 @@ class Store
     }
 
     /**
-     * @param Orm\Object $object
+     * @param Orm\ObjectInterface $object
      * @return Db\Adapter
      */
-    protected function getDbConnection(Orm\Object $object) : Db\Adapter
+    protected function getDbConnection(Orm\ObjectInterface $object) : Db\Adapter
     {
         return Model::factory($object->getName())->getDbConnection();
     }
     /**
      * Update Db object
-     * @param Orm\Object $object
+     * @param Orm\ObjectInterface $object
      * @param boolean $transaction - optional, use transaction if available
      * @return boolean
      */
-    public function update(Orm\Object $object , $transaction = true)
+    public function update(Orm\ObjectInterface $object , $transaction = true)
     {
         if($object->getConfig()->isReadOnly())
         {
@@ -168,7 +167,7 @@ class Store
         if($transact && $transaction)
             $db->beginTransaction();
 
-        $success = $this->_updateOperation($object);
+        $success = $this->updateOperation($object);
 
         if(!$success)
         {
@@ -191,7 +190,7 @@ class Store
         return $object->getId();
     }
 
-    protected function _updateOperation(Orm\Object $object)
+    protected function updateOperation(Orm\ObjectInterface $object)
     {
         try{
             $db = $this->getDbConnection($object);
@@ -200,7 +199,7 @@ class Store
             if($object->getConfig()->hasEncrypted())
                 $updates = $this->encryptData($object , $updates);
 
-            $this->_updateLinks($object);
+            $this->updateLinks($object);
 
             $updates = $object->serializeLinks($updates);
 
@@ -220,7 +219,7 @@ class Store
         }catch (Exception $e){
 
             if($this->log)
-                $this->log->log(LogLevel::ERROR, $object->getName().'::_updateOperation '.$e->getMessage());
+                $this->log->log(LogLevel::ERROR, $object->getName().'::updateOperation '.$e->getMessage());
 
             return false;
         }
@@ -228,11 +227,11 @@ class Store
 
     /**
      * Unpublish Objects
-     * @param Orm\Object $object
-     * @param boolean $transaction - optional, default false
+     * @param Orm\ObjectInterface $object
+     * @param bool $transaction - optional, default false
      * @return bool
      */
-    public function unpublish(Orm\ObjectInterface $object , $transaction = true)
+    public function unpublish(Orm\ObjectInterface $object , $transaction = true) : bool
     {
         if($object->getConfig()->isReadOnly())
         {
@@ -275,7 +274,7 @@ class Store
         if($transact && $transaction)
             $db->beginTransaction();
 
-        $success = $this->_updateOperation($object);
+        $success = $this->updateOperation($object);
 
         if(!$success)
         {
@@ -299,11 +298,11 @@ class Store
 
     /**
      * Publish Db_Object
-     * @param Orm\Object $object
-     * @param boolean $transaction - optional, default true
-     * @return boolean
+     * @param Orm\ObjectInterface $object
+     * @param bool $transaction - optional, default true
+     * @return bool
      */
-    public function publish(Orm\Object $object, $transaction = true)
+    public function publish(Orm\ObjectInterface $object, $transaction = true) : bool
     {
         if($object->getConfig()->isReadOnly())
         {
@@ -345,7 +344,7 @@ class Store
         if($transact && $transaction)
             $db->beginTransaction();
 
-        $success = $this->_updateOperation($object);
+        $success = $this->updateOperation($object);
 
         if(!$success)
         {
@@ -367,7 +366,7 @@ class Store
         return true;
     }
 
-    protected function _updateLinks(Orm\Object $object) : bool
+    protected function updateLinks(Orm\ObjectInterface $object) : bool
     {
         $updates = $object->getUpdates();
 
@@ -380,11 +379,11 @@ class Store
 
             if($object->getConfig()->getField($k)->isMultiLink())
             {
-                if(!$this->_clearLinks($object, $k,$conf['link_config']['object']))
+                if(!$this->clearLinks($object, $k,$conf['link_config']['object']))
                     return false;
 
                 if(!empty($v) && is_array($v))
-                    if(!$this->_createLinks($object , $k,$conf['link_config']['object'] , $v))
+                    if(!$this->createLinks($object , $k,$conf['link_config']['object'] , $v))
                         return false;
             }
         }
@@ -393,12 +392,12 @@ class Store
 
     /**
      * Remove object multi links
-     * @param Orm\Object $object
+     * @param Orm\ObjectInterface $object
      * @param string $objectField
      * @param string $targetObjectName
      * @return bool
      */
-    protected function _clearLinks(Orm\Object $object ,$objectField , $targetObjectName)
+    protected function clearLinks(Orm\ObjectInterface $object ,$objectField , $targetObjectName)
     {
 
         if($object->getConfig()->getField($objectField)->isManyToManyLink())
@@ -427,19 +426,19 @@ class Store
             return true;
         } catch (Exception $e){
             if($this->log)
-                $this->log->log(LogLevel::ERROR,$object->getName().'::_clearLinks '.$e->getMessage());
+                $this->log->log(LogLevel::ERROR,$object->getName().'::clearLinks '.$e->getMessage());
             return false;
         }
     }
     /**
      * Create links to the object
-     * @param Orm\Object $object
+     * @param Orm\ObjectInterface $object
      * @param string $objectField
      * @param string $targetObjectName
      * @param array $links
-     * @return boolean
+     * @return bool
      */
-    protected function _createLinks(Orm\Object $object, $objectField , $targetObjectName , array $links) : bool
+    protected function createLinks(Orm\ObjectInterface $object, $objectField , $targetObjectName , array $links) : bool
     {
         $order = 0;
         $data = [];
@@ -474,8 +473,11 @@ class Store
                 $order++;
             }
         }
-        if(!$linksObjModel->multiInsert($data))
+
+        $insert = new Model\Insert($linksObjModel);
+        if(!$insert->bulkInsert($data)){
             return false;
+        }
 
         return true;
     }
@@ -483,7 +485,7 @@ class Store
      * Insert Db object
      * @param Orm\Object $object
      * @param boolean $transaction - optional , use transaction if available
-     * @return integer -  inserted id
+     * @return int | bool -  inserted id
      */
     public function insert(Orm\Object $object , $transaction = true)
     {
@@ -507,7 +509,7 @@ class Store
         if($transact && $transaction)
             $db->beginTransaction();
 
-        $success = $this->_insertOperation($object);
+        $success = $this->insertOperation($object);
 
         if(!$success)
         {
@@ -527,7 +529,7 @@ class Store
         return $object->getId();
     }
 
-    public function encryptData(Orm\Object $object , $data)
+    public function encryptData(Orm\ObjectInterface $object , $data)
     {
         $objectConfig = $object->getConfig();
         $ivField = $objectConfig->getIvField();
@@ -559,7 +561,7 @@ class Store
         return $data;
     }
 
-    protected function _insertOperation(Orm\Object $object)
+    protected function insertOperation(Orm\Object $object) : bool
     {
         $insertId = $object->getInsertId();
 
@@ -612,7 +614,7 @@ class Store
 
         $object->setId($id);
 
-        if(!$this->_updateLinks($object))
+        if(!$this->updateLinks($object))
             return false;
 
         try{
@@ -625,7 +627,7 @@ class Store
         }catch (Exception $e){
 
             if($this->log)
-                $this->log->log(LogLevel::ERROR, $object->getName().'::_insertOperation '.$e->getMessage());
+                $this->log->log(LogLevel::ERROR, $object->getName().'::insertOperation '.$e->getMessage());
 
             return false;
         }
@@ -640,7 +642,7 @@ class Store
      * Add new object version
      * @param Orm\Object $object
      * @param boolean $useTransaction - optional , use transaction if available
-     * @return boolean|integer - vers number
+     * @return boolean|integer - version number
      */
     public function addVersion(Orm\Object $object , $useTransaction = true)
     {
@@ -675,10 +677,12 @@ class Store
         if($this->eventManager)
             $this->eventManager->fireEvent(Event\Manager::BEFORE_ADD_VERSION, $object);
 
-        /*
+        /**
          * Create new revision
+         * @var \Model_Vc $versionModel
          */
-        $versNum = Model::factory($this->config['versionObject'])->newVersion($object);
+         $versionModel = Model::factory($this->config['versionObject']);
+         $versNum = $versionModel->newVersion($object);
 
         if(!$versNum)
             return false;
@@ -721,11 +725,11 @@ class Store
 
     /**
      * Delete Orm\Object
-     * @param Orm\Object $object
+     * @param Orm\ObjectInterface $object
      * @param boolean $transaction - optional , use transaction if available
-     * @return boolean
+     * @return bool
      */
-    public function delete(Orm\Object $object , $transaction = true)
+    public function delete(Orm\ObjectInterface $object , $transaction = true) : bool
     {
         $objectConfig = $object->getConfig();
 
@@ -754,7 +758,7 @@ class Store
 
         foreach ($fields as $field=>$conf) {
             if($objectConfig->getField($field)->isMultiLink()){
-                if(!$this->_clearLinks($object, $field, $objectConfig->getField($field)->getLinkedObject())){
+                if(!$this->clearLinks($object, $field, $objectConfig->getField($field)->getLinkedObject())){
                     return false;
                 }
             }

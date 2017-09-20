@@ -25,7 +25,6 @@ use Dvelum\Security\CryptServiceInterface;
 use Dvelum\Service;
 use Dvelum\Config as Cfg;
 use Dvelum\Orm\Model;
-use Dvelum\Orm\Object\Config\Field;
 use Dvelum\Orm\Exception;
 
 /**
@@ -640,7 +639,6 @@ class Config
     {
         $fields = $this->getFieldsConfig(false);
         $indexes = $this->getIndexesConfig(false);
-        $translationsData = false;
 
         $config = clone $this->config;
 
@@ -659,7 +657,6 @@ class Config
         $config->set('fields', $fields);
         $config->set('indexes' , $indexes);
         $config->offsetUnset('title');
-
 
         if(!$this->translator->getStorage()->save($translation))
             return false;
@@ -1069,7 +1066,7 @@ class Config
         {
             if(isset($cfg['type']) && $cfg['type']==='link'
                 && isset($cfg['link_config']['link_type'])
-                && $cfg['link_config']['link_type'] == Self::LINK_OBJECT_LIST
+                && $cfg['link_config']['link_type'] == self::LINK_OBJECT_LIST
                 && isset($cfg['link_config']['object'])
                 && isset($cfg['link_config']['relations_type'])
                 && $cfg['link_config']['relations_type'] == self::RELATION_MANY_TO_MANY

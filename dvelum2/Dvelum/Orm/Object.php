@@ -20,11 +20,8 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm;
 
-use Dvelum\Config;
-use Dvelum\Orm\Model;
 use Dvelum\Service;
 use Psr\Log\LogLevel;
-use Dvelum\Orm\Exception;
 use Dvelum\App\Session\User;
 
 /**
@@ -154,16 +151,18 @@ class Object implements ObjectInterface
                         $linkedObject = $this->config->getField($field)->getLinkedObject();
                         $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
                         $linksModel = Model::factory($linksObject);
-                        $relationsData = $linksModel->getList(
-                            ['sort'=>'order','dir'=>'ASC'],
-                            [
-                                'src' => $this->name,
-                                'src_id' => $this->id,
-                                'src_field' =>$field,
-                                'target' => $linkedObject
-                            ],
-                            ['target_id']
-                        );
+                        $relationsData = $linksModel->query()
+                                                    ->params(['sort'=>'order','dir'=>'ASC'])
+                                                    ->filters([
+                                                        'src' => $this->name,
+                                                        'src_id' => $this->id,
+                                                        'src_field' =>$field,
+                                                        'target' => $linkedObject
+                                                    ])
+                                                    ->fields(['target_id'])
+                                                    ->fetchAll();
+
+
                     }
                     if(!empty($relationsData)){
                         $data[$field] = \Utils::fetchCol('target_id',$relationsData);
@@ -785,7 +784,7 @@ class Object implements ObjectInterface
 
     /**
      * Check for required fields
-     * @return boolean|array
+     * @return bool | array
      */
     protected function hasRequired()
     {
@@ -879,7 +878,7 @@ class Object implements ObjectInterface
          */
         $this->editor_id = User::factory()->getId();
 
-        return $store->unpublish($this , $log , $useTransaction);
+        return $store->unpublish($this , $useTransaction);
     }
 
     /**
@@ -932,7 +931,7 @@ class Object implements ObjectInterface
             $this->set('date_published' , date('Y-m-d H:i:s'));
 
         $this->published_version = $this->getVersion();
-        return $store->publish($this , $log , $useTransaction);
+        return $store->publish($this , $useTransaction);
     }
 
     /**

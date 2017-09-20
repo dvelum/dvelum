@@ -10,7 +10,7 @@ class Model_Vc extends Model
      * @property Orm\Object $object
      * @return boolean
      */
-    public function newVersion(Orm\Object $object)
+    public function newVersion(Orm\ObjectInterface $object)
     {
        $object->commitChanges();
        $newVersion = ($this->getLastVersion($object->getName(),$object->getId())+ 1);

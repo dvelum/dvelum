@@ -50,7 +50,7 @@ abstract class Manager
 	 * Note that onBeforeDelete and onAfterDelete events provide "SpacialCase" empty Db_Object
 	 * id property exists
 	 * @param string $code  (action constant)
-	 * @param Orm\Object $object
+	 * @param Orm\ObjectInterface $object
 	 */
-	abstract public function fireEvent(string $code , Orm\Object $object);
+	abstract public function fireEvent(string $code , Orm\ObjectInterface $object);
 }

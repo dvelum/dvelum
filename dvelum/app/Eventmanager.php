@@ -27,7 +27,7 @@ class Eventmanager extends Orm\Object\Event\Manager
      * (non-PHPdoc)
      * @see Db_Object_Event_Manager::fireEvent()
      */
-    public function fireEvent(string $code, Orm\Object $object)
+    public function fireEvent(string $code, Orm\ObjectInterface $object)
     {
         $objectName = ucfirst($object->getName());
         $triggerClass = \Utils_String::classFromString('Trigger_' . $objectName);

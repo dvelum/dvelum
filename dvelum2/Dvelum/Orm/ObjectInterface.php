@@ -116,8 +116,6 @@ interface ObjectInterface
      */
     public function getLinkedObject(string $field): string;
 
-
-
     /**
      * Set the object properties using the associative array of fields and values
      * @param array $values
@@ -134,7 +132,6 @@ interface ObjectInterface
      * @throws Exception
      */
     public function set(string $name, $value): bool;
-
 
     /**
      * Get the object field value
@@ -200,7 +197,6 @@ interface ObjectInterface
      * Get object title
      */
     public function getTitle(): string;
-
 
     /**
      * Get errors

@@ -11,6 +11,7 @@ class MySQL
     /**
      * Get Database tables info
      * @param Model $model
+     * @throws \Exception
      * @return array
      */
     public function getTablesInfo(Model $model) : array
@@ -23,7 +24,7 @@ class MySQL
              */
             return $db->fetchAll("SHOW TABLE STATUS");
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
             $model->logError($e->getMessage());
             return [];

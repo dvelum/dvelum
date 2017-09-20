@@ -23,7 +23,6 @@ namespace Dvelum\Orm\Object;
 use Dvelum\Config as Cfg;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
-use Zend\Db\Sql\Ddl;
 
 /**
  * Builder for Orm\Object
@@ -32,7 +31,6 @@ use Zend\Db\Sql\Ddl;
  * @author Kirill Ygorov
  * @license General Public License version 3
  *
- * @todo replace Exceptions, create error messages
  */
 class Builder
 {
@@ -47,7 +45,7 @@ class Builder
      * @throws Orm\Exception
      * @return Builder\AbstractAdapter
      */
-    static public function factory(string $objectName, bool $forceConfig = true) : Builder\AbstractAdapter
+    static public function factory(string $objectName, bool $forceConfig = true): Builder\AbstractAdapter
     {
         $objectConfig = Config::factory($objectName);
 
@@ -56,17 +54,17 @@ class Builder
         $config = Cfg::factory(\Dvelum\Config\Factory::Simple, $adapter);
 
         $log = false;
-        if(static::$writeLog){
+        if (static::$writeLog) {
             $log = new \Dvelum\Log\File\Sql(static::$logsPath . $objectConfig->get('connection') . '-' . static::$logPrefix . '-build.log');
         }
 
         $ormConfig = Cfg::storage()->get('orm.php');
 
         $config->setData([
-           'objectName' => $objectName,
-           'configPath' =>  $ormConfig->get('object_configs'),
-           'log' => $log,
-           'useForeignKeys' => static::$foreignKeys
+            'objectName' => $objectName,
+            'configPath' => $ormConfig->get('object_configs'),
+            'log' => $log,
+            'useForeignKeys' => static::$foreignKeys
         ]);
 
         $model = Model::factory($objectName);
@@ -75,78 +73,78 @@ class Builder
         $platform = $platform->getName();
         $builderAdapter = static::class . '\\' . $platform;
 
-        if(class_exists($builderAdapter)){
-            return new Builder\MySQL($config, $forceConfig);
+        if (class_exists($builderAdapter)) {
+            return new $builderAdapter($config, $forceConfig);
         }
 
         $builderAdapter = static::class . '\\Generic\\' . $platform;
 
-        if(class_exists($builderAdapter)){
-            return new Builder\MySQL($config, $forceConfig);
+        if (class_exists($builderAdapter)) {
+            return new $builderAdapter($config, $forceConfig);
         }
 
         throw new Orm\Exception('Undefined Platform');
     }
 
     public static $booleanTypes = [
-      'bool',
-      'boolean'
+        'bool',
+        'boolean'
     ];
 
     public static $numTypes = [
-        'tinyint' ,
-        'smallint' ,
-        'mediumint' ,
-        'int' ,
+        'tinyint',
+        'smallint',
+        'mediumint',
+        'int',
         'integer',
-        'bigint' ,
-        'float' ,
-        'double' ,
-        'decimal' ,
+        'bigint',
+        'float',
+        'double',
+        'decimal',
         'bit',
         'biginteger'
     ];
 
     public static $intTypes = [
-        'tinyint' ,
-        'smallint' ,
-        'mediumint' ,
-        'int' ,
+        'tinyint',
+        'smallint',
+        'mediumint',
+        'int',
         'integer',
-        'bigint' ,
+        'bigint',
         'bit',
         'biginteger'
     ];
 
     public static $floatTypes = [
-        'decimal' ,
-        'float' ,
+        'decimal',
+        'float',
         'double'
     ];
 
     public static $charTypes = [
-        'char' ,
+        'char',
         'varchar'
     ];
 
     public static $textTypes = [
-        'tinytext' ,
-        'text' ,
-        'mediumtext' ,
+        'tinytext',
+        'text',
+        'mediumtext',
         'longtext'
     ];
 
     public static $dateTypes = [
-        'date' ,
-        'datetime' ,
-        'time' ,
+        'date',
+        'datetime',
+        'time',
         'timestamp'
     ];
 
     public static $blobTypes = [
-        'tinyblob' ,
-        'blob' ,
-        'mediumblob' ,
+        'tinyblob',
+        'blob',
+        'mediumblob',
         'longblob'
     ];
 
@@ -155,9 +153,9 @@ class Builder
      * @param boolean $flag
      * @return void
      */
-    static public function writeLog($flag) : void
+    static public function writeLog($flag): void
     {
-        self::$writeLog = (boolean) $flag;
+        self::$writeLog = (boolean)$flag;
     }
 
     /**
@@ -165,7 +163,7 @@ class Builder
      * @param string $string
      * @return void
      */
-    static public function setLogPrefix(string $string) : void
+    static public function setLogPrefix(string $string): void
     {
         self::$logPrefix = strval($string);
     }
@@ -175,7 +173,7 @@ class Builder
      * @param string $string
      * @return void
      */
-    static public function setLogsPath(string $string) : void
+    static public function setLogsPath(string $string): void
     {
         self::$logsPath = $string;
     }
@@ -185,262 +183,17 @@ class Builder
      * @param bool $flag
      * @return void
      */
-    static public function useForeignKeys($flag) : void
+    static public function useForeignKeys($flag): void
     {
-        self::$foreignKeys = (bool) $flag;
+        self::$foreignKeys = (bool)$flag;
     }
 
     /**
      * Check if foreign keys is used
      * @return bool
      */
-    static public function foreignKeys() : bool
+    static public function foreignKeys(): bool
     {
         return self::$foreignKeys;
-    }
-
-    /**
-     * Rename object field
-     * @param string $oldName
-     * @param string $newName
-     * @return bool
-     */
-    public function renameField($oldName , $newName) : bool
-    {
-        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
-        {
-            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
-            return false;
-        }
-
-        $fieldConfig = $this->objectConfig->getFieldConfig($newName);
-
-        $sql = ' ALTER TABLE ' . $this->model->table() . ' CHANGE `' . $oldName . '` ' . $this->_proppertySql($newName , $fieldConfig);
-
-        try
-        {
-            $this->db->query($sql);
-            $this->logSql($sql);
-            return true;
-        }
-        catch(\Exception $e)
-        {
-            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
-            return false;
-        }
-    }
-
-
-
-    /**
-     * Build indexes for "create" query
-     *
-     * @return array - sql parts
-     */
-    protected function _createIndexes()
-    {
-        $cmd = array();
-        $configIndexes = $this->objectConfig->getIndexesConfig();
-
-        foreach($configIndexes as $index => $config)
-            $cmd[] = $this->_prepareIndex($index , $config , true);
-
-        return $cmd;
-    }
-
-    public function prepareKeysUpdate($dropOnly = false)
-    {
-        $updates = array();
-        $curTable = $this->model->table();
-
-        /*
-         * Get foreign keys form ORM
-         */
-        $configForeignKeys = $this->getOrmForeignKeys();
-
-        /*
-         * Get foreign keys form database table
-         */
-        $realKeys = $this->getForeignKeys($this->model->table());
-        $realKeysNames = array();
-
-        if(!empty($realKeys))
-            $realKeys = \Utils::rekey('CONSTRAINT_NAME' , $realKeys);
-
-        if(!empty($configForeignKeys))
-        {
-            foreach($configForeignKeys as $keyName => $item)
-            {
-                $realKeysNames[] = $keyName;
-                if(! isset($realKeys[$keyName]) && ! $dropOnly)
-                    $updates[] = array(
-                        'name' => $keyName ,
-                        'action' => 'add' ,
-                        'config' => $item
-                    );
-            }
-        }
-
-        if(!empty($realKeys))
-            foreach($realKeys as $name => $config)
-                if(! in_array($name , $realKeysNames , true))
-                    $updates[] = array(
-                        'name' => $name ,
-                        'action' => 'drop'
-                    );
-
-        return $updates;
-    }
-
-    /**
-     * Rename database table
-     * @param string $newName - new table name (without prefix)
-     * @return boolean
-     */
-    public function renameTable(string $newName) : bool
-    {
-        if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly()) {
-            $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
-            return false;
-        }
-
-        $sql = 'RENAME TABLE `' . $this->model->table() . '` TO `' . $this->model->getDbPrefix() . $newName . '` ;';
-
-        try
-        {
-            $this->db->query($sql);
-            $this->logSql($sql);
-            $this->objectConfig->getConfig()->set('table' , $newName);
-            $this->model->refreshTableInfo();
-            return true;
-        }
-        catch(\Exception $e)
-        {
-            $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
-            return false;
-        }
-    }
-
-
-
-    /**
-     * Create Db_Object`s for relations
-     * @throw Exception
-     * @param $list
-     * @return bool
-     */
-    protected function updateRelations($list) : bool
-    {
-        $lang = \Lang::lang();
-        $usePrefix = true;
-        $connection = $this->objectConfig->get('connection');
-
-        $objectModel = Model::factory($this->objectName);
-        $db = $objectModel->getDbConnection();
-        $tablePrefix = $objectModel->getDbPrefix();
-
-        $oConfigPath = $this->objectConfig->getConfigPath();
-        $configDir  = \Dvelum\Config::storage()->getWrite() . $oConfigPath;
-
-        $fieldList = \Dvelum\Config::storage()->get('objects/relations/fields.php');
-        $indexesList = \Dvelum\Config::storage()->get('objects/relations/indexes.php');
-
-        if(empty($fieldList)){
-            $this->errors[] = 'Cannot get relation fields: ' . 'objects/relations/fields.php';
-            return false;
-        }
-
-        if(empty($indexesList)){
-            $this->errors[] = 'Cannot get relation indexes: ' . 'objects/relations/indexes.php';
-            return false;
-        }
-
-        $fieldList= $fieldList->__toArray();
-        $indexesList = $indexesList->__toArray();
-
-        $fieldList['source_id']['link_config']['object'] = $this->objectName;
-
-
-        foreach($list as $fieldName=>$info)
-        {
-            $newObjectName = $info['name'];
-            $tableName = $newObjectName;
-
-            $linkedObject = $this->objectConfig->getField($fieldName)->getLinkedObject();
-
-            $fieldList['target_id']['link_config']['object'] = $linkedObject;
-
-            $objectData = [
-                'parent_object' => $this->objectName,
-                'connection'=>$connection,
-                'use_db_prefix'=>$usePrefix,
-                'disable_keys' => false,
-                'locked' => false,
-                'readonly' => false,
-                'primary_key' => 'id',
-                'table' => $newObjectName,
-                'engine' => 'InnoDB',
-                'rev_control' => false,
-                'link_title' => 'id',
-                'save_history' => false,
-                'system' => true,
-                'fields' => $fieldList,
-                'indexes' => $indexesList,
-            ];
-
-            $tables = $db->listTables();
-
-            if($usePrefix){
-                $tableName = $tablePrefix . $tableName;
-            }
-
-            if(in_array($tableName, $tables ,true)){
-                $this->errors[] = $lang->get('INVALID_VALUE').' Table Name: '.$tableName .' '.$lang->get('SB_UNIQUE');
-                return false;
-            }
-
-            if(file_exists($configDir . strtolower($newObjectName).'.php')){
-                $this->errors[] = $lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE');
-                return false;
-            }
-
-            if(!is_dir($configDir) && !@mkdir($configDir, 0755, true)){
-                $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
-                return false;
-            }
-
-            /*
-             * Write object config
-             */
-            if(!\Dvelum\Config\File\AsArray::create($configDir. $newObjectName . '.php')){
-                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php';
-                return false;
-            }
-
-            $cfg = \Dvelum\Config::storage()->get($oConfigPath. strtolower($newObjectName).'.php' , false , false);
-
-            if(!$cfg){
-                $this->errors[] = 'Undefined config file '.$oConfigPath. strtolower($newObjectName).'.php';
-                return false;
-            }
-            /**
-             * @var \Dvelum\Config\File $cfg
-             */
-            $cfg->setData($objectData);
-            $cfg->save();
-
-            $objectConfig = Config::factory($newObjectName);
-            $objectConfig->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->objectName.' & '.$linkedObject);
-
-            if(!$objectConfig->save()){
-                $this->errors[] = $lang->get('CANT_WRITE_FS');
-                return false;
-            }
-            /*
-             * Build database
-            */
-            $builder = new Builder($newObjectName);
-            $builder->build();
-        }
     }
 }

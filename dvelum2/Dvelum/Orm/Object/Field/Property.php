@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Object\Field;
 
-use Dvelum\Config;
-use Dvelum\Orm\Object;
+use Dvelum\Orm\Exception;
 
 /**
  * Db_Object Property class
@@ -23,7 +22,7 @@ class Property
      *  List of acceptable properties
      * @var array
      */
-    public static $_acceptedData = [
+    public static $acceptedData = [
             'name',
             'title' , 
             'required' , 
@@ -63,12 +62,12 @@ class Property
      * Properties data
      * @var array
      */
-    protected $_data = [];
-    protected $_name = [];
+    protected $data = [];
+    protected $name = [];
 
     public function __construct($name)
     {
-        $this->_name = $name;
+        $this->name = $name;
     }
 
     /**
@@ -81,10 +80,10 @@ class Property
     {
         foreach($data as $key => $value)
         {
-            if(in_array($key , self::$_acceptedData))
-                $this->_data[$key] = $value;
+            if(in_array($key , self::$acceptedData))
+                $this->data[$key] = $value;
             else
-                throw new \Exception('Invalid property name "' . $key . '"');
+                throw new Exception('Invalid property name "' . $key . '"');
         }
     }
 
@@ -94,7 +93,7 @@ class Property
      */
     public function clear()
     {
-        $this->_data = array();
+        $this->data = [];
     }
 
     /**
@@ -105,22 +104,22 @@ class Property
      */
     public function __get($key)
     {
-        if(isset($this->_data[$key]))
-            return $this->_data[$key];
+        if(isset($this->data[$key]))
+            return $this->data[$key];
         else
-            throw new \Exception('Invalid property name "' . $key . '"');
+            throw new Exception('Invalid property name "' . $key . '"');
     }
 
     public function __isset($key)
     {
-        return isset($this->_data[$key]);
+        return isset($this->data[$key]);
     }
 
     /**
      * Get SQL part
      * @return string
      */
-    public function __toSql()
+    public function __toSql() : string
     {
         $s = '';
         $isNumber = false;
@@ -128,31 +127,31 @@ class Property
         switch(strtolower($this->db_type))
         {
             case 'boolean' :
-                $this->_data['db_isNull'] = false;
-                $s .= '`' . $this->_name . '` ' . $this->_data['db_type'] . ' ';
+                $this->data['db_isNull'] = false;
+                $s .= '`' . $this->name . '` ' . $this->data['db_type'] . ' ';
                 break;
             case 'tinyint' :
             case 'smallint' :
             case 'mediumint' :
             case 'int' :
             case 'bigint' :
-                $this->_data['db_len'] = self::$numberLength[$this->db_type];
+                $this->data['db_len'] = self::$numberLength[$this->db_type];
 
-                $s .= '`' . $this->_name . '` ' . $this->_data['db_type'] . ' (' . $this->_data['db_len'] . ')';
+                $s .= '`' . $this->name . '` ' . $this->data['db_type'] . ' (' . $this->data['db_len'] . ')';
 
-                if(isset($this->_data['db_unsigned']) && $this->_data['db_unsigned'] && strtolower($this->db_type) != 'boolean')
+                if(isset($this->data['db_unsigned']) && $this->data['db_unsigned'] && strtolower($this->db_type) != 'boolean')
                     $s .= ' UNSIGNED ';
 
-                if($this->db_type !== 'boolean' && isset($this->_data['db_auto_increment']) && $this->_data['db_auto_increment'])
+                if($this->db_type !== 'boolean' && isset($this->data['db_auto_increment']) && $this->data['db_auto_increment'])
                     $s .= ' AUTO_INCREMENT ';
 
                 $isNumber = true;
                 break;
 
             case 'bit' :
-                $s .= '`' . $this->_name . '` ' . $this->_data['db_type'] . ' ';
+                $s .= '`' . $this->name . '` ' . $this->data['db_type'] . ' ';
 
-                if(isset($this->_data['db_unsigned']) && $this->_data['db_unsigned'] && strtolower($this->db_type) != 'boolean')
+                if(isset($this->data['db_unsigned']) && $this->data['db_unsigned'] && strtolower($this->db_type) != 'boolean')
                     $s .= ' UNSIGNED ';
 
                 $isNumber = true;
@@ -162,9 +161,9 @@ class Property
             case 'double' :
             case 'decimal' :
 
-                $s .= '`' . $this->_name . '` ' . $this->_data['db_type'] . '(' . $this->_data['db_scale'] . ',' . $this->_data['db_precision'] . ') ';
+                $s .= '`' . $this->name . '` ' . $this->data['db_type'] . '(' . $this->data['db_scale'] . ',' . $this->data['db_precision'] . ') ';
 
-                if(isset($this->_data['db_unsigned']) && $this->_data['db_unsigned'])
+                if(isset($this->data['db_unsigned']) && $this->data['db_unsigned'])
                     $s .= ' UNSIGNED ';
 
                 $isNumber = true;
@@ -180,47 +179,47 @@ class Property
                 /*
 
                 Auto set default '' for NOT NULL string properties
-                if(!isset($this->_data['db_isNull']) || !$this->_data['db_isNull'])
-                    if(!isset($this->_data['db_default']) || $this->_data['db_default'] === false)
-                        $this->_data['db_default'] = '';
+                if(!isset($this->data['db_isNull']) || !$this->data['db_isNull'])
+                    if(!isset($this->data['db_default']) || $this->data['db_default'] === false)
+                        $this->data['db_default'] = '';
                 */
 
-                $s = '`' . $this->_name . '` ' . $this->_data['db_type'] . ' (' . $this->_data['db_len'] . ')  ';
+                $s = '`' . $this->name . '` ' . $this->data['db_type'] . ' (' . $this->data['db_len'] . ')  ';
 
                 break;
             case 'date' :
             case 'time' :
             case 'timestamp' :
             case 'datetime' :
-                if(isset($this->_data['db_default']) && !strlen((string)$this->_data['db_default'])){
-                    unset($this->_data['db_default']);
+                if(isset($this->data['db_default']) && !strlen((string)$this->data['db_default'])){
+                    unset($this->data['db_default']);
                 }
-                $s = '`' . $this->_name . '` ' . $this->_data['db_type'] . ' ';
+                $s = '`' . $this->name . '` ' . $this->data['db_type'] . ' ';
                 break;
             case 'tinytext' :
             case 'text' :
             case 'mediumtext' :
             case 'longtext' :
 
-                $s = '`' . $this->_name . '` ' . $this->_data['db_type'] . ' ';
-                if(isset($this->_data['db_default']))
-                    unset($this->_data['db_default']);
-                if(!isset($this->_data['required']) || !$this->_data['required'])
-                    $this->_data['db_isNull'] = true;
+                $s = '`' . $this->name . '` ' . $this->data['db_type'] . ' ';
+                if(isset($this->data['db_default']))
+                    unset($this->data['db_default']);
+                if(!isset($this->data['required']) || !$this->data['required'])
+                    $this->data['db_isNull'] = true;
 
                 break;
         }
 
-        if(!$this->_data['db_isNull'])
+        if(!$this->data['db_isNull'])
         {
             $s .= 'NOT NULL ';
 
-            if(isset($this->_data['db_default']) && $this->_data['db_default'] !== false)
+            if(isset($this->data['db_default']) && $this->data['db_default'] !== false)
             {
                 if($isNumber)
-                    $s .= " DEFAULT " . $this->_data['db_default'] . " ";
+                    $s .= " DEFAULT " . $this->data['db_default'] . " ";
                 else
-                    $s .= " DEFAULT '" . $this->_data['db_default'] . "' ";
+                    $s .= " DEFAULT '" . $this->data['db_default'] . "' ";
             }
         }
         else
@@ -228,7 +227,7 @@ class Property
             $s .= ' NULL ';
         }
 
-        $s .= " COMMENT '" . addslashes($this->_data['title']) . "' ";
+        $s .= " COMMENT '" . addslashes($this->data['title']) . "' ";
         return $s;
     }
 
@@ -240,8 +239,8 @@ class Property
      */
     public function __set($key , $value)
     {
-        if(in_array(self::$_acceptedData , $key))
-            $this->_data[$key] = $value;
+        if(in_array(self::$acceptedData , $key))
+            $this->data[$key] = $value;
         else
             throw new \Exception('Invalid property name');
     }
