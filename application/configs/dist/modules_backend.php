@@ -44,7 +44,7 @@
             'id' => 'Error_Log',
             'dev' => false,
             'active' => true,
-            'class' => 'Backend_Error_Log_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Error\\Log\\Controller',
             'designer' => '/system/error_log.designer.dat',
             'in_menu' => true,
             'icon' => 'i/system/icons/error_log.png',

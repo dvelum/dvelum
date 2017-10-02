@@ -38,39 +38,43 @@ class Backend extends \Dvelum\App\Router
      * @throws \Exception
      * @return void
      */
-    public function route(Request $request , Response $response) :void
+    public function route(Request $request, Response $response): void
     {
         $configBackend = Config::storage()->get('backend.php');
 
         $controllerCode = $request->getPart(1);
         $controller = \Dvelum\Utils\Strings::formatClassName(\Filter::filterValue('pagecode', $controllerCode));
 
-        if(empty($controller)){
+        if (empty($controller)) {
             $controller = 'Index';
         }
 
-        if(in_array('Backend_' . $controller . '_Controller', $configBackend->get('system_controllers'))) {
-            $controller = 'Backend_' . $controller . '_Controller';
+        $coreClass = 'Backend_' . $controller . '_Controller';
+        $core2Class = 'Dvelum\\App\\Backend\\' . $controller . '\\Controller';
+
+        if (in_array($coreClass, $configBackend->get('system_controllers')) && class_exists($coreClass)) {
+            $controller = $coreClass;
+        } elseif (in_array($core2Class, $configBackend->get('system_controllers'))  && class_exists($core2Class)) {
+            $controller = $core2Class;
         } else {
             $manager = new \Modules_Manager();
             $controller = $manager->getModuleController($controller);
-
-            if(empty($controller)) {
+            if (empty($controller)) {
                 $response->error(Lang::lang()->get('WRONG_REQUEST') . ' ' . $request->getUri());
                 return;
             }
         }
 
-        $this->runController($controller,  $request->getPart(2), $request, $response);
+        $this->runController($controller, $request->getPart(2), $request, $response);
     }
 
     /**
      * (non-PHPdoc)
      * @see Router::findUrl()
      */
-    public function findUrl(string $module) : string
+    public function findUrl(string $module): string
     {
         $cfg = Config::storage()->get('backend.php');
-        return Request::factory()->url([$cfg['adminPath'] , $module],false);
+        return Request::factory()->url([$cfg['adminPath'], $module], false);
     }
 }
