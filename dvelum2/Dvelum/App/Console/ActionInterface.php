@@ -16,9 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
 
-/**
- * Class Console_Action
- * Backward compatibility
- */
-abstract class Console_Action extends Dvelum\App\Console\Action{}
+namespace Dvelum\App\Console;
+
+use Dvelum\Config\ConfigInterface;
+
+interface ActionInterface
+{
+    /**
+     * @param ConfigInterface $appConfig
+     * @param array $params
+     * @return void
+     */
+    public function init(ConfigInterface $appConfig, array $params = []): void;
+
+    /**
+     * Get job statistics as string
+     * (useful for logs)
+     * @return string
+     */
+    public function getInfo(): string;
+
+    /**
+     * @return bool
+     */
+    public function run(): bool;
+}
