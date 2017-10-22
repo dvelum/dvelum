@@ -1,12 +1,15 @@
 <?php
 return [
-    // Rebuild database
-    'buildDb'=>'Console_Orm_Build',
-    'ormMigrate'=>'Console_Orm_Build',
-    // Create Model classes
-    'genModels' =>'Console_Orm_GenerateModels',
-    // Rebuild JS lang files
-    'buildJs' =>'Console_Js_Lang'  ,
-    // Clear memory tables used for Background tasks
-    'clearMemory' =>'Console_Clear_Memory',
+    'router' => '\\Dvelum\\App\\Router\\Console',
+    'user_id'=>1,
+    'lockConfig'=>[
+        'time_limit'=> 300,
+        'intercept_timeout'=>300,
+        'locks_dir'=> './data/locks/',
+    ],
+    'log' => [
+        'enabled' => true,
+        'type'=>'file',
+        'logFile'=>'./data/logs/cronjobs.log'
+    ]
 ];
