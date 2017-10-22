@@ -399,7 +399,7 @@ class Manager
     {
         $class = $this->getModuleController($name);
 
-        if(!class_exists($class)) {
+        if(empty($class) || !class_exists($class)) {
             return false;
         }
 
