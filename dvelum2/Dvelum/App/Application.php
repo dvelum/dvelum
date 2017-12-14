@@ -329,6 +329,22 @@ class Application
     }
 
     /**
+     * Start console application
+     */
+    public function runConsole()
+    {
+        $request = Request::factory();
+        $response = Response::factory();
+        $config = Config::storage()->get('console.php');
+        $routerClass = $config->get('router');
+        $router = new $routerClass();
+        $router->route($request, $response);
+        if (!$response->isSent()) {
+            $response->send();
+        }
+    }
+
+    /**
      * Run backend application
      */
     protected function routeBackOffice()
@@ -371,6 +387,7 @@ class Application
         if (!class_exists($routerClass)) {
             $routerClass = $frontConfig->get('router');
         }
+
         /**
          * @var \Dvelum\App\Router $router
          */

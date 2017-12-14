@@ -5,9 +5,9 @@ return array(
 	'system_controllers' => array(
 		'Backend_Index_Controller' ,
 		'Backend_Mediacategory_Controller',
-		'Backend_Vcs_Controller' ,
-		'Backend_History_Controller',
-		'Backend_Permissions_Controller'
+		'Backend_Permissions_Controller',
+        'Dvelum\\App\\Backend\\Vcs\\Controller',
+        'Dvelum\\App\\Backend\\History\\Controller'
 	),
 	//reserved object names
 	'system_objects'=>array(

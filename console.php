@@ -37,6 +37,8 @@ require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 use \Dvelum\Config\Factory as ConfigFactory;
+use \Dvelum\Config;
+use \Dvelum\Request;
 
 $configStorage = ConfigFactory::storage();
 $configStorage->setConfig($bootCfg['config_storage']);
@@ -75,7 +77,6 @@ else
 
 $autoloader->setConfig($autoloaderCfg);
 
-Registry::set('main', $config , 'config');
 /*
  * Starting the application
  */
@@ -86,7 +87,6 @@ if(!class_exists($appClass))
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);
 $app->init();
-
-Request::getInstance()->setUri('/console/'.$_SERVER['argv'][1]);
-
-$app->run();
+$request = Request::factory();
+$request->setUri($_SERVER['argv'][1]);
+$app->runConsole();

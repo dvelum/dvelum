@@ -228,7 +228,6 @@ class Controller extends App\Controller
             return false;
         }
 
-
         $moduleCfg = $moduleManager->getModuleConfig($this->module);
 
         /*
@@ -238,7 +237,6 @@ class Controller extends App\Controller
             $this->response->error($this->lang->get('CANT_VIEW'));
             return false;
         }
-
 
         /*
          * dev module at production
