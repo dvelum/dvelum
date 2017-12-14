@@ -1,11 +1,11 @@
 <?php
     header('Content-Type: text/html; charset=utf-8');
 
-    $theme = $this->get('theme');
+    $theme = 'gray';
 
     $res = Resource::getInstance();
     $res->addJs('/js/app/system/common.js' , -2);
-    $res->addJs('/js/app/system/Application.js' , -1);
+    $res->addJs('/js/app/system/Desktop.js' , -1);
 
     $res->addJs('/js/lib/jquery.js', 1 , true , 'head');
     $res->addJs('/js/lang/'.$this->get('lang').'.js', 1 , true , 'head');
@@ -23,7 +23,7 @@
 
     $res->addCss('/js/lib/extjs/build/classic/theme-'.$theme.'/resources/theme-'.$theme.'-all.css' , 1);
     $res->addCss('/css/system/style.css' , 2);
-    $res->addCss('/css/system/'.$theme.'/style.css' , 3);
+    $res->addCss('/css/system/desktop/style.css' , 3);
 
 
 	$token = '';

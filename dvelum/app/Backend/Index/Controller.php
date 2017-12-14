@@ -87,7 +87,7 @@ class Backend_Index_Controller extends Dvelum\App\Backend\Controller
             $this->response->error('Undefined controller');
         }
 
-        $controller = new $controller();
+        $controller = new $controller($this->request, $this->response);
 
         if(method_exists($controller,'desktopModuleInfo')){
             $info['layout'] = $controller->desktopModuleInfo();
