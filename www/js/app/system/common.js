@@ -400,6 +400,7 @@ app.storeException = function(proxy, response, operation, eOpts){
     }
     if(response.responseText === null){
         Ext.Msg.alert(appLang.MESSAGE, appLang.INVALID_RESPONSE);
+        return;
     }
     var resp =  Ext.JSON.decode(response.responseText);
     if(resp && resp.msg != null){
