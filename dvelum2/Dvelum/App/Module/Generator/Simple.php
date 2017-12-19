@@ -22,7 +22,6 @@ namespace Dvelum\App\Module\Generator;
 
 use Dvelum\Lang;
 use Dvelum\Orm;
-use Dvelum\Template;
 use Dvelum\Utils;
 use Dvelum\View;
 
@@ -161,8 +160,8 @@ class Simple extends AbstractAdapter
          * Create controller
         */
         $acceptedDirs = $this->appConfig->get('backend_controllers_dirs');
-        $controllerDir = $this->appConfig->get('local_controllers') . $acceptedDirs[0] . '/' . str_replace('_',
-                '/', $objectName);
+        $controllerDir = $this->appConfig->get('local_controllers')
+            . '/' . $acceptedDirs[0] . '/' . str_replace('_', '/', $objectName);
         $this->createControllerFile($controllerDir, $controllerCode);
 
         /*
@@ -215,7 +214,7 @@ class Simple extends AbstractAdapter
         $model->idProperty = $primaryKey;
         $model->addFields($storeFields);
 
-        $project->addObject(\Designer_Project::COMPONENT_ROOT, $model, -10);
+        $project->addObject(\Designer_Project::COMPONENT_ROOT, $model);
 
 
         $dataStore = \Ext_Factory::object('Data_Store');
