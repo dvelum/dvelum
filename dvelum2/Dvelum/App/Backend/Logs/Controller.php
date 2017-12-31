@@ -1,26 +1,58 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+declare(strict_types=1);
 
-use Dvelum\Config;
+namespace Dvelum\App\Backend\Logs;
+
+use Dvelum\App\Backend;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\Filter;
+use Dvelum\Utils;
+use Dvelum\Db\Select;
 
-class Backend_Logs_Controller extends Backend_Controller_Crud
+class Controller extends Backend\Ui\Controller
 {
-	protected  $_canViewObjects = ['User'];
+	protected  $canViewObjects = ['User'];
 
+    public function getModule(): string
+    {
+        return 'Logs';
+    }
 
-	public function listAction()
+    public function getObjectName(): string
+    {
+        return 'Historylog';
+    }
+
+    public function listAction()
 	{
-		$pager = Request::post('pager', 'array', array());
-		$filter = Request::post('filter', 'array', array());
+		$pager = $this->request->post('pager', 'array', array());
+		$filter = $this->request->post('filter', 'array', array());
 
-		$history = Model::factory('Historylog');
+		$history = Model::factory($this->getObjectName());
 
         if(isset($filter['date']) && !empty($filter['date'])){
             $date = date('Y-m-d' ,strtotime($filter['date']));
-            $filter['date'] = new Db_Select_Filter('date',array(
+            $filter['date'] = new Select\Filter('date',array(
                 $date.' 00:00:00', $date.' 23:59:59'
-            ),Db_Select_Filter::BETWEEN);
+            ),Select\Filter::BETWEEN);
         }
 
         $data = $history->getList($pager, $filter, ['date','type','id','object','user_id','record_id']);
@@ -41,7 +73,7 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
 			}unset($v);
 		}
 
-		Response::jsonSuccess(
+		$this->response->success(
 		    $data ,
             [
                 'count'=>$history->query()
@@ -62,7 +94,7 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
         foreach ($list as $object){
             $data[] = ['id'=>$object, 'title' => Orm\Object\Config::factory($object)->getTitle()];
         }
-        Response::jsonSuccess($data);
+        $this->response->success($data);
     }
 
     /**
@@ -70,26 +102,26 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
      */
     public function changesListAction()
     {
-        $filter = Request::post('filter' , Filter::FILTER_ARRAY , false);
+        $filter = $this->request->post('filter' , Filter::FILTER_ARRAY , false);
 
         if(empty($filter['id'])){
-            Response::jsonSuccess();
+            $this->response->success();
         }
 
         $id = intval($filter['id']);
 
         try{
-            $rec = Orm\Object::factory('Historylog' , $id);
-        }catch (Exception $e){
-            Model::factory('Historylog')->logError('Invalid id requested: '.$id);
-            Response::jsonSuccess();
+            $rec = Orm\Object::factory($this->getObjectName() , $id);
+        }catch (\Exception $e){
+            Model::factory($this->getObjectName())->logError('Invalid id requested: '.$id);
+            $this->response->success();
         }
 
         $before = $rec->get('before');
         $after = $rec->get('after');
 
         if(empty($before) && empty($after)){
-            Response::jsonSuccess();
+            $this->response->success();
         }
         $before = json_decode($before , true);
         $after = json_decode($after , true);
@@ -107,6 +139,6 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
                 $data[$field]['after'] = $value;
             }
         }
-        Response::jsonSuccess(array_values($data));
+        $this->response->success(array_values($data));
     }
 }
