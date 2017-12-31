@@ -54,7 +54,7 @@
         array (
             'dev' => false,
             'active' => true,
-            'class' => 'Backend_Logs_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Logs\\Controller',
             'designer' => '/system/historylog.designer.dat',
             'in_menu' => true,
             'icon' => 'i/system/icons/log.png',
