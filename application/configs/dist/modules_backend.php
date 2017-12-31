@@ -4,7 +4,7 @@
             'id' => 'Acl',
             'dev' => false,
             'active' => true,
-            'class' => 'Backend_Acl_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Acl\\Controller',
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/acl.png',

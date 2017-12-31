@@ -1,21 +1,53 @@
 <?php
-use Dvelum\Config;
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+declare(strict_types=1);
+
+namespace Dvelum\App\Backend\Acl;
+
+use Dvelum\App\Backend;
 use Dvelum\Orm\Model;
 use Dvelum\Orm;
 
-class Backend_Acl_Controller extends Backend_Controller
+class Controller extends Backend\Ui\Controller
 {
+
+    public function getModule(): string
+    {
+        return 'Acl';
+    }
+
+    public function getObjectName(): string
+    {
+        return 'Acl';
+    }
+
     /**
      * (non-PHPdoc)
      * @see Backend_Controller::indexAction()
      */
     public function indexAction()
     {
-        $this->_resource->addJs('/js/app/system/Acl.js' , true , 1);
-        $this->_resource->addJs('/js/app/system/crud/acl.js' , true , 2);
-        $this->_resource->addInlineJs('
-        	var canEdit = ' . ((integer) $this->_user->canEdit($this->_module)) . ';
-        	var canDelete = ' . ((integer) $this->_user->canDelete($this->_module)) . ';
+        $this->resource->addJs('/js/app/system/Acl.js' , true , 1);
+        $this->resource->addJs('/js/app/system/crud/acl.js' , true , 2);
+        $this->resource->addInlineJs('
+        	var canEdit = ' . ((integer) $this->checkCanEdit()) . ';
+        	var canDelete = ' . ((integer) $this->checkCanDelete()) . ';
         ');
     }
     /**
@@ -31,24 +63,24 @@ class Backend_Acl_Controller extends Backend_Controller
                     'system'
                 ])->fetchAll();
 
-        Response::jsonSuccess($data);
+        $this->response->success($data);
     }
     /**
      * List permissions action
      */
     public function permissionsAction()
     {
-        $user = Request::post('user_id' , 'int' , 0);
-        $group = Request::post('group_id' , 'int' , 0);
+        $user = $this->request->post('user_id' , 'int' , 0);
+        $group = $this->request->post('group_id' , 'int' , 0);
 
         if($user && $group)
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         if($group)
             $data = Model::factory('acl_simple')->getGroupPermissions($group);
 
         if(!empty($data))
-            $data = Utils::rekey('object' , $data);
+            $data = \Utils::rekey('object' , $data);
 
         $manager = new Orm\Object\Manager();
         $objects = $manager->getRegisteredObjects();
@@ -87,26 +119,26 @@ class Backend_Acl_Controller extends Backend_Controller
             $v['title'] = $cfg->getTitle();
         }
         unset($v);
-        Response::jsonSuccess(array_values($data));
+        $this->response->success(array_values($data));
     }
     /**
      * Save permissions action
      */
     public function savepermissionsAction()
     {
-        $this->_checkCanEdit();
+        $this->checkCanEdit();
 
-        $data = Request::post('data' , 'raw' , false);
-        $groupId = Request::post('group_id' , 'int' , false);
+        $data = $this->request->post('data' , 'raw' , false);
+        $groupId = $this->request->post('group_id' , 'int' , false);
         $data = json_decode($data , true);
 
         if(empty($data) || ! $groupId)
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
 
         if(Model::factory('acl_simple')->updateGroupPermissions($groupId , $data))
-            Response::jsonSuccess();
+            $this->response->success();
         else
-            Response::jsonError($this->_lang->CANT_EXEC);
+            $this->response->error($this->lang->get('CANT_EXEC'));
     }
     /**
      * Get desktop module info
@@ -118,8 +150,8 @@ class Backend_Acl_Controller extends Backend_Controller
         /*
          * Module bootstrap
          */
-        if(file_exists($this->_configMain->get('jsPath').'app/system/desktop/' . strtolower($this->_module) . '.js'))
-            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) .'.js';
+        if(file_exists($this->appConfig->get('jsPath').'app/system/desktop/' . strtolower($this->getModule()) . '.js'))
+            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->getModule()) .'.js';
 
         return $projectData;
     }
