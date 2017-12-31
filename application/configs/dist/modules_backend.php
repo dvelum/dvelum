@@ -105,7 +105,7 @@
             'id' => 'Menu',
             'dev' => false,
             'active' => true,
-            'class' => 'Backend_Menu_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Menu\\Controller',
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/menu.png',
