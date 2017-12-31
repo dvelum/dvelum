@@ -27,7 +27,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
         switch ($type)
         {
             case  'store_selection':
-                $addStores = Request::post('instances', Filter::FILTER_BOOLEAN, false);
+                $addStores = Request::post('stores', Filter::FILTER_BOOLEAN, false);
                 $addInstances = Request::post('instances', Filter::FILTER_BOOLEAN, false);
                 $stores = $project->getStores();
 
