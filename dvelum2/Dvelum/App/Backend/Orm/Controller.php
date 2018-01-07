@@ -23,7 +23,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         'dataview' => 'Dvelum\\App\\Backend\\Orm\\Controller\\DataView',
         'connections' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Connections',
         'log' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Log',
-        'object' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Object',
+        'object' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Record',
         'field' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Field',
         'index' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Index',
         'uml' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Uml',

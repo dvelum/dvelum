@@ -1,5 +1,6 @@
 <?php
 use Dvelum\Orm;
+use Dvelum\Orm\RecordInterface;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
 
@@ -110,7 +111,7 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
  	 * (non-PHPdoc)
  	 * @see Backend_Controller_Crud::insertObject()
  	 */
-    public function insertObject(Orm\RecordInterface $object)
+    public function insertObject(RecordInterface $object)
     {  
          if(!$recId = $object->save())
              Response::jsonError($this->_lang->CANT_CREATE);
@@ -135,7 +136,7 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::updateObject()
      */
-    public function updateObject(Orm\RecordInterface $object)
+    public function updateObject(RecordInterface $object)
     {                            
         if(!$object->save())
            Response::jsonError($this->_lang->CANT_EXEC); 

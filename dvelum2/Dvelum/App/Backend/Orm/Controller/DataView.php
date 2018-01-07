@@ -294,7 +294,7 @@ class DataView extends ApiController
         return true;
     }
 
-    public function checkOwner(ObjectInterface $object): bool
+    public function checkOwner(RecordInterface $object): bool
     {
         return true;
     }

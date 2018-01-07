@@ -324,12 +324,12 @@ abstract class Backend_Controller extends Controller
 
     /**
      * String representation of related object for addLinkedInfo method
-     * @param ObjectInterface $rowObject
+     * @param RecordInterface $rowObject
      * @param string $field
-     * @param ObjectInterface $relatedObject
+     * @param RecordInterface $relatedObject
      * @return string
      */
-    protected function linkedInfoObjectRenderer(ObjectInterface $rowObject, $field, ObjectInterface $relatedObject)
+    protected function linkedInfoObjectRenderer(RecordInterface $rowObject, $field, RecordInterface $relatedObject)
     {
         return $relatedObject->getTitle();
     }

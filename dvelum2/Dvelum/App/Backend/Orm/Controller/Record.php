@@ -28,7 +28,7 @@ use Dvelum\Service;
 use Dvelum\Request;
 use Dvelum\Response;
 
-class Object extends Controller
+class Record extends Controller
 {
     /**
      * @var Orm $ormService
@@ -40,7 +40,6 @@ class Object extends Controller
         parent::__construct($request, $response);
         $this->ormService = Service::get('orm');
     }
-
 
     public function getModule(): string
     {

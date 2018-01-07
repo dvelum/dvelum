@@ -115,16 +115,27 @@ class Orm
     }
 
     /**
-     * Factory method of object creation is preferable to use, cf. method  __construct() description
      * @param string $name
-     * @param int|int[]|bool $id , optional default false
-     * @throws Exception
-     * @return Orm\Record|Orm\Record[]
+     * @param bool $id
+     * @deprecated
+     * @throws \Exception
+     * @return mixed
      */
     public function object(string $name, $id = false)
     {
+        return $this->record($name, $id);
+    }
+    /**
+     * Factory method of object creation is preferable to use, cf. method  __construct() description
+     * @param string $name
+     * @param int|int[]|bool $id , optional default false
+     * @throws \Exception
+     * @return Orm\Record|Orm\Record[]
+     */
+    public function record(string $name, $id = false)
+    {
         if (!is_array($id)) {
-            return new Object($name, $id);
+            return new Record($name, $id);
         }
 
         $list = [];
@@ -170,7 +181,7 @@ class Orm
 
         $primaryKey = $config->getPrimaryKey();
         foreach ($data as $item) {
-            $o = new Object($name);
+            $o = new Record($name);
             $o->disableAcl(true);
             /*
              * Apply links info

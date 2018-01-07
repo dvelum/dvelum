@@ -759,11 +759,11 @@ class Controller extends App\Backend\Controller
      * The provided data is necessary for the RelatedGridPanel component,
      * which is used for visual representation of relationship management.
      * @param string $fieldName
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @param string $targetObjectName
      * @return array
      */
-    protected function collectLinksData($fieldName, ObjectInterface $object, $targetObjectName)
+    protected function collectLinksData($fieldName, RecordInterface $object, $targetObjectName)
     {
         $result = [];
 
@@ -800,22 +800,22 @@ class Controller extends App\Backend\Controller
 
     /**
      * String representation of related object for addLinkedInfo method
-     * @param ObjectInterface $rowObject
+     * @param RecordInterface $rowObject
      * @param string $field
-     * @param ObjectInterface $relatedObject
+     * @param RecordInterface $relatedObject
      * @return string
      */
-    protected function linkedInfoObjectRenderer(ObjectInterface $rowObject, $field, ObjectInterface $relatedObject)
+    protected function linkedInfoObjectRenderer(RecordInterface $rowObject, $field, RecordInterface $relatedObject)
     {
         return $relatedObject->getTitle();
     }
 
     /**
      * Check object owner
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @return bool
      */
-    protected function checkOwner(ObjectInterface $object): bool
+    protected function checkOwner(RecordInterface $object): bool
     {
         if ($this->moduleAcl->onlyOwnRecords($this->getModule()) && $object->get('author_id') !== $this->user->getId()) {
             return false;
@@ -827,10 +827,10 @@ class Controller extends App\Backend\Controller
      * Define the object data preview page URL
      * (needs to be redefined in the child class
      * as per the application structure)
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @return string
      */
-    public function getStagingUrl(ObjectInterface $object): string
+    public function getStagingUrl(RecordInterface $object): string
     {
         $frontConfig = Config::storage()->get('frontend.php');
 
@@ -970,10 +970,10 @@ class Controller extends App\Backend\Controller
      * Unpublish object
      * Sends JSON reply in the result
      * and closes the application.
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @return bool
      */
-    public function unpublishObject(ObjectInterface $object) : bool
+    public function unpublishObject(RecordInterface $object) : bool
     {
         if(!$object->get('published')){
             $this->response->error($this->lang->get('NOT_PUBLISHED'));

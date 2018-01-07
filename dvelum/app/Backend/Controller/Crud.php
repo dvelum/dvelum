@@ -23,6 +23,7 @@
  */
 use Dvelum\Config;
 use Dvelum\Orm;
+use Dvelum\Orm\RecordInterface;
 use Dvelum\Orm\Model;
 use Dvelum\App\Data;
 use Dvelum\App\Controller\EventManager;
@@ -221,11 +222,11 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * The provided data is necessary for the RelatedGridPanel component,
      * which is used for visual representation of relationship management.
      * @param string $fieldName
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @param string $targetObjectName
      * @return array
      */
-    protected function _collectLinksData($fieldName, ObjectInterface $object , $targetObjectName)
+    protected function _collectLinksData($fieldName, RecordInterface $object , $targetObjectName)
     {
         $result = [];
 
@@ -332,10 +333,10 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * Save new ORM object (insert data)
      * Sends JSON reply in the result and
      * closes the application
-     * @param Orm\Record $object
+     * @param RecordInterface $object
      * @return void
      */
-    public function insertObject(Orm\RecordInterface  $object)
+    public function insertObject(RecordInterface  $object)
     {
         if(!$recId = $object->save())
             Response::jsonError($this->_lang->CANT_CREATE);
@@ -347,9 +348,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * Update ORM object data
      * Sends JSON reply in the result and
      * closes the application
-     * @param ObjectInterface  $object
+     * @param RecordInterface  $object
      */
-    public function updateObject(ObjectInterface  $object)
+    public function updateObject(RecordInterface  $object)
     {
         if(!$object->save())
             Response::jsonError($this->_lang->CANT_EXEC);

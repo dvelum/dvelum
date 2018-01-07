@@ -31,6 +31,7 @@ use Dvelum\View;
 use Dvelum\File;
 use Dvelum\Filter;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Orm\RecordInterface;
 
 class Controller extends Backend\Ui\Controller
 {
@@ -215,10 +216,10 @@ class Controller extends Backend\Ui\Controller
 
     /**
      * Find staging URL
-     * @param ObjectInterface $obj
+     * @param RecordInterface $obj
      * @return string
      */
-    public function getStagingUrl(ObjectInterface $obj) : string
+    public function getStagingUrl(RecordInterface $obj) : string
     {
         return $this->request->url([$obj->get('code')]);
     }

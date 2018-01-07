@@ -19,6 +19,7 @@
 
 namespace Dvelum\Orm\Record;
 
+use Dvelum\Orm\Record;
 use Dvelum\Orm\RecordInterface;
 
 abstract class Acl
@@ -39,38 +40,38 @@ abstract class Acl
 
     /**
      * Check create permissions
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @return boolean
      */
-    abstract public function canCreate(ObjectInterface $object);
+    abstract public function canCreate(RecordInterface $object);
 
     /**
      * Check update permissions
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @return boolean
      */
-    abstract public function canEdit(ObjectInterface $object);
+    abstract public function canEdit(RecordInterface $object);
 
     /**
      * Check delete permissions
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @return boolean
      */
-    abstract public function canDelete(ObjectInterface $object);
+    abstract public function canDelete(RecordInterface $object);
 
     /**
      * Check publish permissions
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @return boolean
      */
-    abstract public function canPublish(ObjectInterface $object);
+    abstract public function canPublish(RecordInterface $object);
 
     /**
      * Check read permissions
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @return boolean
      */
-    abstract public function canRead(ObjectInterface $object);
+    abstract public function canRead(RecordInterface $object);
 
     /**
      * Set current User
@@ -93,13 +94,13 @@ abstract class Acl
      * Create ACL adapter object
      * @param string $class
      * @throws \Exception
-     * @return Object\Acl
+     * @return Record\Acl
      */
     static public function factory($class)
     {
         $object = new $class;
 
-        if(!$object instanceof Object\Acl)
+        if(!$object instanceof Record\Acl)
             throw new \Exception('Invalid ACL adapter '.$class);
 
         return $object;
