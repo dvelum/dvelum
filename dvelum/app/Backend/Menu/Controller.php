@@ -59,9 +59,9 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
               
         try{
             /**
-             * @var Dvelum\Orm\ObjectInterface $obj
+             * @var Dvelum\Orm\RecordInterface $obj
              */
-            $obj = Orm\Object::factory($this->_objectName, $id);
+            $obj = Orm\Record::factory($this->_objectName, $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC);
         }
@@ -110,7 +110,7 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
  	 * (non-PHPdoc)
  	 * @see Backend_Controller_Crud::insertObject()
  	 */
-    public function insertObject(Orm\ObjectInterface $object)
+    public function insertObject(Orm\RecordInterface $object)
     {  
          if(!$recId = $object->save())
              Response::jsonError($this->_lang->CANT_CREATE);
@@ -135,7 +135,7 @@ class Backend_Menu_Controller extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::updateObject()
      */
-    public function updateObject(Orm\ObjectInterface $object)
+    public function updateObject(Orm\RecordInterface $object)
     {                            
         if(!$object->save())
            Response::jsonError($this->_lang->CANT_EXEC); 

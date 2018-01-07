@@ -58,7 +58,7 @@ class Modules_Generator
       $runNamespace = 'app'.$jsName.'Application';
       $classNamespace = 'app'.$jsName.'Components';
 
-      $objectConfig = Orm\Object\Config::factory($object);
+      $objectConfig = Orm\Record\Config::factory($object);
       $primaryKey = $objectConfig->getPrimaryKey();
 
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
@@ -75,7 +75,7 @@ class Modules_Generator
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Orm\Object\Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
+          if(in_array($item['db_type'] , Orm\Record\Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -90,7 +90,7 @@ class Modules_Generator
       $dataFields = array();
       foreach($objectConfig->getFieldsConfig(true) as $key => $item)
       {
-          if(in_array($item['db_type'] , Orm\Object\Builder::$textTypes , true))
+          if(in_array($item['db_type'] , Orm\Record\Builder::$textTypes , true))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -104,8 +104,8 @@ class Modules_Generator
 
       $linksToShow = array_keys($objectConfig->getLinks(
           [
-              Orm\Object\Config::LINK_OBJECT,
-              Orm\Object\Config::LINK_OBJECT_LIST,
+              Orm\Record\Config::LINK_OBJECT,
+              Orm\Record\Config::LINK_OBJECT_LIST,
              // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
           ],
           false
@@ -488,7 +488,7 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
       $runNamespace = 'app'.$jsName.'Application';
       $classNamespace = 'app'.$jsName.'Components';
 
-      $objectConfig = Orm\Object\Config::getInstance($object);
+      $objectConfig = Orm\Record\Config::factory($object);
       $primaryKey = $objectConfig->getPrimaryKey();
 
       $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
@@ -506,7 +506,7 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
               $linkedObjects[] = $objectConfig->getLinkedObject($key);
           }
 
-          if(in_array($item['db_type'] , Orm\Object\Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
+          if(in_array($item['db_type'] , Orm\Record\Builder::$textTypes , true) || $objectConfig->isObjectLink($key) || $objectConfig->isMultiLink($key))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -520,7 +520,7 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
       $dataFields = array();
       foreach($objectConfig->getFieldsConfig(true) as $key => $item)
       {
-          if(in_array($item['db_type'] , Orm\Object\Builder::$textTypes , true))
+          if(in_array($item['db_type'] , Orm\Record\Builder::$textTypes , true))
               continue;
 
           if(isset($item['hidden']) && $item['hidden'])
@@ -533,8 +533,8 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
 
       $linksToShow = array_keys($objectConfig->getLinks(
           [
-              Orm\Object\Config::LINK_OBJECT,
-              Orm\Object\Config::LINK_OBJECT_LIST,
+              Orm\Record\Config::LINK_OBJECT,
+              Orm\Record\Config::LINK_OBJECT_LIST,
              // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
           ],
           false

@@ -43,7 +43,7 @@ class Backend_Designer_Sub_Form extends Backend_Designer_Sub
 		if(!$importObject || empty($importFields)  || $this->_project->objectExists($importObject))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 		
-		$importObjectConfig = Orm\Object\Config::factory($importObject);
+		$importObjectConfig = Orm\Record\Config::factory($importObject);
 		
 		foreach ($importFields as $name)
 			if($importObjectConfig->fieldExists($name))

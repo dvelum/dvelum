@@ -26,7 +26,6 @@ use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\App\Data;
 use Dvelum\App\Controller\EventManager;
-use Dvelum\Orm\ObjectInterface;
 
 abstract class Backend_Controller_Crud extends Backend_Controller
 {
@@ -155,7 +154,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $data = $api->getList();
 
         if(!empty($this->_listLinks)){
-            $objectConfig = Orm\Object\Config::factory($this->_objectName);
+            $objectConfig = Orm\Record\Config::factory($this->_objectName);
             if(is_array($this->_listFields) && !in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
                 throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
             }
@@ -203,7 +202,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         /*
          * Prepare object list properties
          */
-        $linkedObjects = $obj->getConfig()->getLinks([Orm\Object\Config::LINK_OBJECT_LIST]);
+        $linkedObjects = $obj->getConfig()->getLinks([Orm\Record\Config::LINK_OBJECT_LIST]);
 
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
@@ -234,8 +233,8 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         if(!empty($data))
         {
-            $list = Orm\Object::factory($targetObjectName , $data);
-            $isVc = Orm\Object\Config::factory($targetObjectName)->isRevControl();
+            $list = Orm\Record::factory($targetObjectName , $data);
+            $isVc = Orm\Record\Config::factory($targetObjectName)->isRevControl();
             foreach($data as $id){
                 if(isset($list[$id])){
                     $result[] = [
@@ -309,7 +308,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         try{
-            $object =  Orm\Object::factory($this->_objectName , $id);
+            $object =  Orm\Record::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
         }
@@ -333,10 +332,10 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      * Save new ORM object (insert data)
      * Sends JSON reply in the result and
      * closes the application
-     * @param Orm\Object $object
+     * @param Orm\Record $object
      * @return void
      */
-    public function insertObject(ObjectInterface  $object)
+    public function insertObject(Orm\RecordInterface  $object)
     {
         if(!$recId = $object->save())
             Response::jsonError($this->_lang->CANT_CREATE);
@@ -369,21 +368,21 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $query = Request::post('search' , 'string' , null);
         $filter = array_merge($filter , Request::extFilters());
 
-        if($object === false || !Orm\Object\Config::configExists($object))
+        if($object === false || !Orm\Record\Config::configExists($object))
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
 
         if(!in_array(strtolower($object), $this->_canViewObjects , true))
             Response::jsonError($this->_lang->get('CANT_VIEW'));
 
-        $objectCfg = Orm\Object\Config::factory($object);
+        $objectCfg = Orm\Record\Config::factory($object);
         $primaryKey = $objectCfg->getPrimaryKey();
 
-        $objectConfig = Orm\Object\Config::factory($object);
+        $objectConfig = Orm\Record\Config::factory($object);
 
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if($acl){
-            if(!$acl->can(Orm\Object\Acl::ACCESS_VIEW , $object)){
+            if(!$acl->can(Orm\Record\Acl::ACCESS_VIEW , $object)){
                 Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
             }
         }
@@ -409,7 +408,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             {
                 $objectIds = Utils::fetchCol('id' , $data);
                 try{
-                    $objects = Orm\Object::factory($object ,$objectIds);
+                    $objects = Orm\Record::factory($object ,$objectIds);
                 }catch (Exception $e){
                     Model::factory($object)->logError('linkedlistAction ->'.$e->getMessage());
                     Response::jsonError($this->_lang->get('CANT_EXEC'));
@@ -461,23 +460,23 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         $object = Request::post('object','string', false);
         $id = Request::post('id', 'string', false);
 
-        if(!$object || !Orm\Object\Config::configExists($object))
+        if(!$object || !Orm\Record\Config::configExists($object))
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         if(!in_array(strtolower($object), $this->_canViewObjects , true))
             Response::jsonError($this->_lang->CANT_VIEW);
 
-        $objectConfig = Orm\Object\Config::factory($object);
+        $objectConfig = Orm\Record\Config::factory($object);
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if($acl){
-            if(!$acl->can(Orm\Object\Acl::ACCESS_VIEW , $object)){
+            if(!$acl->can(Orm\Record\Acl::ACCESS_VIEW , $object)){
                 Response::jsonError($this->_lang->get('ACL_ACCESS_DENIED'));
             }
         }
 
         try {
-            $o = Orm\Object::factory($object, $id);
+            $o = Orm\Record::factory($object, $id);
             Response::jsonSuccess(array('title'=>$o->getTitle()));
         }catch (Exception $e){
             Model::factory($object)->logError('Cannot get title for '.$object.':'.$id);

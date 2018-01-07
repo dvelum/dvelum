@@ -3,4 +3,4 @@
  * Class Db_Object_Config
  * Backward compatibility
  */
-class Db_Object_Manager extends \Dvelum\Orm\Object\Manager{}
+class Db_Object_Manager extends \Dvelum\Orm\Record\Manager{}

@@ -180,7 +180,7 @@ class Model_Permissions extends Model
 
     		try
             {
-                $obj = Orm\Object::factory($this->name);
+                $obj = Orm\Record::factory($this->name);
                 $obj->setValues(array(
                         'view'=>(boolean)$values['view'],
                         'edit'=>(boolean)$values['edit'],
@@ -279,7 +279,7 @@ class Model_Permissions extends Model
                     continue;
                 }
 
-                $obj = Orm\Object::factory($this->name);
+                $obj = Orm\Record::factory($this->name);
                 $obj->setValues(array(
                     'view'=>(boolean)$values['view'],
                     'edit'=>(boolean)$values['edit'],
@@ -335,9 +335,9 @@ class Model_Permissions extends Model
     		$objectId = $data[0]['id'];
 
         try{
-    		$groupObj = Orm\Object::factory('permissions',$objectId);
+    		$groupObj = Orm\Record::factory('permissions',$objectId);
     	}catch(Exception $e){
-    		$groupObj = Orm\Object::factory('permissions');
+    		$groupObj = Orm\Record::factory('permissions');
     	}
 
     	$groupObj->module=$module;

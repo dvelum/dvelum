@@ -73,7 +73,7 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
      */
     public function signal($pid , $signal)
     {
-    	$object = Orm\Object::factory('bgtask_signal');
+    	$object = Orm\Record::factory('bgtask_signal');
     	$object->pid = $pid;
     	$object->signal = $signal;
     	return $object->save(false);  	
@@ -215,7 +215,7 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
       */
      public function addTaskRecord($description)
      {
-     		$object = Orm\Object::factory('bgtask');
+     		$object = Orm\Record::factory('bgtask');
      		$object->title = $description;
      		$pid = $object->save();
      		$this->_objects[$pid] = $object;
@@ -223,14 +223,14 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
      }
      
      /**
-      * Load Orm\Object
+      * Load Orm\Record
       * @param string $class
       * @param integer $pid
       */
      protected function _getObject($pid)
      {
      	if(!isset($this->_objects[$pid]))
-     		$this->_objects[$pid] = Orm\Object::factory('bgtask' , $pid);
+     		$this->_objects[$pid] = Orm\Record::factory('bgtask' , $pid);
      	
      	return $this->_objects[$pid];
      }

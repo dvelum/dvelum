@@ -66,7 +66,7 @@ class Controller extends App\Backend\Api\Controller
         }
 
         try{
-            $o = Orm\Object::factory($object);
+            $o = Orm\Record::factory($object);
         }catch (\Exception $e){
             $this->response->success([]);
         }
@@ -81,7 +81,7 @@ class Controller extends App\Backend\Api\Controller
             ->fields(['date','type','id'])
             ->fetchAll();
 
-        $objectConfig = Orm\Object\Config::factory('Historylog');
+        $objectConfig = Orm\Record\Config::factory('Historylog');
 
         $this->addLinkedInfo($objectConfig,['user_name'=>'user_id'], $data, $objectConfig->getPrimaryKey());
 

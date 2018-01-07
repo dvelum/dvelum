@@ -29,7 +29,7 @@ use Dvelum\App\Session\User;
  * @author Kirill Egorov 2011-2017  DVelum project
  * @package Dvelum\Orm
  */
-class Object implements ObjectInterface
+class Record implements RecordInterface
 {
     /**
      * Error log adapter
@@ -40,7 +40,7 @@ class Object implements ObjectInterface
     protected $name;
 
     /**
-     * @var Object\Config
+     * @var Record\Config
      */
     protected $config;
 
@@ -58,7 +58,7 @@ class Object implements ObjectInterface
 
     /**
      * Access Control List Adapter
-     * @var Object\Acl
+     * @var Record\Acl
      */
     protected $acl = false;
     /**
@@ -94,7 +94,7 @@ class Object implements ObjectInterface
         $this->name = strtolower($name);
         $this->id = $id;
 
-        $this->config = Object\Config::factory($name);
+        $this->config = Record\Config::factory($name);
         $this->primaryKey = $this->config->getPrimaryKey();
         $this->model = Model::factory($name);
         $this->acl = $this->config->getAcl();
@@ -132,7 +132,7 @@ class Object implements ObjectInterface
         if(empty($data))
             throw new Exception('Cannot find object '.$this->name.':'.$this->id);
 
-        $links = $this->config->getLinks([Object\config::LINK_OBJECT_LIST]);
+        $links = $this->config->getLinks([Record\config::LINK_OBJECT_LIST]);
 
         if(!empty($links))
         {
@@ -280,9 +280,9 @@ class Object implements ObjectInterface
 
     /**
      * Get ORM configuration object (data structure helper)
-     * @return Object\Config
+     * @return Record\Config
      */
-    public function getConfig() : Object\Config
+    public function getConfig() : Record\Config
     {
         return $this->config;
     }
@@ -356,11 +356,11 @@ class Object implements ObjectInterface
      */
     static public function objectExists($name , $ids) : bool
     {
-        if(!Object\Config::configExists($name))
+        if(!Record\Config::configExists($name))
             return false;
 
         try {
-            $cfg = Object\Config::factory($name);
+            $cfg = Record\Config::factory($name);
         }catch (Exception $e){
             return false;
         }
@@ -1069,7 +1069,7 @@ class Object implements ObjectInterface
 
     /**
      * Get Access control List
-     * @return Object\Acl | false
+     * @return Record\Acl | false
      */
     public function getAcl()
     {

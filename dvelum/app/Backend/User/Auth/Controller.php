@@ -31,7 +31,7 @@ class Backend_User_Auth_Controller extends Backend_Controller_Crud
             return [];
 
         if(!empty($this->_listLinks)){
-            $objectConfig = Orm\Object\Config::factory($this->_objectName);
+            $objectConfig = Orm\Record\Config::factory($this->_objectName);
             if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
             throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
             }

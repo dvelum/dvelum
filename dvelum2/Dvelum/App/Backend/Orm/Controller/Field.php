@@ -68,9 +68,9 @@ class Field extends Controller
 
         try{
             /**
-             * @var Orm\Object\Config
+             * @var Orm\Record\Config
              */
-            $objectCfg = Orm\Object\Config::factory($object);
+            $objectCfg = Orm\Record\Config::factory($object);
         }catch (Exception $e){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' code 2');
             return;
@@ -101,7 +101,7 @@ class Field extends Controller
              */
             $newConfig['link_config']['link_type'] = $this->request->post('link_type', 'str', 'object');
 
-            if($newConfig['link_config']['link_type'] === Orm\Object\Config::LINK_DICTIONARY)
+            if($newConfig['link_config']['link_type'] === Orm\Record\Config::LINK_DICTIONARY)
             {
                 $newConfig['link_config']['object'] = $this->request->post('dictionary', 'str', '');
                 $newConfig['db_type'] = 'varchar';
@@ -124,7 +124,7 @@ class Field extends Controller
                 }
 
                 try {
-                    $cf = Orm\Object\Config::factory($linkedObject);
+                    $cf = Orm\Record\Config::factory($linkedObject);
                 }catch(Exception $e){
                     $this->response->error($this->lang->get('FILL_FORM') , [['id'=>'object','msg'=>$this->lang->get('INVALID_VALUE')]]);
                     return;
@@ -133,7 +133,7 @@ class Field extends Controller
 
                 switch ($newConfig['link_config']['link_type'])
                 {
-                    case Orm\Object\Config::LINK_OBJECT_LIST:
+                    case Orm\Record\Config::LINK_OBJECT_LIST:
 
                         $newConfig['link_config']['relations_type'] = $this->request->post('relations_type' , 'string' , false);
                         if(!in_array($newConfig['link_config']['relations_type'] , array('polymorphic','many_to_many') , true)){
@@ -145,7 +145,7 @@ class Field extends Controller
                         $newConfig['db_default'] = '';
                         break;
 
-                    case Orm\Object\Config::LINK_OBJECT:
+                    case Orm\Record\Config::LINK_OBJECT:
                         $newConfig['db_isNull'] = (boolean) !$newConfig['required'];
                         $newConfig['db_type'] ='bigint';
                         $newConfig['db_default'] = false;
@@ -187,13 +187,13 @@ class Field extends Controller
                  */
                 $newConfig['required'] = false;
                 $newConfig['db_default'] = (integer)$this->request->post('db_default', 'bool', false);
-            }elseif(in_array($newConfig['db_type'] , Orm\Object\Builder::$intTypes , true)){
+            }elseif(in_array($newConfig['db_type'] , Orm\Record\Builder::$intTypes , true)){
                 /*
                  * integer
                  */
                 $newConfig['db_default'] = $this->request->post('db_default', 'integer', false);
                 $newConfig['db_unsigned'] = $this->request->post('db_unsigned', 'bool', false);
-            }elseif(in_array($newConfig['db_type'], Orm\Object\Builder::$floatTypes)){
+            }elseif(in_array($newConfig['db_type'], Orm\Record\Builder::$floatTypes)){
                 /*
                  * float
                  */
@@ -201,7 +201,7 @@ class Field extends Controller
                 $newConfig['db_unsigned'] = $this->request->post('db_unsigned', 'bool', false);
                 $newConfig['db_scale'] = $this->request->post('db_scale', 'integer', 0);
                 $newConfig['db_precision'] = $this->request->post('db_precision', 'integer', 0);
-            }elseif(in_array($newConfig['db_type'] , Orm\Object\Builder::$charTypes , true)){
+            }elseif(in_array($newConfig['db_type'] , Orm\Record\Builder::$charTypes , true)){
                 /*
                  * char
                  */
@@ -209,7 +209,7 @@ class Field extends Controller
                 $newConfig['db_len'] = $this->request->post('db_len', 'integer', 255);
                 $newConfig['is_search'] =$this->request->post('is_search', 'bool', false);
                 $newConfig['allow_html'] =$this->request->post('allow_html', 'bool', false);
-            }elseif(in_array($newConfig['db_type'] , Orm\Object\Builder::$textTypes , true)){
+            }elseif(in_array($newConfig['db_type'] , Orm\Record\Builder::$textTypes , true)){
                 /*
                  * text
                  */
@@ -220,7 +220,7 @@ class Field extends Controller
                 if(!$newConfig['required'])
                     $newConfig['db_isNull'] = true;
 
-            }elseif(in_array($newConfig['db_type'] , Orm\Object\Builder::$dateTypes , true)){
+            }elseif(in_array($newConfig['db_type'] , Orm\Record\Builder::$dateTypes , true)){
                 /*
                  * date
                  */
@@ -263,7 +263,7 @@ class Field extends Controller
             /**
              * @todo refactor
              */
-            $builder = Orm\Object\Builder::factory($object);
+            $builder = Orm\Record\Builder::factory($object);
             $builder->build();
             $this->response->success();
         }else{

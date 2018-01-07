@@ -31,7 +31,7 @@ class Model_Blockmapping extends Model
         $order = 0;
         foreach ($blockIds as $id)
         {
-            $blockmapItem = Orm\Object::factory('blockmapping');
+            $blockmapItem = Orm\Record::factory('blockmapping');
             $blockmapItem->set('block_id' , $id);
             if($pageId)
               $blockmapItem->set('page_id' , $pageId);

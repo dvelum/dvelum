@@ -45,7 +45,7 @@ class Uml extends Controller
 
         $data = [];
 
-        $manager = new Orm\Object\Manager();
+        $manager = new Orm\Record\Manager();
 
         $names = $manager->getRegisteredObjects();
         $showObj = $this->request->post('objects','array',[]);
@@ -64,7 +64,7 @@ class Uml extends Controller
         $defaultY = 10;
 
         foreach($names as $index=>$objectName){
-            $objectConfig = Orm\Object\Config::factory($objectName);
+            $objectConfig = Orm\Record\Config::factory($objectName);
             if(!empty($objectConfig->isRelationsObject()) || !in_array($objectName,$showObj)){
                 unset($names[$index]);
                 continue;
@@ -72,7 +72,7 @@ class Uml extends Controller
 
             $data[$objectName]['links'] = $objectConfig->getLinks();
 
-            $objectConfig = Orm\Object\Config::factory($objectName);
+            $objectConfig = Orm\Record\Config::factory($objectName);
             $fields = $objectConfig->getFieldsConfig();
 
             foreach($fields as $fieldName => $fieldData){
@@ -147,7 +147,7 @@ class Uml extends Controller
 
         $saved = $config->get('items');
 
-        $manager = new Orm\Object\Manager();
+        $manager = new Orm\Record\Manager();
         $registered = $manager->getRegisteredObjects();
 
         /**

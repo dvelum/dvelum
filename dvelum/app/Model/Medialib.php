@@ -47,7 +47,7 @@ class Model_Medialib extends Model
             'hash' => $hash
         ];
 
-        $obj = Orm\Object::factory($this->name);
+        $obj = Orm\Record::factory($this->name);
         $obj->setValues($data);
 
         if ($obj->save()) {
@@ -68,7 +68,7 @@ class Model_Medialib extends Model
             return false;
         }
 
-        $obj = Orm\Object::factory($this->name, $id);
+        $obj = Orm\Record::factory($this->name, $id);
         $data = $obj->getData();
 
         if (empty($data)) {
@@ -155,7 +155,7 @@ class Model_Medialib extends Model
             return false;
         }
         try {
-            $obj = Orm\Object::factory($this->name, $id);
+            $obj = Orm\Record::factory($this->name, $id);
             $obj->setValues($data);
             $obj->save();
             $hLog = Model::factory('Historylog');
@@ -316,7 +316,7 @@ class Model_Medialib extends Model
      */
     public function updateModifyDate($id)
     {
-        $obj = Orm\Object::factory($this->name, $id);
+        $obj = Orm\Record::factory($this->name, $id);
         $obj->set('modified', date('Y-m-d h:i:s'));
         $obj->save();
     }
@@ -328,7 +328,7 @@ class Model_Medialib extends Model
      */
     public function markCroped($id)
     {
-        $obj = Orm\Object::factory($this->name, $id);
+        $obj = Orm\Record::factory($this->name, $id);
         $obj->set('croped', 1);
         $obj->save();
     }

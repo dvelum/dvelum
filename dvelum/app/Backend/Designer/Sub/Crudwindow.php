@@ -40,10 +40,10 @@ class Backend_Designer_Sub_Crudwindow extends Backend_Designer_Sub
 		$importObject = Request::post('importobject', 'string', false);
 		$importFields = Request::post('importfields', 'array', array());
 		
-		if(!$importObject || empty($importFields)  ||  !Orm\Object\Config::configExists($importObject))
+		if(!$importObject || empty($importFields)  ||  !Orm\Record\Config::configExists($importObject))
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 		
-		$importObjectConfig = Orm\Object\Config::factory($importObject);
+		$importObjectConfig = Orm\Record\Config::factory($importObject);
 		
 		foreach ($importFields as $name)
 			if($importObjectConfig->fieldExists($name))

@@ -33,7 +33,7 @@ class Api
         $this->user = $user;
 
         $object = $this->apiRequest->getObjectName();
-        $ormObjectConfig = Orm\Object\Config::factory($object);
+        $ormObjectConfig = Orm\Record\Config::factory($object);
         $model = Model::factory($object);
 
         $this->dataQuery = $model->query()
@@ -86,7 +86,7 @@ class Api
     {
         $result = [];
         $objectName = $this->apiRequest->getObjectName();
-        $config = Orm\Object\Config::factory($objectName);
+        $config = Orm\Record\Config::factory($objectName);
 
         $fields = $config->getFields();
         foreach($fields as $k=>$v)

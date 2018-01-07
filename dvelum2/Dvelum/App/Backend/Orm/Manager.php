@@ -46,7 +46,7 @@ class Manager
 		//if(!empty($assoc))
 		//	return self::ERROR_HAS_LINKS;
 
-		$objectConfig = Orm\Object\Config::factory($name);
+		$objectConfig = Orm\Record\Config::factory($name);
 		$manyToMany = $objectConfig->getManyToMany();
 
 		if(!empty($manyToMany))
@@ -86,12 +86,12 @@ class Manager
 		$path = $objectsWrite . Config::storage()->get('main.php')->get('object_configs') . $name . '.php';
 
 		try{
-		  $cfg = Orm\Object\Config::factory($name);
-		}catch (Exception $e){
+		  $cfg = Orm\Record\Config::factory($name);
+		}catch (\Exception $e){
 		  return self::ERROR_FS;
 		}
 		
-		$builder = Orm\Object\Builder::factory($name);
+		$builder = Orm\Record\Builder::factory($name);
 		
 		if($deleteTable && !$cfg->isLocked() && !$cfg->isReadOnly()){
 		  if(!$builder->remove()){
@@ -148,7 +148,7 @@ class Manager
 	public function getFieldConfig($object , $field)
 	{
 		try {
-			$cfg = Orm\Object\Config::factory($object);
+			$cfg = Orm\Record\Config::factory($object);
 		}catch (\Exception $e){
 			return false;
 		}
@@ -183,7 +183,7 @@ class Manager
 	public function getIndexConfig($object , $index)
 	{	
 		try {
-			$cfg = Orm\Object\Config::factory($object);
+			$cfg = Orm\Record\Config::factory($object);
 		}catch (\Exception $e){
 			return false;
 		}	
@@ -206,7 +206,7 @@ class Manager
 		$localisations = $this->getLocalisations();
 
 		try{
-			$objectCfg = Orm\Object\Config::factory($objectName);
+			$objectCfg = Orm\Record\Config::factory($objectName);
 		}catch (\Exception $e){
 			return self::ERROR_INVALID_OBJECT;
 		}
@@ -244,12 +244,12 @@ class Manager
 	
 	/**
 	 * Rename object field
-	 * @param Orm\Object\Config $cfg
+	 * @param Orm\Record\Config $cfg
 	 * @param string $oldName
 	 * @param string $newName
 	 * @return integer 0 on success or error code
 	 */
-	public function renameField(Orm\Object\Config $cfg , $oldName , $newName)
+	public function renameField(Orm\Record\Config $cfg , $oldName , $newName)
 	{
 		$localisations = $this->getLocalisations();
 		$langWritePath = Lang::storage()->getWrite();
@@ -291,7 +291,7 @@ class Manager
 	   /*
 		* Check fs write permissions for associated objects
 		*/
-		$assoc = Orm\Object\Expert::getAssociatedStructures($oldName);
+		$assoc = Orm\Record\Expert::getAssociatedStructures($oldName);
 		if(!empty($assoc))
 			foreach ($assoc as $config)
 				if(!is_writable(Config::storage()->getPath($path).strtolower($config['object']).'.php'))
@@ -335,7 +335,7 @@ class Manager
 				$object = $config['object'];
 				$fields = $config['fields'];
 				
-				$oConfig = Orm\Object\Config::factory($object);
+				$oConfig = Orm\Record\Config::factory($object);
 				
 				foreach ($fields as $fName=>$fType)				
 					if($oConfig->isLink($fName))

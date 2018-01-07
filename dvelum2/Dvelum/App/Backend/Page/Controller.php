@@ -24,7 +24,6 @@ use Dvelum\App\Backend;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
-use Dvelum\Orm\ObjectInterface;
 use Dvelum\App\Controller\Event;
 use Dvelum\App\Controller\EventManager;
 use Dvelum\Utils;
@@ -200,7 +199,7 @@ class Controller extends Backend\Ui\Controller
         }
 
         try{
-            $pObject = Orm\Object::factory('page' , $id);
+            $pObject = Orm\Record::factory('page' , $id);
             $pObject->set('parent_id', $newParent);
             $pObject->save();
             /**
@@ -324,7 +323,7 @@ class Controller extends Backend\Ui\Controller
         $ids = Utils::fetchCol('id', $data);
         $data =  Utils::rekey('id', $data);
 
-        $obj = Orm\Object::factory('Blocks');
+        $obj = Orm\Record::factory('Blocks');
         $model = Model::factory('Blocks');
 
         $fields = ['id' , 'title'=>$obj->getConfig()->getLinkTitle(),'is_system'];
@@ -384,9 +383,9 @@ class Controller extends Backend\Ui\Controller
 
         try{
             /**
-             * @var Orm\ObjectInterface $object
+             * @var Orm\RecordInterface $object
              */
-            $object = Orm\Object::factory($this->getObjectName() , $id);
+            $object = Orm\Record::factory($this->getObjectName() , $id);
         }catch(\Exception $e){
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;

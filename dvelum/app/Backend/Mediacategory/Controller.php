@@ -49,7 +49,7 @@ class Backend_Mediacategory_Controller extends Dvelum\App\Backend\Api\Controller
         $model = Model::factory('Mediacategory');
 
         try{
-            $pObject = Orm\Object::factory('mediacategory' , $id);
+            $pObject = Orm\Record::factory('mediacategory' , $id);
             $pObject->set('parent_id', $newParent);
             $pObject->save();
             $model->updateSortOrder($order);
@@ -75,7 +75,7 @@ class Backend_Mediacategory_Controller extends Dvelum\App\Backend\Api\Controller
         }
 
         try{
-            $object = Orm\Object::factory($this->objectName , $id);
+            $object = Orm\Record::factory($this->objectName , $id);
         }catch(Exception $e){
            $this->response->error($this->lang->get('WRONG_REQUEST'));
            return;

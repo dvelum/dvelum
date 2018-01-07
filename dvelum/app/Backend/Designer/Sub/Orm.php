@@ -9,13 +9,13 @@ class Backend_Designer_Sub_Orm extends Backend_Designer_Sub
      */
     public function listAction()
     {
-        $manager = new Orm\Object\Manager();
+        $manager = new Orm\Record\Manager();
         $objects = $manager->getRegisteredObjects();
         $data = array();
 
         if (!empty($objects)) {
             foreach ($objects as $name) {
-                $data[] = array('name' => $name, 'title' => Orm\Object\Config::factory($name)->getTitle());
+                $data[] = array('name' => $name, 'title' => Orm\Record\Config::factory($name)->getTitle());
             }
         }
 
@@ -33,7 +33,7 @@ class Backend_Designer_Sub_Orm extends Backend_Designer_Sub
         }
 
         try {
-            $config = Orm\Object\Config::factory($objectName);
+            $config = Orm\Record\Config::factory($objectName);
         } catch (Exception $e) {
             Response::jsonError($this->_lang->get('WRONG_REQUEST'));
         }
@@ -57,7 +57,7 @@ class Backend_Designer_Sub_Orm extends Backend_Designer_Sub
                     $obj = $field->getLinkedObject();
                     $oName = $obj . '';
                     try {
-                        $oCfg = Orm\Object\Config::factory($obj);
+                        $oCfg = Orm\Record\Config::factory($obj);
                         $oName .= ' (' . $oCfg->get('title') . ')';
                     } catch (Exception $e) {
                         //empty on error

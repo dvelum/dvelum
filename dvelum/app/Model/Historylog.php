@@ -45,7 +45,7 @@ class Model_Historylog extends Model
         if(!is_integer($type))
             throw new Exception('History::log Invalid type');
 
-			$obj = Orm\Object::factory($this->name);
+			$obj = Orm\Record::factory($this->name);
 			$obj->setValues(array(
                 	'user_id' =>intval($user_id),
                     'record_id' => intval($record_id),
@@ -118,13 +118,13 @@ class Model_Historylog extends Model
     public function saveState($operation , $objectName , $objectId , $userId , $date, $before = null , $after = null)
     {
         // проверяем, существует ли такой тип объектов
-        if(!Orm\Object\Config::configExists($objectName)){
+        if(!Orm\Record\Config::configExists($objectName)){
             $this->logError('Invalid object name "'.$objectName.'"');
             return false;
         }
 
         try{
-            $o = Orm\Object::factory('Historylog');
+            $o = Orm\Record::factory('Historylog');
             $o->setValues(array(
                 'type'=>$operation,
                 'object'=>$objectName,

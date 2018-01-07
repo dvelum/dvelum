@@ -36,19 +36,19 @@ class Trigger
 		$this->_cache = $cache;
 	}
 
-	protected function _getItemCacheKey(Orm\ObjectInterface $object)
+	protected function _getItemCacheKey(Orm\RecordInterface $object)
 	{
 		$objectModel = \Model::factory($object->getName());
 		return $objectModel->getCacheKey(array('item',$object->getId()));
 	}
 
-	public function onBeforeAdd(Orm\ObjectInterface $object){}
+	public function onBeforeAdd(Orm\RecordInterface $object){}
 
-	public function onBeforeUpdate(Orm\ObjectInterface $object){}
+	public function onBeforeUpdate(Orm\RecordInterface $object){}
 
-	public function onBeforeDelete(Orm\ObjectInterface $object){}
+	public function onBeforeDelete(Orm\RecordInterface $object){}
 
-	public function onAfterAdd(Orm\ObjectInterface $object)
+	public function onAfterAdd(Orm\RecordInterface $object)
 	{
         $config = $object->getConfig();
         $logObject = $this->ormConfig->get('history_object');
@@ -81,7 +81,7 @@ class Trigger
 		$this->_cache->remove($this->_getItemCacheKey($object));
 	}
 
-	public function onAfterUpdate(Orm\ObjectInterface$object)
+	public function onAfterUpdate(Orm\RecordInterface$object)
 	{
 		if(!$this->_cache)
 			return;
@@ -89,7 +89,7 @@ class Trigger
 		$this->_cache->remove($this->_getItemCacheKey($object));
 	}
 
-	public function onAfterDelete(Orm\ObjectInterface $object)
+	public function onAfterDelete(Orm\RecordInterface $object)
 	{
         $config = $object->getConfig();
         $logObject = $this->ormConfig->get('history_object');
@@ -122,7 +122,7 @@ class Trigger
 		$this->_cache->remove($this->_getItemCacheKey($object));
 	}
 
-	public function onAfterUpdateBeforeCommit(Orm\ObjectInterface $object)
+	public function onAfterUpdateBeforeCommit(Orm\RecordInterface $object)
 	{
         $config = $object->getConfig();
         $logObject = $this->ormConfig->get('history_object');
@@ -160,7 +160,7 @@ class Trigger
         }
 	}
 
-    public function onAfterPublish(Orm\ObjectInterface $object)
+    public function onAfterPublish(Orm\RecordInterface $object)
     {
         $config = $object->getConfig();
         $logObject = $this->ormConfig->get('history_object');
@@ -176,7 +176,7 @@ class Trigger
         }
     }
 
-    public function  onAfterUnpublish(Orm\ObjectInterface $object)
+    public function  onAfterUnpublish(Orm\RecordInterface $object)
     {
         if(!$object->getConfig()->hasHistory()) {
             return;
@@ -193,7 +193,7 @@ class Trigger
         );
     }
 
-    public function onAfterAddVersion(Orm\ObjectInterface $object)
+    public function onAfterAddVersion(Orm\RecordInterface $object)
     {
         if(!$object->getConfig()->hasHistory()) {
             return;
@@ -211,7 +211,7 @@ class Trigger
 
     }
 
-    public function onAfterInsertBeforeCommit(Orm\ObjectInterface $object){}
+    public function onAfterInsertBeforeCommit(Orm\RecordInterface $object){}
 
-    public function onAfterDeleteBeforeCommit(Orm\ObjectInterface $object){}
+    public function onAfterDeleteBeforeCommit(Orm\RecordInterface $object){}
 }

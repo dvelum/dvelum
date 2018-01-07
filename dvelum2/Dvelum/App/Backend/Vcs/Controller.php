@@ -63,7 +63,7 @@ class Controller extends App\Backend\Api\Controller
 
         $data = $model->query()->params($pager)->filters($filter)->fields(['version', 'date', 'id', 'record_id', 'user_id'])->fetchAll();
 
-        $objectConfig = Orm\Object\Config::factory('Vc');
+        $objectConfig = Orm\Record\Config::factory('Vc');
         $this->addLinkedInfo($objectConfig, ['user_name' => 'user_id'], $data, $objectConfig->getPrimaryKey());
 
 

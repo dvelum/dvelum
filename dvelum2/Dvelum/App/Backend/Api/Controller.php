@@ -25,7 +25,7 @@ use Dvelum\{
     Request, Response, Config, App, Orm, Service, Utils
 };
 use Dvelum\Orm\{
-    ObjectInterface, Model
+    RecordInterface, Model
 };
 use Dvelum\App\{
     Data, Session, Dictionary
@@ -132,7 +132,7 @@ class Controller extends App\Backend\Controller
 
         $filter = array_merge($filter, $this->request->extFilters());
 
-        if ($object === false || !Orm\Object\Config::configExists($object)) {
+        if ($object === false || !Orm\Record\Config::configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -142,16 +142,16 @@ class Controller extends App\Backend\Controller
             return;
         }
 
-        $objectCfg = Orm\Object\Config::factory($object);
+        $objectCfg = Orm\Record\Config::factory($object);
         $primaryKey = $objectCfg->getPrimaryKey();
 
-        $objectConfig = Orm\Object\Config::factory($object);
+        $objectConfig = Orm\Record\Config::factory($object);
 
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
 
         if ($acl) {
-            if (!$acl->can(Orm\Object\Acl::ACCESS_VIEW, $object)) {
+            if (!$acl->can(Orm\Record\Acl::ACCESS_VIEW, $object)) {
                 $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
                 return;
             }
@@ -179,7 +179,7 @@ class Controller extends App\Backend\Controller
                 $objectIds = \Utils::fetchCol('id', $data);
 
                 try {
-                    $objects = Orm\Object::factory($object, $objectIds);
+                    $objects = Orm\Record::factory($object, $objectIds);
                 } catch (\Exception $e) {
                     Model::factory($object)->logError('linkedlistAction ->' . $e->getMessage());
                     $this->response->error($this->lang->get('CANT_EXEC'));
@@ -227,7 +227,7 @@ class Controller extends App\Backend\Controller
         $object = $this->request->post('object', 'string', false);
         $id = $this->request->post('id', 'string', false);
 
-        if (!$object || !Orm\Object\Config::configExists($object)) {
+        if (!$object || !Orm\Record\Config::configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -237,18 +237,18 @@ class Controller extends App\Backend\Controller
             return;
         }
 
-        $objectConfig = Orm\Object\Config::factory($object);
+        $objectConfig = Orm\Record\Config::factory($object);
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if ($acl) {
-            if (!$acl->can(Orm\Object\Acl::ACCESS_VIEW, $object)) {
+            if (!$acl->can(Orm\Record\Acl::ACCESS_VIEW, $object)) {
                 $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
                 return;
             }
         }
 
         try {
-            $o = Orm\Object::factory($object, $id);
+            $o = Orm\Record::factory($object, $id);
             $this->response->success(array('title' => $o->getTitle()));
         } catch (\Exception $e) {
             Model::factory($object)->logError('Cannot get title for ' . $object . ':' . $id);
@@ -306,7 +306,7 @@ class Controller extends App\Backend\Controller
         $data = $api->getList();
 
         if (!empty($this->listLinks)) {
-            $objectConfig = Orm\Object\Config::factory($this->objectName);
+            $objectConfig = Orm\Record\Config::factory($this->objectName);
             if (empty($objectConfig->getPrimaryKey())) {
                 throw new \Exception('listLinks requires primary key for object ' . $objectConfig->getName());
             }
@@ -378,9 +378,9 @@ class Controller extends App\Backend\Controller
 
         try {
             /**
-             * @var Orm\ObjectInterface $object
+             * @var Orm\RecordInterface $object
              */
-            $object = Orm\Object::factory($this->objectName, $id);
+            $object = Orm\Record::factory($this->objectName, $id);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
@@ -420,10 +420,10 @@ class Controller extends App\Backend\Controller
      * Save new ORM object (insert data)
      * Sends JSON reply in the result and
      * closes the application
-     * @param Orm\Object $object
+     * @param Orm\Record $object
      * @return void
      */
-    public function insertObject(Orm\Object $object)
+    public function insertObject(Orm\Record $object)
     {
         if ($object->getConfig()->isRevControl()) {
             if (!$object->saveVersion()) {
@@ -453,9 +453,9 @@ class Controller extends App\Backend\Controller
      * Update ORM object data
      * Sends JSON reply in the result and
      * closes the application
-     * @param Orm\Object $object
+     * @param Orm\Record $object
      */
-    public function updateObject(Orm\Object $object)
+    public function updateObject(Orm\Record $object)
     {
         if ($object->getConfig()->isRevControl()) {
             $author = $object->get('author_id');
@@ -492,10 +492,10 @@ class Controller extends App\Backend\Controller
     }
 
     /**
-     * Get posted data and put it into Orm\Object
+     * Get posted data and put it into Orm\Record
      * (in case of failure, JSON error message is sent)
      * @param string $objectName
-     * @return Orm\Object
+     * @return Orm\Record
      */
     public function getPostedData($objectName)
     {
@@ -579,7 +579,7 @@ class Controller extends App\Backend\Controller
     {
         $id = $this->request->post('id', 'int', false);
         $objectName = $this->getObjectName();
-        $objectConfig = Orm\Object\Config::factory($objectName);
+        $objectConfig = Orm\Record\Config::factory($objectName);
 
         if (!$id) {
             return [];
@@ -587,9 +587,9 @@ class Controller extends App\Backend\Controller
 
         try {
             /**
-             * @var $obj Orm\Object
+             * @var $obj Orm\Record
              */
-            $obj = Orm\Object::factory($objectName, $id);
+            $obj = Orm\Record::factory($objectName, $id);
         } catch (\Exception $e) {
             Model::factory($objectName)->logError($e->getMessage());
             return [];
@@ -629,7 +629,7 @@ class Controller extends App\Backend\Controller
         /*
          * Prepare object list properties
          */
-        $linkedObjects = $obj->getConfig()->getLinks([Orm\Object\Config::LINK_OBJECT_LIST]);
+        $linkedObjects = $obj->getConfig()->getLinks([Orm\Record\Config::LINK_OBJECT_LIST]);
 
         foreach ($linkedObjects as $linkObject => $fieldCfg) {
             foreach ($fieldCfg as $field => $linkCfg) {
@@ -642,14 +642,14 @@ class Controller extends App\Backend\Controller
 
     /**
      * Add related objects info into getList results
-     * @param Orm\Object\Config $cfg
+     * @param Orm\Record\Config $cfg
      * @param array $fieldsToShow list of link fields to process ( key - result field, value - object field)
      * object field will be used as result field for numeric keys
      * @param array & $data rows from  Model::getList result
      * @param string $pKey - name of Primary Key field in $data
      * @throws \Exception
      */
-    protected function addLinkedInfo(Orm\Object\Config $cfg, array $fieldsToShow, array & $data, $pKey)
+    protected function addLinkedInfo(Orm\Record\Config $cfg, array $fieldsToShow, array & $data, $pKey)
     {
         $fieldsToKeys = [];
         foreach ($fieldsToShow as $key => $val) {
@@ -661,9 +661,9 @@ class Controller extends App\Backend\Controller
         }
 
         $links = $cfg->getLinks([
-            Orm\Object\Config::LINK_OBJECT,
-            Orm\Object\Config::LINK_OBJECT_LIST,
-            Orm\Object\Config::LINK_DICTIONARY
+            Orm\Record\Config::LINK_OBJECT,
+            Orm\Record\Config::LINK_OBJECT_LIST,
+            Orm\Record\Config::LINK_DICTIONARY
         ], false);
 
         foreach ($fieldsToShow as $resultField => $objectField) {
@@ -679,12 +679,12 @@ class Controller extends App\Backend\Controller
         }
 
         $rowIds = Utils::fetchCol($pKey, $data);
-        $rowObjects = Orm\Object::factory($cfg->getName(), $rowIds);
+        $rowObjects = Orm\Record::factory($cfg->getName(), $rowIds);
         $listedObjects = [];
 
         foreach ($rowObjects as $object) {
             foreach ($links as $field => $config) {
-                if ($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY) {
+                if ($config['link_type'] === Orm\Record\Config::LINK_DICTIONARY) {
                     continue;
                 }
 
@@ -705,7 +705,7 @@ class Controller extends App\Backend\Controller
         }
 
         foreach ($listedObjects as $object => $ids) {
-            $listedObjects[$object] = Orm\Object::factory($object, array_unique($ids));
+            $listedObjects[$object] = Orm\Record::factory($object, array_unique($ids));
         }
 
         /**
@@ -724,7 +724,7 @@ class Controller extends App\Backend\Controller
                 $value = $rowObject->get($field);
 
                 if (!empty($value)) {
-                    if ($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY) {
+                    if ($config['link_type'] === Orm\Record\Config::LINK_DICTIONARY) {
                         $dictionary = $dictionaryService->get($config['object']);
                         if ($dictionary->isValidKey($value)) {
                             $row[$fieldsToKeys[$field]] = $dictionary->getValue($value);
@@ -771,11 +771,11 @@ class Controller extends App\Backend\Controller
 
         if (!empty($data)) {
             /**
-             * @var Orm\Object[] $list
+             * @var Orm\Record[] $list
              */
-            $list = Orm\Object::factory($targetObjectName, $data);
+            $list = Orm\Record::factory($targetObjectName, $data);
 
-            $isVc = Orm\Object\Config::factory($targetObjectName)->isRevControl();
+            $isVc = Orm\Record\Config::factory($targetObjectName)->isRevControl();
             foreach ($data as $id) {
                 if (isset($list[$id])) {
                     $result[] = [
@@ -860,7 +860,7 @@ class Controller extends App\Backend\Controller
     public function publishAction()
     {
         $objectName = $this->getObjectName();
-        $objectConfig = Orm\Object\Config::factory($objectName);
+        $objectConfig = Orm\Record\Config::factory($objectName);
 
         if (!$objectConfig->isRevControl()) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -881,9 +881,9 @@ class Controller extends App\Backend\Controller
 
         try {
             /**
-             * @var Orm\Object $object
+             * @var Orm\Record $object
              */
-            $object = Orm\Object::factory($objectName, $id);
+            $object = Orm\Record::factory($objectName, $id);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('CANT_EXEC' . ' ' . $e->getMessage()));
             return;
@@ -923,7 +923,7 @@ class Controller extends App\Backend\Controller
     public function unpublishAction()
     {
         $objectName = $this->getObjectName();
-        $objectConfig = Orm\Object\Config::factory($objectName);
+        $objectConfig = Orm\Record\Config::factory($objectName);
 
         if (!$objectConfig->isRevControl()) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -943,9 +943,9 @@ class Controller extends App\Backend\Controller
 
         try{
             /**
-             * @var Orm\ObjectInterface $object
+             * @var Orm\RecordInterface $object
              */
-            $object = Orm\Object::factory($objectName , $id);
+            $object = Orm\Record::factory($objectName , $id);
         }catch(\Exception $e){
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;

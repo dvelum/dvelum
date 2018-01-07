@@ -9,14 +9,14 @@ class Build extends Console\Action
 {
     public function action() : bool
     {
-        $dbObjectManager = new Orm\Object\Manager();
+        $dbObjectManager = new Orm\Record\Manager();
         $success = true;
         $t = microtime(true);
         echo 'BUILD OBJECTS '. PHP_EOL;
         foreach($dbObjectManager->getRegisteredObjects() as $object)
         {
             echo  $object . ' : ';
-            $builder = Orm\Object\Builder::factory($object);
+            $builder = Orm\Record\Builder::factory($object);
             if($builder->build()){
                 echo 'OK' . PHP_EOL;
             }else{

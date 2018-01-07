@@ -144,7 +144,7 @@ class Model_Acl_Simple extends Model
                 continue;
 
             try{
-                $obj = Orm\Object::factory($this->name);
+                $obj = Orm\Record::factory($this->name);
                 $obj->setValues(array(
                     'view'=>(boolean)$values['view'],
                     'create'=>(boolean)$values['create'],

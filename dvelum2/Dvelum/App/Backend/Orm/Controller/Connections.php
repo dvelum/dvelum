@@ -30,8 +30,8 @@ use Dvelum\{
 
 use Dvelum\Orm\{
     Model,
-    Object\Manager,
-    Object\Import
+    Record\Manager,
+    Record\Import
 };
 
 

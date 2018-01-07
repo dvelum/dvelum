@@ -20,7 +20,6 @@
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
-use Dvelum\Orm\ObjectInterface;
 
 abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 {
@@ -104,7 +103,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $ids = Utils::fetchCol('id' , $data);
 
         if(!empty($this->_listLinks)){
-            $objectConfig = Orm\Object\Config::factory($this->_objectName);
+            $objectConfig = Orm\Record\Config::factory($this->_objectName);
             if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
                 throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
             }
@@ -162,7 +161,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         /*
          * Prepare Object List properties
          */
-        $linkedObjects = $object->getConfig()->getLinks([Orm\Object\Config::LINK_OBJECT_LIST]);
+        $linkedObjects = $object->getConfig()->getLinks([Orm\Record\Config::LINK_OBJECT_LIST]);
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
                 $data[$field] = $this->_collectLinksData($field, $object , $linkObject);
@@ -219,7 +218,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $id = Request::post('id' , 'integer' , false);
 
         try{
-            $object = Orm\Object::factory($this->_objectName , $id);
+            $object = Orm\Record::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
         }
@@ -252,7 +251,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $this->_checkCanPublish();
 
         try{
-            $object = Orm\Object::factory($this->_objectName , $id);
+            $object = Orm\Record::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC);
         }
@@ -282,7 +281,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $this->_checkCanPublish();
 
         try{
-            $object = Orm\Object::factory($this->_objectName , $id);
+            $object = Orm\Record::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC . '. ' .  $e->getMessage());
         }

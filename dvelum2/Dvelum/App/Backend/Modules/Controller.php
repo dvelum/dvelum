@@ -310,7 +310,7 @@ class Controller extends Backend\Controller
      */
     public function objectsAction()
     {
-        $manager = new Orm\Object\Manager();
+        $manager = new Orm\Record\Manager();
         $list = $manager->getRegisteredObjects();
         $data = array();
 
@@ -320,7 +320,7 @@ class Controller extends Backend\Controller
         foreach ($list as $key) {
             if (!in_array(ucfirst($key), $systemObjects,
                     true) && !class_exists('Backend_' . Utils\Strings::formatClassName($key) . '_Controller')) {
-                $data[] = array('id' => $key, 'title' => Orm\Object\Config::factory($key)->getTitle());
+                $data[] = array('id' => $key, 'title' => Orm\Record\Config::factory($key)->getTitle());
             }
         }
 
@@ -367,18 +367,18 @@ class Controller extends Backend\Controller
             return;
         }
 
-        $objectConfig = Orm\Object\Config::factory($object);
+        $objectConfig = Orm\Record\Config::factory($object);
 
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if ($acl) {
-            if (!$acl->can(Orm\Object\Acl::ACCESS_CREATE, $object) || !$acl->can(Orm\Object\Acl::ACCESS_VIEW, $object)) {
+            if (!$acl->can(Orm\Record\Acl::ACCESS_CREATE, $object) || !$acl->can(Orm\Record\Acl::ACCESS_VIEW, $object)) {
                 $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
                 return;
             }
         }
 
-        $manager = new Orm\Object\Manager();
+        $manager = new Orm\Record\Manager();
 
         if (!$manager->objectExists($object)) {
             $this->response->error($this->lang->get('FILL_FORM'), ['id' => 'object', 'msg' => $this->lang->get('INVALID_VALUE')]);

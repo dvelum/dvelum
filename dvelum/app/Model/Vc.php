@@ -7,10 +7,10 @@ class Model_Vc extends Model
 {
     /**
      * Create new  version
-     * @property Orm\Object $object
+     * @property Orm\Record $object
      * @return boolean
      */
-    public function newVersion(Orm\ObjectInterface $object)
+    public function newVersion(Orm\RecordInterface $object)
     {
        $object->commitChanges();
        $newVersion = ($this->getLastVersion($object->getName(),$object->getId())+ 1);
@@ -30,7 +30,7 @@ class Model_Vc extends Model
 
        $newData['id'] = $object->getId();
        try{
-               $vObject = Orm\Object::factory('vc');
+               $vObject = Orm\Record::factory('vc');
                $vObject->set('date' , date('Y-m-d'));
                $vObject->set('data' , base64_encode(serialize($newData)));
                $vObject->set('user_id' , User::getInstance()->id);

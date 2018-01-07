@@ -65,12 +65,12 @@ class Object extends Controller
             return;
         }
 
-        $objectConfig = Orm\Object\Config::factory($name);
+        $objectConfig = Orm\Record\Config::factory($name);
 
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if ($acl) {
-            if (!$acl->can(Orm\Object\Acl::ACCESS_CREATE, $name) || !$acl->can(Orm\Object\Acl::ACCESS_VIEW, $name)) {
+            if (!$acl->can(Orm\Record\Acl::ACCESS_CREATE, $name) || !$acl->can(Orm\Record\Acl::ACCESS_VIEW, $name)) {
                 $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
                 return;
             }
@@ -83,7 +83,7 @@ class Object extends Controller
             return;
         }
 
-        $builder = Orm\Object\Builder::factory($name);
+        $builder = Orm\Record\Builder::factory($name);
         $tableExists = $builder->tableExists();
 
         $colUpd = [];
@@ -142,12 +142,12 @@ class Object extends Controller
             return;
         }
 
-        if (!Orm\Object\Config::configExists($name)) {
+        if (!Orm\Record\Config::configExists($name)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        $builder = Orm\Object\Builder::factory($name);
+        $builder = Orm\Record\Builder::factory($name);
 
         if (!$builder->build() || !$builder->buildForeignKeys()) {
             $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(',', $builder->getErrors()));
@@ -170,13 +170,13 @@ class Object extends Controller
         }
 
         try {
-            $objectConfig = Orm\Object\Config::factory($object);
+            $objectConfig = Orm\Record\Config::factory($object);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }
 
-        $builder = Orm\Object\Builder::factory($object);
+        $builder = Orm\Record\Builder::factory($object);
         $brokenFields = $builder->hasBrokenLinks();
 
         $fieldsCfg = $objectConfig->getFieldsConfig();
@@ -203,9 +203,9 @@ class Object extends Controller
 
             $v['type'] = $v['db_type'];
 
-            if (in_array($v['db_type'], Orm\Object\Builder::$charTypes, true)) {
+            if (in_array($v['db_type'], Orm\Record\Builder::$charTypes, true)) {
                 $v['type'] .= ' (' . $v['db_len'] . ')';
-            } elseif (in_array($v['db_type'], Orm\Object\Builder::$floatTypes, true)) {
+            } elseif (in_array($v['db_type'], Orm\Record\Builder::$floatTypes, true)) {
                 $v['type'] .= ' (' . $v['db_scale'] . ',' . $v['db_precision'] . ')';
             }
         }
@@ -226,7 +226,7 @@ class Object extends Controller
         }
 
         try {
-            $objectConfig = Orm\Object\Config::factory($object);
+            $objectConfig = Orm\Record\Config::factory($object);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
@@ -261,7 +261,7 @@ class Object extends Controller
         }
 
         try {
-            $oConfig = Orm\Object\Config::factory($objectName);
+            $oConfig = Orm\Record\Config::factory($objectName);
             if ($deleteTable && ($oConfig->isLocked() || $oConfig->isReadOnly())) {
                 $this->response->error($this->lang->get('DB_CANT_DELETE_LOCKED_TABLE'));
             }
@@ -308,7 +308,7 @@ class Object extends Controller
         }
 
         try {
-            $config = Orm\Object\Config::factory($object);
+            $config = Orm\Record\Config::factory($object);
             $info = $config->__toArray();
             $info['name'] = $object;
             $info['use_acl'] = false;
@@ -479,7 +479,7 @@ class Object extends Controller
         Config::storage()->save($cfg);
 
         try {
-            $cfg = Orm\Object\Config::factory($name);
+            $cfg = Orm\Record\Config::factory($name);
             $cfg->setObjectTitle($data['title']);
 
             if (!$cfg->save()) {
@@ -490,7 +490,7 @@ class Object extends Controller
             /*
              * Build database
             */
-            $builder = Orm\Object\Builder::factory($name);
+            $builder = Orm\Record\Builder::factory($name);
             $builder->build();
 
         } catch (\Exception $e) {
@@ -523,13 +523,13 @@ class Object extends Controller
         }
 
         try {
-            $config = Orm\Object\Config::factory($name);
+            $config = Orm\Record\Config::factory($name);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }
 
-        $builder = Orm\Object\Builder::factory($name);
+        $builder = Orm\Record\Builder::factory($name);
 
         /*
          * Rename Db Table

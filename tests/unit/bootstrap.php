@@ -91,7 +91,7 @@ $dbObjectManager = new Db_Object_Manager();
 foreach($dbObjectManager->getRegisteredObjects() as $object)
 {
         echo 'build ' . $object . ' : ';
-        $builder = \Dvelum\Orm\Object\Builder::factory($object);
+        $builder = \Dvelum\Orm\Record\Builder::factory($object);
         if($builder->build()){
             echo 'OK';
         }else{
