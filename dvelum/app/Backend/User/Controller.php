@@ -20,7 +20,7 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
         }
 
         try {
-            $user = Orm\Object::factory('user', $id);
+            $user = Orm\Record::factory('user', $id);
             $userData = $user->getData();
             unset($userData['pass']);
             $this->response->success($userData);

@@ -39,7 +39,7 @@ class Model_Group extends Model
 	 */
 	public function addGroup(string $title)
 	{
-		$obj = Orm\Object::factory($this->_name);
+		$obj = Orm\Record::factory($this->_name);
 		$obj->set('title', $title);
 
 		if(!$obj->save())
@@ -60,7 +60,7 @@ class Model_Group extends Model
 	 */
 	public function removeGroup($id)
 	{
-		$obj = Orm\Object::factory($this->name, $id);
+		$obj = Orm\Record::factory($this->name, $id);
 
 		if(!$obj->delete())
 			return false;

@@ -5,7 +5,7 @@
  */
 use Dvelum\Orm;
 
-class Acl_Table_Simple extends Orm\Object\Acl
+class Acl_Table_Simple extends Orm\Record\Acl
 {
     static $_rights = [];
 
@@ -70,7 +70,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canCreate()
      */
-    public function canCreate(Orm\ObjectInterface $object)
+    public function canCreate(Orm\RecordInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_CREATE);
     }
@@ -78,7 +78,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canEdit()
      */
-    public function canEdit(Orm\ObjectInterface $object)
+    public function canEdit(Orm\RecordInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_EDIT);
     }
@@ -86,7 +86,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canDelete()
      */
-    public function canDelete(Orm\ObjectInterface $object)
+    public function canDelete(Orm\RecordInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_DELETE);
     }
@@ -94,7 +94,7 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canPublish()
      */
-    public function canPublish(Orm\ObjectInterface $object)
+    public function canPublish(Orm\RecordInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_PUBLISH);
     }
@@ -102,17 +102,17 @@ class Acl_Table_Simple extends Orm\Object\Acl
      * (non-PHPdoc)
      * @see Db_Object_Acl::canRead()
      */
-    public function canRead(Orm\ObjectInterface $object)
+    public function canRead(Orm\RecordInterface $object)
     {
         return $this->_checkPermission($object, self::ACCESS_VIEW);
     }
     /**
      * Check permissions for object
-     * @param Orm\Object $object - object name
+     * @param Orm\Record $object - object name
      * @param string $permissionType - permission type
      * @return boolean
      */
-    protected function _checkPermission(Orm\ObjectInterface $object , $permissionType)
+    protected function _checkPermission(Orm\RecordInterface $object , $permissionType)
     {
         return $this->can($permissionType , $object->getName());
     }

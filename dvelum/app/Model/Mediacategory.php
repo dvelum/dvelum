@@ -74,7 +74,7 @@ class Model_Mediacategory extends Model
     $i=0;
     foreach ($sortedIds as $v)
     {
-      $obj = Orm\Object::factory($this->_name, intval($v));
+      $obj = Orm\Record::factory($this->_name, intval($v));
       $obj->set('order_no', $i);
       $obj->save();
       $i++;

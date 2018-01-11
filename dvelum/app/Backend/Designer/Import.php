@@ -1,5 +1,6 @@
 <?php
 use Dvelum\Orm;
+use Orm\Record\Builder;
 
 class Backend_Designer_Import
 {
@@ -16,7 +17,7 @@ class Backend_Designer_Import
             return false;
         
         $data = array();
-        $config = Orm\Object::factory($objectName)->getConfig();
+        $config = Orm\Record::factory($objectName)->getConfig();
         foreach($fields as $field)
         {
             if(!$config->fieldExists($field)){
@@ -180,7 +181,7 @@ class Backend_Designer_Import
         /*
          * Integer
          */
-        elseif(in_array($type , Orm\Object\Builder::$intTypes , true) || $type === 'timestamp')
+        elseif(in_array($type , Builder::$intTypes , true) || $type === 'timestamp')
         {
             $newField = Ext_Factory::object('Form_Field_Number');
             $newField->allowDecimals = false;
@@ -188,7 +189,7 @@ class Backend_Designer_Import
         /*
          * Float
          */
-        elseif(in_array($type , Orm\Object\Builder::$floatTypes , true))
+        elseif(in_array($type , Builder::$floatTypes , true))
         {
             $newField = Ext_Factory::object('Form_Field_Number');
             $newField->allowDecimals = true;
@@ -198,21 +199,21 @@ class Backend_Designer_Import
         /*
          * String
          */
-        elseif(in_array($type , Orm\Object\Builder::$charTypes , true))
+        elseif(in_array($type , Builder::$charTypes , true))
         {
             $newField = Ext_Factory::object('Form_Field_Text');
         }
         /*
          * Text
          */
-        elseif(in_array($type , Orm\Object\Builder::$textTypes , true))
+        elseif(in_array($type , Builder::$textTypes , true))
         {
             $newField = Ext_Factory::object('Form_Field_Textarea');
         }
         /*
          * Date time
          */
-        elseif(in_array($type , Orm\Object\Builder::$dateTypes , true))
+        elseif(in_array($type , Builder::$dateTypes , true))
         {
             switch($type){
                 case 'date':
@@ -276,12 +277,12 @@ class Backend_Designer_Import
                   $newField->forceSelection = false;
                 }
                 $newField->dictionary = $fieldConfig['link_config']['object'];
-            }elseif($fieldConfig['link_config']['link_type'] == Orm\Object\Config::LINK_OBJECT && $fieldConfig['link_config']['object'] == 'medialib'){
+            }elseif($fieldConfig['link_config']['link_type'] == Orm\Record\Config::LINK_OBJECT && $fieldConfig['link_config']['object'] == 'medialib'){
                 $newField = Ext_Factory::object('Ext_Component_Field_System_Medialibitem');
-            }elseif($fieldConfig['link_config']['link_type'] == Orm\Object\Config::LINK_OBJECT){
+            }elseif($fieldConfig['link_config']['link_type'] == Orm\Record\Config::LINK_OBJECT){
                 $newField = Ext_Factory::object('Ext_Component_Field_System_Objectlink');
                 $newField->objectName = $fieldConfig['link_config']['object'];
-            }elseif($fieldConfig['link_config']['link_type'] == Orm\Object\Config::LINK_OBJECT_LIST){
+            }elseif($fieldConfig['link_config']['link_type'] == Orm\Record\Config::LINK_OBJECT_LIST){
                 $newField = Ext_Factory::object('Ext_Component_Field_System_Objectslist');
                 $newField->objectName = $fieldConfig['link_config']['object'];
             }else{
@@ -300,7 +301,7 @@ class Backend_Designer_Import
         /*
          * Integer
          */
-        elseif(in_array($type , Orm\Object\Builder::$intTypes , true))
+        elseif(in_array($type , Builder::$intTypes , true))
         {
             $newField = Ext_Factory::object('Form_Field_Number');
             $newField->allowDecimals = false;
@@ -308,7 +309,7 @@ class Backend_Designer_Import
         /*
          * Float
          */
-        elseif(in_array($type , Orm\Object\Builder::$floatTypes , true))
+        elseif(in_array($type , Builder::$floatTypes , true))
         {
             $newField = Ext_Factory::object('Form_Field_Number');
             $newField->allowDecimals = true;
@@ -322,14 +323,14 @@ class Backend_Designer_Import
         /*
          * String
          */
-        elseif(in_array($type , Orm\Object\Builder::$charTypes , true))
+        elseif(in_array($type , Builder::$charTypes , true))
         {
             $newField = Ext_Factory::object('Form_Field_Text');
         }
         /*
          * Text
          */
-        elseif(in_array($type , Orm\Object\Builder::$textTypes , true))
+        elseif(in_array($type , Builder::$textTypes , true))
         {
             if(isset($fieldConfig['allow_html']) && $fieldConfig['allow_html']){
                 $newField = Ext_Factory::object('Component_Field_System_Medialibhtml');
@@ -343,7 +344,7 @@ class Backend_Designer_Import
         /*
          * Date time
          */
-        elseif(in_array($type , Orm\Object\Builder::$dateTypes , true))
+        elseif(in_array($type , Builder::$dateTypes , true))
         {
             switch($type){
                 case 'date':
@@ -383,7 +384,7 @@ class Backend_Designer_Import
         if(isset($fieldConfig['db_default']) && $fieldConfig['db_default']!==false && $newFieldConfig->isValidProperty('value'))
           $newField->value  = $fieldConfig['db_default'];
          
-        if(in_array($type, Orm\Object\Builder::$numTypes , true) && isset($fieldConfig['db_unsigned']) && $fieldConfig['db_unsigned'] && $newFieldConfig->isValidProperty('minValue'))
+        if(in_array($type, Builder::$numTypes , true) && isset($fieldConfig['db_unsigned']) && $fieldConfig['db_unsigned'] && $newFieldConfig->isValidProperty('minValue'))
           $newField->minValue = 0;
                            
         if($newField->getClass() != 'Component_Field_System_Medialibhtml' && $newFieldConfig->isValidProperty('fieldLabel'))

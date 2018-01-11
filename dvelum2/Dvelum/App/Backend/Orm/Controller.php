@@ -23,7 +23,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         'dataview' => 'Dvelum\\App\\Backend\\Orm\\Controller\\DataView',
         'connections' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Connections',
         'log' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Log',
-        'object' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Object',
+        'object' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Record',
         'field' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Field',
         'index' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Index',
         'uml' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Uml',
@@ -64,9 +64,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
          * Set Orm Builder log paths
          */
         $ormConfig = Config::storage()->get('orm.php');
-        Orm\Object\Builder::writeLog($ormConfig['use_orm_build_log']);
-        Orm\Object\Builder::setLogsPath($ormConfig['log_path']);
-        Orm\Object\Builder::setLogPrefix($this->appConfig['development_version'].'_build_log.sql');
+        Orm\Record\Builder::writeLog($ormConfig['use_orm_build_log']);
+        Orm\Record\Builder::setLogsPath($ormConfig['log_path']);
+        Orm\Record\Builder::setLogPrefix($this->appConfig['development_version'].'_build_log.sql');
     }
 
     public function indexAction()
@@ -155,7 +155,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         $flag = false;
 
-        if(Orm\Object\Builder::foreignKeys())
+        if(Orm\Record\Builder::foreignKeys())
         {
             /*
              * build only fields
@@ -163,7 +163,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             foreach ($names as $name)
             {
                 try{
-                    $builder = Orm\Object\Builder::factory($name);
+                    $builder = Orm\Record\Builder::factory($name);
                     $builder->build(false);
                 }catch(\Exception $e){
                     $flag = true;
@@ -176,7 +176,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             foreach ($names as $name)
             {
                 try{
-                    $builder = Orm\Object\Builder::factory($name);
+                    $builder = Orm\Record\Builder::factory($name);
                     if(!$builder->buildForeignKeys(true , true))
                         $flag = true;
                 }catch(\Exception $e){
@@ -188,7 +188,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             foreach ($names as $name)
             {
                 try{
-                    $builder = Orm\Object\Builder::factory($name);
+                    $builder = Orm\Record\Builder::factory($name);
                     $builder->build();
                 }catch(\Exception $e){
                     $flag = true;

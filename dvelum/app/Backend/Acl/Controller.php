@@ -50,7 +50,7 @@ class Backend_Acl_Controller extends Backend_Controller
         if(!empty($data))
             $data = Utils::rekey('object' , $data);
 
-        $manager = new Orm\Object\Manager();
+        $manager = new Orm\Record\Manager();
         $objects = $manager->getRegisteredObjects();
 
         foreach($objects as $name)
@@ -72,12 +72,12 @@ class Backend_Acl_Controller extends Backend_Controller
 
         foreach($data as $k => &$v)
         {
-            if(!Orm\Object\Config::configExists($k))
+            if(!Orm\Record\Config::configExists($k))
             {
                 unset($data[$k]);
                 continue;
             }
-            $cfg = Orm\Object\Config::factory($k);
+            $cfg = Orm\Record\Config::factory($k);
 
             if($cfg->isRevControl())
                 $v['rc'] = true;

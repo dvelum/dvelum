@@ -55,7 +55,7 @@ class User_Auth_Kerberos extends User_Auth_Abstract
 		if(empty($authCfg))
 			return false;
 
-		$authCfg = Orm\Object::factory('User_Auth',$authCfg[0]['id'])->get('config');
+		$authCfg = Orm\Record::factory('User_Auth',$authCfg[0]['id'])->get('config');
 		$authCfg = json_decode($authCfg,true);
 
 		$principal = (isset($authCfg['principal']))

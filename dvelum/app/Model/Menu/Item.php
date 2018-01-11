@@ -93,7 +93,7 @@ class Model_Menu_Item extends Model
     	{
     		foreach($links as $k=>$item)	
     		{
-    			$obj = Orm\Object::factory('Menu_Item');
+    			$obj = Orm\Record::factory('Menu_Item');
     			try{  				
     				$obj->tree_id = $item['id'];
     				$obj->page_id = $item['page_id'];

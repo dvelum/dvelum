@@ -25,7 +25,6 @@ use Dvelum\Service;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Orm;
-use Dvelum\Orm\ObjectInterface;
 
 class DataView extends ApiController
 {
@@ -295,7 +294,7 @@ class DataView extends ApiController
         return true;
     }
 
-    public function checkOwner(ObjectInterface $object): bool
+    public function checkOwner(RecordInterface $object): bool
     {
         return true;
     }

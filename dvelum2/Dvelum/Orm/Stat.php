@@ -36,7 +36,7 @@ class Stat
         /*
          * Getting list of objects
          */
-        $manager = new Orm\Object\Manager();
+        $manager = new Orm\Record\Manager();
 
         $names = $manager->getRegisteredObjects();
 
@@ -50,11 +50,11 @@ class Stat
          */
         foreach ($names as $objectName)
         {
-            $configObject = Orm\Object\Config::factory($objectName);
+            $configObject = Orm\Record\Config::factory($objectName);
             $objectModel = Model::factory($objectName);
             $config =  $configObject->__toArray();
             $objectTable = $objectModel->table();
-            $builder = Orm\Object\Builder::factory($objectName);
+            $builder = Orm\Record\Builder::factory($objectName);
 
             $records = 0;
             $dataLength = 0;

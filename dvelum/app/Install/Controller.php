@@ -369,19 +369,19 @@ class Install_Controller
         $app->setAutoloader($this->autoloader);
         $app->init();
 
-        $dbObjectManager = new Orm\Object\Manager();
+        $dbObjectManager = new Orm\Record\Manager();
         $objects = $dbObjectManager->getRegisteredObjects();
 
         foreach ($objects as $name)
         {
-            $dbObjectBuilder = Orm\Object\Builder::factory($name);
+            $dbObjectBuilder = Orm\Record\Builder::factory($name);
             if(!$dbObjectBuilder->build(false))
                 $buildErrors[] = $name; // . ': '.$dbObjectBuilder->getErrors()."<br>".PHP_EOL;
         }
 
         foreach ($objects as $name)
         {
-            $dbObjectBuilder = Orm\Object\Builder::factory($name);
+            $dbObjectBuilder = Orm\Record\Builder::factory($name);
             if(!$dbObjectBuilder->buildForeignKeys())
                 $buildErrors[] = $name; // . ': '.$dbObjectBuilder->getErrors()."<br>".PHP_EOL;
         }
@@ -530,7 +530,7 @@ class Install_Controller
             }
 
             // Add group
-            $group = Orm\Object::factory('Group');
+            $group = Orm\Record::factory('Group');
             $group->setValues(array(
                 'title'=>$this->localization->get('ADMINISTRATORS') ,
                 'system'=>true
@@ -559,7 +559,7 @@ class Install_Controller
             $u->setAuthorized();
 
             // Add index Page
-            $page = Orm\Object::factory('Page');
+            $page = Orm\Record::factory('Page');
             $page->setValues(array(
                 'code'=>'index',
                 'is_fixed'=>1,
@@ -588,7 +588,7 @@ class Install_Controller
                 return false;
 
             // add menu
-            $topMenu = Orm\Object::factory('Menu');
+            $topMenu = Orm\Record::factory('Menu');
             $topMenu->setValues([
                 'code' =>'headerMenu',
                 'title' => 'Header Menu'
@@ -597,7 +597,7 @@ class Install_Controller
             if(!$topMenu->save())
                 return false;
 
-            $topMenuItem = Orm\Object::factory('Menu_Item');
+            $topMenuItem = Orm\Record::factory('Menu_Item');
             $topMenuItem->setValues([
                 'page_id'=>$page->getId(),
                 'title'=>'Index',
@@ -613,7 +613,7 @@ class Install_Controller
                 return false;
 
 
-            $bottomMenu = Orm\Object::factory('Menu');
+            $bottomMenu = Orm\Record::factory('Menu');
             $bottomMenu->setValues([
                 'code' =>'footerMenu',
                 'title' => 'Footer Menu'
@@ -621,7 +621,7 @@ class Install_Controller
             if(!$bottomMenu->save())
                 return false;
 
-            $bottomMenuItem = Orm\Object::factory('Menu_Item');
+            $bottomMenuItem = Orm\Record::factory('Menu_Item');
             $bottomMenuItem->setValues([
                 'page_id'=>$page->getId(),
                 'title'=>'Index',
@@ -636,7 +636,7 @@ class Install_Controller
                 return false;
 
 
-            $leftMenu = Orm\Object::factory('Menu');
+            $leftMenu = Orm\Record::factory('Menu');
             $leftMenu->setValues([
                 'code' =>'menu',
                 'title' => 'Menu'
@@ -644,7 +644,7 @@ class Install_Controller
             if(!$leftMenu->save())
                 return false;
 
-            $leftMenuItem = Orm\Object::factory('Menu_Item');
+            $leftMenuItem = Orm\Record::factory('Menu_Item');
             $leftMenuItem->setValues([
                 'page_id'=>$page->getId(),
                 'title'=>'Index',
@@ -660,7 +660,7 @@ class Install_Controller
 
 
             // add blocks
-            $topMenuBlock = Orm\Object::factory('Blocks');
+            $topMenuBlock = Orm\Record::factory('Blocks');
             $topMenuBlock->setValues([
                 'title' => 'Header Menu',
                 'published' =>1,
@@ -676,7 +676,7 @@ class Install_Controller
                 return false;
 
 
-            $bottomMenuBlock = Orm\Object::factory('Blocks');
+            $bottomMenuBlock = Orm\Record::factory('Blocks');
             $bottomMenuBlock->setValues([
                 'title' => 'Footer Menu',
                 'published' =>1,
@@ -691,7 +691,7 @@ class Install_Controller
             if(!$bottomMenuBlock->saveVersion() || !$bottomMenuBlock->publish())
                 return false;
 
-            $menuBlock = Orm\Object::factory('Blocks');
+            $menuBlock = Orm\Record::factory('Blocks');
             $menuBlock->setValues([
                 'title' => 'Menu',
                 'published' =>1,
@@ -706,7 +706,7 @@ class Install_Controller
             if(!$menuBlock->saveVersion() || !$menuBlock->publish())
                 return false;
 
-            $testBlock = Orm\Object::factory('Blocks');
+            $testBlock = Orm\Record::factory('Blocks');
             $testBlock->setValues([
                 'title' => 'Test Block',
                 'published' =>1,

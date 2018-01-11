@@ -22,10 +22,10 @@ namespace Dvelum\App\Form\Adapter\Orm;
 use Dvelum\App\Form;
 use Dvelum\Orm;
 
-class Object extends Form\Adapter
+class Record extends Form\Adapter
 {
     /**
-     * @var Orm\Object $object
+     * @var Orm\Record $object
      */
     protected $object;
 
@@ -44,7 +44,7 @@ class Object extends Form\Adapter
         );
 
         try{
-            $obj = Orm\Object::factory($this->config->get('orm_object'), $id);
+            $obj = Orm\Record::factory($this->config->get('orm_object'), $id);
         }catch(\Exception $e){
              $this->errors[] = new Form\Error($this->lang->get('CANT_EXEC'), null, 'init_object');
              return false;
@@ -125,9 +125,9 @@ class Object extends Form\Adapter
     }
 
     /**
-     * @return Orm\Object
+     * @return Orm\Record
      */
-    public function getData() : Orm\Object
+    public function getData() : Orm\Record
     {
         return $this->object;
     }

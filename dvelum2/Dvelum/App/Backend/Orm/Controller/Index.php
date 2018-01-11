@@ -61,7 +61,7 @@ class Index extends Controller
         }
 
         try{
-            $objectCfg = Orm\Object\Config::factory($object);
+            $objectCfg = Orm\Record\Config::factory($object);
         }catch (\Exception $e){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' code 2');
             return;
@@ -110,7 +110,7 @@ class Index extends Controller
         }
 
         try{
-            $objectCfg = Orm\Object\Config::factory($object);
+            $objectCfg = Orm\Record\Config::factory($object);
         }catch (\Exception $e){
             $this->response->error($this->lang->get('WRONG_REQUEST') .' code 2');
             return;

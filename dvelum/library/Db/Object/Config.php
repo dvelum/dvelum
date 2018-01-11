@@ -4,5 +4,5 @@
  * Class Db_Object_Config
  * Backward compatibility
  */
-class Db_Object_Config extends \Dvelum\Orm\Object\Config{}
+class Db_Object_Config extends \Dvelum\Orm\Record\Config{}
 

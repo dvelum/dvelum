@@ -74,7 +74,7 @@ class Simple extends AbstractAdapter
         $runNamespace = 'app' . $jsName . 'Application';
         $classNamespace = 'app' . $jsName . 'Components';
 
-        $objectConfig = Orm\Object\Config::factory($object);
+        $objectConfig = Orm\Record\Config::factory($object);
         $primaryKey = $objectConfig->getPrimaryKey();
 
         $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
@@ -93,7 +93,7 @@ class Simple extends AbstractAdapter
                 $linkedObjects[] = $fieldItem->getLinkedObject();
             }
 
-            if (in_array($item['db_type'], Orm\Object\Builder::$textTypes, true)) {
+            if (in_array($item['db_type'], Orm\Record\Builder::$textTypes, true)) {
                 continue;
             }
 
@@ -109,7 +109,7 @@ class Simple extends AbstractAdapter
 
         $dataFields = array();
         foreach ($objectConfig->getFieldsConfig(true) as $key => $item) {
-            if (in_array($item['db_type'], Orm\Object\Builder::$textTypes,
+            if (in_array($item['db_type'], Orm\Record\Builder::$textTypes,
                     true) || $objectConfig->getField($key)->isMultiLink()) {
                 continue;
             }
@@ -125,8 +125,8 @@ class Simple extends AbstractAdapter
         $linksToShow = [];
         $links = array_keys($objectConfig->getLinks(
             [
-                Orm\Object\Config::LINK_OBJECT,
-                Orm\Object\Config::LINK_OBJECT_LIST,
+                Orm\Record\Config::LINK_OBJECT,
+                Orm\Record\Config::LINK_OBJECT_LIST,
                 // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
             ],
             false

@@ -46,7 +46,7 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
         $session->set($container , $this->_pid);
         $this->goBackground();
 
-        $objectConfig = Orm\Object\Config::factory($object);
+        $objectConfig = Orm\Record\Config::factory($object);
         $ivField = $objectConfig->getIvField();
         $primaryKey = $objectConfig->getPrimaryKey();
 
@@ -64,7 +64,7 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
         {
             $ids = Utils::fetchCol($primaryKey , $data);
 
-            $objectList = Orm\Object::factory($object , $ids);
+            $objectList = Orm\Record::factory($object , $ids);
             $count = 0;
             foreach($objectList as $dataObject)
             {

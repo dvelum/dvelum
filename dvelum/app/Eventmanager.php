@@ -10,7 +10,7 @@
 use Dvelum\Orm;
 use Dvelum\Cache\CacheInterface;
 
-class Eventmanager extends Orm\Object\Event\Manager
+class Eventmanager extends Orm\Record\Event\Manager
 {
     protected $_cache;
 
@@ -27,7 +27,7 @@ class Eventmanager extends Orm\Object\Event\Manager
      * (non-PHPdoc)
      * @see Db_Object_Event_Manager::fireEvent()
      */
-    public function fireEvent(string $code, Orm\ObjectInterface $object)
+    public function fireEvent(string $code, Orm\RecordInterface $object)
     {
         $objectName = ucfirst($object->getName());
         $triggerClass = \Utils_String::classFromString('Trigger_' . $objectName);

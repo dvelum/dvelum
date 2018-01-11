@@ -20,7 +20,7 @@
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
-use Dvelum\Orm\ObjectInterface;
+use Dvelum\Orm\RecordInterface;
 
 abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 {
@@ -43,7 +43,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * Check object owner
      * @param \Db_Object  $object
      */
-    protected function _checkOwner(ObjectInterface $object)
+    protected function _checkOwner(RecordInterface $object)
     {
         if(!$object->getConfig()->isRevControl()){
             return;
@@ -104,7 +104,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $ids = Utils::fetchCol('id' , $data);
 
         if(!empty($this->_listLinks)){
-            $objectConfig = Orm\Object\Config::factory($this->_objectName);
+            $objectConfig = Orm\Record\Config::factory($this->_objectName);
             if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
                 throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
             }
@@ -126,7 +126,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * @param integer $version
      * @return array
      */
-    protected function _loadData(ObjectInterface $object , $version)
+    protected function _loadData(RecordInterface $object , $version)
     {
         $id = $object->getId();
         $vc = Model::factory('Vc');
@@ -162,7 +162,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         /*
          * Prepare Object List properties
          */
-        $linkedObjects = $object->getConfig()->getLinks([Orm\Object\Config::LINK_OBJECT_LIST]);
+        $linkedObjects = $object->getConfig()->getLinks([Orm\Record\Config::LINK_OBJECT_LIST]);
         foreach($linkedObjects as $linkObject => $fieldCfg){
             foreach($fieldCfg as $field => $linkCfg){
                 $data[$field] = $this->_collectLinksData($field, $object , $linkObject);
@@ -219,7 +219,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $id = Request::post('id' , 'integer' , false);
 
         try{
-            $object = Orm\Object::factory($this->_objectName , $id);
+            $object = Orm\Record::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
         }
@@ -252,7 +252,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $this->_checkCanPublish();
 
         try{
-            $object = Orm\Object::factory($this->_objectName , $id);
+            $object = Orm\Record::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC);
         }
@@ -282,7 +282,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $this->_checkCanPublish();
 
         try{
-            $object = Orm\Object::factory($this->_objectName , $id);
+            $object = Orm\Record::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->CANT_EXEC . '. ' .  $e->getMessage());
         }
@@ -310,10 +310,10 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * Define the object data preview page URL
      * (needs to be redefined in the child class
      * as per the application structure)
-     * @param ObjectInterface $object
+     * @param RecordInterface $object
      * @return string
      */
-    public function getStagingUrl(ObjectInterface $object)
+    public function getStagingUrl(RecordInterface $object)
     {
         $frontConfig = Config::storage()->get('frontend.php');
         $routerClass = '\\Dvelum\\App\\Router\\' . $frontConfig->get('router');
@@ -336,7 +336,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::insertObject()
      */
-    public function insertObject(ObjectInterface $object)
+    public function insertObject(RecordInterface $object)
     {
         $object->published = false;
         $object->author_id = User::getInstance()->id;
@@ -366,7 +366,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::updateObject()
      */
-    public function updateObject(ObjectInterface  $object)
+    public function updateObject(RecordInterface  $object)
     {
         $author = $object->get('author_id');
         if(empty($author)){
@@ -397,7 +397,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * and closes the application.
      * @param Db_Object $object
      */
-    public function unpublishObject(ObjectInterface $object)
+    public function unpublishObject(RecordInterface $object)
     {
         if(!$object->get('published'))
             Response::jsonError($this->_lang->NOT_PUBLISHED);

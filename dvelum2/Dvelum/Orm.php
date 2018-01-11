@@ -22,7 +22,7 @@ namespace Dvelum;
 use Dvelum\Cache\CacheInterface;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\{
-    Object, Model, Exception
+    Record, Model, Exception
 };
 
 use Dvelum\Db;
@@ -59,7 +59,7 @@ class Orm
         /*
          * Prepare Db object storage
          */
-        $objectStore = new Orm\Object\Store(array(
+        $objectStore = new Orm\Record\Store(array(
             'linksObject' => $config->get('links_object'),
             'historyObject' => $config->get('history_object'),
             'versionObject' => $config->get('version_object'),
@@ -77,9 +77,9 @@ class Orm
         /*
          * Prepare Db_Object
          */
-        $translator = new Orm\Object\Config\Translator($language . '/objects.php');
+        $translator = new Orm\Record\Config\Translator($language . '/objects.php');
 
-        Orm\Object\Builder::useForeignKeys($config->get('foreign_keys'));
+        Orm\Record\Builder::useForeignKeys($config->get('foreign_keys'));
 
         $this->configSettings = Config\Factory::create([
             'configPath' => $config->get('object_configs'),
@@ -115,16 +115,27 @@ class Orm
     }
 
     /**
-     * Factory method of object creation is preferable to use, cf. method  __construct() description
      * @param string $name
-     * @param int|int[]|bool $id , optional default false
-     * @throws Exception
-     * @return Orm\Object|Orm\Object[]
+     * @param bool $id
+     * @deprecated
+     * @throws \Exception
+     * @return mixed
      */
     public function object(string $name, $id = false)
     {
+        return $this->record($name, $id);
+    }
+    /**
+     * Factory method of object creation is preferable to use, cf. method  __construct() description
+     * @param string $name
+     * @param int|int[]|bool $id , optional default false
+     * @throws \Exception
+     * @return Orm\Record|Orm\Record[]
+     */
+    public function record(string $name, $id = false)
+    {
         if (!is_array($id)) {
-            return new Object($name, $id);
+            return new Record($name, $id);
         }
 
         $list = [];
@@ -137,7 +148,7 @@ class Orm
         /*
          * Load links info
          */
-        $links = $config->getLinks([Object\Config::LINK_OBJECT_LIST]);
+        $links = $config->getLinks([Record\Config::LINK_OBJECT_LIST]);
         $linksData = [];
 
         if (!empty($links)) {
@@ -170,7 +181,7 @@ class Orm
 
         $primaryKey = $config->getPrimaryKey();
         foreach ($data as $item) {
-            $o = new Object($name);
+            $o = new Record($name);
             $o->disableAcl(true);
             /*
              * Apply links info
@@ -195,15 +206,15 @@ class Orm
      * Instantiate data structure for the objects named $name
      * @param string $name - object name
      * @param boolean $force - reload config
-     * @return Orm\Object\Config
+     * @return Orm\Record\Config
      * @throws Exception
      */
-    public function config(string $name, bool $force = false): Orm\Object\Config
+    public function config(string $name, bool $force = false): Orm\Record\Config
     {
         $name = strtolower($name);
 
         if ($force || !isset($this->configObjects[$name])) {
-            $config = new Object\Config($name, $force, $this->configSettings);
+            $config = new Record\Config($name, $force, $this->configSettings);
             $config->setCryptService($this->cryptService);
 
             $this->configObjects[$name] = $config;

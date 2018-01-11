@@ -23,7 +23,7 @@ namespace Dvelum\App\Form\Adapter;
 use Dvelum\App\Form\Adapter;
 use Dvelum\App\Form;
 
-class Page extends Adapter\Orm\Object
+class Page extends Adapter\Orm\Record
 {
     public function validateRequest(): bool
     {

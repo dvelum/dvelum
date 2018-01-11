@@ -53,7 +53,7 @@ class Controller extends App\Controller
      */
     protected $module;
     /**
-     * Current Orm\Object name
+     * Current Orm\Record name
      * @var string
      */
     protected $objectName = false;
@@ -298,7 +298,7 @@ class Controller extends App\Controller
 
         $objectName = $this->getObjectName();
         if(!empty($objectName)){
-            $objectConfig = \Dvelum\Orm\Object\Config::factory($this->getObjectName());
+            $objectConfig = \Dvelum\Orm\Record\Config::factory($this->getObjectName());
 
             if($objectConfig->isRevControl()){
                 $this->resource->addInlineJs('

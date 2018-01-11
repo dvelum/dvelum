@@ -299,9 +299,9 @@ class Externals_Manager
             $builders = [];
             foreach ($modConf['objects'] as $object) {
                 try {
-                    $objectCfg = Orm\Object\Config::factory($object);
+                    $objectCfg = Orm\Record\Config::factory($object);
                     if (!$objectCfg->isLocked() && !$objectCfg->isReadOnly()) {
-                        $builder = Orm\Object\Builder::factory($object);
+                        $builder = Orm\Record\Builder::factory($object);
                         $builders[] = $builder;
                         if (!$builder->build(false)) {
                             $errors = $builder->getErrors();
@@ -323,7 +323,7 @@ class Externals_Manager
             {
                 try {
                     /**
-                     * @var Orm\Object\Builder\BuilderInterface $builder
+                     * @var Orm\Record\Builder\BuilderInterface $builder
                      */
                     if (!$builder->buildForeignKeys()) {
                         $errors = $builder->getErrors();
@@ -408,9 +408,9 @@ class Externals_Manager
         if (!empty($modConf['objects']) && $modConf['enabled']) {
             foreach ($modConf['objects'] as $object) {
                 try {
-                    $objectCfg = Orm\Object\Config::factory($object);
+                    $objectCfg = Orm\Record\Config::factory($object);
                     if (!$objectCfg->isLocked() && !$objectCfg->isReadOnly()) {
-                        $builder = Orm\Object\Builder::factory($object);
+                        $builder = Orm\Record\Builder::factory($object);
                         if (!$builder->remove()) {
                             $this->errors[] = $builder->getErrors();
                         }

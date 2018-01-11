@@ -28,15 +28,15 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
 		if(!empty($data))
 		{
             $users = Utils::fetchCol('user_id' , $data);
-            $users = Orm\Object::factory('User' , $users);
+            $users = Orm\Record::factory('User' , $users);
 
 			foreach ($data as $k=>&$v)
 			{
                 if(!empty($v['user_id']) && isset($users[$v['user_id']])){
                     $v['user_name'] = $users[$v['user_id']]->getTitle();
                 }
-                if(!empty($v['object']) && Orm\Object\Config::configExists($v['object'])){
-                    $v['object_title'] = Orm\Object\Config::factory($v['object'])->getTitle();
+                if(!empty($v['object']) && Orm\Record\Config::configExists($v['object'])){
+                    $v['object_title'] = Orm\Record\Config::factory($v['object'])->getTitle();
                 }
 			}unset($v);
 		}
@@ -56,11 +56,11 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
      */
     public function objectsListAction()
     {
-        $manager = new Orm\Object\Manager();
+        $manager = new Orm\Record\Manager();
         $list = $manager->getRegisteredObjects();
         $data = [];
         foreach ($list as $object){
-            $data[] = ['id'=>$object, 'title' => Orm\Object\Config::factory($object)->getTitle()];
+            $data[] = ['id'=>$object, 'title' => Orm\Record\Config::factory($object)->getTitle()];
         }
         Response::jsonSuccess($data);
     }
@@ -79,7 +79,7 @@ class Backend_Logs_Controller extends Backend_Controller_Crud
         $id = intval($filter['id']);
 
         try{
-            $rec = Orm\Object::factory('Historylog' , $id);
+            $rec = Orm\Record::factory('Historylog' , $id);
         }catch (Exception $e){
             Model::factory('Historylog')->logError('Invalid id requested: '.$id);
             Response::jsonSuccess();

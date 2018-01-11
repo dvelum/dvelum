@@ -49,7 +49,7 @@ class Crypt extends Controller
         }
         $object = $this->request->post('object' , 'string' , false);
 
-        if(!$object || !Orm\Object\Config::configExists($object)){
+        if(!$object || !Orm\Record\Config::configExists($object)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -96,7 +96,7 @@ class Crypt extends Controller
 
         $object = $this->request->post('object' , 'string' , false);
 
-        if(!$object || !Orm\Object\Config::configExists($object)){
+        if(!$object || !Orm\Record\Config::configExists($object)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }

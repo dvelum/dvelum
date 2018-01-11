@@ -48,7 +48,7 @@ class Model
     protected $settings;
     /**
      * DB Object Storage
-     * @var Orm\Object\Store
+     * @var Orm\Record\Store
      */
     protected $store;
 
@@ -66,7 +66,7 @@ class Model
 
     /**
      * Db_Object config
-     * @var Orm\Object\Config
+     * @var Orm\Record\Config
      */
     private $objectConfig = null;
 
@@ -186,15 +186,15 @@ class Model
     }
 
     /**
-     * Lazy load of ORM\Object\Config
-     * @return Object\Config
+     * Lazy load of ORM\Record\Config
+     * @return Record\Config
      * @throws \Exception
      */
-    public function getObjectConfig(): Orm\Object\Config
+    public function getObjectConfig(): Orm\Record\Config
     {
         if (empty($this->objectConfig)) {
             try {
-                $this->objectConfig = Orm\Object\Config::factory($this->name);
+                $this->objectConfig = Orm\Record\Config::factory($this->name);
             } catch (\Exception $e) {
                 throw new \Exception('Object ' . $this->name . ' is not exists');
             }
@@ -204,9 +204,9 @@ class Model
 
     /**
      * Get Object Storage
-     * @return Orm\Object\Store
+     * @return Orm\Record\Store
      */
-    protected function getObjectsStore(): Orm\Object\Store
+    protected function getObjectsStore(): Orm\Record\Store
     {
         return $this->store;
     }
@@ -222,9 +222,9 @@ class Model
 
     /**
      * Set the adapter of the object store
-     * @param Orm\Object\Store $store
+     * @param Orm\Record\Store $store
      */
-    public function setObjectsStore(Orm\Object\Store $store)
+    public function setObjectsStore(Orm\Record\Store $store)
     {
         $this->store = $store;
     }
@@ -267,9 +267,9 @@ class Model
 
     /**
      * Get storage adapter
-     * @return Orm\Object\Store
+     * @return Orm\Record\Store
      */
-    public function getStore(): Orm\Object\Store
+    public function getStore(): Orm\Record\Store
     {
         return $this->store;
     }
@@ -455,11 +455,11 @@ class Model
 
     /**
      * Get object title
-     * @param Orm\ObjectInterface $object - object for getting title
+     * @param Orm\RecordInterface $object - object for getting title
      * @return mixed|string - object title
      * @throws \Exception
      */
-    public function getTitle(Orm\ObjectInterface $object) : string
+    public function getTitle(Orm\RecordInterface $object) : string
     {
         $objectConfig = $object->getConfig();
         $title = $objectConfig->getLinkTitle();
@@ -488,7 +488,7 @@ class Model
     public function remove($recordId): bool
     {
         try {
-            $object = Orm\Object::factory($this->name, $recordId);
+            $object = Orm\Record::factory($this->name, $recordId);
         } catch (\Exception $e) {
             $this->logError('Remove record ' . $recordId . ' : ' . $e->getMessage());
             return false;
@@ -627,7 +627,7 @@ class Model
     }
 
     /**
-     * Get Orm\Object config array
+     * Get Orm\Record config array
      * @return Config\ConfigInterface
      */
     public function getLightConfig(): Config\ConfigInterface

@@ -21,7 +21,7 @@ use Dvelum\Config;
 use Dvelum\Lang;
 use Dvelum\App;
 use Dvelum\Orm;
-use Dvelum\Orm\ObjectInterface;
+use Dvelum\Orm\RecordInterface;
 /**
  * This is the base class for implementing administrative controllers
  */
@@ -211,14 +211,14 @@ abstract class Backend_Controller extends Controller
 
     /**
      * Add related objects info into getList results
-     * @param Orm\Object\Config $cfg
+     * @param Orm\Record\Config $cfg
      * @param array $fieldsToShow  list of link fields to process ( key - result field, value - object field)
      * object field will be used as result field for numeric keys
      * @param array & $data rows from  Model::getList result
      * @param string $pKey - name of Primary Key field in $data
      * @throws Exception
      */
-    protected function addLinkedInfo(Orm\Object\Config $cfg, array $fieldsToShow, array  & $data, $pKey)
+    protected function addLinkedInfo(Orm\Record\Config $cfg, array $fieldsToShow, array  & $data, $pKey)
     {
         $fieldsToKeys = [];
         foreach($fieldsToShow as $key=>$val){
@@ -231,9 +231,9 @@ abstract class Backend_Controller extends Controller
 
         $links = $cfg->getLinks(
             [
-                Orm\Object\Config::LINK_OBJECT,
-                Orm\Object\Config::LINK_OBJECT_LIST,
-                Orm\Object\Config::LINK_DICTIONARY
+                Orm\Record\Config::LINK_OBJECT,
+                Orm\Record\Config::LINK_OBJECT_LIST,
+                Orm\Record\Config::LINK_DICTIONARY
             ],
             false
         );
@@ -252,14 +252,14 @@ abstract class Backend_Controller extends Controller
         }
 
         $rowIds = Utils::fetchCol($pKey , $data);
-        $rowObjects = Orm\Object::factory($cfg->getName() , $rowIds);
+        $rowObjects = Orm\Record::factory($cfg->getName() , $rowIds);
         $listedObjects = [];
 
         foreach($rowObjects as $object)
         {
             foreach ($links as $field=>$config)
             {
-                if($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY){
+                if($config['link_type'] === Orm\Record\Config::LINK_DICTIONARY){
                     continue;
                 }
 
@@ -296,7 +296,7 @@ abstract class Backend_Controller extends Controller
 
                 if(!empty($value))
                 {
-                    if($config['link_type'] === Orm\Object\Config::LINK_DICTIONARY)
+                    if($config['link_type'] === Orm\Record\Config::LINK_DICTIONARY)
                     {
                         $dictionary = Dictionary::factory($config['object']);
                         if($dictionary->isValidKey($value)){
@@ -324,12 +324,12 @@ abstract class Backend_Controller extends Controller
 
     /**
      * String representation of related object for addLinkedInfo method
-     * @param ObjectInterface $rowObject
+     * @param RecordInterface $rowObject
      * @param string $field
-     * @param ObjectInterface $relatedObject
+     * @param RecordInterface $relatedObject
      * @return string
      */
-    protected function linkedInfoObjectRenderer(ObjectInterface $rowObject, $field, ObjectInterface $relatedObject)
+    protected function linkedInfoObjectRenderer(RecordInterface $rowObject, $field, RecordInterface $relatedObject)
     {
         return $relatedObject->getTitle();
     }
@@ -473,7 +473,7 @@ abstract class Backend_Controller extends Controller
      * (in case of failure, JSON error message is sent)
      *
      * @param string $objectName
-     * @return \Dvelum\Orm\Object
+     * @return \Dvelum\Orm\Record
      */
     public function getPostedData($objectName)
     {

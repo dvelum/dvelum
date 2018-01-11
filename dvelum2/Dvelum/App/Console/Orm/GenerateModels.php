@@ -29,7 +29,7 @@ class GenerateModels extends Console\Action
 {
     public function action(): bool
     {
-        $dbObjectManager = new Orm\Object\Manager();
+        $dbObjectManager = new Orm\Record\Manager();
         $modelPath = Config::storage()->get('main.php')->get('local_models');
 
         echo 'GENERATE MODELS' . PHP_EOL;

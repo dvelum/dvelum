@@ -32,7 +32,7 @@ abstract class Controller extends Backend\Api\Controller
 
         $objectName = $this->getObjectName();
         $moduleName = $this->getModule();
-        $objectConfig = Orm\Object\Config::factory($objectName);
+        $objectConfig = Orm\Record\Config::factory($objectName);
         $moduleAcl = $this->user->getModuleAcl();
         $modulesConfig = Config::factory(Config\Factory::File_Array , $this->appConfig->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($moduleName);
