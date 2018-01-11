@@ -1081,6 +1081,7 @@ class Config
      * Get name of relations Db_Object
      * @param $field
      * @return mixed  false || string
+     * @throws Exception
      */
     public function getRelationsObject($field)
     {
@@ -1163,7 +1164,7 @@ class Config
                 $fieldClass = $dbType;
             }
         }
-        $fieldClass = 'Dvelum\\Orm\\Object\\Config\\Field\\' . ucfirst($fieldClass);
+        $fieldClass = 'Dvelum\\Orm\\Record\\Config\\Field\\' . ucfirst($fieldClass);
 
         if(class_exists($fieldClass)){
             $field = new $fieldClass($config);

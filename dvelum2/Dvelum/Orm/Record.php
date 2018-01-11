@@ -87,7 +87,7 @@ class Record implements RecordInterface
      * the factory method Db_Object::factory() is more advisable to use
      * @param string $name
      * @param bool|int $id - optional
-     * @throws Exception
+     * @throws Exception | \Exception
      */
     public function __construct(string $name, $id = false)
     {
@@ -122,7 +122,7 @@ class Record implements RecordInterface
 
     /**
      * Load object data
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     protected function loadData() : void
@@ -142,11 +142,10 @@ class Record implements RecordInterface
                 {
                     if($this->config->getField($field)->isManyToManyLink()){
                         $relationsObject = $this->config->getRelationsObject($field);
-                        $relationsData = Model::factory($relationsObject)->getList(
-                            ['sort'=>'order_no', 'dir' =>'ASC'],
-                            ['source_id'=>$this->id],
-                            ['target_id']
-                        );
+                        $relationsData = Model::factory($relationsObject)->query()
+                            ->params(['sort'=>'order_no', 'dir' =>'ASC'])
+                            ->filters(['source_id'=>$this->id])
+                            ->fields(['target_id'])->fetchAll();
                     }else{
                         $linkedObject = $this->config->getField($field)->getLinkedObject();
                         $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
@@ -178,6 +177,7 @@ class Record implements RecordInterface
      * Set raw data from storage
      * @param array $data
      * @return void
+     * @throws \Exception
      */
     public function setRawData(array $data) : void
     {
@@ -290,6 +290,7 @@ class Record implements RecordInterface
     /**
      * Get updated, but not saved object data
      * @return array
+     * @throws Exception
      */
     public function getUpdates() : array
     {
@@ -303,6 +304,7 @@ class Record implements RecordInterface
      * Set the object identifier (existing DB ID)
      * @param integer $id
      * @return void
+     * @throws Exception
      */
     public function setId($id) : void
     {
@@ -947,7 +949,7 @@ class Record implements RecordInterface
      * Load version
      * @param int $vers
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function loadVersion(int $vers) :void
     {
@@ -1012,6 +1014,7 @@ class Record implements RecordInterface
     /**
      * Save object as new version
      * @param bool $useTransaction — using a transaction when changing data is optional.
+     * @throws \Exception
      * @return bool
      */
     public function saveVersion(bool $useTransaction = true) : bool
