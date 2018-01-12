@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Record\Builder\Generic;
 
+use Dvelum\Orm;
 use Dvelum\Orm\Record\Builder;
 
 class Pgsql extends Builder\Generic
@@ -98,5 +99,10 @@ class Pgsql extends Builder\Generic
     public function buildForeignKeys($remove = true, $create = true): bool
     {
         // TODO: Implement buildForeignKeys() method.
+    }
+
+    public function getPropertySql(string $name, Orm\Record\Config\Field $field): string
+    {
+        // TODO: Implement getPropertySql() method.
     }
 }

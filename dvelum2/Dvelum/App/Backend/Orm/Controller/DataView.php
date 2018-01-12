@@ -25,6 +25,7 @@ use Dvelum\Service;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Orm;
+use Dvelum\Orm\RecordInterface;
 
 class DataView extends ApiController
 {

@@ -21,15 +21,15 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Record\Config\Field;
 
-use Dvelum\Orm\Record\Config\Field;
 use Dvelum\Orm;
 
-class Object extends \Dvelum\Orm\Record\Config\Field
+class ObjectItem extends \Dvelum\Orm\Record\Config\Field
 {
 
     /**
      * Apply value filter
      * @param mixed $value
+     * @throws \Exception
      * @return mixed
      */
     public function filter($value)

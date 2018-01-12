@@ -106,5 +106,10 @@ class MySQL extends Builder\Generic
     {
         // TODO: Implement buildForeignKeys() method.
     }
+
+    public function getPropertySql(string $name, Orm\Record\Config\Field $field): string
+    {
+        // TODO: Implement getPropertySql() method.
+    }
 }
 

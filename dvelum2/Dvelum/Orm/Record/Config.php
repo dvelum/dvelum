@@ -1142,7 +1142,7 @@ class Config
         if(isset($config['type']) && $config['type']==='link'  && isset($config['link_config']) && isset($config['link_config']['link_type'])){
             switch ($config['link_config']['link_type']){
                 case Orm\Record\Config::LINK_OBJECT;
-                    $fieldClass = 'Object';
+                    $fieldClass = 'ObjectItem';
                     break;
                 case Orm\Record\Config::LINK_OBJECT_LIST;
                     $fieldClass = 'ObjectList';
