@@ -26,6 +26,15 @@ use Dvelum\Config;
 
 abstract class Controller extends Backend\Api\Controller
 {
+    /**
+     * Additional fields for VC Records UI
+     * @var array
+     */
+    protected $revControlFields = [
+        'user' => 'author_id',
+        'updater' => 'editor_id'
+    ];
+
     public function indexAction()
     {
         parent::indexAction();
@@ -57,6 +66,16 @@ abstract class Controller extends Backend\Api\Controller
                 $this->resource->addJs('/js/app/system/crud/' . strtolower($moduleName) .'.js' , 4);
             }
         }
+    }
+
+    public function listAction()
+    {
+        $objectConfig = Orm\Record\Config::factory($this->getObjectName());
+        // Add additional fields for VC Records UI
+        if($objectConfig->isRevControl()){
+            $this->listLinks = array_merge($this->listLinks, $this->revControlFields);
+        }
+        return parent::listAction();
     }
 
     /**
