@@ -122,6 +122,7 @@ Ext.define('designer.objects.Tree',{
 			}
 		},this);
 
+
 		this.treePanel.addListener('itemclick',function(view, record, element , index , e , eOpts){
 			this.fireEvent('itemSelected' , record.get('id') , record.get('objClass'), record.get('text') , record.get('isInstance'));
 		},this);
@@ -181,7 +182,8 @@ Ext.define('designer.objects.Tree',{
 	 */
 	reload:function(){
 		this.nodesState =  this.treePanel.getNodesState();
-		this.dataStore.getRootNode().removeAll();
+		//this.dataStore.getRootNode().removeAll();
+        this.dataStore.removeAll();
 		this.dataStore.load();
 	},
 	getStore:function(){
