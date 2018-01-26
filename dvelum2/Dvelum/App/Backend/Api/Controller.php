@@ -25,7 +25,7 @@ use Dvelum\{
     Request, Response, Config, App, Orm, Service, Utils
 };
 use Dvelum\Orm\{
-    RecordInterface, Model
+    RecordInterface, Model, Record
 };
 use Dvelum\App\{
     Data, Session, Dictionary
@@ -379,7 +379,11 @@ class Controller extends App\Backend\Controller
         if(!$this->checkCanEdit()){
             return;
         }
-        $this->insertObject($this->getPostedData($this->objectName));
+        $object = $this->getPostedData($this->objectName);
+        if(empty($object)){
+            return;
+        }
+        $this->insertObject($object);
     }
 
     /**
@@ -392,7 +396,12 @@ class Controller extends App\Backend\Controller
         if(!$this->checkCanEdit()){
             return;
         }
-        $this->updateObject($this->getPostedData($this->objectName));
+
+        $object = $this->getPostedData($this->objectName);
+        if(empty($object)){
+            return;
+        }
+        $this->updateObject($object);
     }
 
     /**
@@ -532,9 +541,9 @@ class Controller extends App\Backend\Controller
      * (in case of failure, JSON error message is sent)
      * @param string $objectName
      * @throws Exception
-     * @return Orm\Record
+     * @return Record | null
      */
-    public function getPostedData($objectName)
+    public function getPostedData($objectName) : ?Record
     {
         $formCfg = $this->config->get('form');
         $adapterConfig = Config::storage()->get($formCfg['config']);
@@ -543,7 +552,6 @@ class Controller extends App\Backend\Controller
          * @var App\Form\Adapter $form
          */
         $form = new $formCfg['adapter']($this->request, $this->lang, $adapterConfig);
-
         if (!$form->validateRequest()) {
             $errors = $form->getErrors();
             $formMessages = [$this->lang->get('FILL_FORM')];
@@ -560,6 +568,7 @@ class Controller extends App\Backend\Controller
                 }
             }
             $this->response->error(implode('; <br>', $formMessages), $fieldMessages);
+            return null;
         }
         return $form->getData();
     }

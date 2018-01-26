@@ -44,6 +44,9 @@ class Record extends Form\Adapter
         );
 
         try{
+            /**
+             * @var Orm\Record $obj
+             */
             $obj = Orm\Record::factory($this->config->get('orm_object'), $id);
         }catch(\Exception $e){
              $this->errors[] = new Form\Error($this->lang->get('CANT_EXEC'), null, 'init_object');
@@ -56,7 +59,6 @@ class Record extends Form\Adapter
             $this->errors[] = new Form\Error($this->lang->get('CANT_MODIFY'), null, 'acl_cant_edit');
             return false;
         }
-
 
         $posted = $this->request->postArray();
 

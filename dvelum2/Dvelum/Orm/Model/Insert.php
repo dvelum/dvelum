@@ -49,13 +49,13 @@ class Insert
      */
     public function bulkInsert(array $records, int $chunkSize = 500, bool $ignore = false)
     {
-        if (empty($data)) {
+        if (empty($records)) {
             return true;
         }
 
-        $chunks = array_chunk($data, $chunkSize);
+        $chunks = array_chunk($records, $chunkSize);
 
-        $keys = array_keys($data[key($data)]);
+        $keys = array_keys($records[key($records)]);
 
         foreach ($keys as &$key) {
             $key = $this->db->quoteIdentifier($key);
@@ -86,7 +86,7 @@ class Insert
                 $sql .= 'IGNORE ';
             }
 
-            $sql .= 'INTO ' . $this->table() . ' (' . $keys . ') ' . "\n" . ' VALUES ' . "\n" . '(' . implode(')' . "\n" . ',(',
+            $sql .= 'INTO ' . $this->model->table() . ' (' . $keys . ') ' . "\n" . ' VALUES ' . "\n" . '(' . implode(')' . "\n" . ',(',
                     array_values($rowset)) . ') ' . "\n" . '';
 
             try {
