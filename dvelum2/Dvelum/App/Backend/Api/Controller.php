@@ -32,6 +32,8 @@ use Dvelum\App\{
 };
 use Dvelum\App\Controller\EventManager;
 
+use \Exception;
+
 class Controller extends App\Backend\Controller
 {
     /**
@@ -122,8 +124,43 @@ class Controller extends App\Backend\Controller
 
     /**
      * Get list of objects which can be linked
+     * @throws Exception
      */
     public function linkedListAction()
+    {
+        if (!$this->eventManager->fireEvent(EventManager::BEFORE_LINKED_LIST, new \stdClass())) {
+            $this->response->error($this->eventManager->getError());
+            return;
+        }
+
+        try{
+            $result = $this->getLinkedList();
+        }catch (LoadException $e){
+            $this->response->error($e->getMessage());
+            return;
+        }catch(Exception $e){
+            $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
+        }
+
+
+        $eventData = new \stdClass();
+        $eventData->data = $result['data'];
+        $eventData->count = $result['count'];
+
+        if (!$this->eventManager->fireEvent(EventManager::AFTER_LINKED_LIST, $eventData)) {
+            $this->response->error($this->eventManager->getError());
+            return;
+        }
+
+        $this->response->success($eventData->data, ['count' => $eventData->count]);
+    }
+
+    /**
+     * @return array
+     * @throws Exception|LoadException
+     */
+    public function getLinkedList() : array
     {
         $object = $this->request->post('object', 'string', false);
         $filter = $this->request->post('filter', 'array', []);
@@ -133,13 +170,11 @@ class Controller extends App\Backend\Controller
         $filter = array_merge($filter, $this->request->extFilters());
 
         if ($object === false || !Orm\Record\Config::configExists($object)) {
-            $this->response->error($this->lang->get('WRONG_REQUEST'));
-            return;
+            throw new LoadException($this->lang->get('WRONG_REQUEST'));
         }
 
         if (!in_array(strtolower($object), $this->canViewObjects, true)) {
-            $this->response->error($this->lang->get('CANT_VIEW'));
-            return;
+            throw new LoadException($this->lang->get('CANT_VIEW'));
         }
 
         $objectCfg = Orm\Record\Config::factory($object);
@@ -152,8 +187,7 @@ class Controller extends App\Backend\Controller
 
         if ($acl) {
             if (!$acl->can(Orm\Record\Acl::ACCESS_VIEW, $object)) {
-                $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
-                return;
+                throw new LoadException($this->lang->get('ACL_ACCESS_DENIED'));
             }
         }
 
@@ -182,8 +216,7 @@ class Controller extends App\Backend\Controller
                     $objects = Orm\Record::factory($object, $objectIds);
                 } catch (\Exception $e) {
                     Model::factory($object)->logError('linkedlistAction ->' . $e->getMessage());
-                    $this->response->error($this->lang->get('CANT_EXEC'));
-                    return;
+                    throw new LoadException($this->lang->get('CANT_EXEC'));
                 }
 
                 foreach ($data as &$item) {
@@ -194,6 +227,9 @@ class Controller extends App\Backend\Controller
                     $item['deleted'] = false;
 
                     if (isset($objects[$item['id']])) {
+                        /**
+                         * @var Orm\Record $o
+                         */
                         $o = $objects[$item['id']];
                         $item['title'] = $o->getTitle();
                         if ($rc) {
@@ -207,8 +243,7 @@ class Controller extends App\Backend\Controller
                 unset($item);
             }
         }
-
-        $this->response->success($data, ['count' => $count]);
+        return ['data'=>$data, 'count'=>$count];
     }
 
     /**
@@ -221,6 +256,7 @@ class Controller extends App\Backend\Controller
 
     /**
      * Get object title
+     * @throws Exception
      */
     public function objectTitleAction()
     {
@@ -495,6 +531,7 @@ class Controller extends App\Backend\Controller
      * Get posted data and put it into Orm\Record
      * (in case of failure, JSON error message is sent)
      * @param string $objectName
+     * @throws Exception
      * @return Orm\Record
      */
     public function getPostedData($objectName)

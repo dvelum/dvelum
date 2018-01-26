@@ -125,6 +125,7 @@ class Externals_Manager
         }
 
         $autoLoadPaths = [];
+        $autoLoadPathsPsr4 = [];
         $configPaths = [];
         $langPaths = [];
 
@@ -139,6 +140,12 @@ class Externals_Manager
             if (!empty($modCfg['autoloader'])) {
                 foreach ($modCfg['autoloader'] as $classPath) {
                     $autoLoadPaths[] = str_replace('./', $path, $classPath);
+                }
+            }
+
+            if (!empty($modCfg['autoloader-psr-4'])) {
+                foreach ($modCfg['autoloader-psr-4'] as $ns =>$classPath) {
+                    $autoLoadPathsPsr4[$ns] = str_replace('./', $path, $classPath);
                 }
             }
 
@@ -170,9 +177,12 @@ class Externals_Manager
                     $newСhain[] = $path;
                 }
             }
+
+            $autoloaderCfg['psr-4'] = array_merge($autoLoadPathsPsr4, $autoloaderCfg['psr-4']);
             $autoloaderCfg['paths'] = $newСhain;
+
             // update autoloader paths
-            $this->autoloader->setConfig(['paths' => $newСhain]);
+            $this->autoloader->setConfig(['paths' => $autoloaderCfg['paths'], 'psr-4'=>$autoloaderCfg['psr-4']]);
             // update main configuration
             $autoloaderConfig->setData($autoloaderCfg);
         }
