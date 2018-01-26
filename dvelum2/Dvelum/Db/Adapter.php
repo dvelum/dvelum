@@ -136,6 +136,10 @@ class Adapter
         return [];
     }
 
+    /**
+     * @param $sql
+     * @return mixed
+     */
     public function fetchOne($sql)
     {
         $statement = $this->adapter->createStatement();
