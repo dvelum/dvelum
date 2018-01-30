@@ -13,9 +13,12 @@ class EventManager
     const AFTER_LOAD = 'after_load';
     const AFTER_LINKED_LIST ='after_linked_list';
 
+    const AFTER_UPDATE_BEFORE_COMMIT = 'after_update_before_commit';
+    const AFTER_INSERT_BEFORE_COMMIT = 'after_insert_before_commit';
+
     /**
      * @param string $event
-     * @param callabale|array [obj,method] $handler
+     * @param callable|array [obj,method] $handler
      */
     public function on(string $event, $handler)
     {

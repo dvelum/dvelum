@@ -289,11 +289,13 @@ class Controller extends App\Controller
      */
     public function indexAction()
     {
-        $this->includeScripts();
+        $module = $this->getModule();
+
+        $this->includeScripts($this->resource);
 
         $this->resource->addInlineJs('
-	        var canEdit = ' . intval($this->moduleAcl->canEdit($this->module)) . ';
-	        var canDelete = ' . intval($this->moduleAcl->canDelete($this->module)) . ';
+	        var canEdit = ' . intval($this->moduleAcl->canEdit($module) ). ';
+	        var canDelete = ' . intval($this->moduleAcl->canDelete($module)) . ';
 	    ');
 
         $objectName = $this->getObjectName();

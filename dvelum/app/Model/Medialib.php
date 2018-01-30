@@ -167,10 +167,14 @@ class Model_Medialib extends Model
     }
 
     /**
-     * Include required sources
+     * @param \Dvelum\Resource|null $resource
+     * @throws \Exception
      */
-    public function includeScripts()
+    public function includeScripts(?\Dvelum\Resource $resource = null) : void
     {
+        if(empty($resource)){
+            $resource = Dvelum\Resource::factory();
+        }
         $version = Config::storage()->get('versions.php')->get('medialib');
         $appConfig = Config::storage()->get('main.php');
 
@@ -180,7 +184,6 @@ class Model_Medialib extends Model
 
         $conf = $this->getConfig()->__toArray();
 
-        $resource = \Dvelum\Resource::factory();
         $resource->addCss('/js/lib/jquery.Jcrop.css');
 
         $editor = $appConfig->get('html_editor');
@@ -203,11 +206,11 @@ class Model_Medialib extends Model
         $resource->addJs('/js/lib/jquery.Jcrop.min.js', 2, true);
 
         $resource->addInlineJs('
-      	app.maxFileSize = "' . ini_get('upload_max_filesize') . '";
-      	app.mediaConfig = ' . json_encode($conf) . ';
-      	app.imageSize = ' . json_encode($conf['image']['sizes']) . ';
-      	app.medialibControllerName = "medialib";
-    ');
+            app.maxFileSize = "' . ini_get('upload_max_filesize') . '";
+            app.mediaConfig = ' . json_encode($conf) . ';
+            app.imageSize = ' . json_encode($conf['image']['sizes']) . ';
+            app.medialibControllerName = "medialib";
+        ');
         self::$scriptsIncluded = true;
     }
 

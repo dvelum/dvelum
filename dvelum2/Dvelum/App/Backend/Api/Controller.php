@@ -465,44 +465,14 @@ class Controller extends App\Backend\Controller
      * Save new ORM object (insert data)
      * Sends JSON reply in the result and
      * closes the application
-     * @param Orm\Record $object
+     * @param RecordInterface $object
      * @return void
      */
-    public function insertObject(Orm\Record $object)
+    public function insertObject(RecordInterface $object)
     {
-        if ($object->getConfig()->isRevControl()) {
-            if (!$object->saveVersion()) {
-                $this->response->error($this->lang->get('CANT_CREATE'));
-                return;
-            }
+        $isRevControl = $object->getConfig()->isRevControl();
 
-            $stagingUrl = $this->getStagingUrl($object);
-
-            $this->response->success([
-                'id' => $object->getId(),
-                'version' => $object->getVersion(),
-                'published' => $object->get('published'),
-                'staging_url' => $stagingUrl
-            ]);
-
-        } else {
-            if (!$recId = $object->save()) {
-                $this->response->error($this->lang->get('CANT_EXEC'));
-                return;
-            }
-            $this->response->success(['id' => $recId]);
-        }
-    }
-
-    /**
-     * Update ORM object data
-     * Sends JSON reply in the result and
-     * closes the application
-     * @param Orm\Record $object
-     */
-    public function updateObject(Orm\Record $object)
-    {
-        if ($object->getConfig()->isRevControl()) {
+        if($isRevControl) {
             $author = $object->get('author_id');
             if (empty($author)) {
                 $object->set('author_id', $this->user->getId());
@@ -512,28 +482,119 @@ class Controller extends App\Backend\Controller
                     return;
                 }
             }
+        }
 
-            if (!$object->saveVersion()) {
+        $objectModel = Model::factory($object->getName());
+        $db = $objectModel->getDbConnection();
+        $db->beginTransaction();
+
+        $result = [];
+
+        if ($isRevControl) {
+            if (!$object->saveVersion(false)) {
                 $this->response->error($this->lang->get('CANT_CREATE'));
+                $db->rollback();
                 return;
             }
 
             $stagingUrl = $this->getStagingUrl($object);
 
-            $this->response->success([
+            $result = [
+                'id' => $object->getId(),
+                'version' => $object->getVersion(),
+                'published' => $object->get('published'),
+                'staging_url' => $stagingUrl
+            ];
+
+        } else {
+            if (!$recId = $object->save()) {
+                $this->response->error($this->lang->get('CANT_EXEC'));
+                $db->rollback();
+                return;
+            }
+            $result = ['id' => $recId];
+        }
+
+        $eventData = new \stdClass();
+        $eventData->object = $object;
+
+        if (!$this->eventManager->fireEvent(EventManager::AFTER_UPDATE_BEFORE_COMMIT, $eventData)) {
+            $this->response->error($this->eventManager->getError());
+            $db->rollback();
+            return;
+        }
+
+        $db->commit();
+        $this->response->success($result);
+    }
+
+    /**
+     * Update ORM object data
+     * Sends JSON reply in the result and
+     * closes the application
+     * @param RecordInterface $object
+     */
+    public function updateObject(RecordInterface $object)
+    {
+        $isRevControl = $object->getConfig()->isRevControl();
+
+        if($isRevControl) {
+            $author = $object->get('author_id');
+            if (empty($author)) {
+                $object->set('author_id', $this->user->getId());
+            } else {
+                if (!$this->checkOwner($object)) {
+                    $this->response->error($this->lang->get('CANT_ACCESS'));
+                    return;
+                }
+            }
+        }
+
+        $objectModel = Model::factory($object->getName());
+        $db = $objectModel->getDbConnection();
+        $db->beginTransaction();
+
+        $result = [];
+
+        if ($isRevControl) {
+
+            if (!$object->saveVersion(false)) {
+                $this->response->error($this->lang->get('CANT_CREATE'));
+                $db->rollback();
+                return;
+            }
+
+            $stagingUrl = $this->getStagingUrl($object);
+
+            $result = [
                 'id' => $object->getId(),
                 'version' => $object->getVersion(),
                 'staging_url' => $this->getStagingUrl($object),
                 'published_version' => $object->get('published_version'),
                 'published' => $object->get('published')
-            ]);
+            ];
+
         } else {
-            if (!$object->save()) {
+
+            if (!$object->save(false)) {
                 $this->response->error($this->lang->get('CANT_EXEC'));
+                $db->rollback();
                 return;
             }
-            $this->response->success(['id' => $object->getId()]);
+            $result = ['id' => $object->getId()];
         }
+
+        $eventData = new \stdClass();
+        $eventData->object = $object;
+
+        if (!$this->eventManager->fireEvent(EventManager::AFTER_UPDATE_BEFORE_COMMIT, $eventData)) {
+            $this->response->error($this->eventManager->getError());
+            $db->rollback();
+            return;
+        }
+
+        $db->commit();
+        $this->response->success($result);
     }
 
     /**

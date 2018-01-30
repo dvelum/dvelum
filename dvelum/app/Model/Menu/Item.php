@@ -15,37 +15,38 @@ class Model_Menu_Item extends Model
 	 */
 	public function getTreeList($menuId)
 	{
-         $data = $this->getList(
-         	array('sort'=>'order','dir'=>'ASC'),
-         	array('menu_id'=>$menuId)
-         );
+         $data = $this->query()
+             ->params(['sort'=>'order','dir'=>'ASC'])
+             ->filters(['menu_id'=>$menuId])
+             ->fetchAll();
+
          
          if(empty($data))
-             return array();
+             return [];
 
          $tree = new Tree(); 
-         
+
          foreach($data as $value)
              $tree->addItem($value['tree_id'], $value['parent_id'], $value ,$value['order']);
          
-         return $this->_fillChilds($tree , 0);
+         return $this->fillChildren($tree , 0);
 	}
 	
 	/**
-     * Fill childs data array for tree panel
+     * Fill children data array for tree panel
      * @param Tree $tree
      * @param mixed $root
      * @return array
      */
-    protected function _fillChilds(Tree $tree , $root = 0 )
+    protected function fillChildren(Tree $tree , $root = 0 )
     {
-           $result = array();   
-           $childs = $tree->getChilds($root);      
+           $result = array();
+            $children = $tree->getChilds($root);
                
-           if(empty($childs))
-               return array();
+           if(empty($children))
+               return [];
                    
-           foreach($childs as $k=>$v)
+           foreach($children as $k=>$v)
            {
                   $row = $v['data'];                            
                   $obj = new stdClass();
@@ -72,7 +73,7 @@ class Model_Menu_Item extends Model
                    $cld= array();
                    
                    if($tree->hasChilds($row['tree_id']))
-                      $cld = $this->_fillChilds($tree ,  $row['tree_id']);
+                      $cld = $this->fillChildren($tree ,  $row['tree_id']);
                        
                    $obj->children=$cld;                                            
                    $result[] = $obj;
@@ -83,9 +84,9 @@ class Model_Menu_Item extends Model
      * Update menu links
      * @param integer $objectId
      * @param array $links
-     * @return boolean
+     * @return bool
      */
-    public function updateLinks($objectId, $links)
+    public function updateLinks($objectId, $links) : bool
     {  	
     	$this->db->delete($this->table() , 'menu_id = '.intval($objectId));
     	
@@ -93,23 +94,30 @@ class Model_Menu_Item extends Model
     	{
     		foreach($links as $k=>$item)	
     		{
+                /**
+                 * @var Orm\RecordInterface $obj
+                 */
     			$obj = Orm\Record::factory('Menu_Item');
-    			try{  				
-    				$obj->tree_id = $item['id'];
-    				$obj->page_id = $item['page_id'];
-    				$obj->title = $item['title'];
-    				$obj->published = $item['published'];
-    				$obj->menu_id = $objectId;
-    				$obj->parent_id = $item['parent_id'];
-    				$obj->order = $item['order'];
-    				$obj->link_type = $item['link_type'];
-    				$obj->url = $item['url'];
-    				$obj->resource_id = $item['resource_id'];
+
+    			try{
+    			    $obj->setValues([
+    			        'tree_id' => $item['id'],
+                        'page_id' => $item['page_id'],
+                        'title' => $item['title'],
+                        'published' => $item['published'],
+                        'menu_id' => $objectId,
+                        'parent_id' => $item['parent_id'],
+                        'order' => $item['order'],
+                        'link_type' => $item['link_type'],
+                        'url' => $item['url'],
+                        'resource_id' => $item['resource_id']
+                    ]);
+
     				if(!$obj->save(false)){
-    					throw new Exception(Lang::lang()->CANT_CREATE);
+    					throw new Exception(Lang::lang()->get('CANT_CREATE'));
     				}
-    				
     			}catch (Exception $e){
+                    $this->logError($e->getMessage());
     				return false;
     			}
     		}	
@@ -119,24 +127,24 @@ class Model_Menu_Item extends Model
     /**
      * Import Data from Site structure
      */
-    public function exportsiteStructure()
+    public function exportSiteStructure() : array
     {
         $pageModel = Model::factory('page');
-    	$data = $pageModel->getList(
-    		array('sort'=>'order_no','dir'=>'DESC'),
-    		false,
-    		array(
+        $data = $pageModel->query()
+            ->params(['sort'=>'order_no','dir'=>'DESC'])
+            ->fields([
     			'tree_id'=>'id' ,
     			'title'=>'menu_title',
     			'page_id'=>$pageModel->getPrimaryKey(),
     			'published'=>'published',
     			'parent_id'=>'parent_id',
     			'order'=>'order_no'
-    		)
-    	);
+    		])
+            ->fetchAll();
+
     	    	
     	if(!$data)
-    		return array();
+    		return [];
     	
 		$tree = new Tree();
     		
@@ -146,6 +154,6 @@ class Model_Menu_Item extends Model
     		 $value['url']='';
              $tree->addItem($value['tree_id'], intval($value['parent_id']), $value ,$value['order']);
     	}
-    	return $this->_fillChilds($tree , 0);
+    	return $this->fillChildren($tree , 0);
     }
 }

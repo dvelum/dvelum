@@ -414,6 +414,11 @@ class Record implements RecordInterface
 
         $field = $this->getConfig()->getField($name);
 
+        // set null for empty links
+        if($field->isObjectLink() && empty($value)){
+            $value = null;
+        }
+
         // Validate value using special validator
         // Skip validation if value is null and object field can be null
         if ($validator && (!$field->isNull() || !is_null($value)) && !call_user_func_array([$validator, 'validate'], [$value])){
@@ -432,7 +437,7 @@ class Record implements RecordInterface
 
         if(isset($this->data[$name]))
         {
-            if($this->getConfig()->getField($name)->isBoolean() && intval($this->data[$name]) === intval($value) ) {
+            if($field->isBoolean() && intval($this->data[$name]) === intval($value) ) {
                 unset($this->updates[$name]);
                 return true;
             }

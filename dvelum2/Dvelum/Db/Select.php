@@ -631,6 +631,7 @@ class Select
         }
 
         foreach ($columns as $k => $v) {
+            $v = (string)$v;
             $wordsCount = str_word_count($v, 0, "_*\"");
 
             if (is_int($k)) {
