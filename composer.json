@@ -5,7 +5,7 @@
     "description": "PHP/ExtJS-based web development platform",
     "keywords": ["dvelum","php","extjs", "IDE", "orm"],
     "homepage": "https://github.com/dvelum/dvelum",
-    "license": "GPL-3.0",
+    "license": "GPL-3.0-only",
     "authors": [
         {
             "name": "Kirill Yegorov",
