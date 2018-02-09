@@ -278,12 +278,17 @@ class Orm
         }
 
         $objectName = implode('_', array_map('ucfirst', explode('_', $objectName)));
+
+        $className = 'Model_' . $objectName;
+        $nameSpacedClassName = 'App\\'.str_replace('_','\\', $className);
+
         /*
          * Instantiate real or virtual model
          */
-        if (class_exists('Model_' . $objectName)) {
-            $class = 'Model_' . $objectName;
-            $this->models[$listName] = new $class($objectName, $this->modelSettings);
+        if (class_exists($className)) {
+            $this->models[$listName] = new $className($objectName, $this->modelSettings);
+        } elseif (class_exists($nameSpacedClassName)) {
+            $this->models[$listName] = new $nameSpacedClassName($objectName, $this->modelSettings);
         } else {
             $this->models[$listName] = new Model($objectName, $this->modelSettings);
         }

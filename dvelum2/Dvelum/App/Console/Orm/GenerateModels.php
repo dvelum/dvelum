@@ -33,22 +33,33 @@ class GenerateModels extends Console\Action
         $modelPath = Config::storage()->get('main.php')->get('local_models');
 
         echo 'GENERATE MODELS' . PHP_EOL;
+
         foreach ($dbObjectManager->getRegisteredObjects() as $object) {
             $list = explode('_', $object);
             $list = array_map('ucfirst', $list);
             $class = 'Model_' . implode('_', $list);
-            $path = $modelPath . '/' . str_replace(['_', '\\'], '/', $class) . '.php';
+
+            $path = str_replace(['_', '\\'], '/', $class);
+            $namespace = dirname($path);
+            $fileName = basename($path);
+
+            $path = $modelPath . '/' . $namespace . '/' . $fileName . '.php';
 
             if (!class_exists($class)) {
-                echo $class . "\n";
+                echo $namespace . '/' . $fileName . "\n";
                 $dir = dirname($path);
 
                 if (!is_dir($dir) && !mkdir($dir, 0755, true)) {
                     echo Lang::lang()->get('CANT_WRITE_FS') . ' ' . $dir;
                     return false;
                 }
-                $data = '<?php ' . PHP_EOL . 'class ' . $class . ' extends \Dvelum\Orm\Model {}';
 
+                $data = '<?php ' . PHP_EOL
+                    . 'namespace ' . $namespace . ';' . PHP_EOL . PHP_EOL
+                    . 'use Dvelum\\Orm\\Model;' . PHP_EOL . PHP_EOL
+                    . 'class ' . $fileName . ' extends Model {}';
+
+                echo $path . "\n";
                 if (!file_put_contents($path, $data)) {
                     echo Lang::lang()->get('CANT_WRITE_FS') . ' ' . $path;
                     return false;
