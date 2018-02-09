@@ -20,9 +20,14 @@ return [
         'adapter' => '\\Dvelum\\App\\Console\\Orm\\Build'
     ],
     // Create Model classes
-    'genModels'=>[
+    'generateModels'=>[
         'type' => 'action',
-        'adapter' => '\\Dvelum\\App\\Console\\Orm\\GenerateModels'
+        'adapter' => '\\Dvelum\\App\\Console\\Generator\\Models'
+    ],
+    // Create Model classes
+    'generateClassMap'=>[
+        'type' => 'action',
+        'adapter' => '\\Dvelum\\App\\Console\\Generator\\ClassMap'
     ],
     // Rebuild JS lang files
     'buildJs'=>[

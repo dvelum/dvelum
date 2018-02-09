@@ -18,14 +18,14 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\App\Console\Orm;
+namespace Dvelum\App\Console\Generator;
 
 use Dvelum\App\Console;
 use Dvelum\Orm;
 use Dvelum\Config;
 use Dvelum\Lang;
 
-class GenerateModels extends Console\Action
+class Models extends Console\Action
 {
     public function action(): bool
     {
