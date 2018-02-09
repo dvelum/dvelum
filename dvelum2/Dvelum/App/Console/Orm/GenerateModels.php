@@ -40,13 +40,13 @@ class GenerateModels extends Console\Action
             $class = 'Model_' . implode('_', $list);
 
             $path = str_replace(['_', '\\'], '/', $class);
-            $namespace = dirname($path);
+            $namespace = str_replace('/', '\\' , dirname($path));
             $fileName = basename($path);
 
-            $path = $modelPath . '/' . $namespace . '/' . $fileName . '.php';
+            $path = $modelPath . '/' . $path . '.php';
 
             if (!class_exists($class)) {
-                echo $namespace . '/' . $fileName . "\n";
+                echo $namespace . '\\' . $fileName . "\n";
                 $dir = dirname($path);
 
                 if (!is_dir($dir) && !mkdir($dir, 0755, true)) {
@@ -59,7 +59,6 @@ class GenerateModels extends Console\Action
                     . 'use Dvelum\\Orm\\Model;' . PHP_EOL . PHP_EOL
                     . 'class ' . $fileName . ' extends Model {}';
 
-                echo $path . "\n";
                 if (!file_put_contents($path, $data)) {
                     echo Lang::lang()->get('CANT_WRITE_FS') . ' ' . $path;
                     return false;
