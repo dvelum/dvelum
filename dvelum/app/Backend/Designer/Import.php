@@ -2,6 +2,11 @@
 use Dvelum\Orm;
 use Dvelum\Orm\Record\Builder;
 
+/**
+ * @todo replace direct connections by getting it from DB Manager
+ */
+use \Zend\Db as Zend_Db;
+
 class Backend_Designer_Import
 {
     /**
