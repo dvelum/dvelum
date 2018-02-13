@@ -172,7 +172,6 @@ Ext.define('designer.properties.Grid',{
 	showFiltersWindow:function(){
 		Ext.create('designer.grid.filters.Window',{
 			objectName : this.objectName,
-			storeName : this.dataGrid.getSource().store,
 			listeners:{
 				dataSaved:{
 					fn:function(){
@@ -186,8 +185,7 @@ Ext.define('designer.properties.Grid',{
 	showColumnsWindow:function(){
 		var win = Ext.create('designer.grid.column.Window',{
 			title:desLang.gridColumnsConfig,
-			objectName : this.objectName,
-			storeName : this.dataGrid.getSource().store
+			objectName : this.objectName
 		});
 		win.show();
 	},

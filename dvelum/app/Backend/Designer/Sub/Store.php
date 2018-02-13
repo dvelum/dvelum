@@ -77,6 +77,64 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
         Response::jsonSuccess($fields);
     }
     /**
+     * Get list of object store fields
+     */
+    public function listStoreFieldsAction()
+    {
+        $this->_checkLoaded();
+        $name = Request::post('object', 'string', '');
+
+        $project = $this->_getProject();
+        $object = $project->getObject($name);
+
+        $store = $object->store;
+
+        if($store instanceof Ext_Helper_Store){
+            if($store->getType() == Ext_Helper_Store::TYPE_JSCODE){
+                Response::jsonSuccess([]);
+            }else{
+                $store = $store->getValue();
+            }
+        }
+        $store = trim(str_replace(Designer_Project_Code::$NEW_INSTANCE_TOKEN, '', $store));
+
+        if(!strlen($store) || !$project->objectExists($store)){
+            Response::jsonError('Undefined store object');
+        }
+
+        $store = $project->getObject($store);
+        Response::jsonSuccess($this->prepareList($store));
+    }
+
+    protected function prepareList(Ext_Object $object) : array
+    {
+        if($object->isInstance()){
+            $object = $object->getObject();
+        }
+
+        $fields = [];
+
+        // Do not show model fields. It cause misleading
+        //        $model = $object->model;
+        //
+        //        if(strlen($model)){
+        //            $model = $project->getObject($model);
+        //            $fields = $model->fields;
+        //        }
+
+        if(empty($fields))
+            $fields = $object->fields;
+
+        if(is_string($fields)){
+            $fields = json_decode($fields , true);
+        }elseif(is_array($fields) && !empty($fields)){
+            foreach ($fields as $name=>&$field){
+                $field = $field->getConfig()->__toArray(true);
+            }unset ($field);
+        }
+        return $fields;
+    }
+    /**
      * Get list of store fields
      */
     public function listfieldsAction()
@@ -90,35 +148,102 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
         if(!strlen($name) || !$project->objectExists($name))
             Response::jsonError('Undefined Store object');
 
-        $this->_project = $project;
-        $this->_object = $project->getObject($name);
-        if($this->_object->isInstance())
-            $this->_object = $this->_object->getObject();
-        $fields = array();
+        $project = $project;
+        $object = $project->getObject($name);
 
-         // Do not show model fields. It cause misleading
-//        $model = $this->_object->model;
-//
-//        if(strlen($model)){
-//            $model = $this->_project->getObject($model);
-//            $fields = $model->fields;
-//        }
-
-        if(empty($fields))
-            $fields = $this->_object->fields;
-
-        if(is_string($fields)){
-            $fields = json_decode($fields , true);
-        }elseif(is_array($fields) && !empty($fields)){
-            foreach ($fields as $name=>&$field){
-                $field = $field->getConfig()->__toArray(true);
-            }unset ($field);
-        }
-
-        Response::jsonSuccess($fields);
+        Response::jsonSuccess($this->prepareList($object));
     }
 
-    public function allfieldsAction()
+    /**
+     * @param $store
+     * @param Designer_Project $project
+     * @return array
+     */
+    protected function extractFields($store, Designer_Project $project) : array
+    {
+        if (empty($store)) {
+            return [];
+        }
+
+        if ($store->isInstance()) {
+            $store = $store->getObject();
+        }
+
+        $fields = [];
+
+        if ($store->isValidProperty('fields')) {
+            $fields = $store->fields;
+
+            if (empty($fields)) {
+                $fields = [];
+            }
+
+            if (is_string($fields)) {
+                $fields = json_decode($fields, true);
+            }
+        }
+
+        if ($store->isValidProperty('model') && strlen($store->model) && $store->objectExists($store->model)) {
+            $model = $project->getObject($store->model);
+
+            if ($model->isValidProperty('fields')) {
+                $modelFields = $model->fields;
+
+                if (is_string($modelFields)) {
+                    $modelFields = json_decode($modelFields, true);
+                }
+
+                if (!empty($modelFields)) {
+                    $fields = array_merge($fields, $modelFields);
+                }
+            }
+        }
+
+        $data = [];
+        if (!empty($fields)) {
+            foreach ($fields as $item) {
+                if (is_object($item)) {
+                    $data[] = ['name' => $item->name, 'type' => $item->type];
+                } else {
+                    $data[] = ['name' => $item['name'], 'type' => $item['type']];
+                }
+            }
+
+        }
+        return $data;
+    }
+
+    public function allStoreFieldsAction()
+    {
+        $this->_checkLoaded();
+        $name = Request::post('object', 'string', '');
+
+        $project = $this->_getProject();
+
+        if(!strlen($name) || !$project->objectExists($name)){
+            Response::jsonError('Undefined object');
+        }
+
+        $object = $project->getObject($name);
+        $store = $object->store;
+
+        if($store instanceof Ext_Helper_Store){
+            if($store->getType() == Ext_Helper_Store::TYPE_JSCODE){
+                Response::jsonSuccess([]);
+            }else{
+                $store = $store->getValue();
+            }
+        }
+        $store = trim(str_replace(Designer_Project_Code::$NEW_INSTANCE_TOKEN, '', $store));
+
+        if(!strlen($store) || !$project->objectExists($store)){
+            Response::jsonError('Undefined stroe object');
+        }
+
+        $store = $project->getObject($store);
+        Response::jsonSuccess($this->extractFields($store, $project));
+    }
+    public function allFieldsAction()
     {
         $this->_checkLoaded();
         $name = Request::post('object', 'string', '');
@@ -126,57 +251,13 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
         $name = trim(str_replace('[new:]','',$name));
 
         $project = $this->_getProject();
+
         if(!strlen($name) || !$project->objectExists($name))
             Response::jsonError('Undefined Store object');
 
-        $this->_project = $project;
-        $this->_object = $project->getObject($name);
+        $store = $project->getObject($name);
 
-        if($this->_object->isInstance())
-            $this->_object = $this->_object->getObject();
-
-        $fields = [];
-
-        if($this->_object->isValidProperty('fields'))
-        {
-            $fields = $this->_object->fields;
-
-            if(empty($fields))
-                $fields = [];
-
-            if(is_string($fields))
-                $fields = json_decode($fields , true);
-        }
-
-        if($this->_object->isValidProperty('model') && strlen($this->_object->model) && $this->_project->objectExists($this->_object->model))
-        {
-            $model = $this->_project->getObject($this->_object->model);
-
-            if($model->isValidProperty('fields'))
-            {
-                $modelFields = $model->fields;
-
-                if(is_string($modelFields)){
-                    $modelFields = json_decode($modelFields , true);
-                }
-
-                if(!empty($modelFields)){
-                    $fields = array_merge($fields,$modelFields);
-                }
-            }
-        }
-
-        $data = [];
-        if(!empty($fields))
-        {
-            foreach ($fields as $item)
-                if(is_object($item))
-                    $data[] = array('name'=>$item->name , 'type'=>$item->type);
-                else
-                    $data[] = array('name'=>$item['name'],'type'=>$item['type']);
-        }
-
-        Response::jsonSuccess($data);
+        Response::jsonSuccess($this->extractFields($store, $project));
     }
 
     public function importdbfieldsAction(){

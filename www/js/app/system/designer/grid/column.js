@@ -11,16 +11,15 @@ Ext.define('designer.grid.column.Model',{
 	],
 	idProperty:'id'
 });
+
 Ext.define('designer.grid.column.Window',{
 	extend:'Ext.Window',
 	layout:'border',
 	dataStore:null,
-	dataGrid:null,
 	width:app.checkWidth(900),
 	height:app.checkHeight(650),
 	propertiesPanel:null,
 	objectName:null,
-	storeName:null,
 	controllerUrl:null,
 	cellEditing:null,
 	dataTree:null,
@@ -215,13 +214,13 @@ Ext.define('designer.grid.column.Window',{
 							model:'designer.model.fieldsModel',
 							proxy: {
 								type: 'ajax',
-								url:app.createUrl([designer.controllerUrl ,'store','']) +  'allfields',
+								url:app.createUrl([designer.controllerUrl ,'store','']) +  'allStoreFields',
 								reader: {
 									type: 'json',
 									rootProperty: 'data'
 								},
 								extraParams:{
-									object:this.storeName
+									object:this.objectName
 								},
 								simpleSortMode: true
 							},
@@ -539,7 +538,6 @@ Ext.define('designer.grid.column.Window',{
 	importFieldsFromStore:function()
 	{
 		var win = Ext.create('designer.grid.exportFieldsWin',{
-			storeName:this.storeName,
 			controllerUrl:this.controllerUrl,
 			objectName:this.objectName
 		});

@@ -16,8 +16,6 @@ Ext.define('designer.grid.exportFieldsWin',{
 	height:250,
 	modal:true,
 
-
-	storeName:null,
 	controllerUrl:null,
 	objectName:null,
 
@@ -29,14 +27,14 @@ Ext.define('designer.grid.exportFieldsWin',{
 			model:'designer.model.fieldsModel',
 			proxy: {
 				type: 'ajax',
-				url:app.createUrl([designer.controllerUrl ,'store','']) +  'allfields',
+				url:app.createUrl([designer.controllerUrl ,'store','']) +  'allStoreFields',
 				reader: {
 					type: 'json',
 					rootProperty: 'data',
 					idProperty: 'id'
 				},
 				extraParams:{
-					object:this.storeName
+					object:this.objectName
 				},
 				simpleSortMode: true
 			},

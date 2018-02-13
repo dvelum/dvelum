@@ -18,7 +18,6 @@ Ext.define('designer.grid.filters.Window',{
 	width:700,
 	height:500,
 	objectName:null,
-	storeName:null,
 	title:desLang.filtersFeature,
 
 	initComponent:function(){
@@ -97,14 +96,14 @@ Ext.define('designer.grid.filters.Window',{
 							model:'designer.model.fieldsModel',
 							proxy: {
 								type: 'ajax',
-								url:app.createUrl([designer.controllerUrl ,'store','']) +  'listfields',
+								url:app.createUrl([designer.controllerUrl ,'store','']) +  'listStoreFields',
 								reader: {
 									type: 'json',
 									rootProperty: 'data',
 									idProperty: 'id'
 								},
 								extraParams:{
-									object:this.storeName
+									object:this.objectName
 								},
 								simpleSortMode: true
 							},

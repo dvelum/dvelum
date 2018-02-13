@@ -109,8 +109,21 @@ class Designer_Project_Code
         $store = $object->store;
 
         if($store instanceof Ext_Helper_Store){
-            $object->store = (string) $object->store;
+
+            switch ($store->getType()){
+                case Ext_Helper_Store::TYPE_INSTANCE :
+                    $object->store = 'Ext.create("'.Ext_Code::appendNamespace(trim(str_replace(Designer_Project_Code::$NEW_INSTANCE_TOKEN, '', $store->getValue()))).'",{})';
+                    break;
+                case Ext_Helper_Store::TYPE_STORE :
+                    $object->store = Ext_Code::appendRunNamespace($store->getValue());
+                    break;
+                case Ext_Helper_Store::TYPE_JSCODE :
+                    $object->store = $store->getValue();
+                    break;
+            }
+
         }else{
+            //backward compatibility
             $store = trim($store);
             if(strpos($store , Designer_Project_Code::$NEW_INSTANCE_TOKEN) !==false){
                 $object->store = 'Ext.create("'.Ext_Code::appendNamespace(trim(str_replace(Designer_Project_Code::$NEW_INSTANCE_TOKEN, '', $store))).'",{})';
