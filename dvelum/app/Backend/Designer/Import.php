@@ -1,6 +1,6 @@
 <?php
 use Dvelum\Orm;
-use Orm\Record\Builder;
+use Dvelum\Orm\Record\Builder;
 
 class Backend_Designer_Import
 {
