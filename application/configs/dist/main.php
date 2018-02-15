@@ -202,5 +202,5 @@ return array(
             ]
         ]
     ],
-    'use_composer_autoload' => false
+    'use_composer_autoload' => true
 );
