@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Router;
 
 use Dvelum\App\Router;
+use Dvelum\App\Auth;
 use Dvelum\Config;
 use Dvelum\Request;
 use Dvelum\Response;
@@ -53,6 +54,7 @@ class Module extends Router
     public function route(Request $request, Response $response): void
     {
         $pageVersion = $request->get('vers', 'int', false);
+
         $showRevision = false;
         $pageCode = $request->getPart(0);
 
@@ -71,10 +73,12 @@ class Module extends Router
         $cache = $cacheManager->get('data');
 
         if ($pageVersion) {
-            $user = User::getInstance();
+            $user = User::factory();
             if ($user->isAuthorized() && $user->isAdmin()) {
-                $pageData = array_merge($pageData,
-                    Model::factory('Vc')->getData('page', $pageData['id'], $pageVersion));
+                $pageData = array_merge(
+                    $pageData,
+                    Model::factory('Vc')->getData('page', $pageData['id'], $pageVersion)
+                );
                 $showRevision = true;
             }
         }

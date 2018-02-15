@@ -7,18 +7,17 @@ use Dvelum\Orm\Model as Model;
  */
 class User
 {
-	protected static $_instance;
-	
+	protected static $instance;
 
 	/**
      * @var Model_User
      */
-	protected $_model;
+	protected $model;
 	
-	protected $_info = array();
-	protected $_id = false;
+	protected $info = array();
+	protected $id = false;
 	
-	protected $_authChecked = false;
+	protected $authChecked = false;
 
 	protected $authProvider = false;
 
@@ -27,7 +26,7 @@ class User
 	/**
      * @var Store_Session
      */
-	protected $_session = false;
+	protected $session = false;
 
 	/**
      * Authorizing the user: successful authorization returns 
@@ -59,16 +58,16 @@ class User
      */
 	static public function getInstance()
 	{
-		if(!isset(static::$_instance))
-			static::$_instance = new static();
-		return static::$_instance;
+		if(!isset(static::$instance))
+			static::$instance = new static();
+		return static::$instance;
 	}
 
 	protected function __construct()
 	{
-		$this->_model = Model::factory('User');
-		$this->_session = Store_Session::getInstance();
-		$this->_checkAuthSession();
+		$this->model = Model::factory('User');
+		$this->session = Store_Session::getInstance();
+		$this->checkAuthSession();
 	}
 
 	/**
@@ -78,21 +77,21 @@ class User
      */
 	public function setId($id)
 	{
-		$this->_id = $id;
-		$this->_info = null;
-		$this->_permissions = null;
+		$this->id = $id;
+		$this->info = null;
+		$this->permissions = null;
 	}
 
 	/**
      * Load user information
      * @throws Exception
      */
-	protected function _loadData()
+	protected function loadData()
 	{
-		if(!$this->_id || !$this->isAuthorized())
+		if(!$this->id || !$this->isAuthorized())
 			throw new Exception('User is not authorised');
 		
-		$data = $this->_model->getInfo($this->_id);
+		$data = $this->model->getInfo($this->id);
 		if(!$data)
 			throw new Exception('Invalid user data');
 		
@@ -105,7 +104,7 @@ class User
      */
 	public function setInfo(array $data)
 	{
-		$this->_info = $data;
+		$this->info = $data;
 	}
 
 	/**
@@ -114,10 +113,10 @@ class User
      */
 	public function getInfo()
 	{
-		if(empty($this->_info))
-			$this->_loadData();
+		if(empty($this->info))
+			$this->loadData();
 		
-		return $this->_info;
+		return $this->info;
 	}
 
 	/**
@@ -152,13 +151,13 @@ class User
 	public function get($property)
     {
         if($property === 'id')
-            return $this->_id;
+            return $this->id;
 
-        if(empty($this->_info))
-            $this->_loadData();
+        if(empty($this->info))
+            $this->loadData();
 
-        if(isset($this->_info[$property]))
-            return $this->_info[$property];
+        if(isset($this->info[$property]))
+            return $this->info[$property];
         else
             throw new \Exception('User. Invalid property "' . $property . '" ');
     }
@@ -168,7 +167,7 @@ class User
 		if($property === 'id')
 			return true;
 			
-		return isset($this->_info[$property]);
+		return isset($this->info[$property]);
 	}
 
    /**
@@ -181,7 +180,7 @@ class User
 	*/
 	public function isAuthorized()
 	{
-	    if ($this->_authChecked){
+	    if ($this->authChecked){
             return true;
         }else{
 	        return false;
@@ -197,8 +196,8 @@ class User
 		if(!$this->isAuthorized())
 			return false;
 
-		if(empty($this->_info))
-		$this->_loadData();
+		if(empty($this->info))
+		$this->loadData();
 			
 		return (boolean) $this->admin;	
 	}
@@ -211,13 +210,13 @@ class User
 	{
 		$ses = Store::factory(Store::Session);
 		$ses->set('auth' , true);
-		$ses->set('auth_id' , $this->_id);			
-		$this->_authChecked = true;	
+		$ses->set('auth_id' , $this->id);
+		$this->authChecked = true;
 	}
 
 	public function getId()
 	{
-	  return  $this->_id;
+	  return  $this->id;
 	}
 
     /**
@@ -237,18 +236,18 @@ class User
 		$ses = Store::factory(Store::Session);
 		$ses->set('auth' , false);
 		$ses->set('auth_id' , false);
-		$this->_authChecked = false;
-		$this->_info = array();
-		$this->_permissions = null;
+		$this->authChecked = false;
+		$this->info = array();
+		$this->permissions = null;
 	}
 
 	/**
      * Check if user auth session exists 
      */
-	protected function _checkAuthSession()
+	protected function checkAuthSession()
 	{
-		if($this->_session->keyExists('auth') && $this->_session->get('auth') && $this->_session->keyExists('auth_id') && $this->_session->get('auth_id')){
-            $this->setId($this->_session->get('auth_id'));
+		if($this->session->keyExists('auth') && $this->session->get('auth') && $this->session->keyExists('auth_id') && $this->session->get('auth_id')){
+            $this->setId($this->session->get('auth_id'));
         }
 	}
 
@@ -258,7 +257,7 @@ class User
 	 */
 	public function getLanguage()
 	{
-		return $this->_session->get('lang');
+		return $this->session->get('lang');
 	}
 
 	/**
@@ -267,7 +266,7 @@ class User
 	 */
 	public function setLanguage($lang)
 	{
-		$this->_session->set('lang' , $lang);
+		$this->session->set('lang' , $lang);
 	}
 
     /**

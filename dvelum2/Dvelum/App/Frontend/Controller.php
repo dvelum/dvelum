@@ -58,7 +58,6 @@ class Controller extends App\Controller
         $page = \Page::getInstance();
         $page->setTemplatesPath('public/');
 
-
         /**
          * @var BlockManager $blockManager
          */

@@ -25,11 +25,12 @@
  */
 class Page
 {
-    protected static $_instance;
+    protected static $instance;
     /**
      * @var Externals_Expert
      */
-    protected $_externalsExpert = false;
+    protected $externalsExpert = false;
+    protected $templatesPath = '';
     public $title = '';
     public $html_title = '';
     public $code = 'index';
@@ -37,7 +38,7 @@ class Page
     public $meta_description = '';
     public $meta_keywords = '';
     public $theme = 'default';
-    protected $_ogData = array(
+    protected $ogData = array(
         'image' => '' ,
         'title' => '' ,
         'description' => '' ,
@@ -54,10 +55,10 @@ class Page
      */
     static public function getInstance()
     {
-        if(!isset(self::$_instance))
-            self::$_instance = new self();
+        if(!isset(self::$instance))
+            self::$instance = new self();
 
-        return self::$_instance;
+        return self::$instance;
     }
 
     /**
@@ -67,7 +68,7 @@ class Page
      */
     public function setOgProperty($key , $value)
     {
-        $this->_ogData[$key] = $value;
+        $this->ogData[$key] = $value;
     }
 
     /**
@@ -76,7 +77,7 @@ class Page
      */
     public function setExternalsExpert(Externals_Expert $expert)
     {
-        $this->_externalsExpert = $expert;
+        $this->externalsExpert = $expert;
     }
 
     /**
@@ -86,7 +87,7 @@ class Page
     public function getOgMeta()
     {
         $s = '';
-        foreach($this->_ogData as $key => $value)
+        foreach($this->ogData as $key => $value)
             if(strlen($value))
                 $s .= '<meta property="og:' . $key . '" content="' . $value . '"/>';
 
@@ -99,7 +100,7 @@ class Page
      */
     public function setTemplatesPath($path)
     {
-        $this->_templatesPath = $path;
+        $this->templatesPath = $path;
     }
 
     /**
@@ -108,7 +109,7 @@ class Page
      */
     public function getTemplatesPath()
     {
-        return $this->_templatesPath;
+        return $this->templatesPath;
     }
 
     /**
@@ -117,7 +118,7 @@ class Page
      */
     public function getThemePath()
     {
-        return $this->_templatesPath . $this->theme . '/';
+        return $this->templatesPath . $this->theme . '/';
     }
 
     /**
