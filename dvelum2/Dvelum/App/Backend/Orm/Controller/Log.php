@@ -56,7 +56,7 @@ class Log extends Controller
         $this->response->json(['success'=>true, 'data'=>$data]);
     }
 
-    public function getlogfilesAction()
+    public function getLogFilesAction()
     {
         $ormConfig = Config::storage()->get('orm.php');
         $logPath = $ormConfig->get('log_path');

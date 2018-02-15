@@ -55,7 +55,7 @@ class Builder
 
         $log = false;
         if (static::$writeLog) {
-            $log = new \Dvelum\Log\File\Sql(static::$logsPath . $objectConfig->get('connection') . '-' . static::$logPrefix . '-build.log');
+            $log = new \Dvelum\Log\File\Sql(static::$logsPath . $objectConfig->get('connection') . '-' . static::$logPrefix . '-build.sql');
         }
 
         $ormConfig = Cfg::storage()->get('orm.php');
