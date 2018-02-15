@@ -77,7 +77,7 @@ class Uml extends Controller
 
             foreach($fields as $fieldName => $fieldData){
                 $data[$objectName]['fields'][] = $fieldName;
-
+                $data[$objectName]['savedlinks'] = [];
                 if(isset($items[$objectName])){
                     $data[$objectName]['position'] = array('x'=>$items[$objectName]['x'],'y'=>$items[$objectName]['y']);
                     $data[$objectName]['savedlinks'] = [];
