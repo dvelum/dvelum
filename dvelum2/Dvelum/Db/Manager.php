@@ -49,9 +49,12 @@ class Manager implements ManagerInterface
      * @throws \Exception
      * @return Adapter
      */
-    public function getDbConnection(string $name) : Adapter
+    public function getDbConnection(string $name, ?string $workMode = null) : Adapter
     {
-        $workMode = $this->appConfig->get('development');
+        if(empty($workMode)){
+            $workMode = $this->appConfig->get('development');
+        }
+
         if(!isset($this->dbConnections[$workMode][$name]))
         {
             $cfg = $this->getDbConfig($name);
@@ -64,27 +67,37 @@ class Manager implements ManagerInterface
                 $cfg->set('profiler' , true);
             }
 
-            $db = new Adapter($cfg->__toArray());
-
-            if($this->appConfig->get('development')){
-                $profiler = $db->getProfiler();
-                if(!empty($profiler)){
-                    \Debug::addDbProfiler($profiler);
-                }
-            }
-            /*
-             * Set transaction isolation level
-             */
-            if($cfg->offsetExists('transactionIsolationLevel')){
-                $level = $cfg->get('transactionIsolationLevel');
-                if(!empty($level) && $level!=='default'){
-                    $db->query('SET TRANSACTION ISOLATION LEVEL '.$level);
-                }
-            }
-
+            $db = $this->initConnection($cfg->__toArray());
             $this->dbConnections[$workMode][$name] = $db;
         }
         return $this->dbConnections[$workMode][$name];
+    }
+
+    /**
+     * @param array $cfg
+     * @return Adapter
+     * @throws \Exception
+     */
+    public function initConnection(array $cfg) : Adapter
+    {
+        $db = new Adapter($cfg);
+
+        if($this->appConfig->get('development')){
+            $profiler = $db->getProfiler();
+            if(!empty($profiler)){
+                \Debug::addDbProfiler($profiler);
+            }
+        }
+        /*
+         * Set transaction isolation level
+         */
+        if(isset($cfg['transactionIsolationLevel'])){
+            $level = $cfg['transactionIsolationLevel'];
+            if(!empty($level) && $level!=='default'){
+                $db->query('SET TRANSACTION ISOLATION LEVEL '.$level);
+            }
+        }
+        return $db;
     }
     /**
      * Get Db Connection config
@@ -92,9 +105,11 @@ class Manager implements ManagerInterface
      * @throws \Exception
      * @return ConfigInterface
      */
-    public function getDbConfig(string $name) : ConfigInterface
+    public function getDbConfig(string $name, string $workMode = null) : ConfigInterface
     {
-        $workMode = $this->appConfig->get('development');
+        if(empty($workMode)){
+            $workMode = $this->appConfig->get('development');
+        }
 
         if($workMode == \Dvelum\App\Application::MODE_INSTALL)
             $workMode = \Dvelum\App\Application::MODE_DEVELOPMENT;

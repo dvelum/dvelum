@@ -271,13 +271,15 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
         if($connectionId === false || !$table || empty($fields) || $conType===false)
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
-        $conManager = new Backend_Orm_Connections_Manager($this->_configMain->get('db_configs'));
-        $cfg = $conManager->getConnection($conType, $connectionId);
-        if(!$cfg)
-            Response::jsonError($this->_lang->WRONG_REQUEST);
-        $cfg = $cfg->__toArray();
+        $conManager = new \Dvelum\Db\Manager($this->_configMain);
 
-        $data = Backend_Designer_Import::checkImportDBFields($cfg, $fields, $table);
+        try{
+            $db = $conManager->getDbConnection($connectionId, $conType);
+        }catch (Exception $e){
+            Response::jsonError($this->_lang->WRONG_REQUEST);
+        }
+
+        $data = Backend_Designer_Import::checkImportDBFields($db, $fields, $table);
 
         if(!$data)
             Response::jsonError($this->_lang->WRONG_REQUEST);

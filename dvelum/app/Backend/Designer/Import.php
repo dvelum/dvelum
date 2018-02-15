@@ -1,6 +1,7 @@
 <?php
 use Dvelum\Orm;
 use Dvelum\Orm\Record\Builder;
+use Dvelum\Db\Adapter;
 
 class Backend_Designer_Import
 {
@@ -49,28 +50,21 @@ class Backend_Designer_Import
 
     /**
      *
-     * @param array $config - fot Zend_Db::factory
+     * @param Adapter $db
      * @param array $fields - fields to check
      * @param string $table            
      * @return array or false on error
      */
-    static public function checkImportDBFields(array $config , array $fields , $table)
+    static public function checkImportDBFields(Adapter $db , array $fields , $table)
     {
-        if(empty($config) || empty($fields) || ! strlen($table))
+        if(empty($fields) || ! strlen($table))
             return false;
-        
-        $data = array();
-        $adapter = 'Mysqli';
-        if(isset($config['adapter']))
-            $adapter = $config['adapter'];
-        
-        try{
-            $db = Zend_Db::factory($adapter , $config);
-        }catch(Exception $e){
-            return false;
-        }
-        
-        $desc = $db->describeTable($table);
+
+        $meta = $db->getMeta();
+        $data = [];
+
+        $desc = $meta->getColumns($table);
+
         $dbFields = array_keys($desc);
         
         foreach($fields as $field)
@@ -80,10 +74,10 @@ class Backend_Designer_Import
             
             $o = Ext_Factory::object('Data_Field',array(
                     'name' => $field,
-                    'type' => self::convetDBFieldTypeToJS($desc[$field]['DATA_TYPE'])
+                    'type' => self::convetDBFieldTypeToJS($desc[$field]->getDataType())
             ));
             
-            switch($desc[$field]['DATA_TYPE'])
+            switch($desc[$field]->getDataType())
             {
             	case 'date': $o->dateFormat = 'Y-m-d';
             	    break;
@@ -138,27 +132,6 @@ class Backend_Designer_Import
         return $type;
     }
 
-    /**
-     * Get table fields
-     * 
-     * @param array $config - connection config
-     * @param string $table            
-     * @return array or false
-     */
-    static public function getTableFields($config , $table)
-    {      
-        $adapter = 'Mysqli';
-        if(isset($config['adapter']))
-            $adapter = $config['adapter'];
-        
-        try{
-            $db = Zend_Db::factory($adapter , $config);
-        }catch(Exception $e){
-            return false;
-        }
-
-        return $db->describeTable($table);
-    }
 
     /**
      * Convert db column info (from Zend_Db describe table) into ExtJs Field
@@ -168,7 +141,7 @@ class Backend_Designer_Import
      */
     static public function convertDbFieldToExtField($info)
     {
-        $type = strtolower($info['DATA_TYPE']);
+        $type = strtolower($info['data_type']);
         $newField = false;
         
         /*
@@ -246,7 +219,7 @@ class Backend_Designer_Import
         }
         
         if($newField)
-            $newField->fieldLabel = $info['COLUMN_NAME'];
+            $newField->fieldLabel = $info['name'];
         
         return $newField;
     }

@@ -336,25 +336,22 @@ class Connections extends \Dvelum\App\Backend\Controller
 
         $cfg = $cfg->__toArray();
 
+        $conManager = new \Dvelum\Db\Manager($this->appConfig);
         try{
-            $db = Zend_Db::factory($cfg['adapter'] , $cfg);
-            $db->query('SET NAMES ' . $cfg['charset']);
+            $connection = $conManager->initConnection($cfg);
         }catch (\Exception $e){
             $this->response->error($this->lang->get('CANT_CONNECT').' '.$e->getMessage());
             return;
         }
 
+        $meta = $connection->getMeta();
+        $tables = $meta->getTableNames();
 
-        $data = array();
-        try{
-            $list = $db->listTables();
-        }catch (\Exception $e){
-            $this->response->error($e->getMessage());
-            return;
+        $data = [];
+
+        foreach($tables as $v){
+            $data[] = ['id'=>$v,'title'=>$v];
         }
-
-        foreach($list as $v)
-            $data[] = array('id'=>$v,'title'=>$v);
 
         $this->response->success($data);
     }
@@ -370,7 +367,6 @@ class Connections extends \Dvelum\App\Backend\Controller
             return;
         }
 
-
         $cfg = $this->connections->getConnection($connectionType, $connectionId);
 
         if(!$cfg){
@@ -378,22 +374,21 @@ class Connections extends \Dvelum\App\Backend\Controller
             return;
         }
 
-
-
-        $cfg = $cfg->__toArray();
+        $conManager = new \Dvelum\Db\Manager($this->appConfig);
         try{
-            $db = Zend_Db::factory($cfg['adapter'] , $cfg);
-            $db->query('SET NAMES ' . $cfg['charset']);
+            $connection = $conManager->initConnection($cfg->__toArray());
         }catch (\Exception $e){
-            $this->response->error($this->lang->CANT_CONNECT.' '.$e->getMessage());
+            $this->response->error($this->lang->get('CANT_CONNECT').' '.$e->getMessage());
             return;
         }
 
-        $data = array();
-        $desc = $db->describeTable($table);
+        $data = [];
 
-        foreach ($desc as $v=>$k)
-            $data[] = array('name'=>$v, 'type'=>$k['DATA_TYPE']);
+        $meta = $connection->getMeta();
+        $columns = $meta->getColumns($table);
+
+        foreach ($columns as $v=>$k)
+            $data[] = ['name'=>$v, 'type'=>$k['data_type']];
 
         $this->response->success($data);
     }
@@ -466,107 +461,104 @@ class Connections extends \Dvelum\App\Backend\Controller
         $this->response->success($data);
     }
 
-    public function connectobjectAction()
+    public function connectObjectAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $connectionId = $this->request->post('connId', 'string', false);
         $connectionType = $this->request->post('type', 'integer', false);
-        $table = $this->request->post('table', 'string' , false);
+        $table = $this->request->post('table', 'string', false);
 
         $errors = null;
 
-        if($connectionId === false || $connectionType===false || $table === false){
+        if ($connectionId === false || $connectionType === false || $table === false) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
-
 
         $cfg = $this->connections->getConnection($connectionType, $connectionId);
 
-        if(!$cfg){
+        if (!$cfg) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-
         $cfg = $cfg->__toArray();
-        try{
+        try {
             $cfg['driver'] = $cfg['adapter'];
             $db = new Adapter($cfg);
             $db->query('SET NAMES ' . $cfg['charset']);
             $tables = $db->listTables();
-        }catch (\Exception $e){
-            $this->response->error($this->lang->get('CANT_CONNECT').' '.$e->getMessage());
+        } catch (\Exception $e) {
+            $this->response->error($this->lang->get('CANT_CONNECT') . ' ' . $e->getMessage());
             return;
         }
 
         $import = new Import();
 
-        if(!$import->isValidPrimaryKey($db , $table))
-        {
+        if (!$import->isValidPrimaryKey($db, $table)) {
             $errors = $import->getErrors();
 
-            if(!empty($errors))
+            if (!empty($errors)) {
                 $errors = '<br>' . implode('<br>', $errors);
-            else
+            } else {
                 $errors = '';
+            }
 
-            $this->response->error( $this->lang->get('DB_CANT_CONNECT_TABLE'). ' '. $this->lang->get('DB_MSG_UNIQUE_PRIMARY'). ' ' . $errors);
+            $this->response->error($this->lang->get('DB_CANT_CONNECT_TABLE') . ' ' . $this->lang->get('DB_MSG_UNIQUE_PRIMARY') . ' ' . $errors);
             return;
         }
 
         $manager = new Manager();
         $newObjectName = strtolower(str_replace('_', '', $table));
 
-        if($manager->objectExists($newObjectName))
-        {
-            $newObjectName =  strtolower(str_replace('_', '', $cfg['dbname'])).$newObjectName;
-            if($manager->objectExists($newObjectName))
-            {
-                $k=0;
+        if ($manager->objectExists($newObjectName)) {
+            $newObjectName = strtolower(str_replace('_', '', $cfg['dbname'])) . $newObjectName;
+            if ($manager->objectExists($newObjectName)) {
+                $k = 0;
                 $alphabet = \Utils_String::alphabetEn();
 
-                while ($manager->objectExists($newObjectName)){
-                    if(!isset($alphabet[$k])){
+                while ($manager->objectExists($newObjectName)) {
+                    if (!isset($alphabet[$k])) {
                         $this->response->error('Can not create unique object name' . $errors);
                         return;
                     }
 
-                    $newObjectName.= $alphabet[$k];
+                    $newObjectName .= $alphabet[$k];
                     $k++;
                 }
             }
         }
 
-        $config = $import->createConfigByTable($db, $table , $cfg['prefix']);
+        $config = $import->createConfigByTable($db, $table, $cfg['prefix']);
         $config['connection'] = $connectionId;
 
-        if(!$config)
-        {
+        if (!$config) {
             $errors = $import->getErrors();
 
-            if(!empty($errors))
+            if (!empty($errors)) {
                 $errors = '<br>' . implode('<br>', $errors);
-            else
+            } else {
                 $errors = '';
+            }
 
-            $this->response->error($this->lang->get('DB_CANT_CONNECT_TABLE').' ' . $errors);
+            $this->response->error($this->lang->get('DB_CANT_CONNECT_TABLE') . ' ' . $errors);
             return;
-        }else{
-            $path = $this->appConfig->get('object_configs').$newObjectName.'.php';
+        } else {
+            $ormConfig = Config::storage()->get('orm.php');
+            $path = $ormConfig->get('object_configs') . $newObjectName . '.php';
 
-            if(!Config::storage()->create($path)){
-                $this->response->error($this->lang->get('CANT_WRITE_FS') .' '. $path);
+            if (!Config::storage()->create($path)) {
+                $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ' . $path);
                 return;
             }
 
-            $cfg = Config::storage()->get($path,true,true);
+            $cfg = Config::storage()->get($path, true, true);
             $cfg->setData($config);
-            if(!$cfg->save()){
-                $this->response->error($this->lang->get('CANT_WRITE_FS') .' '. $path);
+            if (!Config::storage()->save($cfg)) {
+                $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ' . $path);
                 return;
             }
         }

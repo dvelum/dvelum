@@ -19,6 +19,8 @@
 
 namespace Dvelum\Orm\Record;
 use Dvelum\Db;
+use Exception;
+
 /**
  * Import component, experimental class
  * @package ORM
@@ -28,58 +30,47 @@ use Dvelum\Db;
  */
 class Import
 {
-    protected $_errors = array();
+    protected $errors = [];
     
     public function getErrors()
     {
-        return $this->_errors;
+        return $this->errors;
     }
-    
-    /**
-     * Find PRIMARY KEY
-     * @param Db\Adapter $db
-     * @param string $table
-     * @return array | boolean (false)
-     */
-    public function findPrimaryKey(Db\Adapter $db , string $table)
-    {
-        $fields = $db->describeTable($table);
-        $primary = false;
-        foreach ($fields as $name=>$info){
-            if($info['PRIMARY']==1){
-                $primary = $info;
-                break;
-            }
-        }               
-        return $primary;
-    }
-      
+
     /**
      * Check if PRIMARY KEY of external DB table is correct
-     * @param \Db_Adapter $db
+     * @param Db\Adapter $db
      * @param string $table
-     * @return boolean
+     * @return bool
      */
-    public function isValidPrimaryKey(Db\Adapter $db , string $table)
-    {     
-        $primary = $this->findPrimaryKey($db, $table);
+    public function isValidPrimaryKey(Db\Adapter $db , string $table) : bool
+    {
+        /**
+         * @var Db\Metadata $meta
+         */
+        $meta = $db->getMeta();
+        $primary = $meta->findPrimaryKey($table);
 
-        if(!$primary){
-            $this->_errors[] = 'No primary key';
-            return false;
-        } 
-               
-        $dataType = strtolower($primary['DATA_TYPE']);
-        
-        if(!in_array($dataType , Builder::$numTypes , true)){
-            $this->_errors[] = 'PRIMARY KEY is not numeric';
+        if(empty($primary)){
+            $this->errors[] = 'No primary key';
             return false;
         }
-        
-        if($primary['IDENTITY']!=1){
-            $this->_errors[] = 'The PRIMARY KEY is not using auto-increment';
+
+        $column = $meta->getAdapter()->getColumn($primary, $table);
+        $dataType = strtolower($column->getDataType());
+
+        if(!in_array($dataType , Builder::$numTypes , true)){
+            $this->errors[] = 'PRIMARY KEY is not numeric';
             return false;
-        }     
+        }
+
+        /**
+         * @todo check autoincrement or PG SERIAL/SEQUENCE
+         */
+//        if($primary['IDENTITY']!=1){
+//            $this->errors[] = 'The PRIMARY KEY is not using auto-increment';
+//            return false;
+//        }
         return true;
     }
 
@@ -112,37 +103,53 @@ class Import
         $config['disable_keys'] = false;
         $config['rev_control'] = false;
         $config['save_history'] = true;
-      
-        $primary = $this->findPrimaryKey($dbAdapter, $tableName);
 
-        if(!$primary)
+        /**
+         * @var Db\Metadata $meta
+         */
+        $meta = $dbAdapter->getMeta();
+        $primary = $meta->findPrimaryKey($tableName);
+
+        if(empty($primary))
             return false;
                 
-        $config['primary_key'] = $primary['COLUMN_NAME'];
-        $config['link_title'] = $primary['COLUMN_NAME'];
+        $config['primary_key'] = $primary;
+        $config['link_title'] = $primary;
 
-        $desc = $dbAdapter->describeTable($tableName);
+        $columns = $dbAdapter->getMeta()->getColumns($tableName);
+
         $engine = $dbAdapter->fetchRow('SHOW TABLE STATUS WHERE `Name` = "' . $tableName . '"');
-        $indexes = $dbAdapter->fetchAll('SHOW INDEX FROM `' . $tableName . '`');
+
+       // $indexes = $dbAdapter->fetchAll('SHOW INDEX FROM `' . $tableName . '`');
+        $indexes = $dbAdapter->getMeta()->getConstraints($tableName);
         
-        $index = array();
-        $indexGroups = array();
+        $index = [];
+        $indexGroups = [];
         foreach($indexes as $k => $v)
         {
-            if(strtolower($v['Column_name']) == $config['primary_key'])
+            /**
+             * @var \Zend\Db\Metadata\Object\ConstraintObject $v
+             */
+            if($v->isForeignKey()){
+                continue;
+            }
+
+            $hash = $meta->indexHashByColumns($v->getColumns());
+
+            if(strtolower($hash) == $config['primary_key'])
                 continue;
             
             $flag = false;
             if(!empty($index))
                 foreach($index as $key => &$val)
                 {
-                    if($key == $v['Key_name'])
+                    if($key == $hash)
                     {
-                        $val['columns'][] = $v['Column_name'];
+                        $val['columns'][] = $hash;
                         $flag = true;
                         
-                        if(!$v['Non_unique'])
-                            $indexGroups[$v['Column_name']][] = $v['Key_name'];
+                        if($v->isUnique())
+                            $indexGroups[$hash][] = $hash;
                         
                         break;
                     }
@@ -152,49 +159,53 @@ class Import
             if($flag)
                 continue;
             
-            if($v['Index_type'] == 'FULLTEXT')
-                $index[$v['Key_name']]['fulltext'] = true;
+            if($v->getType() == 'FULLTEXT')
+                $index[$hash]['fulltext'] = true;
             else
-                $index[$v['Key_name']]['fulltext'] = false;
+                $index[$hash]['fulltext'] = false;
             
             /**
     		 * Non_unique 
 			 * 0 if the index cannot contain duplicates, 1 if it can.
     		 */
-            if($v['Non_unique'])
+            if(!$v->isUnique())
             {
-                $index[$v['Key_name']]['unique'] = false;
+                $index[$hash]['unique'] = false;
             }
             else
             {
-                $index[$v['Key_name']]['unique'] = true;
-                $indexGroups[$v['Column_name']][] = $v['Key_name'];
+                $index[$hash]['unique'] = true;
+                $indexGroups[$hash][] = $hash;
             }
             
-            $index[$v['Key_name']]['columns'] = array( $v['Column_name']);
+            $index[$hash]['columns'] = $v->getColumns();
         }
         
-        $fields = array();
-        $objectFields = array();
-        foreach($desc as $k => $v)
+        $fields = [];
+        $objectFields = [];
+        foreach($columns as $k => $v)
         {
-            if(strtolower($v['COLUMN_NAME']) == $config['primary_key'])
+            /**
+             * @var \Zend\Db\Metadata\Object\ColumnObject $v
+             */
+            $name = $v->getName();
+            if(strtolower($name) == $config['primary_key'])
                 continue;
 
-            $objectFields[$v['COLUMN_NAME']] = array(
-                'title' => $v['COLUMN_NAME'] , 
-                'db_type' => strtolower($v['DATA_TYPE'])
+            $objectFields[$name] = array(
+                'title' => $name ,
+                'db_type' => strtolower($v->getDataType())
             );
             
-            $fieldLink = & $objectFields[$v['COLUMN_NAME']];
+            $fieldLink = & $objectFields[$name];
             
-            if(!empty($v['LENGTH']))
-                $fieldLink['db_len'] = $v['LENGTH'];
+            if(!empty($v->getCharacterMaximumLength()))
+                $fieldLink['db_len'] = $v->getCharacterMaximumLength();
             
-            if($v['DEFAULT'] !== null)
-                $fieldLink['db_default'] = $v['DEFAULT'];
+            if($v->getColumnDefault() !== null)
+                $fieldLink['db_default'] = $v->getColumnDefault();
             
-            if($v['NULLABLE'])
+            if($v->getIsNullable())
             {
                $fieldLink['db_isNull'] = true;
                $fieldLink['required'] = false;
@@ -205,20 +216,20 @@ class Import
                $fieldLink['required'] = true;
             }
             
-            if($v['UNSIGNED'])
+            if($v->getNumericUnsigned())
                $fieldLink['db_unsigned'] = true;
             
-            if(!empty($v['SCALE']))
-               $fieldLink['db_scale'] = $v['SCALE'];
+            if(!empty($v->getNumericPrecision()))
+               $fieldLink['db_scale'] = $v->getNumericPrecision();
             
-            if(!empty($v['PRECISION']))
-               $fieldLink['db_precision'] = $v['PRECISION'];
+            if(!empty($v->getNumericScale()))
+               $fieldLink['db_precision'] = $v->getNumericScale();
             
-            if(array_key_exists((string) $v['COLUMN_NAME'] , $indexGroups))
-               $fieldLink['unique'] = $indexGroups[$v['COLUMN_NAME']];
+            if(array_key_exists((string) $name , $indexGroups))
+               $fieldLink['unique'] = $indexGroups[$name];
             
-            if($v['IDENTITY'])
-               $fieldLink['auto_increment'] = true;
+//            if($v['IDENTITY'])
+//               $fieldLink['auto_increment'] = true;
             
             unset($fieldLink);
         }

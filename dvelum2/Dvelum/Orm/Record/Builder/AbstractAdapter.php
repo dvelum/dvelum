@@ -176,7 +176,7 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     protected function getExistingColumns()
     {
-        return $this->db->describeTable($this->model->table());
+        return $this->db->getMeta()->getAdapter()->getColumns($this->model->table());
     }
 
 

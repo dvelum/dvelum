@@ -24,6 +24,7 @@ use Zend\Db;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Adapter\Driver\ResultInterface;
 use Zend\Db\ResultSet\ResultSet;
+use Zend\Db\Metadata\MetadataInterface;
 
 /**
  * Class Adapter
@@ -212,13 +213,12 @@ class Adapter
     }
 
     /**
-     * @param string $tableName
-     * @return Db\Metadata\Object\TableObject
+     * Get metadata object for current DB connection
+     * @return Metadata
      */
-    public function describeTable(string $tableName)
+    public function getMeta() : Metadata
     {
-        $metadata = new Db\Metadata\Metadata($this->adapter);
-        return $metadata->getTable($tableName);
+        return new Metadata($this->adapter);
     }
 
     public function beginTransaction()

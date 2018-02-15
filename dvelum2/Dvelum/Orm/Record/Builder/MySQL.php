@@ -178,7 +178,7 @@ class MySQL extends AbstractAdapter
         if(! $this->tableExists())
             $fields = [];
         else
-            $fields = $this->getExistingColumns()->getColumns();
+            $fields = $this->getExistingColumns();
 
 
         /**

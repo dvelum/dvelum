@@ -67,20 +67,22 @@ class Backend_Designer_Sub_Form extends Backend_Designer_Sub
 		if($connection === false || !$table || empty($importFields) || $conType===false)
 			Response::jsonError($this->_lang->WRONG_REQUEST);
 
-		$conManager = new Backend_Orm_Connections_Manager($this->_configMain->get('db_configs'));
-		$cfg = $conManager->getConnection($conType, $connection);
-		if(!$cfg)
-		    Response::jsonError($this->_lang->WRONG_REQUEST);
-		$cfg = $cfg->__toArray();
-	
-		$tableFields = Backend_Designer_Import::getTableFields($cfg, $table);
+        $conManager = new \Dvelum\Db\Manager($this->_configMain);
+
+        try{
+            $db = $conManager->getDbConnection($connection, $conType);
+        }catch (Exception $e) {
+            Response::jsonError($this->_lang->WRONG_REQUEST);
+        }
+
+		$columns =  $db->getMeta()->getColumnsAsArray($table);
 		
-		if($tableFields === false)
+		if(empty($columns ))
 			Response::jsonError($this->_lang->CANT_CONNECT);
 		
 		foreach ($importFields as $name)
-			if(isset($tableFields[$name]) && !empty($tableFields[$name]))
-				$this->_importDbField($name , $tableFields[$name]);
+			if(isset($columns[$name]) && !empty($columns[$name]))
+				$this->_importDbField($name , $columns[$name]);
 
 		$this->_storeProject();
 		Response::jsonSuccess();		
