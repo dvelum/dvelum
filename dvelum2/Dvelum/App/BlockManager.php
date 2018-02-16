@@ -321,10 +321,10 @@ class BlockManager
             return;
 
         $blockModel = Model::factory('Blocks');
-        $blockItems = $blockModel->getList(false , array(
+        $blockItems = $blockModel->query()->filters([
             'is_system' => 1 ,
             'sys_name' => $blockClass
-        ));
+        ])->fetchAll();
         $this->invalidateBlockList($blockItems);
     }
 
@@ -339,7 +339,7 @@ class BlockManager
             return;
 
         $blockModel = Model::factory('Blocks');
-        $blockItems = $blockModel->getList(false , array('id' => $blockId));
+        $blockItems = $blockModel->query()->filters(['id' => $blockId])->fetchAll();
         $this->invalidateBlockList($blockItems);
     }
 
@@ -354,7 +354,10 @@ class BlockManager
             return;
 
         $blockModel = Model::factory('Blocks');
-        $blockItems = $blockModel->getList(false , array('menu_id' => $menuId , 'is_menu' => 1));
+        $blockItems = $blockModel->query()->filters([
+            'menu_id' => $menuId ,
+            'is_menu' => 1
+        ])->fetchAll();
 
         $this->invalidateBlockList($blockItems);
     }
@@ -368,6 +371,9 @@ class BlockManager
         if(!$this->cache)
             return;
 
+        /**
+         * @var \Model_Page $pagesModel
+         */
         $pagesModel = Model::factory('Page');
         $ids = $pagesModel->getPagesWithDefaultMap();
 
@@ -443,6 +449,9 @@ class BlockManager
         unset($pages);
 
         $sortedPageBlocks = Utils::groupByKey('block_id' , $pageBlocks);
+        /**
+         * @var \Model_Page $pagesModel
+         */
         $pagesModel = Model::factory('Page');
         $defaultMapped = $pagesModel->getPagesWithDefaultMap();
 

@@ -19,31 +19,48 @@
 
 namespace Dvelum;
 
-use Dvelum\Orm\Exception;
+use Dvelum\App\Service\Loader\LoaderInterface;
+use Dvelum\Config\ConfigInterface;
+use Exception;
 
 class Service
 {
     static protected $services = [];
+    /**
+     * @var ConfigInterface $config
+     */
+    static protected $config;
+    /**
+     * @var ConfigInterface $config
+     */
+    static protected $env;
 
-    static public function register(string $name, callable $handler)
+    static public function register(ConfigInterface $config, ConfigInterface $env)
     {
-        self::$services[$name] = [
-            'handler' => $handler,
-            'instance' => null
-        ];
+        self::$config = $config;
+        self::$env = $env;
     }
 
+    /**
+     * @param string $name
+     * @return mixed
+     * @throws Exception
+     */
     static public function get(string $name)
     {
-        if (!isset(self::$services[$name])) {
+        if(!self::$config->offsetExists($name)){
             throw new Exception('Undefined service ' . $name);
         }
 
-        if (empty(self::$services[$name]['instance'])) {
-            $service = self::$services[$name]['handler'];
-            $instance = $service();
-            self::$services[$name]['instance'] = $instance;
+        if (!isset(self::$services[$name])) {
+            $service = self::$config->get($name)['loader'];
+            /**
+             * @var LoaderInterface $instance
+             */
+            $instance = new $service();
+            $instance->setConfig(self::$env);
+            self::$services[$name] = $instance->loadService();
         }
-        return self::$services[$name]['instance'];
+        return self::$services[$name];
     }
 }

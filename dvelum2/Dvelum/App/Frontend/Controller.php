@@ -61,7 +61,7 @@ class Controller extends App\Controller
         /**
          * @var BlockManager $blockManager
          */
-        $blockManager = Service::get('blockmanager');
+        $blockManager = Service::get('blockManager');
 
         if($vers){
             $blockManager->disableCache();

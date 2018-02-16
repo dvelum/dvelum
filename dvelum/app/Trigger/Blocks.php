@@ -1,5 +1,6 @@
 <?php
 use Dvelum\Orm;
+use Dvelum\Service;
 
 class Trigger_Blocks extends Trigger
 {
@@ -23,7 +24,7 @@ class Trigger_Blocks extends Trigger
 	
 	public function clearBlockCache(Orm\RecordInterface $object)
 	{	
-		$blockManager = new \Dvelum\App\BlockManager();
+		$blockManager = Service::get('blockManager');
 		$blockManager->invalidateCacheBlockId($object->getId());
 	}
 }

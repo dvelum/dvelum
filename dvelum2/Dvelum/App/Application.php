@@ -150,69 +150,16 @@ class Application
         }
 
         /*
-         * Register Localization service
+         * Register Services
          */
-        Service::register('lang', function () use ($lang) {
-            $langService = new Lang();
-            $langService->addLoader($lang, $lang . '.php', Config\Factory::File_Array);
-            $langService->setDefaultDictionary($lang);
-            $langStorage = $langService->getStorage();
-            $langStorage->setConfig(Config\Factory::storage()->get('lang_storage.php')->__toArray());
-            return $langService;
-        });
-
-        /*
-         *  Register ORM service
-         */
-        Service::register('orm', function () use ($dbManager, $lang, $cache) {
-            $orm = new Orm();
-            $orm->init(Config::storage()->get('orm.php'), $dbManager, $lang, $cache);
-            return $orm;
-        });
-
-        /*
-         * Register Dictionary service
-         */
-        Service::register('dictionary', function () {
-            $service = new Dictionary\Service();
-            $service->setConfig(Config\Factory::create([
-                'configPath' => $this->config->get('dictionary_folder') . $this->config->get('language') . '/'
-            ]));
-            return $service;
-        });
-
-        /**
-         * Register BlockManager Service
-         */
-        Service::register('blockmanager', function() use ($cache){
-             $blockManager = new BlockManager();
-
-             if($cache){
-                 $blockManager->setCache($cache);
-             }
-
-             if($this->config->get('blockmanager_hard_cache')){
-                 $blockManager->useHardCacheTime(true);
-             }
-
-             return $blockManager;
-        });
-
-        /**
-         * Register Mail Transport Service
-         */
-        Service::register('MailTransport', function(){
-            $cfg = Config::storage()->get('mail_trasport.php')->__toArray();
-            /**
-             * @var \Zend\Mail\Transport\TransportInterface $transport
-             */
-            $transport  = new $cfg['adapter'];
-            if(!empty($cfg['config']['optionsAdapter']) && !empty($cfg['config']['options']) && method_exists($transport,'setOptions')){
-                $transport->setOptions(new $cfg['config']['optionsAdapter']($cfg['config']['options']));
-            }
-
-            return $transport;
-        });
+        Service::register(
+            Config::storage()->get('services.php'),
+            Config\Factory::create([
+                'appConfig' => $this->config,
+                'dbManager' => $dbManager,
+                'cache' => $cache
+            ])
+        );
 
         // init external modules
         $externalsCfg = $this->config->get('externals');
@@ -400,14 +347,5 @@ class Application
         if (!$response->isSent()) {
             $response->send();
         }
-    }
-
-    /**
-     * Close application, stop processing
-     * @deprecated
-     */
-    static public function close()
-    {
-        exit();
     }
 }

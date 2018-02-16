@@ -2,6 +2,7 @@
 
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\Service;
 
 class Trigger_Menu extends Trigger
 {
@@ -30,7 +31,7 @@ class Trigger_Menu extends Trigger
 			
 		$menuModel = Model::factory('Menu');
 		$this->_cache->remove($menuModel->resetCachedMenuLinks($object->getId()));			
-		$blockManager =  new \Dvelum\App\BlockManager();
+		$blockManager = Service::get('blockManager');
 		$blockManager->invalidateCacheBlockMenu($object->getId());
 	}
 }
