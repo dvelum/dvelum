@@ -402,7 +402,7 @@ Ext.define('app.crud.menu.ItemWindow',{
                             simpleSortMode: true
                         },
                         remoteSort: false,
-                        autoLoad: false,
+                        autoLoad: true,
                         sorters: [{
                             property : 'title',
                             direction: 'DESC'
