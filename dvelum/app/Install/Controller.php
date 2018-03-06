@@ -85,17 +85,18 @@ class Install_Controller
 
 
         $lang = $this->lang;
+        $this->appConfig->set('language', $lang);
         /*
-         * Register Localization service
+         * Register Services
          */
-        \Dvelum\Service::register('lang', function () use ($lang) {
-            $langService = new Lang();
-            $langService->addLoader($lang, $lang . '.php', Config\Factory::File_Array);
-            $langService->setDefaultDictionary($lang);
-            $langStorage = $langService->getStorage();
-            $langStorage->setConfig(Config\Factory::storage()->get('lang_storage.php')->__toArray());
-            return $langService;
-        });
+        \Dvelum\Service::register(
+            Config::storage()->get('services.php'),
+            Config\Factory::create([
+                'appConfig' => $this->appConfig,
+                'dbManager' => false,
+                'cache' => false
+            ])
+        );
 
         $this->localization = Lang::storage()->get($this->lang  . '/install.php');
 
