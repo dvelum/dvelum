@@ -80,11 +80,11 @@ return array(
     /**
      * Backend controllers directories
      */
-    'backend_controllers_dirs' => ['App/Backend','Backend'],
+    'backend_controllers_dirs' => ['Dvelum/App/Backend','App/Backend','Backend'],
     /**
      * Frontend controllers directories
      */
-    'frontend_controllers_dirs' => ['App/Frontend', 'Frontend'],
+    'frontend_controllers_dirs' => ['Dvelum/App/Frontend','App/Frontend', 'Frontend'],
     /**
      * Local controllers path
      */

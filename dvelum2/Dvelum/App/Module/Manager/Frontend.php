@@ -22,7 +22,7 @@ namespace Dvelum\App\Module\Manager;
 
 use Dvelum\App\Module\Manager;
 use Dvelum\File;
-use Dvelum\Utils;
+use Dvelum\Config;
 
 class Frontend extends Manager
 {
@@ -34,30 +34,40 @@ class Frontend extends Manager
      */
     public function getControllers() : array
     {
-        $autoloadCfg = $this->appConfig->get('autoloader');
+        $autoloadCfg = Config::storage()->get('autoloader.php');
         $paths = $autoloadCfg['paths'];
-        $dir = $this->appConfig->get('frontend_controllers_dir');
 
-        $data = array();
+        $dirs = $this->appConfig->get('frontend_controllers_dirs');
 
-        foreach($paths as $path){
-            if(!is_dir($path.'/'.$dir)){
-                continue;
-            }
-            $folders = File::scanFiles($path . '/' . $dir, false, true, File::Dirs_Only);
+        $data = [];
 
-            if(empty($folders))
-                continue;
-
-            foreach ($folders as $item)
+        foreach($paths as $path)
+        {
+            if(basename($path) === 'modules')
             {
-                $name = basename($item);
+                $folders = File::scanFiles($path, false, true, File::Dirs_Only);
 
-                if(file_exists($item.'/Controller.php'))
+                if(empty($folders))
+                    continue;
+
+                foreach($folders as $item)
                 {
-                    $name = str_replace($path.'/', '', $item.'/Controller.php');
-                    $name = Utils::classFromPath($name);
-                    $data[$name] = array('id'=>$name,'title'=>$name);
+                    foreach ($dirs as $dir){
+                        if(!is_dir($item.'/'.$dir)){
+                            continue;
+                        }
+                        $prefix = str_replace('/','_',ucfirst(basename($item)).'_'.$dir.'_');
+                        $this->findControllers($item.'/'.$dir, [], $data , $prefix);
+                    }
+                }
+            }else{
+
+                foreach ($dirs as $dir) {
+                    if (!is_dir($path . '/' . $dir)) {
+                        continue;
+                    }
+                    $prefix = str_replace('/','_', $dir . '_');
+                    $this->findControllers($path . '/' . $dir, [], $data, $prefix);
                 }
             }
         }
@@ -78,7 +88,7 @@ class Frontend extends Manager
 
         if(isset($data['title'])){
             $this->modulesLocale->set($data['code'] , $data['title']);
-            if(!$this->modulesLocale->save()){
+            if(!$this->localeStorage->save($this->modulesLocale)){
                 return false;
             }
             unset($data['title']);
