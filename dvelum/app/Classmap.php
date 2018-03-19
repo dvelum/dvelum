@@ -91,11 +91,11 @@ class Classmap
                 if(!isset($map[$class]))
                 {
                     try{
-                        if(class_exists($class)){
+                        if(class_exists($class) || interface_exists($class)){
                             $this->map[$class] = $item;
                         }else{
                             $class = str_replace('_','\\', $class);
-                            if(!isset($map[$class]) && class_exists($class)){
+                            if(!isset($map[$class]) && (class_exists($class) || interface_exists($class))){
                                 $this->map[$class] = $item;
                             }
                         }

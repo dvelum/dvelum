@@ -5,9 +5,9 @@ return [
     'paths' => [
         './application/classes/app',
         './application/classes/library',
+        './dvelum2',
         './dvelum/app',
         './dvelum/library',
-        './dvelum2'
     ],
     // paths priority (cannot be overridden by external modules)
     'priority'=>[

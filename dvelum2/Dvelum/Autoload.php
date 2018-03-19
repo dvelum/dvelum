@@ -127,7 +127,7 @@ class Autoload
             if($this->{$loader}($class))
             {
                 if($this->debug){
-                    $this->debugData[] = $class;
+                    $this->debugData[] = $class . ' -no map';
                 }
                 return true;
             }
@@ -186,10 +186,10 @@ class Autoload
 
     /**
      * Load class map
-     * @property array $path
-     * @return array
+     * @param  array $data
+     * @return void
      */
-    public function setMap(array $data)
+    public function setMap(array $data) : void
     {
         $this->classMap = $data;
     }
@@ -197,8 +197,9 @@ class Autoload
     /**
      * Add class map
      * @param array $data
+     * @return void
      */
-    public function addMap(array $data)
+    public function addMap(array $data) : void
     {
         foreach($data as $k => $v)
             $this->classMap[$k] = $v;
