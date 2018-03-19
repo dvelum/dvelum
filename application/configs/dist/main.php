@@ -119,23 +119,9 @@ return array(
      */
     'maintenance' => false,
     /*
-     * Debug panel configuration (Development mode)
+     * Show debug panel
      */
-    'debug_panel' => array(
-        'enabled' => false,
-        'options' =>array(
-            // cache requests
-            'cache' => true,
-            // sql queries list
-            'sql' => false,
-            // list of autoloaded classes
-            'autoloader' => false,
-            // list of included configs
-            'configs' =>false,
-            // list of included files
-            'includes' => false,
-        )
-    ),
+    'debug_panel' => false,
     /*
      * HTML WYSIWYG Editor
      * default  - ckeditor

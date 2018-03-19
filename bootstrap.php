@@ -129,14 +129,12 @@ echo ob_get_clean();
 /*
  * Print debug information (development mode)
  */
-if($config['development'])
+if($config['development'] && $config->get('debug_panel'))
 {
-    $debugCfg = $config->get('debug_panel');
-    if($debugCfg['enabled']){
-        Debug::setScriptStartTime($scriptStart);
-        Debug::setLoadedClasses($autoloader->getLoadedClasses());
-        Debug::setLoadedConfigs(Config::storage()->getDebugInfo());
-        echo Debug::getStats($debugCfg['options']);
-    }
+    $debugCfg = \Dvelum\Config::storage()->get('debug_panel.php');
+    Debug::setScriptStartTime($scriptStart);
+    Debug::setLoadedClasses($autoloader->getLoadedClasses());
+    Debug::setLoadedConfigs(\Dvelum\Config::storage()->getDebugInfo());
+    echo Debug::getStats($debugCfg->get('options'));
 }
 exit;
