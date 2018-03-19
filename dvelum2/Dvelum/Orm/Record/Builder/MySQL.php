@@ -311,15 +311,20 @@ class MySQL extends AbstractAdapter
 
             if(!((boolean) $v['db_isNull']) && ! in_array($v['db_type'] , Builder::$dateTypes , true) && ! in_array($v['db_type'] , Builder::$textTypes , true))
             {
-                if((!isset($v['db_default']) || $v['db_default'] === false) && !is_null($column->getColumnDefault())){
+                $columnDefault = $column->getColumnDefault();
+                // Zend Send '' as empty default for strings
+                if(is_string($columnDefault)){
+                    $columnDefault = trim($columnDefault,'\'');
+                }
+                if((!isset($v['db_default']) || $v['db_default'] === false) && !is_null($columnDefault)){
                     $defaultCmp = true;
                 }
                 if(isset($v['db_default']))
                 {
-                    if((is_null($column->getColumnDefault()) && $v['db_default'] !== false) || (! is_null($column->getColumnDefault()) && $v['db_default'] === false))
+                    if((is_null($columnDefault) && $v['db_default'] !== false) || (! is_null($columnDefault) && $v['db_default'] === false))
                         $defaultCmp = true;
                     else
-                        $defaultCmp = (string) $v['db_default'] != (string) $column->getColumnDefault();
+                        $defaultCmp = (string) $v['db_default'] != (string) $columnDefault;
                 }
             }
 
