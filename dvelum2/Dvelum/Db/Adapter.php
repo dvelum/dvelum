@@ -32,13 +32,27 @@ use Zend\Db\Metadata\MetadataInterface;
  */
 class Adapter
 {
+    public const EVENT_INIT = 0;
+
     protected $params;
     protected $adapter;
+    protected $listeners;
+
+    private $inited = false;
 
     public function __construct($params)
     {
         $this->params = $params;
-        $this->adapter = new \Zend\Db\Adapter\Adapter($params);
+    }
+
+    public function init()
+    {
+        if($this->inited){
+            return;
+        }
+        $this->adapter = new \Zend\Db\Adapter\Adapter($this->params);
+        $this->inited = true;
+        $this->fireEvent(self::EVENT_INIT);
     }
 
     /**
@@ -46,6 +60,9 @@ class Adapter
      */
     public function getAdapter()
     {
+        if(!$this->inited){
+            $this->init();
+        }
         return $this->adapter;
     }
 
@@ -64,6 +81,9 @@ class Adapter
      */
     public function sql() : Sql
     {
+        if(!$this->inited){
+            $this->init();
+        }
         return  new Sql($this->adapter);
     }
 
@@ -73,6 +93,9 @@ class Adapter
      */
     public function getProfiler(): ?Db\Adapter\Profiler\ProfilerInterface
     {
+        if(!$this->inited){
+            return null;
+        }
         return $this->adapter->getProfiler();
     }
 
@@ -83,6 +106,10 @@ class Adapter
      */
     public function fetchAll($sql) : array
     {
+        if(!$this->inited){
+            $this->init();
+        }
+
         $statement = $this->adapter->createStatement();
         $statement->prepare($sql);
 
@@ -118,6 +145,10 @@ class Adapter
 
     public function fetchCol($sql)
     {
+        if(!$this->inited){
+            $this->init();
+        }
+
         $statement = $this->adapter->createStatement();
         $statement->prepare($sql);
         $result = $statement->execute();
@@ -143,6 +174,10 @@ class Adapter
      */
     public function fetchOne($sql)
     {
+        if(!$this->inited){
+            $this->init();
+        }
+
         $statement = $this->adapter->createStatement();
         $statement->prepare($sql);
 
@@ -161,6 +196,9 @@ class Adapter
 
     public function query($sql)
     {
+        if(!$this->inited){
+            $this->init();
+        }
         $this->adapter->query($sql, Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
     }
 
@@ -171,6 +209,10 @@ class Adapter
      */
     public function fetchRow($sql) : ?array
     {
+        if(!$this->inited){
+            $this->init();
+        }
+
         $statement = $this->adapter->createStatement();
         $statement->prepare($sql);
 
@@ -186,11 +228,19 @@ class Adapter
 
     public function quoteIdentifier(string $string) : string
     {
+        if(!$this->inited){
+            $this->init();
+        }
+
         return $this->adapter->getPlatform()->quoteIdentifier($string);
     }
 
     public function quote($value)
     {
+        if(!$this->inited){
+            $this->init();
+        }
+
         return $this->adapter->getPlatform()->quoteValue($value);
     }
 
@@ -208,6 +258,10 @@ class Adapter
      */
     public function listTables()
     {
+        if(!$this->inited){
+            $this->init();
+        }
+
         $metadata = new Db\Metadata\Metadata($this->adapter);
         return $metadata->getTableNames();
     }
@@ -218,21 +272,33 @@ class Adapter
      */
     public function getMeta() : Metadata
     {
+        if(!$this->inited){
+            $this->init();
+        }
         return new Metadata($this->adapter);
     }
 
     public function beginTransaction()
     {
+        if(!$this->inited){
+            $this->init();
+        }
         $this->adapter->getDriver()->getConnection()->beginTransaction();
     }
 
     public function rollback()
     {
+        if(!$this->inited){
+            $this->init();
+        }
         $this->adapter->getDriver()->getConnection()->rollback();
     }
 
     public function commit()
     {
+        if(!$this->inited){
+            $this->init();
+        }
         $this->adapter->getDriver()->getConnection()->commit();
     }
 
@@ -299,6 +365,9 @@ class Adapter
 
     public function lastInsertId($tableName = null, $primaryKey = null)
     {
+        if(!$this->inited){
+            $this->init();
+        }
         return $this->adapter->getDriver()->getLastGeneratedValue();
     }
 
@@ -308,6 +377,38 @@ class Adapter
      */
     public function quoteValueList(array $values) : string
     {
+        if(!$this->inited){
+            $this->init();
+        }
         return $this->adapter->getPlatform()->quoteValueList($values);
+    }
+
+    /**
+     * Add listener
+     * @param int $eventCode
+     * @param callable $listener
+     */
+    public function on(int $eventCode, callable $listener) : void
+    {
+        if(!isset($this->listeners[$eventCode])){
+            $this->listeners[$eventCode] = [];
+        }
+        $this->listeners[$eventCode][] = $listener;
+    }
+
+    /**
+     * @param int $eventCode
+     * @param array|null $data
+     */
+    protected function fireEvent(int $eventCode , ?array $data = []) : void
+    {
+        if(isset($this->listeners[$eventCode])){
+            foreach ($this->listeners[$eventCode] as $listener){
+                /**
+                 * @var callable $listener
+                 */
+                $listener(new Adapter\Event($eventCode , $data));
+            }
+        }
     }
 }

@@ -81,22 +81,27 @@ class Manager implements ManagerInterface
     public function initConnection(array $cfg) : Adapter
     {
         $db = new Adapter($cfg);
+        $isDevMode = $this->appConfig->get('development');
+        $initFunction = function(\Dvelum\Db\Adapter\Event $e) use ($db, $isDevMode, $cfg){
+            if($isDevMode){
+                $profiler = $db->getProfiler();
+                if(!empty($profiler)){
+                    \Debug::addDbProfiler($profiler);
+                }
+            }
 
-        if($this->appConfig->get('development')){
-            $profiler = $db->getProfiler();
-            if(!empty($profiler)){
-                \Debug::addDbProfiler($profiler);
+            /*
+             * Set transaction isolation level
+             */
+            if(isset($cfg['transactionIsolationLevel'])){
+                $level = $cfg['transactionIsolationLevel'];
+                if(!empty($level) && $level!=='default'){
+                    $db->query('SET TRANSACTION ISOLATION LEVEL '.$level);
+                }
             }
-        }
-        /*
-         * Set transaction isolation level
-         */
-        if(isset($cfg['transactionIsolationLevel'])){
-            $level = $cfg['transactionIsolationLevel'];
-            if(!empty($level) && $level!=='default'){
-                $db->query('SET TRANSACTION ISOLATION LEVEL '.$level);
-            }
-        }
+        };
+
+        $db->on(Adapter::EVENT_INIT , $initFunction);
         return $db;
     }
     /**
