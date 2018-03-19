@@ -6,7 +6,7 @@ return [
         // sql queries list
         'sql' => false,
         // list of autoloaded classes
-        'autoloader' => 1,
+        'autoloader' => false,
         // list of included configs
         'configs' =>false,
         // list of included files
