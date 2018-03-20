@@ -149,13 +149,14 @@ class Backend_Localization_Manager
                 throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath . $indexName);
             }
         }
-        $indexConfig = Lang::storage()->get($indexName);
+        $storage = Lang::storage();
+        $indexConfig = $storage->get($indexName);
         if($indexConfig === false){
             throw new Exception($this->_lang->get('CANT_LOAD') . ' ' . $indexName);
         }
         $indexConfig->removeAll();
         $indexConfig->setData($baseKeys);
-        if(!$indexConfig->save()){
+        if(!$storage->save($indexConfig)){
             throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $indexConfig->getName());
         }
     }
@@ -209,10 +210,11 @@ class Backend_Localization_Manager
                 throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath . $indexName);
             }
         }
-        $indexConfig = Lang::storage()->get($indexName);
+        $storage = Lang::storage();
+        $indexConfig = $storage->get($indexName);
         $indexConfig->removeAll();
         $indexConfig->setData($data);
-        if(!$indexConfig->save()){
+        if(!$storage->save($indexConfig)){
             throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath . $indexName);
         }
     }
@@ -327,18 +329,18 @@ class Backend_Localization_Manager
         $mainLangs = $this->getLangs(true);
 
         $writePath = Lang::storage()->getWrite();
-
+        $storage = Lang::storage();
         if(!$isSub)
         {
             foreach ($langs as $langName => $value)
             {
                 $langFile = $writePath . $langName .'.php';
-                $langConfig = Lang::storage()->get($langName .'.php');
+                $langConfig = $storage->get($langName .'.php');
                 if($langConfig === false){
                     throw new Exception($this->_lang->get('CANT_LOAD').' '.$langName);
                 }
                 $langConfig->set($key , $value);
-                if(!$langConfig->save()){
+                if(!$storage->save($langConfig)){
                     throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
                 }
             }
@@ -354,7 +356,7 @@ class Backend_Localization_Manager
                     throw new Exception($this->_lang->get('CANT_LOAD').' '.$langName .'/'.$dictionaryName);
                 }
                 $langConfig->set($key , $value);
-                if(!$langConfig->save()){
+                if(!$storage->save($langConfig)){
                     throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
                 }
             }
@@ -397,7 +399,7 @@ class Backend_Localization_Manager
         $mainLangs = $this->getLangs(true);
 
         $writePath = Lang::storage()->getWrite();
-
+        $storage = Lang::storage();
         if(!$isSub)
         {
             foreach ($mainLangs as $langName)
@@ -408,7 +410,7 @@ class Backend_Localization_Manager
                     throw new Exception($this->_lang->get('CANT_LOAD').' '.$langName);
                 }
                 $langConfig->remove($key);
-                if(!$langConfig->save()){
+                if(!$storage->save($langConfig)){
                     throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
                 }
             }
@@ -423,7 +425,7 @@ class Backend_Localization_Manager
                     throw new Exception($this->_lang->get('CANT_LOAD').' '.$langName .'/'.$dictionaryName);
                 }
                 $langConfig->remove($key);
-                if(!$langConfig->save()){
+                if(!$storage->save($langConfig)){
                     throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$langFile);
                 }
             }
@@ -443,7 +445,8 @@ class Backend_Localization_Manager
         foreach ($data as $k=>$rec)
             $langConfig->set( $rec['id'] , $rec['title']);
 
-        if(!$langConfig->save()){
+        $storage = Lang::storage();
+        if(!$storage->save($langConfig)){
             throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$writePath);
         }
     }
