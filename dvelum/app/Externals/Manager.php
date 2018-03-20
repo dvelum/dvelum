@@ -69,7 +69,7 @@ class Externals_Manager
             return true;
         }
 
-        $vendors = \File::scanFiles($path, false, false, File::Dirs_Only);
+        $vendors = File::scanFiles($path, false, false, File::Dirs_Only);
 
         $hasNew = false;
         if (!empty($vendors)) {
@@ -263,7 +263,7 @@ class Externals_Manager
     /**
      * Install module, copy resources
      * @param $id
-     * @return boolean
+     * @return bool
      */
     public function install($id)
     {
@@ -389,7 +389,7 @@ class Externals_Manager
     /**
      * Uninstall module remove resources
      * @param $id
-     * @return boolean
+     * @return bool
      */
     public function uninstall($id)
     {

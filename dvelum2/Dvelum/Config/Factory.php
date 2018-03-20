@@ -174,7 +174,7 @@ class Factory
         {
             if(self::$store->keyExists($key))
             {
-                self::$cache->save(self::$store->get($key) , $key);
+                self::$cache->save(self::$store->get($key));
             }
         }
     }
