@@ -52,7 +52,7 @@ if($hasSideLeft && !$hasSideRight){
 
     <div class="page">
 <?php
-          $t = new Template();
+          $t = \Dvelum\View::factory();
             echo $this->renderTemplate(
                 'public/default/header.php',
                 [

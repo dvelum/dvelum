@@ -42,8 +42,10 @@ class Eventmanager extends Orm\Record\Event\Manager
         elseif(method_exists('Trigger', $code))
         {
             $trigger = new \Trigger();
+
             if($this->_cache)
                 $trigger->setCache($this->_cache);
+
             $trigger->$code($object);
         }
     }

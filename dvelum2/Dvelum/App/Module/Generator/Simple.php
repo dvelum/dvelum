@@ -145,7 +145,7 @@ class Simple extends AbstractAdapter
         }
         $linkToField = array_flip($linksToShow);
 
-        $template = new View();
+        $template = View::factory();
         $template->setData([
             'controller_namespace' => 'App\\Backend\\' . str_replace('_','\\', $objectName),
             'listFields' => $this->exportArrayToString($dataFields),

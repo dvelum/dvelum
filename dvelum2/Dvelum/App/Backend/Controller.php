@@ -362,7 +362,7 @@ class Controller extends App\Controller
      */
     protected function loginAction()
     {
-        $template = new View();
+        $template = View::factory();
         $template->set('wwwRoot' , $this->appConfig->get('wwwroot'));
         $this->response->put($template->render('system/'.$this->backofficeConfig->get('theme') . '/login.php'));
         $this->response->send();
@@ -395,9 +395,9 @@ class Controller extends App\Controller
         /*
          * Load template
          */
-        $template = new View();
+        $template = View::factory();
         $template->disableCache();
-        $template->setProperties(array(
+        $template->setData(array(
             'wwwRoot' => $this->appConfig->get('wwwroot'),
             'page' => $page,
             'urlPath' => $controllerCode,

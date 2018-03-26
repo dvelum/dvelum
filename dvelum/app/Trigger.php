@@ -3,7 +3,7 @@ use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\App\Session\User;
-
+use Dvelum\Cache\CacheInterface;
 /**
  * Default Trigger
  * Handle Db_Object Events
@@ -27,11 +27,11 @@ class Trigger
     }
 
     /**
-	 * @var Cache_Abstract | false
+	 * @var CacheInterface | false
 	 */
 	protected $_cache = false;
 
-	public function setCache(Cache_Abstract $cache)
+	public function setCache(CacheInterface $cache)
 	{
 		$this->_cache = $cache;
 	}

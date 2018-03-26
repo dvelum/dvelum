@@ -231,7 +231,7 @@ class Resource
                 if(strpos($file,'http')==0){
                     $s .= '<script type="text/javascript" src="' . $file . '"></script>' . "\n";
                 }else{
-                    $s .= '<script type="text/javascript" src="' . self::$_wwwRoot . $file . '"></script>' . "\n";
+                    $s .= '<script type="text/javascript" src="' . $this->config->get('wwwRoot') . $file . '"></script>' . "\n";
                 }
             }
         }
@@ -309,7 +309,7 @@ class Resource
                 $fileName = \substr($fileName, 0 , $paramsPos);
             }
 
-            $content = \file_get_contents( $this->config->get('wwwPath') . '/' . $fileName);
+            $content = \file_get_contents( $this->config->get('wwwPath') . $fileName);
 
             if($minify && ! $item->minified)
                 $str .= \Code_Js_Minify::minify($content);
@@ -347,7 +347,7 @@ class Resource
             {
                 $file = substr($file, 0 , $paramsPos);
             }
-            $dataHash .= $file . ':' . filemtime( $this->config->get('wwwPath') . '/' . $file);
+            $dataHash .= $file . ':' . filemtime( $this->config->get('wwwPath') . $file);
         }
 
         if($this->cache)

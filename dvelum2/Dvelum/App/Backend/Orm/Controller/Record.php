@@ -106,7 +106,7 @@ class Record extends Controller
             return;
         }
 
-        $template = new \Dvelum\View();
+        $template = \Dvelum\View::factory();
         $template->disableCache();
         $template->engineUpdate = $engineUpdate;
         $template->columns = $colUpd;
