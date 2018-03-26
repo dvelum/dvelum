@@ -142,13 +142,6 @@ class Application
          */
         $lang = $this->config->get('language');
 
-        if ($cache) {
-            View::setCache($cache);
-            if ($this->config->offsetExists('template_check_mtime')) {
-                View::checkMtime($this->config->get('template_check_mtime'));
-            }
-        }
-
         /*
          * Register Services
          */
@@ -318,7 +311,7 @@ class Application
         $response = Response::factory();
 
         if ($this->config->get('maintenance')) {
-            $tpl = new View();
+            $tpl = View::factory();
             $tpl->set('msg', Lang::lang()->get('MAINTENANCE'));
             $response->put($tpl->render('public/maintenance.php'));
             $response->send();

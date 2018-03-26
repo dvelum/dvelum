@@ -35,7 +35,7 @@ class Block_Menu extends Block
 	{
 		$data = $this->_collectData();
 
-		$tpl = new View();
+		$tpl = View::factory();
         $tpl->setData(array(
             'config' => $this->_config,
             'place' => $this->_config['place'],

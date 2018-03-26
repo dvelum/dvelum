@@ -18,17 +18,14 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum;
-
+namespace Dvelum\Template\Adapter;
 use Dvelum\Cache\CacheInterface;
-use Dvelum\Config\ConfigInterface;
-use Dvelum\Service;
 
 /**
  * View class
  * @author Kirill A Egorov 2011
  */
-class View
+class ActiveTemplate
 {
     /**
      * Template data (local variables)
@@ -47,27 +44,27 @@ class View
      */
     protected static $checkMTime = true;
     /**
-     * @property CacheInterface $cache
+     * @property \Cache_Interface $cache
      */
-    protected $cache = null;
+    protected $cache = false;
     /**
      * @property boolean $useCache
      */
     protected $useCache = true;
 
     /**
-     * @property ConfigInterface $config
+     * @property  \Dvelum\Template\Storage $storage
      */
-    protected $config;
+    protected $storage;
 
-//    /**
-//     * Set the template cache manager (system method)
-//     * @param CacheInterface $manager
-//     */
-//    static public function setCache(CacheInterface $manager)
-//    {
-//        self::$defaultCache = $manager;
-//    }
+    /**
+     * Set the template cache manager (system method)
+     * @param CacheInterface $manager
+     */
+    static public function setCache(CacheInterface $manager)
+    {
+        self::$defaultCache = $manager;
+    }
 
     /**
      * Set _checkMTime flag
@@ -78,33 +75,13 @@ class View
         self::$checkMTime = $flag;
     }
 
-    /**
-     * @return View
-     * @throws \Exception
-     */
-    static public function factory() : View
+    public function __construct(?array $data = null)
     {
-        return Service::get('template');
-    }
-
-    public function __construct()
-    {
-        $this->storage = static::storage();
-
-        var_dump($this->storage);
-    }
-    /**
-     * Set template configuration
-     * @param ConfigInterface $config
-     */
-    public function setConfig(ConfigInterface $config)
-    {
-        $this->config = $config;
-    }
-
-    public function setCache(?CacheInterface $cache) : void
-    {
-        $this->cache = $cache;
+        $this->cache = self::$defaultCache;
+        $this->storage = self::storage();
+        if(isset($data) && is_array($data)){
+            $this->data = $data;
+        }
     }
     /**
      * Template Render
@@ -115,7 +92,6 @@ class View
     {
         $hash = '';
 
-        var_dump($this->storage);
         $realPath = $this->storage->get($path);
 
         if(!$realPath){

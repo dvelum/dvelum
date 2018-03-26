@@ -16,23 +16,11 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
 
-namespace Dvelum\App\Block;
-use Dvelum\View;
+namespace Dvelum\Template\Adapter;
+use Dvelum\Cache\CacheInterface;
 
-class Simple extends AbstractAdapter
-{
-    const cacheable = true;
-    const CACHE_KEY = 'block_simple';
+interface AdapterInterface{
 
-    /**
-     * Render block content
-     * @return string
-     */
-    public function render() : string
-    {
-        $tpl = View::factory();
-        $tpl->set('data' , $this->config);
-        return $tpl->render('public/'. $this->template);
-    }
 }

@@ -79,7 +79,7 @@ abstract class Frontend_Controller_Authorised extends Frontend_Controller
    */
   protected function loginAction()
   {
-    $template = new Template();
+    $template = \Dvelum\View::factory();
     $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
     $template->resource = Resource::getInstance();
     Response::put($template->render('public/backoffice_login.php'));

@@ -88,7 +88,7 @@ abstract class AbstractAdapter implements GeneratorInterface
         $methodsManager =  $project->getMethodManager();
 
         // initComponent
-        $initTemplate = new View();
+        $initTemplate = View::factory();
         $m = $methodsManager->addMethod($grid->getName() ,
             'initComponent' ,
             [],
@@ -99,7 +99,7 @@ abstract class AbstractAdapter implements GeneratorInterface
         $deleteUrl = $this->request->url([$urlTemplates['adminpath'] ,  $object , 'delete']);
 
         // deleteRecord
-        $deleteTemplate = new View();
+        $deleteTemplate = View::factory();
         $deleteTemplate->setData([
             'deleteUrl' => $deleteUrl
         ]);
@@ -112,7 +112,7 @@ abstract class AbstractAdapter implements GeneratorInterface
         $m->setDescription('Delete record');
 
         // setCanEdit
-        $setCanEditTemplate = new View();
+        $setCanEditTemplate = View::factory();
         $m = $methodsManager->addMethod(
             $grid->getName(),
             'setCanEdit' ,
@@ -132,7 +132,7 @@ abstract class AbstractAdapter implements GeneratorInterface
         }
 
         // showEditWindow
-        $editTemplate = new View();
+        $editTemplate = View::factory();
         $editTemplate->setData([
             'namespace'=>$project->namespace,
             'vc' => $vc
@@ -157,7 +157,7 @@ abstract class AbstractAdapter implements GeneratorInterface
      */
     protected function createActionJS($object, $runNamespace , $classNamespace , $vc = false)
     {
-        $actionTemplate = new View();
+        $actionTemplate = View::factory();
         $actionTemplate->setData([
             'object'=>$object,
             'runNamespace'=>$runNamespace,

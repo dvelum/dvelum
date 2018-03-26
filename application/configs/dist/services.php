@@ -15,4 +15,7 @@ return [
     'MailTransport' => [
         'loader'=>'\\Dvelum\App\\Service\\Loader\\MailTransport'
     ],
+    'template' => [
+        'loader'=>'\\Dvelum\App\\Service\\Loader\\Template'
+    ],
 ];

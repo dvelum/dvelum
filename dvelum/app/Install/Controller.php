@@ -121,7 +121,7 @@ class Install_Controller
 
     public function indexAction()
     {
-        $this->template = new View();
+        $this->template = View::factory();
         $this->template->url = './index.php';
         $this->template->lang = $this->lang;
         $this->template->dictionary = $this->localization;

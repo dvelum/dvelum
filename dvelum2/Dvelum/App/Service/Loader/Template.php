@@ -1,6 +1,6 @@
 <?php
 /**
- *  DVelum project https://github.com/dvelum/dvelum
+ *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -15,24 +15,30 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-namespace Dvelum\App\Block;
+declare(strict_types=1);
+
+namespace Dvelum\App\Service\Loader;
+
+use Dvelum\Config;
 use Dvelum\View;
 
-class Simple extends AbstractAdapter
+class Template extends AbstractAdapter
 {
-    const cacheable = true;
-    const CACHE_KEY = 'block_simple';
-
-    /**
-     * Render block content
-     * @return string
-     */
-    public function render() : string
+    public function loadService()
     {
-        $tpl = View::factory();
-        $tpl->set('data' , $this->config);
-        return $tpl->render('public/'. $this->template);
+        $config = Config::storage()->get('template.php');
+        $cache = false;
+        if($this->config->offsetExists('cache')){
+            $cache = $this->config->get('cache');
+        }
+        $templateService = new View();
+        $templateService->setConfig($config);
+        if($cache){
+            $templateService->setCache($cache);
+        }
+        return $templateService;
     }
 }

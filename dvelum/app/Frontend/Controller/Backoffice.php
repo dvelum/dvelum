@@ -171,7 +171,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
      * Show login form
      */
     protected function loginAction(){
-        $template = new Template();
+        $template = \Dvelum\View::factory();
         $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
         Response::put($template->render('public/backoffice_login.php'));
         Application::close();

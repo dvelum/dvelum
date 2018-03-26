@@ -70,7 +70,7 @@ class Controller extends App\Controller
         if($page->show_blocks)
             $blockManager->init($page->id , $page->default_blocks , $vers);
 
-        $template = new View();
+        $template = View::factory();
         $template->disableCache();
         $template->setProperties(array(
             'development' => $this->appConfig->get('development') ,

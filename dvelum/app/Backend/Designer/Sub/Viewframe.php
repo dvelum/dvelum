@@ -166,7 +166,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$res->addInlineJs($initCode);
 
 		$backendConfig = Config::storage()->get('backend.php');
-		$tpl = new \Dvelum\View();
+		$tpl = \Dvelum\View::factory();
 		$tpl->lang = $this->_configMain['language'];
 		$tpl->development = $this->_configMain['development'];
 		$tpl->resource = $res;

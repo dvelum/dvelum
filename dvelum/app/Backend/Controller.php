@@ -463,7 +463,7 @@ abstract class Backend_Controller extends Controller
      */
     protected function loginAction()
     {
-        $template = new Template();
+        $template = \Dvelum\View::factory();
         $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
         Response::put($template->render('system/'.$this->_configBackend->get('theme') . '/login.php'));
         exit;
@@ -615,7 +615,7 @@ abstract class Backend_Controller extends Controller
         /*
          * Load template
          */
-        $template = new Template();
+        $template = \Dvelum\View::factory();
         $template->disableCache();
         $template->setProperties(array(
             'wwwRoot' => $this->_configMain->get('wwwroot'),
