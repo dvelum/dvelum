@@ -18,14 +18,18 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Template\Adapter;
+namespace Dvelum\Template\Engine;
+
 use Dvelum\Cache\CacheInterface;
+use Dvelum\Config\ConfigInterface;
+use \Exception;
+use Dvelum\View;
 
 /**
  * View class
  * @author Kirill A Egorov 2011
  */
-class ActiveTemplate
+class ActiveTemplate implements EngineInterface
 {
     /**
      * Template data (local variables)
@@ -34,65 +38,45 @@ class ActiveTemplate
     private $data = [];
 
     /**
-     * Default cache interface
-     * @property \Cache_Interface | bool $defaultCache
+     * @property CacheInterface $cache
      */
-    protected static $defaultCache = false;
-    /**
-     * Check modification time for template file. Invalidate cache
-     * @property bool $checkMTime
-     */
-    protected static $checkMTime = true;
-    /**
-     * @property \Cache_Interface $cache
-     */
-    protected $cache = false;
+    protected $cache = null;
     /**
      * @property boolean $useCache
      */
     protected $useCache = true;
 
     /**
-     * @property  \Dvelum\Template\Storage $storage
+     * @property ConfigInterface $config
      */
-    protected $storage;
+    protected $config;
 
     /**
-     * Set the template cache manager (system method)
-     * @param CacheInterface $manager
+     * Set template configuration
+     * @param ConfigInterface $config
      */
-    static public function setCache(CacheInterface $manager)
+    public function setConfig(ConfigInterface $config)
     {
-        self::$defaultCache = $manager;
+        $this->config = $config;
     }
 
     /**
-     * Set _checkMTime flag
-     * @param boolean $flag
+     * Set caching adapter
+     * @param CacheInterface|null $cache
      */
-    static public function checkMtime(bool $flag)
+    public function setCache(?CacheInterface $cache): void
     {
-        self::$checkMTime = $flag;
-    }
-
-    public function __construct(?array $data = null)
-    {
-        $this->cache = self::$defaultCache;
-        $this->storage = self::storage();
-        if(isset($data) && is_array($data)){
-            $this->data = $data;
-        }
+        $this->cache = $cache;
     }
     /**
      * Template Render
-     * @param string $path — the path to the template file
+     * @param string $templatePath — the path to the template file
      * @return string
      */
-    public function render($path)
+    public function render(string $templatePath): string
     {
         $hash = '';
-
-        $realPath = $this->storage->get($path);
+        $realPath = View::storage()->get($templatePath);
 
         if(!$realPath){
             return '';
@@ -100,12 +84,7 @@ class ActiveTemplate
 
         if($this->cache && $this->useCache)
         {
-            if(self::$checkMTime){
-                $hash = md5('tpl_' . $path . '_' . serialize($this->data).filemtime($realPath));
-            }else{
-                $hash = md5('tpl_' . $path . '_' . serialize($this->data));
-            }
-
+            $hash = md5('tpl_' . $templatePath . '_' . serialize($this->data).filemtime($realPath));
             $html = $this->cache->load($hash);
 
             if($html !== false)
@@ -116,9 +95,9 @@ class ActiveTemplate
         include $realPath;
         $result = \ob_get_clean();
 
-        if($this->cache && $this->useCache)
+        if($this->cache && $this->useCache){
             $this->cache->save($result , $hash);
-
+        }
         return $result;
     }
 
@@ -225,30 +204,16 @@ class ActiveTemplate
     }
 
     /**
-     * Get Templates storage
-     * @return \Dvelum\Template\Storage
-     */
-    static public function storage() : \Dvelum\Template\Storage
-    {
-        static $store = false;
-
-        if(!$store){
-            $store = new \Dvelum\Template\Storage();
-        }
-
-        return $store;
-    }
-
-    /**
      * Render sub template
      * @param string $templatePath
      * @param array $data
      * @param bool|true $useCache
+     * @throws Exception
      * @return string
      */
     public function renderTemplate(string $templatePath, array $data = [], $useCache = true) : string
     {
-        $tpl = new self();
+        $tpl = View::factory();
         $tpl->setData($data);
 
         if(!$useCache)

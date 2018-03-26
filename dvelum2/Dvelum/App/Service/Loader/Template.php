@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Service\Loader;
 
 use Dvelum\Config;
+use Dvelum\Template\Service;
 use Dvelum\View;
 
 class Template extends AbstractAdapter
@@ -30,15 +31,13 @@ class Template extends AbstractAdapter
     public function loadService()
     {
         $config = Config::storage()->get('template.php');
+
         $cache = false;
         if($this->config->offsetExists('cache')){
             $cache = $this->config->get('cache');
         }
-        $templateService = new View();
-        $templateService->setConfig($config);
-        if($cache){
-            $templateService->setCache($cache);
-        }
-        return $templateService;
+
+        $service = new Service($config, $cache);
+        return $service;
     }
 }

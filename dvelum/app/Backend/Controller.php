@@ -617,7 +617,7 @@ abstract class Backend_Controller extends Controller
          */
         $template = \Dvelum\View::factory();
         $template->disableCache();
-        $template->setProperties(array(
+        $template->setData(array(
             'wwwRoot' => $this->_configMain->get('wwwroot'),
             'page' => $page,
             'urlPath' => $controllerCode,

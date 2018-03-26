@@ -397,7 +397,7 @@ class Controller extends App\Controller
          */
         $template = View::factory();
         $template->disableCache();
-        $template->setProperties(array(
+        $template->setData(array(
             'wwwRoot' => $this->appConfig->get('wwwroot'),
             'page' => $page,
             'urlPath' => $controllerCode,

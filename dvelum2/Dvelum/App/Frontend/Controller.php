@@ -72,7 +72,7 @@ class Controller extends App\Controller
 
         $template = View::factory();
         $template->disableCache();
-        $template->setProperties(array(
+        $template->setData(array(
             'development' => $this->appConfig->get('development') ,
             'page' => $page ,
             'path' => $page->getThemePath() ,

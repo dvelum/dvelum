@@ -202,7 +202,7 @@ class Externals_Manager
         }
         // Add Templates paths
         if (!empty($configPaths)) {
-            $templateStorage = Template::storage();
+            $templateStorage = \Dvelum\View::storage();
             foreach ($configPaths as $path) {
                 $templateStorage->addPath($path);
             }
