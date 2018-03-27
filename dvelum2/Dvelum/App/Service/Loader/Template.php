@@ -25,7 +25,6 @@ namespace Dvelum\App\Service\Loader;
 use Dvelum\Cache\CacheInterface;
 use Dvelum\Config;
 use Dvelum\Template\Service;
-use Dvelum\View;
 
 class Template extends AbstractAdapter
 {

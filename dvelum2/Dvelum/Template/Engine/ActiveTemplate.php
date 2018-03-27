@@ -211,7 +211,7 @@ class ActiveTemplate implements EngineInterface
      * @throws Exception
      * @return string
      */
-    public function renderTemplate(string $templatePath, array $data = [], $useCache = true) : string
+    public function renderTemplate(string $templatePath, array $data = [], bool $useCache = true) : string
     {
         $tpl = View::factory();
         $tpl->setData($data);
