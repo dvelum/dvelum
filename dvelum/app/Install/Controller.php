@@ -180,8 +180,8 @@ class Install_Controller
         /**
          * Check for php version
          */
-        $data['items'][0]['title'] = $this->localization->get('PHP_V') . ' >= 7.1.0';
-        if (version_compare(PHP_VERSION, '7.1.0', '<')) {
+        $data['items'][0]['title'] = $this->localization->get('PHP_V') . ' >= 7.2.0';
+        if (version_compare(PHP_VERSION, '7.2.0', '<')) {
             $data['items'][0]['success'] = false;
             $data['items'][0]['error'] = $this->localization->get('UR_PHP_V') . ' ' . PHP_VERSION;
         } else
