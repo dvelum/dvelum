@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Service\Loader;
 
+use Dvelum\Cache\CacheInterface;
 use Dvelum\Config;
 use Dvelum\Template\Service;
 use Dvelum\View;
@@ -34,7 +35,7 @@ class Template extends AbstractAdapter
 
         $cache = $this->config->offsetExists('cache');
 
-        if(empty($cache)){
+        if(!$cache instanceof CacheInterface){
             $cache = null;
         }
 
