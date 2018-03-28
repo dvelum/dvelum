@@ -35,7 +35,6 @@ Ext.define('designer.properties.FieldTypeWindow',{
 			},
 			items:[
 			      {
-			    	  fieldLabel:desLang.Type,
 			    	  xtype: 'combobox',
 					  typeAhead: true,
 					  triggerAction: 'all',
@@ -269,9 +268,5 @@ Ext.define('designer.properties.Field',{
 				 }
 			 }			 
 		 }).show();
-	},
-    destroy:function(){
-        this.setupForm.destroy();
-        this.callParent(arguments);
-    }
+	}
 });

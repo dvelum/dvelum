@@ -67,7 +67,7 @@ Ext.define('designer.properties.Panel', {
     labelAlignData: [['left'], ['top'], ['right']],
     iconAlignData:[['top'],['right'],['bottom'],['left']],
     regionData: [['center'], ['west'], ['north'], ['east'], ['south']],
-    layoutData: [['Auto'], ['border'], ['card'], ['fit'], ['hbox'], ['vbox'], ['anchor']], //['table']
+    layoutData: [['Auto'], ['border'], ['card'], ['fit'], ['hbox'], ['vbox'], ['anchor'], ['center'], ['absolute']], //['table']
     dockData: [['top'], ['right'], ['left'], ['bottom']],
 
 
@@ -614,7 +614,7 @@ Ext.define('designer.properties.Panel', {
      * Get properties filter text
      */
     getSearchText: function () {
-        if (this.searchPanel.searchField) {
+        if (!Ext.isEmpty(this.searchPanel) && !Ext.isEmpty(this.searchPanel.searchField)) {
             return this.searchPanel.searchField.getValue();
         }
         return false;

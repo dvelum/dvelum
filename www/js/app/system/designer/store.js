@@ -930,7 +930,7 @@ Ext.define('designer.store.proxyWindow',{
     destroy: function () {
         this.dataGrid.getStore().destroy();
         this.dataGrid.destroy();
-        this.proxyPropertiesContainer();
+        this.proxyPropertiesContainer.destroy();
         this.callParent(arguments);
     }
 });

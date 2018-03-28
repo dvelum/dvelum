@@ -141,7 +141,9 @@ class Manager
      */
     public function getModuleName($class) : string
     {
-        return \Utils_String::formatClassName(strtolower(str_replace(array('Backend_','_Controller'), '', $class)));
+        $class = str_replace(['\\','Backend_','_Controller','_App_'], ['_','','','_'], $class);
+        $class = trim(strtolower($class),'_');
+        return \Utils_String::formatClassName($class);
     }
 
     /**
