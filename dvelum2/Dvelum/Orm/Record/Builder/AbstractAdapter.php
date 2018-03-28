@@ -391,7 +391,7 @@ abstract class AbstractAdapter implements BuilderInterface
             return false;
         }
 
-        $fieldConfig = $this->objectConfig->getFieldConfig($newName);
+        $fieldConfig = $this->objectConfig->getField($newName);
 
         $sql = ' ALTER TABLE ' . $this->model->table() . ' CHANGE `' . $oldName . '` ' . $this->getPropertySql($newName , $fieldConfig);
 
@@ -403,6 +403,7 @@ abstract class AbstractAdapter implements BuilderInterface
         }
         catch(\Throwable $e)
         {
+            echo $e->getMessage();
             $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
         }

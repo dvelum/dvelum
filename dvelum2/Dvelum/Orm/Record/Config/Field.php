@@ -402,4 +402,13 @@ class Field implements \ArrayAccess
     {
         return $this->validationError;
     }
+
+    /**
+     * Get field title
+     * @return string
+     */
+    public function getTitle() : string
+    {
+        return $this->config['title'];
+    }
 }
