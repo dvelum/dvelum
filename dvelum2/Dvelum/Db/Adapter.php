@@ -220,7 +220,11 @@ class Adapter
         if ($result instanceof ResultInterface && $result->isQueryResult()) {
             $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
             $resultSet->initialize($result);
-            return $resultSet->current();
+            $resultData = $resultSet->current();
+            if(empty($resultData)){
+                $resultData = [];
+            }
+            return $resultData;
         }
         return [];
     }

@@ -778,7 +778,7 @@ class Record implements RecordInterface
      * @param string $name
      * @param int|int[]|bool $id , optional default false
      * @throws Exception
-     * @return Object|Object[]
+     * @return RecordInterface|RecordInterface[]
      */
     static public function factory(string $name , $id = false)
     {
