@@ -193,7 +193,7 @@ class Model_Medialib extends Model
             $resource->addJs('/js/lib/ext_ux/Ext.ux.TinyMCE.js', 1, true);
             $resource->addJs('/js/app/system/medialib/HtmlPanel_tinymce.js', 3);
         } elseif ($editor === 'ckeditor') {
-            $resource->addJs('/js/lib/ckeditor/ckeditor.js', 0, true);
+            $resource->addJs('/js/lib/ckeditor/ckeditor.js', 100, true, 'head');
             $resource->addJs('/js/lib/ext_ux/ckplugin.js', 1, true);
             $resource->addJs('/js/app/system/medialib/HtmlPanel_ckeditor.js', 3, false);
         }

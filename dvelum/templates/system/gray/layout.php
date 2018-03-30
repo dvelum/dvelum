@@ -8,7 +8,7 @@ $res->addJs('/js/app/system/common.js' , -2);
 $res->addJs('/js/app/system/Application.js' , -1);
 
 $res->addJs('/js/lib/jquery.js', 1 , true , 'head');
-$res->addJs('/js/lang/'.$this->get('lang').'.js', 1 , true , 'head');
+$res->addJs('/js/lang/'.$this->get('lang').'.js', -1000 , true);
 
 if($this->get('development'))
     $res->addJs('/js/lib/extjs/build/ext-all-debug.js', 2 , true , 'head');
@@ -99,6 +99,6 @@ $res->addInlineJs('
         </div>
     </div>
 </div>
-<?php echo $res->includeJs(true , false); ?>
+<?php echo $res->includeJs(true , true); ?>
 </body>
 </html>
