@@ -627,11 +627,7 @@ class Designer_Project_Code
 
         if($object->getClass() === 'Component_Field_System_Medialibhtml')
         {
-            /**
-             * @todo Уменьшить связанность
-             */
-            \Dvelum\Resource::factory()->addJs('/js/lib/jquery.js'  , 1);
-            Model::factory('Medialib')->includeScripts();
+             Model::factory('Medialib')->includeScripts();
         }
 
         $code = array('defines'=>'','layout'=>'');

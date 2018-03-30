@@ -7,7 +7,6 @@ $res = Resource::getInstance();
 $res->addJs('/js/app/system/common.js' , -2);
 $res->addJs('/js/app/system/Application.js' , -1);
 
-$res->addJs('/js/lib/jquery.js', 1 , true , 'head');
 $res->addJs('/js/lang/'.$this->get('lang').'.js', -1000 , true);
 
 if($this->get('development'))
@@ -99,6 +98,9 @@ $res->addInlineJs('
         </div>
     </div>
 </div>
-<?php echo $res->includeJs(true , true); ?>
+<?php
+echo $res->includeJsByTag(true , false , 'external');
+echo $res->includeJs(true , true);
+?>
 </body>
 </html>

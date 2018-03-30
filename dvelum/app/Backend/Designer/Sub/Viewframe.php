@@ -19,8 +19,6 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 
 
 		$res = \Dvelum\Resource::factory();
-		$res->addJs('/js/lib/jquery.js'  , 0);
-
 		$backendScripts = Config::storage()->get('js_inc_backend.php');
 		if($backendScripts->getCount())
 		{

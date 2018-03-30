@@ -10,7 +10,6 @@ if($this->useCSRFToken){
 
 $theme = $this->theme;
 
-$res->addJs('/js/lib/jquery.js', -4 , true );
 $res->addJs('/js/lang/'.$this->lang.'.js', -3 , true);
 
 if($this->get('development'))

@@ -135,8 +135,10 @@ class Backend_User_Controller extends Dvelum\App\Backend\Api\Controller
             if (!isset($moduleKeys[$v['module']])) {
                 unset($data[$k]);
             }
-            $v['title'] = $manager->getModuleConfig($k)['title'];
-            $v['rc'] = $manager->isVcModule($k);
+            if($manager->isValidModule($k)){
+                $v['title'] = $manager->getModuleConfig($k)['title'];
+                $v['rc'] = $manager->isVcModule($k);
+            }
         }
         unset($v);
         $this->response->success(array_values($data));

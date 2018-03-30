@@ -9,18 +9,16 @@ if(!defined('DVELUM'))exit;
 	}
 
 	$theme = $this->theme;
-
-	$res->addJs('/js/lib/jquery.js', -4 , true );
-	$res->addJs('/js/lang/'.$this->lang.'.js', -3 , true);
+    $res->addJs('/js/lang/'.$this->get('lang').'.js', -1000 , true);
 
 	if($this->get('development'))
-		$res->addJs('/js/lib/extjs/build/ext-all-debug.js', -2 , true );
+		$res->addJs('/js/lib/extjs/build/ext-all-debug.js', -2 , true , 'head');
 	else
-		$res->addJs('/js/lib/extjs/build/ext-all.js', -2 , true );
+		$res->addJs('/js/lib/extjs/build/ext-all.js', -2 , true , 'head');
 
-	$res->addJs('/js/lib/extjs/build/classic/theme-'.$theme.'/theme-'.$theme.'.js', -1 , true );
+	$res->addJs('/js/lib/extjs/build/classic/theme-'.$theme.'/theme-'.$theme.'.js', -1 , true  , 'head');
 
-	$res->addJs('/js/lib/extjs/build/classic/locale/locale-'.$this->get('lang').'.js', -1 , true );
+	$res->addJs('/js/lib/extjs/build/classic/locale/locale-'.$this->get('lang').'.js', -1 , true  , 'head');
 
 	$res->addInlineJs('var developmentMode = '.intval($this->get('development')).';');
 
@@ -34,12 +32,16 @@ if(!defined('DVELUM'))exit;
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<BASE href="<?php echo Request::baseUrl();?>">
-<?php
+    <BASE href="<?php echo Request::baseUrl();?>">
+    <?php
 	if($this->useCSRFToken)
 		echo '<meta name="csrf-token" content="'.$token.'"/>';
 
- echo $this->resource->includeCss() ,$this->resource->includeJs(false,false) , "\n"?>
+ echo $res->includeCss(true);
+ echo $res->includeJsByTag(true , false , 'head');
+ echo $res->includeJsByTag(true , false , 'external');
+ echo $res->includeJs();
+?>
 </head>
 <body>
 </body>

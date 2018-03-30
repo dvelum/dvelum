@@ -7,7 +7,6 @@
     $res->addJs('/js/app/system/common.js' , -2);
     $res->addJs('/js/app/system/Desktop.js' , -1);
 
-    $res->addJs('/js/lib/jquery.js', 1 , true , 'head');
     $res->addJs('/js/lang/'.$this->get('lang').'.js', 1 , true , 'head');
 
     if($this->get('development'))

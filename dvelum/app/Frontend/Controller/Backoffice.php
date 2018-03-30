@@ -101,7 +101,6 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
         $media->includeScripts();
         $cfg = Config::storage()->get('js_inc_backend.php');
 
-        $this->_resource->addJs('/js/lib/jquery.js',0 , true , 'head');
 
         $this->_resource->addJs('/js/lib/ext6/build/ext-all.js' , 0 , true , 'head');
         $this->_resource->addJs('/js/lang/'.$this->_configMain['language'].'.js', 1 , true , 'head');

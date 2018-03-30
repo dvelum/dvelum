@@ -193,7 +193,7 @@ class Model_Medialib extends Model
             $resource->addJs('/js/lib/ext_ux/Ext.ux.TinyMCE.js', 1, true);
             $resource->addJs('/js/app/system/medialib/HtmlPanel_tinymce.js', 3);
         } elseif ($editor === 'ckeditor') {
-            $resource->addJs('/js/lib/ckeditor/ckeditor.js', 100, true, 'head');
+            $resource->addJs('/js/lib/ckeditor/ckeditor.js', 100, true, 'external');
             $resource->addJs('/js/lib/ext_ux/ckplugin.js', 1, true);
             $resource->addJs('/js/app/system/medialib/HtmlPanel_ckeditor.js', 3, false);
         }
@@ -203,7 +203,8 @@ class Model_Medialib extends Model
         $resource->addJs('/js/lib/ext_ux/AjaxFileUpload.js', 1);
         $resource->addJs('/js/app/system/ImageField.js', 1);
         $resource->addJs('/js/app/system/Medialib.js?v=' . $version, 2);
-        $resource->addJs('/js/lib/jquery.Jcrop.min.js', 2, true);
+        $resource->addJs('/js/lib/jquery.js', 1 , true, 'external');
+        $resource->addJs('/js/lib/jquery.Jcrop.min.js', 2, true, 'external');
 
         $resource->addInlineJs('
             app.maxFileSize = "' . ini_get('upload_max_filesize') . '";

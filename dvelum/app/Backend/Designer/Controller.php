@@ -118,7 +118,6 @@ class Backend_Designer_Controller extends Backend_Controller
         $page->setTemplatesPath('system/' . $designerTheme. '/');
 
 
-		$this->_resource->addJs('/js/lib/jquery.js'  , 1);
 		Model::factory('Medialib')->includeScripts();
 	    $this->_resource->addJs('/js/app/system/designer/lang/'.$this->_config->get('lang').'.js'  , 1);
 		$this->_resource->addCss('/js/app/system/designer/style.css' );		
@@ -142,7 +141,7 @@ class Backend_Designer_Controller extends Backend_Controller
 		$count = 4;
 
 		foreach (self::$_externalScripts as $path){
-				$this->_resource->addJs($path , $count);
+				$this->_resource->addJs($path , $count, true, 'external');
 				$count++;
 		}
 		
