@@ -363,7 +363,7 @@ class Controller extends Backend\Ui\Controller
         }
 
         $time = microtime(true);
-        file_put_contents($wwwPath . '/js/app/system/Medialib.js', \Code_Js_Minify::minify($s));
+        file_put_contents($wwwPath . '/js/app/system/Medialib.js', \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($s));
         echo '
       			Compilation time: ' . number_format(microtime(true) - $time, 5) . ' sec<br>
       			Files compiled: ' . sizeof($sources) . ' <br>

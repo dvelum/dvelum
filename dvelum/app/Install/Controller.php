@@ -250,7 +250,7 @@ class Install_Controller
                 'accessType'=>'required'
             ),
             array(
-                'path'=>$this->wwwPath . 'js/syscache',
+                'path'=>$this->wwwPath . 'css/cache',
                 'accessType'=>'required'
             ),
             array(

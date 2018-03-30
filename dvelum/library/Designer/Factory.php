@@ -136,13 +136,13 @@ class Designer_Factory
                 if(File::getExt($file) == '.css')
                 {
                     if(strpos($file , '?') === false){
-                        $file = $file .'?'. $cachedKey;
+                        $file = $file .'?v='. $cachedKey;
                     }
                     $resource->addCss($file , 100);
                 }else{
 
                     if(strpos($file , '?') === false){
-                        $file = $file .'?'. $cachedKey;
+                        $file = $file .'?v='. $cachedKey;
                     }
 
                     $resource->addJs($file , false, false);
@@ -326,7 +326,7 @@ class Designer_Factory
 
         if($selfInclude)
         {
-            $layoutCacheFile = Utils::createCachePath($applicationConfig->get('jsCacheSysPath'), $cacheKey.'.js');
+            $layoutCacheFile = Utils::createCachePath($applicationConfig->get('jsCachePath'), $cacheKey.'.js');
 
             /**
              * @todo remove slow operation
@@ -335,10 +335,10 @@ class Designer_Factory
                 if($debug){
                     file_put_contents($layoutCacheFile, $project->getCode($replace));
                 } else {
-                    file_put_contents($layoutCacheFile, Code_Js_Minify::minify($project->getCode($replace)));
+                    file_put_contents($layoutCacheFile, \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($project->getCode($replace)));
                 }
             }
-            $includes[] = '/'.str_replace($applicationConfig->get('jsCacheSysPath'), $applicationConfig->get('jsCacheSysUrl') , $layoutCacheFile);
+            $includes[] = '/'.str_replace($applicationConfig->get('jsCachePath'), $applicationConfig->get('jsCacheUrl') , $layoutCacheFile);
         }
         return $includes;
     }

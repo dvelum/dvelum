@@ -1,9 +1,4 @@
 var Ext = Ext || {};
-Ext.manifest = { // the same content as "app.json"
-	compatibility: {
-		ext: '4.2'
-	}
-}
 
 Ext.Loader.setConfig({
 	enabled: false,

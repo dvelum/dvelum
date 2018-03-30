@@ -59,8 +59,10 @@ return array(
     'jsCacheUrl' => 'js/cache/',
     'jsCachePath' => $wwwPath . 'js/cache/',
 
-    'jsCacheSysUrl' => 'js/syscache/',
-    'jsCacheSysPath' => $wwwPath . 'js/syscache/',
+    'cssPath' => $wwwPath . 'css/',
+    'cssCacheUrl' => 'css/cache/',
+    'cssCachePath' => $wwwPath . 'css/cache/',
+
     /*
      * Main directory for config files
      */

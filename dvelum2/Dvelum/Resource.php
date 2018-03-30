@@ -267,17 +267,17 @@ class Resource
     {
         $hash = md5($code);
         $cacheFile = $hash . '.js';
-        $cacheFile = \Utils::createCachePath( $this->config->get('jsCacheSysPath') , $cacheFile);
+        $cacheFile = \Utils::createCachePath( $this->config->get('jsCachePath') , $cacheFile);
 
         if(!file_exists($cacheFile))
         {
             if($minify)
-                $code = \Code_Js_Minify::minify($code);
+                $code = \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($code);
 
             file_put_contents($cacheFile, $code);
         }
 
-        return str_replace($this->config->get('jsCacheSysPath'), $this->config->get('wwwRoot'). $this->config->get('jsCacheSysPath'), $cacheFile);
+        return str_replace($this->config->get('jsCachePath'), $this->config->get('wwwRoot'). $this->config->get('jsCachePath'), $cacheFile);
     }
 
     /**
@@ -286,37 +286,30 @@ class Resource
      * @param boolean $minify - minify scripts
      * @return string  - cached file path
      */
-    protected function compileJsFiles(array $files , bool $minify) : string
+    protected function compileJsFiles(array $files , bool $minify /*deprecated*/) : string
     {
         $validHash = $this->getFileHash(\Utils::fetchCol('file' , $files));
 
-        $cacheFile = \Utils::createCachePath($this->config->get('jsCacheSysPath'), $validHash . '.js');
+        $cacheFile = \Utils::createCachePath($this->config->get('jsCachePath'), $validHash . '.js');
+        $cachedUrl = \str_replace($this->config->get('jsCachePath'), $this->config->get('jsCacheUrl') , $cacheFile);
 
-        $cachedUrl = \str_replace($this->config->get('jsCacheSysPath'), $this->config->get('jsCacheSysUrl') , $cacheFile);
-
-        if(file_exists($cacheFile))
-            return $cachedUrl;
-
-        $str = '';
-        foreach($files as $item)
-        {
-            $str .= "\n";
-
-            $fileName = $item->file;
-            $paramsPos = \strpos($fileName , '?');
-
-            if($paramsPos!==false){
-                $fileName = \substr($fileName, 0 , $paramsPos);
+        if(!file_exists($cacheFile)){
+            $src = '';
+            $minify =  \Dvelum\App\Code\Minify\Minify::factory();
+            foreach($files as $v){
+                if($v->minified){
+                    $src.="\n/**/\n".file_get_contents($this->config->get('wwwPath') . $v->file);
+                }else{
+                    $file =  $v->file;
+                    $paramsPos = strpos($file , '?');
+                    if($paramsPos!==false) {
+                        $file = substr($file, 0 , $paramsPos);
+                    }
+                    $src.="\n/**/\n".$minify->minifyJs($this->config->get('wwwPath') . $file);
+                }
             }
-
-            $content = \file_get_contents( $this->config->get('wwwPath') . $fileName);
-
-            if($minify && ! $item->minified)
-                $str .= \Code_Js_Minify::minify($content);
-            else
-                $str .= $content;
+            file_put_contents($cacheFile,$src);
         }
-        \file_put_contents($cacheFile , $str);
         return $cachedUrl;
     }
 
@@ -343,8 +336,7 @@ class Resource
         foreach($files as $file)
         {
             $paramsPos = strpos($file , '?');
-            if($paramsPos!==false)
-            {
+            if($paramsPos!==false) {
                 $file = substr($file, 0 , $paramsPos);
             }
             $dataHash .= $file . ':' . filemtime( $this->config->get('wwwPath') . $file);
@@ -358,9 +350,10 @@ class Resource
 
     /**
      * Get html code for css files include
+     * @param bool $combine
      * @return string
      */
-    public function includeCss() : string
+    public function includeCss($combine = false) : string
     {
         $s = '';
 
@@ -368,8 +361,28 @@ class Resource
         {
             $this->cssFiles = \Utils::sortByProperty($this->cssFiles, 'order');
 
-            foreach($this->cssFiles as $k => $v)
-                $s .= '<link rel="stylesheet" type="text/css" href="' . $this->config->get('wwwRoot') . $v->file . '" />' . "\n";
+            if($combine)
+            {
+                $fileList = [];
+                foreach($this->cssFiles as $k => $v){
+                    $fileList[] = $v->file;
+                }
+                $validHash = $this->getFileHash($fileList);
+                $cacheFile = \Utils::createCachePath($this->config->get('cssCachePath'), $validHash . '.css');
+                $cachedUrl = \str_replace($this->config->get('cssCachePath'), $this->config->get('cssCacheUrl') , $cacheFile);
+
+                if(!file_exists($cacheFile)){
+                    foreach($fileList as &$v){
+                        $v = $this->config->get('wwwPath') . $v;
+                    }unset($v);
+                    \Dvelum\App\Code\Minify\Minify::factory()->minifyCssFiles($fileList, $cacheFile);
+                }
+                $s .= '<link rel="stylesheet" type="text/css" href="' . $this->config->get('wwwRoot') . $cachedUrl . '" />' . "\n";
+            }else{
+                foreach($this->cssFiles as $k => $v){
+                    $s .= '<link rel="stylesheet" type="text/css" href="' . $this->config->get('wwwRoot') . $v->file . '" />' . "\n";
+                }
+            }
         }
 
         if(strlen($this->rawCss))

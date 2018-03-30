@@ -128,8 +128,10 @@ class Application
 
         $resource = Resource::factory();
         $resource->setConfig(Config\Factory::create([
-            'jsCacheSysUrl' => $this->config->get('jsCacheSysUrl'),
-            'jsCacheSysPath' => $this->config->get('jsCacheSysPath'),
+            'jsCacheUrl' => $this->config->get('jsCacheUrl'),
+            'jsCachePath' => $this->config->get('jsCachePath'),
+            'cssCacheUrl' => $this->config->get('cssCacheUrl'),
+            'cssCachePath' => $this->config->get('cssCachePath'),
             'wwwRoot' => $this->config->get('wwwRoot'),
             'wwwPath' => $this->config->get('wwwPath'),
             'cache' => $cache

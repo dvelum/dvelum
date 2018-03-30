@@ -45,7 +45,8 @@
  * @link http://code.google.com/p/jsmin-php/
  */
  
-class Code_Js_Minify{
+class Code_Js_Minify
+{
   const ORD_LF    = 10;
   const ORD_SPACE = 32;
  

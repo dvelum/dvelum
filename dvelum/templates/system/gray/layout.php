@@ -83,7 +83,7 @@ $res->addInlineJs('
     <title><?php echo $this->get('page')->title;?>  .:: BACK OFFICE PANEL ::.  </title>
     <link rel="shortcut icon" href="<?php echo $wwwRoot;?>i/favicon.png" />
     <?php
-    echo $res->includeCss();
+    echo $res->includeCss(true);
     echo $res->includeJsByTag(true , false , 'head');
     ?>
 </head>
@@ -99,6 +99,6 @@ $res->addInlineJs('
         </div>
     </div>
 </div>
-<?php echo $res->includeJs(true , false); ?>
+<?php echo $res->includeJs(true , true); ?>
 </body>
 </html>

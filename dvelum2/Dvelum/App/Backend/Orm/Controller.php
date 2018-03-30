@@ -300,7 +300,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         }
 
         $time = microtime(true);
-        file_put_contents($wwwPath.'js/app/system/ORM.js', \Code_Js_Minify::minify($s));
+        file_put_contents($wwwPath.'js/app/system/ORM.js', \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($s));
         echo '
 			Compilation time: '.number_format(microtime(true)-$time,5).' sec<br>
 			Files compiled: '.sizeof($sources).' <br>

@@ -194,7 +194,7 @@ class Backend_Designer_Controller extends Backend_Controller
 		}
 		
 		$time = microtime(true);	
-		file_put_contents($this->_configMain['wwwPath'].$this->_config->get('compiled_js'), Code_Js_Minify::minify($s));
+		file_put_contents($this->_configMain['wwwPath'].$this->_config->get('compiled_js'), \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($s));
 		
 		echo '
 			Compilation time: '.number_format(microtime(true)-$time,5).' sec<br>
