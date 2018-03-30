@@ -372,7 +372,11 @@ class Resource
                 $cachedUrl = \str_replace($this->config->get('cssCachePath'), $this->config->get('cssCacheUrl') , $cacheFile);
 
                 if(!file_exists($cacheFile)){
-                    foreach($fileList as &$v){
+                    foreach($fileList as $v){
+                        $paramsPos = strpos($v , '?');
+                        if($paramsPos!==false) {
+                            $v = substr($v, 0 , $paramsPos);
+                        }
                         $v = $this->config->get('wwwPath') . $v;
                     }unset($v);
                     \Dvelum\App\Code\Minify\Minify::factory()->minifyCssFiles($fileList, $cacheFile);

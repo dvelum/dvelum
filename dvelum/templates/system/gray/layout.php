@@ -99,6 +99,6 @@ $res->addInlineJs('
         </div>
     </div>
 </div>
-<?php echo $res->includeJs(true , true); ?>
+<?php echo $res->includeJs(true , false); ?>
 </body>
 </html>
