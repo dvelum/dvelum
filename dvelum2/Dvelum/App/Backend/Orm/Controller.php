@@ -100,7 +100,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         ');
 
         $this->resource->addJs('/js/app/system/SearchPanel.js', 0);
-        $this->resource->addJs('/js/app/system/ORM.js?v='.$version, 2);
+        $this->resource->addJs('/js/app/system/ORM.js', 2, true);
 
         $this->resource->addJs('/js/app/system/EditWindow.js', 1);
         $this->resource->addJs('/js/app/system/HistoryPanel.js', 1);
@@ -112,10 +112,12 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $this->resource->addJs('/js/app/system/ObjectLink.js', 3);
 
         Model::factory('Medialib')->includeScripts();
+
         $this->resource->addCss('/css/system/joint.min.css', 1);
-        $this->resource->addJs('/js/lib/uml/lodash.min.js', 2);
-        $this->resource->addJs('/js/lib/uml/backbone-min.js', 3);
-        $this->resource->addJs('/js/lib/uml/joint.min.js', 4);
+
+        $this->resource->addJs('/js/lib/uml/lodash.min.js', 2 , true , 'external');
+        $this->resource->addJs('/js/lib/uml/backbone-min.js', 3 , true , 'external');
+        $this->resource->addJs('/js/lib/uml/joint.min.js', 4 , true , 'external');
         $this->resource->addJs('/js/app/system/crud/orm.js', 7);
     }
 
