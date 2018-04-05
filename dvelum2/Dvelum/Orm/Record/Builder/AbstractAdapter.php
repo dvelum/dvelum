@@ -416,4 +416,13 @@ abstract class AbstractAdapter implements BuilderInterface
      * @return string
      */
     abstract protected function getPropertySql(string $name , Orm\Record\Config\Field $field) : string;
+
+    /**
+     * Update distributed objects
+     * @param array $list
+     * @return mixed
+     */
+    abstract protected function updateDistributed(array $list) : bool;
+
+    abstract public function getDistributedObjectsUpdatesInfo();
 }

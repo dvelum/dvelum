@@ -64,6 +64,14 @@ Ext.define('app.crud.orm.Index', {
 	]
 });
 
+Ext.define('app.crud.orm.ditributedIndex', {
+    extend: 'Ext.data.Model',
+    fields: [
+        {name:'field' ,  type:'string'},
+        {name:'is_system', type:'boolean'}
+    ]
+});
+
 Ext.define('app.crud.orm.Main',{
 	extend:'Ext.panel.Panel',
 	dataStore:null,
@@ -117,7 +125,13 @@ Ext.define('app.crud.orm.Main',{
             encryptData:		app.createUrl([this.controllerUrl + 'crypt','encrypt']),
             decryptData:		app.createUrl([this.controllerUrl + 'crypt','decrypt']),
 			// crypt task
-            encTaskStat:		app.createUrl([this.controllerUrl + 'crypt','taskstat'])
+            encTaskStat:		app.createUrl([this.controllerUrl + 'crypt','taskstat']),
+
+            // distributed
+            addDistributedIndex:app.createUrl([this.controllerUrl  + 'distributed','adddistributedindex']),
+            listObjDistIndexes: app.createUrl([this.controllerUrl  + 'distributed','distindexes']),
+            deleteDistIndex: 	app.createUrl([this.controllerUrl  + 'distributed','deletedistributedindex']),
+            acceptedDistFields: app.createUrl([this.controllerUrl  + 'distributed','acceptedDistributedFields'])
         };
 
 		this.tbar = [];
@@ -477,14 +491,13 @@ Ext.define('app.crud.orm.Main',{
 		}, this);
 	},
 	showEdit:function(record){
-
 		var oName = Ext.isEmpty(record) ? '' : record.get('name');
-
 		var win = Ext.create('app.crud.orm.ObjectWindow',{
 			objectName:oName,
 			objectList:app.crud.orm.getObjectsList,
 			isSystem:Ext.isEmpty(record) ? false : record.get('system'),
-			isExternal:Ext.isEmpty(record) ? false : record.get('external')
+			isExternal:Ext.isEmpty(record) ? false : record.get('external'),
+            sharding:app.crud.orm.sharding
 		});
 		win.setTitle(appLang.EDIT_OBJECT + ' &laquo;' + oName + '&raquo; ');
 		win.on('dataSaved',function(){

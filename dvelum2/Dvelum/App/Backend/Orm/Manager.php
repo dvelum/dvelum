@@ -23,6 +23,7 @@ namespace Dvelum\App\Backend\Orm;
 use Dvelum\Orm;
 use Dvelum\Lang;
 use Dvelum\Config;
+use \Exception;
 
 class Manager
 {
@@ -73,7 +74,6 @@ class Manager
 			}
 		}
 
-			
 		$localisations = $this->getLocalisations();
 		$langWritePath = Lang::storage()->getWrite();
 		$objectsWrite = Config::storage()->getWrite();
@@ -83,7 +83,9 @@ class Manager
 				return self::ERROR_FS_LOCALISATION;
 		}
 
-		$path = $objectsWrite . Config::storage()->get('main.php')->get('object_configs') . $name . '.php';
+        $ormConfig = Config::storage()->get('orm.php');
+
+		$path = $objectsWrite . $ormConfig->get('object_configs') . $name . '.php';
 
 		try{
 		  $cfg = Orm\Record\Config::factory($name);
@@ -317,7 +319,9 @@ class Manager
 				$cfgArray = $cfg->get($localisationKey);
 				$cfg->remove($localisationKey);
 				$cfg->set($newLocalisationKey, $cfgArray);
-				$cfg->save();				
+                if(!Lang::storage()->save($cfg)){
+                    return self::ERROR_FS;
+                }
 			}
 		}
 		
@@ -338,7 +342,7 @@ class Manager
 				$oConfig = Orm\Record\Config::factory($object);
 				
 				foreach ($fields as $fName=>$fType)				
-					if($oConfig->isLink($fName))
+					if($oConfig->getField($fName)->isLink())
 						if(!$oConfig->setFieldLink($fName, $newName))
 							return self::ERROR_EXEC;
 									
@@ -348,4 +352,40 @@ class Manager
 		}
 		return 0;
 	}
+
+    /**
+     * Sync Distributed index structure
+     * add fields into ObjectId
+     * @param string $objectName
+     * @throws Exception
+     * @return bool
+     */
+    public function syncDistributedIndex($objectName)
+    {
+        $oConfig = Orm\Record\Config::factory($objectName);
+        $distIndexes = $oConfig->getDistributedIndexesConfig();
+
+        $idObject = $oConfig->getDistributedIndexObject();
+        $idObjectConfig = Orm\Record\Config::factory($idObject);
+
+        foreach ($distIndexes as $name=>$info)
+        {
+            if($name == $idObjectConfig->getPrimaryKey()){
+                continue;
+            }
+
+            $cfg = $oConfig->getFieldConfig($name);
+            $cfg['system'] = false;
+            $cfg['db_isNull'] = true;
+
+
+            $idObjectConfig->setFieldConfig($name,$cfg);
+            $idObjectConfig->setIndexConfig($name,[
+                'columns' => [$name],
+                'fulltext' => false,
+                'unique' => false,
+            ]);
+        }
+        return $idObjectConfig->save();
+    }
 }

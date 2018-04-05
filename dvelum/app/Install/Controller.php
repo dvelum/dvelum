@@ -330,9 +330,11 @@ class Install_Controller
                 $configs = array(
                      'db/prod/default.php',
                      'db/prod/error.php',
+                     'db/prod/sharding_index.php',
 
                      'db/dev/default.php',
                      'db/dev/error.php',
+                     'db/dev/sharding_index.php',
                 );
 
                 $params['prefix'] = $prefix;

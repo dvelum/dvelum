@@ -28,6 +28,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         'index' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Index',
         'uml' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Uml',
         'crypt' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Crypt',
+        'distributed' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Distributed',
     ];
 
     public function route(Request $request, Response $response) : void
@@ -97,6 +98,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
           var canUseBackup = false;
           var dbConfigsList = '.json_encode($dbConfigs).';
           var ormTooltips = '.Lang::lang('orm_tooltips')->getJson().';
+          var shardingEnabled = '.intval(Config::storage()->get('orm.php')->get('sharding')).';
         ');
 
         $this->resource->addJs('/js/app/system/SearchPanel.js', 0);

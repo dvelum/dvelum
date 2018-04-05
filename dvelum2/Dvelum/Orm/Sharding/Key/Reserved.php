@@ -1,7 +1,7 @@
 <?php
 /**
- *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- *  Copyright (C) 2011-2017  Kirill Yegorov
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2018  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,33 +15,46 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
-
 declare(strict_types=1);
 
-namespace Dvelum\App\Service\Loader;
+namespace Dvelum\Orm\Sharding\Key;
 
-use Dvelum\Config;
-use Dvelum;
 
-class Orm extends AbstractAdapter
+class Reserved
 {
-    public function loadService()
+    protected $shard;
+    protected $id;
+
+    /**
+     * @return mixed
+     */
+    public function getShard()
     {
-        $cache = null;
-        if($this->config->offsetExists('cache')){
-            $cache = $this->config->get('cache');
-        }
-        $orm = new Dvelum\Orm();
+        return $this->shard;
+    }
 
-        $orm->init(
-            Config::storage()->get('orm.php'),
-            $this->config->get('dbManager'),
-            $this->config->get('appConfig')->get('language'),
-            $cache
-        );
+    /**
+     * @param mixed $shard
+     */
+    public function setShard($shard)
+    {
+        $this->shard = $shard;
+    }
 
-        return $orm;
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 }

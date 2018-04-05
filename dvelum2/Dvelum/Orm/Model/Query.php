@@ -56,6 +56,17 @@ class Query
     }
 
     /**
+     * Change database connection
+     * @param Adapter $connection
+     * @return Query
+     */
+    public function setDbConnection(Adapter $connection) : self
+    {
+        $this->db = $connection;
+        return $this;
+    }
+
+    /**
      * @param mixed $table
      * @return Query
      */

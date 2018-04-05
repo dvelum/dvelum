@@ -573,6 +573,22 @@ class Record implements RecordInterface
             return false;
         }
 
+        if($this->config->isDistributed() && !$this->getId()){
+            $sharding = Sharding::factory();
+            $insert = $sharding->reserveIndex($this);
+            if(empty($insertId)){
+                $text = 'ORM :: Cannot reserve index in bucket for object '.$this->getName().' ';
+                $this->errors[] = $text;
+
+                if($this->logger)
+                    $this->logger->log($text);
+
+                return false;
+            }
+            $this->setInsertId($insert->getId());
+            $this->set($sharding->getShardField(), $insert->getShard());
+        }
+
         if($this->config->hasEncrypted()){
             $ivField = $this->config->getIvField();
             $ivData = $this->get($ivField);

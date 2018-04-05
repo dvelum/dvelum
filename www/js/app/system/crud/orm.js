@@ -6,6 +6,8 @@ Ext.onReady(function() {
     app.crud.orm.dbConfigs = dbConfigsList;
     app.crud.orm.foreignKeys = useForeignKeys;
 
+    app.crud.orm.sharding = shardingEnabled;
+
     var dataPanel = Ext.create('app.crud.orm.Main', {
         title: appLang.MODULE_ORM,
         controllerUrl: app.root

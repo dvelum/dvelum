@@ -140,12 +140,13 @@ Ext.define('app.crud.orm.dataGrid',{
         this.columns.push(
             {
                 text:appLang.TITLE,
-                width:170,
+                width:200,
                 dataIndex:'title',
                 renderer:titleRenderer
             },{
                 text: appLang.OBJECT,
                 dataIndex: 'name',
+                width:200,
                 align:'left'
             },{
                 text:appLang.DATA_TABLE,

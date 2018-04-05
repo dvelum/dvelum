@@ -140,7 +140,7 @@ class Model
     {
         $this->settings = $settings;
 
-        $ormConfig = Config\Factory::storage()->get('orm.php', true, false);
+        $ormConfig = Config\Factory::storage()->get('orm.php');
 
         $this->store = $settings->get('dbObjectStore');
         $this->name = strtolower($objectName);
@@ -324,8 +324,22 @@ class Model
      */
     final public function getItem($id, $fields = ['*'])
     {
+        $config = $this->getObjectConfig();
+        if($config->isDistributed()){
+            $sharding = Sharding::factory();
+            $shard = $sharding->getObjectShard($config->getName(), $id);
+
+            if(!$shard){
+                return false;
+            }
+
+            $db = $this->dbManager->getDbConnection($config->get('connection'), $shard);
+        }else{
+            $db = $this->getSlaveDbConnection();
+        }
+
         $primaryKey = $this->getPrimaryKey();
-        $result = $this->query()
+        $result = $this->query()->setDbConnection($db)
                     ->filters([
                         $primaryKey  => $id
                     ])
@@ -399,6 +413,7 @@ class Model
      * @param $value
      * @param string $fields
      * @return array|null
+     * @todo Create distributed version
      */
     public function getItemByField(string $fieldName, $value, $fields = '*')
     {
@@ -413,6 +428,7 @@ class Model
      * @param mixed $fields - optional - the list of fields to retrieve
      * @param bool $useCache - optional, defaul false
      * @return array / false
+     * @todo Create distributed version
      */
     final public function getItems(array $ids, $fields = '*', $useCache = false)
     {
@@ -484,6 +500,7 @@ class Model
      * Delete record
      * @param mixed $recordId record ID
      * @return bool
+     * @todo Create distributed version
      */
     public function remove($recordId): bool
     {
@@ -509,6 +526,7 @@ class Model
      * @param string $fieldName — field name
      * @param mixed $fieldValue — field value
      * @return boolean
+     * @todo Create distributed version
      */
     public function checkUnique(int $recordId, string $fieldName, $fieldValue): bool
     {
@@ -552,10 +570,11 @@ class Model
 
     public function refreshTableInfo()
     {
+        $config = $this->getObjectConfig();
         $conName = $this->lightConfig->get('connection');
         $this->db = $this->dbManager->getDbConnection($conName);
 
-        if ($this->objectConfig->hasDbPrefix()) {
+        if ($config->hasDbPrefix()) {
             $this->dbPrefix = $this->dbManager->getDbConfig($conName)->get('prefix');
         } else {
             $this->dbPrefix = '';

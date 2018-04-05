@@ -60,7 +60,9 @@ return [
     /*
      * Encrypted object vector field
      */
-    'iv_field'=>'enc_iv'
-
-
+    'iv_field'=>'enc_iv',
+    /*
+     * Enable sharding
+     */
+    'sharding' => false
 ];

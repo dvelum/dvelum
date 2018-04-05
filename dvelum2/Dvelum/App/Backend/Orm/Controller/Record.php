@@ -76,7 +76,10 @@ class Record extends Controller
         }
 
         try {
-            $obj = $this->ormService->object($name);
+            /**
+             * @var Orm\Record\Config $obj
+             */
+            $objConfig = $this->ormService->config($name);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('CANT_GET_VALIDATE_INFO'));
             return;
@@ -101,6 +104,13 @@ class Record extends Controller
 
         $objects = $builder->getRelationUpdates();
 
+        $shardObjects = [];
+
+        $ormConfig = Config::storage()->get('sharding.php');
+        if($ormConfig->get('dist_index_enabled') && $objConfig->isDistributed()){
+            $shardObjects = $builder->getDistributedObjectsUpdatesInfo();
+        }
+
         if (empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects)) {
             $this->response->success([], ['nothingToDo' => true]);
             return;
@@ -114,8 +124,9 @@ class Record extends Controller
         $template->objects = $objects;
         $template->keys = $keyUpd;
         $template->tableExists = $tableExists;
-        $template->tableName = $obj->getTable();
+        $template->tableName = Orm\Model::factory($name)->table();
         $template->lang = $this->lang;
+        $template->shardObjects = $shardObjects;
 
         $cfgBackend = Config\Factory::storage()->get('backend.php');
         $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';
@@ -312,7 +323,7 @@ class Record extends Controller
             $info['name'] = $object;
             $info['use_acl'] = false;
 
-            if ($info['acl']) {
+            if (isset($info['acl']) && $info['acl']) {
                 $info['use_acl'] = true;
             }
 
@@ -351,6 +362,8 @@ class Record extends Controller
         $acl = $this->request->post('acl', 'string', false);
 
         $detalization = $this->request->post('log_detalization', 'string', 'default');
+
+        $distributed = $this->request->post('distributed','boolean',false);
 
         if ($detalization !== 'extended') {
             $detalization = 'default';
@@ -403,6 +416,7 @@ class Record extends Controller
         $data['slave_connection'] = $slaveConnection;
         $data['connection'] = $connection;
         $data['log_detalization'] = $detalization;
+        $data['distributed'] = $distributed;
 
         $name = strtolower($name);
 
@@ -501,7 +515,8 @@ class Record extends Controller
 
     protected function updateObject($recordId, $name, array $data)
     {
-        $dataDir = Config::storage()->getWrite() . $this->appConfig->get('object_configs');
+        $ormConfig = Config::storage()->get('orm.php');
+        $dataDir = Config::storage()->getWrite() . $ormConfig->get('object_configs');
         $objectConfigPath = $dataDir . $recordId . '.php';
 
         if (!is_writable($dataDir)) {
@@ -580,8 +595,9 @@ class Record extends Controller
 
     protected function renameObject($oldName, $newName)
     {
+        $ormConfig = Config::storage()->get('orm.php');
 
-        $newFileName = $this->appConfig->get('object_configs') . $newName . '.php';
+        $newFileName = $ormConfig->get('object_configs') . $newName . '.php';
         //$oldFileName = $this->appConfig->get('object_configs').$oldName.'.php';
 
         if (file_exists($newFileName)) {
@@ -591,7 +607,7 @@ class Record extends Controller
         }
 
         $manager = new Manager();
-        $renameResult = $manager->renameObject($this->appConfig['object_configs'], $oldName, $newName);
+        $renameResult = $manager->renameObject($ormConfig->get('object_configs'), $oldName, $newName);
 
         switch ($renameResult) {
             case 0:

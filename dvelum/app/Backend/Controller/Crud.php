@@ -318,7 +318,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
         if($acl && !$acl->canDelete($object))
             Response::jsonError($this->_lang->CANT_DELETE);
 
-        $ormConfig = Config::storage()->get('orm');
+        $ormConfig = Config::storage()->get('orm.php');
 
         if($ormConfig>get('vc_clear_on_delete'))
             Model::factory('Vc')->removeItemVc($this->_objectName , $id);

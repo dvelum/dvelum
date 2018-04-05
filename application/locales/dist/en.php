@@ -580,5 +580,8 @@
   'USER_PERMISSIONS' => 'User permissions',
   'PERMISSIONS' => 'Permissions',
   'PAGECODE_MATCH' => 'This field should only contain letters, numbers and _ -',
-  'TRANSACTION_ISOLATION_LEVEL' => 'Transaction Isolation Level'
+  'TRANSACTION_ISOLATION_LEVEL' => 'Transaction Isolation Level',
+  'DISTRIBUTED' => 'Distributed',
+  'DISTRIBUTED_INDEXES' => 'Distributed Indexes',
+  'SHARD' => 'Shard',
 );
