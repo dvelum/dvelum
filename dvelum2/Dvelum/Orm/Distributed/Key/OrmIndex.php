@@ -18,13 +18,11 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Sharding\Key;
+namespace Dvelum\Orm\Distributed\Key;
 
+use Dvelum\Orm\Distributed\Router;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
-use Dvelum\Orm\Sharding;
-use Dvelum\Utils;
-use Dvelum\Config;
 use Dvelum\Orm\Record;
 use \Exception;
 
@@ -35,27 +33,35 @@ class OrmIndex implements GeneratorInterface
      */
     protected $config;
     protected $shardField;
+    /**
+     * @var Router
+     */
+    protected $router;
 
     public function __construct(ConfigInterface $config)
     {
         $this->config = $config;
-        $this->shardField =  Sharding::factory()->getShardField();
+        $this->shardField =  $config->get('shard_field');
+    }
+    /**
+     * Set routing adapter
+     * @param Router $router
+     * @return mixed
+     */
+    public function setRouter(Router $router) : void
+    {
+        $this->router = $router;
     }
 
     /**
      * Reserve object id, add to routing table
      * @param Record $object
+     * @param string $shard
      * @return ?Reserved
      */
-    public function reserveIndex(Record $object) : ?Reserved
+    public function reserveIndex(Record $object , string $shard) : ?Reserved
     {
-         $shard = false;
-         $objectConfig = $object->getConfig();
-
-        /**
-         * @todo DETECT SHARD
-         */
-
+        $objectConfig = $object->getConfig();
 
         $indexObject = $objectConfig->getDistributedIndexObject();
         $model = Model::factory($indexObject);

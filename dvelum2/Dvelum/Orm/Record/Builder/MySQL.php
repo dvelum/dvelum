@@ -688,7 +688,7 @@ class MySQL extends AbstractAdapter
             return false;
 
         /*
-         * Update comands
+         * Update commands
          */
         $cmd = [];
 
@@ -770,6 +770,16 @@ class MySQL extends AbstractAdapter
             try{
                 $this->updateRelations($ralationsUpdate);
             }catch (\Exception $e){
+                $this->errors[] = $e->getMessage();
+                return false;
+            }
+        }
+
+        $shardingUpdate = $this->getDistributedObjectsUpdatesInfo();
+        if(!empty($shardingUpdate)){
+            try{
+                $this->updateDistributed($shardingUpdate);
+            }catch (Exception $e){
                 $this->errors[] = $e->getMessage();
                 return false;
             }
@@ -981,123 +991,5 @@ class MySQL extends AbstractAdapter
     }
 
 
-    protected function updateDistributed( array $list) : bool
-    {
-        $shardingConfig = Cfg::storage()->get('sharding.php');
 
-        if(!$shardingConfig->get('dist_index_enabled')){
-            return true;
-        }
-
-        $lang = Lang::lang();
-        $usePrefix = true;
-        $indexConnection = $shardingConfig->get('dist_index_connection');
-
-        $objectModel = Model::factory($this->objectName);
-        $db = $objectModel->getDbConnection();
-        $tablePrefix = $objectModel->getDbPrefix();
-
-        $oConfigPath = $this->objectConfig->getConfigPath();
-        $configDir  = Cfg::storage()->getWrite() . $oConfigPath;
-
-        $fieldList = Cfg::storage()->get('objects/distributed/fields.php');
-
-        if(empty($fieldList)){
-            $this->errors[] = 'Cannot get distributed fields: ' . 'objects/distributed/fields.php';
-            return false;
-        }
-
-        $fieldList = $fieldList->__toArray();
-
-        foreach($list as $item)
-        {
-            $newObjectName = $item['name'];
-            $tableName = $newObjectName;
-
-            $objectData = [
-                'parent_object' => $this->objectName,
-                'connection'=>$indexConnection,
-                'use_db_prefix'=>$usePrefix,
-                'disable_keys' => true,
-                'locked' => false,
-                'readonly' => false,
-                'primary_key' => 'id',
-                'table' => $tableName,
-                'engine' => 'InnoDB',
-                'rev_control' => false,
-                'link_title' => 'id',
-                'save_history' => false,
-                'system' => true,
-                'fields' => $fieldList,
-                'indexes' => [],
-            ];
-
-            $tables = $db->listTables();
-
-            if($usePrefix){
-                $tableName = $tablePrefix . $tableName;
-            }
-
-            if(in_array($tableName, $tables ,true)){
-                $this->errors[] = $lang->get('INVALID_VALUE').' Table Name: '.$tableName .' '.$lang->get('SB_UNIQUE');
-                return false;
-            }
-
-            if(file_exists($configDir . strtolower($newObjectName).'.php')){
-                $this->errors[] =  $lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE');
-                return false;
-
-            }
-
-            if(!is_dir($configDir) && !@mkdir($configDir, 0655, true)){
-                $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
-                return false;
-            }
-
-            /*
-             * Write object config
-             */
-            if(!Cfg\Factory::create($objectData ,$configDir. $newObjectName . '.php')){
-                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php';
-                return false;
-            }
-
-            $newConfigPath = $oConfigPath . strtolower($newObjectName).'.php';
-            $cfg = Cfg::storage()->get($newConfigPath , false , false);
-
-            if(!Cfg::storage()->save($cfg)){
-                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $newConfigPath;
-                return false;
-            }
-
-            $cfg = Orm\Record\Config::factory($newObjectName);
-            $cfg->setObjectTitle($this->objectName.' ID Routes');
-
-            if(!$cfg->save()){
-                $this->errors[] = $lang->get('CANT_WRITE_FS');
-                return false;
-            }
-
-            /*
-             * Build database
-            */
-            $builder = Builder::factory($newObjectName, true);
-            return  $builder->build();
-        }
-    }
-
-    public function getDistributedObjectsUpdatesInfo()
-    {
-        if(!$this->objectConfig->isDistributed()){
-            return [];
-        }
-
-        $updates = [];
-
-        $idObject = $this->objectConfig->getDistributedIndexObject();
-        if(!Orm\Record\Config::configExists($idObject)){
-            $updates[] = ['name' => $idObject, 'action'=>'add'];
-        }
-        return $updates;
-    }
 }

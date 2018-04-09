@@ -912,6 +912,10 @@ class Config
         if(isset($encFields[$field]))
             return true;
 
+        $distributed = $this->getDistributedFields();
+        if(isset($distributed[$field]))
+            return true;
+
         return false;
     }
 

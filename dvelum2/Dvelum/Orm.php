@@ -290,7 +290,11 @@ class Orm
         } elseif (class_exists($nameSpacedClassName)) {
             $this->models[$listName] = new $nameSpacedClassName($objectName, $this->modelSettings);
         } else {
-            $this->models[$listName] = new Model($objectName, $this->modelSettings);
+            if($this->config($objectName)->isDistributed()){
+                $this->models[$listName] = new Orm\Distributed\Model($objectName, $this->modelSettings);
+            }else{
+                $this->models[$listName] = new Model($objectName, $this->modelSettings);
+            }
         }
         return $this->models[$listName];
     }

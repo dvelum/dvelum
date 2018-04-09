@@ -18,8 +18,9 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Sharding\Key;
+namespace Dvelum\Orm\Distributed\Key;
 
+use Dvelum\Orm\Distributed\Router;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Record;
 
@@ -34,9 +35,10 @@ interface GeneratorInterface
     /**
      * Reserve object id, save route
      * @param Record $object
-     * @return bool|string
+     * @param string $shard
+     * @return null|Reserved
      */
-    public function reserveIndex(Record $object);
+    public function reserveIndex(Record $object, string $shard): ?Reserved;
 
     /**
      * Get object shard id
@@ -45,4 +47,11 @@ interface GeneratorInterface
      * @return mixed
      */
     public function getObjectShard(string $objectName, $objectId);
+
+    /**
+     * Set routing adapter
+     * @param Router $router
+     * @return mixed
+     */
+    public function setRouter(Router $router) : void;
 }

@@ -40,7 +40,6 @@ interface ConfigInterface extends \ArrayAccess , \Iterator
      */
     public function getCount() : int;
 
-
     /**
      * Get the configuration parameter
      * @param string $key — parameter name

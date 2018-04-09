@@ -559,7 +559,7 @@ class Record implements RecordInterface
             }
         }
 
-        $store  = $this->model->getStore();
+        $store = $this->model->getStore();
 
         if($this->logger)
             $store->setLog($this->logger);
@@ -574,14 +574,17 @@ class Record implements RecordInterface
         }
 
         if($this->config->isDistributed() && !$this->getId()){
-            $sharding = Sharding::factory();
+
+            $sharding = Distributed::factory();
+
             $insert = $sharding->reserveIndex($this);
-            if(empty($insertId)){
-                $text = 'ORM :: Cannot reserve index in bucket for object '.$this->getName().' ';
+
+            if(empty($insert)){
+                $text = 'ORM :: Cannot reserve index for object '.$this->getName().' ';
                 $this->errors[] = $text;
 
                 if($this->logger)
-                    $this->logger->log($text);
+                    $this->logger->log(LogLevel::ERROR, $text);
 
                 return false;
             }

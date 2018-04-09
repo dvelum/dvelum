@@ -46,10 +46,11 @@ class Manager implements ManagerInterface
     /**
      * Get Database connection
      * @param string $name
-     * @throws \Exception
+     * @param null|string $workMode
+     * @param null|string $shard
      * @return Adapter
      */
-    public function getDbConnection(string $name, ?string $workMode = null) : Adapter
+    public function getDbConnection(string $name, ?string $workMode = null, ?string $shard = null) : Adapter
     {
         if(empty($workMode)){
             $workMode = $this->appConfig->get('development');

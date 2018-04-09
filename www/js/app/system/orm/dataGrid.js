@@ -24,7 +24,8 @@ Ext.define('app.crud.orm.ObjectsModel', {
         {name:'readonly' , type:'boolean'},
         {name:'can_connect' , type:'boolean'},
         {name:'primary_key', type:'string'},
-        {name:'connection' , type:'string'}
+        {name:'connection' , type:'string'},
+        {name:'distributed', type:'boolean'}
     ]
 });
 
@@ -220,6 +221,13 @@ Ext.define('app.crud.orm.dataGrid',{
                 dataIndex:'connection',
                 width:120,
                 hidden:true
+            },{
+                text:appLang.DISTRIBUTED,
+                align:'center',
+                dataIndex:'distributed',
+                width:120,
+                hidden:true,
+                renderer:app.checkboxRenderer
             }
         );
 

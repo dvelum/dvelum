@@ -103,7 +103,6 @@ class Record extends Controller
         }
 
         $objects = $builder->getRelationUpdates();
-
         $shardObjects = [];
 
         $ormConfig = Config::storage()->get('sharding.php');
@@ -111,7 +110,7 @@ class Record extends Controller
             $shardObjects = $builder->getDistributedObjectsUpdatesInfo();
         }
 
-        if (empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects)) {
+        if (empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects) && empty($shardObjects)) {
             $this->response->success([], ['nothingToDo' => true]);
             return;
         }
@@ -127,6 +126,8 @@ class Record extends Controller
         $template->tableName = Orm\Model::factory($name)->table();
         $template->lang = $this->lang;
         $template->shardObjects = $shardObjects;
+
+
 
         $cfgBackend = Config\Factory::storage()->get('backend.php');
         $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';

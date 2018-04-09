@@ -1,7 +1,7 @@
 <?php
 /**
  *  DVelum project https://github.com/dvelum/dvelum
- *  Copyright (C) 2011-2017  Kirill Yegorov
+ *  Copyright (C) 2011-2018  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,26 +16,45 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace  Dvelum\Db;
+declare(strict_types=1);
 
-use Dvelum\Config\ConfigInterface;
-use Dvelum\Db;
+namespace Dvelum\Orm\Distributed\Key;
 
-interface ManagerInterface extends \Db_Manager_Interface
+
+class Reserved
 {
+    protected $shard;
+    protected $id;
+
     /**
-     * Get Database connection
-     * @param string $name
-     * @param null|string $workMode
-     * @param null|string $shard
-     * @return Adapter
+     * @return mixed
      */
-    public function getDbConnection(string $name, ?string $workMode = null, ?string $shard = null) : Adapter;
+    public function getShard()
+    {
+        return $this->shard;
+    }
+
     /**
-     * Get DB connection config
-     * @param string $name
-     * @throws \Exception
-     * @return ConfigInterface
+     * @param mixed $shard
      */
-    public function getDbConfig(string $name) : ConfigInterface;
+    public function setShard($shard)
+    {
+        $this->shard = $shard;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 }

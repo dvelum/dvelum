@@ -75,6 +75,11 @@ class DataView extends ApiController
 
         foreach ($fields as $name => $itemCfg)
         {
+            // list only index fields for distributed objects
+            if($cfg->isDistributed() && !$cfg->isSystemField($name)){
+                continue;
+            }
+
             $fieldCfg = new \stdClass();
             $fieldCfg->name = $name;
 
@@ -172,7 +177,6 @@ class DataView extends ApiController
                 $this->listLinks[] = $item->getName();
             }
         }
-
         parent::listAction();
     }
 

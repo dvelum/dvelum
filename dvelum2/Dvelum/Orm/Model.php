@@ -248,6 +248,14 @@ class Model
     }
 
     /**
+     * Get connection name
+     */
+    public function getDbConnectionName() : string
+    {
+        return $this->getObjectConfig()->get('connection');
+    }
+
+    /**
      * Get Slave Db Connection
      * @return Db\Adapter
      */
@@ -258,9 +266,9 @@ class Model
 
     /**
      * Get current db manager
-     * @return \Db_Manager_Interface
+     * @return \Dvelum\Db\ManagerInterface
      */
-    public function getDbManager(): \Db_Manager_Interface
+    public function getDbManager(): \Dvelum\Db\ManagerInterface
     {
         return $this->dbManager;
     }
@@ -322,24 +330,10 @@ class Model
      * @param array|string $fields — optional — the list of fields to retrieve
      * @return array|false
      */
-    final public function getItem($id, $fields = ['*'])
+    public function getItem($id, $fields = ['*'])
     {
-        $config = $this->getObjectConfig();
-        if($config->isDistributed()){
-            $sharding = Sharding::factory();
-            $shard = $sharding->getObjectShard($config->getName(), $id);
-
-            if(!$shard){
-                return false;
-            }
-
-            $db = $this->dbManager->getDbConnection($config->get('connection'), $shard);
-        }else{
-            $db = $this->getSlaveDbConnection();
-        }
-
         $primaryKey = $this->getPrimaryKey();
-        $result = $this->query()->setDbConnection($db)
+        $result = $this->query()
                     ->filters([
                         $primaryKey  => $id
                     ])
@@ -383,6 +377,7 @@ class Model
      * Get data record by field value using cache. Returns first occurrence
      * @param string $field - field name
      * @param string $value - field value
+     * @throws Exception
      * @return array
      */
     public function getCachedItemByField(string $field, $value)
@@ -413,7 +408,7 @@ class Model
      * @param $value
      * @param string $fields
      * @return array|null
-     * @todo Create distributed version
+     * @throws Exception
      */
     public function getItemByField(string $fieldName, $value, $fields = '*')
     {
@@ -430,7 +425,7 @@ class Model
      * @return array / false
      * @todo Create distributed version
      */
-    final public function getItems(array $ids, $fields = '*', $useCache = false)
+    public function getItems(array $ids, $fields = '*', $useCache = false)
     {
         $data = false;
 
@@ -500,7 +495,6 @@ class Model
      * Delete record
      * @param mixed $recordId record ID
      * @return bool
-     * @todo Create distributed version
      */
     public function remove($recordId): bool
     {
@@ -525,8 +519,8 @@ class Model
      * @param int $recordId — record ID
      * @param string $fieldName — field name
      * @param mixed $fieldValue — field value
-     * @return boolean
-     * @todo Create distributed version
+     * @return bool
+     * @throws Exception
      */
     public function checkUnique(int $recordId, string $fieldName, $fieldValue): bool
     {

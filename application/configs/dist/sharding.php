@@ -12,13 +12,11 @@ return [
      * Default connection for distributed index object
      */
     'dist_index_connection' => 'sharding_index',
-    /*
-     * Shards Object
-     */
-    'shard_object' => 'distributed_shard',
     'shard_field' => 'shard',
+    'routes' => 'sharding_routes.php',
+    'shards' => 'sharding_shards.php',
     /*
      * Adapter for reserving primary keys
      */
-    'key_generator' => '\\Dvelum\\Orm\\Sharding\\Key\\OrmIndex'
+    'key_generator' => '\\Dvelum\\Orm\\Distributed\\Key\\OrmIndex',
 ];

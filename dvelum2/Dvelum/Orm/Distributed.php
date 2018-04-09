@@ -20,12 +20,13 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm;
 
-use Dvelum\Orm\Sharding\Key\GeneratorInterface;
-use Dvelum\Orm\Sharding\Key\Reserved;
+use Dvelum\Orm\Distributed\Key\GeneratorInterface;
+use Dvelum\Orm\Distributed\Key\Reserved;
+use Dvelum\Orm\Distributed\Router;
 use Dvelum\Utils;
 use Dvelum\Config;
 
-class Sharding
+class Distributed
 {
     static protected $instance = false;
 
@@ -44,8 +45,17 @@ class Sharding
     protected $keyGenerator;
 
     /**
+     * Weight map for fast shard random selection
+     * @var array
+     */
+    protected $weightMap;
+
+
+    protected $router;
+
+    /**
      * Factory method
-     * @return Sharding
+     * @return Distributed
      */
     static public function factory() : self
     {
@@ -58,14 +68,20 @@ class Sharding
     protected function __construct()
     {
         $this->config = Config::storage()->get('sharding.php');
-        $this->shardModel = Model::factory($this->config->get('shard_object'));
-        $adapterClass = $this->get('key_generator');
+        $adapterClass = $this->config->get('key_generator');
         $this->keyGenerator = new $adapterClass($this->config);
+        $this->router = Router::factory();
 
-        $list = $this->shardModel->query()->fetchAll();
+        $this->shards = Utils::rekey(
+            'id',
+            Config::storage()->get(
+                $this->config->get('shards')
+            )->__toArray()
+        );
 
-        if(!empty($list)){
-            $this->shards = Utils::rekey($this->shardModel->getPrimaryKey() , $list);
+        $this->weightMap = [];
+        foreach ($this->shards as $index=>$data){
+            $this->weightMap =  array_merge(array_fill(0, $data['weight'], (string) $index), $this->weightMap);
         }
     }
 
@@ -99,7 +115,15 @@ class Sharding
      */
     public function reserveIndex(Record $record) : ?Reserved
     {
-        return $this->keyGenerator->reserveIndex($record);
+        if($this->router->hasRoutes($record->getName())){
+            $shard = $this->router->findShard($record);
+        }
+
+        if(empty($shard)){
+            $shard = $this->randomShard();
+        }
+
+        return $this->keyGenerator->reserveIndex($record, $shard);
     }
 
     /**
@@ -123,5 +147,13 @@ class Sharding
     public function getShardField() : string
     {
         return $this->config->get('shard_field');
+    }
+
+    /**
+     * Get random shard from list using weight
+     */
+    public function randomShard() : string
+    {
+       return $this->weightMap[array_rand($this->weightMap)];
     }
 }

@@ -117,7 +117,18 @@ class Store
      */
     protected function getDbConnection(Orm\RecordInterface $object) : Db\Adapter
     {
-        return Model::factory($object->getName())->getDbConnection();
+        $shardId = null;
+        if($object->getConfig()->isDistributed()){
+            $sharding = Orm\Distributed::factory();
+            $shardId = $sharding->getObjectShard($object->getName(),$object->getId());
+        }
+
+        if(empty($shardId)){
+            $shardId = null;
+        }
+
+        $objectModel = Model::factory($object->getName());
+        return $objectModel->getDbManager()->getDbConnection($objectModel->getDbConnectionName(), null, $shardId);
     }
     /**
      * Update Db object

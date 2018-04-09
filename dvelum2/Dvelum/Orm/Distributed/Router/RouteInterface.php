@@ -16,26 +16,18 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace  Dvelum\Db;
+declare(strict_types=1);
 
-use Dvelum\Config\ConfigInterface;
-use Dvelum\Db;
+namespace Dvelum\Orm\Distributed\Router;
 
-interface ManagerInterface extends \Db_Manager_Interface
+use Dvelum\Orm\RecordInterface;
+
+interface RouteInterface
 {
     /**
-     * Get Database connection
-     * @param string $name
-     * @param null|string $workMode
-     * @param null|string $shard
-     * @return Adapter
+     * Find shard for object
+     * @param RecordInterface $record
+     * @return string
      */
-    public function getDbConnection(string $name, ?string $workMode = null, ?string $shard = null) : Adapter;
-    /**
-     * Get DB connection config
-     * @param string $name
-     * @throws \Exception
-     * @return ConfigInterface
-     */
-    public function getDbConfig(string $name) : ConfigInterface;
+    public function getShard(RecordInterface $record): ?string;
 }

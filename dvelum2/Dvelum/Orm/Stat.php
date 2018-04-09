@@ -140,7 +140,8 @@ class Stat
                 'readonly'=>$config['readonly'],
                 'can_connect'=>$canConnect,
                 'primary_key'=>$configObject->getPrimaryKey(),
-                'connection'=>$config['connection']
+                'connection'=>$config['connection'],
+                'distributed' => $configObject->isDistributed()
             ];
         }
         return $data;

@@ -1,7 +1,7 @@
 <?php
 /**
- *  DVelum project https://github.com/dvelum/dvelum
- *  Copyright (C) 2011-2018  Kirill Yegorov
+ *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2017  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,46 +15,23 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
+
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Sharding\Key;
+namespace Dvelum\App\Service\Loader;
 
+use Dvelum\Config;
+use Dvelum\Orm\Distributed\Router;
 
-class Reserved
+class DistributedRoutes extends AbstractAdapter
 {
-    protected $shard;
-    protected $id;
-
-    /**
-     * @return mixed
-     */
-    public function getShard()
+    public function loadService()
     {
-        return $this->shard;
-    }
-
-    /**
-     * @param mixed $shard
-     */
-    public function setShard($shard)
-    {
-        $this->shard = $shard;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
+        $shardingConfig = Config::storage()->get('sharding.php');
+        $routes = Config::storage()->get($shardingConfig->get('routes'));
+        $router = new Router($routes);
+        return $router;
     }
 }

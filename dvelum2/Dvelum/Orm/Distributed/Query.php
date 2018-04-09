@@ -16,26 +16,34 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace  Dvelum\Db;
+declare(strict_types=1);
 
-use Dvelum\Config\ConfigInterface;
-use Dvelum\Db;
+namespace Dvelum\Orm\Distributed;
 
-interface ManagerInterface extends \Db_Manager_Interface
+use Dvelum\Orm;
+
+class Query extends Orm\Model\Query
 {
     /**
-     * Get Database connection
-     * @param string $name
-     * @param null|string $workMode
-     * @param null|string $shard
-     * @return Adapter
+     * @var \Dvelum\Db\ManagerInterface
      */
-    public function getDbConnection(string $name, ?string $workMode = null, ?string $shard = null) : Adapter;
-    /**
-     * Get DB connection config
-     * @param string $name
-     * @throws \Exception
-     * @return ConfigInterface
-     */
-    public function getDbConfig(string $name) : ConfigInterface;
+    protected $connectionManager;
+
+    public function __construct(Model $model)
+    {
+        $this->table = $model->table();
+        $this->model = $model;
+        $this->connectionManager = $model->getDbManager();
+    }
+
+    public function fields($fields): \Dvelum\Orm\Model\Query
+    {
+        $objectConfig = $this->model->getObjectConfig();
+        foreach ($fields as $k=> &$v){
+            if(is_numeric($k) && !$objectConfig->isSystemField($v)){
+                unset($fields[$k]);
+            }
+        }unset($v);
+        return \Dvelum\Orm\Model\Query::fields($fields);
+    }
 }

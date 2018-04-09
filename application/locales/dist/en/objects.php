@@ -278,14 +278,4 @@
                     'config' => 'Configuration',
                 ),
         ),
-    'distributed_shard' =>
-        array (
-            'title' => 'Distributed. Shards',
-            'fields' =>
-                array (
-                    'name' => 'Shard Name',
-                    'dbHost' => 'Database Host',
-                    'group' => 'Group',
-                ),
-        ),
 );
