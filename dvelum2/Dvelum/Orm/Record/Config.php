@@ -27,6 +27,7 @@ use Dvelum\Config as Cfg;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Exception;
 
+
 /**
  * Orm Object structure config
  * @package Db
@@ -240,12 +241,20 @@ class Config
         $dataLink = & $this->config->dataLink();
         $pKeyName = $this->getPrimaryKey();
 
-        $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
-            $this->settings->get('configPath').'system/pk_field.php'
-        )->__toArray();
-
         if(!isset($dataLink['distributed']))
             $dataLink['distributed'] = false;
+
+
+        if($this->isDistributed()){
+            $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
+                $this->settings->get('configPath').'distributed/pk_field.php'
+            )->__toArray();
+        }else{
+            $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
+                $this->settings->get('configPath').'system/pk_field.php'
+            )->__toArray();
+        }
+
 
         /*
          * System index init
@@ -280,7 +289,7 @@ class Config
             $dataLink['fields'] = array_merge($dataLink['fields'] , $this->getEncryptionFields());
 
 
-        if(isset($dataLink['distributed']) && $dataLink['distributed']){
+        if((isset($dataLink['distributed']) && $dataLink['distributed']) || $this->isIndexObject()){
             $dataLink['fields'] = array_merge($dataLink['fields'] , $this->getDistributedFields());
         }
 
@@ -676,6 +685,10 @@ class Config
         $config->set('indexes' , $indexes);
         $config->offsetUnset('title');
 
+        if($this->isDistributed()){
+            $config->set('distributed_indexes',  $this->getDistributedIndexesConfig(false));
+        }
+
         if(!$this->translator->getStorage()->save($translation))
             return false;
 
@@ -759,9 +772,10 @@ class Config
 
     /**
      * Get list of distributed indexes
+     * @param bool $includeSystem
      * @return array
      */
-    public function getDistributedIndexesConfig()
+    public function getDistributedIndexesConfig(bool $includeSystem = true) : array
     {
         if(!$this->isDistributed()) {
             return [];
@@ -774,10 +788,11 @@ class Config
         }
 
         // Set Required Indexes
-        $list[$this->getPrimaryKey()] = ['field'=>$this->getPrimaryKey(),'is_system'=>true];
-
-        //$bucketField = Db_Sharding::factory()->getBucketField();
-        //$list[$bucketField] = ['field'=>$bucketField,'is_system'=>true];
+        if($includeSystem){
+            $shardingField = Cfg::storage()->get('sharding.php')->get('shard_field');
+            $list[$this->getPrimaryKey()] = ['field'=>$this->getPrimaryKey(),'is_system'=>true];
+            $list[$shardingField] = ['field'=>$shardingField,'is_system'=>true];
+        }
 
         return $list;
     }
@@ -1183,6 +1198,26 @@ class Config
     }
 
     /**
+     * Check if object is sharding index
+     */
+    public function isIndexObject()
+    {
+        if(
+            $this->isSystem()
+            &&
+            $this->config->offsetExists('data_object')
+            &&
+            !empty($this->config->get('data_object'))
+            &&
+            Config::factory($this->config->get('data_object'))->isDistributed()
+        ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
      * Get object field
      * @param string $name
      * @return Config\Field
@@ -1308,4 +1343,5 @@ class Config
         }
         return self::$distributedFields;
     }
+
 }

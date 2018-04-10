@@ -512,6 +512,13 @@ Ext.define('app.crud.orm.Main',{
 		win.on('indexRemoved',function(){
 			this.dataStore.load();
 		},this);
+        win.on('distributedIndexAdded',function(){
+            this.dataStore.load();
+        },this);
+        win.on('distributedIndexRemoved',function(){
+            this.dataStore.load();
+        },this);
+
 		win.show();
 	},
 	/**

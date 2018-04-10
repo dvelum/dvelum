@@ -27,6 +27,7 @@ use Dvelum\Orm\Record\Builder;
 use Dvelum\Log;
 use Dvelum\Lang;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Utils;
 use Zend\Db\Sql\Ddl;
 use Dvelum\Config as Cfg;
 use \Exception;
@@ -456,6 +457,14 @@ abstract class AbstractAdapter implements BuilderInterface
         }
 
         $fieldList = $fieldList->__toArray();
+        $distribIndexes = $this->objectConfig->getDistributedIndexesConfig();
+
+        foreach ($distribIndexes as $conf){
+            if(!$conf['is_system']){
+                $field = $this->objectConfig->getField($conf['field']);
+                $fieldList[$conf['field']] = $field->__toArray();
+            }
+        }
 
         foreach($list as $item)
         {
@@ -463,7 +472,7 @@ abstract class AbstractAdapter implements BuilderInterface
             $tableName = $newObjectName;
 
             $objectData = [
-                'parent_object' => $this->objectName,
+                'data_object' => $this->objectName,
                 'connection'=>$indexConnection,
                 'use_db_prefix'=>$usePrefix,
                 'disable_keys' => true,
@@ -480,46 +489,31 @@ abstract class AbstractAdapter implements BuilderInterface
                 'indexes' => [],
             ];
 
-            $tables = $db->listTables();
-
-            if($usePrefix){
-                $tableName = $tablePrefix . $tableName;
-            }
-
-            if(in_array($tableName, $tables ,true)){
-                $this->errors[] = $lang->get('INVALID_VALUE').' Table Name: '.$tableName .' '.$lang->get('SB_UNIQUE');
-                return false;
-            }
-
-            if(file_exists($configDir . strtolower($newObjectName).'.php')){
-                $this->errors[] =  $lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE');
-                return false;
-
-            }
 
             if(!is_dir($configDir) && !@mkdir($configDir, 0655, true)){
                 $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
                 return false;
             }
 
+            $newObjectName = strtolower($newObjectName);
+            $newConfigPath = $oConfigPath . $newObjectName.'.php';
+
+            if(Cfg::storage()->exists($newConfigPath)){
+                $cfg = Cfg::storage()->get($newConfigPath);
+                $cfg->setData($objectData);
+            }else{
+                $cfg = Cfg\Factory::create($objectData, $newConfigPath);
+            }
+
             /*
              * Write object config
              */
-            $cfg = Cfg\Factory::create($objectData ,$configDir. $newObjectName . '.php');
             if(!Cfg::storage()->save($cfg)){
-                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php';
+                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir. $newObjectName . '.php';;
                 return false;
             }
 
-            $newConfigPath = $oConfigPath . strtolower($newObjectName).'.php';
-            $cfg = Cfg::storage()->get($newConfigPath , false , false);
-
-            if(!Cfg::storage()->save($cfg)){
-                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $newConfigPath;
-                return false;
-            }
-
-            $cfg = Orm\Record\Config::factory($newObjectName);
+            $cfg = Config::factory($newObjectName , true);
             $cfg->setObjectTitle($this->objectName.' ID Routes');
 
             if(!$cfg->save()){
@@ -656,6 +650,35 @@ abstract class AbstractAdapter implements BuilderInterface
         $idObject = $this->objectConfig->getDistributedIndexObject();
         if(!Orm\Record\Config::configExists($idObject)){
             $updates[] = ['name' => $idObject, 'action'=>'add'];
+        }
+
+        $objectConfig = Config::factory($idObject);
+
+        $fields = $this->objectConfig->getDistributedIndexesConfig();
+        $fields = Utils::rekey('field' , $fields);
+
+        foreach ($fields as $field){
+            // New field for index object
+            if(!$objectConfig->fieldExists($field['field'])){
+                $updates[] = ['name' => $idObject, 'action'=>'update'];
+                return $updates;
+            }
+            $fieldConfig = $this->objectConfig->getField($field['field'])->__toArray();
+            $indexConfig = $objectConfig->getField($field['field'])->__toArray();
+            unset($fieldConfig['title']);
+            unset($indexConfig['title']);
+            // field config updated
+            if(!empty(array_diff($fieldConfig,$indexConfig))){
+                $updates[] = ['name' => $idObject, 'action'=>'update'];
+                return $updates;
+            }
+        }
+        // delete field from index
+        foreach ($objectConfig->getFields() as $field){
+            if(!$objectConfig->isSystemField($field->getName()) && !isset($fields[$field->getName()])){
+                $updates[] = ['name' => $idObject, 'action'=>'update'];
+                return $updates;
+            }
         }
         return $updates;
     }

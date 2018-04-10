@@ -1,6 +1,6 @@
 <?php
 /**
- *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -15,34 +15,13 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
-
 declare(strict_types=1);
 
-namespace Dvelum\App\Service\Loader;
+namespace Dvelum\Db\Adapter;
 
-use Dvelum\Config;
-use Dvelum;
+use Dvelum\Db\Adapter;
 
-class Orm extends AbstractAdapter
-{
-    public function loadService()
-    {
+class MySQLi extends Adapter {
 
-        $cache = null;
-        if($this->config->offsetExists('cache')){
-            $cache = $this->config->get('cache');
-        }
-
-        $orm = new Dvelum\Orm();
-
-        $orm->init(
-            Config::storage()->get('orm.php'),
-            $this->config->get('dbManager'),
-            $this->config->get('appConfig')->get('language'),
-            $cache
-        );
-        return $orm;
-    }
 }

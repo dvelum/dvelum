@@ -75,6 +75,7 @@ class OrmIndex implements GeneratorInterface
                     $this->shardField => $shard
                 ]
             );
+
             $id = $db->lastInsertId($model->table(),$objectConfig->getPrimaryKey());
             $db->commit();
 
@@ -84,6 +85,7 @@ class OrmIndex implements GeneratorInterface
 
             return $result;
         }catch (Exception $e){
+            echo $e->getMessage(); die();
             $db->rollBack();
             $model->logError('Sharding::reserveIndex '.$e->getMessage());
             return null;

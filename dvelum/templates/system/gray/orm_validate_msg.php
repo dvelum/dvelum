@@ -118,10 +118,13 @@ if(isset($this->shardObjects) && !empty($this->shardObjects))
 {
     $addStr='';
     $deleteStr='';
+    $updateStr = '';
 
     foreach ($this->shardObjects as $item){
         switch ($item['action']){
             case 'add'  : $addStr.='<li>' . $item['name'] . '</li><br>';
+                break;
+            case 'update'  : $updateStr.='<li>' . $item['name'] . '</li><br>';
                 break;
             case 'drop' : $deleteStr.='<li>' . $item['name'] . '</li><br>';
                 break;
@@ -133,6 +136,9 @@ if(isset($this->shardObjects) && !empty($this->shardObjects))
 
     if(strlen($addStr))
         echo '<h4>Distributed Index Objects to be added:</h4><ul class="ormUl">' , $addStr , '</ul>';
+
+    if(strlen($updateStr))
+        echo '<h4>Distributed Index Objects to be updated:</h4><ul class="ormUl">' , $updateStr , '</ul>';
 }
 
 ?>

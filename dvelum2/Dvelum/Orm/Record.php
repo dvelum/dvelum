@@ -559,6 +559,7 @@ class Record implements RecordInterface
             }
         }
 
+
         $store = $this->model->getStore();
 
         if($this->logger)
@@ -573,9 +574,11 @@ class Record implements RecordInterface
             return false;
         }
 
+
         if($this->config->isDistributed() && !$this->getId()){
 
             $sharding = Distributed::factory();
+
 
             $insert = $sharding->reserveIndex($this);
 
@@ -588,6 +591,7 @@ class Record implements RecordInterface
 
                 return false;
             }
+
             $this->setInsertId($insert->getId());
             $this->set($sharding->getShardField(), $insert->getShard());
         }

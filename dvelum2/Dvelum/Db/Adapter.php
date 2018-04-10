@@ -308,7 +308,7 @@ class Adapter
 
     /**
      * Fix for mysqli driver
-     * convert bollean into integer
+     * convert bool into integer
      * @param array $values
      * @return array
      */

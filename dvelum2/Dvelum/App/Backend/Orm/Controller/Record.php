@@ -106,7 +106,8 @@ class Record extends Controller
         $shardObjects = [];
 
         $ormConfig = Config::storage()->get('sharding.php');
-        if($ormConfig->get('dist_index_enabled') && $objConfig->isDistributed()){
+
+        if($objConfig->isDistributed() && $ormConfig->get('dist_index_enabled')){
             $shardObjects = $builder->getDistributedObjectsUpdatesInfo();
         }
 

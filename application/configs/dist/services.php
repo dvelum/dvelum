@@ -1,7 +1,7 @@
 <?php
 return [
     'ORM' => [
-        'loader'=>'\\Dvelum\\App\\Service\\Loader\\Orm'
+        'loader'=>'\Dvelum\App\Service\Loader\Orm'
     ],
     'Lang' => [
         'loader'=>'\\Dvelum\\App\\Service\\Loader\\Lang'

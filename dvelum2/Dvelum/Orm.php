@@ -110,7 +110,6 @@ class Orm
                 $objectStore->setLog($log);
             }
         }
-
         $this->cryptService =  new \Dvelum\Security\CryptService( Config::storage()->get('crypt.php'));
     }
 
@@ -271,6 +270,7 @@ class Orm
      */
     public function model(string $objectName): Model
     {
+
         $listName = strtolower($objectName);
 
         if (isset($this->models[$listName])) {

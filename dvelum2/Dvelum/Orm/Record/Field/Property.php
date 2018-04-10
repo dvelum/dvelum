@@ -228,6 +228,10 @@ class Property
             $s .= ' NULL ';
         }
 
+        if(isset($this->data['db_auto_increment']) && $this->data['db_auto_increment']){
+            $s.=' AUTO_INCREMENT ';
+        }
+
         $s .= " COMMENT '" . addslashes($this->data['title']) . "' ";
         return $s;
     }

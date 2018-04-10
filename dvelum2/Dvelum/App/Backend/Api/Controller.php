@@ -361,6 +361,7 @@ class Controller extends App\Backend\Controller
      */
     public function editAction()
     {
+
         $id = $this->request->post('id', 'integer', false);
         if (!$id) {
             $this->createAction();
@@ -379,7 +380,9 @@ class Controller extends App\Backend\Controller
         if(!$this->checkCanEdit()){
             return;
         }
+
         $object = $this->getPostedData($this->objectName);
+
         if(empty($object)){
             return;
         }
@@ -514,6 +517,7 @@ class Controller extends App\Backend\Controller
             }
             $result = ['id' => $recId];
         }
+
 
         $eventData = new \stdClass();
         $eventData->object = $object;

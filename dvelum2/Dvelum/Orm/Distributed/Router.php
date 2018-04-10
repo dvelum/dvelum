@@ -34,7 +34,7 @@ class Router
     /**
      * @var array
      */
-    protected $routes;
+    protected $routes = [];
     /**
      * @var array
      */
