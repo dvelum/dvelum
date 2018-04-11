@@ -575,24 +575,6 @@ class Record implements RecordInterface
             return false;
         }
 
-        if($this->config->isDistributed() && !$this->getId()){
-
-            $sharding = Distributed::factory();
-
-            $insert = $sharding->reserveIndex($this);
-
-            if(empty($insert)){
-                $text = 'ORM :: Cannot reserve index for object '.$this->getName().' ';
-                $this->errors[] = $text;
-
-                if($this->logger)
-                    $this->logger->log(LogLevel::ERROR, $text);
-                return false;
-            }
-            $this->setInsertId($insert->getId());
-            $this->set($sharding->getShardField(), $insert->getShard());
-        }
-
         if($this->config->hasEncrypted()){
             $ivField = $this->config->getIvField();
             $ivData = $this->get($ivField);
@@ -613,7 +595,6 @@ class Record implements RecordInterface
                 $this->set('editor_id',  User::getInstance()->getId());
             }
         }
-
 
         $emptyFields = $this->hasRequired();
         if($emptyFields!==true)
@@ -639,11 +620,11 @@ class Record implements RecordInterface
             if($this->logger){
                 $this->logger->log(LogLevel::ERROR, $this->getName() . ' ' . implode(', ' , $this->errors));
             }
-
             return false;
         }
 
         try {
+
             if(!$this->getId()){
                 $id = $store->insert($this , $useTransaction);
                 $this->setId($id);
@@ -820,7 +801,8 @@ class Record implements RecordInterface
 
         foreach ($fields as $name)
         {
-            if(!$this->config->getField($name)->isRequired())
+            $fieldObject = $this->config->getField($name);
+            if(!$fieldObject->isRequired() || $fieldObject->isSystem())
                 continue;
 
             $val = $this->get($name);

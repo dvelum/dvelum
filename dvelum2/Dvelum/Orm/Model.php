@@ -142,7 +142,7 @@ class Model
 
         $ormConfig = Config\Factory::storage()->get('orm.php');
 
-        $this->store = $settings->get('dbObjectStore');
+        $this->store = $settings->get('storage');
         $this->name = strtolower($objectName);
         $this->cacheTime = $settings->get('hardCacheTime');
 

@@ -117,19 +117,8 @@ class Store
      */
     protected function getDbConnection(Orm\RecordInterface $object) : Db\Adapter
     {
-        $shardId = null;
-        if($object->getConfig()->isDistributed()){
-            $sharding = Orm\Distributed::factory();
-            $field = $sharding->getShardField();
-            $shardId = $object->get($field);
-        }
-
-        if(empty($shardId)){
-            $shardId = null;
-        }
-
         $objectModel = Model::factory($object->getName());
-        return $objectModel->getDbManager()->getDbConnection($objectModel->getDbConnectionName(), null, $shardId);
+        return $objectModel->getDbManager()->getDbConnection($objectModel->getDbConnectionName(), null, null);
     }
     /**
      * Update Db object
@@ -625,22 +614,8 @@ class Store
             return false;
         }
 
-        $db = $this->getDbConnection($object);
 
-        $objectTable = $object->getTable();
-
-        try {
-            $db->insert($objectTable, $object->serializeLinks($updates));
-        }catch (Exception $e) {
-            $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
-            return false;
-        }
-
-        if($object->getConfig()->isDistributed()){
-            $id = $object->getInsertId();
-        }else{
-            $id = $db->lastInsertId($objectTable , $object->getConfig()->getPrimaryKey());
-        }
+        $id = $this->insertRecord($object, $updates);
 
         if(!$id)
             return false;
@@ -669,6 +644,45 @@ class Store
         $object->setId($id);
 
         return true;
+    }
+
+    /**
+     * Insert record
+     * @param Orm\RecordInterface $object
+     * @param array $data
+     * @return mixed record id
+     */
+    protected function insertRecord(Orm\RecordInterface $object , array $data)
+    {
+        $db = $this->getDbConnection($object);
+        $objectTable = $object->getTable();
+
+        try {
+            $db->insert($objectTable, $object->serializeLinks($data));
+        }catch (Exception $e) {
+            $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
+            return false;
+        }
+        return $db->lastInsertId($objectTable , $object->getConfig()->getPrimaryKey());
+    }
+
+    /**
+     * Delete record
+     * @param Orm\RecordInterface $object
+     * @return bool
+     */
+    protected function deleteRecord(Orm\RecordInterface $object ) : bool
+    {
+        $db = $this->getDbConnection($object);
+        try{
+            $db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId());
+            return true;
+        }catch (Exception $e){
+           if($this->log){
+              $this->log->log(LogLevel::ERROR,$object->getName().'::delete '.$e->getMessage());
+           }
+           return false;
+        }
     }
 
     /**
@@ -781,11 +795,7 @@ class Store
 
         $transact = $object->getConfig()->isTransact();
 
-        if($objectConfig->isDistributed()){
-            $db = Model::factory($objectConfig->getName())->getDbShardConnection($object->get(Orm\Distributed::factory()->getShardField()));
-        }else{
-            $db = $this->getDbConnection($object);
-        }
+        $db = $this->getDbConnection($object);
 
         if($transact && $transaction)
             $db->beginTransaction();
@@ -800,15 +810,7 @@ class Store
             }
         }
 
-        try{
-            $db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId());
-             $success = true;
-        }catch (Exception $e){
-            if($this->log){
-                $this->log->log(LogLevel::ERROR,$object->getName().'::delete '.$e->getMessage());
-            }
-            $success = false;
-        }
+        $success = $this->deleteRecord($object);
 
         try{
             /*
@@ -822,19 +824,6 @@ class Store
                 $this->log->log(LogLevel::ERROR,$object->getName().'::delete '.$e->getMessage());
             }
             $success = false;
-        }
-
-        if($objectConfig->isDistributed()) {
-            $indexObject = $objectConfig->getDistributedIndexObject();
-            $indexModel = Model::factory($indexObject);
-            if (!$indexModel->remove($object->getId())) {
-                if ($this->log) {
-                    $this->log->log(LogLevel::ERROR, $object->getName() . ' cant delete index' . $object->getId());
-                }
-                $success = false;
-            } else {
-                $success = true;
-            }
         }
 
         if($transact && $transaction)

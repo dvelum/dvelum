@@ -24,12 +24,22 @@ use Dvelum\Db\Select\Filter;
 use Dvelum\Orm;
 use Dvelum\Utils;
 use \Exception;
+use Dvelum\Config\ConfigInterface;
 
 /**
  * Base class for data models
  */
 class Model extends Orm\Model
 {
+    /**
+     * @param string $objectName
+     * @throws \Exception
+     */
+    public function __construct(string $objectName, ConfigInterface $settings)
+    {
+        parent::__construct($objectName, $settings);
+        $this->store = $settings->get('distributed_storage');
+    }
     /**
      * Get record by id
      * @param integer $id

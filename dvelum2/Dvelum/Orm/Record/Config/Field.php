@@ -418,6 +418,9 @@ class Field implements \ArrayAccess
      */
     public function isSystem() : bool
     {
-        return (bool) $this->config['system'];
+        if(isset($this->config['system']) && $this->config['system']){
+            return true;
+        }
+        return false;
     }
 }

@@ -56,20 +56,27 @@ class Orm
             $eventManager->setCache($cache);
         }
 
-        /*
-         * Prepare Db object storage
-         */
-        $objectStore = new Orm\Record\Store(array(
+        $storageOptions = [
             'linksObject' => $config->get('links_object'),
             'historyObject' => $config->get('history_object'),
             'versionObject' => $config->get('version_object'),
-        ));
+        ];
+        /*
+         * Prepare Db object storage
+         */
+        $storeClass = $config->get('storage');
+        $objectStore = new $storeClass($storageOptions);
+        $objectStore->setEventManager($eventManager);
+
+        $distributedStoreClass = $config->get('distributed_storage');
+        $objectDistributedStore = new $distributedStoreClass($storageOptions);
         $objectStore->setEventManager($eventManager);
 
         $this->modelSettings = Config\Factory::create([
             'hardCacheTime' => $config->get('hard_cache'),
             'dataCache' => $cache,
-            'dbObjectStore' => $objectStore,
+            'storage' => $objectStore,
+            'distributed_storage'=> $objectDistributedStore,
             'defaultDbManager' => $dbManager,
             'errorLog' => false,
         ]);

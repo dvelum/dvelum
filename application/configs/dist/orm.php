@@ -64,5 +64,13 @@ return [
     /*
      * Enable sharding
      */
-    'sharding' => false
+    'sharding' => false,
+    /*
+     * Object storage
+     */
+    'storage' => '\\Dvelum\\Orm\\Record\\Store',
+    /*
+     * Distributed objects storage
+     */
+    'distributed_storage' => '\\Dvelum\\Orm\\Distributed\\Store',
 ];

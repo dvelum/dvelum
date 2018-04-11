@@ -4,7 +4,7 @@ return [
         'id' => 'shard1',
         'host' => '127.0.0.1',
         'group' => 'default',
-        'weight'=> 3,
+        'weight'=> 6,
         'override' =>[
             'dbname' => 'shard1'
         ],
