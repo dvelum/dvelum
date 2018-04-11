@@ -127,7 +127,7 @@ class Record implements RecordInterface
      */
     protected function loadData() : void
     {
-        $data =  $this->model->getItem($this->id);
+        $data = $this->model->getItem($this->id);
 
         if(empty($data))
             throw new Exception('Cannot find object '.$this->name.':'.$this->id);

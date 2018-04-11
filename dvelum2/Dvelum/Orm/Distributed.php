@@ -100,7 +100,6 @@ class Distributed
      * @param $objectName
      * @param array $objectId
      * @return array  [ [shard_id=>[itemId1,itemId2]] ]
-     * @todo  write method
      */
     public function getObjectsShards(string $objectName, array $objectId) : array
     {

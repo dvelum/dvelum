@@ -346,7 +346,7 @@ class Query
     public function fetchAll(): array
     {
         try {
-            return $this->model->getDbConnection()->fetchAll($this->__toString());
+            return $this->db->fetchAll($this->__toString());
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
             return [];
@@ -360,7 +360,7 @@ class Query
     public function fetchOne()
     {
         try {
-            return $this->model->getDbConnection()->fetchOne($this->__toString());
+            return $this->db->fetchOne($this->__toString());
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
             return null;
@@ -373,7 +373,7 @@ class Query
     public function fetchRow(): array
     {
         try {
-            return $this->model->getDbConnection()->fetchRow($this->__toString());
+            return $this->db->fetchRow($this->__toString());
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
             return [];
@@ -387,7 +387,7 @@ class Query
     public function fetchCol(): array
     {
         try {
-            return $this->model->getDbConnection()->fetchCol($this->__toString());
+            return $this->db->fetchCol($this->__toString());
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
             return [];
@@ -414,7 +414,10 @@ class Query
         }
 
         $sqlQuery = new Model\Query($this->model);
-        $sqlQuery->fields(['count' => 'COUNT(*)'])->filters($filters)->search($query, $searchType)->joins($joins);
+        $sqlQuery->setDbConnection($this->db);
+        $sqlQuery->fields(['count' => 'COUNT(*)'])
+                 ->filters($filters)->search($query, $searchType)
+                 ->joins($joins);
 
         $data = $sqlQuery->fetchOne($sqlQuery->__toString());
         if (empty($data)) {

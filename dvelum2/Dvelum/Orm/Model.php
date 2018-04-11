@@ -353,12 +353,13 @@ class Model
     public function getItem($id, $fields = ['*'])
     {
         $primaryKey = $this->getPrimaryKey();
-        $result = $this->query()
+        $query = $this->query()
                     ->filters([
                         $primaryKey  => $id
                     ])
-                    ->fields($fields)
-                    ->fetchRow();
+                    ->fields($fields);
+
+        $result = $query->fetchRow();
 
         if(empty($result)){
             $result = false;
@@ -443,7 +444,6 @@ class Model
      * @param mixed $fields - optional - the list of fields to retrieve
      * @param bool $useCache - optional, defaul false
      * @return array / false
-     * @todo Create distributed version
      */
     public function getItems(array $ids, $fields = '*', $useCache = false)
     {

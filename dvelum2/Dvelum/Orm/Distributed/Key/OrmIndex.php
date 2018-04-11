@@ -24,6 +24,7 @@ use Dvelum\Orm\Distributed\Router;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Record;
+use Dvelum\Utils;
 use \Exception;
 
 class OrmIndex implements GeneratorInterface
@@ -122,12 +123,40 @@ class OrmIndex implements GeneratorInterface
         $indexObject = $objectConfig->getDistributedIndexObject();
 
         $model = Model::factory($indexObject);
-        $shardData = $model->query()->filters([$objectConfig->getPrimaryKey(), $objectId])->fetchRow();
+        $query = $model->query()->filters([$objectConfig->getPrimaryKey() => $objectId]);
+
+        $shardData = $query->fetchRow();
 
         if(empty($shardData)){
             return false;
         }
-
         return $shardData[$this->shardField];
+    }
+
+    /**
+     * Get shards for list of objects
+     * @param string $objectName
+     * @param array $objectIds
+     * @return array  [ [shard_id=>[itemId1,itemId2]] ]
+     */
+    public function getObjectsShards(string $objectName, array $objectIds) : array
+    {
+        $objectConfig = Record\Config::factory($objectName);
+        $indexObject = $objectConfig->getDistributedIndexObject();
+
+        $model = Model::factory($indexObject);
+        $query = $model->query()->filters([$objectConfig->getPrimaryKey() => $objectIds]);
+
+        $shardData = $query->fetchAll();
+
+        if(empty($shardData)){
+            return [];
+        }
+        $result = [];
+        $idField = $model->getObjectConfig()->getPrimaryKey();
+        foreach ($shardData as $item){
+            $result[$item[$this->shardField]][] = $item[$idField];
+        }
+        return $result;
     }
 }

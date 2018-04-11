@@ -411,4 +411,13 @@ class Field implements \ArrayAccess
     {
         return $this->config['title'];
     }
+
+    /**
+     * Check if fieldIs System
+     * @return bool
+     */
+    public function isSystem() : bool
+    {
+        return (bool) $this->config['system'];
+    }
 }

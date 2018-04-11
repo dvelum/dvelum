@@ -20,7 +20,9 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Distributed;
 
+use Dvelum\Db\Select\Filter;
 use Dvelum\Orm;
+use Dvelum\Utils;
 use \Exception;
 
 /**
@@ -36,26 +38,22 @@ class Model extends Orm\Model
      */
     final public function getItem($id, $fields = ['*'])
     {
-        $config = $this->getObjectConfig();
-
         $sharding = Orm\Distributed::factory();
+        $shard = $sharding->getObjectShard($this->getObjectName(), $id);
 
-        $shard = $sharding->getObjectShard($config->getName(), $id);
-
-        if(!$shard){
+        if(empty($shard)){
             return false;
         }
 
         $db = $this->getDbShardConnection($shard);
-
-
         $primaryKey = $this->getPrimaryKey();
-        $result = $this->query(true)->setDbConnection($db)
+        $query = $this->query()->setDbConnection($db)
             ->filters([
                 $primaryKey  => $id
             ])
-            ->fields($fields)
-            ->fetchRow();
+            ->fields($fields);
+
+        $result = $query->fetchRow();;
 
         if(empty($result)){
             $result = false;
@@ -72,10 +70,6 @@ class Model extends Orm\Model
      */
     public function getCachedItemByField(string $field, $value)
     {
-        if($this->getObjectConfig()->isDistributed()){
-            throw new Exception('getCachedItemByField method can`t work properly with distributed objects');
-        }
-
         $cacheKey = $this->getCacheKey(array('item', $field, $value));
         $data = false;
 
@@ -97,6 +91,7 @@ class Model extends Orm\Model
     }
 
     /**
+    * Note check only IndexObject
     * Get Item by field value. Returns first occurrence
     * @param string $fieldName
     * @param $value
@@ -106,26 +101,25 @@ class Model extends Orm\Model
     */
     public function getItemByField(string $fieldName, $value, $fields = '*')
     {
-        if($this->getObjectConfig()->isDistributed()){
-            throw new Exception('getItemByField method can`t work properly with distributed objects');
-        }
+        $model = Model::factory($this->getObjectConfig()->getDistributedIndexObject());
+        $item = $model->getItemByField($fieldName, $value);
 
-        $sql = $this->dbSlave->select()->from($this->table(), $fields);
-        $sql->where($this->dbSlave->quoteIdentifier($fieldName) . ' = ?', $value)->limit(1);
-        return $this->dbSlave->fetchRow($sql);
+        if(!empty($item)){
+            return $this->getItem($item[$this->getPrimaryKey()],$fields);
+        }else{
+            return [];
+        }
     }
 
     /**
      * Get a number of entries a list of IDs
      * @param array $ids - list of IDs
      * @param mixed $fields - optional - the list of fields to retrieve
-     * @param bool $useCache - optional, defaul false
+     * @param bool $useCache - optional, default false
      * @return array / false
-     * @todo Create distributed version
      */
     final public function getItems(array $ids, $fields = '*', $useCache = false)
     {
-        throw new Orm\Exception('Not implemented yet');
         $data = false;
 
         if (empty($ids)) {
@@ -138,18 +132,35 @@ class Model extends Orm\Model
         }
 
         if ($data === false) {
-            $sql = $this->dbSlave->select()->from($this->table(),
-                $fields)->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . \Utils::listIntegers($ids) . ')');
-            $data = $this->dbSlave->fetchAll($sql);
 
-            if (!$data) {
-                $data = [];
+            $sharding = Orm\Distributed::factory();
+            $shards = $sharding->getObjectsShards($this->getObjectName(), $ids);
+
+            $data = [];
+
+            if(!empty($shards))
+            {
+                foreach ($shards as $shard=>$items)
+                {
+                    $db = $this->getDbShardConnection($shard);
+
+                    $results = $this->query()
+                         ->setDbConnection($db)
+                         ->fields($fields)
+                         ->filters([$this->getPrimaryKey()=>$items])
+                         ->fetchAll();
+
+                    $data = array_merge($data , $results);
+                }
+            }
+
+            if(!empty($data)){
+                $data = Utils::rekey($this->getPrimaryKey(), $data);
             }
 
             if ($useCache && $this->cache) {
                 $this->cache->save($data, $cacheKey, $this->cacheTime);
             }
-
         }
         return $data;
     }
@@ -186,6 +197,8 @@ class Model extends Orm\Model
     }
 
     /**
+     * Note check only IndexObject
+     *
      * Check whether the field value is unique
      * Returns true if value $fieldValue is unique for $fieldName field
      * otherwise returns false
@@ -197,12 +210,13 @@ class Model extends Orm\Model
      */
     public function checkUnique(int $recordId, string $fieldName, $fieldValue): bool
     {
-        if($this->getObjectConfig()->isDistributed()){
-            throw new Exception('checkUnique method can`t work properly with distributed objects');
-        }
+        $model = Model::factory($this->getObjectConfig()->getDistributedIndexObject());
 
-        return !(boolean)$this->dbSlave->fetchOne($this->dbSlave->select()->from($this->table(),
-            array('count' => 'COUNT(*)'))->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' != ?',
-            $recordId)->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?', $fieldValue));
+        $filters = [
+             new Filter($this->getPrimaryKey(), Filter::NOT, $recordId),
+             $fieldName => $fieldValue
+        ];
+
+        return !(boolean) $model->query()->fields(['count' => 'COUNT(*)'])->filters($filters)->fetchOne();
     }
 }
