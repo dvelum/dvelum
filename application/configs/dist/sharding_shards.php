@@ -1,21 +1,30 @@
 <?php
 return [
     [
-        'id' => 'Shard1',
+        'id' => 'shard1',
         'host' => '127.0.0.1',
         'group' => 'default',
-        'weight'=> 10
+        'weight'=> 3,
+        'override' =>[
+            'dbname' => 'shard1'
+        ],
     ],
     [
-        'id' => 'Shard2',
-        'weight' => 2,
-        'host' => '127.0.0.2',
+        'id' => 'shard2',
+        'weight' => 3,
+        'host' => '127.0.0.1',
         'group' => 'default',
+        'override' =>[
+            'dbname' => 'shard2'
+        ],
     ],
     [
-        'id' => 'Shard3',
-        'weight' => 0,
-        'host' => '127.0.0.3',
+        'id' => 'shard3',
+        'weight' => 1,
+        'host' => '127.0.0.1',
         'group' => 'default',
+        'override' =>[
+            'dbname' => 'shard3'
+        ],
     ]
 ];

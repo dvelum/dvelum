@@ -230,7 +230,7 @@ class Adapter
     }
 
 
-    public function quoteIdentifier(string $string) : string
+    public function quoteIdentifier($string)
     {
         if(!$this->inited){
             $this->init();

@@ -120,7 +120,8 @@ class Store
         $shardId = null;
         if($object->getConfig()->isDistributed()){
             $sharding = Orm\Distributed::factory();
-            $shardId = $sharding->getObjectShard($object->getName(),$object->getId());
+            $field = $sharding->getShardField();
+            $shardId = $object->get($field);
         }
 
         if(empty($shardId)){
@@ -615,9 +616,8 @@ class Store
         {
             if($this->log)
             {
-                $errors = array();
-                foreach($values as $k => $v)
-                {
+                $errors = [];
+                foreach($values as $k => $v) {
                     $errors[] = $k . ':' . $v;
                 }
                 $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . implode(', ' , $errors));
@@ -631,12 +631,16 @@ class Store
 
         try {
             $db->insert($objectTable, $object->serializeLinks($updates));
-        }catch (Orm\Exception $e) {
+        }catch (Exception $e) {
             $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
             return false;
         }
 
-        $id = $db->lastInsertId($objectTable , $object->getConfig()->getPrimaryKey());
+        if($object->getConfig()->isDistributed()){
+            $id = $object->getInsertId();
+        }else{
+            $id = $db->lastInsertId($objectTable , $object->getConfig()->getPrimaryKey());
+        }
 
         if(!$id)
             return false;
@@ -762,11 +766,10 @@ class Store
     {
         $objectConfig = $object->getConfig();
 
-        if($objectConfig->isReadOnly())
-        {
-            if($this->log)
+        if($objectConfig->isReadOnly()) {
+            if($this->log){
                 $this->log->log(LogLevel::ERROR, 'ORM :: cannot delete readonly object '. $object->getName());
-
+            }
             return false;
         }
 
@@ -778,7 +781,11 @@ class Store
 
         $transact = $object->getConfig()->isTransact();
 
-        $db = $this->getDbConnection($object);
+        if($objectConfig->isDistributed()){
+            $db = Model::factory($objectConfig->getName())->getDbShardConnection($object->get(Orm\Distributed::factory()->getShardField()));
+        }else{
+            $db = $this->getDbConnection($object);
+        }
 
         if($transact && $transaction)
             $db->beginTransaction();
@@ -795,7 +802,7 @@ class Store
 
         try{
             $db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId());
-            $success = true;
+             $success = true;
         }catch (Exception $e){
             if($this->log){
                 $this->log->log(LogLevel::ERROR,$object->getName().'::delete '.$e->getMessage());
@@ -815,6 +822,19 @@ class Store
                 $this->log->log(LogLevel::ERROR,$object->getName().'::delete '.$e->getMessage());
             }
             $success = false;
+        }
+
+        if($objectConfig->isDistributed()) {
+            $indexObject = $objectConfig->getDistributedIndexObject();
+            $indexModel = Model::factory($indexObject);
+            if (!$indexModel->remove($object->getId())) {
+                if ($this->log) {
+                    $this->log->log(LogLevel::ERROR, $object->getName() . ' cant delete index' . $object->getId());
+                }
+                $success = false;
+            } else {
+                $success = true;
+            }
         }
 
         if($transact && $transaction)

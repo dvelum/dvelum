@@ -653,6 +653,7 @@ class MySQL extends AbstractAdapter
             $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
             return false;
         }
+
         /*
          * Create table if not exists
          */

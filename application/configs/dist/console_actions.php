@@ -19,6 +19,11 @@ return [
         'type' => 'action',
         'adapter' => '\\Dvelum\\App\\Console\\Orm\\Build'
     ],
+    // Rebuild database
+    'buildShards'=>[
+        'type' => 'action',
+        'adapter' => '\\Dvelum\\App\\Console\\Orm\\BuildShards'
+    ],
     // Create Model classes
     'generateModels'=>[
         'type' => 'action',

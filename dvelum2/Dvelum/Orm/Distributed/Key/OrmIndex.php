@@ -62,19 +62,38 @@ class OrmIndex implements GeneratorInterface
     public function reserveIndex(Record $object , string $shard) : ?Reserved
     {
         $objectConfig = $object->getConfig();
-
         $indexObject = $objectConfig->getDistributedIndexObject();
         $model = Model::factory($indexObject);
+        $indexConfig = $model->getObjectConfig();
         $db = $model->getDbConnection();
+
+        $fieldList = $indexConfig->getFields();
+        $primary = $indexConfig->getPrimaryKey();
+
+        $indexData = [
+            $this->shardField => $shard
+        ];
+        /**
+         * @var Record\Config\Field $field
+         */
+        foreach ($fieldList as $field){
+            $fieldName = $field->getName();
+
+            if($fieldName == $primary || $fieldName == $this->shardField){
+                continue;
+            }
+
+            try{
+                $indexData[$fieldName] = $object->get($fieldName);
+            }catch (Exception $e){
+                $model->logError('Sharding Invalid index structure for  '.$objectConfig->getName().' '.$e->getMessage());
+                return null;
+            }
+        }
 
         try{
             $db->beginTransaction();
-            $db->insert(
-                $model->table(),
-                [
-                    $this->shardField => $shard
-                ]
-            );
+            $db->insert($model->table(),$indexData);
 
             $id = $db->lastInsertId($model->table(),$objectConfig->getPrimaryKey());
             $db->commit();
@@ -85,7 +104,6 @@ class OrmIndex implements GeneratorInterface
 
             return $result;
         }catch (Exception $e){
-            echo $e->getMessage(); die();
             $db->rollBack();
             $model->logError('Sharding::reserveIndex '.$e->getMessage());
             return null;

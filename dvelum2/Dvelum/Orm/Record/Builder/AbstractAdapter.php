@@ -107,6 +107,13 @@ abstract class AbstractAdapter implements BuilderInterface
     }
 
     /**
+     * @param  \Dvelum\Db\Adapter $db
+     */
+    public function setConnection(\Dvelum\Db\Adapter $db){
+        $this->db = $db;
+    }
+
+    /**
      * Get error messages
      * @return array
      */
@@ -370,7 +377,7 @@ abstract class AbstractAdapter implements BuilderInterface
             if(!$this->tableExists())
                 return true;
 
-            $db = $model->getDbConnection();
+            $db = $this->db;
 
             $ddl = new Ddl\DropTable($model->table());
             $sql = $db->sql()->buildSqlString($ddl);
@@ -443,7 +450,7 @@ abstract class AbstractAdapter implements BuilderInterface
         $indexConnection = $shardingConfig->get('dist_index_connection');
 
         $objectModel = Model::factory($this->objectName);
-        $db = $objectModel->getDbConnection();
+        $db = $this->db;
         $tablePrefix = $objectModel->getDbPrefix();
 
         $oConfigPath = $this->objectConfig->getConfigPath();
@@ -541,9 +548,9 @@ abstract class AbstractAdapter implements BuilderInterface
         $usePrefix = true;
         $connection = $this->objectConfig->get('connection');
 
-        $objectModel = Model::factory($this->objectName);
-        $db = $objectModel->getDbConnection();
-        $tablePrefix = $objectModel->getDbPrefix();
+
+        $db = $this->db;
+        $tablePrefix = $this->model->getDbPrefix();
 
         $oConfigPath = $this->objectConfig->getConfigPath();
 

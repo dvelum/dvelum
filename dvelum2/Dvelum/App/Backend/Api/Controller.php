@@ -510,7 +510,7 @@ class Controller extends App\Backend\Controller
             ];
 
         } else {
-            if (!$recId = $object->save()) {
+            if (!$recId = $object->save(false)) {
                 $this->response->error($this->lang->get('CANT_EXEC'));
                 $db->rollback();
                 return;

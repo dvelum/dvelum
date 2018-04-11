@@ -559,7 +559,6 @@ class Record implements RecordInterface
             }
         }
 
-
         $store = $this->model->getStore();
 
         if($this->logger)
@@ -569,16 +568,16 @@ class Record implements RecordInterface
         {
             $text = 'ORM :: cannot save readonly object '. $this->config->getName();
             $this->errors[] = $text;
+
             if($this->logger)
                 $this->logger->log(LogLevel::ERROR, $text);
+
             return false;
         }
-
 
         if($this->config->isDistributed() && !$this->getId()){
 
             $sharding = Distributed::factory();
-
 
             $insert = $sharding->reserveIndex($this);
 
@@ -588,10 +587,8 @@ class Record implements RecordInterface
 
                 if($this->logger)
                     $this->logger->log(LogLevel::ERROR, $text);
-
                 return false;
             }
-
             $this->setInsertId($insert->getId());
             $this->set($sharding->getShardField(), $insert->getShard());
         }

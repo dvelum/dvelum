@@ -186,6 +186,26 @@ class Model
     }
 
     /**
+     * Get current Db connectionName
+     * @return string
+     */
+    public function getConnectionName() : string
+    {
+        return $this->lightConfig->get('connection');
+    }
+
+    /**
+     * Get db connection for shard
+     * @param string $shard
+     * @return Db\Adapter
+     */
+    public function getDbShardConnection(string $shard) : Db\Adapter
+    {
+        $curName = $this->getDbConnectionName();
+        return $this->getDbManager()->getDbConnection($curName,null, $shard);
+    }
+
+    /**
      * Lazy load of ORM\Record\Config
      * @return Record\Config
      * @throws \Exception

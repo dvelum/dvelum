@@ -37,18 +37,17 @@ class Model extends Orm\Model
     final public function getItem($id, $fields = ['*'])
     {
         $config = $this->getObjectConfig();
-        if($config->isDistributed()){
-            $sharding = Distributed::factory();
-            $shard = $sharding->getObjectShard($config->getName(), $id);
 
-            if(!$shard){
-                return false;
-            }
+        $sharding = Orm\Distributed::factory();
 
-            $db = $this->dbManager->getDbConnection($config->get('connection'), $shard);
-        }else{
-            $db = $this->getSlaveDbConnection();
+        $shard = $sharding->getObjectShard($config->getName(), $id);
+
+        if(!$shard){
+            return false;
         }
+
+        $db = $this->getDbShardConnection($shard);
+
 
         $primaryKey = $this->getPrimaryKey();
         $result = $this->query(true)->setDbConnection($db)
@@ -126,6 +125,7 @@ class Model extends Orm\Model
      */
     final public function getItems(array $ids, $fields = '*', $useCache = false)
     {
+        throw new Orm\Exception('Not implemented yet');
         $data = false;
 
         if (empty($ids)) {
@@ -168,12 +168,11 @@ class Model extends Orm\Model
      * Delete record
      * @param mixed $recordId record ID
      * @return bool
-     * @todo Create distributed version
      */
     public function remove($recordId): bool
     {
         try {
-            $object = Orm\Record::factory($this->name, $recordId);
+            $object = Orm\Record::factory($this->getObjectName(), $recordId);
         } catch (\Exception $e) {
             $this->logError('Remove record ' . $recordId . ' : ' . $e->getMessage());
             return false;
@@ -205,22 +204,5 @@ class Model extends Orm\Model
         return !(boolean)$this->dbSlave->fetchOne($this->dbSlave->select()->from($this->table(),
             array('count' => 'COUNT(*)'))->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' != ?',
             $recordId)->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?', $fieldValue));
-    }
-
-
-
-
-
-
-
-
-    public function getIndexes() : array
-    {
-        $config = $this->getObjectConfig();
-        $indexObject =  $config->getDistributedIndexObject();
-        if(!empty($indexObject)){
-            $model =  Orm\Model::factory($indexObject);
-
-        }
     }
 }
