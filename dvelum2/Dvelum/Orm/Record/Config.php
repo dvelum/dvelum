@@ -293,6 +293,10 @@ class Config
             $dataLink['fields'] = array_merge($dataLink['fields'] , $this->getDistributedFields());
         }
 
+        if($this->isIndexObject()){
+            $dataLink['indexes'] = $this->initIndexIndexes();
+        }
+
         /*
          * Init ACL adapter
          */
@@ -679,7 +683,7 @@ class Config
             if($translationsData !==false)
                 $translationsData[$this->name]['fields'][$field] = $cfg['title'];
             unset($cfg['title']);
-        }
+        } unset($cfg);
 
         $config->set('fields', $fields);
         $config->set('indexes' , $indexes);
@@ -771,6 +775,53 @@ class Config
     }
 
     /**
+     * Init indexes for distributed index object
+     * @return array
+     */
+    protected function initIndexIndexes() : array
+    {
+        $list = $this->config->get('indexes');
+        $shardingField = Cfg::storage()->get('sharding.php')->get('shard_field');
+
+        $list[$shardingField] = [
+            'columns'=>[$shardingField],
+            'fulltext'=>false,
+            'unique'=>false,
+            'primary'=>false,
+            'db_auto_increment'=> false,
+            'is_search' =>false,
+            'lazyLang'=>false,
+            'system'=>true
+        ];
+
+        $dataObject = Config::factory($this->getDataObject());
+        $dataIndexes = $dataObject->getIndexesConfig();
+        $currentFields = $this->getFields();
+
+        foreach ($currentFields as $field)
+        {
+            $fieldName = $field->getName();
+            if(isset($list[$fieldName]) || $fieldName ==$this->getPrimaryKey()){
+                continue;
+            }
+            if(isset($dataIndexes[$fieldName]) && count($dataIndexes[$fieldName]['columns']) == 1 && $dataIndexes[$fieldName]['columns'][0]==$fieldName){
+                $list[$fieldName] = $dataIndexes[$fieldName];
+            }else{
+                $list[$fieldName] =  [
+                    'columns'=>[$fieldName],
+                    'fulltext'=>false,
+                    'unique'=>false,
+                    'primary'=>false,
+                    'db_auto_increment'=> false,
+                    'is_search' =>true,
+                    'lazyLang'=>false
+                ];
+            }
+            $list[$fieldName]['system'] = true;
+        }
+        return $list;
+    }
+    /**
      * Get list of distributed indexes
      * @param bool $includeSystem
      * @return array
@@ -790,10 +841,12 @@ class Config
         // Set Required Indexes
         if($includeSystem){
             $shardingField = Cfg::storage()->get('sharding.php')->get('shard_field');
-            $list[$this->getPrimaryKey()] = ['field'=>$this->getPrimaryKey(),'is_system'=>true];
+            $list[$this->getPrimaryKey()] = [
+                'field'=>$this->getPrimaryKey(),
+                'is_system'=>true,
+            ];
             $list[$shardingField] = ['field'=>$shardingField,'is_system'=>true];
         }
-
         return $list;
     }
 
@@ -1215,6 +1268,19 @@ class Config
         }else{
             return false;
         }
+    }
+
+    /**
+     * Get Data object for index
+     * @throws Exception
+     * @return string
+     */
+    public function getDataObject() : string
+    {
+        if(!$this->isIndexObject()){
+            throw new Exception('Cannot get data object. '.$this->getName().' is not index object');
+        }
+        return $this->config->get('data_object');
     }
 
     /**

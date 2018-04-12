@@ -60,7 +60,8 @@ Ext.define('app.crud.orm.Index', {
 		{name:'fulltext' , type:'boolean'},
 		{name:'unique', type:'boolean'},
 		{name:'columns', type:'string'},
-		{name:'primary', type:'boolean'}
+		{name:'primary', type:'boolean'},
+        {name:'system', type:'boolean'}
 	]
 });
 

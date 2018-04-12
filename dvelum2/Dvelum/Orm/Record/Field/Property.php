@@ -48,7 +48,9 @@ class Property
             'use_db_prefix',
             'hidden',
             'relations_type',
-            'sharding'
+            'sharding',
+            'data_object',
+            'parent_object'
     ];
 
     public static $numberLength = [

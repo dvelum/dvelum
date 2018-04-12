@@ -41,6 +41,14 @@ interface GeneratorInterface
     public function reserveIndex(Record $object, string $shard): ?Reserved;
 
     /**
+     * Delete reserved index
+     * @param Record $record
+     * @param $indexId
+     * @return bool
+     */
+    public function deleteIndex(Record $record, $indexId) : bool;
+
+    /**
      * Get object shard id
      * @param string $objectName
      * @param mixed $objectId

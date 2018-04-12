@@ -126,6 +126,16 @@ class Distributed
     }
 
     /**
+     * Delete reserved index
+     * @param Record $record
+     * @param $indexId
+     * @return bool
+     */
+    public function deleteIndex(Record $record, $indexId) : bool
+    {
+        return $this->keyGenerator->deleteIndex($record, $indexId);
+    }
+    /**
      * Get shard info by id
      * @param $id
      * @return array|bool

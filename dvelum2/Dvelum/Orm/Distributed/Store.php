@@ -69,6 +69,7 @@ class Store extends \Dvelum\Orm\Record\Store
         try {
             $db->insert($object->getTable(), $data);
         }catch (Exception $e) {
+            $this->sharding->deleteIndex($object, $insertId);
             $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
             return false;
         }
@@ -112,8 +113,7 @@ class Store extends \Dvelum\Orm\Record\Store
     {
         $shardId = null;
 
-        $sharding = Orm\Distributed::factory();
-        $field = $sharding->getShardField();
+        $field = $this->sharding->getShardField();
         $shardId = $object->get($field);
 
         if(empty($shardId)){
@@ -122,5 +122,60 @@ class Store extends \Dvelum\Orm\Record\Store
 
         $objectModel = Model::factory($object->getName());
         return $objectModel->getDbManager()->getDbConnection($objectModel->getDbConnectionName(), null, $shardId);
+    }
+
+    /**
+     * Update record
+     * @param Orm\RecordInterface $object
+     * @return bool
+     */
+    protected function updateRecord(Orm\RecordInterface $object ) : bool
+    {
+        $db = $this->getDbConnection($object);
+
+        $updates = $object->getUpdates();
+
+        if($object->getConfig()->hasEncrypted())
+            $updates = $this->encryptData($object , $updates);
+
+        $this->updateLinks($object);
+
+        $updates = $object->serializeLinks($updates);
+
+        $shardingIndex = $object->getConfig()->getDistributedIndexObject();
+        $indexModel = Model::factory($shardingIndex);
+        $indexConfig = $indexModel->getObjectConfig();
+        $indexDb = $indexModel->getDbConnection();
+
+        $indexFields = $indexConfig->getFields();
+        $indexUpdates = [];
+
+        foreach ($updates as $field => $value){
+            if(isset($indexFields[$field]) && $indexConfig->getPrimaryKey()!==$field){
+                $indexUpdates[$field] = $value;
+            }
+        }
+
+        if(!empty($updates)){
+            try{
+                if(!empty($indexUpdates)){
+                    $indexDb->beginTransaction();
+                    $indexDb->update($indexModel->table(),$indexUpdates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
+                }
+                $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
+                if(!empty($indexUpdates)){
+                    $indexDb->commit();
+                }
+            }catch (Exception $e){
+                if($this->log){
+                    $this->log->log(LogLevel::ERROR,$object->getName().'::update '.$e->getMessage());
+                }
+                if(!empty($indexUpdates)){
+                    $indexDb->rollback();
+                }
+                return false;
+            }
+        }
+        return true;
     }
 }

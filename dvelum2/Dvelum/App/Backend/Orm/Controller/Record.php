@@ -371,7 +371,8 @@ class Record extends Controller
             $detalization = 'default';
         }
 
-        $parentObject = $this->request->post('parent_object', 'string', '');
+        $dataObject = $this->request->post('parent_object', 'string', '');
+        $parentObject = $this->request->post('data_object', 'string', '');
 
         $reqStrings = array('name', 'title', 'table', 'engine', 'connection');
         $errors = array();
@@ -406,6 +407,7 @@ class Record extends Controller
             $data['acl'] = false;
         }
 
+        $data['data_object'] = $dataObject;
         $data['parent_object'] = $parentObject;
         $data['rev_control'] = $revControl;
         $data['save_history'] = $saveHistory;

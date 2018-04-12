@@ -294,7 +294,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 				colid:'editcolumn',
 				renderer:function(value, metaData, record, rowIndex, colIndex, store){
 
-					if(record.get('primary')){
+					if(record.get('primary') || record.get('system')){
 						return '<img src="'+app.wwwRoot+'i/system/locked.png" title="'+appLang.SYSTEM_PROTECTED_INDEX+'">';
 					}
 
@@ -643,6 +643,9 @@ Ext.define('app.crud.orm.ObjectWindow', {
 				xtype:'hiddenfield',
 				name:'parent_object'
 			},{
+                xtype:'hiddenfield',
+                name:'data_object'
+            },{
 				xtype:'textfield',
 				name:'name',
 				fieldLabel:appLang.OBJECT_NAME,
@@ -911,7 +914,9 @@ Ext.define('app.crud.orm.ObjectWindow', {
                         render:{fn:this.initTooltip,scope:this},
                         change:function(box, value){
                             if(value){
-                                this.distributedIndexGrid.enable();
+                                if(!Ext.isEmpty(handle.objectName)){
+                                    this.distributedIndexGrid.enable();
+                                }
                             }else{
                                 this.distributedIndexGrid.disable();
                             }

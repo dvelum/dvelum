@@ -174,6 +174,7 @@ class Store
          }
          */
 
+
         /*
          * Check if DB table support transactions
          */
@@ -212,19 +213,9 @@ class Store
     protected function updateOperation(Orm\RecordInterface $object)
     {
         try{
-            $db = $this->getDbConnection($object);
-            $updates = $object->getUpdates();
-
-            if($object->getConfig()->hasEncrypted())
-                $updates = $this->encryptData($object , $updates);
-
-            $this->updateLinks($object);
-
-            $updates = $object->serializeLinks($updates);
-
-            if(!empty($updates))
-                $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
-
+            if(!$this->updateRecord($object)){
+                return false;
+            }
             /*
              * Fire "AFTER_UPDATE_BEFORE_COMMIT" Event if event manager exists
              */
@@ -601,6 +592,7 @@ class Store
          */
         $values = $object->validateUniqueValues();
 
+
         if(!empty($values))
         {
             if($this->log)
@@ -613,7 +605,6 @@ class Store
             }
             return false;
         }
-
 
         $id = $this->insertRecord($object, $updates);
 
@@ -683,6 +674,37 @@ class Store
            }
            return false;
         }
+    }
+
+    /**
+     * Update record
+     * @param Orm\RecordInterface $object
+     * @return bool
+     */
+    protected function updateRecord(Orm\RecordInterface $object ) : bool
+    {
+        $db = $this->getDbConnection($object);
+
+        $updates = $object->getUpdates();
+
+        if($object->getConfig()->hasEncrypted())
+            $updates = $this->encryptData($object , $updates);
+
+        $this->updateLinks($object);
+
+        $updates = $object->serializeLinks($updates);
+
+        if(!empty($updates)){
+            try{
+                $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
+            }catch (Exception $e){
+                if($this->log){
+                    $this->log->log(LogLevel::ERROR,$object->getName().'::update '.$e->getMessage());
+                }
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

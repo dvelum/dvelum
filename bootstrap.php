@@ -121,6 +121,9 @@ if(!class_exists($appClass))
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);
 $app->init();
+
+\Dvelum\Orm\Model::factory('USER')->logError('test');
+
 $app->run();
 /*
  * Clean the buffer and send response

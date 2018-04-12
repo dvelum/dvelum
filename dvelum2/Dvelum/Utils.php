@@ -367,4 +367,40 @@ class Utils
         $fig = (int) str_pad('1', $precision, '0');
         return (ceil($number * $fig) / $fig);
     }
+
+    /**
+     * @param $array1
+     * @param $array2
+     * @return array
+     */
+    static public function array_diff_assoc_recursive($array1, $array2) : array
+    {
+        foreach($array1 as $key => $value)
+        {
+            if(is_array($value))
+            {
+                if(!isset($array2[$key]))
+                {
+                    $difference[$key] = $value;
+                }
+                elseif(!is_array($array2[$key]))
+                {
+                    $difference[$key] = $value;
+                }
+                else
+                {
+                    $new_diff = array_diff_assoc_recursive($value, $array2[$key]);
+                    if($new_diff != FALSE)
+                    {
+                        $difference[$key] = $new_diff;
+                    }
+                }
+            }
+            elseif(!isset($array2[$key]) || $array2[$key] != $value)
+            {
+                $difference[$key] = $value;
+            }
+        }
+        return !isset($difference) ? [] : $difference;
+    }
 }

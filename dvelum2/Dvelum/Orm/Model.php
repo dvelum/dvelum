@@ -622,6 +622,7 @@ class Model
      */
     public function logError(string $message): void
     {
+
         if (!$this->log) {
             return;
         }

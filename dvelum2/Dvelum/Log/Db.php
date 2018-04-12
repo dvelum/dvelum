@@ -66,7 +66,7 @@ class Db extends \Psr\Log\AbstractLogger implements \Log
     public function log($level, $message, array $context = array())
     {
         try{
-            $result = $this->db->insert(
+            $this->db->insert(
                 $this->table,
                 [
                     $this->logFields['name'] => $this->name,
@@ -75,13 +75,9 @@ class Db extends \Psr\Log\AbstractLogger implements \Log
                     $this->logFields['level']=> json_encode($context)
                 ]
             );
-
-            if(!$result)
-                throw new \Exception('Cannot save DB Log ');
-
             return true;
-
         }catch (\Exception $e){
+            echo  $e->getMessage(); die();
             $this->lastError = $e->getMessage();
             return false;
         }

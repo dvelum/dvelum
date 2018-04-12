@@ -470,6 +470,7 @@ abstract class AbstractAdapter implements BuilderInterface
             if(!$conf['is_system']){
                 $field = $this->objectConfig->getField($conf['field']);
                 $fieldList[$conf['field']] = $field->__toArray();
+                $fieldList[$conf['field']]['db_isNull'] = true;
             }
         }
 
@@ -496,7 +497,6 @@ abstract class AbstractAdapter implements BuilderInterface
                 'indexes' => [],
             ];
 
-
             if(!is_dir($configDir) && !@mkdir($configDir, 0655, true)){
                 $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
                 return false;
@@ -509,7 +509,7 @@ abstract class AbstractAdapter implements BuilderInterface
                 $cfg = Cfg::storage()->get($newConfigPath);
                 $cfg->setData($objectData);
             }else{
-                $cfg = Cfg\Factory::create($objectData, $newConfigPath);
+                $cfg = Cfg\Factory::create($objectData, $configDir. $newObjectName);
             }
 
             /*
@@ -520,7 +520,8 @@ abstract class AbstractAdapter implements BuilderInterface
                 return false;
             }
 
-            $cfg = Config::factory($newObjectName , true);
+            $cfg = Config::factory($newObjectName, true);
+
             $cfg->setObjectTitle($this->objectName.' ID Routes');
 
             if(!$cfg->save()){
@@ -652,17 +653,22 @@ abstract class AbstractAdapter implements BuilderInterface
             return [];
         }
 
+        $mainIndexes = $this->objectConfig->getIndexesConfig(false);
         $updates = [];
 
         $idObject = $this->objectConfig->getDistributedIndexObject();
         if(!Orm\Record\Config::configExists($idObject)){
             $updates[] = ['name' => $idObject, 'action'=>'add'];
+            return $updates;
         }
 
         $objectConfig = Config::factory($idObject);
 
         $fields = $this->objectConfig->getDistributedIndexesConfig();
-        $fields = Utils::rekey('field' , $fields);
+
+        if(!empty($fields)){
+            $fields = Utils::rekey('field' , $fields);
+        }
 
         foreach ($fields as $field){
             // New field for index object
@@ -674,8 +680,16 @@ abstract class AbstractAdapter implements BuilderInterface
             $indexConfig = $objectConfig->getField($field['field'])->__toArray();
             unset($fieldConfig['title']);
             unset($indexConfig['title']);
+            unset($fieldConfig['db_isNull']);
+            unset($fieldConfig['db_isNull']);
+
+            if($this->objectConfig->getPrimaryKey() == $field['field']){
+                continue;
+            }
+            unset($fieldConfig['system']);
+            unset($indexConfig['system']);
             // field config updated
-            if(!empty(array_diff($fieldConfig,$indexConfig))){
+            if(!empty(Utils::array_diff_assoc_recursive($fieldConfig,$indexConfig))){
                 $updates[] = ['name' => $idObject, 'action'=>'update'];
                 return $updates;
             }

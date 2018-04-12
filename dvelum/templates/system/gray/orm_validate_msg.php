@@ -138,7 +138,8 @@ if(isset($this->shardObjects) && !empty($this->shardObjects))
         echo '<h4>Distributed Index Objects to be added:</h4><ul class="ormUl">' , $addStr , '</ul>';
 
     if(strlen($updateStr))
-        echo '<h4>Distributed Index Objects to be updated:</h4><ul class="ormUl">' , $updateStr , '</ul>';
+        echo '<h4>Distributed Index Objects field to be updated:</h4><ul class="ormUl">' , $updateStr , '</ul>';
+
 }
 
 ?>

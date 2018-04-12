@@ -301,6 +301,7 @@ class AsArray implements StorageInterface
                 return false;
             }
         }
+
         if(\Utils::exportArray($id, $data)!==false){
             Config\Factory::cache();
             return true;

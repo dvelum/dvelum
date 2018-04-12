@@ -55,6 +55,27 @@ class OrmIndex implements GeneratorInterface
     }
 
     /**
+     * Delete reserved index
+     * @param Record $object
+     * @param $indexId
+     * @return bool
+     */
+    public function deleteIndex(Record $object, $indexId) : bool
+    {
+        $objectConfig = $object->getConfig();
+        $indexObject = $objectConfig->getDistributedIndexObject();
+        $model = Model::factory($indexObject);
+        $db = $model->getDbConnection();
+        try{
+            $db->delete($model->table(), $db->quoteIdentifier($model->getPrimaryKey()).' = '.$db->quote($indexId));
+            return true;
+        }catch (Exception $e){
+            $model->logError('Sharding::reserveIndex '.$e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Reserve object id, add to routing table
      * @param Record $object
      * @param string $shard

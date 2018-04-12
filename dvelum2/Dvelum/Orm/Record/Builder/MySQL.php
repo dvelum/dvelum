@@ -524,6 +524,13 @@ class MySQL extends AbstractAdapter
         $colDiff = array_diff($cfg1['columns'] , $cfg2['columns']);
         $colDiffReverse = array_diff($cfg2['columns'] , $cfg1['columns']);
 
+        if(!isset($cfg1['unique'])){
+            $cfg1['unique']  = false;
+        }
+        if(!isset($cfg2['unique'])){
+            $cfg2['unique']  = false;
+        }
+
         if($cfg1['fulltext'] !== $cfg2['fulltext'] || $cfg1['unique'] !== $cfg2['unique'] || ! empty($colDiff) || !empty($colDiffReverse))
             return false;
 
