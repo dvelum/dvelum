@@ -50,5 +50,8 @@
             "www/js/lib/{$name}": ["type:js-library"],
             "modules/{$vendor}/{$name}":["type:dvelum-module"]
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7"
     }
 }
