@@ -343,9 +343,10 @@ class Controller extends Backend\Controller
             return;
         }
 
-        $object = Utils\Strings::formatClassName($object, true);
+        $objectClassName = Utils\Strings::formatClassName($object, true);
+        $object = Utils\Strings::formatClassName($object, false);
 
-        $class = 'App\\Backend\\' . $object . '\\Controller';
+        $class = 'App\\Backend\\' . $objectClassName . '\\Controller';
 
         if (class_exists($class)) {
             $this->response->error($this->lang->get('FILL_FORM'),
