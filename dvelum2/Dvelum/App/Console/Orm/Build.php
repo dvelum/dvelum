@@ -15,6 +15,11 @@ class Build extends Console\Action
         echo 'BUILD OBJECTS '. PHP_EOL;
         foreach($dbObjectManager->getRegisteredObjects() as $object)
         {
+            if(Orm\Record\Config::factory($object)->isDistributed()){
+                echo  $object . ' :  is distributed, skip'. PHP_EOL;
+                continue;
+            }
+
             echo  $object . ' : ';
             $builder = Orm\Record\Builder::factory($object);
             if($builder->build()){
