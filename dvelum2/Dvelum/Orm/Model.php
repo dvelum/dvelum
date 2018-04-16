@@ -140,9 +140,9 @@ class Model
     {
         $this->settings = $settings;
 
-        $ormConfig = Config\Factory::storage()->get('orm.php', true);
+        $ormConfig = Config\Factory::storage()->get('orm.php');
 
-        $this->store = $settings->get('dbObjectStore');
+        $this->store = $settings->get('storage');
         $this->name = strtolower($objectName);
         $this->cacheTime = $settings->get('hardCacheTime');
 
@@ -161,7 +161,8 @@ class Model
 
         $this->dbManager = $settings->get('defaultDbManager');
 
-        $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php', true, false);
+        $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php',
+            true, false);
 
         $conName = $this->lightConfig->get('connection');
         $this->db = $this->dbManager->getDbConnection($conName);
@@ -182,6 +183,26 @@ class Model
         if ($settings->get('errorLog')) {
             $this->log = $settings->get('errorLog');
         }
+    }
+
+    /**
+     * Get current Db connectionName
+     * @return string
+     */
+    public function getConnectionName() : string
+    {
+        return $this->lightConfig->get('connection');
+    }
+
+    /**
+     * Get db connection for shard
+     * @param string $shard
+     * @return Db\Adapter
+     */
+    public function getDbShardConnection(string $shard) : Db\Adapter
+    {
+        $curName = $this->getDbConnectionName();
+        return $this->getDbManager()->getDbConnection($curName,null, $shard);
     }
 
     /**
@@ -247,6 +268,14 @@ class Model
     }
 
     /**
+     * Get connection name
+     */
+    public function getDbConnectionName() : string
+    {
+        return $this->getObjectConfig()->get('connection');
+    }
+
+    /**
      * Get Slave Db Connection
      * @return Db\Adapter
      */
@@ -257,9 +286,9 @@ class Model
 
     /**
      * Get current db manager
-     * @return \Db_Manager_Interface
+     * @return \Dvelum\Db\ManagerInterface
      */
-    public function getDbManager(): \Db_Manager_Interface
+    public function getDbManager(): \Dvelum\Db\ManagerInterface
     {
         return $this->dbManager;
     }
@@ -321,15 +350,16 @@ class Model
      * @param array|string $fields — optional — the list of fields to retrieve
      * @return array|false
      */
-    final public function getItem($id, $fields = ['*'])
+    public function getItem($id, $fields = ['*'])
     {
         $primaryKey = $this->getPrimaryKey();
-        $result = $this->query()
-                    ->filters([
-                        $primaryKey  => $id
-                    ])
-                    ->fields($fields)
-                    ->fetchRow();
+        $query = $this->query()
+            ->filters([
+                $primaryKey  => $id
+            ])
+            ->fields($fields);
+
+        $result = $query->fetchRow();
 
         if(empty($result)){
             $result = false;
@@ -368,6 +398,7 @@ class Model
      * Get data record by field value using cache. Returns first occurrence
      * @param string $field - field name
      * @param string $value - field value
+     * @throws Exception
      * @return array
      */
     public function getCachedItemByField(string $field, $value)
@@ -398,6 +429,7 @@ class Model
      * @param $value
      * @param string $fields
      * @return array|null
+     * @throws Exception
      */
     public function getItemByField(string $fieldName, $value, $fields = '*')
     {
@@ -413,7 +445,7 @@ class Model
      * @param bool $useCache - optional, defaul false
      * @return array / false
      */
-    final public function getItems(array $ids, $fields = '*', $useCache = false)
+    public function getItems(array $ids, $fields = '*', $useCache = false)
     {
         $data = false;
 
@@ -428,7 +460,7 @@ class Model
 
         if ($data === false) {
             $sql = $this->dbSlave->select()->from($this->table(),
-                    $fields)->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . \Utils::listIntegers($ids) . ')');
+                $fields)->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . \Utils::listIntegers($ids) . ')');
             $data = $this->dbSlave->fetchAll($sql);
 
             if (!$data) {
@@ -507,13 +539,14 @@ class Model
      * @param int $recordId — record ID
      * @param string $fieldName — field name
      * @param mixed $fieldValue — field value
-     * @return boolean
+     * @return bool
+     * @throws Exception
      */
     public function checkUnique(int $recordId, string $fieldName, $fieldValue): bool
     {
         return !(boolean)$this->dbSlave->fetchOne($this->dbSlave->select()->from($this->table(),
-                array('count' => 'COUNT(*)'))->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' != ?',
-                $recordId)->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?', $fieldValue));
+            array('count' => 'COUNT(*)'))->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' != ?',
+            $recordId)->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?', $fieldValue));
     }
 
     /**
@@ -551,10 +584,11 @@ class Model
 
     public function refreshTableInfo()
     {
+        $config = $this->getObjectConfig();
         $conName = $this->lightConfig->get('connection');
         $this->db = $this->dbManager->getDbConnection($conName);
 
-        if ($this->objectConfig->hasDbPrefix()) {
+        if ($config->hasDbPrefix()) {
             $this->dbPrefix = $this->dbManager->getDbConfig($conName)->get('prefix');
         } else {
             $this->dbPrefix = '';
@@ -588,6 +622,7 @@ class Model
      */
     public function logError(string $message): void
     {
+
         if (!$this->log) {
             return;
         }
@@ -657,7 +692,7 @@ class Model
         }
 
         if(method_exists($deprecatedFunctions[$objectName], $name)){
-           // trigger_error('Deprecated method call'. get_called_class().'::'.$name,E_USER_NOTICE);
+            // trigger_error('Deprecated method call'. get_called_class().'::'.$name,E_USER_NOTICE);
             return call_user_func_array([$deprecatedFunctions[$objectName],$name], $arguments);
         }
     }
