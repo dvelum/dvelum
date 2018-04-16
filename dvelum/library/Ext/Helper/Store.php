@@ -5,9 +5,18 @@ class Ext_Helper_Store
     const TYPE_INSTANCE = 'instance';
     const TYPE_JSCODE = 'jscall';
 
+    protected $_class = 'Helper_Store';
     protected $type = 'store';
     protected $value = '';
 
+    /**
+     * (non-PHPdoc)
+     * @see Ext_Object::getClass()
+     */
+    public function getClass()
+    {
+        return $this->_class;
+    }
 
     /**
      * Set renderer type
@@ -56,6 +65,20 @@ class Ext_Helper_Store
             self::TYPE_INSTANCE,
             self::TYPE_JSCODE,
         ];
+    }
+
+    public function getState(){
+        return [
+            'type' => $this->type,
+            'value' => $this->value
+        ];
+    }
+
+    public function setState(array $state){
+        if(!empty($state['type']))
+            $this->type = $state['type'];
+        if(!empty($state['value']))
+            $this->value = $state['value'];
     }
 
     public function __toString()

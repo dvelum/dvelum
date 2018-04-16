@@ -455,7 +455,15 @@ class Ext_Grid extends Ext_Object
 		$columns = $this->_columns->getItems();
 		$colData = array();
 
-		if(!empty($columns))
+        if($state['config']['store'] instanceof Ext_Helper_Store){
+            $state['config']['store'] = [
+                'class' => get_class($state['config']['store']),
+                'extClass' => $state['config']['store']->getClass(),
+                'state' => $state['config']['store']->getState()
+            ];
+        }
+
+        if(!empty($columns))
         {
             $columns = Utils::sortByField($columns , 'order');
 
@@ -500,6 +508,12 @@ class Ext_Grid extends Ext_Object
 			}
 			$this->_columns->sortItems();
 		}
+
+		if(!empty($state['config']['store'])){
+		    $store = new Ext_Helper_Store();
+		    $store->setState($state['config']['store']['state']);
+		    $this->_config->store = $store;
+        }
 	}
 
 	/**
