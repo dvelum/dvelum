@@ -56,48 +56,11 @@ class Stat
             $objectTable = $objectModel->table();
             $builder = Orm\Record\Builder::factory($objectName);
 
-            $records = 0;
-            $dataLength = 0;
-            $indexLength=0;
-            $size = 0;
-
             $oModel = Model::factory($objectName);
             $oDb = $oModel->getDbConnection();
             $oDbConfig = $oDb->getConfig();
-            $oDbHash = md5(serialize($oDbConfig));
 
             $canConnect = true;
-
-            if(!isset($tables[$oDbHash]) && $oDb->getAdapter()->getPlatform()->getName() === 'MySQL')
-            {
-                $platformAdapter = '\\Dvelum\\Orm\\Stat\\'.$oDb->getAdapter()->getPlatform()->getName();
-
-                if(class_exists($platformAdapter)){
-                    $adapter = new $platformAdapter();
-                    $tablesData = $adapter->getTablesInfo($oModel);
-                }
-
-                if(!empty($tablesData))
-                {
-                    foreach ($tablesData as $k=>$v)
-                    {
-                        $tables[$oDbHash][$v['Name']] = [
-                            'rows'=>$v['Rows'],
-                            'data_length'=>$v['Data_length'],
-                            'index_length'=>$v['Index_length']
-                        ];
-                    }
-                }
-                unset($tablesData);
-            }
-
-            if(isset($tables[$oDbHash][$objectTable]))
-            {
-                $records = $tables[$oDbHash][$objectTable]['rows'];
-                $dataLength = \Utils::formatFileSize($tables[$oDbHash][$objectTable]['data_length']);
-                $indexLength = \Utils::formatFileSize($tables[$oDbHash][$objectTable]['index_length']);
-                $size = \Utils::formatFileSize($tables[$oDbHash][$objectTable]['data_length'] + $tables[$oDbHash][$objectTable]['index_length']);
-            }
 
             $title = '';
             $saveHistory = true;
@@ -123,14 +86,12 @@ class Stat
                 'engine'=>$config['engine'],
                 'vc'=>$config['rev_control'],
                 'fields'=>sizeof($config['fields']),
-                'records'=>number_format($records,0,'.',' '),
+
                 'title'=>$title,
                 'link_title'=>$linkTitle,
                 'rev_control'=>$config['rev_control'],
                 'save_history'=>$saveHistory,
-                'data_size'=>$dataLength,
-                'index_size'=>$indexLength,
-                'size'=>$size,
+
                 'system'=>$configObject->isSystem(),
                 'validdb'=>$builder->validate(),
                 'broken'=>$hasBroken,
@@ -144,6 +105,58 @@ class Stat
                 'distributed' => $configObject->isDistributed()
             ];
         }
+        return $data;
+    }
+
+    public function getDetails($objectName)
+    {
+        $objectModel = Model::factory($objectName);
+        $objectTable = $objectModel->table();
+
+        $records = 0;
+        $dataLength = 0;
+        $indexLength=0;
+        $size = 0;
+
+        $oModel = Model::factory($objectName);
+        $oDb = $oModel->getDbConnection();
+        $tableInfo = [];
+
+        if($oDb->getAdapter()->getPlatform()->getName() === 'MySQL')
+        {
+            $platformAdapter = '\\Dvelum\\Orm\\Stat\\'.$oDb->getAdapter()->getPlatform()->getName();
+
+            if(class_exists($platformAdapter)){
+                $adapter = new $platformAdapter();
+                $tableData = $adapter->getTablesInfo($oModel , $objectTable);
+            }
+
+            if(!empty($tableData))
+            {
+                $tableInfo = [
+                    'rows'=>$tableData['Rows'],
+                    'data_length'=>$tableData['Data_length'],
+                    'index_length'=>$tableData['Index_length']
+                ];
+            }
+            unset($tableData);
+        }
+
+        if(!empty($tableInfo))
+        {
+            $records = $tableInfo['rows'];
+            $dataLength = \Utils::formatFileSize($tableInfo['data_length']);
+            $indexLength = \Utils::formatFileSize($tableInfo['index_length']);
+            $size = \Utils::formatFileSize($tableInfo['data_length'] + $tableInfo['index_length']);
+        }
+
+        $data = [[
+            'name' => $objectTable,
+            'records'=>number_format($records,0,'.',' '),
+            'data_size'=>$dataLength,
+            'index_size'=>$indexLength,
+            'size'=>$size,
+        ]];
         return $data;
     }
 }

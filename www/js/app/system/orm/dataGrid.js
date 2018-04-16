@@ -7,10 +7,10 @@ Ext.define('app.crud.orm.ObjectsModel', {
         {name:'engine', type:'string'},
         {name:'vc', 	type:'boolean'},
         {name:'fields', type:'integer'},
-        {name:'records',type:'string'},
-        {name:'data_size', type:'string'},
-        {name:'index_size', type:'string'},
-        {name:'size', type:'string'},
+       // {name:'records',type:'string'},
+       // {name:'data_size', type:'string'},
+       // {name:'index_size', type:'string'},
+       // {name:'size', type:'string'},
         {name:'validdb', typr:'boolean'},
         {name:'title', typr:'string'},
         {name:'save_history', type:'boolean'},
@@ -28,7 +28,17 @@ Ext.define('app.crud.orm.ObjectsModel', {
         {name:'distributed', type:'boolean'}
     ]
 });
-
+Ext.define('app.crud.orm.ObjectsDetailsModel', {
+    extend: 'Ext.data.Model',
+    fields: [
+        {name:'records',type:'string'},
+        {name:'data_size', type:'string'},
+        {name:'index_size', type:'string'},
+        {name:'size', type:'string'},
+        {name:'validdb', typr:'boolean'},
+        {name:'name' ,  type:'string'}
+    ]
+});
 /**
  *
  * @event editRecord
@@ -55,9 +65,16 @@ Ext.define('app.crud.orm.dataGrid',{
     bodyBorder:false,
     border:false,
 
-    editable:false,
+    editable: false,
 
     initComponent:function(){
+
+
+        this.initNestedGridPlugin();
+
+
+
+
 
         this.viewConfig = {stripeRows: true, enableTextSelection: true};
 
@@ -79,18 +96,8 @@ Ext.define('app.crud.orm.dataGrid',{
                         }
                     },{
                         tooltip:appLang.REBUILD_DB_TABLE,
-                        //iconCls:'buildIcon',
+                        iconCls:'buildIcon',
                         scope:this,
-                        getClass: function(v, meta, record) {
-                            if(record.get('distributed')) {
-                                return 'x-hide-display';
-                            }else{
-                                return 'buildIcon';
-                            }
-                        },
-                        isDisabled:function(view,row,col,item,record){
-                            return record.get('distributed')
-                        },
                         handler:function(grid, rowIndex, colIndex){
                             this.fireEvent('rebuildTable' , grid.getStore().getAt(rowIndex).get('name'));
                         }
@@ -122,18 +129,7 @@ Ext.define('app.crud.orm.dataGrid',{
             });
         }
 
-        var rendererRecords = function(value, metaData, record, rowIndex, colIndex, store){
 
-            if(record.get('external')){
-                metaData.style ='color:#0415D0;';
-            }
-
-            if(record.get('engine') == 'InnoDB'){
-                value = '~ ' + value;
-            }
-
-            return value;
-        };
 
         var titleRenderer = function(value, metaData, record, rowIndex, colIndex, store){
             if(record.get('external')){
@@ -184,6 +180,7 @@ Ext.define('app.crud.orm.dataGrid',{
                 dataIndex: 'fields',
                 align:'center'
             },
+ /*
             {
                 text:appLang.DB_STATE,
                 columns:[
@@ -206,7 +203,9 @@ Ext.define('app.crud.orm.dataGrid',{
                         align:'center'
                     }
                 ]
-            },{
+            },
+  */
+            {
                 text: appLang.DB_ENGINE,
                 dataIndex: 'engine',
                 align:'center'
@@ -275,5 +274,70 @@ Ext.define('app.crud.orm.dataGrid',{
             );
         }
         this.callParent();
+    },
+    initNestedGridPlugin:function(){
+        this.plugins = [{
+            ptype: 'rowexpandergrid',
+            gridConfig: {
+                columns: [
+                    {
+                        text: appLang.NAME,
+                        dataIndex: 'name',
+                        align: 'center'
+                    },
+                    {
+                        text: appLang.RECORDS,
+                        dataIndex: 'records',
+                        align: 'center',
+                        renderer: function(value, metaData, record, rowIndex, colIndex, store){
+                            if(record.get('external')){
+                                metaData.style ='color:#0415D0;';
+                            }
+                            if(record.get('engine') == 'InnoDB'){
+                                value = '~ ' + value;
+                            }
+                            return value;
+                        }
+                    }, {
+                        text: appLang.DATA_SIZE,
+                        dataIndex: 'data_size',
+                        align: 'center'
+                    }, {
+                        text: appLang.INDEX_SIZE,
+                        dataIndex: 'index_size',
+                        align: 'center'
+                    }, {
+                        text: appLang.SPACE_USAGE,
+                        dataIndex: 'size',
+                        align: 'center'
+                    }
+                ],
+                columnLines: true,
+                border: true,
+             //   autoWidth: false,
+             //   autoHeight: true,
+                frame: false
+                //header:false,
+            },
+            initStore: function (record, config) {
+                config.store = Ext.create('Ext.data.Store', {
+                    model: 'app.crud.orm.ObjectsDetailsModel',
+                    proxy: {
+                        type: 'ajax',
+                        url: app.crud.orm.Actions.listObjDetails,
+                        reader: {
+                            type: 'json',
+                            rootProperty: 'data',
+                            idProperty: 'name'
+                        },
+                        extraParams: {
+                            object: record.get('name')
+                        },
+                        simpleSortMode: true
+                    },
+                    autoLoad: true
+                });
+            }
+        }];
     }
 });

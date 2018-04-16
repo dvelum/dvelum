@@ -650,9 +650,10 @@ class MySQL extends AbstractAdapter
     /**
      * Create / alter db table
      * @param bool $buildForeignKeys
-     * @return boolean
+     * @param bool $buildShard
+     * @return bool
      */
-    public function build(bool $buildForeignKeys = true) : bool
+    public function build(bool $buildForeignKeys = true, bool $buildShard = false) : bool
     {
         $this->errors = array();
         if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
@@ -661,6 +662,18 @@ class MySQL extends AbstractAdapter
             return false;
         }
 
+        if($this->objectConfig->isDistributed() && !$buildShard){
+            $shardingUpdate = $this->getDistributedObjectsUpdatesInfo();
+            if(!empty($shardingUpdate)){
+                try{
+                    $this->updateDistributed($shardingUpdate);
+                }catch (Exception $e){
+                    $this->errors[] = $e->getMessage();
+                    return false;
+                }
+            }
+            return true;
+        }
         /*
          * Create table if not exists
          */
@@ -782,16 +795,7 @@ class MySQL extends AbstractAdapter
             }
         }
 
-        $shardingUpdate = $this->getDistributedObjectsUpdatesInfo();
 
-        if(!empty($shardingUpdate)){
-            try{
-                $this->updateDistributed($shardingUpdate);
-            }catch (Exception $e){
-                $this->errors[] = $e->getMessage();
-                return false;
-            }
-        }
 
         if(empty($this->errors))
             return true;

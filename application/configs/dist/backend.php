@@ -36,7 +36,7 @@ return array(
 		'Sysdocs_localization'
 
 	),
-	'use_csrf_token'=>true,
+	'use_csrf_token'=>0,
 	// token lifetime seconds by default 2 hours 7200 s
 	'use_csrf_token_lifetime'=>7200,
 	// count of tokens to enable garbage collector

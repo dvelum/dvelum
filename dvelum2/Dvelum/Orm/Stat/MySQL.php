@@ -11,10 +11,11 @@ class MySQL
     /**
      * Get Database tables info
      * @param Model $model
+     * @param ?string $tableName
      * @throws \Exception
      * @return array
      */
-    public function getTablesInfo(Model $model) : array
+    public function getTablesInfo(Model $model, ?string $tableName = null) : array
     {
         $db = $model->getDbConnection();
         try
@@ -22,7 +23,13 @@ class MySQL
             /*
              * Getting object db tables info
              */
-            return $db->fetchAll("SHOW TABLE STATUS");
+            if(!empty($tableName)){
+                $sql = 'SHOW TABLE STATUS  where `Name` = '.$db->quote($tableName);
+                $result =  $db->fetchRow($sql);
+                return $result;
+            }else{
+                return $db->fetchAll("SHOW TABLE STATUS");
+            }
         }
         catch (\Exception $e)
         {

@@ -64,7 +64,7 @@ return [
     /*
      * Enable sharding
      */
-    'sharding' => false,
+    'sharding' => true,
     /*
      * Object storage
      */

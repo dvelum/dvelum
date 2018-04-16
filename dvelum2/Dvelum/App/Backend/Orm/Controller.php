@@ -109,6 +109,8 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $this->resource->addJs('/js/app/system/ContentWindow.js', 1);
         $this->resource->addJs('/js/app/system/RevisionPanel.js', 2);
         $this->resource->addJs('/js/app/system/RelatedGridPanel.js', 2);
+        $this->resource->addJs('/js/lib/ext_ux/rowExpanderGrid.js', 2);
+
 
         $this->resource->addJs('/js/app/system/SelectWindow.js', 2);
         $this->resource->addJs('/js/app/system/ObjectLink.js', 3);
@@ -138,6 +140,23 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
                     unset($data[$k]);
             sort($data);
         }
+        $this->response->success($data);
+    }
+
+    /**
+     * Get Data info
+     */
+    public function listDetailsAction()
+    {
+        $object = $this->request->post('object', 'string', '');
+
+        if(!Orm\Record\Config::configExists($object)){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+        $stat = new Orm\Stat();
+        $data = $stat->getDetails($object);
         $this->response->success($data);
     }
 

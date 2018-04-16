@@ -37,7 +37,7 @@ class BuildShards extends Console\Action
 
                 $builder = Orm\Record\Builder::factory($object);
                 $builder->setConnection(Orm\Model::factory($object)->getDbShardConnection($shardId));
-                if ($builder->build()) {
+                if ($builder->build(true, true)) {
                     echo 'OK' . PHP_EOL;
                 } else {
                     $success = false;

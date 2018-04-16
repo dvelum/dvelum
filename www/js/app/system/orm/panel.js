@@ -73,6 +73,8 @@ Ext.define('app.crud.orm.ditributedIndex', {
     ]
 });
 
+
+
 Ext.define('app.crud.orm.Main',{
 	extend:'Ext.panel.Panel',
 	dataStore:null,
@@ -92,6 +94,7 @@ Ext.define('app.crud.orm.Main',{
             updateDictionary:	this.controllerUrl  + 'updatedictionary',
             removeDictionary:	this.controllerUrl  + 'removedictionary',
             listObj: 			this.controllerUrl  + 'list',
+            listObjDetails:		this.controllerUrl  + 'listDetails',
             listAcl:			this.controllerUrl  + 'listacl',
 
 			// object

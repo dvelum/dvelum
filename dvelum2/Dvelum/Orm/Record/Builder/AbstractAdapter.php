@@ -503,13 +503,13 @@ abstract class AbstractAdapter implements BuilderInterface
             }
 
             $newObjectName = strtolower($newObjectName);
-            $newConfigPath = $oConfigPath . $newObjectName.'.php';
+            $newConfigPath = $oConfigPath . $newObjectName . '.php';
 
             if(Cfg::storage()->exists($newConfigPath)){
                 $cfg = Cfg::storage()->get($newConfigPath);
                 $cfg->setData($objectData);
             }else{
-                $cfg = Cfg\Factory::create($objectData, $configDir. $newObjectName);
+                $cfg = Cfg\Factory::create($objectData, $configDir. $newObjectName . '.php');
             }
 
             /*
@@ -520,6 +520,7 @@ abstract class AbstractAdapter implements BuilderInterface
                 return false;
             }
 
+            die($newObjectName);
             $cfg = Config::factory($newObjectName, true);
 
             $cfg->setObjectTitle($this->objectName.' ID Routes');
@@ -623,10 +624,10 @@ abstract class AbstractAdapter implements BuilderInterface
             /*
              * Write object config
              */
-           if(!Cfg::storage()->save($cfg)){
-               $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir. $newObjectName . '.php';
-               return false;
-           }
+            if(!Cfg::storage()->save($cfg)){
+                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir. $newObjectName . '.php';
+                return false;
+            }
 
             $cfg = Orm\Record\Config::factory($newObjectName);
             $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->_objectName.' & '.$linkedObject);

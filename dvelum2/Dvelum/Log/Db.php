@@ -77,7 +77,6 @@ class Db extends \Psr\Log\AbstractLogger implements \Log
             );
             return true;
         }catch (\Exception $e){
-            echo  $e->getMessage(); die();
             $this->lastError = $e->getMessage();
             return false;
         }
