@@ -90,7 +90,7 @@ class User
 	{
 		if(!$this->id || !$this->isAuthorized())
 			throw new Exception('User is not authorised');
-		
+
 		$data = $this->model->getInfo($this->id);
 		if(!$data)
 			throw new Exception('Invalid user data');
@@ -196,8 +196,9 @@ class User
 		if(!$this->isAuthorized())
 			return false;
 
-		if(empty($this->info))
-		$this->loadData();
+		if(empty($this->info)){
+            $this->loadData();
+        }
 			
 		return (boolean) $this->admin;	
 	}

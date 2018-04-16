@@ -284,7 +284,7 @@ class Orm
             return $this->models[$listName];
         }
 
-        $objectName = implode('_', array_map('ucfirst', explode('_', $objectName)));
+        $objectName = implode('_', array_map('ucfirst', explode('_', $listName)));
 
         $className = 'Model_' . $objectName;
         $nameSpacedClassName = 'App\\'.str_replace('_','\\', $className);
