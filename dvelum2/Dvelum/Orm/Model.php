@@ -140,7 +140,7 @@ class Model
     {
         $this->settings = $settings;
 
-        $ormConfig = Config\Factory::storage()->get('orm.php', true, false);
+        $ormConfig = Config\Factory::storage()->get('orm.php', true);
 
         $this->store = $settings->get('dbObjectStore');
         $this->name = strtolower($objectName);
@@ -161,8 +161,7 @@ class Model
 
         $this->dbManager = $settings->get('defaultDbManager');
 
-        $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php',
-            true, false);
+        $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php', true, false);
 
         $conName = $this->lightConfig->get('connection');
         $this->db = $this->dbManager->getDbConnection($conName);
