@@ -151,15 +151,15 @@ class Record implements RecordInterface
                         $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
                         $linksModel = Model::factory($linksObject);
                         $relationsData = $linksModel->query()
-                                                    ->params(['sort'=>'order','dir'=>'ASC'])
-                                                    ->filters([
-                                                        'src' => $this->name,
-                                                        'src_id' => $this->id,
-                                                        'src_field' =>$field,
-                                                        'target' => $linkedObject
-                                                    ])
-                                                    ->fields(['target_id'])
-                                                    ->fetchAll();
+                            ->params(['sort'=>'order','dir'=>'ASC'])
+                            ->filters([
+                                'src' => $this->name,
+                                'src_id' => $this->id,
+                                'src_field' =>$field,
+                                'target' => $linkedObject
+                            ])
+                            ->fields(['target_id'])
+                            ->fetchAll();
 
 
                     }
@@ -575,6 +575,24 @@ class Record implements RecordInterface
             return false;
         }
 
+        if($this->config->isDistributed() && !$this->getId()){
+
+            $sharding = Distributed::factory();
+
+            $insert = $sharding->reserveIndex($this);
+
+            if(empty($insert)){
+                $text = 'ORM :: Cannot reserve index for object '.$this->getName().' ';
+                $this->errors[] = $text;
+
+                if($this->logger)
+                    $this->logger->log(LogLevel::ERROR, $text);
+                return false;
+            }
+            $this->setInsertId($insert->getId());
+            $this->set($sharding->getShardField(), $insert->getShard());
+        }
+
         if($this->config->hasEncrypted()){
             $ivField = $this->config->getIvField();
             $ivData = $this->get($ivField);
@@ -595,6 +613,7 @@ class Record implements RecordInterface
                 $this->set('editor_id',  User::getInstance()->getId());
             }
         }
+
 
         $emptyFields = $this->hasRequired();
         if($emptyFields!==true)
@@ -620,11 +639,11 @@ class Record implements RecordInterface
             if($this->logger){
                 $this->logger->log(LogLevel::ERROR, $this->getName() . ' ' . implode(', ' , $this->errors));
             }
+
             return false;
         }
 
         try {
-
             if(!$this->getId()){
                 $id = $store->insert($this , $useTransaction);
                 $this->setId($id);
@@ -730,31 +749,9 @@ class Record implements RecordInterface
         if(empty($uniqGroups))
             return null;
 
-        $db = $this->model->getDbConnection();
+        $store = $this->model->getStore();
 
-        foreach ($uniqGroups as $group)
-        {
-            $sql = $db->select()
-                ->from($this->model->table() , array('count'=>'COUNT(*)'));
-
-            if($this->getId())
-                $sql->where(' '.$db->quoteIdentifier($this->primaryKey).' != ?', $this->getId());
-
-            foreach ($group as $k=>$v)
-            {
-                if($k===$this->primaryKey)
-                    continue;
-
-                $sql->where($db->quoteIdentifier($k) . ' =?' , $v);
-            }
-
-            $count = $db->fetchOne($sql);
-
-            if($count > 0){
-                return array_keys($group);
-            }
-        }
-        return null;
+        return $store->validateUniqueValues($this->getName(), $this->getId(), $uniqGroups);
     }
 
     /**
@@ -801,8 +798,7 @@ class Record implements RecordInterface
 
         foreach ($fields as $name)
         {
-            $fieldObject = $this->config->getField($name);
-            if(!$fieldObject->isRequired() || $fieldObject->isSystem())
+            if(!$this->config->getField($name)->isRequired())
                 continue;
 
             $val = $this->get($name);

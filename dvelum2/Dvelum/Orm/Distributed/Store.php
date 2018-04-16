@@ -178,4 +178,52 @@ class Store extends \Dvelum\Orm\Record\Store
         }
         return true;
     }
+
+    /**
+     * Validate unique fields, object field groups
+     * Returns array of errors or null .
+     * @return  array | null
+     */
+    public function validateUniqueValues($objectName, $recordId, $groupsData) : ?array
+    {
+
+        $objectConfig = Orm\Record\Config::factory($objectName);
+        $model = Model::factory($objectConfig->getDistributedIndexObject());
+
+        $db = $model->getDbConnection();
+        $primaryKey = $model->getPrimaryKey();
+
+        try{
+            foreach ($groupsData as $group)
+            {
+                $sql = $db->select()
+                    ->from($model->table() , array('count'=>'COUNT(*)'));
+
+                if($recordId)
+                    $sql->where(' '.$db->quoteIdentifier($primaryKey).' != ?', $recordId);
+
+                foreach ($group as $k=>$v)
+                {
+                    if($k===$primaryKey)
+                        continue;
+
+                    $sql->where($db->quoteIdentifier($k) . ' =?' , $v);
+                }
+
+                $count = $db->fetchOne($sql);
+
+                if($count > 0){
+                    return array_keys($group);
+                }
+            }
+        }catch (Exception $e){
+
+            if($this->log){
+                $this->log->log(LogLevel::ERROR,$objectName .'::validate '.$e->getMessage());
+            }
+            return null;
+        }
+
+        return null;
+    }
 }
