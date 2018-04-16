@@ -1,11 +1,10 @@
 <?php
-class Ext_Helper_Store
+class Ext_Helper_Store implements Ext_Exportable
 {
     const TYPE_STORE = 'store';
     const TYPE_INSTANCE = 'instance';
     const TYPE_JSCODE = 'jscall';
 
-    protected $_class = 'Helper_Store';
     protected $type = 'store';
     protected $value = '';
 
@@ -15,7 +14,7 @@ class Ext_Helper_Store
      */
     public function getClass()
     {
-        return $this->_class;
+        return get_called_class();
     }
 
     /**

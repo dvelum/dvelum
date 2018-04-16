@@ -208,16 +208,16 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 
 		$config = array(
 			'id' => $id,
-			'class' => get_class($object),
-			//'state_dump' => $object
+			'class' => get_class($object)
 		);
 
-		if($object instanceof Ext_Object)
-		{
+		if($object instanceof Ext_Object) {
 			$config['extClass']= $object->getClass();
 			$config['name'] = $object->getName();
 			$config['state'] = $object->getState();
-		}
+		}elseif ($object instanceof Ext_Exportable){
+            $config['state'] = $object->getState();
+        }
 
 		if(!Utils::exportArray($objectFile , $config)){
 			$this->_errors[] = 'write: ' . $objectFile;
