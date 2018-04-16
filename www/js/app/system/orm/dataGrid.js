@@ -68,7 +68,7 @@ Ext.define('app.crud.orm.dataGrid',{
             this.columns.push({
                 xtype:'actioncolumn',
                 align:'center',
-                width:70,
+                width:86,
                 items:[
                     {
                         tooltip:appLang.EDIT_RECORD,
@@ -79,8 +79,18 @@ Ext.define('app.crud.orm.dataGrid',{
                         }
                     },{
                         tooltip:appLang.REBUILD_DB_TABLE,
-                        iconCls:'buildIcon',
+                        //iconCls:'buildIcon',
                         scope:this,
+                        getClass: function(v, meta, record) {
+                            if(record.get('distributed')) {
+                                return 'x-hide-display';
+                            }else{
+                                return 'buildIcon';
+                            }
+                        },
+                        isDisabled:function(view,row,col,item,record){
+                            return record.get('distributed')
+                        },
                         handler:function(grid, rowIndex, colIndex){
                             this.fireEvent('rebuildTable' , grid.getStore().getAt(rowIndex).get('name'));
                         }
@@ -91,6 +101,21 @@ Ext.define('app.crud.orm.dataGrid',{
                         handler:function(grid, rowIndex, colIndex){
                             var rec = grid.getStore().getAt(rowIndex);
                             this.fireEvent('viewData' , rec);
+                        }
+                    },{
+                        tooltip:appLang.SHARD,
+                       // iconCls:'shardIcon',
+                        scope:this,
+                        handler:function(grid, rowIndex, colIndex){
+                            var rec = grid.getStore().getAt(rowIndex);
+                            this.fireEvent('viewShards' , rec);
+                        },
+                        getClass: function(v, meta, record) {
+                            if(!record.get('distributed')) {
+                                return 'x-hide-display';
+                            }else{
+                                return 'shardIcon';
+                            }
                         }
                     }
                 ]
