@@ -74,6 +74,7 @@ class Manager
 			}
 		}
 
+			
 		$localisations = $this->getLocalisations();
 		$langWritePath = Lang::storage()->getWrite();
 		$objectsWrite = Config::storage()->getWrite();
@@ -83,9 +84,7 @@ class Manager
 				return self::ERROR_FS_LOCALISATION;
 		}
 
-        $ormConfig = Config::storage()->get('orm.php');
-
-		$path = $objectsWrite . $ormConfig->get('object_configs') . $name . '.php';
+        $path = $objectsWrite . Config::storage()->get('orm.php')->get('object_configs') . $name . '.php';
 
 		try{
 		  $cfg = Orm\Record\Config::factory($name);
@@ -105,12 +104,13 @@ class Manager
 			return self::ERROR_FS;
 		
 		$localisationKey = strtolower($name);
-		foreach ($localisations as $file) 
+        $langStorage = Lang::storage();
+		foreach ($localisations as $file)
 		{		
-			$cfg = Lang::storage()->get($file);
+			$cfg = $langStorage->get($file);
 			if($cfg->offsetExists($localisationKey)){
 				$cfg->remove($localisationKey);
-				$cfg->save();
+                $langStorage->save($cfg);
 			}			
 		}			 
 		return 0;
@@ -180,7 +180,7 @@ class Manager
 	 * Get index config
 	 * @param string $object
 	 * @param string $index
-	 * @return boolean
+	 * @return false|array
 	 */
 	public function getIndexConfig($object , $index)
 	{	
@@ -205,8 +205,6 @@ class Manager
 	 */
 	public function removeField($objectName , $fieldName)
 	{
-		$localisations = $this->getLocalisations();
-
 		try{
 			$objectCfg = Orm\Record\Config::factory($objectName);
 		}catch (\Exception $e){
@@ -263,9 +261,10 @@ class Manager
 			return self::ERROR_EXEC;
 		
 		$localisationKey = strtolower($cfg->getName());
+        $langStorage = Lang::storage();
 		foreach ($localisations as $file)
 		{
-			$cfg = Lang::storage()->get($file,true,true);
+			$cfg = $langStorage->get($file,true,true);
 			if($cfg->offsetExists($localisationKey))
 			{
 				$cfgArray = $cfg->get($localisationKey);
@@ -275,7 +274,7 @@ class Manager
 					unset($cfgArray['fields'][$oldName]);
 					$cfgArray['fields'][$newName] = $oldCfg;
 					$cfg->set($localisationKey, $cfgArray);
-					$cfg->save();
+                    $langStorage->save($cfg);
 				}
 			}
 		}
@@ -302,8 +301,9 @@ class Manager
 	   /*
 		* Check fs write permissions for localisation files
 		*/
+        $langStorage = Lang::storage();
 		$localisations = $this->getLocalisations();
-		$langWritePath = Lang::storage()->getWrite();
+		$langWritePath = $langStorage->getWrite();
 		foreach ($localisations as $file)
 			if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file))
 				return self::ERROR_FS_LOCALISATION;
@@ -313,13 +313,13 @@ class Manager
 		
 		foreach ($localisations as $file)
 		{
-			$cfg = Lang::storage()->get($file,true,true);
+			$cfg = $langStorage->get($file,true,true);
 			if($cfg->offsetExists($localisationKey))
 			{
 				$cfgArray = $cfg->get($localisationKey);
 				$cfg->remove($localisationKey);
 				$cfg->set($newLocalisationKey, $cfgArray);
-                if(!Lang::storage()->save($cfg)){
+                if(!$langStorage->save($cfg)){
                     return self::ERROR_FS;
                 }
 			}

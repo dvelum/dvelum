@@ -90,7 +90,7 @@ return array(
     /**
      * Local controllers path
      */
-    'local_controllers' => './application/classes/app',
+    'local_controllers' => './application/classes',
     /**
      * Local models path
      */

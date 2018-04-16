@@ -146,8 +146,9 @@ class Simple extends AbstractAdapter
         $linkToField = array_flip($linksToShow);
 
         $template = View::factory();
+        $controllerNamespace = 'App\\Backend\\' . str_replace('_','\\', $objectName);
         $template->setData([
-            'controller_namespace' => 'App\\Backend\\' . str_replace('_','\\', $objectName),
+            'controller_namespace' => $controllerNamespace,
             'listFields' => $this->exportArrayToString($dataFields),
             'listLinks' => $this->exportArrayToString($linksToShow),
             'canViewObjects' => $this->exportArrayToString($linkedObjects),
@@ -161,7 +162,7 @@ class Simple extends AbstractAdapter
         */
         $acceptedDirs = $this->appConfig->get('backend_controllers_dirs');
         $controllerDir = $this->appConfig->get('local_controllers')
-            . '/' . $acceptedDirs[0] . '/' . str_replace('_', '/', $objectName);
+            . '/' . str_replace('\\','/', $controllerNamespace);
         $this->createControllerFile($controllerDir, $controllerCode);
 
         /*

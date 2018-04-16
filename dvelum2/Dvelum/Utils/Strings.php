@@ -85,7 +85,7 @@ class Strings
             $sep = '_';
         }
 
-        $nameParts = explode($sep, $name);
+        $nameParts = explode('\\',str_replace('_','\\', $name));
         $nameParts = array_map('ucfirst', $nameParts);
         return implode($sep, $nameParts);
     }
