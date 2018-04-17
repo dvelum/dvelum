@@ -795,12 +795,10 @@ class MySQL extends AbstractAdapter
             }
         }
 
-
-
         if(empty($this->errors))
             return true;
         else
-            return true;
+            return false;
     }
 
     /**

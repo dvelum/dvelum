@@ -460,7 +460,7 @@ Ext.define('app.crud.orm.Main',{
 			]
 		}).show();
 	},
-	rebuildAllObjects:function(){
+	rebuildAllObjects:function(callback){
 		Ext.Msg.confirm(appLang.CONFIRMATION, appLang.MSG_CONFIRM_REBUILD, function(btn){
 			if(btn != 'yes')
 				return;
@@ -483,7 +483,9 @@ Ext.define('app.crud.orm.Main',{
 					this.dataGrid.getEl().unmask();
 					response =  Ext.JSON.decode(response.responseText);
 					if(response.success){
-						this.dataStore.load();
+						if(!Ext.isEmpty(callback)){
+						    callback();
+                        }
 					}else{
 						Ext.Msg.alert(appLang.MESSAGE , response.msg);
 					}
@@ -704,7 +706,9 @@ Ext.define('app.crud.orm.Main',{
         });
 
         win.on('RebuildAllCall',function(){
-            this.rebuildAllObjects();
+            this.rebuildAllObjects(function(){
+                win.validateAllObjects();
+            });
         },this);
 
         win.on('rebuildTable', function(objectName, shard){

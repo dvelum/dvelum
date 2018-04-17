@@ -62,7 +62,13 @@ class Record extends Controller
 
         $stat = new Orm\Stat();
         $config = Orm\Record\Config::factory($object);
-        if($config->isDistributed()){
+
+        $validateShard = false;
+        if(strlen($shard) && $config->isDistributed()){
+            $validateShard = true;
+        }
+
+        if($config->isDistributed() && $validateShard){
             $data = $stat->validateDistributed($object, $shard);
         }else{
             $data = $stat->validate($object);
@@ -183,13 +189,15 @@ class Record extends Controller
         $builder = Orm\Record\Builder::factory($name);
         $config = Orm\Record\Config::factory($name);
 
+        $buildShard = false;
         if(strlen($shard) && $config->isDistributed()){
+            $buildShard = true;
             $model = Orm\Model::factory($name);
             $connectionName = $model->getConnectionName();
             $builder->setConnection($model->getDbManager()->getDbConnection($connectionName,null,$shard));
         }
 
-        if (!$builder->build() || !$builder->buildForeignKeys()) {
+        if (!$builder->build(true, $buildShard)) {
             $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(',', $builder->getErrors()));
             return;
         }
