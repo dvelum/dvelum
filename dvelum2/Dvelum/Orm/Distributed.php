@@ -150,6 +150,15 @@ class Distributed
     }
 
     /**
+     * Get shards info
+     * @return array
+     */
+    public function getShards() : array
+    {
+        return $this->shards;
+    }
+
+    /**
      * Get object field with shard id
      * @return string
      */

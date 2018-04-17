@@ -3,7 +3,7 @@ Ext.ns('app.orm.validate');
 Ext.define('app.orm.validate.Model',{
     extend:'Ext.data.Model',
     fields: [
-        {name:'id', type:'integer'},
+        {name:'id', type:'string'},
         {name:'title' ,  type:'string'},
         {name:'name' ,  type:'string'},
         {name:'validdb', typr:'boolean'},
@@ -11,7 +11,7 @@ Ext.define('app.orm.validate.Model',{
         {name:'locked' , type:'boolean'},
         {name:'readonly' , type:'boolean'},
         {name:'distributed', type:'boolean'},
-        {name:'group', type:'string'}
+        {name:'shard', type:'string'}
     ]
 });
 
@@ -21,7 +21,7 @@ Ext.define('app.orm.validate.Window',{
    closable:true,
    modal:true,
    layout:'fit',
-   width:450,
+   width:550,
    height:450,
    objectsStore:null,
    validateQueue:null,
@@ -31,17 +31,14 @@ Ext.define('app.orm.validate.Window',{
        this.dataStore = Ext.create('Ext.data.Store',{
            model:'app.orm.validate.Model',
            autoLoad: false,
-           groupField:'group',
-           sorters: [{
-               property : 'name',
-               direction: 'ASC'
-           }]
+           groupField:'validdb'
        });
 
        this.buttons = [
            {
                text:appLang.CLOSE,
-               handler: me.close
+               handler: me.close,
+               scope:me
            }
        ];
 
@@ -99,33 +96,24 @@ Ext.define('app.orm.validate.Window',{
 
        this.dataGrid = Ext.create('Ext.grid.Panel',{
            store:this.dataStore,
+           viewConfig:{
+             columnLines:true,
+             enableTextSelection:true
+           },
+           bufferedRenderer:false,
            columns:[
                {
                    xtype:'actioncolumn',
                    align:'center',
-                   width:40,
+                   width:20,
                    items:[
                        {
                            tooltip:appLang.REBUILD_DB_TABLE,
                            iconCls:'buildIcon',
                            scope:this,
                            handler:function(grid, rowIndex, colIndex){
-                               this.fireEvent('rebuildTable' , grid.getStore().getAt(rowIndex).get('name'));
-                           }
-                       },{
-                           tooltip:appLang.SHARD,
-                           // iconCls:'shardIcon',
-                           scope:this,
-                           handler:function(grid, rowIndex, colIndex){
-                               var rec = grid.getStore().getAt(rowIndex);
-                               this.fireEvent('viewShards' , rec);
-                           },
-                           getClass: function(v, meta, record) {
-                               if(!record.get('distributed')) {
-                                   return 'x-hide-display';
-                               }else{
-                                   return 'shardIcon';
-                               }
+                               var record = grid.getStore().getAt(rowIndex);
+                               this.fireEvent('rebuildTable' , record.get('name'), record.get('shard'));
                            }
                        }
                    ]
@@ -140,8 +128,8 @@ Ext.define('app.orm.validate.Window',{
                    dataIndex: 'name',
                    align:'left'
                },{
-                   text: appLang.GROUP,
-                   dataIndex: 'group',
+                   text: appLang.SHARD,
+                   dataIndex: 'shard',
                    align:'left'
                },{
                    text:appLang.VALID_DB,
@@ -154,8 +142,8 @@ Ext.define('app.orm.validate.Window',{
                Ext.create('Ext.grid.feature.Grouping',{
                    groupHeaderTpl: '{name} ({rows.length})',
                    startCollapsed: 0,
-                   enableGroupingMenu: 0,
-                   hideGroupedHeader:1
+                   enableGroupingMenu: 1,
+                   hideGroupedHeader:0
                })
            ]
        });

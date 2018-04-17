@@ -549,7 +549,7 @@ Ext.define('app.crud.orm.Main',{
 	/**
 	 * Rebuild all DB Objects
 	 */
-	rebuildObject:function(name , callback)
+	rebuildObject:function(name, shard , callback)
 	{
 		var handle = this;
 		this.win = Ext.create('Ext.Window',{
@@ -571,7 +571,7 @@ Ext.define('app.crud.orm.Main',{
 					text:appLang.APPLY,
 					scope:handle,
 					handler:function(){
-						handle.buildObject(name, callback);
+						handle.buildObject(name, shard, callback);
 						handle.win.close();
 					}
 				}
@@ -584,7 +584,8 @@ Ext.define('app.crud.orm.Main',{
 			url: app.crud.orm.Actions.validateObject,
 			method: 'post',
 			params:{
-				'name':name
+				'name':name,
+                'shard':shard
 			},
 			scope:this,
 			timeout:3600000,
@@ -618,13 +619,14 @@ Ext.define('app.crud.orm.Main',{
 	 * Build Db Object
 	 * @param string name
 	 */
-	buildObject:function(name, callback){
+	buildObject:function(name, shard, callback){
 		var handle = this;
 		Ext.Ajax.request({
 			url: app.crud.orm.Actions.buildObject,
 			method: 'post',
 			params:{
-				'name':name
+				'name':name,
+                'shard':shard
 			},
 			timeout:3600000,
 			success: function(response, request) {
@@ -705,8 +707,8 @@ Ext.define('app.crud.orm.Main',{
             this.rebuildAllObjects();
         },this);
 
-        win.on('rebuildTable', function(objectName){
-            this.rebuildObject(objectName, function() {
+        win.on('rebuildTable', function(objectName, shard){
+            this.rebuildObject(objectName, shard, function() {
                 win.addToQueue(objectName);
                 win.validateObjects();
             });

@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm;
 
+use Dvelum\Db\Adapter;
 use Dvelum\Lang;
 use Dvelum\Orm;
 use Dvelum\Service;
@@ -108,6 +109,13 @@ class Stat
     public function getDetails($objectName)
     {
         $objectModel = Model::factory($objectName);
+        $data = $this->getTableInfo($objectName, $objectModel->getDbConnection());
+        return [$data];
+    }
+
+    protected function getTableInfo($objectName, Adapter $db)
+    {
+        $objectModel = Model::factory($objectName);
         $objectTable = $objectModel->table();
 
         $records = 0;
@@ -115,12 +123,11 @@ class Stat
         $indexLength=0;
         $size = 0;
 
-        $oDb = $objectModel->getDbConnection();
         $tableInfo = [];
 
-        if($oDb->getAdapter()->getPlatform()->getName() === 'MySQL')
+        if($db->getAdapter()->getPlatform()->getName() === 'MySQL')
         {
-            $platformAdapter = '\\Dvelum\\Orm\\Stat\\'.$oDb->getAdapter()->getPlatform()->getName();
+            $platformAdapter = '\\Dvelum\\Orm\\Stat\\'.$db->getAdapter()->getPlatform()->getName();
 
             if(class_exists($platformAdapter)){
                 $adapter = new $platformAdapter();
@@ -146,7 +153,7 @@ class Stat
             $size = \Utils::formatFileSize($tableInfo['data_length'] + $tableInfo['index_length']);
         }
 
-        $data = [[
+        $data = [
             'name' => $objectTable,
             'records'=>number_format($records,0,'.',' '),
             'data_size'=>$dataLength,
@@ -154,7 +161,32 @@ class Stat
             'size'=>$size,
             'engine'=>$objectModel->getObjectConfig()->get('engine'),
             'external' => '' /* @todo check external */
-        ]];
+        ];
+        return $data;
+    }
+
+    public function getDistributedDetails(string $objectName) : array
+    {
+        $config = Orm\Record\Config::factory($objectName);
+        if(!$config->isDistributed()){
+            throw new Exception($objectName.' is not distributed');
+        }
+        $objectModel = Model::factory($objectName);
+        $connectionName = $objectModel->getConnectionName();
+        $sharding = Distributed::factory();
+        $shards = $sharding->getShards();
+        $table = $objectModel->table();
+        $data = [];
+
+        if(!empty($shards))
+        {
+            foreach ($shards as $info)
+            {
+                $shardInfo = $this->getTableInfo($objectName, $objectModel->getDbManager()->getDbConnection($connectionName,null, $info['id']));
+                $shardInfo['name'] = $info['id'].' : '.$table;
+                $data[] = $shardInfo;
+            }
+        }
         return $data;
     }
 
@@ -191,8 +223,61 @@ class Stat
             'locked' => $config->get('locked'),
             'readonly'  => $config->get('readonly'),
             'distributed' => $config->isDistributed(),
-            'group' => $group
+            'id' => $objectName
         ];
+        return $result;
+    }
+
+    /**
+     * @param string $objectName
+     * @param string $shard
+     * @return array
+     */
+    public function validateDistributed(string $objectName, string $shard) : array
+    {
+        /**
+         * @var  Lang $lang
+         */
+        $lang = Service::get('lang')->getDictionary();
+        $config = Record\Config::factory($objectName);
+        $builder = Orm\Record\Builder::factory($objectName);
+        $model = Model::factory($objectName);
+        $connectionName = $model->getConnectionName();
+
+        $sharding = Distributed::factory();
+        $shards = $sharding->getShards();
+
+        $result[] = $this->validate($objectName);
+
+        foreach ($shards as $item)
+        {
+            if(strlen($shard) && $item['id']=!$shard){
+                continue;
+            }
+            $hasBroken = false;
+            $builder->setConnection($model->getDbManager()->getDbConnection($connectionName,null,$item['id']));
+            $valid = $builder->validate();
+
+            if(!empty($builder->getBrokenLinks()))
+                $hasBroken = true;
+
+            if($hasBroken || !$valid) {
+                $group =  $lang->get('INVALID_STRUCTURE');
+            }else{
+                $group =  $lang->get('VALID_STRUCTURE');
+            }
+            $result[] = [
+                'title' => $config->getTitle(),
+                'name'  => $objectName,
+                'validdb' => $valid,
+                'broken' => $hasBroken,
+                'locked' => $config->get('locked'),
+                'readonly'  => $config->get('readonly'),
+                'distributed' => $config->isDistributed(),
+                'shard' => $item['id'],
+                'id' => $objectName . $item['id']
+            ];
+        }
         return $result;
     }
 }

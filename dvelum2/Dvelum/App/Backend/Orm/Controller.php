@@ -154,9 +154,13 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
-
         $stat = new Orm\Stat();
-        $data = $stat->getDetails($object);
+        $config = Orm\Record\Config::factory($object);
+        if($config->isDistributed()){
+            $data = $stat->getDistributedDetails($object);
+        }else{
+            $data = $stat->getDetails($object);
+        }
         $this->response->success($data);
     }
 

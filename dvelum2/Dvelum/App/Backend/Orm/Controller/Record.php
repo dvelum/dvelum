@@ -53,6 +53,7 @@ class Record extends Controller
     public function validateRecordAction()
     {
         $object = $this->request->post('object','string', '');
+        $shard = $this->request->post('shard','string','');
 
         if(!Orm\Record\Config::configExists($object)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -60,8 +61,12 @@ class Record extends Controller
         }
 
         $stat = new Orm\Stat();
-        $data = $stat->validate($object);
-
+        $config = Orm\Record\Config::factory($object);
+        if($config->isDistributed()){
+            $data = $stat->validateDistributed($object, $shard);
+        }else{
+            $data = $stat->validate($object);
+        }
         $this->response->success($data);
     }
 
@@ -163,6 +168,7 @@ class Record extends Controller
         }
 
         $name = $this->request->post('name', 'string', false);
+        $shard = $this->request->post('shard', 'string', '');
 
         if (!$name) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -175,12 +181,18 @@ class Record extends Controller
         }
 
         $builder = Orm\Record\Builder::factory($name);
+        $config = Orm\Record\Config::factory($name);
+
+        if(strlen($shard) && $config->isDistributed()){
+            $model = Orm\Model::factory($name);
+            $connectionName = $model->getConnectionName();
+            $builder->setConnection($model->getDbManager()->getDbConnection($connectionName,null,$shard));
+        }
 
         if (!$builder->build() || !$builder->buildForeignKeys()) {
             $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(',', $builder->getErrors()));
             return;
         }
-
         $this->response->success();
     }
 

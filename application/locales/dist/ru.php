@@ -590,4 +590,5 @@
   'VALIDATE_DB_STRUCTURE' => 'Проверить структуру таблиц БД',
   'VALID_STRUCTURE' => 'Синхронизировано',
   'INVALID_STRUCTURE' => 'Неверная структура БД',
+  'GROUP_BY' => 'Группировать по'
 ); 
