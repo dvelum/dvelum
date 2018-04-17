@@ -11,13 +11,14 @@ Ext.define('app.orm.validate.Model',{
         {name:'locked' , type:'boolean'},
         {name:'readonly' , type:'boolean'},
         {name:'distributed', type:'boolean'},
-        {name:'shard', type:'string'}
+        {name:'shard', type:'string'},
+        {name:'shard_title', type:'string'}
     ]
 });
 
 Ext.define('app.orm.validate.Window',{
    extend:'Ext.window.Window',
-   resizable:false,
+   resizable:true,
    closable:true,
    modal:true,
    layout:'fit',
@@ -129,7 +130,7 @@ Ext.define('app.orm.validate.Window',{
                    align:'left'
                },{
                    text: appLang.SHARD,
-                   dataIndex: 'shard',
+                   dataIndex: 'shard_title',
                    align:'left'
                },{
                    text:appLang.VALID_DB,

@@ -205,10 +205,15 @@ class Stat
         $builder = Orm\Record\Builder::factory($objectName);
 
         $hasBroken = false;
-        $valid =  $builder->validate();
 
-         if(!empty($builder->getBrokenLinks()))
-             $hasBroken = true;
+        if($config->isDistributed()){
+            $valid =  $builder->validateDistributedConfig();
+        }else{
+            $valid =  $builder->validate();
+        }
+
+        if(!empty($builder->getBrokenLinks()))
+            $hasBroken = true;
 
         if($hasBroken || !$valid) {
             $group =  $lang->get('INVALID_STRUCTURE');
@@ -223,6 +228,7 @@ class Stat
             'locked' => $config->get('locked'),
             'readonly'  => $config->get('readonly'),
             'distributed' => $config->isDistributed(),
+            'shard_title' => '-',
             'id' => $objectName
         ];
         return $result;
@@ -254,6 +260,7 @@ class Stat
             if(strlen($shard) && $item['id']=!$shard){
                 continue;
             }
+
             $hasBroken = false;
             $builder->setConnection($model->getDbManager()->getDbConnection($connectionName,null,$item['id']));
             $valid = $builder->validate();
@@ -275,6 +282,7 @@ class Stat
                 'readonly'  => $config->get('readonly'),
                 'distributed' => $config->isDistributed(),
                 'shard' => $item['id'],
+                'shard_title' => $item['id'],
                 'id' => $objectName . $item['id']
             ];
         }

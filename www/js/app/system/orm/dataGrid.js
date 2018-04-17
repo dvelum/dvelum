@@ -64,12 +64,7 @@ Ext.define('app.crud.orm.dataGrid',{
 
     initComponent:function(){
 
-
         this.initNestedGridPlugin();
-
-
-
-
 
         this.viewConfig = {stripeRows: true, enableTextSelection: true};
 
@@ -101,8 +96,6 @@ Ext.define('app.crud.orm.dataGrid',{
                 ]
             });
         }
-
-
 
         var titleRenderer = function(value, metaData, record, rowIndex, colIndex, store){
             if(record.get('external')){
@@ -147,19 +140,19 @@ Ext.define('app.crud.orm.dataGrid',{
                 text: appLang.PROPERTIES,
                 dataIndex: 'fields',
                 align:'center',
-                width:60
+                width:90
             },{
                 sortable: true,
                 text: appLang.VC,
                 dataIndex: 'vc',
-                width:60,
+                width:90,
                 align:'center',
                 renderer:app.checkboxRenderer
             },{
                 text:appLang.IS_SYSTEM,
                 dataIndex:'system',
                 align:'center',
-                width:60,
+                width:90,
                 renderer:app.checkboxRenderer
             },{
                 text:appLang.DB_HOST,
@@ -183,7 +176,7 @@ Ext.define('app.crud.orm.dataGrid',{
                 text:appLang.DISTRIBUTED,
                 align:'center',
                 dataIndex:'distributed',
-                width:60,
+                width:90,
                 hidden:false,
                 renderer:app.checkboxRenderer
             }
@@ -217,7 +210,8 @@ Ext.define('app.crud.orm.dataGrid',{
                     {
                         text: appLang.NAME,
                         dataIndex: 'name',
-                        align: 'center'
+                        align: 'center',
+                        flex:1
                     },
                     {
                         text: appLang.RECORDS,

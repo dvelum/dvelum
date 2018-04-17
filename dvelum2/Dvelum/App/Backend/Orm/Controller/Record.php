@@ -63,12 +63,12 @@ class Record extends Controller
         $stat = new Orm\Stat();
         $config = Orm\Record\Config::factory($object);
 
-        $validateShard = false;
-        if(strlen($shard) && $config->isDistributed()){
-            $validateShard = true;
-        }
+//        $validateShard = false;
+//        if(strlen($shard) && $config->isDistributed()){
+//            $validateShard = true;
+//        }
 
-        if($config->isDistributed() && $validateShard){
+        if($config->isDistributed()){
             $data = $stat->validateDistributed($object, $shard);
         }else{
             $data = $stat->validate($object);
@@ -84,6 +84,7 @@ class Record extends Controller
         $engineUpdate = false;
 
         $name = $this->request->post('name', 'string', false);
+        $shard = $this->request->post('shard', 'string', '');
 
         if (!$name) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -112,25 +113,41 @@ class Record extends Controller
         }
 
         $builder = Orm\Record\Builder::factory($name);
-        $tableExists = $builder->tableExists();
+
 
         $colUpd = [];
         $indUpd = [];
         $keyUpd = [];
+        $shardObjects = [];
 
-        if ($tableExists) {
-            $colUpd = $builder->prepareColumnUpdates();
-            $indUpd = $builder->prepareIndexUpdates();
-            $keyUpd = $builder->prepareKeysUpdate();
+        $checkColumns = false;
 
-            if (method_exists($builder, 'prepareEngineUpdate')) {
-                $engineUpdate = $builder->prepareEngineUpdate();
+        if(strlen($shard) && $objectConfig->isDistributed()){
+            $model = Orm\Model::factory($name);
+            $connectionName = $model->getConnectionName();
+            $db = $model->getDbManager()->getDbConnection($connectionName,null,$shard);
+            $builder->setConnection($db);
+            $checkColumns = true;
+        }elseif ($objectConfig->isDistributed()){
+            $tableExists = true;
+        }else{
+            $checkColumns = true;
+        }
+
+        if($checkColumns){
+            $tableExists = $builder->tableExists();
+            if ($tableExists) {
+                $colUpd = $builder->prepareColumnUpdates();
+                $indUpd = $builder->prepareIndexUpdates();
+                $keyUpd = $builder->prepareKeysUpdate();
+
+                if (method_exists($builder, 'prepareEngineUpdate')) {
+                    $engineUpdate = $builder->prepareEngineUpdate();
+                }
             }
         }
 
         $objects = $builder->getRelationUpdates();
-        $shardObjects = [];
-
         $ormConfig = Config::storage()->get('sharding.php');
 
         if($objConfig->isDistributed() && $ormConfig->get('dist_index_enabled')){
@@ -153,8 +170,6 @@ class Record extends Controller
         $template->tableName = Orm\Model::factory($name)->table();
         $template->lang = $this->lang;
         $template->shardObjects = $shardObjects;
-
-
 
         $cfgBackend = Config\Factory::storage()->get('backend.php');
         $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';

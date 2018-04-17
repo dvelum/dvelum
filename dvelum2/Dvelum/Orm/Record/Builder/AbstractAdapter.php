@@ -80,6 +80,8 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     protected $configPath;
 
+    protected $validationErrors = [];
+
     abstract public function prepareColumnUpdates();
     abstract public function prepareIndexUpdates();
     abstract public function prepareKeysUpdate();
@@ -148,19 +150,40 @@ abstract class AbstractAdapter implements BuilderInterface
         return $brokenFields;
     }
 
+    public function validateDistributedConfig() : bool
+    {
+        if(!$this->checkRelations()){
+            $this->validationErrors['relations'] = true;
+            return false;
+        }
+        $shardUpdates = $this->getDistributedObjectsUpdatesInfo();
+        $linksUpdates = $this->getObjectsUpdatesInfo();
+
+        if(!empty($updateKeys) || !empty($shardUpdates) || !empty($linksUpdates))
+            return false;
+        else
+            return true;
+
+    }
     /**
      * Check if DB table has correct structure
      * @return bool
      */
     public function validate() : bool
     {
-        if(!$this->tableExists() || !$this->checkRelations()){
+        if(!$this->tableExists()){
+            $this->validationErrors['table'] = true;
+            return false;
+        }
+        if(!$this->checkRelations()){
+            $this->validationErrors['relations'] = true;
             return false;
         }
         // Check columns
         $updateColumns = $this->prepareColumnUpdates();
         // Column changes
         if(!empty($updateColumns)){
+            $this->validationErrors['columns'] = true;
             return false;
         }
 
@@ -168,6 +191,7 @@ abstract class AbstractAdapter implements BuilderInterface
         $updateIndexes = $this->prepareIndexUpdates();
         // Index changes
         if(!empty($updateIndexes)){
+            $this->validationErrors['indexes'] = true;
             return false;
         }
 
@@ -179,12 +203,22 @@ abstract class AbstractAdapter implements BuilderInterface
         $shardUpdates = $this->getDistributedObjectsUpdatesInfo();
         $linksUpdates = $this->getObjectsUpdatesInfo();
 
-        if(!empty($updateColumns) || !empty($updateIndexes) || !empty($updateKeys) || !empty($shardUpdates) || !empty($linksUpdates))
+        $this->validationErrors = [
+            'keys' => (int) $updateKeys,
+            'shards' => (int) $shardUpdates,
+            'links' => (int) $linksUpdates,
+        ];
+
+        if(!empty($updateKeys) || !empty($shardUpdates) || !empty($linksUpdates))
             return false;
         else
             return true;
     }
 
+    public function getValidationErrors() : array
+    {
+        return $this->validationErrors;
+    }
     /**
      * Get Existing Columns
      * @return \Zend\Db\Metadata\Object\TableObject
@@ -214,7 +248,6 @@ abstract class AbstractAdapter implements BuilderInterface
         }catch(\Exception $e){
             return false;
         }
-
         return in_array($name , $tables , true);
     }
 
@@ -520,7 +553,6 @@ abstract class AbstractAdapter implements BuilderInterface
                 return false;
             }
 
-            die($newObjectName);
             $cfg = Config::factory($newObjectName, true);
 
             $cfg->setObjectTitle($this->objectName.' ID Routes');

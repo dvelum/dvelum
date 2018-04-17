@@ -51,6 +51,8 @@ class MySQL extends AbstractAdapter
 
         $engineUpdate = $this->prepareEngineUpdate();
 
+        $this->validationErrors['engine'] = $engineUpdate;
+
         if(!empty($engineUpdate))
             return false;
         else
