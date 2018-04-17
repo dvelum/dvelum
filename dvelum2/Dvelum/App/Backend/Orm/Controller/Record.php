@@ -50,6 +50,21 @@ class Record extends Controller
     {
     }
 
+    public function validateRecordAction()
+    {
+        $object = $this->request->post('object','string', '');
+
+        if(!Orm\Record\Config::configExists($object)){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+        $stat = new Orm\Stat();
+        $data = $stat->validate($object);
+
+        $this->response->success($data);
+    }
+
     /**
      * Validate Object Db Structure
      */

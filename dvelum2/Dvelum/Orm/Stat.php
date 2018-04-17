@@ -21,7 +21,9 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm;
 
+use Dvelum\Lang;
 use Dvelum\Orm;
+use Dvelum\Service;
 
 class Stat
 {
@@ -54,13 +56,12 @@ class Stat
             $objectModel = Model::factory($objectName);
             $config =  $configObject->__toArray();
             $objectTable = $objectModel->table();
-            $builder = Orm\Record\Builder::factory($objectName);
+
 
             $oModel = Model::factory($objectName);
             $oDb = $oModel->getDbConnection();
             $oDbConfig = $oDb->getConfig();
 
-            $canConnect = true;
 
             $title = '';
             $saveHistory = true;
@@ -75,10 +76,7 @@ class Stat
             if(isset($config['save_history']) && !$config['save_history'])
                 $saveHistory = false;
 
-            $hasBroken = false;
 
-            if(!empty($builder->getBrokenLinks()))
-                $hasBroken = true;
 
             $data[] = [
                 'name'=>$objectName,
@@ -93,16 +91,15 @@ class Stat
                 'save_history'=>$saveHistory,
 
                 'system'=>$configObject->isSystem(),
-                'validdb'=>$builder->validate(),
-                'broken'=>$hasBroken,
+
                 'db_host'=>$oDbConfig['host'] ,
                 'db_name'=>$oDbConfig['dbname'],
                 'locked'=>$config['locked'],
                 'readonly'=>$config['readonly'],
-                'can_connect'=>$canConnect,
                 'primary_key'=>$configObject->getPrimaryKey(),
                 'connection'=>$config['connection'],
-                'distributed' => $configObject->isDistributed()
+                'distributed' => $configObject->isDistributed(),
+                'external' => '' /* @todo check external */
             ];
         }
         return $data;
@@ -118,8 +115,7 @@ class Stat
         $indexLength=0;
         $size = 0;
 
-        $oModel = Model::factory($objectName);
-        $oDb = $oModel->getDbConnection();
+        $oDb = $objectModel->getDbConnection();
         $tableInfo = [];
 
         if($oDb->getAdapter()->getPlatform()->getName() === 'MySQL')
@@ -128,7 +124,7 @@ class Stat
 
             if(class_exists($platformAdapter)){
                 $adapter = new $platformAdapter();
-                $tableData = $adapter->getTablesInfo($oModel , $objectTable);
+                $tableData = $adapter->getTablesInfo($objectModel , $objectTable);
             }
 
             if(!empty($tableData))
@@ -156,7 +152,47 @@ class Stat
             'data_size'=>$dataLength,
             'index_size'=>$indexLength,
             'size'=>$size,
+            'engine'=>$objectModel->getObjectConfig()->get('engine'),
+            'external' => '' /* @todo check external */
         ]];
         return $data;
+    }
+
+    /**
+     * Validate Db object
+     * @param $objectName
+     * @return array
+     */
+    public function validate($objectName) : array
+    {
+        /**
+         * @var  Lang $lang
+         */
+        $lang = Service::get('lang')->getDictionary();
+        $config = Record\Config::factory($objectName);
+        $builder = Orm\Record\Builder::factory($objectName);
+
+        $hasBroken = false;
+        $valid =  $builder->validate();
+
+         if(!empty($builder->getBrokenLinks()))
+             $hasBroken = true;
+
+        if($hasBroken || !$valid) {
+            $group =  $lang->get('INVALID_STRUCTURE');
+        }else{
+            $group =  $lang->get('VALID_STRUCTURE');
+        }
+        $result = [
+            'title' => $config->getTitle(),
+            'name'  => $objectName,
+            'validdb' => $valid,
+            'broken' => $hasBroken,
+            'locked' => $config->get('locked'),
+            'readonly'  => $config->get('readonly'),
+            'distributed' => $config->isDistributed(),
+            'group' => $group
+        ];
+        return $result;
     }
 }

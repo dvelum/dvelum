@@ -586,4 +586,8 @@
   'DISTRIBUTED' => 'Распределенный',
   'DISTRIBUTED_INDEXES' => 'Распределенные индексы',
   'SHARD' => 'Шард',
+  'VALIDATE_DB' => 'Проверить БД',
+  'VALIDATE_DB_STRUCTURE' => 'Проверить структуру таблиц БД',
+  'VALID_STRUCTURE' => 'Синхронизировано',
+  'INVALID_STRUCTURE' => 'Неверная структура БД',
 ); 

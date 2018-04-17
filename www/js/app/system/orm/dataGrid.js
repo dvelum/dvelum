@@ -4,15 +4,8 @@ Ext.define('app.crud.orm.ObjectsModel', {
         {name:'title' ,  type:'string'},
         {name:'name' ,  type:'string'},
         {name:'table' , type:'string'},
-        {name:'engine', type:'string'},
         {name:'vc', 	type:'boolean'},
         {name:'fields', type:'integer'},
-       // {name:'records',type:'string'},
-       // {name:'data_size', type:'string'},
-       // {name:'index_size', type:'string'},
-       // {name:'size', type:'string'},
-        {name:'validdb', typr:'boolean'},
-        {name:'title', typr:'string'},
         {name:'save_history', type:'boolean'},
         {name:'link_title', type:'string'},
         {name:'rev_control',type:'boolean'},
@@ -22,10 +15,10 @@ Ext.define('app.crud.orm.ObjectsModel', {
         {name:'broken' , type:'boolean'},
         {name:'locked' , type:'boolean'},
         {name:'readonly' , type:'boolean'},
-        {name:'can_connect' , type:'boolean'},
         {name:'primary_key', type:'string'},
         {name:'connection' , type:'string'},
-        {name:'distributed', type:'boolean'}
+        {name:'distributed', type:'boolean'},
+        {name:'external', type:'boolean'}
     ]
 });
 Ext.define('app.crud.orm.ObjectsDetailsModel', {
@@ -36,7 +29,9 @@ Ext.define('app.crud.orm.ObjectsDetailsModel', {
         {name:'index_size', type:'string'},
         {name:'size', type:'string'},
         {name:'validdb', typr:'boolean'},
-        {name:'name' ,  type:'string'}
+        {name:'name' ,  type:'string'},
+        {name:'engine', type:'string'},
+        {name:'external', type:'boolean'}
     ]
 });
 /**
@@ -85,7 +80,7 @@ Ext.define('app.crud.orm.dataGrid',{
             this.columns.push({
                 xtype:'actioncolumn',
                 align:'center',
-                width:86,
+                width:40,
                 items:[
                     {
                         tooltip:appLang.EDIT_RECORD,
@@ -95,34 +90,12 @@ Ext.define('app.crud.orm.dataGrid',{
                             this.fireEvent('editRecord' , grid.getStore().getAt(rowIndex));
                         }
                     },{
-                        tooltip:appLang.REBUILD_DB_TABLE,
-                        iconCls:'buildIcon',
-                        scope:this,
-                        handler:function(grid, rowIndex, colIndex){
-                            this.fireEvent('rebuildTable' , grid.getStore().getAt(rowIndex).get('name'));
-                        }
-                    },{
                         tooltip:appLang.VIEW_DATA,
                         iconCls:'gridIcon',
                         scope:this,
                         handler:function(grid, rowIndex, colIndex){
                             var rec = grid.getStore().getAt(rowIndex);
                             this.fireEvent('viewData' , rec);
-                        }
-                    },{
-                        tooltip:appLang.SHARD,
-                       // iconCls:'shardIcon',
-                        scope:this,
-                        handler:function(grid, rowIndex, colIndex){
-                            var rec = grid.getStore().getAt(rowIndex);
-                            this.fireEvent('viewShards' , rec);
-                        },
-                        getClass: function(v, meta, record) {
-                            if(!record.get('distributed')) {
-                                return 'x-hide-display';
-                            }else{
-                                return 'shardIcon';
-                            }
                         }
                     }
                 ]
@@ -146,15 +119,10 @@ Ext.define('app.crud.orm.dataGrid',{
                 value = '<img src="'+app.wwwRoot+'i/system/locked.png" title="'+appLang.DB_STRUCTURE_LOCKED_TOOLTIP+'" height="15"> ' + value;
             }
 
-
-
             if(record.get('broken'))
             {
                 metaData.style ='background-color:red;';
                 value = '<img src="'+app.wwwRoot+'i/system/broken.png" title="'+appLang.BROKEN_LINK+'" height="15">&nbsp; ' + value;
-            }else if(!record.get('can_connect')){
-                metaData.style ='background-color:red;';
-                value = '<img src="'+app.wwwRoot+'i/system/broken.png" title="'+appLang.CANT_CONNECT+'" height="15">&nbsp; ' + value;
             }
             return value;
         };
@@ -178,54 +146,20 @@ Ext.define('app.crud.orm.dataGrid',{
             },{
                 text: appLang.PROPERTIES,
                 dataIndex: 'fields',
-                align:'center'
-            },
- /*
-            {
-                text:appLang.DB_STATE,
-                columns:[
-                    {
-                        text: appLang.RECORDS,
-                        dataIndex: 'records',
-                        align:'center',
-                        renderer:rendererRecords
-                    },{
-                        text:appLang.DATA_SIZE,
-                        dataIndex:'data_size',
-                        align:'center'
-                    },{
-                        text:appLang.INDEX_SIZE,
-                        dataIndex:'index_size',
-                        align:'center'
-                    },{
-                        text:appLang.SPACE_USAGE,
-                        dataIndex:'size',
-                        align:'center'
-                    }
-                ]
-            },
-  */
-            {
-                text: appLang.DB_ENGINE,
-                dataIndex: 'engine',
-                align:'center'
+                align:'center',
+                width:60
             },{
                 sortable: true,
                 text: appLang.VC,
                 dataIndex: 'vc',
-                width:100,
-                align:'center',
-                renderer:app.checkboxRenderer
-            },{
-                text:appLang.VALID_DB,
-                dataIndex: 'validdb',
+                width:60,
                 align:'center',
                 renderer:app.checkboxRenderer
             },{
                 text:appLang.IS_SYSTEM,
                 dataIndex:'system',
                 align:'center',
-                width:100,
+                width:60,
                 renderer:app.checkboxRenderer
             },{
                 text:appLang.DB_HOST,
@@ -249,8 +183,8 @@ Ext.define('app.crud.orm.dataGrid',{
                 text:appLang.DISTRIBUTED,
                 align:'center',
                 dataIndex:'distributed',
-                width:120,
-                hidden:true,
+                width:60,
+                hidden:false,
                 renderer:app.checkboxRenderer
             }
         );
@@ -310,12 +244,17 @@ Ext.define('app.crud.orm.dataGrid',{
                         text: appLang.SPACE_USAGE,
                         dataIndex: 'size',
                         align: 'center'
+                    },{
+                        text: appLang.DB_ENGINE,
+                        dataIndex: 'engine',
+                        align:'center',
+                        hidden:false
                     }
                 ],
                 columnLines: true,
                 border: true,
-             //   autoWidth: false,
-             //   autoHeight: true,
+                //   autoWidth: false,
+                //   autoHeight: true,
                 frame: false
                 //header:false,
             },

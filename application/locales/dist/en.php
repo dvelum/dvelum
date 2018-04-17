@@ -584,4 +584,8 @@
   'DISTRIBUTED' => 'Distributed',
   'DISTRIBUTED_INDEXES' => 'Distributed Indexes',
   'SHARD' => 'Shard',
+  'VALIDATE_DB' => 'Validate DB',
+  'VALIDATE_DB_STRUCTURE' => 'Validate DB structure',
+  'VALID_STRUCTURE' => 'Valid DB Structure',
+  'INVALID_STRUCTURE' => 'Invalid DB structure',
 );

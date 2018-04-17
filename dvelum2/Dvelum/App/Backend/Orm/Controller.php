@@ -306,7 +306,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             'js/app/system/orm/logWindow.js',
             'js/app/system/orm/import.js',
             'js/app/system/orm/taskStatusWindow.js',
-            'js/app/system/orm/selectObjectsWindow.js'
+            'js/app/system/orm/selectObjectsWindow.js',
+            'js/app/system/orm/validate.js'
+
         );
 
         if(!$this->appConfig->get('development')){
