@@ -426,7 +426,7 @@ class Ext_Object implements Ext_Exportable
 
         $config = $this->getConfig();
 
-        if($config->isValidProperty('store') && !empty($state['config']['store'])){
+        if($config->isValidProperty('store') && !empty($state['config']['store']['class'])){
             /**
              * @var Ext_Exportable $store
              */
