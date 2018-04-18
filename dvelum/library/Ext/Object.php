@@ -8,7 +8,7 @@
  * @uses Lang
  * @package Ext
  */
-class Ext_Object
+class Ext_Object implements Ext_Exportable
 {
     /**
      * @var Ext_Config $_config
@@ -391,9 +391,22 @@ class Ext_Object
 	 */
 	public function getState()
 	{
-		return array(
-			'config' => $this->getConfig()->__toArray(true)
-		);
+	    $config = $this->getConfig();
+        $state = [
+            'config' => $config->__toArray(true)
+        ];
+
+	    if($config->isValidProperty('store')){
+
+	        $store = $config->store;
+            if($store instanceof Ext_Helper_Store){
+                $state['config']['store'] = [
+                    'class' => $store->getClass(),
+                    'state' => $store->getState()
+                ];
+            }
+        }
+		return $state;
 	}
 	/**
 	 * Set object state
@@ -410,5 +423,16 @@ class Ext_Object
 				$this->{$property} = $value;
 			}
 		}
+
+        $config = $this->getConfig();
+
+        if($config->isValidProperty('store') && !empty($state['config']['store'])){
+            /**
+             * @var Ext_Exportable $store
+             */
+            $store = new $state['config']['store']['class'];
+            $store->setState($state['config']['store']['state']);
+            $config->store = $store;
+        }
 	}
 }

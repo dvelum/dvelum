@@ -455,7 +455,7 @@ class Ext_Grid extends Ext_Object
 		$columns = $this->_columns->getItems();
 		$colData = array();
 
-		if(!empty($columns))
+        if(!empty($columns))
         {
             $columns = Utils::sortByField($columns , 'order');
 

@@ -1,5 +1,5 @@
 <?php
-class Ext_Helper_Store
+class Ext_Helper_Store implements Ext_Exportable
 {
     const TYPE_STORE = 'store';
     const TYPE_INSTANCE = 'instance';
@@ -8,6 +8,14 @@ class Ext_Helper_Store
     protected $type = 'store';
     protected $value = '';
 
+    /**
+     * (non-PHPdoc)
+     * @see Ext_Object::getClass()
+     */
+    public function getClass()
+    {
+        return get_called_class();
+    }
 
     /**
      * Set renderer type
@@ -56,6 +64,20 @@ class Ext_Helper_Store
             self::TYPE_INSTANCE,
             self::TYPE_JSCODE,
         ];
+    }
+
+    public function getState(){
+        return [
+            'type' => $this->type,
+            'value' => $this->value
+        ];
+    }
+
+    public function setState(array $state){
+        if(!empty($state['type']))
+            $this->type = $state['type'];
+        if(!empty($state['value']))
+            $this->value = $state['value'];
     }
 
     public function __toString()
