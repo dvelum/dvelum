@@ -219,7 +219,17 @@ class Controller extends Backend\Controller
                     ['class' => $this->lang->get('CANT_BE_EMPTY')]
                 );
             } else {
-                $moduleName = str_replace(['Backend_', '_Controller'], '', $controller);
+                $replace = $this->appConfig->get('backend_controllers_dirs');
+                $replace[] = 'Controller';
+                $replace[] = 'Dvelum\\App';
+
+                foreach ($replace as &$item){
+                    $item = str_replace('/','\\', $item);
+                }unset($item);
+                $replace[] = '\\';
+                $moduleName = str_replace($replace, '', $controller);
+                $moduleName = trim($moduleName,'_\\');
+
                 $list = $manager->getRegisteredModules();
                 if (in_array($moduleName, $list, true)) {
                     $this->response->error(
