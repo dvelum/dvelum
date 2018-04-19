@@ -88,7 +88,7 @@ class Backend_Mediacategory_Controller extends Dvelum\App\Backend\Api\Controller
             return;
         }
 
-        $ormConfig = Config::storage()->get('orm');
+        $ormConfig = Config::storage()->get('orm.php');
 
         if($ormConfig->get('vc_clear_on_delete')){
             Model::factory('Vc')->removeItemVc($this->objectName , $id);

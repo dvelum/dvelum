@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Modules;
 
 use Dvelum\App\Backend;
+use Dvelum\Orm\Record;
 use Dvelum\App\Module\Generator\GeneratorInterface;
 use Dvelum\App\Module\Manager;
 use Dvelum\Orm;
@@ -328,6 +329,10 @@ class Controller extends Backend\Controller
         $systemObjects = $config->get('system_objects');
 
         foreach ($list as $key) {
+            $cfg = Record\Config::factory($key);
+            if($cfg->isDistributed() || $cfg->isIndexObject()){
+                continue;
+            }
             if (!in_array(ucfirst($key), $systemObjects,
                     true) && !class_exists('Backend_' . Utils\Strings::formatClassName($key) . '_Controller')) {
                 $data[] = array('id' => $key, 'title' => Orm\Record\Config::factory($key)->getTitle());

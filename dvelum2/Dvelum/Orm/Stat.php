@@ -21,7 +21,10 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm;
 
+use Dvelum\Db\Adapter;
+use Dvelum\Lang;
 use Dvelum\Orm;
+use Dvelum\Service;
 
 class Stat
 {
@@ -54,50 +57,12 @@ class Stat
             $objectModel = Model::factory($objectName);
             $config =  $configObject->__toArray();
             $objectTable = $objectModel->table();
-            $builder = Orm\Record\Builder::factory($objectName);
 
-            $records = 0;
-            $dataLength = 0;
-            $indexLength=0;
-            $size = 0;
 
             $oModel = Model::factory($objectName);
             $oDb = $oModel->getDbConnection();
             $oDbConfig = $oDb->getConfig();
-            $oDbHash = md5(serialize($oDbConfig));
 
-            $canConnect = true;
-
-            if(!isset($tables[$oDbHash]) && $oDb->getAdapter()->getPlatform()->getName() === 'MySQL')
-            {
-                $platformAdapter = '\\Dvelum\\Orm\\Stat\\'.$oDb->getAdapter()->getPlatform()->getName();
-
-                if(class_exists($platformAdapter)){
-                    $adapter = new $platformAdapter();
-                    $tablesData = $adapter->getTablesInfo($oModel);
-                }
-
-                if(!empty($tablesData))
-                {
-                    foreach ($tablesData as $k=>$v)
-                    {
-                        $tables[$oDbHash][$v['Name']] = [
-                            'rows'=>$v['Rows'],
-                            'data_length'=>$v['Data_length'],
-                            'index_length'=>$v['Index_length']
-                        ];
-                    }
-                }
-                unset($tablesData);
-            }
-
-            if(isset($tables[$oDbHash][$objectTable]))
-            {
-                $records = $tables[$oDbHash][$objectTable]['rows'];
-                $dataLength = \Utils::formatFileSize($tables[$oDbHash][$objectTable]['data_length']);
-                $indexLength = \Utils::formatFileSize($tables[$oDbHash][$objectTable]['index_length']);
-                $size = \Utils::formatFileSize($tables[$oDbHash][$objectTable]['data_length'] + $tables[$oDbHash][$objectTable]['index_length']);
-            }
 
             $title = '';
             $saveHistory = true;
@@ -112,10 +77,7 @@ class Stat
             if(isset($config['save_history']) && !$config['save_history'])
                 $saveHistory = false;
 
-            $hasBroken = false;
 
-            if(!empty($builder->getBrokenLinks()))
-                $hasBroken = true;
 
             $data[] = [
                 'name'=>$objectName,
@@ -123,26 +85,207 @@ class Stat
                 'engine'=>$config['engine'],
                 'vc'=>$config['rev_control'],
                 'fields'=>sizeof($config['fields']),
-                'records'=>number_format($records,0,'.',' '),
+
                 'title'=>$title,
                 'link_title'=>$linkTitle,
                 'rev_control'=>$config['rev_control'],
                 'save_history'=>$saveHistory,
-                'data_size'=>$dataLength,
-                'index_size'=>$indexLength,
-                'size'=>$size,
+
                 'system'=>$configObject->isSystem(),
-                'validdb'=>$builder->validate(),
-                'broken'=>$hasBroken,
+
                 'db_host'=>$oDbConfig['host'] ,
                 'db_name'=>$oDbConfig['dbname'],
                 'locked'=>$config['locked'],
                 'readonly'=>$config['readonly'],
-                'can_connect'=>$canConnect,
                 'primary_key'=>$configObject->getPrimaryKey(),
-                'connection'=>$config['connection']
+                'connection'=>$config['connection'],
+                'distributed' => $configObject->isDistributed(),
+                'external' => '' /* @todo check external */
             ];
         }
         return $data;
+    }
+
+    public function getDetails($objectName)
+    {
+        $objectModel = Model::factory($objectName);
+        $data = $this->getTableInfo($objectName, $objectModel->getDbConnection());
+        return [$data];
+    }
+
+    protected function getTableInfo($objectName, Adapter $db)
+    {
+        $objectModel = Model::factory($objectName);
+        $objectTable = $objectModel->table();
+
+        $records = 0;
+        $dataLength = 0;
+        $indexLength=0;
+        $size = 0;
+
+        $tableInfo = [];
+
+        if($db->getAdapter()->getPlatform()->getName() === 'MySQL')
+        {
+            $platformAdapter = '\\Dvelum\\Orm\\Stat\\'.$db->getAdapter()->getPlatform()->getName();
+
+            if(class_exists($platformAdapter)){
+                $adapter = new $platformAdapter();
+                $tableData = $adapter->getTablesInfo($objectModel , $objectTable);
+            }
+
+            if(!empty($tableData))
+            {
+                $tableInfo = [
+                    'rows'=>$tableData['Rows'],
+                    'data_length'=>$tableData['Data_length'],
+                    'index_length'=>$tableData['Index_length']
+                ];
+            }
+            unset($tableData);
+        }
+
+        if(!empty($tableInfo))
+        {
+            $records = $tableInfo['rows'];
+            $dataLength = \Utils::formatFileSize($tableInfo['data_length']);
+            $indexLength = \Utils::formatFileSize($tableInfo['index_length']);
+            $size = \Utils::formatFileSize($tableInfo['data_length'] + $tableInfo['index_length']);
+        }
+
+        $data = [
+            'name' => $objectTable,
+            'records'=>number_format($records,0,'.',' '),
+            'data_size'=>$dataLength,
+            'index_size'=>$indexLength,
+            'size'=>$size,
+            'engine'=>$objectModel->getObjectConfig()->get('engine'),
+            'external' => '' /* @todo check external */
+        ];
+        return $data;
+    }
+
+    public function getDistributedDetails(string $objectName) : array
+    {
+        $config = Orm\Record\Config::factory($objectName);
+        if(!$config->isDistributed()){
+            throw new Exception($objectName.' is not distributed');
+        }
+        $objectModel = Model::factory($objectName);
+        $connectionName = $objectModel->getConnectionName();
+        $sharding = Distributed::factory();
+        $shards = $sharding->getShards();
+        $table = $objectModel->table();
+        $data = [];
+
+        if(!empty($shards))
+        {
+            foreach ($shards as $info)
+            {
+                $shardInfo = $this->getTableInfo($objectName, $objectModel->getDbManager()->getDbConnection($connectionName,null, $info['id']));
+                $shardInfo['name'] = $info['id'].' : '.$table;
+                $data[] = $shardInfo;
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Validate Db object
+     * @param $objectName
+     * @return array
+     */
+    public function validate($objectName) : array
+    {
+        /**
+         * @var  Lang $lang
+         */
+        $lang = Service::get('lang')->getDictionary();
+        $config = Record\Config::factory($objectName);
+        $builder = Orm\Record\Builder::factory($objectName);
+
+        $hasBroken = false;
+
+        if($config->isDistributed()){
+            $valid =  $builder->validateDistributedConfig();
+        }else{
+            $valid =  $builder->validate();
+        }
+
+        if(!empty($builder->getBrokenLinks()))
+            $hasBroken = true;
+
+        if($hasBroken || !$valid) {
+            $group =  $lang->get('INVALID_STRUCTURE');
+        }else{
+            $group =  $lang->get('VALID_STRUCTURE');
+        }
+        $result = [
+            'title' => $config->getTitle(),
+            'name'  => $objectName,
+            'validdb' => $valid,
+            'broken' => $hasBroken,
+            'locked' => $config->get('locked'),
+            'readonly'  => $config->get('readonly'),
+            'distributed' => $config->isDistributed(),
+            'shard_title' => '-',
+            'id' => $objectName
+        ];
+        return $result;
+    }
+
+    /**
+     * @param string $objectName
+     * @param string $shard
+     * @return array
+     */
+    public function validateDistributed(string $objectName, string $shard) : array
+    {
+        /**
+         * @var  Lang $lang
+         */
+        $lang = Service::get('lang')->getDictionary();
+        $config = Record\Config::factory($objectName);
+        $builder = Orm\Record\Builder::factory($objectName);
+        $model = Model::factory($objectName);
+        $connectionName = $model->getConnectionName();
+
+        $sharding = Distributed::factory();
+        $shards = $sharding->getShards();
+
+        $result[] = $this->validate($objectName);
+
+        foreach ($shards as $item)
+        {
+            if(strlen($shard) && $item['id']=!$shard){
+                continue;
+            }
+
+            $hasBroken = false;
+            $builder->setConnection($model->getDbManager()->getDbConnection($connectionName,null,$item['id']));
+            $valid = $builder->validate();
+
+            if(!empty($builder->getBrokenLinks()))
+                $hasBroken = true;
+
+            if($hasBroken || !$valid) {
+                $group =  $lang->get('INVALID_STRUCTURE');
+            }else{
+                $group =  $lang->get('VALID_STRUCTURE');
+            }
+            $result[] = [
+                'title' => $config->getTitle(),
+                'name'  => $objectName,
+                'validdb' => $valid,
+                'broken' => $hasBroken,
+                'locked' => $config->get('locked'),
+                'readonly'  => $config->get('readonly'),
+                'distributed' => $config->isDistributed(),
+                'shard' => $item['id'],
+                'shard_title' => $item['id'],
+                'id' => $objectName . $item['id']
+            ];
+        }
+        return $result;
     }
 }

@@ -60,7 +60,17 @@ return [
     /*
      * Encrypted object vector field
      */
-    'iv_field'=>'enc_iv'
-
-
+    'iv_field'=>'enc_iv',
+    /*
+     * Enable sharding
+     */
+    'sharding' => true,
+    /*
+     * Object storage
+     */
+    'storage' => '\\Dvelum\\Orm\\Record\\Store',
+    /*
+     * Distributed objects storage
+     */
+    'distributed_storage' => '\\Dvelum\\Orm\\Distributed\\Store',
 ];

@@ -34,7 +34,12 @@ class Api
 
         $object = $this->apiRequest->getObjectName();
         $ormObjectConfig = Orm\Record\Config::factory($object);
+
         $model = Model::factory($object);
+
+        if($ormObjectConfig->isDistributed()){
+            $model = Model::factory($ormObjectConfig->getDistributedIndexObject());
+        }
 
         $this->dataQuery = $model->query()
             ->params($this->apiRequest->getPagination())
@@ -48,6 +53,13 @@ class Api
             $fields = $this->getDefaultFields();
         }else{
             $fields = $this->fields;
+        }
+
+        $object = $this->apiRequest->getObjectName();
+        $ormObjectConfig = Orm\Record\Config::factory($object);
+        if($ormObjectConfig->isDistributed()){
+            $indexConfig = Orm\Record\Config::factory($ormObjectConfig->getDistributedIndexObject());
+            $fields = array_keys($indexConfig->getFields());
         }
         return  $this->dataQuery->fields($fields)->fetchAll();
     }

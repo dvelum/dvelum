@@ -56,20 +56,27 @@ class Orm
             $eventManager->setCache($cache);
         }
 
-        /*
-         * Prepare Db object storage
-         */
-        $objectStore = new Orm\Record\Store(array(
+        $storageOptions = [
             'linksObject' => $config->get('links_object'),
             'historyObject' => $config->get('history_object'),
             'versionObject' => $config->get('version_object'),
-        ));
+        ];
+        /*
+         * Prepare Db object storage
+         */
+        $storeClass = $config->get('storage');
+        $objectStore = new $storeClass($storageOptions);
+        $objectStore->setEventManager($eventManager);
+
+        $distributedStoreClass = $config->get('distributed_storage');
+        $objectDistributedStore = new $distributedStoreClass($storageOptions);
         $objectStore->setEventManager($eventManager);
 
         $this->modelSettings = Config\Factory::create([
             'hardCacheTime' => $config->get('hard_cache'),
             'dataCache' => $cache,
-            'dbObjectStore' => $objectStore,
+            'storage' => $objectStore,
+            'distributed_storage'=> $objectDistributedStore,
             'defaultDbManager' => $dbManager,
             'errorLog' => false,
         ]);
@@ -110,7 +117,6 @@ class Orm
                 $objectStore->setLog($log);
             }
         }
-
         $this->cryptService =  new \Dvelum\Security\CryptService( Config::storage()->get('crypt.php'));
     }
 
@@ -271,13 +277,14 @@ class Orm
      */
     public function model(string $objectName): Model
     {
+
         $listName = strtolower($objectName);
 
         if (isset($this->models[$listName])) {
             return $this->models[$listName];
         }
 
-        $objectName = implode('_', array_map('ucfirst', explode('_', $objectName)));
+        $objectName = implode('_', array_map('ucfirst', explode('_', $listName)));
 
         $className = 'Model_' . $objectName;
         $nameSpacedClassName = 'App\\'.str_replace('_','\\', $className);
@@ -290,7 +297,11 @@ class Orm
         } elseif (class_exists($nameSpacedClassName)) {
             $this->models[$listName] = new $nameSpacedClassName($objectName, $this->modelSettings);
         } else {
-            $this->models[$listName] = new Model($objectName, $this->modelSettings);
+            if($this->config($objectName)->isDistributed()){
+                $this->models[$listName] = new Orm\Distributed\Model($objectName, $this->modelSettings);
+            }else{
+                $this->models[$listName] = new Model($objectName, $this->modelSettings);
+            }
         }
         return $this->models[$listName];
     }

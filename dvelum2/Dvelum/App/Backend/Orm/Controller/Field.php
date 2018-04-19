@@ -259,6 +259,7 @@ class Field extends Controller
         } else{
             $objectCfg->setFieldConfig($name, $newConfig);
         }
+
         if($objectCfg->save()){
             /**
              * @todo refactor

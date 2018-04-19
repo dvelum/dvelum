@@ -47,7 +47,10 @@ class Property
             'connection',
             'use_db_prefix',
             'hidden',
-            'relations_type'
+            'relations_type',
+            'sharding',
+            'data_object',
+            'parent_object'
     ];
 
     public static $numberLength = [
@@ -225,6 +228,10 @@ class Property
         else
         {
             $s .= ' NULL ';
+        }
+
+        if(isset($this->data['db_auto_increment']) && $this->data['db_auto_increment']){
+            $s.=' AUTO_INCREMENT ';
         }
 
         $s .= " COMMENT '" . addslashes($this->data['title']) . "' ";

@@ -21,15 +21,16 @@ namespace  Dvelum\Db;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Db;
 
-interface ManagerInterface
+interface ManagerInterface extends \Db_Manager_Interface
 {
     /**
-     * Get DB connection
+     * Get Database connection
      * @param string $name
-     * @throws \Exception
-     * @return Db\Adapter
+     * @param null|string $workMode
+     * @param null|string $shard
+     * @return Adapter
      */
-    public function getDbConnection(string $name) : Db\Adapter;
+    public function getDbConnection(string $name, ?string $workMode = null, ?string $shard = null) : Adapter;
     /**
      * Get DB connection config
      * @param string $name

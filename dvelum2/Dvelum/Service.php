@@ -37,6 +37,16 @@ class Service
 
     static public function register(ConfigInterface $config, ConfigInterface $env)
     {
+        $data = $config->__toArray();
+        $reIndexed = [];
+
+        foreach($data as $k=>$v){
+            $reIndexed[strtolower($k)] = $v;
+        }
+
+        $config->removeAll();
+        $config->setData($reIndexed);
+
         self::$config = $config;
         self::$env = $env;
     }
@@ -48,6 +58,8 @@ class Service
      */
     static public function get(string $name)
     {
+        $name = strtolower($name);
+
         if(!self::$config->offsetExists($name)){
             throw new Exception('Undefined service ' . $name);
         }

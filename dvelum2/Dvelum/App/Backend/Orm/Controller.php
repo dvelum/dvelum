@@ -28,6 +28,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         'index' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Index',
         'uml' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Uml',
         'crypt' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Crypt',
+        'distributed' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Distributed',
     ];
 
     public function route(Request $request, Response $response) : void
@@ -97,6 +98,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
           var canUseBackup = false;
           var dbConfigsList = '.json_encode($dbConfigs).';
           var ormTooltips = '.Lang::lang('orm_tooltips')->getJson().';
+          var shardingEnabled = '.intval(Config::storage()->get('orm.php')->get('sharding')).';
         ');
 
         $this->resource->addJs('/js/app/system/SearchPanel.js', 0);
@@ -107,6 +109,8 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $this->resource->addJs('/js/app/system/ContentWindow.js', 1);
         $this->resource->addJs('/js/app/system/RevisionPanel.js', 2);
         $this->resource->addJs('/js/app/system/RelatedGridPanel.js', 2);
+        $this->resource->addJs('/js/lib/ext_ux/rowExpanderGrid.js', 2);
+
 
         $this->resource->addJs('/js/app/system/SelectWindow.js', 2);
         $this->resource->addJs('/js/app/system/ObjectLink.js', 3);
@@ -135,6 +139,27 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
                 if($v['system'])
                     unset($data[$k]);
             sort($data);
+        }
+        $this->response->success($data);
+    }
+
+    /**
+     * Get Data info
+     */
+    public function listDetailsAction()
+    {
+        $object = $this->request->post('object', 'string', '');
+
+        if(!Orm\Record\Config::configExists($object)){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+        $stat = new Orm\Stat();
+        $config = Orm\Record\Config::factory($object);
+        if($config->isDistributed()){
+            $data = $stat->getDistributedDetails($object);
+        }else{
+            $data = $stat->getDetails($object);
         }
         $this->response->success($data);
     }
@@ -285,7 +310,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             'js/app/system/orm/logWindow.js',
             'js/app/system/orm/import.js',
             'js/app/system/orm/taskStatusWindow.js',
-            'js/app/system/orm/selectObjectsWindow.js'
+            'js/app/system/orm/selectObjectsWindow.js',
+            'js/app/system/orm/validate.js'
+
         );
 
         if(!$this->appConfig->get('development')){

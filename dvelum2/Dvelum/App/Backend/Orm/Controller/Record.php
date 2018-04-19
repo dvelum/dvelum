@@ -50,6 +50,32 @@ class Record extends Controller
     {
     }
 
+    public function validateRecordAction()
+    {
+        $object = $this->request->post('object','string', '');
+        $shard = $this->request->post('shard','string','');
+
+        if(!Orm\Record\Config::configExists($object)){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+        $stat = new Orm\Stat();
+        $config = Orm\Record\Config::factory($object);
+
+//        $validateShard = false;
+//        if(strlen($shard) && $config->isDistributed()){
+//            $validateShard = true;
+//        }
+
+        if($config->isDistributed()){
+            $data = $stat->validateDistributed($object, $shard);
+        }else{
+            $data = $stat->validate($object);
+        }
+        $this->response->success($data);
+    }
+
     /**
      * Validate Object Db Structure
      */
@@ -58,6 +84,7 @@ class Record extends Controller
         $engineUpdate = false;
 
         $name = $this->request->post('name', 'string', false);
+        $shard = $this->request->post('shard', 'string', '');
 
         if (!$name) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -76,32 +103,58 @@ class Record extends Controller
         }
 
         try {
-            $obj = $this->ormService->object($name);
+            /**
+             * @var Orm\Record\Config $obj
+             */
+            $objConfig = $this->ormService->config($name);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('CANT_GET_VALIDATE_INFO'));
             return;
         }
 
         $builder = Orm\Record\Builder::factory($name);
-        $tableExists = $builder->tableExists();
+
 
         $colUpd = [];
         $indUpd = [];
         $keyUpd = [];
+        $shardObjects = [];
 
-        if ($tableExists) {
-            $colUpd = $builder->prepareColumnUpdates();
-            $indUpd = $builder->prepareIndexUpdates();
-            $keyUpd = $builder->prepareKeysUpdate();
+        $checkColumns = false;
 
-            if (method_exists($builder, 'prepareEngineUpdate')) {
-                $engineUpdate = $builder->prepareEngineUpdate();
+        if(strlen($shard) && $objectConfig->isDistributed()){
+            $model = Orm\Model::factory($name);
+            $connectionName = $model->getConnectionName();
+            $db = $model->getDbManager()->getDbConnection($connectionName,null,$shard);
+            $builder->setConnection($db);
+            $checkColumns = true;
+        }elseif ($objectConfig->isDistributed()){
+            $tableExists = true;
+        }else{
+            $checkColumns = true;
+        }
+
+        if($checkColumns){
+            $tableExists = $builder->tableExists();
+            if ($tableExists) {
+                $colUpd = $builder->prepareColumnUpdates();
+                $indUpd = $builder->prepareIndexUpdates();
+                $keyUpd = $builder->prepareKeysUpdate();
+
+                if (method_exists($builder, 'prepareEngineUpdate')) {
+                    $engineUpdate = $builder->prepareEngineUpdate();
+                }
             }
         }
 
         $objects = $builder->getRelationUpdates();
+        $ormConfig = Config::storage()->get('sharding.php');
 
-        if (empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects)) {
+        if($objConfig->isDistributed() && $ormConfig->get('dist_index_enabled')){
+            $shardObjects = $builder->getDistributedObjectsUpdatesInfo();
+        }
+
+        if (empty($colUpd) && empty($indUpd) && empty($keyUpd) && $tableExists && !$engineUpdate && empty($objects) && empty($shardObjects)) {
             $this->response->success([], ['nothingToDo' => true]);
             return;
         }
@@ -114,8 +167,9 @@ class Record extends Controller
         $template->objects = $objects;
         $template->keys = $keyUpd;
         $template->tableExists = $tableExists;
-        $template->tableName = $obj->getTable();
+        $template->tableName = Orm\Model::factory($name)->table();
         $template->lang = $this->lang;
+        $template->shardObjects = $shardObjects;
 
         $cfgBackend = Config\Factory::storage()->get('backend.php');
         $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';
@@ -135,6 +189,7 @@ class Record extends Controller
         }
 
         $name = $this->request->post('name', 'string', false);
+        $shard = $this->request->post('shard', 'string', '');
 
         if (!$name) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -147,12 +202,20 @@ class Record extends Controller
         }
 
         $builder = Orm\Record\Builder::factory($name);
+        $config = Orm\Record\Config::factory($name);
 
-        if (!$builder->build() || !$builder->buildForeignKeys()) {
+        $buildShard = false;
+        if(strlen($shard) && $config->isDistributed()){
+            $buildShard = true;
+            $model = Orm\Model::factory($name);
+            $connectionName = $model->getConnectionName();
+            $builder->setConnection($model->getDbManager()->getDbConnection($connectionName,null,$shard));
+        }
+
+        if (!$builder->build(true, $buildShard)) {
             $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(',', $builder->getErrors()));
             return;
         }
-
         $this->response->success();
     }
 
@@ -312,7 +375,7 @@ class Record extends Controller
             $info['name'] = $object;
             $info['use_acl'] = false;
 
-            if ($info['acl']) {
+            if (isset($info['acl']) && $info['acl']) {
                 $info['use_acl'] = true;
             }
 
@@ -352,11 +415,14 @@ class Record extends Controller
 
         $detalization = $this->request->post('log_detalization', 'string', 'default');
 
+        $distributed = $this->request->post('distributed','boolean',false);
+
         if ($detalization !== 'extended') {
             $detalization = 'default';
         }
 
-        $parentObject = $this->request->post('parent_object', 'string', '');
+        $dataObject = $this->request->post('parent_object', 'string', '');
+        $parentObject = $this->request->post('data_object', 'string', '');
 
         $reqStrings = array('name', 'title', 'table', 'engine', 'connection');
         $errors = array();
@@ -391,6 +457,7 @@ class Record extends Controller
             $data['acl'] = false;
         }
 
+        $data['data_object'] = $dataObject;
         $data['parent_object'] = $parentObject;
         $data['rev_control'] = $revControl;
         $data['save_history'] = $saveHistory;
@@ -403,6 +470,7 @@ class Record extends Controller
         $data['slave_connection'] = $slaveConnection;
         $data['connection'] = $connection;
         $data['log_detalization'] = $detalization;
+        $data['distributed'] = $distributed;
 
         $name = strtolower($name);
 
@@ -501,7 +569,8 @@ class Record extends Controller
 
     protected function updateObject($recordId, $name, array $data)
     {
-        $dataDir = Config::storage()->getWrite() . $this->appConfig->get('object_configs');
+        $ormConfig = Config::storage()->get('orm.php');
+        $dataDir = Config::storage()->getWrite() . $ormConfig->get('object_configs');
         $objectConfigPath = $dataDir . $recordId . '.php';
 
         if (!is_writable($dataDir)) {
@@ -580,8 +649,9 @@ class Record extends Controller
 
     protected function renameObject($oldName, $newName)
     {
+        $ormConfig = Config::storage()->get('orm.php');
 
-        $newFileName = $this->appConfig->get('object_configs') . $newName . '.php';
+        $newFileName = $ormConfig->get('object_configs') . $newName . '.php';
         //$oldFileName = $this->appConfig->get('object_configs').$oldName.'.php';
 
         if (file_exists($newFileName)) {
@@ -591,7 +661,7 @@ class Record extends Controller
         }
 
         $manager = new Manager();
-        $renameResult = $manager->renameObject($this->appConfig['object_configs'], $oldName, $newName);
+        $renameResult = $manager->renameObject($ormConfig->get('object_configs'), $oldName, $newName);
 
         switch ($renameResult) {
             case 0:

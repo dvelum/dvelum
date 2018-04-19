@@ -29,18 +29,20 @@ class Orm extends AbstractAdapter
 {
     public function loadService()
     {
+
         $cache = null;
         if($this->config->offsetExists('cache')){
             $cache = $this->config->get('cache');
         }
+
         $orm = new Dvelum\Orm();
+
         $orm->init(
             Config::storage()->get('orm.php'),
             $this->config->get('dbManager'),
             $this->config->get('appConfig')->get('language'),
             $cache
         );
-
         return $orm;
     }
 }

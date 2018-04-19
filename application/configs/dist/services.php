@@ -1,21 +1,24 @@
 <?php
 return [
-    'orm' => [
-        'loader'=>'\\Dvelum\App\\Service\\Loader\\Orm'
+    'ORM' => [
+        'loader'=>'\\Dvelum\\App\\Service\\Loader\\Orm'
     ],
-    'lang' => [
-        'loader'=>'\\Dvelum\App\\Service\\Loader\\Lang'
+    'Lang' => [
+        'loader'=>'\\Dvelum\\App\\Service\\Loader\\Lang'
     ],
-    'dictionary' => [
-        'loader'=>'\\Dvelum\App\\Service\\Loader\\Dictionary'
+    'Dictionary' => [
+        'loader'=>'\\Dvelum\\App\\Service\\Loader\\Dictionary'
     ],
-    'blockManager' => [
-        'loader'=>'\\Dvelum\App\\Service\\Loader\\BlockManager'
+    'BlockManager' => [
+        'loader'=>'\\Dvelum\\App\\Service\\Loader\\BlockManager'
     ],
     'MailTransport' => [
-        'loader'=>'\\Dvelum\App\\Service\\Loader\\MailTransport'
+        'loader'=>'\\Dvelum\\App\\Service\\Loader\\MailTransport'
     ],
-    'template' => [
-        'loader'=>'\\Dvelum\App\\Service\\Loader\\Template'
+    'Template' => [
+        'loader'=>'\\Dvelum\\App\\Service\\Loader\\Template'
     ],
+    'ShardingRouter' =>[
+        'loader' => '\\Dvelum\\App\\Service\\Loader\\DistributedRoutes'
+    ]
 ];

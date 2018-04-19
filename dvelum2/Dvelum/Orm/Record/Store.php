@@ -117,7 +117,8 @@ class Store
      */
     protected function getDbConnection(Orm\RecordInterface $object) : Db\Adapter
     {
-        return Model::factory($object->getName())->getDbConnection();
+        $objectModel = Model::factory($object->getName());
+        return $objectModel->getDbManager()->getDbConnection($objectModel->getDbConnectionName(), null, null);
     }
     /**
      * Update Db object
@@ -173,6 +174,7 @@ class Store
          }
          */
 
+
         /*
          * Check if DB table support transactions
          */
@@ -211,19 +213,9 @@ class Store
     protected function updateOperation(Orm\RecordInterface $object)
     {
         try{
-            $db = $this->getDbConnection($object);
-            $updates = $object->getUpdates();
-
-            if($object->getConfig()->hasEncrypted())
-                $updates = $this->encryptData($object , $updates);
-
-            $this->updateLinks($object);
-
-            $updates = $object->serializeLinks($updates);
-
-            if(!empty($updates))
-                $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
-
+            if(!$this->updateRecord($object)){
+                return false;
+            }
             /*
              * Fire "AFTER_UPDATE_BEFORE_COMMIT" Event if event manager exists
              */
@@ -600,13 +592,13 @@ class Store
          */
         $values = $object->validateUniqueValues();
 
+
         if(!empty($values))
         {
             if($this->log)
             {
-                $errors = array();
-                foreach($values as $k => $v)
-                {
+                $errors = [];
+                foreach($values as $k => $v) {
                     $errors[] = $k . ':' . $v;
                 }
                 $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . implode(', ' , $errors));
@@ -614,18 +606,7 @@ class Store
             return false;
         }
 
-        $db = $this->getDbConnection($object);
-
-        $objectTable = $object->getTable();
-
-        try {
-            $db->insert($objectTable, $object->serializeLinks($updates));
-        }catch (Orm\Exception $e) {
-            $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
-            return false;
-        }
-
-        $id = $db->lastInsertId($objectTable , $object->getConfig()->getPrimaryKey());
+        $id = $this->insertRecord($object, $updates);
 
         if(!$id)
             return false;
@@ -653,6 +634,76 @@ class Store
         $object->commitChanges();
         $object->setId($id);
 
+        return true;
+    }
+
+    /**
+     * Insert record
+     * @param Orm\RecordInterface $object
+     * @param array $data
+     * @return mixed record id
+     */
+    protected function insertRecord(Orm\RecordInterface $object , array $data)
+    {
+        $db = $this->getDbConnection($object);
+        $objectTable = $object->getTable();
+
+        try {
+            $db->insert($objectTable, $object->serializeLinks($data));
+        }catch (Exception $e) {
+            $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
+            return false;
+        }
+        return $db->lastInsertId($objectTable , $object->getConfig()->getPrimaryKey());
+    }
+
+    /**
+     * Delete record
+     * @param Orm\RecordInterface $object
+     * @return bool
+     */
+    protected function deleteRecord(Orm\RecordInterface $object ) : bool
+    {
+        $db = $this->getDbConnection($object);
+        try{
+            $db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId());
+            return true;
+        }catch (Exception $e){
+           if($this->log){
+              $this->log->log(LogLevel::ERROR,$object->getName().'::delete '.$e->getMessage());
+           }
+           return false;
+        }
+    }
+
+    /**
+     * Update record
+     * @param Orm\RecordInterface $object
+     * @return bool
+     */
+    protected function updateRecord(Orm\RecordInterface $object ) : bool
+    {
+        $db = $this->getDbConnection($object);
+
+        $updates = $object->getUpdates();
+
+        if($object->getConfig()->hasEncrypted())
+            $updates = $this->encryptData($object , $updates);
+
+        $this->updateLinks($object);
+
+        $updates = $object->serializeLinks($updates);
+
+        if(!empty($updates)){
+            try{
+                $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
+            }catch (Exception $e){
+                if($this->log){
+                    $this->log->log(LogLevel::ERROR,$object->getName().'::update '.$e->getMessage());
+                }
+                return false;
+            }
+        }
         return true;
     }
 
@@ -751,11 +802,10 @@ class Store
     {
         $objectConfig = $object->getConfig();
 
-        if($objectConfig->isReadOnly())
-        {
-            if($this->log)
+        if($objectConfig->isReadOnly()) {
+            if($this->log){
                 $this->log->log(LogLevel::ERROR, 'ORM :: cannot delete readonly object '. $object->getName());
-
+            }
             return false;
         }
 
@@ -782,15 +832,7 @@ class Store
             }
         }
 
-        try{
-            $db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId());
-            $success = true;
-        }catch (Exception $e){
-            if($this->log){
-                $this->log->log(LogLevel::ERROR,$object->getName().'::delete '.$e->getMessage());
-            }
-            $success = false;
-        }
+        $success = $this->deleteRecord($object);
 
         try{
             /*
@@ -899,5 +941,42 @@ class Store
             }
         }
         return true;
+    }
+    /**
+     * Validate unique fields, object field groups
+     * Returns array of errors or null .
+     * @return  array | null
+     */
+    public function validateUniqueValues($objectName, $recordId, $groupsData) : ?array
+    {
+
+        $model = Model::factory($objectName);
+        $db = $model->getDbConnection();
+
+        $primaryKey = $model->getPrimaryKey();
+
+        foreach ($groupsData as $group)
+        {
+            $sql = $db->select()
+                ->from($model->table() , array('count'=>'COUNT(*)'));
+
+            if($recordId)
+                $sql->where(' '.$db->quoteIdentifier($primaryKey).' != ?', $recordId);
+
+            foreach ($group as $k=>$v)
+            {
+                if($k===$primaryKey)
+                    continue;
+
+                $sql->where($db->quoteIdentifier($k) . ' =?' , $v);
+            }
+
+            $count = $db->fetchOne($sql);
+
+            if($count > 0){
+                return array_keys($group);
+            }
+        }
+        return null;
     }
 }

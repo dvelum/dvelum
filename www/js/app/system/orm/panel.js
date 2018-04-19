@@ -60,9 +60,20 @@ Ext.define('app.crud.orm.Index', {
 		{name:'fulltext' , type:'boolean'},
 		{name:'unique', type:'boolean'},
 		{name:'columns', type:'string'},
-		{name:'primary', type:'boolean'}
+		{name:'primary', type:'boolean'},
+        {name:'system', type:'boolean'}
 	]
 });
+
+Ext.define('app.crud.orm.ditributedIndex', {
+    extend: 'Ext.data.Model',
+    fields: [
+        {name:'field' ,  type:'string'},
+        {name:'is_system', type:'boolean'}
+    ]
+});
+
+
 
 Ext.define('app.crud.orm.Main',{
 	extend:'Ext.panel.Panel',
@@ -83,12 +94,14 @@ Ext.define('app.crud.orm.Main',{
             updateDictionary:	this.controllerUrl  + 'updatedictionary',
             removeDictionary:	this.controllerUrl  + 'removedictionary',
             listObj: 			this.controllerUrl  + 'list',
+            listObjDetails:		this.controllerUrl  + 'listDetails',
             listAcl:			this.controllerUrl  + 'listacl',
 
 			// object
             listObjFields: 		app.createUrl([this.controllerUrl + 'object','fields']),
             listObjIndexes: 	app.createUrl([this.controllerUrl + 'object','indexes']),
             validateObject: 	app.createUrl([this.controllerUrl + 'object','validate']),
+            validateRecord: 	app.createUrl([this.controllerUrl + 'object','validateRecord']),
             loadObjCfg:			app.createUrl([this.controllerUrl + 'object','load']),
             buildObject:		app.createUrl([this.controllerUrl + 'object','build']),
             saveObjCfg: 		app.createUrl([this.controllerUrl + 'object','save']),
@@ -117,7 +130,13 @@ Ext.define('app.crud.orm.Main',{
             encryptData:		app.createUrl([this.controllerUrl + 'crypt','encrypt']),
             decryptData:		app.createUrl([this.controllerUrl + 'crypt','decrypt']),
 			// crypt task
-            encTaskStat:		app.createUrl([this.controllerUrl + 'crypt','taskstat'])
+            encTaskStat:		app.createUrl([this.controllerUrl + 'crypt','taskstat']),
+
+            // distributed
+            addDistributedIndex:app.createUrl([this.controllerUrl  + 'distributed','adddistributedindex']),
+            listObjDistIndexes: app.createUrl([this.controllerUrl  + 'distributed','distindexes']),
+            deleteDistIndex: 	app.createUrl([this.controllerUrl  + 'distributed','deletedistributedindex']),
+            acceptedDistFields: app.createUrl([this.controllerUrl  + 'distributed','acceptedDistributedFields'])
         };
 
 		this.tbar = [];
@@ -300,11 +319,11 @@ Ext.define('app.crud.orm.Main',{
 				this.searchField,'-',
 				{
 					xtype:'button',
-					text:appLang.BUILD_ALL,
-					tooltip:appLang.BUILD_ALL,
-					iconCls:'buildIcon',
-					scope:this,
-					handler:this.rebuildAllObjects
+					text:appLang.VALIDATE_DB,
+                    tooltip:appLang.VALIDATE_DB_STRUCTURE,
+                    iconCls:'buildIcon',
+                    scope:this,
+                    handler:this.showValidateWindow
 				}
 			]
 		});
@@ -441,7 +460,7 @@ Ext.define('app.crud.orm.Main',{
 			]
 		}).show();
 	},
-	rebuildAllObjects:function(){
+	rebuildAllObjects:function(callback){
 		Ext.Msg.confirm(appLang.CONFIRMATION, appLang.MSG_CONFIRM_REBUILD, function(btn){
 			if(btn != 'yes')
 				return;
@@ -464,7 +483,9 @@ Ext.define('app.crud.orm.Main',{
 					this.dataGrid.getEl().unmask();
 					response =  Ext.JSON.decode(response.responseText);
 					if(response.success){
-						this.dataStore.load();
+						if(!Ext.isEmpty(callback)){
+						    callback();
+                        }
 					}else{
 						Ext.Msg.alert(appLang.MESSAGE , response.msg);
 					}
@@ -477,14 +498,13 @@ Ext.define('app.crud.orm.Main',{
 		}, this);
 	},
 	showEdit:function(record){
-
 		var oName = Ext.isEmpty(record) ? '' : record.get('name');
-
 		var win = Ext.create('app.crud.orm.ObjectWindow',{
 			objectName:oName,
 			objectList:app.crud.orm.getObjectsList,
 			isSystem:Ext.isEmpty(record) ? false : record.get('system'),
-			isExternal:Ext.isEmpty(record) ? false : record.get('external')
+			isExternal:Ext.isEmpty(record) ? false : record.get('external'),
+            sharding:app.crud.orm.sharding
 		});
 		win.setTitle(appLang.EDIT_OBJECT + ' &laquo;' + oName + '&raquo; ');
 		win.on('dataSaved',function(){
@@ -499,6 +519,13 @@ Ext.define('app.crud.orm.Main',{
 		win.on('indexRemoved',function(){
 			this.dataStore.load();
 		},this);
+        win.on('distributedIndexAdded',function(){
+            this.dataStore.load();
+        },this);
+        win.on('distributedIndexRemoved',function(){
+            this.dataStore.load();
+        },this);
+
 		win.show();
 	},
 	/**
@@ -524,7 +551,7 @@ Ext.define('app.crud.orm.Main',{
 	/**
 	 * Rebuild all DB Objects
 	 */
-	rebuildObject:function(name)
+	rebuildObject:function(name, shard , callback)
 	{
 		var handle = this;
 		this.win = Ext.create('Ext.Window',{
@@ -546,8 +573,8 @@ Ext.define('app.crud.orm.Main',{
 					text:appLang.APPLY,
 					scope:handle,
 					handler:function(){
-						this.buildObject(name);
-						this.win.close();
+						handle.buildObject(name, shard, callback);
+						handle.win.close();
 					}
 				}
 			]
@@ -559,7 +586,8 @@ Ext.define('app.crud.orm.Main',{
 			url: app.crud.orm.Actions.validateObject,
 			method: 'post',
 			params:{
-				'name':name
+				'name':name,
+                'shard':shard
 			},
 			scope:this,
 			timeout:3600000,
@@ -580,7 +608,7 @@ Ext.define('app.crud.orm.Main',{
 				}else{
 					Ext.Msg.alert(appLang.MESSAGE , response.msg);
 					handle.win.close();
-				}
+				};
 				handle.win.setLoading(false);
 			},
 			failure:function() {
@@ -593,19 +621,22 @@ Ext.define('app.crud.orm.Main',{
 	 * Build Db Object
 	 * @param string name
 	 */
-	buildObject:function(name){
+	buildObject:function(name, shard, callback){
 		var handle = this;
 		Ext.Ajax.request({
 			url: app.crud.orm.Actions.buildObject,
 			method: 'post',
 			params:{
-				'name':name
+				'name':name,
+                'shard':shard
 			},
 			timeout:3600000,
 			success: function(response, request) {
 				response =  Ext.JSON.decode(response.responseText);
 				if(response.success){
-					handle.dataStore.load();
+					if(!Ext.isEmpty(callback)){
+					    callback();
+                    }
 				}else{
 					Ext.Msg.alert('Error' , response.msg);
 				}
@@ -663,7 +694,33 @@ Ext.define('app.crud.orm.Main',{
 				}
 			}
 		}).show();
-	}
+	},
+    /**
+     * Show validation window
+     */
+    showValidateWindow:function()
+    {
+        var win = Ext.create('app.orm.validate.Window',{
+            title:appLang.VALIDATE_DB_STRUCTURE,
+            objectsStore:this.dataStore
+        });
+
+        win.on('RebuildAllCall',function(){
+            this.rebuildAllObjects(function(){
+                win.validateAllObjects();
+            });
+        },this);
+
+        win.on('rebuildTable', function(objectName, shard){
+            this.rebuildObject(objectName, shard, function() {
+                win.addToQueue(objectName);
+                win.validateObjects();
+            });
+        },this);
+
+        win.show();
+        win.validateAllObjects();
+    }
 });
 
 

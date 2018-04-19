@@ -24,6 +24,7 @@ namespace  Dvelum\Db;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Db\ManagerInterface;
+use Dvelum\Orm\Distributed;
 
 class Manager implements ManagerInterface
 {
@@ -46,16 +47,23 @@ class Manager implements ManagerInterface
     /**
      * Get Database connection
      * @param string $name
-     * @throws \Exception
+     * @param null|string $workMode
+     * @param null|string $shard
      * @return Adapter
      */
-    public function getDbConnection(string $name, ?string $workMode = null) : Adapter
+    public function getDbConnection(string $name, ?string $workMode = null, ?string $shard = null) : Adapter
     {
         if(empty($workMode)){
             $workMode = $this->appConfig->get('development');
         }
 
-        if(!isset($this->dbConnections[$workMode][$name]))
+        if(empty($shard)){
+            $shardKey = '1';
+        }else{
+            $shardKey = $shard;
+        }
+
+        if(!isset($this->dbConnections[$workMode][$name][$shardKey]))
         {
             $cfg = $this->getDbConfig($name);
             $cfg->set('driver', $cfg->get('adapter'));
@@ -67,10 +75,21 @@ class Manager implements ManagerInterface
                 $cfg->set('profiler' , true);
             }
 
+            if(!empty($shard))
+            {
+                $sharding = Distributed::factory();
+                $shardInfo = $sharding->getShardInfo($shard);
+                $cfg->set('host', $shardInfo['host']);
+                if(isset($shardInfo['override']) && !empty($shardInfo['override'])){
+                    foreach ($shardInfo['override'] as $k=>$v){
+                        $cfg->set($k,$v);
+                    }
+                }
+            }
             $db = $this->initConnection($cfg->__toArray());
-            $this->dbConnections[$workMode][$name] = $db;
+            $this->dbConnections[$workMode][$name][$shardKey] = $db;
         }
-        return $this->dbConnections[$workMode][$name];
+        return $this->dbConnections[$workMode][$name][$shardKey];
     }
 
     /**

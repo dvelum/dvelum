@@ -276,6 +276,9 @@
 .filterIcon{
     background-image: url('../../i/system/filter.png');
 }
+.shardIcon{
+    background-image: url('../../i/system/shards.png');
+}
 
 .urlTriggerIcon{
     width:25px;

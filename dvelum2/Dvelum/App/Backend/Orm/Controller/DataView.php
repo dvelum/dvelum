@@ -67,22 +67,26 @@ class DataView extends ApiController
 
         $cfg = $this->ormService->config($object);
 
-        $fields = $cfg->getFieldsConfig(true);
+        $fields = $cfg->getFields();
         $fieldsCfg = [];
         $columns = [];
         $systemColumns = [];
         $searchFields = $cfg->getSearchFields();
 
-        foreach ($fields as $name => $itemCfg)
+        $objectConfig = Orm\Record\Config::factory($object);
+        if($objectConfig->isDistributed()){
+            $fields =  Orm\Record\Config::factory($objectConfig->getDistributedIndexObject())->getFields();
+        }
+
+        foreach ($fields as $name => $field)
         {
             $fieldCfg = new \stdClass();
             $fieldCfg->name = $name;
 
             $col = new \stdClass();
             $col->dataIndex = $name;
-            $col->text = $itemCfg['title'];
+            $col->text = $field->getTitle();
 
-            $field = $cfg->getField($name);
             $dbType = $field->getDbType();
 
             if ($field->isLink()) {
@@ -134,7 +138,7 @@ class DataView extends ApiController
                 $col->sortable = false;
             }
 
-            if (isset($itemCfg['system']) && $itemCfg['system']) {
+            if ($field->isSystem()) {
                 $systemColumns[] = $col;
             } else {
                 $columns[] = $col;
@@ -172,7 +176,6 @@ class DataView extends ApiController
                 $this->listLinks[] = $item->getName();
             }
         }
-
         parent::listAction();
     }
 

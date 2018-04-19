@@ -23,9 +23,14 @@ namespace Dvelum\Orm\Record\Builder;
 use Dvelum\Orm;
 use Dvelum\Orm\Record\Config;
 use Dvelum\Orm\Model;
+use Dvelum\Orm\Record\Builder;
 use Dvelum\Log;
+use Dvelum\Lang;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Utils;
 use Zend\Db\Sql\Ddl;
+use Dvelum\Config as Cfg;
+use \Exception;
 
 
 abstract class AbstractAdapter implements BuilderInterface
@@ -75,6 +80,8 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     protected $configPath;
 
+    protected $validationErrors = [];
+
     abstract public function prepareColumnUpdates();
     abstract public function prepareIndexUpdates();
     abstract public function prepareKeysUpdate();
@@ -99,6 +106,13 @@ abstract class AbstractAdapter implements BuilderInterface
         $this->db = $this->model->getDbConnection();
         $this->dbPrefix = $this->model->getDbPrefix();
         $this->objectConfig = Orm\Record\Config::factory($this->objectName);
+    }
+
+    /**
+     * @param  \Dvelum\Db\Adapter $db
+     */
+    public function setConnection(\Dvelum\Db\Adapter $db){
+        $this->db = $db;
     }
 
     /**
@@ -136,40 +150,75 @@ abstract class AbstractAdapter implements BuilderInterface
         return $brokenFields;
     }
 
+    public function validateDistributedConfig() : bool
+    {
+        if(!$this->checkRelations()){
+            $this->validationErrors['relations'] = true;
+            return false;
+        }
+        $shardUpdates = $this->getDistributedObjectsUpdatesInfo();
+        $linksUpdates = $this->getObjectsUpdatesInfo();
+
+        if(!empty($updateKeys) || !empty($shardUpdates) || !empty($linksUpdates))
+            return false;
+        else
+            return true;
+
+    }
     /**
      * Check if DB table has correct structure
      * @return bool
      */
-     public function validate() : bool
-     {
-         if(!$this->tableExists() || !$this->checkRelations()){
-             return false;
-         }
-         // Check columns
-         $updateColumns = $this->prepareColumnUpdates();
-         // Column changes
-         if(!empty($updateColumns)){
-             return false;
-         }
+    public function validate() : bool
+    {
+        if(!$this->tableExists()){
+            $this->validationErrors['table'] = true;
+            return false;
+        }
+        if(!$this->checkRelations()){
+            $this->validationErrors['relations'] = true;
+            return false;
+        }
+        // Check columns
+        $updateColumns = $this->prepareColumnUpdates();
+        // Column changes
+        if(!empty($updateColumns)){
+            $this->validationErrors['columns'] = true;
+            return false;
+        }
 
-         // Check indexes
-         $updateIndexes = $this->prepareIndexUpdates();
-         // Index changes
-         if(!empty($updateIndexes)){
-             return false;
-         }
+        // Check indexes
+        $updateIndexes = $this->prepareIndexUpdates();
+        // Index changes
+        if(!empty($updateIndexes)){
+            $this->validationErrors['indexes'] = true;
+            return false;
+        }
 
-         $updateKeys = [];
-         if($this->useForeignKeys){
-             $updateKeys = $this->prepareKeysUpdate();
-         }
+        $updateKeys = [];
+        if($this->useForeignKeys){
+            $updateKeys = $this->prepareKeysUpdate();
+        }
 
-         if(!empty($updateColumns) || !empty($updateIndexes) || !empty($updateKeys))
-             return false;
-         else
-             return true;
-     }
+        $shardUpdates = $this->getDistributedObjectsUpdatesInfo();
+        $linksUpdates = $this->getObjectsUpdatesInfo();
 
+        $this->validationErrors = [
+            'keys' => (int) $updateKeys,
+            'shards' => (int) $shardUpdates,
+            'links' => (int) $linksUpdates,
+        ];
+
+        if(!empty($updateKeys) || !empty($shardUpdates) || !empty($linksUpdates))
+            return false;
+        else
+            return true;
+    }
+
+    public function getValidationErrors() : array
+    {
+        return $this->validationErrors;
+    }
     /**
      * Get Existing Columns
      * @return \Zend\Db\Metadata\Object\TableObject
@@ -199,7 +248,6 @@ abstract class AbstractAdapter implements BuilderInterface
         }catch(\Exception $e){
             return false;
         }
-
         return in_array($name , $tables , true);
     }
 
@@ -286,8 +334,8 @@ abstract class AbstractAdapter implements BuilderInterface
     public function createForeignKeyName(array $item): string
     {
         $key = $item['curDb'].'.'.$item['curTable'].'.'.$item['curField'] .
-               '-' .
-                $item['toDb'].'.'.$item['toTable'].'.'.$item['toField'];
+            '-' .
+            $item['toDb'].'.'.$item['toTable'].'.'.$item['toField'];
 
         if(mb_strlen($key,'utf-8') > 64){
             $key = md5($key);
@@ -362,7 +410,7 @@ abstract class AbstractAdapter implements BuilderInterface
             if(!$this->tableExists())
                 return true;
 
-            $db = $model->getDbConnection();
+            $db = $this->db;
 
             $ddl = new Ddl\DropTable($model->table());
             $sql = $db->sql()->buildSqlString($ddl);
@@ -409,11 +457,304 @@ abstract class AbstractAdapter implements BuilderInterface
         }
     }
 
-   /**
+    /**
      * Get property SQL query
      * @param string $name
      * @param Orm\Record\Config\Field $field
      * @return string
      */
     abstract protected function getPropertySql(string $name , Orm\Record\Config\Field $field) : string;
+
+    /**
+     * Update distributed objects
+     * @param array $list
+     * @return mixed
+     */
+    protected function updateDistributed( array $list) : bool
+    {
+        $shardingConfig = Cfg::storage()->get('sharding.php');
+
+        if(!$shardingConfig->get('dist_index_enabled')){
+            return true;
+        }
+
+        $lang = Lang::lang();
+        $usePrefix = true;
+        $indexConnection = $shardingConfig->get('dist_index_connection');
+
+        $objectModel = Model::factory($this->objectName);
+        $db = $this->db;
+        $tablePrefix = $objectModel->getDbPrefix();
+
+        $oConfigPath = $this->objectConfig->getConfigPath();
+        $configDir  = Cfg::storage()->getWrite() . $oConfigPath;
+
+        $fieldList = Cfg::storage()->get('objects/distributed/fields.php');
+
+        if(empty($fieldList)){
+            $this->errors[] = 'Cannot get distributed fields: ' . 'objects/distributed/fields.php';
+            return false;
+        }
+
+        $fieldList = $fieldList->__toArray();
+        $distribIndexes = $this->objectConfig->getDistributedIndexesConfig();
+
+        foreach ($distribIndexes as $conf){
+            if(!$conf['is_system']){
+                $field = $this->objectConfig->getField($conf['field']);
+                $fieldList[$conf['field']] = $field->__toArray();
+                $fieldList[$conf['field']]['db_isNull'] = true;
+            }
+        }
+
+        foreach($list as $item)
+        {
+            $newObjectName = $item['name'];
+            $tableName = $newObjectName;
+
+            $objectData = [
+                'data_object' => $this->objectName,
+                'connection'=>$indexConnection,
+                'use_db_prefix'=>$usePrefix,
+                'disable_keys' => true,
+                'locked' => false,
+                'readonly' => false,
+                'primary_key' => 'id',
+                'table' => $tableName,
+                'engine' => 'InnoDB',
+                'rev_control' => false,
+                'link_title' => 'id',
+                'save_history' => false,
+                'system' => true,
+                'fields' => $fieldList,
+                'indexes' => [],
+            ];
+
+            if(!is_dir($configDir) && !@mkdir($configDir, 0655, true)){
+                $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
+                return false;
+            }
+
+            $newObjectName = strtolower($newObjectName);
+            $newConfigPath = $oConfigPath . $newObjectName . '.php';
+
+            if(Cfg::storage()->exists($newConfigPath)){
+                $cfg = Cfg::storage()->get($newConfigPath);
+                $cfg->setData($objectData);
+            }else{
+                $cfg = Cfg\Factory::create($objectData, $configDir. $newObjectName . '.php');
+            }
+
+            /*
+             * Write object config
+             */
+            if(!Cfg::storage()->save($cfg)){
+                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir. $newObjectName . '.php';;
+                return false;
+            }
+
+            $cfg = Config::factory($newObjectName, true);
+
+            $cfg->setObjectTitle($this->objectName.' ID Routes');
+
+            if(!$cfg->save()){
+                $this->errors[] = $lang->get('CANT_WRITE_FS');
+                return false;
+            }
+
+            /*
+             * Build database
+            */
+            $builder = Builder::factory($newObjectName, true);
+            return  $builder->build();
+        }
+    }
+
+    /**
+     * Create Db_Object`s for relations
+     * @throw Exception
+     * @param array $list
+     * @return bool
+     */
+    protected function updateRelations(array $list) : bool
+    {
+        $lang = Lang::lang();
+        $usePrefix = true;
+        $connection = $this->objectConfig->get('connection');
+
+
+        $db = $this->db;
+        $tablePrefix = $this->model->getDbPrefix();
+
+        $oConfigPath = $this->objectConfig->getConfigPath();
+
+        $configDir  = Cfg::storage()->getWrite() . $oConfigPath;
+
+        $fieldList = Cfg::storage()->get('objects/relations/fields.php');
+        $indexesList = Cfg::storage()->get('objects/relations/indexes.php');
+
+        if(empty($fieldList))
+            throw new Exception('Cannot get relation fields: ' . 'objects/relations/fields.php');
+
+        if(empty($indexesList))
+            throw new Exception('Cannot get relation indexes: ' . 'objects/relations/indexes.php');
+
+        $fieldList= $fieldList->__toArray();
+        $indexesList = $indexesList->__toArray();
+
+        $fieldList['source_id']['link_config']['object'] = $this->objectName;
+
+
+        foreach($list as $fieldName=>$info)
+        {
+            $newObjectName = $info['name'];
+            $tableName = $newObjectName;
+
+            $linkedObject = $this->objectConfig->getField($fieldName)->getLinkedObject();
+
+            $fieldList['target_id']['link_config']['object'] = $linkedObject;
+
+            $objectData = [
+                'parent_object' => $this->objectName,
+                'connection'=>$connection,
+                'use_db_prefix'=>$usePrefix,
+                'disable_keys' => false,
+                'locked' => false,
+                'readonly' => false,
+                'primary_key' => 'id',
+                'table' => $newObjectName,
+                'engine' => 'InnoDB',
+                'rev_control' => false,
+                'link_title' => 'id',
+                'save_history' => false,
+                'system' => true,
+                'fields' => $fieldList,
+                'indexes' => $indexesList,
+            ];
+
+            $tables = $db->listTables();
+
+            if($usePrefix){
+                $tableName = $tablePrefix . $tableName;
+            }
+
+            if(in_array($tableName, $tables ,true))
+                throw new Exception($lang->get('INVALID_VALUE').' Table Name: '.$tableName .' '.$lang->get('SB_UNIQUE'));
+
+            if(file_exists($configDir . strtolower($newObjectName).'.php'))
+                throw new Exception($lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE'));
+
+            if(!is_dir($configDir) && !@mkdir($configDir, 0655, true)){
+                $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
+                return false;
+            }
+
+            /**
+             * @var ConfigInterface
+             */
+            $cfg = !Cfg\Factory::create($objectData,$configDir. $newObjectName . '.php');
+            /*
+             * Write object config
+             */
+            if(!Cfg::storage()->save($cfg)){
+                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir. $newObjectName . '.php';
+                return false;
+            }
+
+            $cfg = Orm\Record\Config::factory($newObjectName);
+            $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->_objectName.' & '.$linkedObject);
+
+            if(!Cfg::storage()->save($cfg)){
+                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $cfg->getName();
+                return false;
+            }
+
+            /*
+             * Build database
+            */
+            $builder = Builder::factory($newObjectName, true);
+            return $builder->build();
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getDistributedObjectsUpdatesInfo()
+    {
+        if(!$this->objectConfig->isDistributed()){
+            return [];
+        }
+
+        $mainIndexes = $this->objectConfig->getIndexesConfig(false);
+        $updates = [];
+
+        $idObject = $this->objectConfig->getDistributedIndexObject();
+        if(!Orm\Record\Config::configExists($idObject)){
+            $updates[] = ['name' => $idObject, 'action'=>'add'];
+            return $updates;
+        }
+
+        $objectConfig = Config::factory($idObject);
+
+        $fields = $this->objectConfig->getDistributedIndexesConfig();
+
+        if(!empty($fields)){
+            $fields = Utils::rekey('field' , $fields);
+        }
+
+        foreach ($fields as $field){
+            // New field for index object
+            if(!$objectConfig->fieldExists($field['field'])){
+                $updates[] = ['name' => $idObject, 'action'=>'update'];
+                return $updates;
+            }
+            $fieldConfig = $this->objectConfig->getField($field['field'])->__toArray();
+            $indexConfig = $objectConfig->getField($field['field'])->__toArray();
+            unset($fieldConfig['title']);
+            unset($indexConfig['title']);
+            unset($fieldConfig['db_isNull']);
+            unset($fieldConfig['db_isNull']);
+
+            if($this->objectConfig->getPrimaryKey() == $field['field']){
+                continue;
+            }
+            unset($fieldConfig['system']);
+            unset($indexConfig['system']);
+            // field config updated
+            if(!empty(Utils::array_diff_assoc_recursive($fieldConfig,$indexConfig))){
+                $updates[] = ['name' => $idObject, 'action'=>'update'];
+                return $updates;
+            }
+        }
+        // delete field from index
+        foreach ($objectConfig->getFields() as $field){
+            if(!$objectConfig->isSystemField($field->getName()) && !isset($fields[$field->getName()])){
+                $updates[] = ['name' => $idObject, 'action'=>'update'];
+                return $updates;
+            }
+        }
+        return $updates;
+    }
+
+    /**
+     * @return array
+     */
+    public function getObjectsUpdatesInfo()
+    {
+        $updates = [];
+        $list = $this->objectConfig->getManyToMany();
+        foreach($list as $objectName=>$fields)
+        {
+            if(!empty($fields)){
+                foreach($fields as $fieldName=>$linkType){
+                    $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
+                    if(!Orm\Record\Config::configExists($relationObjectName)){
+                        $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
+                    }
+                }
+            }
+        }
+        return $updates;
+    }
 }

@@ -9,7 +9,6 @@ define('DVELUM_ROOT' ,$dvelumRoot);
 define('DVELUM_WWW_PATH', $dvelumRoot.'/www/');
 $_SERVER['DOCUMENT_ROOT'] = DVELUM_WWW_PATH;
 
-
 chdir(DVELUM_ROOT);
 
 //===== loading kernel =========
@@ -22,59 +21,52 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
  */
 require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
+
 use \Dvelum\Config\Factory as ConfigFactory;
 
-$configStorage = Config::storage();
+$configStorage = ConfigFactory::storage();
 $configStorage->setConfig($bootCfg['config_storage']);
 
 //==== Loading system ===========
 /*
  * Reload storage options from local system
  */
-$storageConfig = $configStorage->get('config_storage.php')->__toArray();
-$storageConfig['file_array'] = array(
-    'paths' => array(
-        './application/configs/dist/',
-        './application/configs/local/',
-        './tests/data/configs/'
-    ),
-    'write' =>  './tests/data/configs/',
-    'apply_to' => './application/configs/dist/',
-);
-
-$configStorage->setConfig($storageConfig);
-
+$configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->__toArray());
 /*
  * Connecting main configuration file
  */
-$config = Config::storage()->get('main.php');
-$config->set('development' ,2);
+$config = ConfigFactory::storage()->get('main.php');
+$config->set('development', 2);
 
 /*
- * Disable op caching for test mode
+ * Disable op caching for development mode
  */
-ini_set('opcache.enable', 0);
-
-/**
- * Enable Zend Framework 1.x library support
- */
-set_include_path(get_include_path() . PATH_SEPARATOR . $config->get('vendor_lib'));
-
+if($config->get('development')){
+    ini_set('opcache.enable', 0);
+    $configStorage->setConfig(['debug' => true]);
+}
 /*
  * Setting autoloader config
  */
 $autoloaderCfg = ConfigFactory::storage()->get('autoloader.php')->__toArray();
-$autoloaderCfg['debug'] = true;
-$autoloaderCfg['map'] = false;
+$autoloaderCfg['debug'] = $config->get('development');
+
+if(!isset($autoloaderCfg['useMap']))
+    $autoloaderCfg['useMap'] = true;
+
+if($autoloaderCfg['useMap'] && $autoloaderCfg['map'])
+    $autoloaderCfg['map'] = require ConfigFactory::storage()->getPath($autoloaderCfg['map']);
+else
+    $autoloaderCfg['map'] = false;
 
 $autoloader->setConfig($autoloaderCfg);
 
-Registry::set('main', $config , 'config');
-
-// clear test configs
-File::rmdirRecursive('./tests/data/configs/' , false);
-File::copyDir('./tests/data/test_objects/', './tests/data/configs/objects/');
-
+/*
+ * Register composer autoload
+ */
+if($config->get('use_composer_autoload') && file_exists(__DIR__ . '/vendor/autoload.php')){
+    require __DIR__ . '/vendor/autoload.php';
+}
 
 /*
  * Starting the application
@@ -83,11 +75,14 @@ $appClass = $config->get('application');
 if(!class_exists($appClass))
     throw new Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
 
+\Dvelum\File::rmdirRecursive('./tests/data/configs/' , false);
+\Dvelum\File::copyDir('./tests/data/test_objects/', './tests/data/configs/objects/');
+
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);
 $app->init();
 
-$dbObjectManager = new Db_Object_Manager();
+$dbObjectManager = new \Dvelum\Orm\Record\Manager();
 foreach($dbObjectManager->getRegisteredObjects() as $object)
 {
         echo 'build ' . $object . ' : ';

@@ -226,7 +226,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
         $this->_checkOwner($object);
 
-        $ormConfig = Config::storage()->get('orm');
+        $ormConfig = Config::storage()->get('orm.php');
 
         if($ormConfig->get('vc_clear_on_delete'))
             Model::factory('Vc')->removeItemVc($this->_objectName , $id);

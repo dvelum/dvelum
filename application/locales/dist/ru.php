@@ -471,7 +471,7 @@
   'SYNC_INFO' => 'Синхронизировать информацию',
   'SQL_EXEC_FAIL' => 'Произошла ошибка во время исполнения sql команды',
   'TABLE_NAME' => 'Имя таблицы',
-  'TABLE_ENGINE' => 'Table engine',
+  'TABLE_ENGINE' => 'Storage engine',
   'TITLE' => 'Заголовок',
   'TYPE' => 'Тип',
   'THUMBNAIL' => 'Превью',
@@ -582,5 +582,13 @@
   'USER_PERMISSIONS' => 'Права пользователей',
   'PERMISSIONS' => 'Права доступа',
   'PAGECODE_MATCH' => 'Это моле может содержать только цифры, латински буквы и символы _ -',
-  'TRANSACTION_ISOLATION_LEVEL' => 'Уровень изолированности транзакций'
+  'TRANSACTION_ISOLATION_LEVEL' => 'Уровень изолированности транзакций',
+  'DISTRIBUTED' => 'Распределенный',
+  'DISTRIBUTED_INDEXES' => 'Распределенные индексы',
+  'SHARD' => 'Шард',
+  'VALIDATE_DB' => 'Проверить БД',
+  'VALIDATE_DB_STRUCTURE' => 'Проверить структуру таблиц БД',
+  'VALID_STRUCTURE' => 'Синхронизировано',
+  'INVALID_STRUCTURE' => 'Неверная структура БД',
+  'GROUP_BY' => 'Группировать по'
 ); 

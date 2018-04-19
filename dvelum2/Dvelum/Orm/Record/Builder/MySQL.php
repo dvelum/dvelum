@@ -23,11 +23,14 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Record\Builder;
 
 use Dvelum\Config as Cfg;
+use Dvelum\Db\Metadata\ColumnObject;
 use Dvelum\Orm;
 use Dvelum\Orm\Exception;
 use Dvelum\Orm\Record\Config;
 use Dvelum\Orm\Record\Builder;
 use Dvelum\Lang;
+use Dvelum\Orm\Model;
+use Dvelum\Utils;
 
 
 /**
@@ -47,6 +50,8 @@ class MySQL extends AbstractAdapter
         }
 
         $engineUpdate = $this->prepareEngineUpdate();
+
+        $this->validationErrors['engine'] = $engineUpdate;
 
         if(!empty($engineUpdate))
             return false;
@@ -180,9 +185,8 @@ class MySQL extends AbstractAdapter
         else
             $fields = $this->getExistingColumns();
 
-
         /**
-         * @var \Zend\Db\Metadata\Object\ColumnObject $column
+         * @var ColumnObject $column
          */
         $columns = [];
         foreach ($fields as $column){
@@ -254,6 +258,11 @@ class MySQL extends AbstractAdapter
              * @var bool
              */
             $incrementCmp = false;
+
+            // Compare PRIMARY KEY Sequence
+            if($name == $this->objectConfig->getPrimaryKey() &&  $column->isAutoIncrement() !== (bool) $v['db_auto_increment']){
+                $incrementCmp = true;
+            }
 
             if($v['db_type'] === 'boolean' && $dataType === 'tinyint')
             {
@@ -327,17 +336,10 @@ class MySQL extends AbstractAdapter
                         $defaultCmp = (string) $v['db_default'] != (string) $columnDefault;
                 }
             }
-
-            /**
-             * @todo migrate identity
-             */
-            //            if($fields[$name]['IDENTITY'] && $name != $this->objectConfig->getPrimaryKey())
-            //                $incrementCmp = true;
-            //
-            //            if($name == $this->objectConfig->getPrimaryKey() && ! $fields[$name]['IDENTITY'])
-            //                $incrementCmp = true;
-
-
+            // Compare PRIMARY KEY Sequence
+            if($name == $this->objectConfig->getPrimaryKey() &&  $column->isAutoIncrement() !== (bool) $v['db_auto_increment']){
+                $incrementCmp = true;
+            }
 
             /*
              * If not passed at least one comparison then rebuild the the field
@@ -524,6 +526,13 @@ class MySQL extends AbstractAdapter
         $colDiff = array_diff($cfg1['columns'] , $cfg2['columns']);
         $colDiffReverse = array_diff($cfg2['columns'] , $cfg1['columns']);
 
+        if(!isset($cfg1['unique'])){
+            $cfg1['unique']  = false;
+        }
+        if(!isset($cfg2['unique'])){
+            $cfg2['unique']  = false;
+        }
+
         if($cfg1['fulltext'] !== $cfg2['fulltext'] || $cfg1['unique'] !== $cfg2['unique'] || ! empty($colDiff) || !empty($colDiffReverse))
             return false;
 
@@ -643,15 +652,29 @@ class MySQL extends AbstractAdapter
     /**
      * Create / alter db table
      * @param bool $buildForeignKeys
-     * @return boolean
+     * @param bool $buildShard
+     * @return bool
      */
-    public function build(bool $buildForeignKeys = true) : bool
+    public function build(bool $buildForeignKeys = true, bool $buildShard = false) : bool
     {
         $this->errors = array();
         if($this->objectConfig->isLocked() || $this->objectConfig->isReadOnly())
         {
             $this->errors[] = 'Can not build locked object ' . $this->objectConfig->getName();
             return false;
+        }
+
+        if($this->objectConfig->isDistributed() && !$buildShard){
+            $shardingUpdate = $this->getDistributedObjectsUpdatesInfo();
+            if(!empty($shardingUpdate)){
+                try{
+                    $this->updateDistributed($shardingUpdate);
+                }catch (Exception $e){
+                    $this->errors[] = $e->getMessage();
+                    return false;
+                }
+            }
+            return true;
         }
         /*
          * Create table if not exists
@@ -687,7 +710,7 @@ class MySQL extends AbstractAdapter
             return false;
 
         /*
-         * Update comands
+         * Update commands
          */
         $cmd = [];
 
@@ -777,7 +800,7 @@ class MySQL extends AbstractAdapter
         if(empty($this->errors))
             return true;
         else
-            return true;
+            return false;
     }
 
     /**
@@ -842,110 +865,6 @@ class MySQL extends AbstractAdapter
 
         return true;
     }
-
-    /**
-     * Create Orm\Record`s for relations
-     * @throws Exception
-     * @param array $list
-     * @return bool
-     */
-    protected function updateRelations(array $list) : bool
-    {
-        $lang = Lang::lang();
-        $usePrefix = true;
-        $connection = $this->objectConfig->get('connection');
-
-        $db = $this->model->getDbConnection();
-        $tablePrefix = $this->model->getDbPrefix();
-
-        $configDir  = Cfg::storage()->getWrite() . $this->configPath;
-        $fieldList = Cfg::storage()->get('objects/relations/fields.php');
-        $indexesList = Cfg::storage()->get('objects/relations/indexes.php');
-
-        if(empty($fieldList))
-            throw new Exception('Cannot get relation fields: ' . 'objects/relations/fields.php');
-
-        if(empty($indexesList))
-            throw new Exception('Cannot get relation indexes: ' . 'objects/relations/indexes.php');
-
-        $fieldList= $fieldList->__toArray();
-        $indexesList = $indexesList->__toArray();
-
-        $fieldList['source_id']['link_config']['object'] = $this->objectName;
-
-        foreach($list as $fieldName=>$info)
-        {
-            $newObjectName = $info['name'];
-            $tableName = $newObjectName;
-
-            $linkedObject = $this->objectConfig->getField($fieldName)->getLinkedObject();
-
-            $fieldList['target_id']['link_config']['object'] = $linkedObject;
-
-            $objectData = [
-                'parent_object' => $this->objectName,
-                'connection'=>$connection,
-                'use_db_prefix'=>$usePrefix,
-                'disable_keys' => false,
-                'locked' => false,
-                'readonly' => false,
-                'primary_key' => 'id',
-                'table' => $newObjectName,
-                'engine' => 'InnoDB',
-                'rev_control' => false,
-                'link_title' => 'id',
-                'save_history' => false,
-                'system' => true,
-                'fields' => $fieldList,
-                'indexes' => $indexesList,
-            ];
-
-            $tables = $db->listTables();
-
-            if($usePrefix){
-                $tableName = $tablePrefix . $tableName;
-            }
-
-            if(in_array($tableName, $tables ,true)){
-                $this->errors[] = $lang->get('INVALID_VALUE').' Table Name: '.$tableName .' '.$lang->get('SB_UNIQUE');
-                return false;
-            }
-
-            if(file_exists($configDir . strtolower($newObjectName).'.php')){
-                $this->errors[] = $lang->get('INVALID_VALUE').' Object Name: '.$newObjectName .' '.$lang->get('SB_UNIQUE');
-                return false;
-            }
-
-            if(!is_dir($configDir) && !@mkdir($configDir, 0755, true)){
-                $this->errors[] = $lang->get('CANT_WRITE_FS').' '.$configDir;
-                return false;
-            }
-
-            /*
-             * Write object config
-             */
-            $newConfig = Cfg\Factory::create($objectData, $configDir. $newObjectName . '.php');
-
-            if(!$newConfig || Cfg::storage()->save($newConfig)){
-                $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $configDir . $newObjectName . '.php';
-                return false;
-            }
-
-            $cfg = Config::factory($newObjectName);
-            $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->objectName.' & '.$linkedObject);
-
-            if(!Cfg::storage()->save($cfg)){
-                $this->errors[] = $lang->get('CANT_WRITE_FS');
-                return false;
-            }
-
-            /*
-             * Build database
-            */
-            return $this->build(true);
-        }
-    }
-
     /**
      * Rename database table
      *
@@ -978,4 +897,7 @@ class MySQL extends AbstractAdapter
 
         }
     }
+
+
+
 }

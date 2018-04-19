@@ -27,6 +27,7 @@ use Dvelum\Config as Cfg;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Exception;
 
+
 /**
  * Orm Object structure config
  * @package Db
@@ -64,6 +65,12 @@ class Config
      * @var array
      */
     static protected $cryptFields;
+
+    /**
+     * List of system fields used for sharding
+     * @var array
+     */
+    static protected $distributedFields;
 
     /**
      * @var string $name
@@ -234,9 +241,20 @@ class Config
         $dataLink = & $this->config->dataLink();
         $pKeyName = $this->getPrimaryKey();
 
-        $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
-            $this->settings->get('configPath').'system/pk_field.php'
-        )->__toArray();
+        if(!isset($dataLink['distributed']))
+            $dataLink['distributed'] = false;
+
+
+        if($this->isDistributed()){
+            $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
+                $this->settings->get('configPath').'distributed/pk_field.php'
+            )->__toArray();
+        }else{
+            $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
+                $this->settings->get('configPath').'system/pk_field.php'
+            )->__toArray();
+        }
+
 
         /*
          * System index init
@@ -245,7 +263,11 @@ class Config
             'columns'=>[$pKeyName],
             'fulltext'=>false,
             'unique'=>true,
-            'primary'=>true
+            'primary'=>true,
+             // distributed fields does not use auto increment index
+            'db_auto_increment'=>!$dataLink['distributed'],
+            'is_search' =>true,
+            'lazyLang'=>true
         );
 
         /*
@@ -265,6 +287,15 @@ class Config
          */
         if($this->hasEncrypted())
             $dataLink['fields'] = array_merge($dataLink['fields'] , $this->getEncryptionFields());
+
+
+        if((isset($dataLink['distributed']) && $dataLink['distributed']) || $this->isIndexObject()){
+            $dataLink['fields'] = array_merge($dataLink['fields'] , $this->getDistributedFields());
+        }
+
+        if($this->isIndexObject()){
+            $dataLink['indexes'] = $this->initIndexIndexes();
+        }
 
         /*
          * Init ACL adapter
@@ -652,11 +683,15 @@ class Config
             if($translationsData !==false)
                 $translationsData[$this->name]['fields'][$field] = $cfg['title'];
             unset($cfg['title']);
-        }
+        } unset($cfg);
 
         $config->set('fields', $fields);
         $config->set('indexes' , $indexes);
         $config->offsetUnset('title');
+
+        if($this->isDistributed()){
+            $config->set('distributed_indexes',  $this->getDistributedIndexesConfig(false));
+        }
 
         if(!$this->translator->getStorage()->save($translation))
             return false;
@@ -725,6 +760,94 @@ class Config
         $indexes = $this->getIndexesConfig();
         $indexes[$index] = $config;
         $this->config->set('indexes', $indexes);
+    }
+
+    /**
+     * Configure distributed index
+     * @param $index
+     * @param array $config
+     */
+    public function setDistributedIndexConfig($index, array $config)
+    {
+        $indexes = $this->getDistributedIndexesConfig();
+        $indexes[$index] = $config;
+        $this->config->set('distributed_indexes', $indexes);
+    }
+
+    /**
+     * Init indexes for distributed index object
+     * @return array
+     */
+    protected function initIndexIndexes() : array
+    {
+        $list = $this->config->get('indexes');
+        $shardingField = Cfg::storage()->get('sharding.php')->get('shard_field');
+
+        $list[$shardingField] = [
+            'columns'=>[$shardingField],
+            'fulltext'=>false,
+            'unique'=>false,
+            'primary'=>false,
+            'db_auto_increment'=> false,
+            'is_search' =>false,
+            'lazyLang'=>false,
+            'system'=>true
+        ];
+
+        $dataObject = Config::factory($this->getDataObject());
+        $dataIndexes = $dataObject->getIndexesConfig();
+        $currentFields = $this->getFields();
+
+        foreach ($currentFields as $field)
+        {
+            $fieldName = $field->getName();
+            if(isset($list[$fieldName]) || $fieldName ==$this->getPrimaryKey()){
+                continue;
+            }
+            if(isset($dataIndexes[$fieldName]) && count($dataIndexes[$fieldName]['columns']) == 1 && $dataIndexes[$fieldName]['columns'][0]==$fieldName){
+                $list[$fieldName] = $dataIndexes[$fieldName];
+            }else{
+                $list[$fieldName] =  [
+                    'columns'=>[$fieldName],
+                    'fulltext'=>false,
+                    'unique'=>false,
+                    'primary'=>false,
+                    'db_auto_increment'=> false,
+                    'is_search' =>true,
+                    'lazyLang'=>false
+                ];
+            }
+            $list[$fieldName]['system'] = true;
+        }
+        return $list;
+    }
+    /**
+     * Get list of distributed indexes
+     * @param bool $includeSystem
+     * @return array
+     */
+    public function getDistributedIndexesConfig(bool $includeSystem = true) : array
+    {
+        if(!$this->isDistributed()) {
+            return [];
+        }
+
+        $list = [];
+
+        if($this->config->offsetExists('distributed_indexes')){
+            $list = $this->config->get('distributed_indexes');
+        }
+
+        // Set Required Indexes
+        if($includeSystem){
+            $shardingField = Cfg::storage()->get('sharding.php')->get('shard_field');
+            $list[$this->getPrimaryKey()] = [
+                'field'=>$this->getPrimaryKey(),
+                'is_system'=>true,
+            ];
+            $list[$shardingField] = ['field'=>$shardingField,'is_system'=>true];
+        }
+        return $list;
     }
 
     /**
@@ -855,6 +978,10 @@ class Config
 
         $encFields = $this->getEncryptionFields();
         if(isset($encFields[$field]))
+            return true;
+
+        $distributed = $this->getDistributedFields();
+        if(isset($distributed[$field]))
             return true;
 
         return false;
@@ -1124,6 +1251,39 @@ class Config
     }
 
     /**
+     * Check if object is sharding index
+     */
+    public function isIndexObject()
+    {
+        if(
+            $this->isSystem()
+            &&
+            $this->config->offsetExists('data_object')
+            &&
+            !empty($this->config->get('data_object'))
+            &&
+            Config::factory($this->config->get('data_object'))->isDistributed()
+        ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * Get Data object for index
+     * @throws Exception
+     * @return string
+     */
+    public function getDataObject() : string
+    {
+        if(!$this->isIndexObject()){
+            throw new Exception('Cannot get data object. '.$this->getName().' is not index object');
+        }
+        return $this->config->get('data_object');
+    }
+
+    /**
      * Get object field
      * @param string $name
      * @return Config\Field
@@ -1192,4 +1352,62 @@ class Config
     {
         return $this->cryptService;
     }
+
+    /**
+     * Check if object uses sharding strategy
+     * @return bool
+     */
+    public function isDistributed() : bool
+    {
+        if($this->config->offsetExists('distributed') && $this->config->get('distributed')){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    /**
+     * Delete distributed index
+     * @param string $name
+     * @return bool
+     */
+    public function removeDistributedIndex(string $name) : bool
+    {
+        $indexes = $this->getDistributedIndexesConfig();
+
+        if(!isset($indexes[$name]) || $indexes[$name]['is_system'])
+            return false;
+
+        unset($indexes[$name]);
+
+        $this->config->set('distributed_indexes' , $indexes);
+
+        return true;
+    }
+
+    /**
+     * Get object for storing distributed id for current object
+     * @return string
+     * @throws Exception
+     */
+    public function getDistributedIndexObject()
+    {
+        if($this->isDistributed()){
+            return $this->getName() . Cfg::storage()->get('sharding.php')->get('dist_index_postfix');
+        }else{
+            throw new Exception('Object has no distribution');
+        }
+    }
+
+    /**
+     * Get system sharding fields
+     * @return array
+     */
+    protected function getDistributedFields() : array
+    {
+        if(!isset(self::$distributedFields)){
+            self::$distributedFields = Cfg::storage()->get($this->settings->get('configPath') . 'distributed/fields.php')->__toArray();
+        }
+        return self::$distributedFields;
+    }
+
 }
