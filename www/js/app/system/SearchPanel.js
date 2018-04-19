@@ -51,6 +51,10 @@ Ext.define('SearchPanel', {
      * The minimum number of characters the user must type before search starts
      */
     minChars: 1,
+    /**
+     * Reload store to first page. For buffered store must be set to false
+     */
+    reloadToFirstPage: true,
 
     constructor: function (config) {
 
@@ -144,7 +148,11 @@ Ext.define('SearchPanel', {
             this.store.filter({fn: this.isSearched, scope: this});
         } else {
             this.store.getProxy().setExtraParam(this.searchParam, this.searchField.getValue());
-            this.store.loadPage(1);
+            if (this.reloadToFirstPage) {
+                this.store.loadPage(1);
+            }else{
+                this.store.load();
+            }
         }
         this.lastQuery = query;
     },
