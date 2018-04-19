@@ -46,6 +46,9 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
                         if($class === 'Data_Store_Tree')
                             $title.= ' (Tree)';
 
+                        if($class === 'Data_Store_Buffered')
+                            $title.= ' (Buffered)';
+
                         // append instance token
                         if($addInstances && $object->isExtendedComponent()){
                             $list[] = array('id'=>$name, 'title'=>$name, 'objClass'=>$cfg['namespace'] .'.' . $name);
@@ -77,6 +80,9 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
 
                         if($class === 'Data_Store_Tree')
                             $title.= ' (Tree)';
+
+                        if($class === 'Data_Store_Buffered')
+                            $title.= ' (Buffered)';
 
                         // append instance token
                         if($addInstances && $object->isExtendedComponent())
@@ -113,7 +119,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
      */
     protected function _fillContainers(Tree $tree , $root = 0)
     {
-        $exceptions = array('Store' , 'Data_Store' , 'Data_Store_Tree' , 'Model');
+        $exceptions = array('Store', 'Data_Store', 'Data_Store_Tree', 'Data_Store_Buffered', 'Model');
         $result = array();
         $childs = $tree->getChilds($root);
 
@@ -250,6 +256,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
             'Store'=>'storeIcon',
             'Data_Store'=>'storeIcon',
             'Data_Store_Tree'=>'storeIcon',
+            'Data_Store_Buffered'=>'storeIcon',
             'Model'=>'modelIcon',
             'Image'=>'imageIcon',
 

@@ -93,6 +93,7 @@ class Designer_Project
 	public static $storeClasses = array(
 		'Data_Store',
 		'Data_Store_Tree',
+        'Data_Store_Buffered',
 		'Store'
 	);
 
@@ -408,10 +409,11 @@ class Designer_Project
 	 */
 	public function getStores($treeStores = true)
 	{
-		$list = $this->getObjectsByClass(['Store','Data_Store','Data_Store_Tree','Object_Instance']);
+		$list = $this->getObjectsByClass(['Store','Data_Store','Data_Store_Tree','Data_Store_Buffered','Object_Instance']);
 
 		foreach($list as $k=>$v){
-			if($v->isInstance() &&  !in_array($v->getObject()->getClass(),['Store','Data_Store','Data_Store_Tree'],true)){
+			if($v->isInstance() && !in_array($v->getObject()->getClass(),
+                    ['Store','Data_Store','Data_Store_Tree','Data_Store_Buffered'],true)){
 				unset($list[$k]);
 			}
 		}
