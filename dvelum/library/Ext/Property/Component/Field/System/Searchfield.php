@@ -9,6 +9,7 @@ class Ext_Property_Component_Field_System_Searchfield extends Ext_Property
 	public $searchParam = self::String;
 	public $fieldLabel = self::String;
 	public $minChars = self::Numeric;
+	public $reloadToFirstPage = self::Boolean;
 
 	static public $extend = 'SearchPanel';
 	static public $xtype = 'searchpanel';
