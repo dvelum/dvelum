@@ -227,8 +227,8 @@ class Controller extends Backend\Controller
                 foreach ($replace as &$item){
                     $item = str_replace('/','\\', $item);
                 }unset($item);
-                $replace[] = '\\';
                 $moduleName = str_replace($replace, '', $controller);
+                $moduleName = str_replace('\\','_',$moduleName);
                 $moduleName = trim($moduleName,'_\\');
 
                 $list = $manager->getRegisteredModules();
@@ -259,6 +259,8 @@ class Controller extends Backend\Controller
                 $data[$name] = $this->request->post($name, $type, null);
             }
         }
+
+        $data['class'] = trim($data['class'],'\\');
 
         if ($id) {
             if (!$manager->isValidModule($id)) {
