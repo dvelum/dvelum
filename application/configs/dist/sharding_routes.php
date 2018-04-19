@@ -1,4 +1,6 @@
 <?php
+return [];
+/*
 return [
     [
         'id' => '',
@@ -20,3 +22,4 @@ return [
         'enabled' => false
     ]
 ];
+*/

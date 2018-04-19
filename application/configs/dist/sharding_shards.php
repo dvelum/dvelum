@@ -1,4 +1,6 @@
 <?php
+return [];
+/*
 return [
     [
         'id' => 'shard1',
@@ -28,3 +30,4 @@ return [
         ],
     ]
 ];
+*/
