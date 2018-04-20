@@ -183,7 +183,7 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
             }
         }
 
-        if ($store->isValidProperty('model') && strlen($store->model) && $store->objectExists($store->model)) {
+        if ($store->isValidProperty('model') && strlen($store->model) && $project->objectExists($store->model)) {
             $model = $project->getObject($store->model);
 
             if ($model->isValidProperty('fields')) {
