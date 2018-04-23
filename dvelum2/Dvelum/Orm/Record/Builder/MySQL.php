@@ -418,10 +418,10 @@ class MySQL extends AbstractAdapter
                     'action' => 'drop'
                 );
 
-      /*
-       * Compare DB and Config indexes, create if not exist, drop and create if
-       * invalid
-       */
+        /*
+         * Compare DB and Config indexes, create if not exist, drop and create if
+         * invalid
+         */
         if(!empty($configIndexes))
         {
             foreach($configIndexes as $index => $config)
@@ -470,8 +470,10 @@ class MySQL extends AbstractAdapter
          */
         $realKeys = $this->getForeignKeys($this->model->table());
         $realKeysNames = array();
+
         if(!empty($realKeys))
             $realKeys = \Utils::rekey('CONSTRAINT_NAME' , $realKeys);
+
         if(!empty($configForeignKeys))
         {
             foreach($configForeignKeys as $keyName => $item)
@@ -679,7 +681,7 @@ class MySQL extends AbstractAdapter
         /*
          * Create table if not exists
          */
-        if(! $this->tableExists())
+        if(!$this->tableExists())
         {
             $sql = '';
             try
@@ -702,6 +704,10 @@ class MySQL extends AbstractAdapter
         $engineUpdate = $this->prepareEngineUpdate();
         $colUpdates = $this->prepareColumnUpdates();
         $indexUpdates = $this->prepareIndexUpdates();
+        $keysUpdates = '';
+        if($buildForeignKeys){
+            $keysUpdates = $this->prepareKeysUpdate(false);
+        }
 
         /*
          * Remove invalid foreign keys
@@ -797,6 +803,12 @@ class MySQL extends AbstractAdapter
             }
         }
 
+        if(!empty($keysUpdates)){
+            if(!$this->buildForeignKeys(false, true)){
+                return false;
+            }
+        }
+
         if(empty($this->errors))
             return true;
         else
@@ -835,12 +847,27 @@ class MySQL extends AbstractAdapter
                             $cmd[] = "\n" . 'DROP FOREIGN KEY `' . $info['name'] . '`';
                         break;
                     case 'add' :
-                        if($create)
-                            $cmd[] = 'ADD CONSTRAINT `' . $info['name'] . '`
-        						FOREIGN KEY (`' . $info['config']['curField'] . '`)
-    				      		REFERENCES `' . $info['config']['toDb'] . '`.`' . $info['config']['toTable'] . '` (`' . $info['config']['toField'] . '`)
-    				      		ON UPDATE ' . $info['config']['onUpdate'] . '
-    				      		ON DELETE ' . $info['config']['onDelete'];
+                        if($create){
+
+                            if($this->objectConfig->isDistributed())
+                            {
+                                $toObj  = Orm\Record\Config::factory($info['config']['toObject']);
+
+                                if($toObj->isDistributed()){
+                                    $cmd[] = 'ADD CONSTRAINT `' . $info['name'] . '`
+                                            FOREIGN KEY (`' . $info['config']['curField'] . '`)
+                                            REFERENCES `' . $this->db->getConfig()['dbname'] . '`.`' . $info['config']['toTable'] . '` (`' . $info['config']['toField'] . '`)
+                                            ON UPDATE ' . $info['config']['onUpdate'] . '
+                                            ON DELETE ' . $info['config']['onDelete'];
+                                }
+                            }else{
+                                $cmd[] = 'ADD CONSTRAINT `' . $info['name'] . '`
+                                            FOREIGN KEY (`' . $info['config']['curField'] . '`)
+                                            REFERENCES `' . $info['config']['toDb'] . '`.`' . $info['config']['toTable'] . '` (`' . $info['config']['toField'] . '`)
+                                            ON UPDATE ' . $info['config']['onUpdate'] . '
+                                            ON DELETE ' . $info['config']['onDelete'];
+                            }
+                        }
                         break;
                 }
             }
@@ -897,7 +924,4 @@ class MySQL extends AbstractAdapter
 
         }
     }
-
-
-
 }

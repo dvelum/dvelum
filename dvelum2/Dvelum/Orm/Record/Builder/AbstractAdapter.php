@@ -333,9 +333,24 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     public function createForeignKeyName(array $item): string
     {
-        $key = $item['curDb'].'.'.$item['curTable'].'.'.$item['curField'] .
-            '-' .
-            $item['toDb'].'.'.$item['toTable'].'.'.$item['toField'];
+        $curObjectConfig = Orm\Record\Config::factory($item['curObject']);
+        $key = '';
+        if($curObjectConfig->isDistributed())
+        {
+            $toObj  = Orm\Record\Config::factory($item['toObject']);
+            if($toObj->isDistributed())
+            {
+                $key = $this->db->getConfig()['dbname'].'.'.$item['curTable'].'.'.$item['curField'] .
+                    '-' .
+                    $this->db->getConfig()['dbname'].'.'.$item['toTable'].'.'.$item['toField'];
+            }
+        }
+
+        if(empty($key)){
+            $key = $item['curDb'].'.'.$item['curTable'].'.'.$item['curField'] .
+                '-' .
+                $item['toDb'].'.'.$item['toTable'].'.'.$item['toField'];
+        }
 
         if(mb_strlen($key,'utf-8') > 64){
             $key = md5($key);

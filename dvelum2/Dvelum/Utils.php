@@ -389,7 +389,7 @@ class Utils
                 }
                 else
                 {
-                    $new_diff = array_diff_assoc_recursive($value, $array2[$key]);
+                    $new_diff = self::array_diff_assoc_recursive($value, $array2[$key]);
                     if($new_diff != FALSE)
                     {
                         $difference[$key] = $new_diff;
