@@ -372,7 +372,7 @@ class Model
      * @param integer $id - object identifier
      * @return array
      */
-    public function getCachedItem($id)
+    public function getCachedItem($id , $lifetime = false)
     {
         if (!$this->cache) {
             return $this->getItem($id);
@@ -388,7 +388,7 @@ class Model
         $data = $this->getItem($id);
 
         if ($this->cache) {
-            $this->cache->save($data, $cacheKey);
+            $this->cache->save($data, $cacheKey, $lifetime);
         }
 
         return $data;
