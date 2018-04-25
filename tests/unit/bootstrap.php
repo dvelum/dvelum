@@ -76,7 +76,11 @@ if(!class_exists($appClass))
     throw new Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
 
 \Dvelum\File::rmdirRecursive('./tests/data/configs/' , false);
+\Dvelum\File::copyDir('./tests/data/test_configs/', './tests/data/configs/');
 \Dvelum\File::copyDir('./tests/data/test_objects/', './tests/data/configs/objects/');
+
+$storage = \Dvelum\Config::storage();
+$storage->addPath('./tests/data/configs/');
 
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);

@@ -75,7 +75,7 @@ class Distributed
         $this->shards = Utils::rekey(
             'id',
             Config::storage()->get(
-                $this->config->get('shards')
+                $this->config->get('shards') ,  false, false
             )->__toArray()
         );
 

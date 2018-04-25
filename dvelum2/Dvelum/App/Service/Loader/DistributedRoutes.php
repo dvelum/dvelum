@@ -30,7 +30,7 @@ class DistributedRoutes extends AbstractAdapter
     public function loadService()
     {
         $shardingConfig = Config::storage()->get('sharding.php');
-        $routes = Config::storage()->get($shardingConfig->get('routes'));
+        $routes = Config::storage()->get($shardingConfig->get('routes'), false, false);
         $router = new Router($routes);
         return $router;
     }
