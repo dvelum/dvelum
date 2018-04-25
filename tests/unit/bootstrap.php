@@ -94,3 +94,33 @@ foreach($dbObjectManager->getRegisteredObjects() as $object)
         }
         echo "\n";
 }
+echo 'BUILD SHARDS ' . PHP_EOL;
+
+$sharding = \Dvelum\Config::storage()->get('sharding.php');
+$shardsFile = $sharding->get('shards');
+$shardsConfig = \Dvelum\Config::storage()->get($shardsFile);
+$registeredObjects = $dbObjectManager->getRegisteredObjects();
+
+foreach ($shardsConfig as $item)
+{
+    $shardId = $item['id'];
+    echo "\t" . 'BUILD ' . $shardId . ' ' . PHP_EOL;
+
+    foreach ($registeredObjects as $index => $object) {
+        if (!\Dvelum\Orm\Record\Config::factory($object)->isDistributed()) {
+            unset($registeredObjects[$index]);
+            continue;
+        }
+
+        echo "\t\t" . $object . ' : ';
+
+        $builder = \Dvelum\Orm\Record\Builder::factory($object);
+        $builder->setConnection(\Dvelum\Orm\Model::factory($object)->getDbShardConnection($shardId));
+        if ($builder->build(true, true)) {
+            echo 'OK' . PHP_EOL;
+        } else {
+            $success = false;
+            echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
+        }
+    }
+}
