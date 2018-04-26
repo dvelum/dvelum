@@ -39,11 +39,13 @@ class Query extends Orm\Model\Query
     public function fields($fields): \Dvelum\Orm\Model\Query
     {
         $objectConfig = $this->model->getObjectConfig();
-        foreach ($fields as $k=> &$v){
-            if(is_numeric($k) && !$objectConfig->isSystemField($v)){
-                unset($fields[$k]);
-            }
-        }unset($v);
+        if(is_array($fields)) {
+            foreach ($fields as $k=> &$v){
+                if(is_numeric($k) && !$objectConfig->isSystemField($v)){
+                    unset($fields[$k]);
+                }
+            }unset($v);
+        }
         return \Dvelum\Orm\Model\Query::fields($fields);
     }
 }

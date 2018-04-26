@@ -110,7 +110,7 @@ class Select
      * @param array $columns
      * @return self
      */
-    public function columns(array $columns) : self
+    public function columns($columns) : self
     {
         if (!is_array($columns)) {
             if ($columns !== '*')

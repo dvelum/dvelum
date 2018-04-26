@@ -163,20 +163,28 @@ class Orm
                     $fieldObject = $config->getField($field);
                     if ($fieldObject->isManyToManyLink()) {
                         $relationsObject = $config->getRelationsObject($field);
-                        $relationsData = $this->model($relationsObject)->getList([
-                            'sort' => 'order_no',
-                            'dir' => 'ASC'
-                        ], ['source_id' => $id], ['target_id', 'source_id']);
+                        $relationsData = $this->model($relationsObject)->query()
+                            ->params([
+                                'sort' => 'order_no',
+                                'dir' => 'ASC'
+                            ])
+                            ->filters(['source_id' => $id])
+                            ->fields(['target_id', 'source_id'])
+                            ->fetchAll();
                     } else {
                         $linkedObject = $fieldObject->getLinkedObject();
                         $linksObject = $this->model($linkedObject)->getStore()->getLinksObjectName();
                         $linksModel = $this->model($linksObject);
-                        $relationsData = $linksModel->getList(['sort' => 'order', 'dir' => 'ASC'], [
+                        $relationsData = $linksModel->query()
+                            ->params(['sort' => 'order', 'dir' => 'ASC'])
+                            ->filters([
                                 'src' => $name,
                                 'src_id' => $id,
                                 'src_field' => $field,
                                 'target' => $linkedObject
-                            ], ['target_id', 'source_id' => 'src_id']);
+                            ])
+                            ->fields(['target_id', 'source_id' => 'src_id'])
+                            ->fetchAll();
                     }
                     if (!empty($relationsData)) {
                         $linksData[$field] = Utils::groupByKey('source_id', $relationsData);
