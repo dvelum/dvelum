@@ -35,6 +35,10 @@ class Ext_Property_Form_Field_Text extends Ext_Property_Form_Field_Field
 	public $vtypeText = self::String;
 	public $value = self::String;
 
+
+	// dvelum validation field
+	public $initialPassField = self::String;
+
 	static public $extend = 'Ext.form.field.Text';
 	static public $xtype = 'textfield';
 }
