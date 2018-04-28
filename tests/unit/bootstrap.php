@@ -102,7 +102,7 @@ echo 'BUILD SHARDS ' . PHP_EOL;
 
 $sharding = \Dvelum\Config::storage()->get('sharding.php');
 $shardsFile = $sharding->get('shards');
-$shardsConfig = \Dvelum\Config::storage()->get($shardsFile);
+$shardsConfig = \Dvelum\Config::storage()->get($shardsFile, true, false);
 $registeredObjects = $dbObjectManager->getRegisteredObjects();
 
 foreach ($shardsConfig as $item)
