@@ -59,6 +59,11 @@ Ext.define('app.crud.orm.dataGrid',{
     scrollable:true,
     bodyBorder:false,
     border:false,
+    config:{
+      stateEvents:['columnmove', 'columnresize', 'sortchange', 'resize', 'show', 'hide'],
+      stateful:true,
+      stateId:'orm_grid_state'
+    },
 
     editable: false,
 
