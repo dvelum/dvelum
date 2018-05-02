@@ -30,6 +30,10 @@ class Manager implements ManagerInterface
 {
     protected $dbConnections = [];
     protected $dbConfigs = [];
+    /**
+     * @var callable $errorHandler
+     */
+    protected $connectionErrorHandler;
 
     /**
      * @var ConfigInterface
@@ -121,6 +125,9 @@ class Manager implements ManagerInterface
         };
 
         $db->on(Adapter::EVENT_INIT , $initFunction);
+        if(is_callable($this->connectionErrorHandler)){
+            $db->on(Adapter::EVENT_CONNECTION_ERROR, $this->connectionErrorHandler);
+        }
         return $db;
     }
     /**
@@ -149,5 +156,14 @@ class Manager implements ManagerInterface
         }
 
         return $this->dbConfigs[$workMode][$name];
+    }
+
+    /**
+     * Set connection error handler
+     * @param callable $handler
+     */
+    public function setConnectionErrorHandler(callable $handler)
+    {
+        $this->connectionErrorHandler = $handler;
     }
 }

@@ -33,6 +33,7 @@ use Zend\Db\Metadata\MetadataInterface;
 class Adapter
 {
     public const EVENT_INIT = 0;
+    public const EVENT_CONNECTION_ERROR =1;
 
     protected $params;
     protected $adapter;
@@ -50,8 +51,15 @@ class Adapter
         if($this->inited){
             return;
         }
+
         $this->adapter = new \Zend\Db\Adapter\Adapter($this->params);
         $this->inited = true;
+        try{
+            $this->adapter->getDriver()->getConnection()->connect();
+        }catch (\Exception $e){
+            $this->fireEvent(self::EVENT_CONNECTION_ERROR, ['message'=>$e->getMessage()]);
+            return;
+        }
         $this->fireEvent(self::EVENT_INIT);
     }
 

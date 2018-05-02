@@ -37,6 +37,7 @@ use Dvelum\{
     Service,
     Cache\CacheInterface
 };
+use \Exception;
 
 
 /**
@@ -225,33 +226,25 @@ class Application
      */
     protected function initDb()
     {
-        //        $templatesPath = $this->config->get('templates');
-        //        $dev = $this->config->get('development');
-        //        $dbErrorHandler = function (Exception $e) use($templatesPath , $dev){
-        //            if(Request::isAjax()){
-        //                Response::jsonError(Lang::lang()->CANT_CONNECT);
-        //            }else{
-        //                $tpl = new Template();
-        //                $tpl->set('error_msg', 'MySQL : '.$e->getMessage());
-        //                $tpl->set('development', $dev);
-        //                echo $tpl->render('public/error.php');
-        //                exit();
-        //            }
-        //        };
+        $templatesPath = $this->config->get('templates');
+        $dev = $this->config->get('development');
+        $dbErrorHandler = function ( Db\Adapter\Event $e) use($templatesPath , $dev){
+            $response = Response::factory();
+            $request = Request::factory();
+            if($request->isAjax()){
+                $response->error(Lang::lang()->get('CANT_CONNECT'));
+                exit();
+            }else{
+                $tpl = View::factory();
+                $tpl->set('error_msg', ' ' . $e->getData()['message']);
+                $tpl->set('development', $dev);
+                echo $tpl->render('public/error.php');
+                exit();
+            }
+        };
 
-        /**
-         * @todo handle connection error
-         */
         $conManager = new Db\Manager($this->config);
-        //        try{
-        //            $dbConfig = $conManager->getDbConfig('default');
-        //            $this->_db = $conManager->getDbConnection('default');
-        //                        if($dbConfig->get('adapterNamespace') == 'Db_Adapter')
-        //                            $this->_db->setConnectionErrorHandler($dbErrorHandler);
-        //        }
-        //        catch (Exception $e){
-        //            $dbErrorHandler($e);
-        //        }
+        $conManager->setConnectionErrorHandler($dbErrorHandler);
         return $conManager;
     }
 
