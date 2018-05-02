@@ -119,7 +119,8 @@ class Adapter
         }
 
         $statement = $this->adapter->createStatement();
-        $statement->prepare($sql);
+        $statement->setSQl($sql);
+        $statement->prepare();
 
         $result = $statement->execute();
         if ($result instanceof ResultInterface && $result->isQueryResult())
@@ -158,7 +159,8 @@ class Adapter
         }
 
         $statement = $this->adapter->createStatement();
-        $statement->prepare($sql);
+        $statement->setSQl($sql);
+        $statement->prepare();
         $result = $statement->execute();
 
         if ($result instanceof ResultInterface && $result->isQueryResult()) {
@@ -187,7 +189,8 @@ class Adapter
         }
 
         $statement = $this->adapter->createStatement();
-        $statement->prepare($sql);
+        $statement->setSQl($sql);
+        $statement->prepare();
 
         $result = $statement->execute();
 
@@ -222,7 +225,8 @@ class Adapter
         }
 
         $statement = $this->adapter->createStatement();
-        $statement->prepare($sql);
+        $statement->setSQl($sql);
+        $statement->prepare();
 
         $result = $statement->execute();
         if ($result instanceof ResultInterface && $result->isQueryResult()) {

@@ -136,13 +136,11 @@ class Model
      * @param string $objectName
      * @throws \Exception
      */
-    public function __construct(string $objectName, Config\ConfigInterface $settings)
+    public function __construct(string $objectName, Config\ConfigInterface $settings, Config\ConfigInterface $ormConfig)
     {
         $this->settings = $settings;
 
-        $ormConfig = Config\Factory::storage()->get('orm.php');
-
-        $this->store = $settings->get('storage');
+        $this->store = $settings->get('storeLoader')();
         $this->name = strtolower($objectName);
         $this->cacheTime = $settings->get('hardCacheTime');
 
@@ -150,10 +148,6 @@ class Model
             $this->cache = $settings->get('dataCache');
         } else {
             $this->cache = false;
-        }
-
-        if($settings->offsetExists('defaultLog')){
-            $this->log = $settings->get('defaultLog');
         }
 
         // backward compatibility
@@ -179,10 +173,6 @@ class Model
         }
 
         $this->table = $this->lightConfig->get('table');
-
-        if ($settings->get('errorLog')) {
-            $this->log = $settings->get('errorLog');
-        }
     }
 
     /**
@@ -225,10 +215,11 @@ class Model
     /**
      * Get Object Storage
      * @return Orm\Record\Store
+     * @deprecated
      */
     protected function getObjectsStore(): Orm\Record\Store
     {
-        return $this->store;
+        return $this->getStore();
     }
 
     /**
@@ -239,14 +230,22 @@ class Model
     {
         $this->db = $db;
     }
-
     /**
      * Set the adapter of the object store
      * @param Orm\Record\Store $store
      */
-    public function setObjectsStore(Orm\Record\Store $store)
+    public function setStore(Orm\Record\Store $store)
     {
         $this->store = $store;
+    }
+    /**
+     * Set the adapter of the object store
+     * @param Orm\Record\Store $store
+     * @deprecated
+     */
+    public function setObjectsStore(Orm\Record\Store $store)
+    {
+        $this->setStore($store);
     }
 
     /**
@@ -299,6 +298,9 @@ class Model
      */
     public function getStore(): Orm\Record\Store
     {
+        if(empty($this->store)){
+            $this->store = $this->settings->get('storeLoader')();
+        }
         return $this->store;
     }
 
@@ -310,9 +312,13 @@ class Model
     static public function factory(string $objectName): Model
     {
         /**
+         * Runtime call optimization
          * @var Orm $service
          */
-        $service = Service::get('orm');
+        static $service = false;
+        if(empty($service)){
+            $service = Service::get('orm');
+        }
         return $service->model($objectName);
     }
 
@@ -525,7 +531,7 @@ class Model
             return false;
         }
 
-        if ($this->getObjectsStore()->delete($object)) {
+        if ($this->getStore()->delete($object)) {
             return true;
         } else {
             return false;
@@ -608,10 +614,17 @@ class Model
 
     /**
      * Get logs Adapter
-     * @return LoggerInterface
+     * @return ?LoggerInterface
      */
-    public function getLogsAdapter() : LoggerInterface
+    public function getLogsAdapter() : ?LoggerInterface
     {
+        if($this->log === false){
+            if($this->settings->offsetExists('logLoader') && is_callable($this->settings->get('logLoader'))){
+                $this->log = $this->settings->get('logLoader')();
+            }else{
+                $this->log = null;
+            }
+        }
         return $this->log;
     }
 
@@ -622,12 +635,11 @@ class Model
      */
     public function logError(string $message): void
     {
-
-        if (!$this->log) {
+        $log = $this->getLogsAdapter();
+        if (!empty($log)) {
             return;
         }
-
-        $this->log->log(\Psr\Log\LogLevel::ERROR, get_called_class() . ': ' . $message);
+        $log->log(\Psr\Log\LogLevel::ERROR, get_called_class() . ': ' . $message);
     }
 
     /**

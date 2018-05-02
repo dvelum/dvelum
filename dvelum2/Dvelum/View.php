@@ -36,10 +36,14 @@ class View
     static public function factory() : EngineInterface
     {
         /**
-         * @var Template\Service $templateService
+         * Runtime call optimization
+         * @var Template\Service $service
          */
-       $templateService = Service::get('template');
-       return $templateService->getTemplate();
+        static $service = false;
+        if(empty($service)){
+            $service = Service::get('template');
+        }
+        return $service->getTemplate();
     }
 
     /**

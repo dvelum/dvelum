@@ -47,77 +47,154 @@ class Orm
      * @var CryptServiceInterface;
      */
     private $cryptService;
+    /**
+     * @var Record\Store $storage
+     */
+    protected $storage = null;
+    /**
+     * @var Record\Store $distributedStorage
+     */
+    protected $distributedStorage = null;
+    /**
+     * @var \Eventmanager $eventManager
+     */
+    protected $eventManager = null;
+    /**
+     * @var ConfigInterface $config
+     */
+    protected $config;
+    /**
+     * @var \Log $log
+     */
+    protected $log = false;
+
+    protected $translator = false;
+    protected $language;
+
+    protected $storeLoader;
+    protected $distributedStoreLoader;
 
     public function init(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, CacheInterface $cache = null)
     {
-        $eventManager = new \Eventmanager();
+        $this->config = $config;
+        $this->language = $language;
+        $this->eventManager = new \Eventmanager();
 
         if ($cache) {
-            $eventManager->setCache($cache);
+            $this->eventManager->setCache($cache);
         }
 
-        $storageOptions = [
-            'linksObject' => $config->get('links_object'),
-            'historyObject' => $config->get('history_object'),
-            'versionObject' => $config->get('version_object'),
-        ];
-        /*
-         * Prepare Db object storage
-         */
-        $storeClass = $config->get('storage');
-        $objectStore = new $storeClass($storageOptions);
-        $objectStore->setEventManager($eventManager);
-
-        $distributedStoreClass = $config->get('distributed_storage');
-        $objectDistributedStore = new $distributedStoreClass($storageOptions);
-        $objectStore->setEventManager($eventManager);
+        $orm = $this;
 
         $this->modelSettings = Config\Factory::create([
             'hardCacheTime' => $config->get('hard_cache'),
             'dataCache' => $cache,
-            'storage' => $objectStore,
-            'distributed_storage'=> $objectDistributedStore,
             'defaultDbManager' => $dbManager,
-            'errorLog' => false,
+            'logLoader'=> function() use ($orm){
+               return $orm->getLog();
+            }
         ]);
 
         /*
          * Prepare Db_Object
          */
-        $translator = new Orm\Record\Config\Translator($language . '/objects.php');
-
         Orm\Record\Builder::useForeignKeys($config->get('foreign_keys'));
 
         $this->configSettings = Config\Factory::create([
             'configPath' => $config->get('object_configs'),
-            'translator' => $translator,
+            'translatorLoader' => function() use ($orm){
+                return $orm->getTranslator();
+            },
             'useForeignKeys' => $config->get('foreign_keys'),
             'ivField'=> $config->get('iv_field'),
         ]);
 
-        if ($config->get('db_object_error_log')) {
-            $log = new Log\File($config->get('db_object_error_log_path'));
+        $this->storeLoader = function()use($orm){return $orm->storage();};
+        $this->distributedStoreLoader = function()use($orm){return $orm->distributedStorage();};
+    }
+
+    /**
+     * Get ORM configuration options
+     * @return ConfigInterface
+     */
+    public function getConfig() : ConfigInterface
+    {
+        return $this->config;
+    }
+
+    public function getTranslator()
+    {
+        if(empty($this->translator)){
+            $this->translator = new Orm\Record\Config\Translator($this->language . '/objects.php');
+        }
+        return  $this->translator;
+    }
+    public function getCryptService() : \Dvelum\Security\CryptService
+    {
+        if(empty($this->cryptService)){
+            $this->cryptService =  new \Dvelum\Security\CryptService( Config::storage()->get('crypt.php'));
+        }
+        return $this->cryptService;
+    }
+
+    public function getLog():?\Log
+    {
+        if($this->log!==false){
+            return $this->log;
+        }
+
+        if ($this->config->get('db_object_error_log')) {
+            $this->log = new Log\File($this->config->get('db_object_error_log_path'));
             /*
              * Switch to Db_Object error log
              */
-            if (!empty($config->get('error_log_object'))) {
-                $errorModel = $this->model($config->get('error_log_object'));
-                $errorModel->setLog($log);
+            if (!empty($this->config->get('error_log_object'))) {
+                $errorModel = $this->model($this->config->get('error_log_object'));
+                $errorModel->setLog($this->log);
                 $errorTable = $errorModel->table();
                 $errorDb = $errorModel->getDbConnection();
 
-                $logOrmDb = new Log\Db('db_object_error_log', $errorDb, $errorTable);
-                $logModelDb = new Log\Db('model', $errorDb, $errorTable);
-                $logDb = new Log\Mixed($log, $logModelDb);
-                $this->modelSettings->set('defaultLog', $logDb);
-                $errorModel->setLog($logDb);
-                $objectStore->setLog($logOrmDb);
-            } else {
-                $this->modelSettings->set('defaultLog', $log);
-                $objectStore->setLog($log);
+                $logDb = new Log\Db('error_log', $errorDb, $errorTable);
+                $this->log = new Log\Mixed($this->log, $logDb);
             }
         }
-        $this->cryptService =  new \Dvelum\Security\CryptService( Config::storage()->get('crypt.php'));
+        return $this->log;
+    }
+
+    public function storage() : Record\Store
+    {
+        if(empty($this->storage)){
+            $storageOptions = [
+                'linksObject' => $this->config->get('links_object'),
+                'historyObject' => $this->config->get('history_object'),
+                'versionObject' => $this->config->get('version_object'),
+            ];
+            $storeClass = $this->config->get('storage');
+            $this->storage = new $storeClass($storageOptions);
+            $this->storage->setEventManager($this->eventManager);
+            if(!empty($this->log)){
+                $this->storage->setLog($this->log);
+            }
+        }
+        return $this->storage;
+    }
+
+    public function distributedStorage() : Record\Store
+    {
+        if(empty($this->distributedStorage)){
+            $storageOptions = [
+                'linksObject' => $this->config->get('links_object'),
+                'historyObject' => $this->config->get('history_object'),
+                'versionObject' => $this->config->get('version_object'),
+            ];
+            $distributedStoreClass = $this->config->get('distributed_storage');
+            $this->distributedStorage = new $distributedStoreClass($storageOptions);
+            $this->distributedStorage->setEventManager($this->eventManager);
+            if(!empty($this->log)){
+                $this->distributedStorage->setLog($this->log);
+            }
+        }
+        return $this->distributedStorage;
     }
 
     /**
@@ -229,11 +306,13 @@ class Orm
 
         if ($force || !isset($this->configObjects[$name])) {
             $config = new Record\Config($name, $force, $this->configSettings);
-            $config->setCryptService($this->cryptService);
-
+            $orm = $this;
+            $loader = function () use ($orm){
+                return $orm->cryptService();
+            };
+            $config->setCryptServiceLoader($loader);
             $this->configObjects[$name] = $config;
         }
-
         return $this->configObjects[$name];
     }
 
@@ -285,7 +364,6 @@ class Orm
      */
     public function model(string $objectName): Model
     {
-
         $listName = strtolower($objectName);
 
         if (isset($this->models[$listName])) {
@@ -297,18 +375,22 @@ class Orm
         $className = 'Model_' . $objectName;
         $nameSpacedClassName = 'App\\'.str_replace('_','\\', $className);
 
+        $modelSettings = $this->modelSettings;
+        $modelSettings['storeLoader'] = $this->storeLoader;
+
         /*
          * Instantiate real or virtual model
          */
         if (class_exists($className)) {
-            $this->models[$listName] = new $className($objectName, $this->modelSettings);
+            $this->models[$listName] = new $className($objectName, $modelSettings, $this->config);
         } elseif (class_exists($nameSpacedClassName)) {
-            $this->models[$listName] = new $nameSpacedClassName($objectName, $this->modelSettings);
+            $this->models[$listName] = new $nameSpacedClassName($objectName, $modelSettings, $this->config);
         } else {
+            $modelSettings['storeLoader'] = $this->distributedStoreLoader;
             if($this->config($objectName)->isDistributed()){
-                $this->models[$listName] = new Orm\Distributed\Model($objectName, $this->modelSettings);
+                $this->models[$listName] = new Orm\Distributed\Model($objectName, $modelSettings);
             }else{
-                $this->models[$listName] = new Model($objectName, $this->modelSettings);
+                $this->models[$listName] = new Model($objectName, $modelSettings);
             }
         }
         return $this->models[$listName];

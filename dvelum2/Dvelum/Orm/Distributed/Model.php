@@ -32,15 +32,6 @@ use Dvelum\Config\ConfigInterface;
 class Model extends Orm\Model
 {
     /**
-     * @param string $objectName
-     * @throws \Exception
-     */
-    public function __construct(string $objectName, ConfigInterface $settings)
-    {
-        parent::__construct($objectName, $settings);
-        $this->store = $settings->get('distributed_storage');
-    }
-    /**
      * Get record by id
      * @param integer $id
      * @param array|string $fields — optional — the list of fields to retrieve
@@ -199,7 +190,7 @@ class Model extends Orm\Model
             return false;
         }
 
-        if ($this->getObjectsStore()->delete($object)) {
+        if ($this->getStore()->delete($object)) {
             return true;
         } else {
             return false;

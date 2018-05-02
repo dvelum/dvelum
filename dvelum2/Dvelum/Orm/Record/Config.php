@@ -114,6 +114,10 @@ class Config
      * @var CryptServiceInterface
      */
     private $cryptService = null;
+    /**
+     * @var callable $cryptServiceLoader
+     */
+    protected $cryptServiceLoader = null;
 
     /**
      * Instantiate data structure for the objects named $name
@@ -143,9 +147,13 @@ class Config
     static public function factory(string $name , bool $force = false) : Orm\Record\Config
     {
         /**
+         * Runtime call optimization
          * @var Orm $service
          */
-        $service = Service::get('orm');
+        static $service = false;
+        if(empty($service)){
+            $service = Service::get('orm');
+        }
         return $service->config($name, $force);
     }
 
@@ -163,7 +171,6 @@ class Config
     {
         $this->settings = $settings;
         $this->name = strtolower($name);
-        $this->translator = $settings->get('translator');
 
         if(!self::configExists($name))
             throw new Exception('Undefined object config '. $name);
@@ -228,7 +235,8 @@ class Config
             return;
 
         $dataLink = & $this->config->dataLink();
-        $this->translator->translate($this->name , $dataLink);
+        $translator = $this->getTranslator();
+        $translator->translate($this->name , $dataLink);
         $this->translated = true;
     }
 
@@ -672,8 +680,8 @@ class Config
         $indexes = $this->getIndexesConfig(false);
 
         $config = clone $this->config;
-
-        $translation = $this->translator->getTranslation();
+        $translator = $this->getTranslator();
+        $translation = $translator->getTranslation();
 
         $translationsData = & $translation->dataLink();
         $translationsData[$this->name]['title'] = $this->config->get('title');
@@ -693,7 +701,8 @@ class Config
             $config->set('distributed_indexes',  $this->getDistributedIndexesConfig(false));
         }
 
-        if(!$this->translator->getStorage()->save($translation))
+
+        if(!$translator->getStorage()->save($translation))
             return false;
 
         return Cfg::storage()->save($config);
@@ -1117,6 +1126,10 @@ class Config
      */
     public function getTranslator() : Config\Translator
     {
+        if(empty($this->translator)){
+            $this->translator = $this->settings->get('translatorLoader')();
+        }
+
         return $this->translator;
     }
 
@@ -1334,7 +1347,10 @@ class Config
 
         return $field;
     }
-
+    public function setCryptServiceLoader(callable $loader)
+    {
+        $this->cryptServiceLoader = $loader;
+    }
     /**
      * Set encryption service adapter
      * @param CryptServiceInterface $service
@@ -1350,6 +1366,9 @@ class Config
      */
     public function getCryptService() : CryptServiceInterface
     {
+        if(empty($this->cryptService)){
+            $this->cryptService = $this->cryptServiceLoader();
+        }
         return $this->cryptService;
     }
 

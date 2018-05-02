@@ -134,7 +134,7 @@ class Model_Vc extends Model
     						->where('`object_name` = ?', $this->_dbSlave->quote($object))
     						->where('`record_id` = ?', $recordId);
     	$vcIds = $this->dbSlave->fetchCol($select);
-    	$store = $this->getObjectsStore();
+    	$store = $this->getStore();
         $store->deleteObjects($this->name, $vcIds);
     }
 }

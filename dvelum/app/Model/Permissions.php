@@ -365,7 +365,7 @@ class Model_Permissions extends Model
 
     	$groupIds = $this->dbSlave->fetchCol($select);
 
-		$store = $this->getObjectsStore();
+		$store = $this->getStore();
 
         if(!empty($groupIds) && !$store->deleteObjects($this->name, $groupIds))
             return false;

@@ -129,7 +129,7 @@ echo ob_get_clean();
 /*
  * Print debug information (development mode)
  */
-if($config['development'] && $config->get('debug_panel'))
+if($config['development'] && $config->get('debug_panel') && !\Dvelum\Request::factory()->isAjax())
 {
     $debugCfg = \Dvelum\Config::storage()->get('debug_panel.php');
     Debug::setScriptStartTime($scriptStart);
