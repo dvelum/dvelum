@@ -388,9 +388,9 @@ class Orm
         } else {
             $modelSettings['storeLoader'] = $this->distributedStoreLoader;
             if($this->config($objectName)->isDistributed()){
-                $this->models[$listName] = new Orm\Distributed\Model($objectName, $modelSettings);
+                $this->models[$listName] = new Orm\Distributed\Model($objectName, $modelSettings, $this->config);
             }else{
-                $this->models[$listName] = new Model($objectName, $modelSettings);
+                $this->models[$listName] = new Model($objectName, $modelSettings, $this->config);
             }
         }
         return $this->models[$listName];
