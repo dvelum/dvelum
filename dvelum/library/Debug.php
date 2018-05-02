@@ -186,20 +186,6 @@ class Debug
 		return self::$_timers[$timer]['stop'] - self::$_timers[$timer]['start'];
 	}
 
-    static protected function formatString($profile)
-    {
-        $sql = $profile['sql'];
-        if ($profile['parameters']
-            instanceof \Zend\Db\Adapter\ParameterContainer) {
-            $parameters = $profile['parameters'];
-            foreach ($parameters as $k => $v) {
-                $sql = str_replace(":" . $k, $v, $sql);
-            }
-        }
-
-        return sprintf("%s; (in %s seconds)", $sql, $profile['elapse']);
-    }
-
     static protected function getQueryProfiles($options)
 	{
 		$str = '';
