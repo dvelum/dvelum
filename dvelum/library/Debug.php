@@ -64,11 +64,16 @@ class Debug
 		if(self::$_scriptStartTime)
 			$str .= '<b>Time:</b> ' . number_format((microtime(true) - self::$_scriptStartTime) , 5) . "sec.<br>\n";
 		
-		$str .= '<b>Memory:</b> ' . number_format((memory_get_usage() / (1024 * 1024)) , 3) . "mb<br>\n" . '<b>Memory peak:</b> ' . number_format((memory_get_peak_usage() / (1024 * 1024)) , 3) . "mb<br>\n" . '<b>Includes:</b> ' . sizeof(get_included_files()) . "<br>\n" . '<b>Autoloaded:</b> ' . sizeof(self::$_loadedClasses) . "<br>\n";
+		$str .= '<b>Memory:</b> ' . number_format((memory_get_usage() / (1024 * 1024)) , 3) . "mb<br>\n"
+             . '<b>Memory peak:</b> ' . number_format((memory_get_peak_usage() / (1024 * 1024)) , 3) . "mb<br>\n"
+             . '<b>Includes:</b> ' . count(get_included_files()) . "<br>\n"
+             . '<b>Autoloaded:</b> ' . count(self::$_loadedClasses) . "<br>\n"
+             . '<b>Config files:</b> ' . count(self::$_loadedConfigs) . "<br>\n";
 
 		if(!empty(self::$_dbProfilers)) {
 			$str.= self::getQueryProfiles($options);
 		}
+
 
 		if($options['configs'])
 			$str .= "<b>Configs (".count(self::$_loadedConfigs)."):</b>\n<br> " . implode("\n\t <br>" , self::$_loadedConfigs). '<br>';
@@ -181,7 +186,7 @@ class Debug
 		return self::$_timers[$timer]['stop'] - self::$_timers[$timer]['start'];
 	}
 
-	static protected function getQueryProfiles($options)
+    static protected function getQueryProfiles($options)
 	{
 		$str = '';
 
