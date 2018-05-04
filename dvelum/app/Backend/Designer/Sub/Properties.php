@@ -150,7 +150,7 @@ class Backend_Designer_Sub_Properties extends Backend_Designer_Sub
     public function listadaptersAction()
     {
         $data = array();
-        $autoloaderPaths = $this->_configMain['autoloader']['paths'];
+        $autoloaderPaths = Config::storage()->get('autoloader.php')->get('paths');
         $files = array();
         $classes = array();
 
