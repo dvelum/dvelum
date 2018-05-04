@@ -52,7 +52,7 @@ class Backend_Designer_Sub_Orm extends Backend_Designer_Sub
 
             if ($field->isLink()){
                 if ($field->isDictionaryLink()){
-                    $type = $this->_lang->get('DICTIONARY_LINK') . '"' . $config->getLinkedDictionary($name) . '"';
+                    $type = $this->_lang->get('DICTIONARY_LINK') . '"' . $config->getField($name)->getLinkedDictionary() . '"';
                 } else {
                     $obj = $field->getLinkedObject();
                     $oName = $obj . '';
