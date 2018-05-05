@@ -16,13 +16,13 @@
       'db_default' => '',
       'is_search' => true,
     ),
-    'email' =>
+    'email' => 
     array (
       'type' => '',
       'unique' => 'email',
       'db_isNull' => true,
       'required' => false,
-      'validator' => '',
+      'validator' => 'Validator_Email',
       'db_type' => 'varchar',
       'db_default' => '',
       'db_len' => 255,
@@ -35,6 +35,7 @@
       'unique' => 'login',
       'db_isNull' => false,
       'required' => true,
+      'validator' => 'Validator_Login',
       'db_type' => 'varchar',
       'db_default' => '',
       'db_len' => 255,
@@ -187,4 +188,5 @@
   'use_db_prefix' => true,
   'acl' => false,
   'slave_connection' => 'default',
+  'distributed' => false,
 ); 
