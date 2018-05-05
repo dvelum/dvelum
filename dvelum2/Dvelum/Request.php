@@ -215,6 +215,26 @@ class Request
     }
 
     /**
+     * Validate the parameter passed by $_POST method
+     * @param string $name — parameter name
+     * @param string $type —   the value type defining the way the data will be filtered.
+     * The ‘Filter’ chapter expands on the list of supported types. Here is the basic list:
+     * integer , boolean , float , string, cleaned_string , array и др.
+     * @return boolean
+     */
+    public function validatePost(string $name, string $type)
+    {
+        if (isset($this->updatedPost[$name])) {
+            return ($this->updatedPost[$name] === Filter::filterValue($type, $this->updatedPost[$name]));
+        }
+        if (!isset($_POST[$name])) {
+            return false;
+        } else {
+            return ($_POST[$name] === Filter::filterValue($type, $_POST[$name]));
+        }
+    }
+
+    /**
      * Build system request URL
      * The method creates a string based on the defined parameter delimiter and
      * the parameter values array
