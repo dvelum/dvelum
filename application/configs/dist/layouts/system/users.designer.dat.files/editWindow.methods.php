@@ -29,39 +29,6 @@
   ),
   2 => 
   array (
-    'name' => 'checkLogin',
-    'code' => 'editWindow.methods.checkLogin.js',
-    'description' => 'Validate unique Login',
-    'params' => 
-    array (
-      0 => 
-      array (
-        'name' => 'field',
-        'type' => '{Ext.form.Field}',
-      ),
-    ),
-  ),
-  3 => 
-  array (
-    'name' => 'checkMail',
-    'code' => 'editWindow.methods.checkMail.js',
-    'description' => 'Validate unique email',
-    'params' => 
-    array (
-      0 => 
-      array (
-        'name' => 'field',
-        'type' => '{Ext.form.Field}',
-      ),
-      1 => 
-      array (
-        'name' => 'event',
-        'type' => '{Event}',
-      ),
-    ),
-  ),
-  4 => 
-  array (
     'name' => 'denyBlankPassword',
     'code' => 'editWindow.methods.denyBlankPassword.js',
     'description' => 'Permit or prohibit be empty password field',
@@ -79,7 +46,7 @@
       ),
     ),
   ),
-  5 => 
+  3 => 
   array (
     'name' => 'loadUserData',
     'code' => 'editWindow.methods.loadUserData.js',
@@ -93,7 +60,7 @@
       ),
     ),
   ),
-  6 => 
+  4 => 
   array (
     'name' => 'initComponent',
     'code' => 'editWindow.methods.initComponent.js',
