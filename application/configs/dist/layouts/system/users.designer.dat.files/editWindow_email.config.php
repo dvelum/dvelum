@@ -9,9 +9,7 @@
     array (
       'allowBlank' => true,
       'enableKeyEvents' => true,
-      'vtype' => 'email',
       'name' => 'email',
-      'listeners' => '{  keyup: { fn: this.checkMail, scope: this,   buffer: 400 }  }',
       'fieldLabel' => '[js:] appLang.EMAIL',
     ),
   ),

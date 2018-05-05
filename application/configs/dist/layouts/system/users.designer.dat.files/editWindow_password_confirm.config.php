@@ -9,11 +9,11 @@
     array (
       'allowBlank' => false,
       'vtype' => 'password',
+      'initialPassField' => 'pass',
       'submitValue' => false,
       'inputType' => 'password',
       'name' => 'pass2',
       'fieldLabel' => '[js:] appLang.PASS_CONFIRM',
-      'initialPassField' => 'pass',
     ),
   ),
 ); 
