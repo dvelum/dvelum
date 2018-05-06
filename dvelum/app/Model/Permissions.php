@@ -52,6 +52,8 @@ class Model_Permissions extends Model
          if(!empty($userRights)){
             foreach ($userRights as $k=>$v){
                 foreach (self::$_fields as $field){
+                    if($field == 'module')
+                        continue;
                     if(isset($v[$field])) {
                         if($v[$field]){
                             $data[$v['module']][$field] = true;
