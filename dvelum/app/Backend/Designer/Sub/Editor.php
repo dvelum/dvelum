@@ -11,7 +11,7 @@ class Backend_Designer_Sub_Editor extends Backend_Designer_Sub_Properties
 		 * Grid
 		 */
 		$o = parent::_getObject();
-		$col = Request::post('column', 'pagecode', false);
+		$col = Request::post('column', 'string', false);
 		
 		if($col === false || !$o->columnExists($col)){
 			Response::jsonError($this->_lang->WRONG_REQUEST);			
