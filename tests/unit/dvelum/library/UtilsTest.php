@@ -85,22 +85,6 @@ class UtilsTest extends TestCase
 		$this->assertTrue($hash1 !== $hash3);		
 	}
 	
-	public function testFormatFileSize(){
-	
-	}
-	
-	public function testFormatTime(){
-		
-	}
-	
-	public function testExportArray(){
-	
-	}
-	
-	public function testExportCode(){
-	
-	}
-	
 	public function testClassFromPath()
 	{	
 		$this->assertEquals('Store_Session1' , Utils::classFromPath('store/session1.php'));

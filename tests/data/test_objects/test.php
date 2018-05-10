@@ -56,13 +56,14 @@
                 array (
                     'type' => 'link',
                     'unique' => '',
-                    'db_isNull' => 0,
+                    'db_isNull' => false,
                     'required' => false,
                     'validator' => '',
                     'link_config' =>
                         array (
-                            'link_type' => 'multy',
-                            'object' => 'page',
+                            'link_type' => 'multi',
+                            'object' => 'user',
+                            'relations_type' => 'polymorphic',
                         ),
                     'db_type' => 'longtext',
                     'db_default' => '',

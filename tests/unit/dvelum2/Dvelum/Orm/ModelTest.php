@@ -1,5 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
+use Dvelum\Orm\Model;
+use Dvelum\Orm\Record;
 
 class ModelTest extends TestCase
 {
@@ -8,16 +10,17 @@ class ModelTest extends TestCase
 		parent::__construct();
 		$this->clear();
 	}
+
 	protected function createPage()
 	{
-		$group = new Db_Object('Group');
+		$group = Record::factory('Group');
 		$group->setValues(array(
 			'title' => date('YmdHis'),
 			'system' =>false
 		));
 		$group->save();
 
-		$user = new Db_Object('User');
+		$user = Record::factory('User');
 		try{
 			$user->setValues(array(
 				'login'=>uniqid().date('YmdHis'),
@@ -38,7 +41,7 @@ class ModelTest extends TestCase
 		$u->setId($user->getId());
 		$u->setAuthorized();
 
-		$page = new Db_Object('Page');
+		$page = Record::factory('Page');
 		$page->setValues(array(
 			'code'=>uniqid().date('YmdHis'),
 			'is_fixed'=>1,
@@ -72,7 +75,6 @@ class ModelTest extends TestCase
 	protected function clear()
 	{
 		Model::factory('Page')->getDbConnection()->delete(Model::factory('Page')->table());
-		Model::factory('Group')->getDbConnection()->delete(Model::factory('Group')->table());
 	}
 
 	public function testFactory()
@@ -88,9 +90,10 @@ class ModelTest extends TestCase
 	
 	public function testTable()
 	{
-		$dbCfg = Registry::get('db','config');
-		$apiKeys = Model::factory('User');
-		$this->assertEquals($dbCfg['prefix'] . 'user' , $apiKeys->table());
+        $userModel = Model::factory('User');
+        $dbCfg = $userModel->getDbConnection()->getConfig();
+        $userModel = Model::factory('User');
+		$this->assertEquals($dbCfg['prefix'] . 'user' , $userModel->table());
 	}
 	
 	public function testGetItem()
@@ -100,13 +103,7 @@ class ModelTest extends TestCase
 		$item = $pageModel->getItem($page->getId(),array('id','code'));
 		$this->assertEquals($page->get('code') , $item['code']);
 	}
-	
-	public function testListIntegers()
-	{
-		$this->assertEquals('1,2,3,4,5', Model::listIntegers(array('1','2','3','4','5')));
-	}
-	
-	
+
 	public function testGetCount()
 	{
 		$page = $this->createPage();

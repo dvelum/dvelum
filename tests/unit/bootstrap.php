@@ -91,12 +91,24 @@ foreach($dbObjectManager->getRegisteredObjects() as $object)
 {
         echo 'build ' . $object . ' : ';
         $builder = \Dvelum\Orm\Record\Builder::factory($object);
-        if($builder->build()){
+        if($builder->build(false)){
             echo 'OK';
         }else{
            echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
         }
         echo "\n";
+}
+echo  PHP_EOL.'BUILD FOREIGN KEYS' . PHP_EOL. PHP_EOL;
+foreach($dbObjectManager->getRegisteredObjects() as $object)
+{
+    echo 'build ' . $object . ' : ';
+    $builder = \Dvelum\Orm\Record\Builder::factory($object);
+    if($builder->build(true)){
+        echo 'OK';
+    }else{
+        echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
+    }
+    echo "\n";
 }
 echo 'BUILD SHARDS ' . PHP_EOL;
 
@@ -128,3 +140,38 @@ foreach ($shardsConfig as $item)
         }
     }
 }
+
+
+
+// init default objects
+
+$modelContent = \Dvelum\Orm\Model::factory('Page');
+$modelContent->getDbConnection()->delete($modelContent->table());
+
+$modelUser = \Dvelum\Orm\Model::factory('User');
+$modelUser->getDbConnection()->delete($modelUser->table());
+
+$modelGroup = \Dvelum\Orm\Model::factory('Group');
+$modelGroup->getDbConnection()->delete($modelGroup->table());
+
+$group = \Dvelum\Orm\Record::factory('Group');
+$group->setInsertId(1);
+$group->setValues(array('title' => date('YmdHis'), 'system' =>false));
+$group->save();
+
+$user = \Dvelum\Orm\Record::factory('User');
+$user->setInsertId(1);
+$user->setValues(array(
+        'login' => uniqid(date('YmdHis')),
+        'pass' => '111',
+        'email' => uniqid(date('YmdHis')) . '@mail.com',
+        'enabled' => 1,
+        'admin' => 1,
+        'name'=>'Test User',
+        'group_id' => $group->getId()
+    ));
+$user->save();
+
+$session = \Dvelum\App\Session\User::factory();
+$session->setId(1);
+$session->setAuthorized();

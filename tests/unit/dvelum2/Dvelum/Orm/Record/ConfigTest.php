@@ -1,13 +1,16 @@
 <?php
 use PHPUnit\Framework\TestCase;
+use Dvelum\Orm\Record\Builder;
+use Dvelum\Orm\Record;
+use Dvelum\Orm\Model;
 
-class Db_Object_ConfigTest extends TestCase
+class ConfigTest extends TestCase
 {
 	
 	public function testRenameField()
 	{
-		$o = new Db_Object_Builder('Page');
-		$cfg = Db_Object_Config::getInstance('Page');
+		$o = Builder::factory('Page');
+		$cfg = Record\Config::factory('Page');
 		
 		$this->assertTrue($cfg->renameField('page_title', 'untitle'));
 		$this->assertTrue($o->validate());
@@ -17,7 +20,7 @@ class Db_Object_ConfigTest extends TestCase
 	
 	public function testGetTable()
 	{	
-		$cfg = Db_Object_Config::getInstance('Page');
+		$cfg = Record\Config::factory('Page');
 		$prefix = Model::factory('page')->getDbPrefix();		
 		$this->assertEquals($cfg->getTable(false), $cfg->get('table'));
 		$this->assertEquals($cfg->getTable(), $prefix . $cfg->get('table'));
@@ -26,7 +29,7 @@ class Db_Object_ConfigTest extends TestCase
 
 	public function testGetObjectTtile()
 	{
-		$cfg =  Db_Object_Config::getInstance('Page');
+		$cfg = Record\Config::factory('Page');
 		$oldTitle = $cfg->getTitle();
 		$cfg->setObjectTitle('My title');	
 		$this->assertEquals($cfg->getTitle() , 'My title');
@@ -35,7 +38,7 @@ class Db_Object_ConfigTest extends TestCase
 	
 	public function testSave()
 	{
-		$cfg =  Db_Object_Config::getInstance('Page');
+		$cfg =  Record\Config::factory('Page');
 		$oldTitle = $cfg->getTitle();
 		$cfg->setObjectTitle('My title');
 		$this->assertTrue($cfg->save());
@@ -45,7 +48,7 @@ class Db_Object_ConfigTest extends TestCase
 	
 	public function testRemoveField()
 	{
-		$cfg =  Db_Object_Config::getInstance('Page');
+		$cfg = Record\Config::factory('Page');
 		$fldCfg = $cfg->getFieldConfig('page_title');
 		$cfg->removeField('page_title');
 		$this->assertFalse($cfg->fieldExists('page_title'));
@@ -55,125 +58,125 @@ class Db_Object_ConfigTest extends TestCase
 	
 	public function testIsText()
 	{
-		$cfg =  Db_Object_Config::getInstance('Page');
-		$this->assertTrue($cfg->isText('text'));
-		$this->assertFalse($cfg->isText('id'));
+		$cfg = Record\Config::factory('Page');
+		$this->assertTrue($cfg->getField('text')->isText());
+		$this->assertFalse($cfg->getField('id')->isText());
 	}
 	
 	public function testIndexExists()
 	{
-		$cfg =  Db_Object_Config::getInstance('Page');
+		$cfg =  Record\Config::factory('Page');
 		$this->assertTrue($cfg->indexExists('PRIMARY'));
 		$this->assertFalse($cfg->indexExists('undefinedindex'));
 	}
 	
 	public function testIsUnique()
 	{
-		$cfg =  Db_Object_Config::getInstance('Page');
-		$this->assertTrue($cfg->isUnique('id'));
-		$this->assertTrue($cfg->isUnique('code'));
-		$this->assertFalse($cfg->isUnique('title'));
-		$this->assertFalse($cfg->isUnique('parent_id'));
+		$cfg = Record\Config::factory('Page');
+		$this->assertTrue($cfg->getField('id')->isUnique());
+		$this->assertTrue($cfg->getField('code')->isUnique());
+		$this->assertFalse($cfg->getField('title')->isUnique());
+		$this->assertFalse($cfg->getField('parent_id')->isUnique());
 	}
 	
 	public function testIsHtml()
 	{
-	  $cfg = Db_Object_Config::getInstance('page');
-	  $this->assertTrue($cfg->isHtml('text'));
-	  $this->assertFalse($cfg->isHtml('code'));  
+	  $cfg = Record\Config::factory('page');
+	  $this->assertTrue($cfg->getField('text')->isHtml());
+	  $this->assertFalse($cfg->getField('code')->isHtml());
 	}
 	
 	public function testIsNumeric()
 	{
-	  $cfg = Db_Object_Config::getInstance('page');
-	  $this->assertTrue($cfg->isNumeric('id'));
-	  $this->assertFalse($cfg->isNumeric('code'));
+	  $cfg = Record\Config::factory('page');
+	  $this->assertTrue($cfg->getField('id')->isNumeric());
+	  $this->assertFalse($cfg->getField('code')->isNumeric());
 	}
 	
 	public function testIsInteger()
 	{
-	  $cfg = Db_Object_Config::getInstance('page');
-	  $this->assertTrue($cfg->isInteger('id'));
-	  $this->assertFalse($cfg->isInteger('code'));
+	  $cfg = Record\Config::factory('page');
+	  $this->assertTrue($cfg->getField('id')->isInteger());
+	  $this->assertFalse($cfg->getField('code')->isInteger());
 	}
 	
 	public function testIsSearch()
 	{
-	  $cfg = Db_Object_Config::getInstance('page');
-	  $this->assertTrue($cfg->isSearch('code'));
-	  $this->assertTrue($cfg->isSearch('id'));
+	  $cfg = Record\Config::factory('page');
+	  $this->assertTrue($cfg->getField('id')->isSearch('code'));
+	  $this->assertTrue($cfg->getField('code')->isSearch('id'));
 	}
 	
 	public function testGetLinkTittle()
 	{
-	  $cfg = Db_Object_Config::getInstance('page');
+	  $cfg = Record\Config::factory('page');
 	  $this->assertEquals($cfg->getLinkTitle() , 'menu_title');
 	}
 	
 	public function testIsFloat()
 	{
-	  $cfg = Db_Object_Config::getInstance('test');
-	  $this->assertFalse($cfg->isFloat('integer'));  
-	  $this->assertTrue($cfg->isFloat('float'));
+	  $cfg = Record\Config::factory('test');
+	  $this->assertFalse($cfg->getField('integer')->isFloat());
+	  $this->assertTrue($cfg->getField('float')->isFloat());
 	}
 	
 	public function testIsSystem()
 	{
-	  $cfg = Db_Object_Config::getInstance('test');
+	  $cfg = Record\Config::factory('test');
 	  $this->assertFalse($cfg->isSystem());
-	  $cfg = Db_Object_Config::getInstance('page');
+	  $cfg = Record\Config::factory('page');
 	  $this->assertTrue($cfg->isSystem());
 	}
 	
 	public function testgetLinkTitle()
 	{
-	  $cfg = Db_Object_Config::getInstance('test');
+	  $cfg = Record\Config::factory('test');
 	  $this->assertEquals($cfg->getLinkTitle() , $cfg->getPrimaryKey());
 	}
 	
 	public function testgetDbType()
 	{
-	  $cfg = Db_Object_Config::getInstance('test');
-	  $this->assertEquals('bigint', $cfg->getDbType($cfg->getPrimaryKey()));
-	  $this->assertEquals('float', $cfg->getDbType('float'));
+	  $cfg = Record\Config::factory('test');
+	  $this->assertEquals('bigint', $cfg->getField($cfg->getPrimaryKey())->getDbType());
+	  $this->assertEquals('float', $cfg->getField('float')->getDbType());
 	}
 	
 	public function testHasHistory()
 	{
-	  $cfg = Db_Object_Config::getInstance('test');
+	  $cfg = Record\Config::factory('test');
 	  $this->assertTrue($cfg->hasHistory());
-	  $cfg = Db_Object_Config::getInstance('historylog');
+	  $cfg = Record\Config::factory('historylog');
 	  $this->assertFalse($cfg->hasHistory());
 	}
 	
 	public function testIsObjectLink()
 	{
-	  $cfg = Db_Object_Config::getInstance('test');
-	  $this->assertTrue($cfg->isObjectLink('link'));
-	  $this->assertFalse($cfg->isObjectLink('multilink'));
-	  $this->assertFalse($cfg->isObjectLink('integer'));
-	  $this->assertFalse($cfg->isObjectLink('dictionary'));
+	  $cfg = Record\Config::factory('test');
+	  $this->assertTrue($cfg->getField('link')->isObjectLink());
+	  $this->assertFalse($cfg->getField('multilink')->isObjectLink());
+	  $this->assertFalse($cfg->getField('integer')->isObjectLink());
+	  $this->assertFalse($cfg->getField('dictionary')->isObjectLink('dictionary'));
 	}
 	
 	public function testIsMultiLink()
 	{
-	  $cfg = Db_Object_Config::getInstance('test');
-	  $this->assertTrue($cfg->isMultiLink('multilink'));
-	  $this->assertFalse($cfg->isMultiLink('link'));
-	  $this->assertFalse($cfg->isMultiLink('dictionary'));
-	  $this->assertFalse($cfg->isMultiLink('integer'));
+	  $cfg = Record\Config::factory('test');
+	  $this->assertTrue($cfg->getField('multilink')->isMultiLink());
+	  $this->assertFalse($cfg->getField('link')->isMultiLink());
+	  $this->assertFalse($cfg->getField('dictionary')->isMultiLink());
+	  $this->assertFalse($cfg-->getField('integer')->isMultiLink());
 	}
 	
 	public function testGetLinkedObject()
 	{
-	  $cfg = Db_Object_Config::getInstance('test');
+	  $cfg = Record\Config::factory('test');
 	  $this->assertEquals('user', $cfg->getLinkedObject('link'));
 	  $this->assertEquals('page', $cfg->getLinkedObject('multilink'));
 	}
 	
 	public function testGetLinkedDictionary()
 	{
-	  $cfg = Db_Object_Config::getInstance('test');
+	  $cfg = Record\Config::factory('test');
 	  $this->assertEquals('link_type', $cfg->getLinkedDictionary('dictionary'));
 	}
 }

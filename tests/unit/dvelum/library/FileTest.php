@@ -1,6 +1,9 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
+use Dvelum\File;
+use Dvelum\Config;
+
 class FileTest extends TestCase
 {
     public function testGetExt()
@@ -23,11 +26,12 @@ class FileTest extends TestCase
 
     public function testRmdirRecursive()
     {
-        $dir = './temp/unit/'.date('Y').'/'.date('m').'/'.date('d');
-        $this->assertTrue(mkdir($dir , 0664, true));
+        $tmpDir = Config::storage()->get('main.php')->get('tmp');
+        $dir = $tmpDir.'unit/'.date('Y').'/'.date('m').'/'.date('d');
+        $this->assertTrue(mkdir($dir , 0775, true));
         $this->assertTrue((boolean)file_put_contents($dir.'/test.txt','test'));
-        $this->assertTrue(File::rmdirRecursive('./temp/unit/'.date('Y'),true));
-        $this->assertTrue(!file_exists('./temp/unit/'.date('Y')));
-        File::rmdirRecursive('./temp/unit/',true);
+        $this->assertTrue(File::rmdirRecursive($tmpDir.'unit/'.date('Y'),true));
+        $this->assertTrue(!file_exists($tmpDir.'unit/'.date('Y')));
+        File::rmdirRecursive($tmpDir.'unit/',true);
     }
 }

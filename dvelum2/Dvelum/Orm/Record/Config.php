@@ -674,7 +674,7 @@ class Config
     /**
      * Save the object configuration
      */
-    public function save()
+    public function save() : bool
     {
         $fields = $this->getFieldsConfig(false);
         $indexes = $this->getIndexesConfig(false);
@@ -700,7 +700,6 @@ class Config
         if($this->isDistributed()){
             $config->set('distributed_indexes',  $this->getDistributedIndexesConfig(false));
         }
-
 
         if(!$translator->getStorage()->save($translation))
             return false;
@@ -1337,7 +1336,7 @@ class Config
                 $fieldClass = $dbType;
             }
         }
-        $fieldClass = 'Dvelum\\Orm\\Record\\Config\\Field\\' . ucfirst($fieldClass);
+        $fieldClass = 'Dvelum\\Orm\\Record\\Config\\Field\\' . ucfirst((string)$fieldClass);
 
         if(class_exists($fieldClass)){
             $field = new $fieldClass($config);
