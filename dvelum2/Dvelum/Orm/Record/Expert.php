@@ -4,6 +4,8 @@ namespace Dvelum\Orm\Record;
 
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
+use Dvelum\Utils;
+use Dvelum\Orm\Record;
 
 /**
  * Db_Object information expert
@@ -49,7 +51,7 @@ class Expert
 	 * 	   )
 	 * )
 	 */
-	static public function getAssociatedObjects(Object $object)
+	static public function getAssociatedObjects(Record $object)
 	{
 		$linkedObjects = array('single'=>array(),'multi'=>array());
 
