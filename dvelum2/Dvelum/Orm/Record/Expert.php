@@ -29,7 +29,7 @@ class Expert
 		$manager = new Manager();
 		$objects = $manager->getRegisteredObjects();
 		foreach ($objects as $name){
-			$config = Record::factory($name);
+			$config = Record\Config::factory($name);
 			$links = $config->getLinks();
 			self::$_objectAssociations[$name] = $links;
 		}
