@@ -75,7 +75,7 @@ class ConfigTest extends TestCase
 		$cfg = Record\Config::factory('Page');
 		$this->assertTrue($cfg->getField('id')->isUnique());
 		$this->assertTrue($cfg->getField('code')->isUnique());
-		$this->assertFalse($cfg->getField('title')->isUnique());
+		$this->assertFalse($cfg->getField('page_title')->isUnique());
 		$this->assertFalse($cfg->getField('parent_id')->isUnique());
 	}
 	
@@ -164,19 +164,19 @@ class ConfigTest extends TestCase
 	  $this->assertTrue($cfg->getField('multilink')->isMultiLink());
 	  $this->assertFalse($cfg->getField('link')->isMultiLink());
 	  $this->assertFalse($cfg->getField('dictionary')->isMultiLink());
-	  $this->assertFalse($cfg-->getField('integer')->isMultiLink());
+	  $this->assertFalse($cfg->getField('integer')->isMultiLink());
 	}
 	
 	public function testGetLinkedObject()
 	{
 	  $cfg = Record\Config::factory('test');
-	  $this->assertEquals('user', $cfg->getLinkedObject('link'));
-	  $this->assertEquals('page', $cfg->getLinkedObject('multilink'));
+	  $this->assertEquals('user', $cfg->getField('link')->getLinkedObject());
+	  $this->assertEquals('user', $cfg->getField('multilink')->getLinkedObject());
 	}
 	
 	public function testGetLinkedDictionary()
 	{
 	  $cfg = Record\Config::factory('test');
-	  $this->assertEquals('link_type', $cfg->getLinkedDictionary('dictionary'));
+	  $this->assertEquals('link_type', $cfg->getField('dictionary')->getLinkedDictionary());
 	}
 }
