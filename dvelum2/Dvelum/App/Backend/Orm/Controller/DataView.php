@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Api\Controller as ApiController;
+use Dvelum\App\Controller\Event;
+use Dvelum\App\Controller\EventManager;
 use Dvelum\Service;
 use Dvelum\Request;
 use Dvelum\Response;
@@ -51,9 +53,42 @@ class DataView extends ApiController
         $dataObject = $this->request->post('d_object', 'string', false);
 
         if(!$dataObject || !$this->ormService->configExists($dataObject)){
-           return 'Orm';
+            return 'Orm';
         }
         return ucfirst($dataObject);
+    }
+
+    public function initListeners()
+    {
+        parent::initListeners();
+        $this->eventManager->on(EventManager::AFTER_LIST, [$this, 'prepareList']);
+    }
+
+    /**
+     * Get pages list as array
+     * @param Event $event
+     * @return void
+     */
+    public function prepareList(Event $event) : void
+    {
+        $data = &$event->getData()->data;
+
+        if(empty($data)){
+            return;
+        }
+
+        $object = $this->request->post('d_object', 'string', null);
+        $config = $this->ormService->config($object);
+        $fields = $config->getFields();
+
+        foreach ($data as &$row){
+            foreach ($fields as $item)
+            {
+                if($item->isText()){
+                    $row[$item->getName()] = '[text]';
+                }
+            }
+        }
     }
 
     public function viewConfigAction()
@@ -305,15 +340,15 @@ class DataView extends ApiController
 
     public function objectTitleAction() : void
     {
-       $object = $this->request->post('object', 'string', null);
+        $object = $this->request->post('object', 'string', null);
 
-       if(!$object || !$this->ormService->configExists($object)) {
-           $this->response->error($this->lang->get('WRONG_REQUEST'));
-           return;
-       }
+        if(!$object || !$this->ormService->configExists($object)) {
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
-       $this->canViewObjects[] = $object;
+        $this->canViewObjects[] = $object;
 
-       parent::objectTitleAction();
+        parent::objectTitleAction();
     }
 }
