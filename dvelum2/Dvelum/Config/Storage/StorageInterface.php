@@ -106,4 +106,15 @@ interface StorageInterface
      * @return bool
      */
     public function save(ConfigInterface $config) : bool;
+
+    /**
+     * Reset cached configs
+     */
+    public function resetConfigCache() : void;
+
+    /**
+     * Replace paths data
+     * @param array $paths
+     */
+    public function replacePaths(array $paths): void;
 }

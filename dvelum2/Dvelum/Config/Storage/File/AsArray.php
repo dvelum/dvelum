@@ -308,4 +308,22 @@ class AsArray implements StorageInterface
         }
         return false;
     }
+
+    /**
+     * Reset cached configs
+     */
+    public function resetConfigCache() : void
+    {
+        static::$runtimeCache = [];
+    }
+
+    /**
+     * Replace paths data
+     * @param array $paths
+     */
+    public function replacePaths(array $paths): void
+    {
+        $this->config['file_array']['paths'] = $paths;
+        $this->resetConfigCache();
+    }
 }

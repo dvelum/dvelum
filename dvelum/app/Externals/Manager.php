@@ -189,9 +189,25 @@ class Externals_Manager
         // Add Config paths
         if (!empty($configPaths)) {
             $storage = Config::storage();
-            foreach ($configPaths as $path) {
-                $storage->prependPath($path);
+
+            $writePath = $storage->getWrite();
+            $applyPath = $storage->getApplyTo();
+
+            $paths = $storage->getPaths();
+            $resultPaths = [];
+
+            foreach ($paths as $path){
+                if($path!==$writePath && $path!==$applyPath){
+                    $resultPaths[] = $path;
+                }
             }
+            foreach ($configPaths as $path) {
+                \array_unshift($resultPaths , $path);
+            }
+
+            \array_unshift($resultPaths , $applyPath);
+            $resultPaths[] = $writePath;
+            $storage->replacePaths($resultPaths);
         }
         // Add localization paths
         if (!empty($langPaths)) {
