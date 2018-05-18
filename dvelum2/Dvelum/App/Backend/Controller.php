@@ -364,6 +364,16 @@ class Controller extends App\Controller
     {
         $template = View::factory();
         $template->set('wwwRoot' , $this->appConfig->get('wwwroot'));
+
+        if($this->backofficeConfig->get('use_csrf_token')){
+            $template->setData([
+                'csrf' => [
+                    'csrfToken' => (new \Security_Csrf())->createToken(),
+                    'csrfFieldName' => \Security_Csrf::POST_VAR
+                ]
+            ]);
+        }
+
         $this->response->put($template->render('system/'.$this->backofficeConfig->get('theme') . '/login.php'));
         $this->response->send();
     }
