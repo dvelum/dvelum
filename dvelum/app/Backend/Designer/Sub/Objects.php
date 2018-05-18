@@ -342,7 +342,9 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
             $object->extendedComponent(false);
         }
 
-        $project->changeParent($id, $newParent);
+        if(!$project->changeParent($id, $newParent))
+            Response::jsonError('Cannot move object');
+
         $count = 0;
         foreach ($order as $name)
         {
