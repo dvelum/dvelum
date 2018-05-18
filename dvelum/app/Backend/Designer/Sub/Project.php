@@ -361,7 +361,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 
 	  $this->_checkLoaded();
 	  $name = Request::post('name', 'alphanum', false);
-	  $adapter = Request::post('adapter', 'alphanum', false);
+	  $adapter = Request::post('adapter', 'string', false);
 	  $parent = Request::post('parent', 'alphanum', 0);
 	  
 	  if(!class_exists($adapter))
