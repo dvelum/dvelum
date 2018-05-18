@@ -43,7 +43,7 @@ class Models extends Console\Action
             $namespace = str_replace('/', '\\' , dirname($path));
             $fileName = basename($path);
 
-            $path = $modelPath . '/' . $path . '.php';
+            $path = $modelPath . $path . '.php';
 
             if (!class_exists($class)) {
                 echo $namespace . '\\' . $fileName . "\n";

@@ -667,7 +667,7 @@ abstract class AbstractAdapter implements BuilderInterface
             /**
              * @var ConfigInterface
              */
-            $cfg = !Cfg\Factory::create($objectData,$configDir. $newObjectName . '.php');
+            $cfg = Cfg\Factory::create($objectData,$configDir. $newObjectName . '.php');
             /*
              * Write object config
              */

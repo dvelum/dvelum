@@ -28,6 +28,7 @@ interface GeneratorInterface
         ConfigInterface $designerConfig,
         ConfigInterface $generatorConfig
     );
-    public function createVcModule(string $object, string $projectFile);
-    public function createModule(string $object, string $projectFile);
+
+    public function createVcModule(string $object, string $controllerClass, string $projectFile);
+    public function createModule(string $object,  string $controllerClass, string $projectFile);
 }

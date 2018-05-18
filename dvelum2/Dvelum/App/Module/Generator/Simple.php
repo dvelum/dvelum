@@ -22,8 +22,10 @@ namespace Dvelum\App\Module\Generator;
 
 use Dvelum\Lang;
 use Dvelum\Orm;
+use Dvelum\Request;
 use Dvelum\Utils;
 use Dvelum\View;
+use Dvelum\Utils\Strings;
 
 class Simple extends AbstractAdapter
 {
@@ -63,7 +65,7 @@ class Simple extends AbstractAdapter
         return '[' . implode(',', $elements) . ']';
     }
 
-    public function createModule(string $object, string $projectFile)
+    public function createModule(string $object, string $controllerClass, string $projectFile)
     {
         $lang = Lang::lang();
 
@@ -146,7 +148,7 @@ class Simple extends AbstractAdapter
         $linkToField = array_flip($linksToShow);
 
         $template = View::factory();
-        $controllerNamespace = 'App\\Backend\\' . str_replace('_','\\', $objectName);
+        $controllerNamespace = substr($controllerClass, 0,  strrpos($controllerClass ,'\\'));
         $template->setData([
             'controller_namespace' => $controllerNamespace,
             'listFields' => $this->exportArrayToString($dataFields),
@@ -159,10 +161,8 @@ class Simple extends AbstractAdapter
         $controllerCode = '<?php ' . PHP_EOL . $template->render('generator/simple.php');
         /*
          * Create controller
-        */
-        $acceptedDirs = $this->appConfig->get('backend_controllers_dirs');
-        $controllerDir = $this->appConfig->get('local_controllers')
-            . '/' . str_replace('\\','/', $controllerNamespace);
+         */
+        $controllerDir = $this->appConfig->get('local_controllers') . str_replace('\\','/', $controllerNamespace);
         $this->createControllerFile($controllerDir, $controllerCode);
 
         /*
@@ -540,9 +540,425 @@ class Simple extends AbstractAdapter
         return true;
     }
 
-    public function createVcModule(string $objectName, string $projectFile)
+    public function createVcModule(string $object, string $controllerClass, string $projectFile)
     {
+        $lang = Lang::lang();
 
+        //prepare class name
+        $objectName = Utils\Strings::formatClassName($object);
+
+        $jsName = str_replace('_', '', $objectName);
+        $runNamespace = 'app' . $jsName . 'Application';
+        $classNamespace = 'app' . $jsName . 'Components';
+
+        $objectConfig = Orm\Record\Config::factory($object);
+        $primaryKey = $objectConfig->getPrimaryKey();
+
+        $objectFieldsConfig = $objectConfig->getFieldsConfig(false);
+        $objectFields = array();
+        $searchFields = array();
+        $linkedObjects = array();
+
+        /*
+         * Skip text fields
+        */
+        foreach($objectFieldsConfig as $key => $item)
+        {
+            if($objectConfig->getField($key)->isObjectLink() || $objectConfig->getField($key)->isMultiLink()){
+                $linkedObjects[] = $objectConfig->getField($key)->getLinkedObject();
+            }
+
+            if(in_array($item['db_type'] , Orm\Record\Builder::$textTypes , true) || $objectConfig->getField($key)->isObjectLink() || $objectConfig->getField($key)->isMultiLink())
+                continue;
+
+            if(isset($item['hidden']) && $item['hidden'])
+                continue;
+
+
+            $objectFields[] = $key;
+            if(isset($item['is_search']) && $item['is_search'])
+                $searchFields[] = $key;
+        }
+
+        $dataFields = array();
+        foreach($objectConfig->getFieldsConfig(true) as $key => $item)
+        {
+            if(in_array($item['db_type'] , Orm\Record\Builder::$textTypes , true))
+                continue;
+
+            if(isset($item['hidden']) && $item['hidden'])
+                continue;
+
+
+            $dataFields[] = $key;
+        }
+
+        array_unshift($objectFields , $objectConfig->getPrimaryKey());
+
+        $linksToShow = array_keys($objectConfig->getLinks(
+            [
+                Orm\Record\Config::LINK_OBJECT,
+                Orm\Record\Config::LINK_OBJECT_LIST,
+                // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
+            ],
+            false
+        ));
+
+        foreach($linksToShow as $k=>$v){
+            if($objectConfig->getField($v)->isSystem()){
+                unset($linksToShow[$v]);
+            }
+        }
+
+        $template = View::factory();
+        $controllerNamespace =  $controllerNamespace = substr($controllerClass, 0,  strrpos($controllerClass ,'\\'));
+        $template->setData([
+            'controller_namespace' => $controllerNamespace,
+            'listFields' => $this->exportArrayToString($dataFields),
+            'listLinks' => $this->exportArrayToString($linksToShow),
+            'canViewObjects' => $this->exportArrayToString($linkedObjects),
+            'moduleName' => $objectName,
+            'objectName' => $objectName
+        ]);
+
+        $controllerCode = '<?php ' . PHP_EOL . $template->render('generator/simple.php');
+        /*
+         * Create controller
+        */
+        $acceptedDirs = $this->appConfig->get('backend_controllers_dirs');
+        $controllerDir = $this->appConfig->get('local_controllers') . str_replace('\\','/', $controllerNamespace);
+        $this->createControllerFile($controllerDir, $controllerCode);
+
+        /*
+         * Designer project
+        */
+        $project = new \Designer_Project();
+        $project->namespace = $classNamespace;
+        $project->runnamespace = $runNamespace;
+
+        /*
+         * Project events
+        */
+        $eventManager = $project->getEventManager();
+
+        /*
+         * Data Storage
+        */
+        $storeFields = array(
+            \Ext_Factory::object('Data_Field',array('name' => 'published','type' => 'boolean')),
+            \Ext_Factory::object('Data_Field',array('name' => 'date_created','type' => 'date','dateFormat' =>'Y-m-d H:i:s')),
+            \Ext_Factory::object('Data_Field',array('name' => 'date_updated','type' => 'date','dateFormat' =>'Y-m-d H:i:s')),
+            \Ext_Factory::object('Data_Field',array('name' => 'date_published','type' => 'date','dateFormat' =>'Y-m-d H:i:s')),
+            \Ext_Factory::object('Data_Field',array('name' => 'last_version','type' => 'integer')),
+            \Ext_Factory::object('Data_Field',array('name' => 'published_version','type' => 'integer')),
+            \Ext_Factory::object('Data_Field',array('name' => 'user','type' => 'string')),
+            \Ext_Factory::object('Data_Field',array('name' => 'updater','type' => 'string')),
+        );
+
+        $storeFields = array_merge($storeFields , \Backend_Designer_Import::checkImportORMFields($object ,  $dataFields));
+
+        $urlTemplates =  $this->designerConfig->get('templates');
+
+
+        $controllerUrl = Request::factory()->url(array($urlTemplates['adminpath'] , $object , '') , false);
+        $storeUrl = Request::factory()->url(array($urlTemplates['adminpath'] ,  $object , 'list'));
+
+        $modelName = str_replace('_', '', $objectName) . 'Model';
+
+        $model = \Ext_Factory::object('Model');
+        $model->setName($modelName);
+        $model->idProperty = $primaryKey;
+        $model->addFields($storeFields);
+
+        $project->addObject(\Designer_Project::COMPONENT_ROOT , $model, -10);
+
+        $dataStore = \Ext_Factory::object('Data_Store');
+        $dataStore->setName('dataStore');
+        $dataStore->model = $modelName;
+        $dataStore->autoLoad = true;
+
+        $dataProxy = \Ext_Factory::object('Data_Proxy_Ajax');
+        $dataProxy->type = 'ajax';
+
+        $dataReader = \Ext_Factory::object('Data_Reader_Json');
+        $dataReader->rootProperty = 'data';
+        $dataReader->totalProperty = 'count';
+        $dataReader->type = 'json';
+
+        $dataProxy->reader = $dataReader;
+        $dataProxy->url = $storeUrl;
+
+        $dataProxy->startParam = 'pager[start]';
+        $dataProxy->limitParam = 'pager[limit]';
+        $dataProxy->sortParam = 'pager[sort]';
+        $dataProxy->directionParam = 'pager[dir]';
+        $dataProxy->simpleSortMode = true;
+
+        $dataStore->proxy = $dataProxy;
+        $dataStore->remoteSort = true;
+
+        $project->addObject(\Designer_Project::LAYOUT_ROOT  , $dataStore);
+
+        /*
+         * Data grid
+        */
+        $dataGrid = \Ext_Factory::object('Grid');
+        $dataGrid->setName('dataGrid');
+        $dataGrid->store = 'dataStore';
+        $dataGrid->columnLines = true;
+        $dataGrid->minHeight = 400;
+        $dataGrid->title = $objectConfig->getTitle() . ' :: ' . $lang->HOME;
+        $dataGrid->setAdvancedProperty('paging' , true);
+        $dataGrid->viewConfig = '{enableTextSelection: true}';
+        $dataGrid->extendedComponent(true);
+
+        $this->addGridMethods($project , $dataGrid , $object , true);
+
+        $eventManager->setEvent('dataGrid', 'itemdblclick', 'this.showEditWindow(record.get("id"));');
+
+        $objectFieldList = \Backend_Designer_Import::checkImportORMFields($object , $objectFields);
+
+
+        $publishedRec = new \stdClass();
+        $publishedRec->name = 'published';
+        $publishedRec->type = 'string';
+        array_unshift($objectFieldList , $publishedRec);
+
+        $createdRec = new \stdClass();
+        $createdRec->name =  'date_created';
+        $createdRec->type='';
+        $objectFieldList[] = $createdRec;
+
+        $updatedRec = new \stdClass();
+        $updatedRec->name =  'date_updated';
+        $updatedRec->type='';
+        $objectFieldList[] = $updatedRec;
+
+        foreach($objectFieldList as $fieldConfig)
+        {
+
+            switch($fieldConfig->type){
+                case 'boolean':
+                    $column = \Ext_Factory::object('Grid_Column_Boolean');
+                    break;
+                case 'integer':
+                    $column = \Ext_Factory::object('Grid_Column');
+                    break;
+                case 'float':
+                    $column = \Ext_Factory::object('Grid_Column_Number');
+                    if(isset($objectFieldsConfig[$fieldConfig->name]['db_precision']))
+                        $column->format = '0,000.'.str_repeat('0' , $objectFieldsConfig[$fieldConfig->name]['db_precision']);
+                    break;
+                case 'date':
+                    $column = \Ext_Factory::object('Grid_Column_Date');
+                    if($objectFieldsConfig[$fieldConfig->name]['db_type'] == 'time')
+                        $column->format = 'H:i:s';
+                    break;
+                default:
+                    $column = \Ext_Factory::object('Grid_Column');
+            }
+
+            if($objectConfig->fieldExists($fieldConfig->name)){
+                $cfg = $objectConfig->getFieldConfig($fieldConfig->name);
+                $column->text = $cfg['title'];
+            }else{
+                $column->text = $fieldConfig->name;
+            }
+
+            $column->dataIndex = $fieldConfig->name;
+            $column->setName($fieldConfig->name);
+            $column->itemId = $column->getName();
+
+            switch($fieldConfig->name)
+            {
+                case $primaryKey:
+                    $column->renderer = 'Ext_Component_Renderer_System_Version';
+                    $column->text = '[js:] appLang.VERSIONS_HEADER';
+                    $column->align = 'center';
+                    $column->width = 147;
+                    break;
+
+                case 'published':
+                    $column->renderer = 'Ext_Component_Renderer_System_Publish';
+                    $column->text = '[js:] appLang.STATUS';
+                    $column->align = 'center';
+                    $column->width = 50;
+                    break;
+
+                case 'date_created':
+                    $column->renderer = 'Ext_Component_Renderer_System_Creator';
+                    $column->text = '[js:] appLang.CREATED_BY';
+                    $column->align = 'center';
+                    $column->width = 142;
+                    break;
+
+                case 'date_updated':
+                    $column->renderer = 'Ext_Component_Renderer_System_Updater';
+                    $column->text = '[js:] appLang.UPDATED_BY';
+                    $column->align = 'center';
+                    $column->width = 146;
+                    break;
+            }
+
+            if($objectConfig->getField($fieldConfig->name)->isDictionaryLink()){
+                $dictionary = $objectConfig->getField($fieldConfig->name)->getLinkedDictionary();
+                $rendererHelper = new \Ext_Helper_Grid_Column_Renderer();
+                $rendererHelper->setType(\Ext_Helper_Grid_Column_Renderer::TYPE_DICTIONARY);
+                $rendererHelper->setValue($dictionary);
+                $column->renderer = $rendererHelper;
+            }
+
+            $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+        }
+
+        $column = \Ext_Factory::object('Grid_Column_Action');
+        $column->text = '[js:] appLang.ACTIONS';
+        $column->setName($dataGrid->getName().'_actions');
+        $column->align = 'center';
+        $column->width = 50;
+
+        $deleteButton = \Ext_Factory::object('Grid_Column_Action_Button');
+        $deleteButton->setName($dataGrid->getName().'_actions_delete');
+        $deleteButton->text = 'dg_action_delete';
+        $deleteButton->icon = '[%wroot%]i/system/delete.png';
+        $deleteButton->tooltip = '[js:] appLang.DELETE';
+        $deleteButton->isDisabled = 'function(){return !this.canDelete;}';
+
+        $eventManager->setEvent($deleteButton->getName(), 'handler', 'this.deleteRecord(grid.getStore().getAt(rowIndex));');
+
+        $column->addAction($deleteButton->getName() ,$deleteButton);
+        $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+
+        $project->addObject(\Designer_Project::COMPONENT_ROOT, $dataGrid);
+
+        /**
+         * Instance of data grid to layout
+         */
+        $gridInstance = \Ext_Factory::object('Object_Instance');
+        $gridInstance->setObject($dataGrid);
+        $gridInstance->setName($dataGrid->getName());
+        $project->getTree()->addItem($gridInstance->getName() . '_instance', \Designer_Project::LAYOUT_ROOT, $gridInstance);
+
+        /*
+         * Top toolbar
+         */
+        $dockObject = \Ext_Factory::object('Docked');
+        $dockObject->setName($dataGrid->getName() . '__docked');
+        $project->addObject($dataGrid->getName() , $dockObject);
+
+        $filters = \Ext_Factory::object('Toolbar');
+        $filters->setName('filters');
+        $project->addObject($dockObject->getName() , $filters);
+
+        /*
+         * Top toolbar items
+         */
+        $addButton = \Ext_Factory::object('Button');
+        $addButton->setName('addButton');
+        $addButton->text = $lang->ADD_ITEM;
+        $addButton->icon = '[%wroot%]i/system/add_icon.png';
+        $eventManager->setEvent('addButton', 'click', 'this.showEditWindow(false);');
+
+        $project->addObject($filters->getName() , $addButton);
+
+        $sep1 = \Ext_Factory::object('Toolbar_Separator');
+        $sep1->setName('sep1');
+        $project->addObject($filters->getName() , $sep1);
+
+        if(!empty($searchFields)){
+            $searchField = \Ext_Factory::object('Component_Field_System_Searchfield');
+            $searchField->setName('searchField');
+            $searchField->width = 200;
+            // $searchField->local = false;
+            $searchField->store = $dataStore->getName();
+            $searchField->fieldNames = json_encode($searchFields);
+
+            $fill = \Ext_Factory::object('Toolbar_Fill');
+            $fill->setName('fill1');
+            $project->addObject($filters->getName() , $fill);
+            $project->addObject($filters->getName() , $searchField);
+        }
+
+        /*
+         * Editor window
+        */
+        $editWindow = \Ext_Factory::object('Component_Window_System_Crud_Vc');
+        $editWindow->setName('editWindow');
+        $editWindow->objectName = $object;
+        $editWindow->controllerUrl = $controllerUrl;
+        $editWindow->width = 800;
+        $editWindow->height = 650;
+        $editWindow->modal = true;
+        $editWindow->resizable = true;
+        $editWindow->extendedComponent(true);
+
+
+        /*
+         * Hide history panel
+        */
+        /*if(!$objectConfig->hasHistory())
+         $editWindow->hideEastPanel = true;
+        */
+
+        $project->addObject(\Designer_Project::COMPONENT_ROOT, $editWindow);
+
+        $tab = \Ext_Factory::object('Panel');
+        $tab->setName($editWindow->getName() . '_generalTab');
+        $tab->frame = false;
+        $tab->border = false;
+        $tab->layout = 'anchor';
+        $tab->bodyPadding = 3;
+        $tab->bodyCls = 'formBody';
+        $tab->anchor = '100%';
+        $tab->title = $lang->GENERAL;
+        $tab->scrollable = true;
+        $tab->fieldDefaults = "{labelAlign:'right', labelWidth: 160, anchor: '100%'}";
+
+        $project->addObject($editWindow->getName() , $tab);
+
+        $objectFieldList = array_keys($objectConfig->getFieldsConfig(false));
+
+        foreach($objectFieldList as $field)
+        {
+            if($field == $primaryKey)
+                continue;
+
+            $fieldConfig = $objectConfig->getFieldConfig($field);
+
+            if(isset($fieldConfig['hidden']) && $fieldConfig['hidden'])
+                continue;
+
+            $newField = \Backend_Designer_Import::convertOrmFieldToExtField($field , $fieldConfig);
+
+            if($newField === false)
+                continue;
+
+            $newField->setName($editWindow->getName() . '_' . $field);
+            $fieldClass = $newField->getClass();
+
+            if($fieldClass == 'Component_Field_System_Objectslist' || $fieldClass == 'Component_Field_System_Objectlink')
+                $newField->controllerUrl = $controllerUrl;
+
+            if(in_array($fieldClass , $this->tabTypes , true))
+                $project->addObject($editWindow->getName() , $newField);
+            else
+                $project->addObject($tab->getName() , $newField);
+        }
+
+        /*
+         * Create ActionJS code
+         */
+        $project->setActionJs($this->createActionJS($object, $runNamespace, $classNamespace , true));
+
+        /*
+         * Save designer project
+         */
+        $designerStorage = \Designer_Factory::getStorage($this->designerConfig);
+        if(!$designerStorage->save($projectFile , $project , $this->designerConfig->get('vcs_support'))){
+            @unlink($controllerFile);
+            throw new \Exception('Can`t create Designer project');
+        }
+        return true;
     }
 
 }

@@ -224,12 +224,13 @@ class Controller extends Backend\Controller
                 $replace[] = 'Controller';
                 $replace[] = 'Dvelum\\App';
 
-                foreach ($replace as &$item){
-                    $item = str_replace('/','\\', $item);
-                }unset($item);
+                foreach ($replace as &$item) {
+                    $item = str_replace('/', '\\', $item);
+                }
+                unset($item);
                 $moduleName = str_replace($replace, '', $controller);
-                $moduleName = str_replace('\\','_',$moduleName);
-                $moduleName = trim($moduleName,'_\\');
+                $moduleName = str_replace('\\', '_', $moduleName);
+                $moduleName = trim($moduleName, '_\\');
 
                 $list = $manager->getRegisteredModules();
                 if (in_array($moduleName, $list, true)) {
@@ -260,7 +261,7 @@ class Controller extends Backend\Controller
             }
         }
 
-        $data['class'] = trim($data['class'],'\\');
+        $data['class'] = trim($data['class'], '\\');
 
         if ($id) {
             if (!$manager->isValidModule($id)) {
@@ -331,8 +332,16 @@ class Controller extends Backend\Controller
         $systemObjects = $config->get('system_objects');
 
         foreach ($list as $key) {
-            if (!in_array(ucfirst($key), $systemObjects,
-                    true) && !class_exists('Backend_' . Utils\Strings::formatClassName($key) . '_Controller')) {
+            if (
+                // not system object
+                !in_array(ucfirst($key), $systemObjects, true)
+                &&
+                // no core 1.x backend controller
+                !class_exists('Backend_' . Utils\Strings::formatClassName($key) . '_Controller')
+                &&
+                // no core 2.x backend controller
+                !class_exists('App\\Backend\\' . Utils\Strings::formatClassName($key) . '\\Controller')
+            ) {
                 $data[] = array('id' => $key, 'title' => Orm\Record\Config::factory($key)->getTitle());
             }
         }
@@ -345,7 +354,7 @@ class Controller extends Backend\Controller
      */
     public function createAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -362,12 +371,10 @@ class Controller extends Backend\Controller
         $class = 'App\\Backend\\' . $objectClassName . '\\Controller';
 
         if (class_exists($class)) {
-            $this->response->error($this->lang->get('FILL_FORM'),
-                [
+            $this->response->error($this->lang->get('FILL_FORM'), [
                     'id' => 'name',
-                    'msg' => $this->lang->get('SB_UNIQUE')
-                ]
-            );
+                    'msg' => $this->lang->get('SB_UNIQUE') . ' class ' . $class
+            ]);
             return;
         }
 
@@ -386,7 +393,8 @@ class Controller extends Backend\Controller
         // Check ACL permissions
         $acl = $objectConfig->getAcl();
         if ($acl) {
-            if (!$acl->can(Orm\Record\Acl::ACCESS_CREATE, $object) || !$acl->can(Orm\Record\Acl::ACCESS_VIEW, $object)) {
+            if (!$acl->can(Orm\Record\Acl::ACCESS_CREATE, $object) || !$acl->can(Orm\Record\Acl::ACCESS_VIEW,
+                    $object)) {
                 $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
                 return;
             }
@@ -395,7 +403,8 @@ class Controller extends Backend\Controller
         $manager = new Orm\Record\Manager();
 
         if (!$manager->objectExists($object)) {
-            $this->response->error($this->lang->get('FILL_FORM'), ['id' => 'object', 'msg' => $this->lang->get('INVALID_VALUE')]);
+            $this->response->error($this->lang->get('FILL_FORM'),
+                ['id' => 'object', 'msg' => $this->lang->get('INVALID_VALUE')]);
             return;
         }
 
@@ -411,9 +420,9 @@ class Controller extends Backend\Controller
         );
         try {
             if ($objectConfig->isRevControl()) {
-                $codeGen->createVcModule($object, $projectFile);
+                $codeGen->createVcModule($object, $class, $projectFile);
             } else {
-                $codeGen->createModule($object, $projectFile);
+                $codeGen->createModule($object, $class, $projectFile);
             }
 
         } catch (\Exception $e) {
@@ -443,6 +452,8 @@ class Controller extends Backend\Controller
             'icon' => 'i/system/icons/default.png',
             'in_menu' => true
         ));
+
+        $this->createClassMap();
 
         $this->response->success(
             array(
@@ -488,7 +499,7 @@ class Controller extends Backend\Controller
 
     public function deleteAction()
     {
-        if(!$this->checkCanDelete()){
+        if (!$this->checkCanDelete()) {
             return;
         }
 
@@ -526,6 +537,7 @@ class Controller extends Backend\Controller
         }
 
         if ($manager->removeModule($code)) {
+            $this->createClassMap();
             $this->response->success();
         } else {
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
@@ -571,7 +583,7 @@ class Controller extends Backend\Controller
      */
     protected function deleteBackendModule()
     {
-        if(!$this->checkCanDelete()){
+        if (!$this->checkCanDelete()) {
             return;
         }
 
@@ -730,7 +742,7 @@ class Controller extends Backend\Controller
      */
     public function rebuildMapAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -760,7 +772,7 @@ class Controller extends Backend\Controller
         $projectData['includes']['js'][] = '/js/app/system/Modules.js';
         $projectData['includes']['js'][] = '/js/app/system/FilesystemWindow.js';
         $projectData['includes']['js'][] = '/js/app/system/IconField.js';
-        
+
         $module = $this->getModule();
         /*
          * Module bootstrap

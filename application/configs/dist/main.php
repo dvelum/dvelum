@@ -90,11 +90,11 @@ return array(
     /**
      * Local controllers path
      */
-    'local_controllers' => './application/classes',
+    'local_controllers' => './application/classes/',
     /**
      * Local models path
      */
-    'local_models' => './application/classes/app',
+    'local_models' => './application/classes/app/',
     /*
      * Frontend modules config file
      */

@@ -65,7 +65,7 @@ abstract class AbstractAdapter implements GeneratorInterface
      * @throws \Exception
      * @return string file path
      */
-    protected function createControllerFile($dir , $content)
+    protected function createControllerFile($dir , $content) : string
     {
         if(file_exists($dir)){
             if(!is_dir($dir))
