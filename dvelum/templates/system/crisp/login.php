@@ -25,6 +25,10 @@ $lang = [
 		<div class="widget">
 			<div class="title"><h6>BackOffice Panel</h6></div>
 			<form action="" id="validate" class="form" method="post">
+                <?php
+                    if(!empty($this->csrf))
+                        echo '<input type="hidden" name="'. $this->csrf['csrfFieldName'] .'" value="'. $this->csrf['csrfToken'] .'"/>';
+                ?>
 				<fieldset>
 					<div class="formRow half">
 						<label for="lang">Language:</label>
