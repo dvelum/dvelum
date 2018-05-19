@@ -318,6 +318,9 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
         if(!$id  || !$project->objectExists($id))
             Response::jsonError($this->_lang->WRONG_REQUEST .' code1');
 
+        if(!$project->objectExists($newParent))
+            Response::jsonError('Bad new parent');
+
         $itemData = $project->getTree()->getItem($id);
 
         if(in_array($itemData['data']->getClass() , Designer_Project::$storeClasses , true)){
