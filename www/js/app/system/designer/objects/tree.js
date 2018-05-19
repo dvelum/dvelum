@@ -70,16 +70,9 @@ Ext.define('designer.objects.Tree',{
 					type: 'json',
 					idProperty: 'id'
 				},
-				autoLoad:false
 			},
-			root: {
-				text: '/',
-				expanded: true,
-				id:0,
-				leaf:false,
-				children:[]
-			},
-			defaultRootId:0,
+			defaultRootId:'_ROOT_',
+			defaultRootText: '/',
 			clearOnLoad:true,
 			autoLoad:false,
 			listeners:{
@@ -105,9 +98,17 @@ Ext.define('designer.objects.Tree',{
 						fn:this.sortChanged,
 						scope:this
 					},
+                    nodedragover: function(targetNode, position, dragData){
+                        var rec = dragData.records[0],
+                            isFirst = targetNode.isFirst(),
+                            isRoot = targetNode.isRoot();
+
+                        if(isRoot)
+                        	return false;
+                        return (!(targetNode.parentNode.isRoot() && position != 'append'));
+                    },
 					scope:this
 				}
-
 			}
 		});
 
