@@ -28,6 +28,13 @@ use Dvelum\Cache\CacheInterface;
 
 use \Page;
 
+/**
+ * Class BlockManager
+ * Note that blocks can be accessed only through place code.
+ * It faster then making cache request for each block item
+ * also it simplier to reset cache for map of blocks dependent on page.
+ * @package Dvelum\App
+ */
 class BlockManager
 {
     /**
