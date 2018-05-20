@@ -72,4 +72,20 @@ class Controller
     {
         $this->router = $router;
     }
+
+    /**
+     * Render template
+     * @param string $templatePath
+     * @param array $data
+     * @param bool $cacheResult
+     */
+    public function render(string $templatePath , array $data, bool $cacheResult = true) : void
+    {
+        $template = \Dvelum\View::factory();
+        if(!$cacheResult){
+            $template->disableCache();
+        }
+        $template->setData($data);
+        $this->response->put($template->render($templatePath));
+    }
 }

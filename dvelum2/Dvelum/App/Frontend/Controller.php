@@ -49,11 +49,11 @@ class Controller extends App\Controller
      * data.
      * @return void
      */
-    public function showPage() : void
+    public function showPage(): void
     {
         header('Content-Type: text/html; charset=utf-8');
 
-        $vers = $this->request->get('vers' , 'int' , false);
+        $vers = $this->request->get('vers', 'int', false);
 
         $page = \Page::getInstance();
         $page->setTemplatesPath('public/');
@@ -63,23 +63,22 @@ class Controller extends App\Controller
          */
         $blockManager = Service::get('blockManager');
 
-        if($vers){
+        if ($vers) {
             $blockManager->disableCache();
         }
 
-        if($page->show_blocks)
-            $blockManager->init($page->id , $page->default_blocks , $vers);
+        if ($page->show_blocks) {
+            $blockManager->init($page->id, $page->default_blocks, $vers);
+        }
 
-        $template = View::factory();
-        $template->disableCache();
-        $template->setData(array(
-            'development' => $this->appConfig->get('development') ,
-            'page' => $page ,
-            'path' => $page->getThemePath() ,
-            'blockManager' => $blockManager ,
+        $layoutPath = $page->getThemePath() . 'layout.php';
+        $this->render($layoutPath, [
+            'development' => $this->appConfig->get('development'),
+            'page' => $page,
+            'path' => $page->getThemePath(),
+            'blockManager' => $blockManager,
             'resource' => Resource::factory(),
             'pagesTree' => Model::factory('Page')->getTree()
-        ));
-        $this->response->put($template->render($page->getThemePath().'layout.php'));
+        ], false);
     }
 }
