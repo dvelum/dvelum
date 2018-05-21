@@ -36,7 +36,7 @@ class BuildShards extends Console\Action
                     continue;
                 }
 
-                echo "\t" . $object . ' : ';
+                echo "\t\t" . $object . ' : ';
 
                 $builder = Orm\Record\Builder::factory($object);
                 $builder->setConnection(Orm\Model::factory($object)->getDbShardConnection($shardId));
@@ -50,11 +50,11 @@ class BuildShards extends Console\Action
             //build foreign keys
             if ($ormConfig->get('foreign_keys'))
             {
-                echo "\t" . $object . ' :  is distributed, skip' . PHP_EOL;
+                echo "\t\t" . $object . ' :  is distributed, skip' . PHP_EOL;
 
                 foreach ($registeredObjects as $index => $object)
                 {
-                    echo "\t" . $object . ' : ';
+                    echo "\t\t" . $object . ' : ';
 
                     $builder = Orm\Record\Builder::factory($object);
                     $builder->setConnection(Orm\Model::factory($object)->getDbShardConnection($shardId));
