@@ -26,8 +26,8 @@ class BuildShards extends Console\Action
         foreach ($shardsConfig as $item)
         {
             $shardId = $item['id'];
-            echo "\t" . 'BUILD ' . $shardId . ' ' . PHP_EOL;
-
+            echo  $shardId . ' ' . PHP_EOL;
+            echo "\t Tables" . PHP_EOL;
             //build objects
             foreach ($registeredObjects as $index => $object)
             {
@@ -50,10 +50,15 @@ class BuildShards extends Console\Action
             //build foreign keys
             if ($ormConfig->get('foreign_keys'))
             {
-                echo "\t\t" . $object . ' :  is distributed, skip' . PHP_EOL;
+                echo "\t Foreign Keys " . PHP_EOL;
 
                 foreach ($registeredObjects as $index => $object)
                 {
+                    if (!Orm\Record\Config::factory($object)->isDistributed()) {
+                        unset($registeredObjects[$index]);
+                        continue;
+                    }
+
                     echo "\t\t" . $object . ' : ';
 
                     $builder = Orm\Record\Builder::factory($object);
