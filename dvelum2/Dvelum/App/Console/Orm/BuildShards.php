@@ -11,6 +11,7 @@ class BuildShards extends Console\Action
 {
     public function action(): bool
     {
+        $ormConfig = Config::storage()->get('orm.php');
         $dbObjectManager = new Orm\Record\Manager();
         $success = true;
         $t = microtime(true);
@@ -27,21 +28,42 @@ class BuildShards extends Console\Action
             $shardId = $item['id'];
             echo "\t" . 'BUILD ' . $shardId . ' ' . PHP_EOL;
 
-            foreach ($registeredObjects as $index => $object) {
+            //build objects
+            foreach ($registeredObjects as $index => $object)
+            {
                 if (!Orm\Record\Config::factory($object)->isDistributed()) {
                     unset($registeredObjects[$index]);
                     continue;
                 }
 
-                echo "\t\t" . $object . ' : ';
+                echo "\t" . $object . ' : ';
 
                 $builder = Orm\Record\Builder::factory($object);
                 $builder->setConnection(Orm\Model::factory($object)->getDbShardConnection($shardId));
-                if ($builder->build(true, true)) {
+                if ($builder->build(false)) {
                     echo 'OK' . PHP_EOL;
                 } else {
                     $success = false;
                     echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
+                }
+            }
+            //build foreign keys
+            if ($ormConfig->get('foreign_keys'))
+            {
+                echo "\t" . $object . ' :  is distributed, skip' . PHP_EOL;
+
+                foreach ($registeredObjects as $index => $object)
+                {
+                    echo "\t" . $object . ' : ';
+
+                    $builder = Orm\Record\Builder::factory($object);
+                    $builder->setConnection(Orm\Model::factory($object)->getDbShardConnection($shardId));
+                    if ($builder->build(true)) {
+                        echo 'OK' . PHP_EOL;
+                    } else {
+                        $success = false;
+                        echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
+                    }
                 }
             }
         }

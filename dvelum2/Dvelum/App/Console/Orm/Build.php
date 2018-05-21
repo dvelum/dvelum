@@ -2,31 +2,61 @@
 declare(strict_types=1);
 
 namespace Dvelum\App\Console\Orm;
+
 use Dvelum\App\Console;
 use Dvelum\Orm;
+use Dvelum\Config;
 
 class Build extends Console\Action
 {
-    public function action() : bool
+    public function action(): bool
     {
+        $ormConfig = Config::storage()->get('orm.php');
         $dbObjectManager = new Orm\Record\Manager();
         $success = true;
         $t = microtime(true);
-        echo 'BUILD OBJECTS '. PHP_EOL;
-        foreach($dbObjectManager->getRegisteredObjects() as $object)
+
+        echo "BUILD OBJECTS " . PHP_EOL;
+
+        // build object
+        foreach ($dbObjectManager->getRegisteredObjects() as $object)
         {
-            if(Orm\Record\Config::factory($object)->isDistributed()){
-                echo  $object . ' :  is distributed, skip'. PHP_EOL;
+            if (Orm\Record\Config::factory($object)->isDistributed())
+            {
+                echo "\t " . $object . ' :  is distributed, skip' . PHP_EOL;
                 continue;
             }
 
-            echo  $object . ' : ';
+            echo "\t " . $object . ' : ';
             $builder = Orm\Record\Builder::factory($object);
-            if($builder->build()){
+            if ($builder->build(false)) {
                 echo 'OK' . PHP_EOL;
-            }else{
+            } else {
                 $success = false;
-                echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())). PHP_EOL;
+                echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
+            }
+        }
+
+        //build foreign keys
+        if ($ormConfig->get('foreign_keys'))
+        {
+            echo PHP_EOL . "\t BUILD FOREIGN KEYS" . PHP_EOL . PHP_EOL;
+
+            foreach ($dbObjectManager->getRegisteredObjects() as $object)
+            {
+                if (Orm\Record\Config::factory($object)->isDistributed()) {
+                    echo "\t " . $object . ' :  is distributed, skip' . PHP_EOL;
+                    continue;
+                }
+
+                echo "\t " . $object . ' : ';
+                $builder = Orm\Record\Builder::factory($object);
+                if ($builder->build(true)) {
+                    echo 'OK' . PHP_EOL;
+                } else {
+                    $success = false;
+                    echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
+                }
             }
         }
         return $success;
