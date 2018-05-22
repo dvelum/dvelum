@@ -257,7 +257,6 @@ class Config
             )->__toArray();
         }
 
-
         /*
          * System index init
          */
@@ -675,15 +674,13 @@ class Config
 
         $config = clone $this->config;
         $translator = $this->getTranslator();
-        $translation = $translator->getTranslation();
 
-        $translationsData = & $translation->dataLink();
-        $translationsData[$this->name]['title'] = $this->config->get('title');
+        $translation = $translator->getTranslation($this->getName());
+        $translation['title'] = $this->config->get('title');
 
         foreach ($fields as $field =>& $cfg)
         {
-            if($translationsData !==false)
-                $translationsData[$this->name]['fields'][$field] = $cfg['title'];
+            $translation['fields'][$field] = $cfg['title'];
             unset($cfg['title']);
         } unset($cfg);
 
@@ -695,9 +692,11 @@ class Config
             $config->set('distributed_indexes',  $this->getDistributedIndexesConfig(false));
         }
 
-        if(!$translator->getStorage()->save($translation))
+        try{
+            $translator->save($this->getName() , $translation);
+        }catch (\Exception $e){
             return false;
-
+        }
         return Cfg::storage()->save($config);
     }
 

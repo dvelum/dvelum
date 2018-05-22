@@ -23,6 +23,7 @@ namespace Dvelum\App\Backend\Orm;
 use Dvelum\Orm;
 use Dvelum\Lang;
 use Dvelum\Config;
+use Dvelum\Orm\Record\Config\Translator;
 use \Exception;
 
 class Manager
@@ -79,9 +80,17 @@ class Manager
 		$langWritePath = Lang::storage()->getWrite();
 		$objectsWrite = Config::storage()->getWrite();
 
-		foreach ($localisations as $file){
-			if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file))
-				return self::ERROR_FS_LOCALISATION;
+		foreach ($localisations as $file)
+		{
+			if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file)){
+                return self::ERROR_FS_LOCALISATION;
+            }
+
+            $localeName = basename(dirname($file));
+            $translator = $this->getTranslator($localeName, $name);
+            if(!$translator->removeObjectTranslation($name, true)){
+                return self::ERROR_FS_LOCALISATION;
+            }
 		}
 
         $path = $objectsWrite . Config::storage()->get('orm.php')->get('object_configs') . $name . '.php';
@@ -105,13 +114,18 @@ class Manager
 		
 		$localisationKey = strtolower($name);
         $langStorage = Lang::storage();
+
 		foreach ($localisations as $file)
 		{		
 			$cfg = $langStorage->get($file);
 			if($cfg->offsetExists($localisationKey)){
 				$cfg->remove($localisationKey);
                 $langStorage->save($cfg);
-			}			
+			}
+
+            $localeName = basename(dirname($file));
+            $translator = $this->getTranslator($localeName, $name);
+            $translator->removeObjectTranslation($name, true);
 		}			 
 		return 0;
 	}
@@ -222,22 +236,28 @@ class Manager
 			return self::ERROR_FS;
 		
 		$localisationKey = strtolower($objectName);
+
 		foreach ($localisations as $file)
 		{
+            $localeName = basename(dirname($file));
+            $translator = $this->getTranslator($localeName, $objectName);
+            $translation = $translator->getTranslation($objectName);
+            unset($translation['fields'][$fieldName]);
+
 		    $langStorage = Lang::storage();
 			$cfg = $langStorage->get($file);
+
 			if($cfg->offsetExists($localisationKey))
 			{
-				$cfgArray = $cfg->get($localisationKey);
-				if(isset($cfgArray['fields']) && isset($cfgArray['fields'][$fieldName]))
-				{
-					unset($cfgArray['fields'][$fieldName]);
-					$cfg->set($localisationKey, $cfgArray);
-					if(!$langStorage->save($cfg)){
-						return self::ERROR_FS_LOCALISATION;
-					}
-				}
-			}			
+                $cfg->offsetUnset($localisationKey);
+                if(!$langStorage->save($cfg)){
+                    return self::ERROR_FS_LOCALISATION;
+                }
+			}
+
+            if(!$translator->save($objectName, $translation)){
+                return self::ERROR_FS_LOCALISATION;
+            }
 		}	
 		return 0;
 	}
@@ -253,30 +273,42 @@ class Manager
 	{
 		$localisations = $this->getLocalisations();
 		$langWritePath = Lang::storage()->getWrite();
-		foreach ($localisations as $file)
-			if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file))
-				return self::ERROR_FS_LOCALISATION;
+
+		foreach ($localisations as $file){
+            if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file)){
+                return self::ERROR_FS_LOCALISATION;
+            }
+            $localeName = basename(dirname($file));
+            $translator = $this->getTranslator($localeName, $cfg->getName());
+            if(!$translator->removeObjectTranslation($cfg->getName(), true)){
+                return self::ERROR_FS_LOCALISATION;
+            }
+        }
 
 		if(!$cfg->renameField($oldName, $newName))
 			return self::ERROR_EXEC;
 		
 		$localisationKey = strtolower($cfg->getName());
         $langStorage = Lang::storage();
+
 		foreach ($localisations as $file)
 		{
+            $localeName = basename(dirname($file));
+            $translator = $this->getTranslator($localeName, $cfg->getName());
+            $translation = $translator->getTranslation($cfg->getName());
+            $translation['fields'][$newName] = $translation['fields'][$oldName];
+            unset($translation['fields'][$oldName]);
+
 			$cfg = $langStorage->get($file,true,true);
-			if($cfg->offsetExists($localisationKey))
-			{
-				$cfgArray = $cfg->get($localisationKey);
-				if(isset($cfgArray['fields']) && isset($cfgArray['fields'][$oldName]))
-				{
-					$oldCfg = $cfgArray['fields'][$oldName];
-					unset($cfgArray['fields'][$oldName]);
-					$cfgArray['fields'][$newName] = $oldCfg;
-					$cfg->set($localisationKey, $cfgArray);
-                    $langStorage->save($cfg);
-				}
+
+			if($cfg->offsetExists($localisationKey)) {
+                $cfg->offsetUnset($localisationKey);
+                $langStorage->save($cfg);
 			}
+
+            if($translator->save($cfg->getName(), $translation)){
+                return self::ERROR_FS_LOCALISATION;
+            }
 		}
 		return 0;
 	}
@@ -288,11 +320,13 @@ class Manager
 	 * @return integer 0 on success or error code
 	 */
 	public function renameObject($path , $oldName , $newName)
-	{		
+	{
+        $objectConfig = Orm\Record\Config::factory($oldName);
 	   /*
 		* Check fs write permissions for associated objects
 		*/
 		$assoc = Orm\Record\Expert::getAssociatedStructures($oldName);
+
 		if(!empty($assoc))
 			foreach ($assoc as $config)
 				if(!is_writable(Config::storage()->getPath($path).strtolower($config['object']).'.php'))
@@ -304,25 +338,46 @@ class Manager
         $langStorage = Lang::storage();
 		$localisations = $this->getLocalisations();
 		$langWritePath = $langStorage->getWrite();
-		foreach ($localisations as $file)
-			if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file))
-				return self::ERROR_FS_LOCALISATION;
 
-		$localisationKey = strtolower($oldName);
-		$newLocalisationKey = strtolower($newName);
-		
+        $translator = $objectConfig->getTranslator();
+
 		foreach ($localisations as $file)
 		{
+            if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file)){
+                return self::ERROR_FS_LOCALISATION;
+            }
+
+            $localeName = basename(dirname($file));
+            $translator = $this->getTranslator($localeName, $oldName);
+            if(!$translator->removeObjectTranslation($oldName, true)){
+                return self::ERROR_FS_LOCALISATION;
+            }
+        }
+
+		$localisationKey = strtolower($oldName);
+		foreach ($localisations as $file)
+		{
+            $localeName = basename(dirname($file));
+
 			$cfg = $langStorage->get($file,true,true);
 			if($cfg->offsetExists($localisationKey))
 			{
-				$cfgArray = $cfg->get($localisationKey);
 				$cfg->remove($localisationKey);
-				$cfg->set($newLocalisationKey, $cfgArray);
                 if(!$langStorage->save($cfg)){
                     return self::ERROR_FS;
                 }
 			}
+
+            $localeName = basename(dirname($file));
+            $translator = $this->getTranslator($localeName, $oldName);
+            $oldTranslations = $translator->getTranslation($oldName);
+            if(!$translator->removeObjectTranslation($oldName)){
+                return self::ERROR_FS_LOCALISATION;
+            }
+            $translator = $this->getTranslator($localeName, $newName);
+            if(!$translator->save($newName, $oldTranslations)){
+                return self::ERROR_FS_LOCALISATION;
+            }
 		}
 		
 		$newFileName = Config::storage()->getWrite(). $path . $newName . '.php';
@@ -330,7 +385,7 @@ class Manager
 
 		if(!@rename($oldFileName, $newFileName))
 			return self::ERROR_FS;
-		
+
 		
 		if(!empty($assoc))
 		{
@@ -387,5 +442,14 @@ class Manager
             ]);
         }
         return $idObjectConfig->save();
+    }
+
+
+    public function getTranslator(string $locale, string $objectName) : Translator
+    {
+        $ormConfig = Config::storage()->get('orm.php');
+        $commonFile = $locale . '/objects.php';
+        $objectsDir = $locale . '/' . $ormConfig->get('translations_dir');
+        return new Translator($commonFile, $objectsDir);
     }
 }
