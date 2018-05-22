@@ -184,7 +184,7 @@ class Translator
      */
     public function removeObjectTranslation(string  $objectName , bool $checkOnly = false) : bool
     {
-        $localFile = $this->localesDir . strtolower($objectName) . '.php';
+        $localFile = $this->getStorage()->getWrite() . $this->localesDir . strtolower($objectName) . '.php';
 
         if(file_exists($localFile)){
             if($checkOnly){

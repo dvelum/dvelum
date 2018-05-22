@@ -231,7 +231,7 @@ class Manager
 		$localisations = $this->getLocalisations();
 
 		$objectCfg->removeField($fieldName);
-		 
+
 		if(!$objectCfg->save())
 			return self::ERROR_FS;
 		
@@ -240,8 +240,10 @@ class Manager
 		foreach ($localisations as $file)
 		{
             $localeName = basename(dirname($file));
+
             $translator = $this->getTranslator($localeName, $objectName);
             $translation = $translator->getTranslation($objectName);
+
             unset($translation['fields'][$fieldName]);
 
 		    $langStorage = Lang::storage();
@@ -296,7 +298,9 @@ class Manager
             $localeName = basename(dirname($file));
             $translator = $this->getTranslator($localeName, $cfg->getName());
             $translation = $translator->getTranslation($cfg->getName());
-            $translation['fields'][$newName] = $translation['fields'][$oldName];
+            if(isset($translation['fields'][$oldName])){
+                $translation['fields'][$newName] = $translation['fields'][$oldName];
+            }
             unset($translation['fields'][$oldName]);
 
 			$cfg = $langStorage->get($file,true,true);
@@ -306,7 +310,7 @@ class Manager
                 $langStorage->save($cfg);
 			}
 
-            if($translator->save($cfg->getName(), $translation)){
+            if(!$translator->save($cfg->getName(), $translation)){
                 return self::ERROR_FS_LOCALISATION;
             }
 		}
