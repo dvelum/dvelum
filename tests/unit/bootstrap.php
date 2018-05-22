@@ -145,6 +145,10 @@ foreach ($shardsConfig as $item)
 
 // init default objects
 
+$session = \Dvelum\App\Session\User::factory();
+$session->setId(1);
+$session->setAuthorized();
+
 $modelContent = \Dvelum\Orm\Model::factory('Page');
 $modelContent->getDbConnection()->delete($modelContent->table());
 
@@ -171,7 +175,3 @@ $user->setValues(array(
         'group_id' => $group->getId()
     ));
 $user->save();
-
-$session = \Dvelum\App\Session\User::factory();
-$session->setId(1);
-$session->setAuthorized();
