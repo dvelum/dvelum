@@ -22,32 +22,46 @@ namespace Dvelum\Orm\Record\Config;
 
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Config\Storage\StorageInterface;
+use Dvelum\Lang;
 
 class Translator
 {
-	protected $mainConfig = '';
+	protected $commonPath = '';
+	protected $localesDir = '';
+
 	protected $translation = false;
 	/**
 	 * @var \Lang
 	 */
 	protected $lang = false;
 	/**
-	 * @param string $configPath - path to translation Array config
+	 * @param string $commonPath - path to translation Array config
+     * @param string $localesDir - locales directory (relative)
 	*/
-	public function __construct($configPath)
+	public function __construct(string $commonPath, string $localesDir)
 	{
-		$this->mainConfig = $configPath;
+		$this->commonPath = $commonPath;
+		$this->localesDir = $localesDir;
 	}
 
     /**
      * Get object fields translation
-     * @return ConfigInterface
+     * @param string $objectName
+     * @return array|null
      */
-	public function getTranslation() : ?ConfigInterface
+	public function getTranslation(string $objectName) : ?array
 	{
 		if(!$this->translation){
-			$this->translation = \Lang::storage()->get($this->mainConfig, true, true);
+			$this->translation = Lang::storage()->get($this->commonPath, true, true)->__toArray();
 		}
+
+		if(!isset($this->translation[$objectName])){
+            $localFile = $this->localesDir . strtolower($objectName) . '.php';
+
+		    if(Lang::storage()->exists($localFile)) {
+                $this->translation[$objectName] = Lang::storage()->get($localFile, true, true)->__toArray();
+            }
+        }
 		return $this->translation;
 	}
 
@@ -61,12 +75,12 @@ class Translator
     }
 
 	/**
-	 * Get Main config path
+	 * Get common config path
 	 * @return string
 	 */
-	public function getMainConfig()
+	public function getcommonConfigPath() : string
 	{
-		return $this->mainConfig;
+		return $this->commonPath;
 	}
 	
 	/**
@@ -76,7 +90,7 @@ class Translator
 	 */
 	public function translate($objectName , & $objectConfig)
 	{
-		$translation = $this->getTranslation();
+		$translation = $this->getTranslation($objectName);
 
 		if($translation)
 		{
@@ -101,7 +115,7 @@ class Translator
 			if(isset($v['lazyLang']) && $v['lazyLang'])
 			{
 				if(!$this->lang)
-					$this->lang = \Lang::lang();
+					$this->lang = Lang::lang();
 
 				if(isset($v['title']))
 					$v['title'] = $this->lang->get($v['title']);

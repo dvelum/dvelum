@@ -125,7 +125,9 @@ class Orm
     public function getTranslator()
     {
         if(empty($this->translator)){
-            $this->translator = new Orm\Record\Config\Translator($this->language . '/objects.php');
+            $commonFile = $this->language . '/objects.php';
+            $objectsDir = $this->language . '/' . $this->getConfig()->get('translations_dir');
+            $this->translator = new Orm\Record\Config\Translator($commonFile, $objectsDir);
         }
         return  $this->translator;
     }

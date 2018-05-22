@@ -79,12 +79,6 @@ class Config
     protected $name;
 
     /**
-     * Translation config
-     * @var Cfg\Adapter
-     */
-    static protected $translation = null;
-
-    /**
      * Translation adapter
      * @var Orm\Record\Config\Translator
      */

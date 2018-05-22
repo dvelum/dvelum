@@ -73,4 +73,8 @@ return [
      * Distributed objects storage
      */
     'distributed_storage' => '\\Dvelum\\Orm\\Distributed\\Store',
+    /*
+     * Object translations dir
+     */
+    'translations_dir' => 'objects/'
 ];
