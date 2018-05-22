@@ -700,6 +700,8 @@ Ext.define('app.crud.orm.Main',{
      */
     showValidateWindow:function()
     {
+        this.searchField.clearFilter();
+
         var win = Ext.create('app.orm.validate.Window',{
             title:appLang.VALIDATE_DB_STRUCTURE,
             objectsStore:this.dataStore
@@ -716,6 +718,10 @@ Ext.define('app.crud.orm.Main',{
                 win.addToQueue(objectName);
                 win.validateObjects();
             });
+        },this);
+
+        win.on('close',function(){
+            this.searchField.clearFilter();
         },this);
 
         win.show();
