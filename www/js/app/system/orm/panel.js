@@ -700,7 +700,7 @@ Ext.define('app.crud.orm.Main',{
      */
     showValidateWindow:function()
     {
-        this.searchField.clearFilter();
+        this.searchField.reset();
 
         var win = Ext.create('app.orm.validate.Window',{
             title:appLang.VALIDATE_DB_STRUCTURE,

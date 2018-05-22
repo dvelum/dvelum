@@ -111,6 +111,10 @@ Ext.define('SearchPanel', {
         this.items.push(this.searchField, this.resetButton);
         this.callParent(arguments);
     },
+    reset : function() {
+        this.clearFilter();
+        this.searchField.reset();
+    },
     /**
      * Clear filter
      */
