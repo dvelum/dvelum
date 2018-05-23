@@ -166,6 +166,7 @@ class Translator
         }
 
         $common = Lang::storage()->get($this->commonPath, true, true);
+
         if($common->offsetExists($objectName)){
             $common->offsetUnset($objectName);
             if(!$this->getStorage()->save($common)){

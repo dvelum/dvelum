@@ -124,7 +124,7 @@ class AsArray implements StorageInterface
         $file = $this->getWrite() . $id;
 
         $dir = dirname($file);
-        if(!file_exists($dir) && !@mkdir($dir,0755, true))
+        if(!file_exists($dir) && !@mkdir($dir,0775, true))
             throw new \Exception('Cannot create '.$dir);
 
         if(\File::getExt($file)!=='.php')

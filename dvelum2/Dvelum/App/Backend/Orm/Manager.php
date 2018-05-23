@@ -287,33 +287,37 @@ class Manager
             }
         }
 
-		if(!$cfg->renameField($oldName, $newName))
-			return self::ERROR_EXEC;
-		
 		$localisationKey = strtolower($cfg->getName());
         $langStorage = Lang::storage();
 
 		foreach ($localisations as $file)
 		{
+            $langCfg = $langStorage->get($file,true,true);
+
+            if($langCfg->offsetExists($localisationKey)) {
+                $langCfg->offsetUnset($localisationKey);
+                if(!$langStorage->save($langCfg)){
+                    return self::ERROR_FS_LOCALISATION;
+                }
+            }
+
             $localeName = basename(dirname($file));
             $translator = $this->getTranslator($localeName, $cfg->getName());
             $translation = $translator->getTranslation($cfg->getName());
+
             if(isset($translation['fields'][$oldName])){
                 $translation['fields'][$newName] = $translation['fields'][$oldName];
             }
             unset($translation['fields'][$oldName]);
 
-			$cfg = $langStorage->get($file,true,true);
-
-			if($cfg->offsetExists($localisationKey)) {
-                $cfg->offsetUnset($localisationKey);
-                $langStorage->save($cfg);
-			}
-
             if(!$translator->save($cfg->getName(), $translation)){
                 return self::ERROR_FS_LOCALISATION;
             }
 		}
+
+        if(!$cfg->renameField($oldName, $newName))
+            return self::ERROR_EXEC;
+
 		return 0;
 	}
 	/**
