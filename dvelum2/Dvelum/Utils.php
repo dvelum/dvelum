@@ -182,6 +182,7 @@ class Utils
     {
         try {
             file_put_contents($file, '<?php return ' . var_export($data, true) . '; ');
+            chmod($file, 0775);
             return true;
         } catch (\Error $e) {
             return false;
