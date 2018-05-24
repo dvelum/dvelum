@@ -47,11 +47,12 @@ class Translator
     /**
      * Get object fields translation
      * @param string $objectName
+     * @param bool $force
      * @return array
      */
-	public function getTranslation(string $objectName) : array
+	public function getTranslation(string $objectName, $force = false) : array
 	{
-		if(!$this->translation){
+		if(!$this->translation || $force){
 			$this->translation = Lang::storage()->get($this->commonPath, true, true)->__toArray();
 		}
 
