@@ -675,7 +675,7 @@ class Config
         $config = clone $this->config;
         $translator = $this->getTranslator();
 
-        $translation = $translator->getTranslation($this->getName());
+        $translation = $translator->getTranslation($this->getName(), true);
         $translation['title'] = $this->config->get('title');
 
         foreach ($fields as $field =>& $cfg)
@@ -884,7 +884,10 @@ class Config
         }
         $this->config->set('indexes', $indexes);
         $builder = Orm\Record\Builder::factory($this->getName() , false);
-        return $builder->renameField($oldName , $newName);
+        if(!$builder->renameField($oldName , $newName)){
+            return false;
+        }
+        return $this->save();
     }
 
     /**
