@@ -36,6 +36,9 @@ class Page
     public $code = 'index';
     public $id = 0;
     public $meta_description = '';
+    public $page_title = '';
+    public $text = '';
+    public $show_blocks = false;
     public $meta_keywords = '';
     public $theme = 'default';
     protected $ogData = array(
