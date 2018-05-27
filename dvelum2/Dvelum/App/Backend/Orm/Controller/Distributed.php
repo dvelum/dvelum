@@ -24,6 +24,10 @@ use Dvelum\App\Backend\Orm\Manager;
 use Dvelum\App\Backend\Controller;
 
 
+use Dvelum\Config;
+use Dvelum\Lang;
+use Dvelum\Orm;
+use Dvelum\Service;
 use \Exception;
 use Dvelum\Orm\Record;
 
@@ -141,6 +145,60 @@ class Distributed extends Controller
             $this->response->success();
         else
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
+    }
+
+    /**
+     * Sharding types for combobox
+     * @throws Exception
+     */
+    public function listShardingTypesAction()
+    {
+        $lang = Lang::lang();
+
+        $config = Config::storage()->get('sharding.php')->get('sharding_types');
+        $data = [];
+        foreach ($config as $index => $item){
+            $data[] =[
+                'id' => $index,
+                'title' => $lang->get($item['title'])
+            ];
+        }
+        $this->response->success($data);
+    }
+
+    /**
+     * Sharding types for combobox
+     * @throws Exception
+     */
+    public function listShardingFieldsAction()
+    {
+        $object = $this->request->post('object','string','');
+
+        if(empty($object)){
+            $this->response->success([]);
+            return;
+        }
+
+        if(!Orm\Record\Config::configExists($object)){
+            $this->response->success([]);
+            return;
+        }
+
+        $fields = Orm\Record\Config::factory($object)->getFields();
+        $data = [];
+        foreach ($fields as $item){
+            /**
+             * @var Orm\Record\Config\Field $item
+             */
+            if($item->isSystem() || $item->isBoolean() || $item->isText()){
+                continue;
+            }
+            $data[] = [
+                'id' => $item->getName(),
+                'title' => $item->getName() .' ('. $item->getTitle().')'
+            ];
+        }
+        $this->response->success($data);
     }
 
     /**

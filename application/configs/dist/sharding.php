@@ -19,4 +19,14 @@ return [
      * Adapter for reserving primary keys
      */
     'key_generator' => '\\Dvelum\\Orm\\Distributed\\Key\\OrmIndex',
+    'sharding_types' => [
+        'global_id' => [
+            'title' => 'ORM_DISTRIBUTED_PRIMARY_KEY',
+            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\OrmIndex',
+        ],
+        'sharding_key' =>[
+            'title' => 'ORM_SHARD_KEY',
+            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\ShardingKey',
+        ]
+    ]
 ];

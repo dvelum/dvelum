@@ -588,5 +588,8 @@
   'VALIDATE_DB_STRUCTURE' => 'Validate DB structure',
   'VALID_STRUCTURE' => 'Valid DB Structure',
   'INVALID_STRUCTURE' => 'Invalid DB structure',
-  'GROUP_BY' => 'Group by'
+  'GROUP_BY' => 'Group by',
+  'ORM_SHARDING_TYPE' => 'Sharding type',
+  'ORM_DISTRIBUTED_PRIMARY_KEY' => 'Distributed unique Primary Key',
+  'ORM_SHARD_KEY' => 'Sharding Key',
 );

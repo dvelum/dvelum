@@ -590,5 +590,8 @@
   'VALIDATE_DB_STRUCTURE' => 'Проверить структуру таблиц БД',
   'VALID_STRUCTURE' => 'Синхронизировано',
   'INVALID_STRUCTURE' => 'Неверная структура БД',
-  'GROUP_BY' => 'Группировать по'
+  'GROUP_BY' => 'Группировать по',
+  'ORM_SHARDING_TYPE' => 'Тип шардинга',
+  'ORM_DISTRIBUTED_PRIMARY_KEY' => 'Распределенный уникальный первичный ключ',
+  'ORM_SHARD_KEY' => 'Шардирование по ключу',
 ); 

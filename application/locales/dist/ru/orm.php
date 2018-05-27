@@ -50,5 +50,6 @@ $newsModel = Model::factory(‘News’);<br>
   'qtip_field_relations_type' => 'Тип связи объектов.<br>
 Полиморфная связь - данные ассоциаций храняться в одной общей таблице объекта Links<br>
 Many to Many - для связи создается отдельный объект ORM (таблица связей)',
+  'qtip_object_sharding_key'=> 'Выберите поле ORM для'
 
 );

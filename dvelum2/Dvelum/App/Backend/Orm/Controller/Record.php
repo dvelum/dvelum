@@ -417,6 +417,10 @@ class Record extends Controller
 
         $distributed = $this->request->post('distributed','boolean',false);
 
+        $shardingType = $this->request->post('sharding_type','string', null);
+        $shardingKey = $this->request->post('sharding_key', 'string', null);
+
+
         if ($detalization !== 'extended') {
             $detalization = 'default';
         }
@@ -451,6 +455,10 @@ class Record extends Controller
             $this->response->error($this->lang->get('FILL_FORM'), $errors);
         }
 
+        if(!$distributed){
+            $shardingType = $shardingKey = null;
+        }
+
         if ($useAcl) {
             $data['acl'] = $acl;
         } else {
@@ -471,6 +479,8 @@ class Record extends Controller
         $data['connection'] = $connection;
         $data['log_detalization'] = $detalization;
         $data['distributed'] = $distributed;
+        $data['sharding_type'] = $shardingType;
+        $data['sharding_key'] = $shardingKey;
 
         $name = strtolower($name);
 

@@ -880,10 +880,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 					valueField:'id',
 					hidden:true,
 					store:Ext.create('Ext.data.Store',{
-						fields:[
-							{name:'id' , type:'string'},
-							{name:'title' ,type:'string'}
-						],
+                        model:'app.comboStringModel',
 						autoLoad:true,
 						proxy: {
 							type: 'ajax',
@@ -913,16 +910,104 @@ Ext.define('app.crud.orm.ObjectWindow', {
                     listeners:{
                         render:{fn:this.initTooltip,scope:this},
                         change:function(box, value){
+                            var form = this.configForm.getForm();
                             if(value){
                                 if(!Ext.isEmpty(handle.objectName)){
                                     this.distributedIndexGrid.enable();
                                 }
+                                form.findField('sharding_type').show();
+                                form.findField('sharding_type').enable();
                             }else{
                                 this.distributedIndexGrid.disable();
+                                form.findField('sharding_type').hide();
+                                form.findField('sharding_type').disable();
                             }
                         },
                         scope:this
                     }
+                },{
+                    xtype:'combobox',
+                    name:'sharding_type',
+                    fieldLabel:appLang.ORM_SHARDING_TYPE,
+                    queryMode:'local',
+                    displayField:'title',
+                    forceSelection:true,
+                    allowBlank:false,
+                    valueField:'id',
+                    hidden:true,
+                    disabled:true,
+                    value:'global_id',
+                    listeners:{
+                        render:{fn:this.initTooltip,scope:this},
+                        change:function(box, value){
+                            var form = this.configForm.getForm();
+                            var field = form.findField('sharding_key');
+                            if(value == 'sharding_key'){
+                                field.show();
+                                field.enable();
+                            }else{
+                                this.distributedIndexGrid.disable();
+                                field.hide();
+                                field.reset();
+                                field.disable();
+                            }
+                        },
+                        scope:this
+                    },
+                    store:Ext.create('Ext.data.Store',{
+                        model:'app.comboStringModel',
+                        autoLoad:true,
+                        proxy: {
+                            type: 'ajax',
+                            url: app.crud.orm.Actions.listShardingTypes,
+                            reader: {
+                                type: 'json',
+                                rootProperty: 'data',
+                                idProperty: 'id'
+                            }
+                        },
+                        remoteSort:false,
+                        sorters: [{
+                            property : 'title',
+                            direction: 'ASC'
+                        }]
+                    }),
+                },{
+                    xtype:'combobox',
+                    name:'sharding_key',
+                    fieldLabel:appLang.ORM_SHARD_KEY,
+                    queryMode:'remote',
+                    displayField:'title',
+                    forceSelection:true,
+                    allowBlank:false,
+                    valueField:'id',
+                    hidden:true,
+                    disabled:true,
+                    value:'global_id',
+                    listeners:{
+                        render:{fn:this.initTooltip,scope:this}
+                    },
+                    store:Ext.create('Ext.data.Store',{
+                        model:'app.comboStringModel',
+                        autoLoad:true,
+                        proxy: {
+                            type: 'ajax',
+                            extraParams:{
+                               object: Ext.isEmpty(this.objectName)?'':this.objectName
+                            },
+                            url: app.crud.orm.Actions.listShardingFields,
+                            reader: {
+                                type: 'json',
+                                rootProperty: 'data',
+                                idProperty: 'id'
+                            }
+                        },
+                        remoteSort:false,
+                        sorters: [{
+                            property : 'title',
+                            direction: 'ASC'
+                        }]
+                    }),
                 },{
 					xtype:'fieldcontainer',
 					fieldLabel:' ',
@@ -1105,6 +1190,8 @@ Ext.define('app.crud.orm.ObjectWindow', {
 					handle.configForm.getForm().findField('locked').show();
 				}
 				handle.configForm.getForm().findField('link_title').show();
+                handle.configForm.getForm().findField('sharding_key').getStore().setExtraParam('object',handle.objectName);
+
 				handle.dataStore.load();
 				handle.indexStore.load();
 				handle.setTitle(appLang.EDIT_OBJECT + ' &laquo;' + handle.objectName + '&raquo; ');

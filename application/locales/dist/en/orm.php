@@ -43,4 +43,5 @@ $newsModel = Model::factory(‘News’);
   'qtip_field_relations_type' => 'Type of relations <br>
 Polymorphic relationship -  associations stored in a common ORM object Links <br>
 Many to Many - create a separate associations object ORM',
+  'qtip_object_sharding_key'=> 'Select ORM Object field'
 );

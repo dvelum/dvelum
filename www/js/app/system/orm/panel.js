@@ -136,7 +136,9 @@ Ext.define('app.crud.orm.Main',{
             addDistributedIndex:app.createUrl([this.controllerUrl  + 'distributed','adddistributedindex']),
             listObjDistIndexes: app.createUrl([this.controllerUrl  + 'distributed','distindexes']),
             deleteDistIndex: 	app.createUrl([this.controllerUrl  + 'distributed','deletedistributedindex']),
-            acceptedDistFields: app.createUrl([this.controllerUrl  + 'distributed','acceptedDistributedFields'])
+            acceptedDistFields: app.createUrl([this.controllerUrl  + 'distributed','acceptedDistributedFields']),
+            listShardingTypes:  app.createUrl([this.controllerUrl  + 'distributed','listShardingTypes']),
+            listShardingFields: app.createUrl([this.controllerUrl  + 'distributed','listShardingFields'])
         };
 
 		this.tbar = [];
