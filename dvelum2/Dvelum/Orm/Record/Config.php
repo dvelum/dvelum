@@ -44,6 +44,9 @@ class Config
 
     const RELATION_MANY_TO_MANY = 'many_to_many';
 
+    const SHARDING_TYPE_GLOABAL_ID = 'global_id';
+    const SHARDING_TYPE_KEY = 'sharding_key';
+
     /**
      * @var Cfg\ConfigInterface $settings
      */
@@ -840,13 +843,19 @@ class Config
         }
 
         // Set Required Indexes
-        if($includeSystem){
+        if($includeSystem)
+        {
             $shardingField = Cfg::storage()->get('sharding.php')->get('shard_field');
-            $list[$this->getPrimaryKey()] = [
-                'field'=>$this->getPrimaryKey(),
-                'is_system'=>true,
+            $primaryKey = $this->getPrimaryKey();
+            $list[$primaryKey] = [
+                'field'=> $primaryKey,
+                'is_system'=> true,
             ];
             $list[$shardingField] = ['field'=>$shardingField,'is_system'=>true];
+            $distributedKey = $this->getDistributedKey();
+            if(!empty($distributedKey) && $distributedKey!== $primaryKey){
+                $list[$distributedKey] = ['field'=>$distributedKey,'is_system'=>true,'unique'=>true];
+            }
         }
         return $list;
     }
@@ -1424,4 +1433,41 @@ class Config
         return self::$distributedFields;
     }
 
+    /**
+     * Get sharding type for distributed object
+     * @return null|string
+     */
+    public function getShardingType() : ?string
+    {
+        if(!$this->config->offsetExists('sharding_type')){
+            return null;
+        }
+        return $this->config->get('sharding_type');
+    }
+    /**
+     * Get distributed key field
+     * @return null|string
+     * @throws \Exception
+     */
+    public function getDistributedKey() : ?string
+    {
+        $type = $this->getShardingType();
+
+        if(!$this->isDistributed() || empty($type)){
+            return null;
+        }
+
+        $key = null;
+        switch ($type){
+            case self::SHARDING_TYPE_GLOABAL_ID:
+                $key = $this->getPrimaryKey();
+                break;
+            case self::SHARDING_TYPE_KEY :
+                if($this->config->offsetExists('sharding_key')){
+                    $key = $this->config->get('sharding_key');
+                }
+                break;
+        }
+        return $key;
+    }
 }

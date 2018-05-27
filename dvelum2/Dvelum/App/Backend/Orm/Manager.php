@@ -441,12 +441,15 @@ class Manager
             $cfg['system'] = false;
             $cfg['db_isNull'] = true;
 
-
+            $unique = false;
+            if(isset($cfg['unique']) && $cfg['unique']){
+                $unique = true;
+            }
             $idObjectConfig->setFieldConfig($name,$cfg);
             $idObjectConfig->setIndexConfig($name,[
                 'columns' => [$name],
                 'fulltext' => false,
-                'unique' => false,
+                'unique' => $unique,
             ]);
         }
         return $idObjectConfig->save();

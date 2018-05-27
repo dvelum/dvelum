@@ -946,10 +946,15 @@ Ext.define('app.crud.orm.ObjectWindow', {
                                 field.show();
                                 field.enable();
                             }else{
-                                this.distributedIndexGrid.disable();
                                 field.hide();
                                 field.reset();
                                 field.disable();
+                            }
+
+                            if(value == 'global_id'){
+                                this.distributedIndexGrid.enable();
+                            }else{
+                                this.distributedIndexGrid.disable();
                             }
                         },
                         scope:this

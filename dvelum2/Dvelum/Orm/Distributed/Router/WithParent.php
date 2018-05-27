@@ -54,7 +54,7 @@ class WithParent implements RouteInterface
         $objectShard = '';
 
         if(!empty($parentId)){
-            $objectShard = $this->sharding->getObjectShard($parentObject , $parentId);
+            $objectShard = $this->sharding->findObjectShard($parentObject , $parentId);
         }
 
         if(empty($objectShard)){

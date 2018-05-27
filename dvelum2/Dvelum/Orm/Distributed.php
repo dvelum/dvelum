@@ -89,21 +89,23 @@ class Distributed
      * Get object shard id
      * @param string $objectName
      * @param mixed $objectId
+     * @param mixed $distributedKey
      * @return mixed
      */
-    public function getObjectShard(string $objectName, $objectId)
+    public function findObjectShard(string $objectName, $distributedKey)
     {
-        return $this->keyGenerator->getObjectShard($objectName, $objectId);
+        return $this->keyGenerator->findObjectShard($objectName, $distributedKey);
     }
 
     /**
      * @param $objectName
      * @param array $objectId
-     * @return array  [ [shard_id=>[itemId1,itemId2]] ]
+     * @param array $distributedkeys
+     * @return array  [shard_id=>[key1,key2,key3], shard_id2=>[...]]
      */
-    public function getObjectsShards(string $objectName, array $objectId) : array
+    public function findObjectsShards(string $objectName, array $distributedKeys) : array
     {
-        return $this->keyGenerator->getObjectsShards($objectName, $objectId);
+        return $this->keyGenerator->findObjectsShards($objectName, $distributedKeys);
     }
 
 

@@ -40,7 +40,7 @@ class Model extends Orm\Model
     final public function getItem($id, $fields = ['*'])
     {
         $sharding = Orm\Distributed::factory();
-        $shard = $sharding->getObjectShard($this->getObjectName(), $id);
+        $shard = $sharding->findObjectShard($this->getObjectName(), $id);
 
         if(empty($shard)){
             return false;
@@ -135,7 +135,7 @@ class Model extends Orm\Model
         if ($data === false) {
 
             $sharding = Orm\Distributed::factory();
-            $shards = $sharding->getObjectsShards($this->getObjectName(), $ids);
+            $shards = $sharding->findObjectsShards($this->getObjectName(), $ids);
 
             $data = [];
 

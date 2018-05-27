@@ -43,23 +43,23 @@ interface GeneratorInterface
     /**
      * Delete reserved index
      * @param Record $record
-     * @param $indexId
+     * @param $distributedKey
      * @return bool
      */
-    public function deleteIndex(Record $record, $indexId) : bool;
+    public function deleteIndex(Record $record, $distributedKey) : bool;
 
     /**
      * Get object shard id
      * @param string $objectName
-     * @param mixed $objectId
+     * @param mixed $distributedKey
      * @return mixed
      */
-    public function getObjectShard(string $objectName, $objectId);
-
+    public function findObjectShard(string $objectName, $distributedKey);
     /**
-     * Set routing adapter
-     * @param Router $router
-     * @return mixed
+     * Get shards for list of objects
+     * @param string $objectName
+     * @param array $objectIds
+     * @return array  [shard_id=>[key1,key2,key3], shard_id2=>[...]]
      */
-    public function setRouter(Router $router) : void;
+    public function findObjectsShards(string $objectName, array $distributedKeys) : array;
 }

@@ -26,7 +26,7 @@ return [
         ],
         'sharding_key' =>[
             'title' => 'ORM_SHARD_KEY',
-            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\ShardingKey',
+            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\OrmShardingKey',
         ]
     ]
 ];

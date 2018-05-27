@@ -92,6 +92,10 @@ class Router
     public function findShard(RecordInterface $record) : ?string
     {
         $objectName = $record->getName();
-        $route = $this->objectToRoute[$objectName];
+        if(isset($this->objectToRoute[$objectName])){
+            return $this->objectToRoute[$objectName];
+        }else{
+            return null;
+        }
     }
 }
