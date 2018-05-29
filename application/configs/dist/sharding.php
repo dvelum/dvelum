@@ -18,15 +18,19 @@ return [
     /*
      * Adapter for reserving primary keys
      */
-    'key_generator' => '\\Dvelum\\Orm\\Distributed\\Key\\OrmIndex',
+    'key_generator' => '\\Dvelum\\Orm\\Distributed\\Key\\UniqueID',
     'sharding_types' => [
         'global_id' => [
             'title' => 'ORM_DISTRIBUTED_PRIMARY_KEY',
-            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\OrmIndex',
+            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\Strategy\\UniqueID',
         ],
         'sharding_key' =>[
             'title' => 'ORM_SHARD_KEY',
-            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\OrmShardingKey',
+            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\Strategy\\UserKey',
+        ],
+        'sharding_key_no_index'=>[
+            'title' => 'ORM_SHARD_KEY_NO_INDEX',
+            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\Strategy\\UserKeyNoID',
         ]
     ]
 ];

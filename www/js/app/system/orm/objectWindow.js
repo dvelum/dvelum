@@ -569,6 +569,8 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			},this);
 		}
 
+		var me = this;
+
 		this.configForm = Ext.create('Ext.form.Panel',{
 			bodyPadding:3,
 			frame:false,
@@ -616,8 +618,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
                             },
                             scope:this
 						}
-					},
-                    {
+					},{
                         xtype:'combobox',
                         name:'log_detalization',
                         fieldLabel:appLang.HISTORY_LOG_DETALIZATION,
@@ -907,18 +908,19 @@ Ext.define('app.crud.orm.ObjectWindow', {
                     value:0,
                     width:200,
                     hidden:!this.sharding,
+					disabled:true,
                     listeners:{
                         render:{fn:this.initTooltip,scope:this},
                         change:function(box, value){
-                            var form = this.configForm.getForm();
+                            var form = me.configForm.getForm();
                             if(value){
-                                if(!Ext.isEmpty(handle.objectName)){
-                                    this.distributedIndexGrid.enable();
+                                if(!Ext.isEmpty(this.objectName)){
+                                    me.distributedIndexGrid.enable();
                                 }
                                 form.findField('sharding_type').show();
                                 form.findField('sharding_type').enable();
                             }else{
-                                this.distributedIndexGrid.disable();
+                                me.distributedIndexGrid.disable();
                                 form.findField('sharding_type').hide();
                                 form.findField('sharding_type').disable();
                             }
@@ -949,12 +951,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
                                 field.hide();
                                 field.reset();
                                 field.disable();
-                            }
-
-                            if(value == 'global_id'){
-                                this.distributedIndexGrid.enable();
-                            }else{
-                                this.distributedIndexGrid.disable();
                             }
                         },
                         scope:this
@@ -1068,6 +1064,9 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			var handle = this;
 			handle.configForm.getForm().findField('readonly').show();
 			handle.configForm.getForm().findField('locked').show();
+            if(handle.sharding){
+                handle.configForm.getForm().findField('distributed').enable();
+            }
 			this.on('show' , function(){
 				var params = Ext.apply({object:this.objectName});
 				this.configForm.getForm().load({
@@ -1187,20 +1186,24 @@ Ext.define('app.crud.orm.ObjectWindow', {
 
 				handle.dataStore.proxy.setExtraParam('object' , handle.objectName);
 				handle.indexStore.proxy.setExtraParam('object' , handle.objectName);
+
+				var configForm = handle.configForm.getForm();
 				if(isNew)
 				{
 					handle.tabPanel.add(handle.dataGrid);
 					handle.tabPanel.add(handle.indexGrid);
-					handle.configForm.getForm().findField('readonly').show();
-					handle.configForm.getForm().findField('locked').show();
+                    configForm.findField('readonly').show();
+                    configForm.findField('locked').show();
 				}
-				handle.configForm.getForm().findField('link_title').show();
-                handle.configForm.getForm().findField('sharding_key').getStore().setExtraParam('object',handle.objectName);
+                configForm.findField('link_title').show();
+                configForm.findField('sharding_key').getStore().proxy.extraParams['object'] = handle.objectName;
+                if(handle.sharding){
+                    configForm.findField('distributed').enable();
+                }
 
 				handle.dataStore.load();
 				handle.indexStore.load();
 				handle.setTitle(appLang.EDIT_OBJECT + ' &laquo;' + handle.objectName + '&raquo; ');
-
 
 				handle.fireEvent('dataSaved');
 			},

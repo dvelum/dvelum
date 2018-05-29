@@ -591,5 +591,6 @@
   'GROUP_BY' => 'Group by',
   'ORM_SHARDING_TYPE' => 'Sharding type',
   'ORM_DISTRIBUTED_PRIMARY_KEY' => 'Distributed unique Primary Key',
-  'ORM_SHARD_KEY' => 'Sharding Key',
+  'ORM_SHARD_KEY' => 'Sharding by user field with distributed primary key',
+  'ORM_SHARD_KEY_NO_INDEX' => 'Sharding by user field without distributed primary key',
 );

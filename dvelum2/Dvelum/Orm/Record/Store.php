@@ -539,6 +539,17 @@ class Store
         return $object->getId();
     }
 
+    /**
+     * Load record data
+     * @param string $objectName
+     * @param int $id
+     * @return array
+     */
+    public function load($objectName, $id): array
+    {
+        return Model::factory($objectName)->getItem($id);
+    }
+
     public function encryptData(Orm\RecordInterface $object , $data)
     {
         $objectConfig = $object->getConfig();

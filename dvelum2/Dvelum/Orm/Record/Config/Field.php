@@ -37,6 +37,14 @@ class Field implements \ArrayAccess
     }
 
     /**
+     * Get field config
+     * @return array
+     */
+    public function getConfig() : array
+    {
+        return $this->config;
+    }
+    /**
      * Get field type
      * @return string
      */

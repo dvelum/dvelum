@@ -69,6 +69,7 @@ class Controller extends App\Backend\Api\Controller
             $o = Orm\Record::factory($object);
         }catch (\Exception $e){
             $this->response->success([]);
+            return;
         }
 
         $filter['object'] = $o->getName();

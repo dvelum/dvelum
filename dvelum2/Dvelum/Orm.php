@@ -24,7 +24,7 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\{
     Record, Model, Exception
 };
-
+use Dvelum\Orm\Distributed\Record as DistributedRecord;
 use Dvelum\Db;
 use Dvelum\Security\CryptServiceInterface;
 use Dvelum\Utils;
@@ -72,7 +72,8 @@ class Orm
     protected $language;
 
     protected $storeLoader;
-    protected $distributedStoreLoader;
+
+    protected $store;
 
     public function init(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, CacheInterface $cache = null)
     {
@@ -206,28 +207,32 @@ class Orm
      * @throws \Exception
      * @return mixed
      */
-    public function object(string $name, $id = false)
+    public function object(string $name, $id = false, $shard = false)
     {
-        return $this->record($name, $id);
+        return $this->record($name, $id, $shard);
     }
     /**
      * Factory method of object creation is preferable to use, cf. method  __construct() description
      * @param string $name
      * @param int|int[]|bool $id , optional default false
+     * @param  string $shard. optional
      * @throws \Exception
      * @return Orm\Record|Orm\Record[]
      */
-    public function record(string $name, $id = false)
+    public function record(string $name, $id = false, $shard = false)
     {
+        $config = $this->config($name);
+
         if (!is_array($id)) {
-            return new Record($name, $id);
+            if(!$config->isDistributed()){
+                return new Record($name, $id);
+            }else{
+                return new DistributedRecord($name, $id, $shard);
+            }
         }
 
         $list = [];
-
         $model = $this->model($name);
-        $config = $this->config($name);
-
         $data = $model->getItems($id);
 
         /*

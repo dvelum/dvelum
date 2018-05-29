@@ -37,7 +37,7 @@ class Model extends Orm\Model
      * @param array|string $fields — optional — the list of fields to retrieve
      * @return array|false
      */
-    final public function getItem($id, $fields = ['*'])
+    public function getItem($id, $fields = ['*'])
     {
         $sharding = Orm\Distributed::factory();
         $shard = $sharding->findObjectShard($this->getObjectName(), $id);
@@ -58,6 +58,30 @@ class Model extends Orm\Model
 
         if(empty($result)){
             $result = false;
+        }
+        return $result;
+    }
+
+    /**
+     * Get record by id from shard
+     * @param $id
+     * @param string $shard
+     * @return array
+     */
+    public function getItemFromShard($id, string $shard) : array
+    {
+        $db = $this->getDbShardConnection($shard);
+        $primaryKey = $this->getPrimaryKey();
+
+        $query = $this->query()->setDbConnection($db)
+            ->filters([
+                $primaryKey  => $id
+            ]);
+
+        $result = $query->fetchRow();
+
+        if(empty($result)){
+            $result = [];
         }
         return $result;
     }

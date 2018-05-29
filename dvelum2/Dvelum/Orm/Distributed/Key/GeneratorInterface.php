@@ -62,4 +62,11 @@ interface GeneratorInterface
      * @return array  [shard_id=>[key1,key2,key3], shard_id2=>[...]]
      */
     public function findObjectsShards(string $objectName, array $distributedKeys) : array;
+
+    /**
+     * Detect object shard by own rules
+     * @param Record $record
+     * @return null|string
+     */
+    public function detectShard(Record $record): ?string;
 }

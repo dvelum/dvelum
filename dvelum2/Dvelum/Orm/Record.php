@@ -98,7 +98,6 @@ class Record implements RecordInterface
         $this->primaryKey = $this->config->getPrimaryKey();
         $this->model = Model::factory($name);
         $this->acl = $this->config->getAcl();
-
         $this->logger = $this->model->getLogsAdapter();
 
         if($this->id){
@@ -127,7 +126,8 @@ class Record implements RecordInterface
      */
     protected function loadData() : void
     {
-        $data = $this->model->getItem($this->id);
+        $store = $this->model->getStore();
+        $data = $store->load($this->name, $this->id);
 
         if(empty($data))
             throw new Exception('Cannot find object '.$this->name.':'.$this->id);
@@ -760,13 +760,13 @@ class Record implements RecordInterface
      * @throws Exception
      * @return RecordInterface|RecordInterface[]
      */
-    static public function factory(string $name , $id = false)
+    static public function factory(string $name , $id = false, $shard = false)
     {
         /**
          * @var Orm $service
          */
         $service = Service::get('orm');
-        return $service->object($name, $id);
+        return $service->object($name, $id, $shard);
     }
 
     /**

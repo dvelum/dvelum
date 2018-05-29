@@ -46,7 +46,7 @@ class Config
 
     const SHARDING_TYPE_GLOABAL_ID = 'global_id';
     const SHARDING_TYPE_KEY = 'sharding_key';
-
+    const SHARDING_TYPE_KEY_NO_INDEX = 'sharding_key_no_index';
     /**
      * @var Cfg\ConfigInterface $settings
      */
@@ -250,7 +250,7 @@ class Config
             $dataLink['distributed'] = false;
 
 
-        if($this->isDistributed()){
+        if($this->isDistributed() && $this->getShardingType()!==self::SHARDING_TYPE_KEY_NO_INDEX){
             $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
                 $this->settings->get('configPath').'distributed/pk_field.php'
             )->__toArray();
@@ -852,9 +852,13 @@ class Config
                 'is_system'=> true,
             ];
             $list[$shardingField] = ['field'=>$shardingField,'is_system'=>true];
-            $distributedKey = $this->getDistributedKey();
+            $distributedKey = $this->getShardingKey();
             if(!empty($distributedKey) && $distributedKey!== $primaryKey){
-                $list[$distributedKey] = ['field'=>$distributedKey,'is_system'=>true,'unique'=>true];
+                $unique = false;
+                if($this->getShardingType() === self::SHARDING_TYPE_KEY_NO_INDEX){
+                    $unique = true;
+                }
+                $list[$distributedKey] = ['field'=>$distributedKey,'is_system'=>true,'unique'=>$unique];
             }
         }
         return $list;
@@ -1430,6 +1434,12 @@ class Config
         if(!isset(self::$distributedFields)){
             self::$distributedFields = Cfg::storage()->get($this->settings->get('configPath') . 'distributed/fields.php')->__toArray();
         }
+        if($this->getShardingType() == self::SHARDING_TYPE_KEY_NO_INDEX){
+            $key = $this->getShardingKey();
+            if(!empty($key)){
+                self::$distributedFields[$key] = $this->getField($key)->getConfig();
+            }
+        }
         return self::$distributedFields;
     }
 
@@ -1449,7 +1459,7 @@ class Config
      * @return null|string
      * @throws \Exception
      */
-    public function getDistributedKey() : ?string
+    public function getShardingKey() : ?string
     {
         $type = $this->getShardingType();
 
@@ -1462,7 +1472,8 @@ class Config
             case self::SHARDING_TYPE_GLOABAL_ID:
                 $key = $this->getPrimaryKey();
                 break;
-            case self::SHARDING_TYPE_KEY :
+            case self::SHARDING_TYPE_KEY:
+            case self::SHARDING_TYPE_KEY_NO_INDEX :
                 if($this->config->offsetExists('sharding_key')){
                     $key = $this->config->get('sharding_key');
                 }

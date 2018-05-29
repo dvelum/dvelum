@@ -18,15 +18,17 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Distributed\Key;
+namespace Dvelum\Orm\Distributed\Key\Strategy;
 
+use Dvelum\Orm\Distributed\Key\GeneratorInterface;
+use Dvelum\Orm\Distributed\Key\Reserved;
 use Dvelum\Orm\Distributed\Router;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Record;
 use \Exception;
 
-class OrmShardingKey implements GeneratorInterface
+class UserKeyNoID implements GeneratorInterface
 {
     /**
      * @var ConfigInterface $config
@@ -66,7 +68,7 @@ class OrmShardingKey implements GeneratorInterface
         $model = Model::factory($indexObject);
         $db = $model->getDbConnection();
         try{
-            $db->delete($model->table(), $db->quoteIdentifier($db->quoteIdentifier($objectConfig->getDistributedKey()) .' = '.$db->quote($distributedKey)));
+            $db->delete($model->table(), $db->quoteIdentifier($db->quoteIdentifier($objectConfig->getShardingKey()) .' = '.$db->quote($distributedKey)));
             return true;
         }catch (Exception $e){
             $model->logError('Sharding::reserveIndex '.$e->getMessage());
@@ -86,6 +88,9 @@ class OrmShardingKey implements GeneratorInterface
         $indexObject = $objectConfig->getDistributedIndexObject();
         $model = Model::factory($indexObject);
         $indexConfig = $model->getObjectConfig();
+
+        $distributedKey = $objectConfig->getShardingKey();
+        $savedIndexData = $model->query()->filters([$distributedKey=>$object->get($distributedKey)])->params(['limit'=>1])->fetchRow();
 
         $db = $model->getDbConnection();
         $fieldList = $indexConfig->getFields();
@@ -113,15 +118,24 @@ class OrmShardingKey implements GeneratorInterface
         }
 
         try{
+
             $db->beginTransaction();
-            $db->insert($model->table(), $indexData);
+            if(!empty($savedIndexData)){
+                $keyValue = $indexData[$distributedKey];
+                unset($indexData[$distributedKey]);
+                unset($indexData[$this->shardField]);
+                if(!empty($indexData)){
+                    $db->update($model->table(), $indexData, $db->quoteIdentifier($distributedKey) . ' = ' . $db->quote($keyValue));
+                }
 
-            $id = $db->lastInsertId($model->table(),$objectConfig->getPrimaryKey());
+            }else{
+                unset($indexData[$objectConfig->getPrimaryKey()]);
+                $db->insert($model->table(), $indexData);
+            }
+
             $db->commit();
-
             $result = new Reserved();
             $result->setShard($shard);
-
             return $result;
         }catch (Exception $e){
             $db->rollBack();
@@ -136,7 +150,7 @@ class OrmShardingKey implements GeneratorInterface
      * @param mixed $distributedKey
      * @return mixed
      */
-    public function getObjectShard(string $objectName, $distributedKey)
+    public function findObjectShard(string $objectName, $distributedKey)
     {
         $objectConfig = Record\Config::factory($objectName);
         $indexObject = $objectConfig->getDistributedIndexObject();
@@ -144,7 +158,7 @@ class OrmShardingKey implements GeneratorInterface
         $model = Model::factory($indexObject);
 
         $query = $model->query()->filters([
-            $objectConfig->getDistributedKey() => $distributedKey
+            $objectConfig->getShardingKey() => $distributedKey
         ]);
 
         $shardData = $query->fetchRow();
@@ -166,7 +180,7 @@ class OrmShardingKey implements GeneratorInterface
         $objectConfig = Record\Config::factory($objectName);
         $indexObject = $objectConfig->getDistributedIndexObject();
 
-        $distributedKey = $objectConfig->getDistributedKey();
+        $distributedKey = $objectConfig->getShardingKey();
 
         if(empty($distributedKey)){
             throw new Exception('undefined distributed key name');
@@ -174,7 +188,7 @@ class OrmShardingKey implements GeneratorInterface
 
         $model = Model::factory($indexObject);
         $query = $model->query()->filters([
-            $objectConfig->getDistributedKey()  => $distributedKeys
+            $objectConfig->getShardingKey()  => $distributedKeys
         ]);
 
         $shardData = $query->fetchAll();
@@ -189,5 +203,28 @@ class OrmShardingKey implements GeneratorInterface
             $result[$item[$this->shardField]][] = $item[$distributedKey];
         }
         return $result;
+    }
+
+    /**
+     * Detect object shard by own rules
+     * @param Record $record
+     * @return null|string
+     */
+    public function detectShard(Record $record): ?string
+    {
+        $objectConfig = $record->getConfig();
+        $indexObject = $objectConfig->getDistributedIndexObject();
+        $model = Model::factory($indexObject);
+
+        $distributedKey = $objectConfig->getShardingKey();
+
+        $shard = null;
+
+        $data = $model->query()->filters([$distributedKey=>$record->get($distributedKey)])->params(['limit'=>1])->fetchRow();
+
+        if (!empty($data)) {
+            $shard = $data[$this->shardField];
+        }
+        return $shard;
     }
 }

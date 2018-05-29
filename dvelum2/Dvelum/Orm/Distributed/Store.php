@@ -34,10 +34,43 @@ class Store extends \Dvelum\Orm\Record\Store
      */
     protected $sharding;
 
+    protected $shard = '';
+
     public function __construct(array $config = [])
     {
         parent::__construct($config);
         $this->sharding = Distributed::factory();
+    }
+
+    public function setShard(string $shard)
+    {
+        $this->shard = $shard;
+    }
+
+    /**
+    * Load record data
+    * @param string $objectName
+    * @param int $id
+    * @return array
+    */
+    public function load($objectName, $id): array
+    {
+        /**
+         * @var \Dvelum\Orm\Distributed\Model $model
+         */
+        $model = Model::factory($objectName);
+
+        if(empty($this->shard)){
+            $result = $model->getItem($id);
+        }else{
+            $result = $model->getItemFromShard($id, $this->shard);
+        }
+
+        if(empty($result)){
+            $result = [];
+        }
+
+        return $result;
     }
 
     /**

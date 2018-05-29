@@ -131,7 +131,7 @@ class Stat
 
             if(class_exists($platformAdapter)){
                 $adapter = new $platformAdapter();
-                $tableData = $adapter->getTablesInfo($objectModel , $objectTable);
+                $tableData = $adapter->getTablesInfo($db, $objectTable);
             }
 
             if(!empty($tableData))

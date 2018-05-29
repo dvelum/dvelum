@@ -18,15 +18,16 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Distributed\Key;
+namespace Dvelum\Orm\Distributed\Key\Strategy;
 
-use Dvelum\Orm\Distributed\Router;
+use Dvelum\Orm\Distributed\Key\GeneratorInterface;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Record;
+use Dvelum\Orm\Distributed\Key\Reserved;
 use \Exception;
 
-class OrmIndex implements GeneratorInterface
+class UniqueID implements GeneratorInterface
 {
     /**
      * @var ConfigInterface $config
@@ -43,10 +44,10 @@ class OrmIndex implements GeneratorInterface
     /**
      * Delete reserved index
      * @param Record $object
-     * @param mixed $distributedIndex
+     * @param mixed $indexId
      * @return bool
      */
-    public function deleteIndex(Record $object, $distributedIndex) : bool
+    public function deleteIndex(Record $object, $indexId) : bool
     {
         $objectConfig = $object->getConfig();
         $indexObject = $objectConfig->getDistributedIndexObject();
@@ -165,5 +166,15 @@ class OrmIndex implements GeneratorInterface
             $result[$item[$this->shardField]][] = $item[$idField];
         }
         return $result;
+    }
+
+    /**
+     * Detect object shard by own rules
+     * @param Record $record
+     * @return null|string
+     */
+    public function detectShard(Record $record): ?string
+    {
+        return null;
     }
 }

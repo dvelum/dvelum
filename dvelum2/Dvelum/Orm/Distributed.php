@@ -40,9 +40,9 @@ class Distributed
     protected $shardModel;
 
     /**
-     * @var GeneratorInterface $keyGenerator
+     * @var GeneratorInterface[] $keyGenerator
      */
-    protected $keyGenerator;
+    protected $keyGenerators;
 
     /**
      * Weight map for fast shard random selection
@@ -68,8 +68,12 @@ class Distributed
     protected function __construct()
     {
         $this->config = Config::storage()->get('sharding.php');
-        $adapterClass = $this->config->get('key_generator');
-        $this->keyGenerator = new $adapterClass($this->config);
+
+        foreach ($this->config->get('sharding_types') as $type => $info){
+            $adapterClass = $info['adapter'];
+            $this->keyGenerators[$type] = new $adapterClass($this->config);
+        }
+
         $this->router = Router::factory();
 
         $this->shards = Utils::rekey(
@@ -94,7 +98,8 @@ class Distributed
      */
     public function findObjectShard(string $objectName, $distributedKey)
     {
-        return $this->keyGenerator->findObjectShard($objectName, $distributedKey);
+        $config = Record\Config::factory($objectName);
+        return $this->keyGenerators[$config->getShardingType()]->findObjectShard($objectName, $distributedKey);
     }
 
     /**
@@ -105,7 +110,8 @@ class Distributed
      */
     public function findObjectsShards(string $objectName, array $distributedKeys) : array
     {
-        return $this->keyGenerator->findObjectsShards($objectName, $distributedKeys);
+        $config = Record\Config::factory($objectName);
+        return $this->keyGenerators[$config->getShardingType()]->findObjectsShards($objectName, $distributedKeys);
     }
 
 
@@ -116,7 +122,11 @@ class Distributed
      */
     public function reserveIndex(Record $record) : ?Reserved
     {
-        if($this->router->hasRoutes($record->getName())){
+        $keyGen = $this->keyGenerators[$record->getConfig()->getShardingType()];
+
+        $shard = $keyGen->detectShard($record);
+
+        if(empty($shard) && $this->router->hasRoutes($record->getName())){
             $shard = $this->router->findShard($record);
         }
 
@@ -124,7 +134,7 @@ class Distributed
             $shard = $this->randomShard();
         }
 
-        return $this->keyGenerator->reserveIndex($record, $shard);
+        return $keyGen->reserveIndex($record, $shard);
     }
 
     /**
@@ -135,7 +145,7 @@ class Distributed
      */
     public function deleteIndex(Record $record, $indexId) : bool
     {
-        return $this->keyGenerator->deleteIndex($record, $indexId);
+        return $this->keyGenerators[$record->getConfig()->getShardingType()]->deleteIndex($record, $indexId);
     }
     /**
      * Get shard info by id
