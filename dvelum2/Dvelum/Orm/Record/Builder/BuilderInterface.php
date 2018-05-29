@@ -70,9 +70,10 @@ interface BuilderInterface
     /**
      * Create / alter db table
      * @param bool $buildForeignKeys
+     * @param bool $buildShards
      * @return boolean
      */
-    public function build(bool $buildForeignKeys = true) : bool;
+    public function build(bool $buildForeignKeys = true, bool $buildShards = false) : bool;
     /**
      * Build Foreign Keys
      * @param bool $remove - remove keys

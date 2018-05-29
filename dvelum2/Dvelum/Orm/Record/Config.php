@@ -1434,10 +1434,14 @@ class Config
         if(!isset(self::$distributedFields)){
             self::$distributedFields = Cfg::storage()->get($this->settings->get('configPath') . 'distributed/fields.php')->__toArray();
         }
-        if($this->getShardingType() == self::SHARDING_TYPE_KEY_NO_INDEX){
+        $type = $this->getShardingType();
+        if($type == self::SHARDING_TYPE_KEY_NO_INDEX || $type===self::SHARDING_TYPE_KEY){
             $key = $this->getShardingKey();
             if(!empty($key)){
                 self::$distributedFields[$key] = $this->getField($key)->getConfig();
+                if($this->isIndexObject()){
+                    self::$distributedFields[$key]['system'] = true;
+                }
             }
         }
         return self::$distributedFields;

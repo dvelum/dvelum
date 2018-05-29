@@ -40,7 +40,7 @@ class BuildShards extends Console\Action
 
                 $builder = Orm\Record\Builder::factory($object);
                 $builder->setConnection(Orm\Model::factory($object)->getDbShardConnection($shardId));
-                if ($builder->build(false)) {
+                if ($builder->build(false, true)) {
                     echo 'OK' . PHP_EOL;
                 } else {
                     $success = false;
@@ -54,16 +54,11 @@ class BuildShards extends Console\Action
 
                 foreach ($registeredObjects as $index => $object)
                 {
-                    if (!Orm\Record\Config::factory($object)->isDistributed()) {
-                        unset($registeredObjects[$index]);
-                        continue;
-                    }
-
                     echo "\t\t" . $object . ' : ';
 
                     $builder = Orm\Record\Builder::factory($object);
                     $builder->setConnection(Orm\Model::factory($object)->getDbShardConnection($shardId));
-                    if ($builder->build(true)) {
+                    if ($builder->build(true, true)) {
                         echo 'OK' . PHP_EOL;
                     } else {
                         $success = false;

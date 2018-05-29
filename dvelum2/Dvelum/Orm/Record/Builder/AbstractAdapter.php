@@ -515,6 +515,7 @@ abstract class AbstractAdapter implements BuilderInterface
         $distribIndexes = $this->objectConfig->getDistributedIndexesConfig();
 
         foreach ($distribIndexes as $conf){
+            $field = $conf['field'];
             if(!$conf['is_system']){
                 $field = $this->objectConfig->getField($conf['field']);
                 $fieldList[$conf['field']] = $field->__toArray();

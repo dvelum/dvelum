@@ -173,16 +173,12 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             return;
         }
 
-        $names = $this->request->post('names', 'array', false);
-
-        if(empty($names)){
-            $this->response->error($this->lang->get('WRONG_REQUEST'));
-            return;
-        }
+        $dbObjectManager = new Orm\Record\Manager();
+        $names = $dbObjectManager->getRegisteredObjects();
 
         $flag = false;
-
-        if(Orm\Record\Builder::foreignKeys())
+        $ormConfig = Config::storage()->get('orm.php');
+        if($ormConfig->get('foreign_keys'))
         {
             /*
              * build only fields
@@ -222,6 +218,42 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
                 }
             }
         }
+
+
+        if($ormConfig->get('sharding')) {
+
+            $sharding = Config::storage()->get('sharding.php');
+            $shardsFile = $sharding->get('shards');
+            $shardsConfig = Config::storage()->get($shardsFile);
+            $registeredObjects = $dbObjectManager->getRegisteredObjects();
+
+            foreach ($shardsConfig as $item) {
+                $shardId = $item['id'];
+                //build objects
+                foreach ($names as $index => $object) {
+                    if (!Orm\Record\Config::factory($object)->isDistributed()) {
+                        unset($registeredObjects[$index]);
+                        continue;
+                    }
+                    $builder = Orm\Record\Builder::factory($object);
+                    $builder->setConnection(Orm\Model::factory($object)->getDbShardConnection($shardId));
+                    if (!$builder->build(false, true)) {
+                        $flag = true;
+                    }
+                }
+                //build foreign keys
+                if ($ormConfig->get('foreign_keys')) {
+                    foreach ($registeredObjects as $index => $object) {
+                        $builder = Orm\Record\Builder::factory($object);
+                        $builder->setConnection(Orm\Model::factory($object)->getDbShardConnection($shardId));
+                        if (!$builder->build(true, true)) {
+                            $flag = true;
+                        }
+                    }
+                }
+            }
+        }
+
 
         if ($flag)
             $this->response->error($this->lang->get('CANT_EXEC'));
