@@ -593,4 +593,5 @@
   'ORM_DISTRIBUTED_PRIMARY_KEY' => 'Distributed unique Primary Key',
   'ORM_SHARD_KEY' => 'Sharding by user field with distributed primary key',
   'ORM_SHARD_KEY_NO_INDEX' => 'Sharding by user field without distributed primary key',
+  'ORM_SHARDING_KEY' => 'Sharding Key',
 );

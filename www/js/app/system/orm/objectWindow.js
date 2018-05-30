@@ -976,7 +976,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
                 },{
                     xtype:'combobox',
                     name:'sharding_key',
-                    fieldLabel:appLang.ORM_SHARD_KEY,
+                    fieldLabel:appLang.ORM_SHARDING_KEY,
                     queryMode:'remote',
                     displayField:'title',
                     forceSelection:true,
