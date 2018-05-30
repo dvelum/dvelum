@@ -236,6 +236,35 @@ class UserKeyNoID implements GeneratorInterface
     }
 
     /**
+     * Change shard value for user key in index table
+     * @param string $objectName
+     * @param string $key
+     * @param string $newShard
+     * @return bool
+     */
+    public function changeShard(string $objectName, string $key, string $newShard) : bool
+    {
+        $objectConfig = Record\Config::factory($objectName);
+        $indexObject = $objectConfig->getDistributedIndexObject();
+        $model = Model::factory($indexObject);
+        $db = $model->getDbConnection();
+
+        try{
+            $db->update(
+                $model->table(),
+                [
+                    $this->shardField => $newShard
+                ],
+                $db->quoteIdentifier($key).' = '.$db->quoteIdentifier($newShard)
+            );
+            return true;
+        }catch (Exception $e){
+            $model->logError($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * @param string $objectName
      * @param array $keyData
      * @return Reserved|null
