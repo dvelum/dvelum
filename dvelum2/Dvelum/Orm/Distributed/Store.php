@@ -100,7 +100,15 @@ class Store extends \Dvelum\Orm\Record\Store
         $db = $this->getDbConnection($object);
 
         try {
-            $db->insert($object->getTable(), $data);
+            $db->beginTransaction();
+            if(empty($insertId)) {
+                $db->insert($object->getTable(), $data);
+                $insertId = $db->lastInsertId($object->getTable());
+            }else{
+                $db->insert($object->getTable(), $data);
+            }
+            $db->commit();
+
         }catch (Exception $e) {
             $this->sharding->deleteIndex($object, $insertId);
             $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());

@@ -89,10 +89,6 @@ class UserKeyNoID implements GeneratorInterface
         $model = Model::factory($indexObject);
         $indexConfig = $model->getObjectConfig();
 
-        $distributedKey = $objectConfig->getShardingKey();
-        $savedIndexData = $model->query()->filters([$distributedKey=>$object->get($distributedKey)])->params(['limit'=>1])->fetchRow();
-
-        $db = $model->getDbConnection();
         $fieldList = $indexConfig->getFields();
         $primary = $indexConfig->getPrimaryKey();
 
@@ -116,32 +112,7 @@ class UserKeyNoID implements GeneratorInterface
                 return null;
             }
         }
-
-        try{
-
-            $db->beginTransaction();
-            if(!empty($savedIndexData)){
-                $keyValue = $indexData[$distributedKey];
-                unset($indexData[$distributedKey]);
-                unset($indexData[$this->shardField]);
-                if(!empty($indexData)){
-                    $db->update($model->table(), $indexData, $db->quoteIdentifier($distributedKey) . ' = ' . $db->quote($keyValue));
-                }
-
-            }else{
-                unset($indexData[$objectConfig->getPrimaryKey()]);
-                $db->insert($model->table(), $indexData);
-            }
-
-            $db->commit();
-            $result = new Reserved();
-            $result->setShard($shard);
-            return $result;
-        }catch (Exception $e){
-            $db->rollBack();
-            $model->logError('Sharding::reserveIndex '.$e->getMessage());
-            return null;
-        }
+        return $this->reserveKey($object->getName(), $indexData);
     }
 
     /**
@@ -226,5 +197,82 @@ class UserKeyNoID implements GeneratorInterface
             $shard = $data[$this->shardField];
         }
         return $shard;
+    }
+
+    /**
+     * Reserve
+     * @param string $objectName
+     * @param array $keyData
+     * @return Reserved|null
+     */
+    public function reserveKey(string $objectName , array $keyData) : ?Reserved
+    {
+        $result = $this->insertOrGetKey($objectName, $keyData);
+        if(empty($result)){
+            // try restart
+            $result =  $this->insertOrGetKey($objectName, $keyData);
+        }
+        return $result;
+    }
+
+    /**
+     * Detect shard for user key
+     * @param string $objectName
+     * @param $key
+     * @return null|string
+     */
+    public function detectShardByKey(string $objectName,  $key) : ? string
+    {
+        $objectConfig = Record\Config::factory($objectName);
+        $indexObject = $objectConfig->getDistributedIndexObject();
+        $model = Model::factory($indexObject);
+        $keyName = $objectConfig->getShardingKey();
+
+        $data = $model->query()->filters([$keyName=>$key])->params(['limit'=>1])->fetchRow();
+        if(!empty($data)){
+            return $data[$this->shardField];
+        }
+        return null;
+    }
+
+    /**
+     * @param string $objectName
+     * @param array $keyData
+     * @return Reserved|null
+     * @throws Exception
+     */
+    private function insertOrGetKey(string $objectName , array $keyData) : ?Reserved
+    {
+        $objectConfig = Record\Config::factory($objectName);
+        $indexObject = $objectConfig->getDistributedIndexObject();
+        $model = Model::factory($indexObject);
+        $keyName = $objectConfig->getShardingKey();
+
+        $data = $model->query()->filters([$keyName=>$keyData[$keyName]])->params(['limit'=>1])->fetchRow();
+        if(!empty($data)){
+            $reserved = new Reserved();
+            $reserved->setShard($data[$this->shardField]);
+            return $reserved;
+        }
+
+        try{
+            $db = $model->getDbConnection();
+            $db->beginTransaction();
+            $db->insert($model->table(),$keyData);
+            $id = $db->lastInsertId($model->table());
+            $data = $model->query()->filters([$model->getPrimaryKey()=>$id])->fetchRow();
+            if(empty($data)){
+                throw new Exception('Transaction error');
+            }
+            $db->commit();
+            $reserved = new Reserved();
+            $reserved->setShard($data[$this->shardField]);
+            return $reserved;
+        }catch (Exception $e){
+            $db->rollback();
+            $model->logError($e->getMessage());
+            $model->logError('Cannot reserve key for '.$objectName.':: '.$keyData[$this->shardField].' try restart');
+        }
+        return null;
     }
 }

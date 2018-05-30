@@ -186,4 +186,20 @@ class Distributed
     {
        return $this->weightMap[array_rand($this->weightMap)];
     }
+
+    /**
+     * Get key generator for distributed ORM object
+     * @param string $objectName
+     * @return GeneratorInterface
+     * @throws Exception
+     */
+    public function getKeyGenerator(string $objectName) : GeneratorInterface
+    {
+        $config = Record\Config::factory($objectName);
+        $key = $config->getShardingType();
+        if(!isset($this->keyGenerators[$key])){
+            throw new Exception('Undefined key generator for '.$objectName);
+        }
+        return $this->keyGenerators[$key];
+    }
 }

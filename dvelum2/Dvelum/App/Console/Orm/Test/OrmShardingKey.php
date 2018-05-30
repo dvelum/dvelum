@@ -10,21 +10,20 @@ class OrmShardingKey extends Console\Action
 {
     public function action(): bool
     {
-        $this->testWrite('complex_shard');
-        //$this->testWrite('complex_shard_no_index');
-        //$this->testLoad();
+       // $this->testWrite('complex_shard_no_index');
+        $this->testLoad();
 
         return true;
     }
 
     protected function testLoad()
     {
-        $record = Record::factory('complex_shard_no_index', 3, 'shard3');
-        print_r($record->getData());
+        $record = Record::factory('complex_shard_no_index', 25, 'shard3');
+
         $record->set('price',107.03);
         $record->save();
-        $record = Record::factory('complex_shard_no_index', 3, 'shard3');
-        print_r($record->getData());
+        $record = Record::factory('complex_shard_no_index', 25, 'shard3');
+
     }
 
 
