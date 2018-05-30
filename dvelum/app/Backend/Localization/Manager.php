@@ -512,6 +512,8 @@ class Backend_Localization_Manager
          */
         $langService = Service::get('lang');
 
+        $exceptDirs = ['objects','modules'];
+
         foreach ($langs as $lang)
         {
             $name = $lang;
@@ -521,6 +523,11 @@ class Backend_Localization_Manager
             $filePath = $jsPath . $lang .'.js';
 
             $dir = dirname($lang);
+
+            if(in_array(basename($dir), $exceptDirs, true)){
+                continue;
+            }
+
             if(!empty($dir) && $dir!=='.' && !is_dir($jsPath.'/'.$dir))
             {
                 mkdir($jsPath.'/'.$dir , 0755 , true);
