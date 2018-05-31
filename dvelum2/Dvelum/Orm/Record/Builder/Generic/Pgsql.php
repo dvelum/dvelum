@@ -91,7 +91,13 @@ class Pgsql extends Builder\Generic
         'xml' => self::TYPE_TEXT,
     ];
 
-    public function build(bool $buildKeys = true): bool
+    /**
+     * Create / alter db table
+     * @param bool $buildForeignKeys
+     * @param bool $buildShard
+     * @return bool
+     */
+    public function build(bool $buildForeignKeys = true, bool $buildShard = false) : bool
     {
         // TODO: Implement build() method.
     }
