@@ -52,6 +52,7 @@ var desLang = {
     checkboxSelection: 'Checkbox Selection',
 
     codeEditor: 'Code Editor',
+    preCodeEditor: 'PreProject Code Editor',
     cantDeleteDocked: 'Removing docked Items is not allowed',
     changeFieldType: 'Change field type',
 

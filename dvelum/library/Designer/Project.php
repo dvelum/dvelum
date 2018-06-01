@@ -129,6 +129,12 @@ class Designer_Project
 	 */
 	protected $_actionJs = '';
 
+    /**
+     * Pre Project JS Code
+     * @var string
+     */
+    protected $_preProjectJs = '';
+
 	public function __construct()
 	{
 		$this->_tree = new Tree();
@@ -620,6 +626,15 @@ class Designer_Project
 		return $this->_actionJs;
 	}
 
+    /**
+     * Get Application preProjectJs code
+     * @return string
+     */
+    public function getPreProjectJs()
+    {
+        return $this->_preProjectJs;
+    }
+
 	/**
 	 * Set Application ActionJs code
 	 * @param $code
@@ -629,7 +644,16 @@ class Designer_Project
 		$this->_actionJs = $code;
 	}
 
-	/**
+    /**
+     * Set Application preProjectJs code
+     * @param $code
+     */
+    public function setPreProjectJs($code)
+    {
+        $this->_preProjectJs = $code;
+    }
+
+    /**
 	 * Create unique component id
 	 * @param string $prefix
 	 * @return string
