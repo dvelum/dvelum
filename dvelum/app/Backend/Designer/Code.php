@@ -18,23 +18,29 @@ class Backend_Designer_Code
         $templates = $designerConfig->get('templates');
 
         if (!class_exists($controllerName)) {
-            return '';
+            $namespaceController = str_replace('_','\\',$controllerName);
+            if(class_exists($namespaceController)){
+                $controllerName = $namespaceController;
+            }else{
+                return '';
+            }
         }
-        $reflector = new ReflectionClass($controllerName);
 
+
+        $reflector = new ReflectionClass($controllerName);
 
         if (!$reflector->isSubclassOf('\\Dvelum\\App\\Backend\\Controller') && !$reflector->isSubclassOf('Backend_Controller') && !$reflector->isSubclassOf('Frontend_Controller')) {
             return [];
         }
 
-        $url = array();
+        $url = [];
 
         $manager = new Modules_Manager();
 
-        if ($reflector->isSubclassOf('Backend_Controller')) {
+        if ($reflector->isSubclassOf('Backend_Controller') || $reflector->isSubclassOf('\\Dvelum\\App\\Backend\\Controller')) {
             $url[] = $templates['adminpath'];
             $url[] = $manager->getModuleName($controllerName);
-        } elseif ($reflector->isSubclassOf('Frontend_Controller')) {
+        } elseif ($reflector->isSubclassOf('Frontend_Controller') || $reflector->isSubclassOf('\\Dvelum\\App\\Frontend\\Controller')) {
             $routerType = $frontConfig->get('router');
             if ($routerType == 'Module') {
                 $module = self::_moduleByClass($controllerName);
