@@ -3,7 +3,7 @@ class Ext_Property_Panel extends Ext_Property_Container{
 
 	public $animCollapse = self::Boolean;
 	public $bbar = self::Object;
-	public $bodyBorder = self::Boolean;
+	public $bodyBorder = self::Object;
 	public $bodyCls = self::String;
 	public $bodyPadding = self::Number;
 	public $bodyStyle = self::String;

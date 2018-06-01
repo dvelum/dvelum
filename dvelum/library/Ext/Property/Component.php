@@ -11,7 +11,7 @@ class Ext_Property_Component extends Ext_Property
 	public $autoShow = self::Boolean;
 	public $baseCls = self::String;
 	public $bind = self::Object;
-	public $border = self::String;
+	public $border = self::Object;
 	public $childEls = self::Object;
 	public $cls = self::String;
 	public $columnWidth = self::Number;
