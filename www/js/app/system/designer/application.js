@@ -35,6 +35,7 @@ Ext.define('designer.application', {
     topToolbar: null,
 
     codeEditor: null,
+    preCodeEditor: null,
     eventsEditor: null,
     methodsEditor: null,
     viewSwitch: null,
@@ -182,6 +183,12 @@ Ext.define('designer.application', {
             controllerUrl: app.createUrl([designer.controllerUrl, 'actionjs', ''])
         });
 
+        this.preCodeEditor = Ext.create('designer.codeEditor', {
+            title: desLang.preCodeEditor,
+            disabled: true,
+            controllerUrl: app.createUrl([designer.controllerUrl, 'preprojectjs', ''])
+        });
+
         this.eventsEditor = Ext.create('designer.eventsEditor', {
             title: desLang.eventsEditor,
             disabled: true,
@@ -223,6 +230,7 @@ Ext.define('designer.application', {
             layout: 'fit',
             items: [
                 this.codeEditor,
+                this.preCodeEditor,
                 this.eventsEditor,
                 this.methodsEditor
             ],
@@ -230,6 +238,7 @@ Ext.define('designer.application', {
                 activate: {
                     fn: function (tab, opt) {
                         this.codeEditor.syncEditor();
+                        this.preCodeEditor.syncEditor();
                     },
                     scope: this
                 }
@@ -993,6 +1002,7 @@ Ext.define('designer.application', {
      */
     saveProject: function (callback) {
         this.codeEditor.saveCode();
+        this.preCodeEditor.saveCode();
         Ext.Ajax.request({
             url: app.createUrl([designer.controllerUrl, 'project', 'save']),
             method: 'post',
@@ -1061,14 +1071,18 @@ Ext.define('designer.application', {
             this.rightPanel.enable();
             this.centerPanel.enable();
             this.codeEditor.enable();
+            this.preCodeEditor.enable();
             this.eventsEditor.enable();
             this.methodsEditor.enable();
             this.eventsEditor.getStore().load();
             this.methodsEditor.getStore().load();
             this.codeEditor.loadCode();
+            this.preCodeEditor.loadCode();
         } else {
             this.codeEditor.disable();
             this.codeEditor.setValue('');
+            this.preCodeEditor.disable();
+            this.preCodeEditor.setValue('');
             this.eventsEditor.disable();
             this.methodsEditor.disable();
             this.projectItems.clearData();

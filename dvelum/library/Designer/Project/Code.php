@@ -43,8 +43,9 @@ class Designer_Project_Code
     {
         $this->applyStoreInstances();
         $code = $this->_compileJs(0);
-        return '
-		Ext.ns("' . $this->_project->namespace . '","' . $this->_project->runnamespace . '");
+        return
+            $this->_project->getPreProjectJs() . "\n"
+		  . 'Ext.ns("' . $this->_project->namespace . '","' . $this->_project->runnamespace . '");
 		' . $code['defines'] . '
 	    ' . $code['layout'].'
 	    ' . $this->_project->getActionJs();

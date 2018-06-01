@@ -124,11 +124,16 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 			return false;
 		}
 		*/
-		// Export ActionJs
-		if(@file_put_contents($this->exportPath.'ActionJS.js', $project->getActionJs())===false){
-			$this->_errors[] = 'write: ' . $this->exportPath.'ActionJS.js';
-			return false;
-		}
+        // Export ActionJs
+        if(@file_put_contents($this->exportPath.'ActionJS.js', $project->getActionJs())===false){
+            $this->_errors[] = 'write: ' . $this->exportPath.'ActionJS.js';
+            return false;
+        }
+        // Export preProjectJs
+        if(@file_put_contents($this->exportPath.'preProjectJS.js', $project->getPreProjectJs())===false){
+            $this->_errors[] = 'write: ' . $this->exportPath.'preProjectJS.js';
+            return false;
+        }
 		// Export Project config
 		if(!Utils::exportArray($this->exportPath.'__config.php' , $project->getConfig())){
 			$this->_errors[] = 'write: ' . $this->exportPath . '__config.php';
@@ -362,7 +367,8 @@ class Designer_Storage_Adapter_File extends Designer_Storage_Adapter_Abstract
 		$project = new Designer_Project();
 		$project->setConfig($config);
 
-		$project->setActionJs(@file_get_contents($this->exportPath . 'ActionJS.js'));
+        $project->setActionJs(@file_get_contents($this->exportPath . 'ActionJS.js'));
+        $project->setPreProjectJs(@file_get_contents($this->exportPath . 'preProjectJS.js'));
 
 		$treeData = require $this->exportPath . '__tree.php';
 		$this->importTree($project, $treeData);
