@@ -37,28 +37,32 @@ class Ext_Component_JSObject extends Ext_Object
     public function __toString()
     {
         $data = $this->data;
-        foreach ($this->data as $k=>&$v){
-            switch ($v['type']){
-                case 'Number':
-                    $v = $k.':'.floatval($v);
-                    break;
-                case 'String':
-                    $v = $k.':"'.urlencode(strval($v)).'"';
-                    break;
-                case 'Object':
-                    $v = $k.':'.strval($v);
-                    break;
-                case 'Boolean':
-                    if(boolval($v)){
-                        $v = $k.':true';
-                    }else{
-                        $v = $k.':false';
-                    }
-                    break;
-                default:
-                    $v = $k.':null';
-            }
-        }unset($v);
+        if(!empty($this->data)){
+            foreach ($this->data as $k=>&$v){
+                switch ($v['type']){
+                    case 'Number':
+                        $v = $k.':'.floatval($v);
+                        break;
+                    case 'String':
+                        $v = $k.':"'.urlencode(strval($v)).'"';
+                        break;
+                    case 'Object':
+                        $v = $k.':'.strval($v);
+                        break;
+                    case 'Boolean':
+                        if(boolval($v)){
+                            $v = $k.':true';
+                        }else{
+                            $v = $k.':false';
+                        }
+                        break;
+                    default:
+                        $v = $k.':null';
+                }
+            }unset($v);
+        }else{
+            return '{}';
+        }
 
         return '{'.implode(':', array_values($data)).'}';
     }
