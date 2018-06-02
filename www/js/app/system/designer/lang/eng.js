@@ -25,6 +25,7 @@ var desLang = {
     bufferedStore: 'Buffered Store',
 
     cancel: 'Cancel',
+    jsObject:'Javascript Object',
     useGroupSummary: 'Use group summary',
     useSummary: 'Use summary',
     cantLoad: 'Cannot load',

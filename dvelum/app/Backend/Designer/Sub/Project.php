@@ -202,7 +202,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 		/*
 		 * Skip parent for window , store and model
 		 */
-		$rootClasses = array('Window','Model');
+		$rootClasses = array('Window','Model','Component_JSObject');
 		$isWindowComponent = strpos($class,'Component_Window_')!==false;
 
 		/*
@@ -219,7 +219,6 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
 
 		if(in_array($class, $rootClasses , true) || $isWindowComponent)
 			$parent = Designer_Project::COMPONENT_ROOT;
-
 
 		$object = Ext_Factory::object($class);
 		$object->setName($name);

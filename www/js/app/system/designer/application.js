@@ -713,8 +713,12 @@ Ext.define('designer.application', {
                             {
                                 text: desLang.storeFilter,
                                 handler: this.addObject,
-                                //  iconCls:'objectWindowIcon',
                                 oClass: 'Component_Filter',
+                                showType: 'loaded'
+                            },{
+                                text: desLang.jsObject,
+                                handler:this.addObject,
+                                oClass: 'Component_JSObject',
                                 showType: 'loaded'
                             }
                         ]
@@ -1285,6 +1289,9 @@ Ext.define('designer.application', {
                     break;
                 case 'Component_Field_System_Medialibitem' :
                     panelClass = 'designer.properties.MediaItem';
+                    break;
+                case 'Component_JSObject':
+                    panelClass = 'designer.properties.JSObject';
                     break;
                 default    :
                     if (objectClass.indexOf('Field_', 0) !== -1 || objectClass === 'Form_Checkboxgroup') {

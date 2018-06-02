@@ -100,7 +100,7 @@ $res->addInlineJs('
 </div>
 <?php
 echo $res->includeJsByTag(true , false , 'external');
-echo $res->includeJs(true , true);
+echo $res->includeJs(false , false);
 ?>
 </body>
 </html>

@@ -47,6 +47,7 @@ class Backend_Designer_Controller extends Backend_Controller
 		'/js/app/system/designer/ormSelectorWindow.js',	
 		'/js/app/system/designer/iconSelectorWinow.js',
 		'/js/app/system/designer/defaultsWindow.js',
+        '/js/app/system/designer/typedDefaultsWindow.js',
 	    '/js/app/system/designer/paramsWindow.js',
 	        
 		//'/js/app/system/designer/connections.js',
@@ -86,6 +87,7 @@ class Backend_Designer_Controller extends Backend_Controller
 		'/js/app/system/designer/properties/filterComponent.js',
 		'/js/app/system/designer/properties/search.js',
 		'/js/app/system/designer/properties/mediaItem.js',
+        '/js/app/system/designer/properties/jsObject.js',
 		
 		'/js/app/system/designer/model.js',
 		'/js/app/system/designer/store.js',
