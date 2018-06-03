@@ -328,24 +328,25 @@ class Install_Controller
             try {
 
                 $configs = array(
-                     'db/prod/default.php',
-                     'db/prod/error.php',
-                     'db/prod/sharding_index.php',
+                     './application/configs/prod/db/default.php',
+                     './application/configs/prod/db/error.php',
+                     './application/configs/prod/db/sharding_index.php',
 
-                     'db/dev/default.php',
-                     'db/dev/error.php',
-                     'db/dev/sharding_index.php',
+                    './application/configs/prod/dev/default.php',
+                    './application/configs/prod/dev/error.php',
+                    './application/configs/prod/dev/sharding_index.php',
+
+                    './application/configs/prod/test/default.php',
+                    './application/configs/prod/test/error.php',
+                    './application/configs/prod/test/sharding_index.php',
                 );
 
                 $params['prefix'] = $prefix;
                 $params['charset'] = 'UTF8';
                 $storage = Config::storage();
-                foreach($configs as $item)
-                {
-
-                    $cfg = Config::storage()->get($item , false, false);
-                    $cfg->setData($params);
-
+                foreach($configs as $item) {
+                    $cfg = \Dvelum\Config\Factory::create($params, $item);
+                    echo $storage->getWrite();
                     if (!$storage->save($cfg))
                         throw new Exception();
                 }
