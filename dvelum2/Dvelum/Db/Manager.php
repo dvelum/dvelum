@@ -70,6 +70,7 @@ class Manager implements ManagerInterface
         if(!isset($this->dbConnections[$workMode][$name][$shardKey]))
         {
             $cfg = $this->getDbConfig($name);
+
             $cfg->set('driver', $cfg->get('adapter'));
             /*
              * Enable Db profiler for development mode Attention! Db Profiler causes

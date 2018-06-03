@@ -222,7 +222,7 @@ class Install_Controller
 
         $writablePaths = array(
             array(
-                'path'=>'application/configs/local',
+                'path'=>'application/configs',
                 'accessType'=>'required'
             ),
             array(
@@ -300,7 +300,7 @@ class Install_Controller
             'username'       => Request::post('username', 'str', false),
             'password'       => Request::post('password', 'str', false),
             'dbname'         => Request::post('dbname', 'str', false),
-            'driver'  => 'Mysqli',
+            'adapter'  => 'Mysqli',
             'transactionIsolationLevel' => 'default'
         );
 
@@ -332,13 +332,13 @@ class Install_Controller
                      './application/configs/prod/db/error.php',
                      './application/configs/prod/db/sharding_index.php',
 
-                    './application/configs/prod/dev/default.php',
-                    './application/configs/prod/dev/error.php',
-                    './application/configs/prod/dev/sharding_index.php',
+                    './application/configs/dev/db/default.php',
+                    './application/configs/dev/db/error.php',
+                    './application/configs/dev/db/sharding_index.php',
 
-                    './application/configs/prod/test/default.php',
-                    './application/configs/prod/test/error.php',
-                    './application/configs/prod/test/sharding_index.php',
+                    './application/configs/test/db/default.php',
+                    './application/configs/test/db/error.php',
+                    './application/configs/test/db/sharding_index.php',
                 );
 
                 $params['prefix'] = $prefix;
@@ -346,12 +346,18 @@ class Install_Controller
                 $storage = Config::storage();
                 foreach($configs as $item) {
                     $cfg = \Dvelum\Config\Factory::create($params, $item);
-                    echo $storage->getWrite();
+
+                    $dirName = dirname($item);
+                    if(!file_exists($dirName)){
+                        if(!mkdir($dirName,0777,true)){
+                            throw new Exception('Cant write '.$dirName);
+                        }
+                    }
                     if (!$storage->save($cfg))
                         throw new Exception();
                 }
 
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $data['success'] = false;
                 $data['msg'] = $this->localization->get('CONNECTION_SAVE_FAIL');
             }
