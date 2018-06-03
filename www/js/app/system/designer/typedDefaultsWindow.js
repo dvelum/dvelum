@@ -4,7 +4,8 @@ Ext.define('designer.typedDefaultsModel', {
         {name:'key' , type:'string'},
         {name:'value', type:'string'},
         {name:'type', type:'string'}
-    ]
+    ],
+    idProperty:'key'
 });
 /**
  * @event dataSaved
@@ -37,7 +38,6 @@ Ext.define('designer.typedDefaultsWindow',{
                 iconCls:'plusIcon',
                 tooltip:desLang.add,
                 handler:function(){
-
                     var r = Ext.create('designer.defaultsModel', {
                         key:'',
                         value:''

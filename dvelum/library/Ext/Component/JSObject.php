@@ -6,7 +6,7 @@ class Ext_Component_JSObject extends Ext_Object
 
     public function addItemProperty($name, $type, $value)
     {
-       $this->data[$name] = ['name'=>$name, 'type'=>$type,'value'=>$value];
+       $this->data[$name] = ['key'=>$name, 'type'=>$type,'value'=>$value];
     }
 
     public function getItemProperty($name)
@@ -31,39 +31,45 @@ class Ext_Component_JSObject extends Ext_Object
         else
             $name = $this->getName();
 
-        $name.' = '.$this->__toString();
+        return "\n".$name.' = '.$this->__toString();
     }
 
     public function __toString()
     {
-        $data = $this->data;
-        if(!empty($this->data)){
-            foreach ($this->data as $k=>&$v){
-                switch ($v['type']){
+        $data = $this->_config->data;
+        if(!empty($data))
+        {
+            $data = json_decode($data, true);
+            $result = [];
+            foreach ($data as $k=>$v)
+            {
+                switch ($v['type'])
+                {
                     case 'Number':
-                        $v = $k.':'.floatval($v);
+                        $result[] = $v['key'].':'.floatval($v['value']);
                         break;
                     case 'String':
-                        $v = $k.':"'.urlencode(strval($v)).'"';
+                        $result[] = $v['key'].':"'.addcslashes(strval($v['value']),'"').'"';
                         break;
                     case 'Object':
-                        $v = $k.':'.strval($v);
+                        $result[] = $v['key'].':'.strval($v['value']);
                         break;
                     case 'Boolean':
-                        if(boolval($v)){
-                            $v = $k.':true';
+                        if(boolval($v['value'])){
+                            $result[] = $v['key'].':true';
                         }else{
-                            $v = $k.':false';
+                            $result[] = $v['key'].':false';
                         }
                         break;
                     default:
-                        $v = $k.':null';
+                        $k.':null';
                 }
             }unset($v);
+            $data = $result;
         }else{
             return '{}';
         }
 
-        return '{'.implode(':', array_values($data)).'}';
+        return "{\n\t".implode(",\n\t", $data)."\n};\n";
     }
 }
