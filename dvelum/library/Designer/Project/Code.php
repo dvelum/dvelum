@@ -405,6 +405,7 @@ class Designer_Project_Code
 
         switch($oClass)
         {
+            case 'Component_JSObject' :
             case 'Docked' :
                 $result =  "\n". $objectVar . ' = ' . Utils_String::addIndent($object->__toString(),1,"\t",true) . ';' . "\n";
                 break;

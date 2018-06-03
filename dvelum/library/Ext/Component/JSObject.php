@@ -31,7 +31,7 @@ class Ext_Component_JSObject extends Ext_Object
         else
             $name = $this->getName();
 
-        return "\n".$name.' = '.$this->__toString();
+        return "\n".$name.' = '.$this->__toString().';';
     }
 
     public function __toString()
@@ -70,6 +70,6 @@ class Ext_Component_JSObject extends Ext_Object
             return '{}';
         }
 
-        return "{\n\t".implode(",\n\t", $data)."\n};\n";
+        return "{\n\t".implode(",\n\t", $data)."\n}";
     }
 }
