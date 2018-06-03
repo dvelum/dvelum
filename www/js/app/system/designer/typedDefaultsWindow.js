@@ -133,8 +133,6 @@ Ext.define('designer.typedDefaultsWindow',{
         this.dataStore.each(function(item) {
             result.push(item.getData());
         });
-        console.log(result);
-        console.log(Ext.JSON.encode(result));
         this.fireEvent('dataChanged' ,  Ext.JSON.encode(result));
         this.close();
     }
