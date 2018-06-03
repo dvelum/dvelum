@@ -1,13 +1,12 @@
 <?php
 return array(
-	'username' => 'dvelum',
-	'password' => '',
-	'dbname'   => 'dvelum_5',
+	'username' => 'root',
+	'password' => 'njkvfdnjkvfd',
+	'dbname'   => 'dvelum_test',
 	'host'     => 'localhost',
 	'charset'  => 'UTF8',
 	'prefix'   => 'dv_',
 	'adapter'  => 'Mysqli',
     'transactionIsolationLevel' => 'default',
-
 );
   

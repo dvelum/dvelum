@@ -44,7 +44,7 @@ ob_start();
 /*
  * Including initial config
  */
-$bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
+$bootCfg = include DVELUM_ROOT . '/application/configs/common/dist/init.php';
 /*
  * Including Autoloader class
  */
@@ -66,12 +66,24 @@ $configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->_
  */
 $config = ConfigFactory::storage()->get('main.php');
 
-/*
- * Disable op caching for development mode
- */
-if($config->get('development')){
-    ini_set('opcache.enable', 0);
-    $configStorage->setConfig(['debug' => true]);
+switch ($config->get('development')){
+    // production
+    case 0 :
+        $configStorage->addPath('./application/configs/prod/');
+        break;
+    // development
+    case 1 :
+        $configStorage->addPath('./application/configs/dev/');
+        /*
+         * Disable op caching for development mode
+         */
+        ini_set('opcache.enable', 0);
+        $configStorage->setConfig(['debug' => true]);
+        break;
+    // test
+    case 2 :
+        $configStorage->addPath('./application/configs/test/');
+        break;
 }
 /*
  * Setting autoloader config
