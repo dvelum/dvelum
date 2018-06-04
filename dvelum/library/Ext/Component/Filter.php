@@ -95,7 +95,11 @@ class Ext_Component_Filter extends Ext_Object
                 } else {
                     $listener .= $ident . ' store.proxy.setExtraParam("filter[' . $field . ']" , fld.getValue());';
                 }
+                $listener .= $ident . 'if(Ext.isEmpty(store.isBufferedStore)){';
                 $listener .= $ident . ' store.loadPage(1);';
+                $listener .= $ident . '}else{';
+                $listener .= $ident . ' store.load();';
+                $listener .= $ident . '}';
             }
 
             $listener .= "\n\t" . '}';
