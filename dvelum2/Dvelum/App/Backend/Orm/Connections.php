@@ -51,11 +51,16 @@ class Connections
         if(!$this->typeExists($devType))
             throw new \Exception('Backend_Orm_Connections_Manager :: getConnections undefined dev type ' . $devType);
 
-        $files = Config::storage()->getList($this->config[$devType]['dir']);
-        $result = array();
+        $dbPath = Config::storage()->get('main.php')->get('db_config_path');
+
+        $dir = dirname($this->config[$devType]['dir'] .'/'. $dbPath);
+
+        $files = \Dvelum\File::scanFiles($dir , array('.php'), false ,  \Dvelum\File::Files_Only);
+        $result = [];
         if(!empty($files)){
             foreach($files as $path){
-                $result[substr(basename($path),0,-4)] =  Config::storage()->get($this->config[$devType]['dir'] . basename($path) , true , false);
+                $data = include $path;
+                $result[substr(basename($path),0,-4)] =  Config\Factory::create($data , $path);
             }
         }
         return $result;
@@ -76,7 +81,7 @@ class Connections
          */
         foreach ($this->config as $devType =>$data)
         {
-            $file = $writePath . $data['dir'] . $id .'.php';
+            $file = $data['dir'] . $id .'.php';
             if(!file_exists($file) && !is_writable($file))
                 $errors[] = $file;
         }
@@ -86,7 +91,7 @@ class Connections
 
         foreach ($this->config as $devType=>$data)
         {
-            $file = $writePath . $data['dir'] . $id .'.php';
+            $file = $data['dir'] . $id .'.php';
             if(!@unlink($file)){
                 throw new \Exception(Lang::lang()->get('CANT_WRITE_FS') . ' ' . $file);
             }
@@ -104,7 +109,11 @@ class Connections
         if(!$this->typeExists($devType))
             return null;
 
-        $cfg = Config::storage()->get($this->config[$devType]['dir'] . $id . '.php');
+        $path = $this->config[$devType]['dir'] . $id . '.php';
+
+        $data = include $path;
+
+        $cfg = Config\Factory::create($data , $path);
 
         if(empty($cfg))
             return null;
@@ -120,11 +129,9 @@ class Connections
 
         foreach ($this->config as $devType=>$data)
         {
-            if(!Config::storage()->create($this->config[$devType]['dir'] . $id . '.php'))
-                return false;
+            $path = $this->config[$devType]['dir'] . $id . '.php';
 
-            $c = $this->getConnection($devType, $id);
-            $c->setData([
+            if(!$c = Config\Factory::create( [
                 'username' => '',
                 'password' => '',
                 'dbname'   => '',
@@ -132,10 +139,13 @@ class Connections
                 'charset'  => 'UTF8',
                 'prefix'   => '',
                 'adapter'  => 'Mysqli',
+                'driver'  => 'Mysqli',
                 'transactionIsolationLevel' => 'default'
-            ]);
+            ],$path))
 
-            if(!$c->save())
+            return false;
+
+            if(!Config::storage()->save($c))
                 return false;
         }
         return true;
@@ -148,22 +158,21 @@ class Connections
      */
     public function renameConnection($oldId , $newId)
     {
-        $writePath = Config::storage()->getWrite();
         /**
          * Check permissions
          */
         foreach ($this->config as $devType=>$data)
         {
-            if(!is_writable($writePath . $data['dir'])
+            if(!is_writable($data['dir'])
                 || $this->connectionExists($devType, $newId)
-                || !file_exists($writePath . $data['dir'] . $oldId . '.php')
-                || !is_writable($writePath . $data['dir'] . $oldId . '.php')
+                || !file_exists($data['dir'] . $oldId . '.php')
+                || !is_writable($data['dir'] . $oldId . '.php')
             ){
                 return false;
             }
         }
         foreach ($this->config as $devType=>$data){
-            rename($writePath .$this->config[$devType]['dir'] . $oldId . '.php', $writePath.$this->config[$devType]['dir'] . $newId . '.php');
+            rename($this->config[$devType]['dir'] . $oldId . '.php', $this->config[$devType]['dir'] . $newId . '.php');
         }
         return true;
     }
@@ -178,7 +187,7 @@ class Connections
         if(!$this->typeExists($devType))
             return false;
 
-        return Config::storage()->exists($this->config[$devType]['dir'] . $id . '.php');
+        return file_exists($this->config[$devType]['dir'] . $id . '.php');
     }
     /**
      * Get connections config

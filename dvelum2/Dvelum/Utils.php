@@ -134,18 +134,6 @@ class Utils
         }
         return $result;
     }
-
-    /**
-     * Get hash for the string
-     * @param string $string
-     * @throws \Exception
-     * @return string
-     */
-    static public function hash(string $string): string
-    {
-        return md5(md5($string . self::$salt . $string));
-    }
-
     /**
      * Format file size in user friendly
      * @param int $size

@@ -300,6 +300,7 @@ class Install_Controller
             'username'       => Request::post('username', 'str', false),
             'password'       => Request::post('password', 'str', false),
             'dbname'         => Request::post('dbname', 'str', false),
+            'driver'  => 'Mysqli',
             'adapter'  => 'Mysqli',
             'transactionIsolationLevel' => 'default'
         );
@@ -430,7 +431,6 @@ class Install_Controller
             Response::jsonError(implode(', ', $errors));
 
         $mainConfig = array(
-            'salt'=> Utils::getRandomString(4) . '_' . Utils::getRandomString(4),
             'development' => 1,
             'timezone' => $timezone,
             'adminPath'=> $adminpath,

@@ -41,14 +41,6 @@ interface StorageInterface
     public function getPath($localPath);
 
     /**
-     * Get list of available configs
-     * @param bool $path - optional, default false
-     * @param bool $recursive - optional, default false
-     * @return array
-     */
-    public function getList($path = false, $recursive = false) : array;
-
-    /**
      * Check if config file exists
      * @param $localPath
      * @return bool

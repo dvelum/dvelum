@@ -102,7 +102,7 @@ class Security_Csrf
 		if(self::$_storage->getCount() > self::$_cleanupLimit)
 			$this->cleanup();
 		
-		$token = Utils::hash(mt_rand(1, 200000000));
+		$token = md5(Utils::getRandomString(16).uniqid('',true));
 		self::$_storage->set($token , time());
 		return $token;
 	}
