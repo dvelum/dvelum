@@ -15,7 +15,7 @@ chdir(DVELUM_ROOT);
 /*
  * Including initial config
  */
-$bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
+$bootCfg = include DVELUM_ROOT . '/application/configs/common/dist/init.php';
 /*
  * Including Autoloader class
  */
@@ -35,7 +35,6 @@ $configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->_
 
 //add test configs
 \Dvelum\File::rmdirRecursive('./tests/data/configs/' , false);
-\Dvelum\File::copyDir('./tests/data/test_configs/', './tests/data/configs/');
 \Dvelum\File::copyDir('./tests/data/test_objects/', './tests/data/configs/objects/');
 
 $storage = \Dvelum\Config::storage();
@@ -47,12 +46,24 @@ $storage->addPath('./tests/data/configs/');
 $config = ConfigFactory::storage()->get('main.php');
 $config->set('development', 2);
 
-/*
- * Disable op caching for development mode
- */
-if($config->get('development')){
-    ini_set('opcache.enable', 0);
-    $configStorage->setConfig(['debug' => true]);
+switch ($config->get('development')){
+    // production
+    case 0 :
+        $configStorage->addPath('./application/configs/prod/');
+        break;
+    // development
+    case 1 :
+        $configStorage->addPath('./application/configs/dev/');
+        /*
+         * Disable op caching for development mode
+         */
+        ini_set('opcache.enable', 0);
+        $configStorage->setConfig(['debug' => true]);
+        break;
+    // test
+    case 2 :
+        $configStorage->addPath('./application/configs/test/');
+        break;
 }
 /*
  * Setting autoloader config

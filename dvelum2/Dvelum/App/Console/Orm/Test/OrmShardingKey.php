@@ -10,8 +10,8 @@ class OrmShardingKey extends Console\Action
 {
     public function action(): bool
     {
-       // $this->testWrite('complex_shard_no_index');
-        $this->testLoad();
+        $this->testWrite('complex_shard_no_index');
+       // $this->testLoad();
 
         return true;
     }

@@ -29,7 +29,7 @@ chdir(DVELUM_ROOT);
 /*
  * Including initial config
  */
-$bootCfg = include DVELUM_ROOT . '/application/configs/dist/init.php';
+$bootCfg = include DVELUM_ROOT . '/application/configs/common/dist/init.php';
 /*
  * Including Autoloader class
  */
@@ -55,11 +55,24 @@ $config = Config::storage()->get('main.php');
 $config->set('frontend_router', 'Path');
 $_SERVER['DOCUMENT_ROOT'] = $config->get('wwwpath');
 
-/*
- * Disable op caching for development mode
- */
-if($config->get('development')){
-    ini_set('opcache.enable', 0);
+switch ($config->get('development')){
+    // production
+    case 0 :
+        $configStorage->addPath('./application/configs/prod/');
+        break;
+    // development
+    case 1 :
+        $configStorage->addPath('./application/configs/dev/');
+        /*
+         * Disable op caching for development mode
+         */
+        ini_set('opcache.enable', 0);
+        $configStorage->setConfig(['debug' => true]);
+        break;
+    // test
+    case 2 :
+        $configStorage->addPath('./application/configs/test/');
+        break;
 }
 /*
  * Setting autoloader config

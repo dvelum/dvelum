@@ -74,17 +74,7 @@ class UtilsTest extends TestCase
 			)
 		), $result);
 	}
-	
-	public function testHash(){
-		$hash1 = Utils::hash('abc');
-		$hash2 = Utils::hash('abc');
-		$hash3 = Utils::hash('abcd');
-		
-		$this->assertEquals(32 , strlen($hash1));
-		$this->assertEquals($hash1 , $hash2);
-		$this->assertTrue($hash1 !== $hash3);		
-	}
-	
+
 	public function testClassFromPath()
 	{	
 		$this->assertEquals('Store_Session1' , Utils::classFromPath('store/session1.php'));
