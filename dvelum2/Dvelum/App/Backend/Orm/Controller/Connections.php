@@ -134,8 +134,6 @@ class Connections extends \Dvelum\App\Backend\Controller
             return;
         }
 
-
-
         $data = $this->connections->getConnection($devType , $id);
 
         if(!$data){
@@ -218,7 +216,7 @@ class Connections extends \Dvelum\App\Backend\Controller
                 return;
             }
 
-            $con = $this->connections->getConnection($devType, $oldId);
+            $con = $this->connections->getConnection($devType, (string) $oldId);
         }
 
         if(!$con){
@@ -246,6 +244,7 @@ class Connections extends \Dvelum\App\Backend\Controller
         $con->set('host', $host);
         $con->set('charset', $charset);
         $con->set('adapter', $adapter);
+        $con->set('driver', $adapter);
         $con->set('transactionIsolationLevel', $transactionIsolationLevel);
         $con->set('prefix' , $prefix);
 

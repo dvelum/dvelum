@@ -70,6 +70,7 @@ class Manager implements ManagerInterface
         if(!isset($this->dbConnections[$workMode][$name][$shardKey]))
         {
             $cfg = $this->getDbConfig($name);
+
             $cfg->set('driver', $cfg->get('adapter'));
             /*
              * Enable Db profiler for development mode Attention! Db Profiler causes
@@ -152,7 +153,10 @@ class Manager implements ManagerInterface
             if(!isset($dbConfigPaths[$workMode]))
                 throw new \Exception('Invalid application work mode ' . $workMode);
 
-            $this->dbConfigs[$workMode][$name] = Config\Factory::storage()->get($dbConfigPaths[$workMode]['dir'].$name.'.php' , true , false);
+            $configPath = $dbConfigPaths[$workMode]['dir'].$name.'.php';
+            $configData = include $configPath;
+            $config = Config\Factory::create($configData, $configPath);
+            $this->dbConfigs[$workMode][$name] = $config;
         }
 
         return $this->dbConfigs[$workMode][$name];

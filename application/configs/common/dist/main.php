@@ -140,6 +140,10 @@ return array(
      */
     'wwwroot' => $wwwRoot,
     'wwwpath' => $wwwPath,
+    /**
+     * Relative path to DB configs
+     */
+    'db_config_path' => 'db/',
     /*
      * Directories for storing data base connection settings as per the system mode
      */
@@ -147,15 +151,15 @@ return array(
         /* key as development mode code */
         0 => array(
             'title' => 'PRODUCTION',
-            'dir' => 'db/prod/'
+            'dir' => './application/configs/prod/db/'
         ),
         1 => array(
             'title' => 'DEVELOPMENT',
-            'dir' => 'db/dev/'
+            'dir' => './application/configs/dev/db/'
         ),
         2 => array(
             'title' => 'TEST',
-            'dir' =>  'db/test/'
+            'dir' =>  './application/configs/test/db/'
         )
     ),
     /*

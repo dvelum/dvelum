@@ -222,7 +222,7 @@ class Install_Controller
 
         $writablePaths = array(
             array(
-                'path'=>'application/configs/local',
+                'path'=>'application/configs',
                 'accessType'=>'required'
             ),
             array(
@@ -301,6 +301,7 @@ class Install_Controller
             'password'       => Request::post('password', 'str', false),
             'dbname'         => Request::post('dbname', 'str', false),
             'driver'  => 'Mysqli',
+            'adapter'  => 'Mysqli',
             'transactionIsolationLevel' => 'default'
         );
 
@@ -328,29 +329,36 @@ class Install_Controller
             try {
 
                 $configs = array(
-                     'db/prod/default.php',
-                     'db/prod/error.php',
-                     'db/prod/sharding_index.php',
+                     './application/configs/prod/db/default.php',
+                     './application/configs/prod/db/error.php',
+                     './application/configs/prod/db/sharding_index.php',
 
-                     'db/dev/default.php',
-                     'db/dev/error.php',
-                     'db/dev/sharding_index.php',
+                    './application/configs/dev/db/default.php',
+                    './application/configs/dev/db/error.php',
+                    './application/configs/dev/db/sharding_index.php',
+
+                    './application/configs/test/db/default.php',
+                    './application/configs/test/db/error.php',
+                    './application/configs/test/db/sharding_index.php',
                 );
 
                 $params['prefix'] = $prefix;
                 $params['charset'] = 'UTF8';
                 $storage = Config::storage();
-                foreach($configs as $item)
-                {
+                foreach($configs as $item) {
+                    $cfg = \Dvelum\Config\Factory::create($params, $item);
 
-                    $cfg = Config::storage()->get($item , false, false);
-                    $cfg->setData($params);
-
+                    $dirName = dirname($item);
+                    if(!file_exists($dirName)){
+                        if(!mkdir($dirName,0777,true)){
+                            throw new Exception('Cant write '.$dirName);
+                        }
+                    }
                     if (!$storage->save($cfg))
                         throw new Exception();
                 }
 
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $data['success'] = false;
                 $data['msg'] = $this->localization->get('CONNECTION_SAVE_FAIL');
             }
@@ -423,7 +431,6 @@ class Install_Controller
             Response::jsonError(implode(', ', $errors));
 
         $mainConfig = array(
-            'salt'=> Utils::getRandomString(4) . '_' . Utils::getRandomString(4),
             'development' => 1,
             'timezone' => $timezone,
             'adminPath'=> $adminpath,

@@ -59,7 +59,7 @@ class Backend_Designer_Sub_Model extends Backend_Designer_Sub
 		if($connectionId === false || !$table || empty($fields) || $conType===false)
 			Response::jsonError($this->_lang->WRONG_REQUEST);
         
-        $conManager = new Backend_Orm_Connections_Manager($this->_configMain->get('db_configs'));		
+        $conManager = new \Dvelum\App\Backend\Orm\Connections($this->_configMain->get('db_configs'));
 		$cfg = $conManager->getConnection($conType, $connectionId);	
 		if(!$cfg)
 		    Response::jsonError($this->_lang->WRONG_REQUEST);	

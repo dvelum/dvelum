@@ -6,11 +6,11 @@ return array(
     'config_storage' => array(
         'file_array'=>array(
             'paths' => array(
-                './application/configs/dist/',
-                './application/configs/local/',
+                './application/configs/common/dist/',
+                './application/configs/common/local/',
             ),
-            'write' =>  './application/configs/local/',
-            'apply_to' => './application/configs/dist/',
+            'write' =>  './application/configs/common/local/',
+            'apply_to' => './application/configs/common/dist/',
         ),
         'debug' => false
     ),
