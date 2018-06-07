@@ -156,6 +156,31 @@ class AsArray implements StorageInterface
     }
 
     /**
+     * Get list of available configs
+     * @param bool $path - optional, default false
+     * @param bool $recursive - optional, default false
+     * @return array
+     */
+    public function getList($path = false, $recursive = false) : array
+    {
+        $files = [];
+        foreach($this->config['file_array']['paths'] as $item)
+        {
+            if($path)
+                $item.=$path;
+
+            if(!is_dir($item))
+                continue;
+
+            $list = \File::scanFiles($item , array('.php'), $recursive , \File::Files_Only);
+            if(!empty($list))
+                $files = array_merge($files , $list);
+
+        }
+        return $files;
+    }
+
+    /**
      * Check if config file exists
      * @param $localPath
      * @return bool
