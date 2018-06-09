@@ -107,7 +107,7 @@
             'renderer' => 'Ext_Component_Renderer_System_Checkbox',
             'text' => '[js:] appLang.SYNCHRONIZED',
             'itemId' => 'sync',
-            'width' => 94.0,
+            'width' => 135.0,
           ),
         ),
       ),
@@ -126,7 +126,7 @@
             'align' => 'center',
             'dataIndex' => 'id',
             'itemId' => 'actions',
-            'width' => 40.0,
+            'width' => 50.0,
           ),
           'actions' => 
           array (

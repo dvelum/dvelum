@@ -69,8 +69,8 @@
             'dataIndex' => 'page',
             'renderer' => '',
             'text' => '[js:] externalsLang.app_page',
+            'flex' => 1.0,
             'itemId' => 'url',
-            'width' => 350.0,
           ),
           'renderer' => 
           array (
@@ -95,7 +95,7 @@
             'dataIndex' => 'downloads',
             'text' => '[js:] externalsLang.downloads',
             'itemId' => 'downloads',
-            'width' => 78.0,
+            'width' => 120.0,
           ),
         ),
       ),
@@ -115,7 +115,7 @@
             'dataIndex' => 'number',
             'text' => '[js:] appLang.LAST_VERSION',
             'itemId' => 'last_version_num',
-            'width' => 80.0,
+            'width' => 120.0,
           ),
         ),
       ),
@@ -135,7 +135,7 @@
             'dataIndex' => 'size',
             'text' => '[js:] appLang.SIZE',
             'itemId' => 'size',
-            'width' => 71.0,
+            'width' => 120.0,
           ),
         ),
       ),
@@ -156,7 +156,7 @@
             'dataIndex' => 'date',
             'text' => '[js:] appLang.DATE',
             'itemId' => 'date',
-            'width' => 78.0,
+            'width' => 120.0,
           ),
         ),
       ),
@@ -174,7 +174,7 @@
           array (
             'dataIndex' => 'code',
             'itemId' => 'actions',
-            'width' => 20.0,
+            'width' => 40.0,
           ),
           'actions' => 
           array (

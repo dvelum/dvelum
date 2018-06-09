@@ -11,6 +11,7 @@
       'columnLines' => true,
       'viewConfig' => '{enableTextSelection:true}',
       'title' => '[js:]appLang.HISTORY_LOG',
+      'split' => true,
       'flex' => 1.0,
       'isExtended' => false,
     ),
@@ -38,6 +39,26 @@
     ),
     'columns' => 
     array (
+      'recordid' => 
+      array (
+        'id' => 'recordid',
+        'parent' => 0,
+        'class' => 'Ext_Grid_Column',
+        'name' => 'recordid',
+        'extClass' => 'Grid_Column',
+        'order' => 0,
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'align' => 'left',
+            'dataIndex' => 'record_id',
+            'text' => '[js:] appLang.RECORD_ID',
+            'itemId' => 'recordid',
+            'width' => 100.0,
+          ),
+        ),
+      ),
       'date' => 
       array (
         'id' => 'date',
@@ -45,7 +66,7 @@
         'class' => 'Ext_Grid_Column_Date',
         'name' => 'date',
         'extClass' => 'Grid_Column_Date',
-        'order' => 0,
+        'order' => 1,
         'state' => 
         array (
           'config' => 
@@ -54,7 +75,7 @@
             'align' => 'center',
             'dataIndex' => 'date',
             'text' => '[js:] appLang.DATE',
-            'width' => 122.0,
+            'width' => 170.0,
           ),
         ),
       ),
@@ -65,34 +86,14 @@
         'class' => 'Ext_Grid_Column',
         'name' => 'object',
         'extClass' => 'Grid_Column',
-        'order' => 1,
+        'order' => 2,
         'state' => 
         array (
           'config' => 
           array (
             'dataIndex' => 'object_title',
             'text' => '[js:] appLang.OBJECT',
-            'width' => 112.0,
-          ),
-        ),
-      ),
-      'recordid' => 
-      array (
-        'id' => 'recordid',
-        'parent' => 0,
-        'class' => 'Ext_Grid_Column',
-        'name' => 'recordid',
-        'extClass' => 'Grid_Column',
-        'order' => 2,
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'align' => 'left',
-            'dataIndex' => 'record_id',
-            'text' => '[js:] appLang.RECORD_ID',
-            'itemId' => 'recordid',
-            'width' => 60.0,
+            'width' => 174.0,
           ),
         ),
       ),

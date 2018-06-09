@@ -209,7 +209,7 @@ Ext.define('app.relatedGridPanel',{
                 sortable: false,
                 text: appLang.STATUS,
                 dataIndex: 'published',
-                width:50,
+                width:60,
                 align:'center',
                 renderer:function(value, metaData, record, rowIndex, colIndex, store){
                     if(record.get('deleted')){

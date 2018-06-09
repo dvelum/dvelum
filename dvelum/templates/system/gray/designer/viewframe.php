@@ -37,10 +37,13 @@ if(!defined('DVELUM'))exit;
 	if($this->useCSRFToken)
 		echo '<meta name="csrf-token" content="'.$token.'"/>';
 
- echo $res->includeCss(true);
+/**
+ * @var \Dvelum\Resource $res
+ */
+ echo $res->includeCss(false);
  echo $res->includeJsByTag(true , false , 'head');
  echo $res->includeJsByTag(true , false , 'external');
- echo $res->includeJs();
+ echo $res->includeJs(false,false);
 ?>
 </head>
 <body>

@@ -22,7 +22,7 @@ Ext.define('app.orm.validate.Window',{
    closable:true,
    modal:true,
    layout:'fit',
-   width:550,
+   width:650,
    height:450,
    objectsStore:null,
    validateQueue:null,
@@ -76,7 +76,7 @@ Ext.define('app.orm.validate.Window',{
 
        var titleRenderer = function(value, metaData, record){
            if(record.get('external')){
-               metaData.style ='color:#0415D0;';
+               metaData.tdCls ='color:#0415D0;';
            }
 
            if(record.get('readonly')){
@@ -106,7 +106,7 @@ Ext.define('app.orm.validate.Window',{
                {
                    xtype:'actioncolumn',
                    align:'center',
-                   width:20,
+                   width:40,
                    items:[
                        {
                            tooltip:appLang.REBUILD_DB_TABLE,
@@ -127,7 +127,8 @@ Ext.define('app.orm.validate.Window',{
                },{
                    text: appLang.OBJECT,
                    dataIndex: 'name',
-                   align:'left'
+                   align:'left',
+                   width:200
                },{
                    text: appLang.SHARD,
                    dataIndex: 'shard_title',

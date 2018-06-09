@@ -7,9 +7,16 @@
   array (
     'config' => 
     array (
-      'store' => 'dataStore',
+      'store' => 
+      array (
+        'class' => 'Ext_Helper_Store',
+        'state' => 
+        array (
+          'type' => 'jscall',
+          'value' => 'me.getStore()',
+        ),
+      ),
       'storeField' => 'date',
-      'local' => false,
       'autoFilter' => true,
       'isExtended' => false,
     ),
@@ -22,7 +29,6 @@
         array (
           'format' => 'd.m.Y',
           'submitFormat' => 'Y-m-d',
-          'width' => 140.0,
         ),
       ),
     ),

@@ -80,7 +80,7 @@ Ext.define('app.crud.orm.dataGrid',{
             this.columns.push({
                 xtype:'actioncolumn',
                 align:'center',
-                width:40,
+                width:80,
                 items:[
                     {
                         tooltip:appLang.EDIT_RECORD,
@@ -145,12 +145,12 @@ Ext.define('app.crud.orm.dataGrid',{
                 text: appLang.PROPERTIES,
                 dataIndex: 'fields',
                 align:'center',
-                width:90
+                width:120
             },{
                 sortable: true,
                 text: appLang.VC,
                 dataIndex: 'vc',
-                width:90,
+                width:130,
                 align:'center',
                 renderer:app.checkboxRenderer
             },{
@@ -181,7 +181,7 @@ Ext.define('app.crud.orm.dataGrid',{
                 text:appLang.DISTRIBUTED,
                 align:'center',
                 dataIndex:'distributed',
-                width:90,
+                width:120,
                 hidden:false,
                 renderer:app.checkboxRenderer
             }

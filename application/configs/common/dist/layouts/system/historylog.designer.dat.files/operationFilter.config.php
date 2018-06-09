@@ -29,7 +29,7 @@
           'queryMode' => 'local',
           'triggerAction' => 'all',
           'emptyText' => '[js:] appLang.ALL',
-          'width' => 120.0,
+          'width' => 160.0,
         ),
       ),
     ),

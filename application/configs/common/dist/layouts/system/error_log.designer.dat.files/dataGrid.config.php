@@ -45,7 +45,7 @@
             'dataIndex' => 'date',
             'text' => '[js:] appLang.DATE',
             'itemId' => 'date',
-            'width' => 122.0,
+            'width' => 141.0,
           ),
         ),
       ),

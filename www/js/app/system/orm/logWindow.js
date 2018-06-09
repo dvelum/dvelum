@@ -9,11 +9,13 @@ Ext.define('app.crud.orm.logWindow',{
 	bodyPadding:5,
 	scrollable:true,
 	displayField:false,
-	bodyStyle:{
-		backgroundColor:'#ffffff'
-	},
+	bodyCls:'formBody',
 	initComponent:function(){
-		this.displayField = Ext.create('Ext.form.Display',{name:'text'});
+
+		this.displayField = Ext.create('Ext.form.Display',{
+			name:'text'
+		});
+
 		this.items = [this.displayField];
 
 		this.fileSelector = Ext.create('Ext.form.field.ComboBox',{

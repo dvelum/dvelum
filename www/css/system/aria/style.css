@@ -23,6 +23,12 @@
 .loginInfo .name{
     color:#ed9200;
 }
+a:link, a:visited{
+    color:#ed9200
+}
+a:hover{
+    color:#7e55ef;
+}
 
 .disabledPermissions{
     background-color:#616f8c;

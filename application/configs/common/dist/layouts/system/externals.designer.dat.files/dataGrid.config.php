@@ -41,7 +41,7 @@
           array (
             'dataIndex' => 'name',
             'text' => '[js:] appLang.TITLE',
-            'width' => 177.0,
+            'width' => 270.0,
           ),
         ),
       ),
@@ -61,7 +61,7 @@
             'dataIndex' => 'enabled',
             'renderer' => '',
             'text' => '[js:] appLang.ENABLED',
-            'width' => 60.0,
+            'width' => 95.0,
           ),
           'renderer' => 
           array (
@@ -85,7 +85,7 @@
             'align' => 'center',
             'dataIndex' => 'version',
             'text' => '[js:] appLang.VERSION',
-            'width' => 51.0,
+            'width' => 88.0,
           ),
         ),
       ),
@@ -103,6 +103,7 @@
           array (
             'dataIndex' => 'author',
             'text' => '[js:] appLang.AUTHOR',
+            'width' => 162.0,
           ),
         ),
       ),
@@ -122,7 +123,7 @@
             'dataIndex' => 'installed',
             'renderer' => '',
             'text' => '[js:] externalsLang.installed',
-            'width' => 60.0,
+            'width' => 105.0,
           ),
           'renderer' => 
           array (

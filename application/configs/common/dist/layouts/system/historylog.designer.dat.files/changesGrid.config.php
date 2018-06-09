@@ -11,6 +11,7 @@
       'columnLines' => true,
       'viewConfig' => '{enableTextSelection:true}',
       'title' => '[js:] appLang.CHANGES',
+      'split' => true,
       'flex' => 1.0,
       'isExtended' => false,
     ),
