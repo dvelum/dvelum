@@ -465,3 +465,7 @@ div.module-target{
     margin-right: 10px;
     line-height: 1
 }
+
+.disabledPermissions{
+    background-color:#DCDCDC;
+}

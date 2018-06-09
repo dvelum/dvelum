@@ -17,6 +17,7 @@ this.groupsPanel = Ext.create('appUsersClasses.Groups',{
   canEdit:canEdit ,
   canDelete:canDelete,
   region:'west',
+  split:true,
   width:250,
   listeners:{
     selectionchange:{

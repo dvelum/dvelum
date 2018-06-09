@@ -9,7 +9,7 @@
     array (
       'title' => '[js:] appLang.EDIT_USER',
       'layout' => 'fit',
-      'height' => 342.0,
+      'height' => 360.0,
       'modal' => false,
       'resizable' => false,
       'width' => 405.0,

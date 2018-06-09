@@ -9,7 +9,9 @@
     array (
       'store' => '[new:] groupsStore',
       'columnLines' => true,
+      'bodyBorder' => false,
       'title' => '[js:] appLang.GROUPS',
+      'border' => 0.0,
       'frame' => false,
       'isExtended' => true,
       'defineOnly' => true,
@@ -65,7 +67,7 @@
             'renderer' => 'Ext_Component_Renderer_System_Checkbox',
             'text' => '[js:] appLang.SYSTEM',
             'itemId' => 'system',
-            'width' => 60.0,
+            'width' => 80.0,
           ),
         ),
       ),

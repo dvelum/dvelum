@@ -149,7 +149,7 @@
           array (
             'dataIndex' => 'email',
             'text' => '[js:] appLang.EMAIL',
-            'width' => 129.0,
+            'width' => 184.0,
           ),
         ),
       ),
@@ -169,7 +169,7 @@
             'dataIndex' => 'admin',
             'renderer' => 'Ext_Component_Renderer_System_Checkbox',
             'text' => '[js:] appLang.ADMIN',
-            'width' => 99.0,
+            'width' => 151.0,
           ),
         ),
       ),

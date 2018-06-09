@@ -11,7 +11,9 @@
       'columnLines' => true,
       'selModel' => ' {                 selType: \'cellmodel\'             }',
       'viewConfig' => '{                 stripeRows: true             }',
+      'bodyBorder' => false,
       'title' => '[js:] appLang.PERMISSIONS',
+      'border' => 0.0,
       'frame' => false,
       'hidden' => false,
       'isExtended' => true,
@@ -180,7 +182,7 @@
             'renderer' => '',
             'text' => '[js:] appLang.ONLY_OWN',
             'itemId' => 'only_own',
-            'width' => 117.0,
+            'width' => 150.0,
           ),
           'renderer' => 
           array (

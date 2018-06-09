@@ -192,7 +192,7 @@
             'renderer' => '',
             'text' => '[js:] appLang.ONLY_OWN',
             'itemId' => 'only_own',
-            'width' => 108.0,
+            'width' => 150.0,
           ),
           'renderer' => 
           array (

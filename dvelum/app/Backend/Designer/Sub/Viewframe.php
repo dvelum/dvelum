@@ -11,6 +11,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$designerConfig = Config::storage()->get('designer.php');
         $backendConfig = Config::storage()->get('backend.php');
 
+        $adminTheme = $backendConfig->get('theme');
         // change theme
 		$designerTheme = $designerConfig->get('application_theme');
         $backendConfig->set('theme' , $designerTheme);
@@ -169,7 +170,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$tpl->development = $this->_configMain['development'];
 		$tpl->resource = $res;
 		$tpl->useCSRFToken = $backendConfig->get('use_csrf_token');
-		$tpl->theme = $backendConfig->get('theme');
+		$tpl->theme = $adminTheme;
 
 		$this->response->put($tpl->render($this->page->getTemplatesPath().'designer/viewframe.php'));
 	    $this->response->send();
