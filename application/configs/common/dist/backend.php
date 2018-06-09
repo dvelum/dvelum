@@ -1,6 +1,6 @@
 <?php
 return array(
-	'theme'=>'gray', // gray / triton / crisp / desktop
+	'theme'=>'gray', // gray / triton / crisp / desktop / aria
     'desktop_themes' => ['desktop'],
 	'system_controllers' => array(
 		'Backend_Index_Controller' ,
