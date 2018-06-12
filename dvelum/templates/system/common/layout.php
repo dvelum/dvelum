@@ -4,8 +4,10 @@ if(!defined('DVELUM'))exit;
 header('Content-Type: text/html; charset=utf-8');
 
 $theme = $this->get('theme');
-
-$res = Resource::getInstance();
+/**
+ * @var \Dvelum\Resource $res
+ */
+$res = \Dvelum\Resource::factory();
 $res->addJs('/js/app/system/common.js' , -2);
 $res->addJs('/js/app/system/Application.js' , -1);
 
@@ -97,7 +99,7 @@ $wwwRoot = Request::wwwRoot();
 </div>
 <?php
     echo $res->includeJsByTag(true , false , 'external');
-    echo $res->includeJs(true , false);
+    echo $res->includeJs(true , true);
 ?>
 </body>
 </html>

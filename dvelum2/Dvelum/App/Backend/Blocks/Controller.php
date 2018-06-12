@@ -31,7 +31,7 @@ class Controller extends Backend\Ui\Controller
 {
     public function indexAction()
     {
-        $this->resource->addJs('/js/app/system/Blocks.js' , true , 1);
+        $this->resource->addJs('/js/app/system/Blocks.js' , 10 , 1);
         parent::indexAction();
     }
 
