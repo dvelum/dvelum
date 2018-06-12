@@ -210,7 +210,7 @@ class Controller extends Backend\Ui\Controller
     /**
      * Get desktop module info
      */
-    protected function desktopModuleInfo()
+    public function desktopModuleInfo()
     {
         $projectData = [];
         $projectData['includes']['js'][] = '/js/app/system/Menu.js';

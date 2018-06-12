@@ -70,7 +70,7 @@ class Backend_Cache_Controller extends Backend_Controller_Crud
     /**
      * Get desktop module info
      */
-    protected function desktopModuleInfo()
+    public function desktopModuleInfo()
     {
         $projectData = [];
         $projectData['includes']['js'][] =  '/js/app/system/Cache.js';
