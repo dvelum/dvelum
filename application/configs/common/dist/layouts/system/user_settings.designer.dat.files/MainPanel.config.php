@@ -7,8 +7,10 @@
   array (
     'config' => 
     array (
+      'bodyBorder' => 'false',
       'bodyCls' => 'formBody',
       'bodyPadding' => 10.0,
+      'border' => 'false',
       'isExtended' => true,
     ),
   ),

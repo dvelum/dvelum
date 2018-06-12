@@ -1,12 +1,13 @@
 <?php
 return array(
-	'theme'=>'gray', // gray / triton / crisp / desktop / aria
+	'theme'=>'gray', // gray / triton / crisp / desktop / aria / classic
     'desktop_themes' => ['desktop'],
 	'themes'=>[
 	    'gray',
         'triton',
         'crisp',
         'aria',
+        'classic'
       //  'desktop'
     ],
 	'languages'=>[

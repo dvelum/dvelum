@@ -2,6 +2,7 @@ app.application = false;
 app.content =  Ext.create('Ext.Panel',{
 	frame:false,
 	border:false,
+	bodyBorder:false,
 	layout:'fit',
 	//margins: '0 5 0 0',
 	scrollable:false,
