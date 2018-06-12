@@ -27,6 +27,7 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 use Dvelum\App\Session;
 use Dvelum\Lang;
+use Dvelum\Service;
 use Dvelum\View;
 use Dvelum\Request;
 use Dvelum\Resource;
@@ -116,6 +117,34 @@ class Controller extends App\Controller
                 return true;
             }
         }
+
+        // switch language
+        $userLang = $this->user->getSettings()->get('language');
+        $acceptedLanguages = $this->backofficeConfig->get('languages');
+
+        if (!empty($userLang)
+            && $userLang != $this->appConfig->get('language')
+            && in_array($userLang, $acceptedLanguages, true)
+        ) {
+            $this->appConfig->set('language', $userLang);
+            Lang::addDictionaryLoader((string) $userLang, $userLang . '.php', Config\Factory::File_Array);
+            Service::get('Lang')->setDefaultDictionary((string) $userLang);
+            Service::get('Dictionary')->setConfig(Config\Factory::create([
+                'configPath' => $this->appConfig->get('dictionary_folder') . $this->appConfig->get('language') . '/'
+            ]));
+       }
+
+        // switch theme
+        $userTheme = $this->user->getSettings()->get('theme');
+        $acceptedThemes = $this->backofficeConfig->get('themes');
+        if (!empty($userTheme)
+            && $userTheme != $this->backofficeConfig->get('theme')
+            && in_array($userTheme, $acceptedThemes, true)
+        ) {
+            $this->backofficeConfig->set('theme', $userTheme);
+        }
+
+
         $this->moduleAcl = $this->user->getModuleAcl();
         
         /*

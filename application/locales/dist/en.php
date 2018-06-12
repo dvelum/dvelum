@@ -594,4 +594,7 @@
   'ORM_SHARD_KEY' => 'Sharding by user field with distributed primary key',
   'ORM_SHARD_KEY_NO_INDEX' => 'Sharding by user field without distributed primary key',
   'ORM_SHARDING_KEY' => 'Sharding Key',
+  'SETTINGS'=> 'Settings',
+  'DATA_SAVED' =>  'Data saved successfully'
+
 );

@@ -1,6 +1,7 @@
 <?php
 
 use Dvelum\Orm\Model as Model;
+use Dvelum\App\Session\UserSettings;
 /**
  * The class is used to identify the current system User.
  * @author Kirill Egorov
@@ -23,6 +24,11 @@ class User
 
     protected $moduleAcl = false;
 
+    /**
+     * @var UserSettings $settings
+     */
+    protected $settings;
+
 	/**
      * @var Store_Session
      */
@@ -44,7 +50,6 @@ class User
 		
 		$user = User::getInstance();
 		$user->logout();
-		
 		$user->setId($data['id']);
 		$user->setInfo($data);
 		$user->setAuthorized();
@@ -80,6 +85,7 @@ class User
 		$this->id = $id;
 		$this->info = null;
 		$this->permissions = null;
+        $this->settings = new UserSettings($id);
 	}
 
 	/**
@@ -107,6 +113,10 @@ class User
 		$this->info = $data;
 	}
 
+    public function getSettings() : UserSettings
+    {
+        return $this->settings;
+    }
 	/**
      * Get User data
      * @return array
@@ -238,7 +248,7 @@ class User
 		$ses->set('auth' , false);
 		$ses->set('auth_id' , false);
 		$this->authChecked = false;
-		$this->info = array();
+		$this->info = [];
 		$this->permissions = null;
 	}
 
@@ -250,24 +260,6 @@ class User
 		if($this->session->keyExists('auth') && $this->session->get('auth') && $this->session->keyExists('auth_id') && $this->session->get('auth_id')){
             $this->setId($this->session->get('auth_id'));
         }
-	}
-
-	/**
-	 * Get selected language
-	 * @return mixed|null|string
-	 */
-	public function getLanguage()
-	{
-		return $this->session->get('lang');
-	}
-
-	/**
-	 * Set UI language
-	 * @param $lang
-	 */
-	public function setLanguage($lang)
-	{
-		$this->session->set('lang' , $lang);
 	}
 
     /**

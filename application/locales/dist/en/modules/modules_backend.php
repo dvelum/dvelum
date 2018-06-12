@@ -18,4 +18,5 @@
   'User' =>  'Users',
   'Externals' => 'External Modules',
   'User_Auth' => 'Auth settings',
+  'Settings' => 'My Settings'
 ); 

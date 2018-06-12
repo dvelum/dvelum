@@ -62,7 +62,8 @@ class Record extends Form\Adapter
 
         $posted = $this->request->postArray();
 
-        $fields = $obj->getFields();
+        $fields = $this->getFields($obj);
+
         $objectConfig = $obj->getConfig();
         $systemFields = $objectConfig->getSystemFieldsConfig();
 
@@ -126,6 +127,10 @@ class Record extends Form\Adapter
         return true;
     }
 
+    protected function getFields(Orm\RecordInterface $object) : array
+    {
+        return $object->getFields();
+    }
     /**
      * @return Orm\Record
      */

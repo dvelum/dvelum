@@ -29,7 +29,6 @@ class Auth
     const AUTH_LOGIN = 'ulogin';
     const AUTH_PASSWORD = 'upassword';
     const AUTH_PROVIDER = 'uprovider';
-    const AUTH_LANG = 'ulang';
 
     protected  $request;
     protected  $appConfig;
@@ -66,7 +65,6 @@ class Auth
             $login = $this->request->post(self::AUTH_LOGIN, 'login', false);
             $pass = $this->request->post(self::AUTH_PASSWORD , 'string' , false);
             $provider = $this->request->post(self::AUTH_PROVIDER , 'string' , $this->appConfig->get('default_auth_provider'));
-            $language = $this->request->post(self::AUTH_LANG, 'string' , '');
 
             if(!empty($login) && !empty($pass)){
                 // slow check

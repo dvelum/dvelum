@@ -624,7 +624,7 @@ class Controller extends Backend\Ui\Controller
     /**
      * Get desktop module info
      */
-    protected function desktopModuleInfo()
+    public function desktopModuleInfo()
     {
         $modulesConfig = Config::storage()->get($this->appConfig->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($this->getModule());

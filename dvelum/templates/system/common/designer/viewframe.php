@@ -38,7 +38,7 @@ $res->addCss('/css/system/'.$theme.'/style.css' , 3);
     if($this->useCSRFToken)
         echo '<meta name="csrf-token" content="'.$token.'"/>';
 
-    echo $this->resource->includeCss() ,$this->resource->includeJs(false,false) , "\n"?>
+    echo $res->includeCss(),  $res->includeJsByTag(true , false , 'external'), $res->includeJs(false,false) , "\n"?>
 </head>
 <body>
 </body>

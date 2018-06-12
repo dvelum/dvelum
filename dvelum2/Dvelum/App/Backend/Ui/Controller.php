@@ -81,7 +81,7 @@ abstract class Controller extends Backend\Api\Controller
     /**
      * Get desktop module info
      */
-    protected function desktopModuleInfo()
+    public function desktopModuleInfo()
     {
         $moduleName = $this->getModule();
 

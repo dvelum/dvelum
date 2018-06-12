@@ -2,11 +2,6 @@
 if(!defined('DVELUM'))exit;
 
 $wwwRoot = $this->get('wwwRoot');
-$curLang = Lang::lang()->getName();
-$lang = [
-    'en' => 'English',
-    'ru' => 'Русский'
-];
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -30,24 +25,6 @@ $lang = [
                         echo '<input type="hidden" name="'. $this->csrf['csrfFieldName'] .'" value="'. $this->csrf['csrfToken'] .'"/>';
                 ?>
 				<fieldset>
-					<div class="formRow half">
-						<label for="lang">Language:</label>
-						<div class="loginInput">
-							<select name="ulang" class="validate[required]" id="lang" autocomplete="on">
-                                <?php
-                                    foreach($lang as $name=>$title)
-                                    {
-                                        $selected = '';
-                                        if($name == $curLang)
-                                            $selected = 'selected="selected"';
-                                        echo '<option value="'.$name.'" '.$selected.'>'.$title.'</option>';
-                                    }
-                                ?>
-							</select>
-						</div>
-						<div class="clear"></div>
-					</div>
-
 					<div class="formRow">
 						<label for="login">Username:</label>
 						<div class="loginInput"><input name="ulogin" class="validate[required]" id="login" type="text"></div>

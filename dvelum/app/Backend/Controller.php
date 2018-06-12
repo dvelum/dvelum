@@ -393,7 +393,7 @@ abstract class Backend_Controller extends Controller
 
         if($user->isAuthorized()) {
             $uid = $user->id;
-            $userLang =$user->getLanguage();
+            $userLang = $user->getSettings()->get('language');
             $langManager = new Backend_Localization_Manager($this->_configMain);
             $acceptedLanguages = $langManager->getLangs(true);
             // switch language
@@ -562,7 +562,7 @@ abstract class Backend_Controller extends Controller
     /**
      * Get desktop module info
      */
-    protected function desktopModuleInfo()
+    public function desktopModuleInfo()
     {
         $modulesConfig = Config::factory(Config::File_Array , $this->_configMain->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($this->_module);

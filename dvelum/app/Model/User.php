@@ -29,7 +29,6 @@ class Model_User extends Model
         $user = Request::post(self::AUTH_LOGIN, 'login', false);
         $pass = Request::post(self::AUTH_PASSWORD , 'string' , false);
         $provider = Request::post(self::AUTH_PROVIDER , 'string' , $mainCfg->get('default_auth_provider'));
-        $language = Request::post(self::AUTH_LANG, 'string' , '');
 
         if($user === false || $pass=== false)
             return false;
@@ -42,11 +41,6 @@ class Model_User extends Model
         if(!$result && !empty($mainCfg['fallback_auth_provider'])){
             $provider = $mainCfg->get('fallback_auth_provider');
             $result = $this->login($user, $pass , $provider);
-        }
-
-        if($result) {
-            $user = User::getInstance();
-            $user->setLanguage($language);
         }
 
         return $result;

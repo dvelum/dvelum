@@ -44,6 +44,11 @@ return [
         'type' => 'action',
         'adapter' => '\\Dvelum\\App\\Console\\Clear\\Memory'
     ],
+    // clear js and css cache
+    'clearStatic'=>[
+        'type' => 'action',
+        'adapter' => '\\Dvelum\\App\\Console\\Clear\\StaticCache'
+    ],
     // test task
     'testTask'=>array(
         'type' => 'task',

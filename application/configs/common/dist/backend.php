@@ -2,6 +2,17 @@
 return array(
 	'theme'=>'gray', // gray / triton / crisp / desktop / aria
     'desktop_themes' => ['desktop'],
+	'themes'=>[
+	    'gray',
+        'triton',
+        'crisp',
+        'aria',
+      //  'desktop'
+    ],
+	'languages'=>[
+        'en',
+        'ru'
+    ],
 	'system_controllers' => array(
 		'Backend_Index_Controller' ,
 		'Backend_Mediacategory_Controller',

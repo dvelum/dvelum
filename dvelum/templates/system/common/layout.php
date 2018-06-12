@@ -95,6 +95,9 @@ $wwwRoot = Request::wwwRoot();
         </div>
     </div>
 </div>
-<?php echo $res->includeJs(true , false); ?>
+<?php
+    echo $res->includeJsByTag(true , false , 'external');
+    echo $res->includeJs(true , false);
+?>
 </body>
 </html>

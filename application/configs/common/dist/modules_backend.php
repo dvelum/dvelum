@@ -160,4 +160,14 @@
             'icon' => 'i/system/icons/user_auth.png',
             'id' => 'User_Auth',
         ),
+    'Settings' =>
+        array (
+            'dev' => false,
+            'active' => true,
+            'class' => 'Dvelum\\App\\Backend\\Settings\\Controller',
+            'designer' => '/system/user_settings.designer.dat',
+            'in_menu' => true,
+            'icon' => 'i/system/icons/user_settings.png',
+            'id' => 'Settings',
+        ),
 );
