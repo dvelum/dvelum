@@ -435,13 +435,18 @@ class Model
      * @param $value
      * @param string $fields
      * @return array|null
-     * @throws Exception
+     * @throws \Exception
      */
     public function getItemByField(string $fieldName, $value, $fields = '*')
     {
-        $sql = $this->dbSlave->select()->from($this->table(), $fields);
-        $sql->where($this->dbSlave->quoteIdentifier($fieldName) . ' = ?', $value)->limit(1);
-        return $this->dbSlave->fetchRow($sql);
+        try{
+            $sql = $this->dbSlave->select()->from($this->table(), $fields);
+            $sql->where($this->dbSlave->quoteIdentifier($fieldName) . ' = ?', $value)->limit(1);
+            return $this->dbSlave->fetchRow($sql);
+        }catch (\Exception $e){
+            $this->logError($e->getMessage());
+            return [];
+        }
     }
 
     /**
