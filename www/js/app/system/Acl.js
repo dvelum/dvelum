@@ -37,6 +37,7 @@ Ext.define('app.crud.acl.Permissions',{
      */
     dataStore:null,
     controllerUrl:null,
+    split:true,
 
     initComponent:function(){
 
@@ -87,7 +88,7 @@ Ext.define('app.crud.acl.Permissions',{
         });
 
 
-        this.saveBtn =  Ext.create('Ext.Button',{
+        this.saveBtn = Ext.create('Ext.Button',{
             text:appLang.SAVE,
             iconCls:'saveIcon',
             handler:this.savePermissions,
@@ -116,7 +117,6 @@ Ext.define('app.crud.acl.Permissions',{
                     text:appLang.OBJECT,
                     dataIndex:'object',
                     align:'left',
-                    renderer:false,
                     editable:false,
                     id:'object',
                     width:250,
@@ -126,8 +126,9 @@ Ext.define('app.crud.acl.Permissions',{
                 },{
                     text:appLang.ALL,
                     dataIndex:'id',
+                    align:'center',
                     itemId:'all',
-                    width:30,
+                    width:60,
                     scope:this,
                     renderer:function(value, metaData, record, rowIndex, colIndex, store){
                         var allChecked = this.checkPermissionsCol(record);
@@ -256,6 +257,7 @@ Ext.define('app.crud.acl.Groups',{
     dataStore:null,
     permissionsPanel:null,
     controllerUrl:null,
+    split:true,
     constructor: function(config) {
         config = Ext.apply({
             modal: true,
@@ -320,7 +322,7 @@ Ext.define('app.crud.acl.Groups',{
                     header:appLang.SYSTEM,
                     dataIndex:'system',
                     align:'center',
-                    width:60,
+                    width:90,
                     renderer:app.checkboxRenderer
                 }
             ]
