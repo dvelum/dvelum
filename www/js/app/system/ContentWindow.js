@@ -191,7 +191,7 @@ Ext.define('app.contentWindow',{
 			enableTabScroll:true,
 			border:false,
 			frame:false,
-			bodyCls:'formBody',
+			cls:'formBody',
 			defaults:{
 				border:false,
 				frame:true,

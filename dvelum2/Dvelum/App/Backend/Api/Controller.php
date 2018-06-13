@@ -1099,4 +1099,34 @@ class Controller extends App\Backend\Controller
         return true;
     }
 
+    /**
+     * Get desktop module info
+     */
+    public function desktopModuleInfo()
+    {
+        $moduleName = $this->getModule();
+
+        $modulesConfig = Config::factory(Config\Factory::File_Array , $this->appConfig->get('backend_modules'));
+        $moduleCfg = $modulesConfig->get($moduleName);
+
+        $projectData = [];
+
+        if(strlen($moduleCfg['designer']))
+        {
+            $manager = new \Designer_Manager($this->appConfig);
+            $project = $manager->findWorkingCopy($moduleCfg['designer']);
+            $projectData =  $manager->compileDesktopProject($project, 'app.__modules.'.$moduleName , $moduleName);
+            $projectData['isDesigner'] = true;
+            $modulesManager = new \Modules_Manager();
+            $modulesList = $modulesManager->getList();
+            $projectData['title'] = (isset($modulesList[$this->module])) ? $modulesList[$moduleName]['title'] : '';
+        }
+        else
+        {
+            if(file_exists($this->appConfig->get('jsPath').'app/system/desktop/' . strtolower($moduleName) . '.js'))
+                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($moduleName) .'.js';
+        }
+        return $projectData;
+    }
+
 }

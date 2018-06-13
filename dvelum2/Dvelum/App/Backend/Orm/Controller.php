@@ -380,4 +380,39 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     {
         return '';
     }
+
+    /**
+     * Get desktop module info
+     */
+    public function desktopModuleInfo()
+    {
+        $version = Config::storage()->get('versions.php')->get('orm');
+        $dbConfigs = array();
+        foreach ($this->appConfig->get('db_configs') as $k => $v) {
+            $dbConfigs[] = array('id' => $k, 'title' => $this->lang->get($v['title']));
+        }
+
+        //tooltips
+        $lPath = $this->appConfig->get('language') . '/orm.php';
+        Lang::addDictionaryLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
+        $projectData['includes']['js'][] = $this->resource->cacheJs('
+           var useForeignKeys = ' . ((integer)$this->appConfig['foreign_keys']) . ';
+           var dbConfigsList = ' . json_encode($dbConfigs) . ';
+           var ormTooltips = ' . Lang::lang('orm_tooltips')->getJson() . ';
+        ');
+
+        $projectData['includes']['css'][] = '/css/system/joint.min.css';
+        $projectData['includes']['js'][] = '/js/lib/uml/lodash.min.js';
+        $projectData['includes']['js'][] = '/js/lib/uml/backbone-min.js';
+        $projectData['includes']['js'][] = '/js/lib/uml/joint.min.js';
+        $projectData['includes']['js'][] = '/js/lib/ext_ux/rowExpanderGrid.js';
+        $projectData['includes']['js'][] = '/js/app/system/ORM.js?v=' . $version;
+        /*
+         * Module bootstrap
+         */
+        if (file_exists($this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($this->getModule()) . '.js')) {
+            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->getModule()) . '.js';
+        }
+        return $projectData;
+    }
 }

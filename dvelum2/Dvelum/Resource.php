@@ -277,7 +277,7 @@ class Resource
             file_put_contents($cacheFile, $code);
         }
 
-        return str_replace($this->config->get('jsCachePath'), $this->config->get('wwwRoot'). $this->config->get('jsCachePath'), $cacheFile);
+        return str_replace($this->config->get('jsCachePath'), $this->config->get('wwwRoot'). $this->config->get('jsCacheUrl'), $cacheFile);
     }
 
     /**

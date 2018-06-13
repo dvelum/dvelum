@@ -7,8 +7,8 @@ return array(
         'triton',
         'crisp',
         'aria',
-        'classic'
-      //  'desktop'
+        'classic',
+        'desktop'
     ],
 	'languages'=>[
         'en',

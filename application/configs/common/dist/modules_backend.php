@@ -135,7 +135,7 @@
             'id' => 'User',
             'dev' => false,
             'active' => true,
-            'class' => 'Backend_User_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\User\\Controller',
             'designer' => '/system/users.designer.dat',
             'in_menu' => true,
             'icon' => 'i/system/icons/users.png',

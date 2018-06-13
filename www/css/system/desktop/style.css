@@ -1,3 +1,4 @@
+.formBody{background-color:#EDEDED;}
 .menu-item-wrap{
     float:left;
     width: 120px;
@@ -28,11 +29,6 @@
 body{
     background-color: #F0F0F0;
 }
-
-.formBody{
-    background-color: #F0F0F0;
-}
-
 .x-toolbar{
     background-color: #F0F0F0;
 }
