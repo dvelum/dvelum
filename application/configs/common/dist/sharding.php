@@ -13,6 +13,7 @@ return [
      */
     'dist_index_connection' => 'sharding_index',
     'shard_field' => 'shard',
+    'bucket_field' => 'bucket',
     'routes' => 'sharding_routes.php',
     'shards' => 'sharding_shards.php',
     /*
@@ -31,6 +32,14 @@ return [
         'sharding_key_no_index'=>[
             'title' => 'ORM_SHARD_KEY_NO_INDEX',
             'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\Strategy\\UserKeyNoID',
+        ],
+        'virtual_bucket' =>[
+            'title' => 'ORM_SHARD_VIRTUAL_BUCKET',
+            'adapter' => '\\Dvelum\\Orm\\Distributed\\Key\\Strategy\\VirtualBucket',
         ]
-    ]
+    ],
+    'keyToBucket' => [
+        'number' => '\\Dvelum\\Orm\\Distributed\\Key\\Strategy\\VirtualBucket\\IntToBucket',
+        'string' => '\\Dvelum\\Orm\\Distributed\\Key\\Strategy\\VirtualBucket\\StringToBucket',
+    ],
 ];

@@ -71,7 +71,12 @@ class Distributed
 
         foreach ($this->config->get('sharding_types') as $type => $info){
             $adapterClass = $info['adapter'];
-            $this->keyGenerators[$type] = new $adapterClass($this->config);
+            if(isset($info['adapterOptions'])){
+                $options = $info['adapterOptions'];
+            }else{
+                $options = [];
+            }
+            $this->keyGenerators[$type] = new $adapterClass($this->config , $options);
         }
 
         $this->router = Router::factory();
@@ -177,6 +182,16 @@ class Distributed
     public function getShardField() : string
     {
         return $this->config->get('shard_field');
+    }
+
+    /**
+     * Get bucket field for object
+     * @return string
+     * @throws \Exception
+     */
+    public function getBucketField() : string
+    {
+        return $this->config->get('bucket_field');
     }
 
     /**

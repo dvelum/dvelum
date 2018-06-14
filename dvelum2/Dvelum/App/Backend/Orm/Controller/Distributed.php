@@ -184,9 +184,13 @@ class Distributed extends Controller
             return;
         }
 
-        $fields = Orm\Record\Config::factory($object)->getFields();
+        $config = Orm\Record\Config::factory($object);
+        $fields = $config->getFields();
+
         $data = [];
-        foreach ($fields as $item){
+
+        foreach ($fields as $item)
+        {
             /**
              * @var Orm\Record\Config\Field $item
              */
@@ -196,6 +200,14 @@ class Distributed extends Controller
             $data[] = [
                 'id' => $item->getName(),
                 'title' => $item->getName() .' ('. $item->getTitle().')'
+            ];
+        }
+
+        if($config->getShardingType() == Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET){
+            $pk =  $config->getPrimaryKey();
+            $data[] = [
+                'id' => $pk,
+                'title' => $pk .' ('. $config->getField($pk)->getTitle().')'
             ];
         }
         $this->response->success($data);

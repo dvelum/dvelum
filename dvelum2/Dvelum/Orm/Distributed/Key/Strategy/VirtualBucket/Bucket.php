@@ -18,63 +18,70 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Distributed\Key;
+namespace Dvelum\Orm\Distributed\Key\Strategy\VirtualBucket;
 
 
-class Reserved
+class Bucket
 {
-    protected $shard = null;
-    protected $id = null;
     /**
-     * @var null
+     * @var int $id
      */
-    protected $bucket = null;
+    protected $id;
+    /**
+     * @var int $start
+     */
+    protected $start;
+    /**
+     * @var int $end
+     */
+    protected $end;
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getBucket()
-    {
-        return $this->bucket;
-    }
-
-    /**
-     * @param mixed $bucket
-     */
-    public function setBucket($bucket): void
-    {
-        $this->bucket = $bucket;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getShard()
-    {
-        return $this->shard;
-    }
-
-    /**
-     * @param mixed $shard
-     */
-    public function setShard($shard)
-    {
-        $this->shard = $shard;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      */
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
+
+    /**
+     * @return int
+     */
+    public function getStart(): int
+    {
+        return $this->start;
+    }
+
+    /**
+     * @param int $start
+     */
+    public function setStart(int $start): void
+    {
+        $this->start = $start;
+    }
+
+    /**
+     * @return int
+     */
+    public function getEnd(): int
+    {
+        return $this->end;
+    }
+
+    /**
+     * @param int $end
+     */
+    public function setEnd(int $end): void
+    {
+        $this->end = $end;
+    }
+
 }

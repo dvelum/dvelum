@@ -35,24 +35,11 @@ class UserKeyNoID implements GeneratorInterface
      */
     protected $config;
     protected $shardField;
-    /**
-     * @var Router
-     */
-    protected $router;
 
     public function __construct(ConfigInterface $config)
     {
         $this->config = $config;
         $this->shardField =  $config->get('shard_field');
-    }
-    /**
-     * Set routing adapter
-     * @param Router $router
-     * @return mixed
-     */
-    public function setRouter(Router $router) : void
-    {
-        $this->router = $router;
     }
 
     /**
@@ -189,6 +176,10 @@ class UserKeyNoID implements GeneratorInterface
 
         $distributedKey = $objectConfig->getShardingKey();
 
+        if(empty($record->get($distributedKey))){
+            return null;
+        }
+
         $shard = null;
 
         $data = $model->query()->filters([$distributedKey=>$record->get($distributedKey)])->params(['limit'=>1])->fetchRow();
@@ -270,7 +261,7 @@ class UserKeyNoID implements GeneratorInterface
      * @return Reserved|null
      * @throws Exception
      */
-    private function insertOrGetKey(string $objectName , array $keyData) : ?Reserved
+    protected function insertOrGetKey(string $objectName , array $keyData) : ?Reserved
     {
         $objectConfig = Record\Config::factory($objectName);
         $indexObject = $objectConfig->getDistributedIndexObject();

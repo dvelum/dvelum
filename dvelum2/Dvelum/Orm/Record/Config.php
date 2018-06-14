@@ -47,6 +47,7 @@ class Config
     const SHARDING_TYPE_GLOABAL_ID = 'global_id';
     const SHARDING_TYPE_KEY = 'sharding_key';
     const SHARDING_TYPE_KEY_NO_INDEX = 'sharding_key_no_index';
+    const SHARDING_TYPE_VIRTUAL_BUCKET = 'virtual_bucket';
     /**
      * @var Cfg\ConfigInterface $settings
      */
@@ -73,7 +74,7 @@ class Config
      * List of system fields used for sharding
      * @var array
      */
-    static protected $distributedFields;
+     protected $distributedFields;
 
     /**
      * @var string $name
@@ -294,7 +295,7 @@ class Config
 
 
         if((isset($dataLink['distributed']) && $dataLink['distributed']) || $this->isIndexObject()){
-            $dataLink['fields'] = array_merge($dataLink['fields'] , $this->getDistributedFields());
+            $dataLink['fields'] = array_merge($dataLink['fields'], $this->getDistributedFields());
         }
 
         if($this->isIndexObject()){
@@ -1429,22 +1430,30 @@ class Config
      * Get system sharding fields
      * @return array
      */
-    protected function getDistributedFields() : array
+    public function getDistributedFields() : array
     {
-        if(!isset(self::$distributedFields)){
-            self::$distributedFields = Cfg::storage()->get($this->settings->get('configPath') . 'distributed/fields.php')->__toArray();
+        if(!isset($this->distributedFields)){
+            $this->distributedFields = Cfg::storage()->get($this->settings->get('configPath') . 'distributed/fields.php')->__toArray();
         }
+
         $type = $this->getShardingType();
         if($type == self::SHARDING_TYPE_KEY_NO_INDEX || $type===self::SHARDING_TYPE_KEY){
             $key = $this->getShardingKey();
             if(!empty($key)){
-                self::$distributedFields[$key] = $this->getField($key)->getConfig();
+                $this->distributedFields[$key] = $this->getField($key)->getConfig();
                 if($this->isIndexObject()){
-                    self::$distributedFields[$key]['system'] = true;
+                    $this->distributedFields[$key]['system'] = true;
                 }
             }
         }
-        return self::$distributedFields;
+
+        if($type == self::SHARDING_TYPE_VIRTUAL_BUCKET || ($this->isIndexObject() && self::factory($this->getDataObject())->getShardingType() == self::SHARDING_TYPE_VIRTUAL_BUCKET)){
+            $bucketFields = Cfg::storage()->get($this->settings->get('configPath') . 'distributed/bucket_fields.php')->__toArray();
+            foreach ($bucketFields as $k=>$v){
+                $this->distributedFields[$k] = $v;
+            }
+        }
+        return $this->distributedFields;
     }
 
     /**
@@ -1482,7 +1491,31 @@ class Config
                     $key = $this->config->get('sharding_key');
                 }
                 break;
+            case self::SHARDING_TYPE_VIRTUAL_BUCKET:
+                    $key = Orm\Distributed::factory()->getBucketField();
+                break;
         }
+        return $key;
+    }
+
+    /**
+     * Get key used for mapping object to virtual bucket.
+     * Only for Virtual Bucket sharding
+     * @return string|null
+     */
+    public function getBucketMapperKey() :?string
+    {
+        $type = $this->getShardingType();
+
+        if(!$this->isDistributed() || empty($type) || $type!=self::SHARDING_TYPE_VIRTUAL_BUCKET){
+            return null;
+        }
+
+        $key = null;
+        if($this->config->offsetExists('sharding_key')){
+            $key = $this->config->get('sharding_key');
+        }
+
         return $key;
     }
 }

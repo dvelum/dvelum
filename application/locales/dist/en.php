@@ -594,7 +594,8 @@
   'ORM_SHARD_KEY' => 'Sharding by user field with distributed primary key',
   'ORM_SHARD_KEY_NO_INDEX' => 'Sharding by user field without distributed primary key',
   'ORM_SHARDING_KEY' => 'Sharding Key',
+  'ORM_SHARD_VIRTUAL_BUCKET' => 'Sharding by Virtual Buckets  f(key) -> bucket -> shard',
   'SETTINGS'=> 'Settings',
-  'DATA_SAVED' =>  'Data saved successfully'
-
+  'DATA_SAVED' =>  'Data saved successfully',
+  'BUCKET' => 'Virtual Bucket'
 );

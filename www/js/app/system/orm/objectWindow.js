@@ -944,7 +944,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
                         change:function(box, value){
                             var form = this.configForm.getForm();
                             var field = form.findField('sharding_key');
-                            if(value == 'sharding_key' || value == 'sharding_key_no_index'){
+                            if(value == 'sharding_key' || value == 'sharding_key_no_index' || value == 'virtual_bucket'){
                                 field.show();
                                 field.enable();
                             }else{

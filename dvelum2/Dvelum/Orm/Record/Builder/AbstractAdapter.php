@@ -504,14 +504,14 @@ abstract class AbstractAdapter implements BuilderInterface
         $oConfigPath = $this->objectConfig->getConfigPath();
         $configDir  = Cfg::storage()->getWrite() . $oConfigPath;
 
-        $fieldList = Cfg::storage()->get('objects/distributed/fields.php');
+        $objectConfig = Orm\Record\Config::factory($this->objectName);
+        $fieldList = $objectConfig->getDistributedFields();
 
         if(empty($fieldList)){
             $this->errors[] = 'Cannot get distributed fields: ' . 'objects/distributed/fields.php';
             return false;
         }
 
-        $fieldList = $fieldList->__toArray();
         $distribIndexes = $this->objectConfig->getDistributedIndexesConfig();
 
         foreach ($distribIndexes as $conf){

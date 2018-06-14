@@ -10,9 +10,68 @@ class OrmShardingKey extends Console\Action
 {
     public function action(): bool
     {
-        $this->testWrite('complex_shard_no_index');
-       // $this->testLoad();
 
+        $o = Record::factory('shard_vbu');
+        $o->setId(1);
+        $o->setValues([
+            'articul' => '1111111',
+            'maker_id' => 1,
+            'description' => 'text 1',
+            'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
+        ]);
+        $o->save();
+
+        $o = Record::factory('shard_vbu');
+        $o->setId(10);
+        $o->setValues([
+            'articul' => '1111111',
+            'maker_id' => 1,
+            'description' => 'text 10',
+            'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
+        ]);
+        $o->save();
+
+        $o = Record::factory('shard_vbu');
+        $o->setId(21);
+        $o->setValues([
+            'articul' => '1111111',
+            'maker_id' => 1,
+            'description' => 'text 21',
+            'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
+        ]);
+        $o->save();
+        $o = Record::factory('shard_vbu');
+        $o->setId(22);
+        $o->setValues([
+            'articul' => '1111111',
+            'maker_id' => 1,
+            'description' => 'text 22',
+            'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
+        ]);
+        $o->save();
+
+        /*
+        $file =  './xaa';
+        $struc = [
+            'id' =>0,
+            'articul'=>1,
+            'maker_id'=>2,
+            'description'=>4,
+            'uuid'=>5
+        ];
+        $file = fopen($file, 'r');
+        while($row = fgetcsv($file)){
+            $o = Record::factory('shard_vbu');
+            $o->setId($row[$struc['id']]);
+            $o->setValues([
+               'articul' => $row[$struc['articul']],
+               'maker_id' => $row[$struc['maker_id']],
+               'description' => $row[$struc['description']],
+               'uuid' => $row[$struc['uuid']],
+            ]);
+            die();
+        }
+        */
         return true;
     }
 

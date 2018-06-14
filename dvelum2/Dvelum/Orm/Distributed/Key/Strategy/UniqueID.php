@@ -35,7 +35,6 @@ class UniqueID implements GeneratorInterface
     protected $config;
     protected $shardField;
 
-
     public function __construct(ConfigInterface $config)
     {
         $this->config = $config;

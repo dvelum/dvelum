@@ -92,6 +92,9 @@ class Store extends \Dvelum\Orm\Record\Store
         $shardingField =  $this->sharding->getShardField();
 
         $object->set($shardingField, $insert->getShard());
+        if($object->getConfig()->getShardingType() == Orm\Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET){
+            $object->setValues($this->sharding->getBucketField(), $insert->getBucket());
+        }
 
         $data[$shardingField] = $insert->getShard();
         $data[$object->getConfig()->getPrimaryKey()] = $insertId;
