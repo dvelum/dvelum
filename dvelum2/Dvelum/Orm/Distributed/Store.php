@@ -96,6 +96,9 @@ class Store extends \Dvelum\Orm\Record\Store
             $bucketField = $this->sharding->getBucketField();
             $object->set($bucketField, $insert->getBucket());
             $data[$bucketField] = $insert->getBucket();
+            if(!empty($object->getInsertId())){
+                $insertId = $object->getInsertId();
+            }
         }
 
         $data[$shardingField] = $insert->getShard();
