@@ -60,10 +60,5 @@ return [
     'testJob'=>array(
         'type' => 'task',
         'adapter' => 'Cronjob_Test'
-    ),
-        // Rebuild database
-    'testshards'=>[
-        'type' => 'action',
-        'adapter' => '\\Dvelum\\App\\Console\\Orm\\Test\\OrmShardingKey'
-    ],
+    )
 ];

@@ -269,6 +269,7 @@ class Config
             'fulltext'=>false,
             'unique'=>true,
             'primary'=>true,
+            'system'=> true,
              // distributed fields does not use auto increment index
             'db_auto_increment'=>!$dataLink['distributed'],
             'is_search' =>true,
@@ -296,6 +297,7 @@ class Config
 
         if((isset($dataLink['distributed']) && $dataLink['distributed']) || $this->isIndexObject()){
             $dataLink['fields'] = array_merge($dataLink['fields'], $this->getDistributedFields());
+
         }
 
         if($this->isIndexObject()){
@@ -378,20 +380,16 @@ class Config
      */
     public function getIndexesConfig($includeSystem = true) : array
     {
-        if($this->config->offsetExists('indexes'))
-        {
-            if($includeSystem)
-                return $this->config->get('indexes');
-
-            $indexes = $this->config->get('indexes');
-            if(isset($indexes['PRIMARY']))
-                unset($indexes['PRIMARY']);
-            return $indexes;
+        $list = [];
+        if($this->config->offsetExists('indexes')) {
+            foreach ($this->config->get('indexes') as $k=>$v){
+                if(!$includeSystem && isset($v['system']) && $v['system']){
+                    continue;
+                }
+                $list[$k] = $v;
+            }
         }
-        else
-        {
-            return [];
-        }
+        return $list;
     }
 
     /**
@@ -819,7 +817,8 @@ class Config
                     'primary'=>false,
                     'db_auto_increment'=> false,
                     'is_search' =>true,
-                    'lazyLang'=>false
+                    'lazyLang'=>false,
+                    'system'=>true
                 ];
             }
             $list[$fieldName]['system'] = true;

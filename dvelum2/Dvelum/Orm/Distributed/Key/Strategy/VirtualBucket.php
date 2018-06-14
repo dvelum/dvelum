@@ -41,21 +41,42 @@ class VirtualBucket extends UserKeyNoID
     /**
      * @var MapperInterface $numericMapper
      */
-    protected $numericMapper;
+    protected $numericMapper = null;
     /**
      * @var MapperInterface $stringMapper
      */
-    protected $stringMapper;
-
+    protected $stringMapper = null;
 
     public function __construct(ConfigInterface $config)
     {
         parent::__construct($config);
         $this->bucketField = $config->get('bucket_field');
-        $numericAdapter = $config->get('keyToBucket')['number'];
-        $stringAdapter = $config->get('keyToBucket')['string'];
-        $this->numericMapper = new $numericAdapter();
-        $this->stringMapper = new $stringAdapter();
+    }
+
+    /**
+     * @return MapperInterface
+     * @throws \Exception
+     */
+    public function getNumericMapper():MapperInterface
+    {
+        if(empty($this->numericMapper)){
+            $numericAdapter = $this->config->get('keyToBucket')['number'];
+            $this->numericMapper =   new $numericAdapter();
+        }
+        return $this->numericMapper;
+    }
+
+    /**
+     * @return MapperInterface
+     * @throws \Exception
+     */
+    public function getStringMapper():MapperInterface
+    {
+        if(empty($this->stringMapper)){
+            $numericAdapter = $this->config->get('keyToBucket')['string'];
+            $this->stringMapper =   new $numericAdapter();
+        }
+        return $this->stringMapper;
     }
 
     /**
@@ -73,10 +94,11 @@ class VirtualBucket extends UserKeyNoID
 
         $bucket = null;
 
+
         if ($fieldObject->isNumeric()) {
-            $bucket = $this->numericMapper->keyToBucket($keyData[$keyField]);
+            $bucket = $this->getNumericMapper()->keyToBucket($keyData[$keyField]);
         } elseif ($fieldObject->isText()) {
-            $bucket = $this->stringMapper->keyToBucket($keyData[$keyField]);
+            $bucket = $this->getStringMapper()->keyToBucket($keyData[$keyField]);
         }
 
         if (empty($bucket)) {
@@ -85,6 +107,7 @@ class VirtualBucket extends UserKeyNoID
 
         $keyData[$this->bucketField] = $bucket->getId();
 
+        unset($keyData[$config->getPrimaryKey()]);
         $result = parent::reserveKey($objectName, $keyData);
 
         if (!empty($result)) {

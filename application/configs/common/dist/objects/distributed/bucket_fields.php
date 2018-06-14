@@ -7,7 +7,7 @@ return [
         'db_isNull' => false,
         'db_unsigned'=>true,
         'db_auto_increment'=>false,
-        'unique'=>'PRIMARY',
+        'unique'=>false,
         'is_search' =>true,
         'lazyLang'=>true
     ]

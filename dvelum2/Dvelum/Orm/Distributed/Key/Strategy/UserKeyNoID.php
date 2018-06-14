@@ -94,7 +94,11 @@ class UserKeyNoID implements GeneratorInterface
             }
 
             try{
-                $indexData[$fieldName] = $object->get($fieldName);
+                if($fieldName == $primary && $object->getInsertId()){
+                    $indexData[$fieldName] = $object->getInsertId();
+                }else{
+                    $indexData[$fieldName] = $object->get($fieldName);
+                }
             }catch (Exception $e){
                 $model->logError('Sharding Invalid index structure for  '.$objectConfig->getName().' '.$e->getMessage());
                 return null;
