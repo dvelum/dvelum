@@ -35,6 +35,7 @@ class UserKeyNoID implements GeneratorInterface
      */
     protected $config;
     protected $shardField;
+    protected $exceptIndexPrimaryKey = true;
 
     public function __construct(ConfigInterface $config)
     {
@@ -88,7 +89,7 @@ class UserKeyNoID implements GeneratorInterface
         foreach ($fieldList as $field){
             $fieldName = $field->getName();
 
-            if($fieldName == $primary || $fieldName == $this->shardField){
+            if(($this->exceptIndexPrimaryKey && $fieldName == $primary) || $fieldName == $this->shardField){
                 continue;
             }
 

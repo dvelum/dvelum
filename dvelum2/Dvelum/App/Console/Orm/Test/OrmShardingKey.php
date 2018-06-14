@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Console\Orm\Test;
 
 use Dvelum\App\Console;
+use Dvelum\Orm\Exception;
 use Dvelum\Orm\Record;
 
 class OrmShardingKey extends Console\Action
@@ -11,44 +12,67 @@ class OrmShardingKey extends Console\Action
     public function action(): bool
     {
 
-        $o = Record::factory('shard_vbu');
-        $o->setId(1);
-        $o->setValues([
-            'articul' => '1111111',
-            'maker_id' => 1,
-            'description' => 'text 1',
-            'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
-        ]);
-        $o->save();
+        try{
+            $o = Record::factory('shard_vbu');
+            $o->setInsertId(1);
+            $o->setValues([
+                'articul' => '1111111',
+                'maker_id' => 1,
+                'description' => 'text 1',
+                'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
+            ]);
+            if(!$o->save()){
+                throw  new \Exception('Cant save');
+            }
 
-        $o = Record::factory('shard_vbu');
-        $o->setId(10);
-        $o->setValues([
-            'articul' => '1111111',
-            'maker_id' => 1,
-            'description' => 'text 10',
-            'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
-        ]);
-        $o->save();
+            $o = Record::factory('shard_vbu');
+            $o->setInsertId(10);
+            $o->setValues([
+                'articul' => '1111111',
+                'maker_id' => 1,
+                'description' => 'text 10',
+                'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
+            ]);
+            if(!$o->save()){
+                throw  new \Exception('Cant save');
+            }
 
-        $o = Record::factory('shard_vbu');
-        $o->setId(21);
-        $o->setValues([
-            'articul' => '1111111',
-            'maker_id' => 1,
-            'description' => 'text 21',
-            'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
-        ]);
-        $o->save();
-        $o = Record::factory('shard_vbu');
-        $o->setId(22);
-        $o->setValues([
-            'articul' => '1111111',
-            'maker_id' => 1,
-            'description' => 'text 22',
-            'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
-        ]);
-        $o->save();
+            $o = Record::factory('shard_vbu');
+            $o->setInsertId(21);
+            $o->setValues([
+                'articul' => '1111111',
+                'maker_id' => 1,
+                'description' => 'text 21',
+                'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
+            ]);
+            if(!$o->save()){
+                throw  new \Exception('Cant save');
+            }
+
+            $o = Record::factory('shard_vbu');
+            $o->setInsertId(22);
+            $o->setValues([
+                'articul' => '1111111',
+                'maker_id' => 1,
+                'description' => 'text 22',
+                'uuid' => '70dbb1e9-9f71-11e7-9b70-005056813ef5',
+            ]);
+            if(!$o->save()){
+                throw  new \Exception('Cant save');
+            }
+            $id = $o->getId();
+
+            $o = Record::factory('shard_vbu',$id);
+            $o->set('description' ,' updated 22');
+            if(!$o->save()){
+                throw  new \Exception('Cant save');
+            }
+
+        }catch (Exception $e){
+
+            echo $e->getMessage();
+        }
+
 
         /*
         $file =  './xaa';

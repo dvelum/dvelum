@@ -31,7 +31,7 @@ class IntToBucket implements MapperInterface
     public function keyToBucket($key) : Bucket
     {
         $key = (int) $key;
-        $index  = ceil($key / IntToBucket::BUCKET_SIZE);
+        $index  = (int)($key / IntToBucket::BUCKET_SIZE);
         $id = $index + 1;
         $start = $index * IntToBucket::BUCKET_SIZE;
         $end = $start + IntToBucket::BUCKET_SIZE-1;

@@ -36,6 +36,7 @@ class VirtualBucket extends UserKeyNoID
     protected $shardField;
     protected $options;
     protected $bucketField;
+    protected $exceptIndexPrimaryKey = false;
 
     /**
      * @var MapperInterface $numericMapper
@@ -82,12 +83,12 @@ class VirtualBucket extends UserKeyNoID
             return null;
         }
 
-        $keyData[$this->bucketField] = $bucket;
+        $keyData[$this->bucketField] = $bucket->getId();
 
         $result = parent::reserveKey($objectName, $keyData);
 
         if (!empty($result)) {
-            $result->setBucket($bucket);
+            $result->setBucket($bucket->getId());
         }
         return $result;
     }

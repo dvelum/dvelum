@@ -856,7 +856,8 @@ class Config
             $distributedKey = $this->getShardingKey();
             if(!empty($distributedKey) && $distributedKey!== $primaryKey){
                 $unique = false;
-                if($this->getShardingType() === self::SHARDING_TYPE_KEY_NO_INDEX){
+                $type = $this->getShardingType();
+                if($type === self::SHARDING_TYPE_KEY_NO_INDEX || $type === self::SHARDING_TYPE_VIRTUAL_BUCKET){
                     $unique = true;
                 }
                 $list[$distributedKey] = ['field'=>$distributedKey,'is_system'=>true,'unique'=>$unique];
