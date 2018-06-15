@@ -203,13 +203,12 @@ class Distributed extends Controller
             ];
         }
 
-        if($config->getShardingType() == Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET){
-            $pk =  $config->getPrimaryKey();
-            $data[] = [
-                'id' => $pk,
-                'title' => $pk .' ('. $config->getField($pk)->getTitle().')'
-            ];
-        }
+        $pk =  $config->getPrimaryKey();
+        $data[] = [
+            'id' => $pk,
+            'title' => $pk .' ('. $config->getField($pk)->getTitle().')'
+        ];
+
         $this->response->success($data);
     }
 
