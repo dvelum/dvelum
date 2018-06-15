@@ -22,7 +22,7 @@ namespace Dvelum\Orm\Distributed\Key\Strategy\VirtualBucket;
 
 class IntToBucket implements MapperInterface
 {
-    private const BUCKET_SIZE = 10;
+    private const BUCKET_SIZE = 2000;
     /**
      * Map key to bucket
      * @param mixed $key

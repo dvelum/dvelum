@@ -297,7 +297,6 @@ class Config
 
         if((isset($dataLink['distributed']) && $dataLink['distributed']) || $this->isIndexObject()){
             $dataLink['fields'] = array_merge($dataLink['fields'], $this->getDistributedFields());
-
         }
 
         if($this->isIndexObject()){
