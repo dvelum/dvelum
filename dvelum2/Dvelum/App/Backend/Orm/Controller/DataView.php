@@ -242,12 +242,14 @@ class DataView extends ApiController
 
         $tabs[] = $tab;
         $related = [];
-        $objectFieldList = array_keys($objectConfig->getFieldsConfig(false));
+
+        $objectFieldList = array_keys($objectConfig->getFieldsConfig($objectConfig->isDistributed()));
 
         $readOnly = $objectConfig->isReadOnly();
 
-        foreach ($objectFieldList as $field) {
-            if (is_string($field) && $field == 'id') {
+        foreach ($objectFieldList as $field)
+        {
+            if (is_string($field) && $field == 'id' && !$objectConfig->isDistributed()) {
                 continue;
             }
 

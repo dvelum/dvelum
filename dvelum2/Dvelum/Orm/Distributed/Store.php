@@ -102,7 +102,9 @@ class Store extends \Dvelum\Orm\Record\Store
         }
 
         $data[$shardingField] = $insert->getShard();
-        $data[$object->getConfig()->getPrimaryKey()] = $insertId;
+        if(!empty($insertId)){
+            $data[$object->getConfig()->getPrimaryKey()] = $insertId;
+        }
 
         $data = $object->serializeLinks($data);
         $db = $this->getDbConnection($object);
