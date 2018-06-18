@@ -234,13 +234,14 @@ class UserKeyNoID implements GeneratorInterface
     /**
      * Change shard value for user key in index table
      * @param string $objectName
-     * @param string $key
+     * @param mixed $shardingKeyValue
      * @param string $newShard
      * @return bool
      */
-    public function changeShard(string $objectName, string $key, string $newShard) : bool
+    public function changeShard(string $objectName, $shardingKeyValue, string $newShard) : bool
     {
         $objectConfig = Record\Config::factory($objectName);
+        $shardingKey = $objectConfig->getShardingKey();
         $indexObject = $objectConfig->getDistributedIndexObject();
         $model = Model::factory($indexObject);
         $db = $model->getDbConnection();
@@ -251,7 +252,7 @@ class UserKeyNoID implements GeneratorInterface
                 [
                     $this->shardField => $newShard
                 ],
-                $db->quoteIdentifier($key).' = '.$db->quoteIdentifier($newShard)
+                $db->quoteIdentifier($shardingKey).' = '.$db->quote($shardingKeyValue)
             );
             return true;
         }catch (Exception $e){
