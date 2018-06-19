@@ -578,7 +578,27 @@ Ext.define('app.crud.orm.FieldWindow', {
 						 	boxLabel: appLang.FILED_STD,
 							name: 'type',
 						 	inputValue: '',
-						 	checked: true
+						 	checked: true,
+                            listeners:{
+								 'change':{
+									 fn:function( field, newValue, oldValue, options ){
+										 if(newValue){
+                                             this.processFields(
+                                                 [
+                                                     this.fieldLinkType,
+                                                     this.fieldObject
+                                                 ],[
+                                                     this.fieldType
+                                                 ]
+                                             );
+
+                                             this.dbTypeSelected(this.fieldType.getValue());
+
+                                         }
+									 },
+                                     scope:this
+								 }
+						 	}
 						 },
 						{
 							boxLabel: appLang.LINK,
