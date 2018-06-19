@@ -203,6 +203,29 @@ class Distributed
     }
 
     /**
+     * Get random shard except shards in $execpt
+     * @param array $except
+     * @return null|string
+     */
+    public function randomShardExcept(array $except) : ?string
+    {
+        $shards = $this->shards;
+
+        foreach($except as $shard) {
+            unset($shards[$shard]);
+        }
+        if (empty($shards)) {
+            return null;
+        }
+
+        $weightMap = [];
+        foreach ($shards as $index=>$data){
+            $weightMap =  array_merge(array_fill(0, $data['weight'], (string) $index), $weightMap);
+        }
+        return $weightMap[array_rand($weightMap)];
+    }
+
+    /**
      * Get key generator for distributed ORM object
      * @param string $objectName
      * @return GeneratorInterface
