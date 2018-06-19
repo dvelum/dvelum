@@ -716,7 +716,7 @@ Ext.define('app.crud.orm.ObjectWindow', {
 					name:'disable_keys',
 					fieldLabel:appLang.DISABLE_KEYS,
 					value:0,
-					hidden:true,
+					hidden:false,
 					listeners:{
 						render:{fn:this.initTooltip,scope:this}
 					}
