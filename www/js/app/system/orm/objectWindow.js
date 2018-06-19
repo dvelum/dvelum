@@ -699,10 +699,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 									this.checkFieldsValidation(newValue);
 								}
 
-								if(!app.crud.orm.foreignKeys){
-									return;
-								}
-
 								var keysField = this.configForm.getForm().findField('disable_keys');
 
 								if(newValue == 'InnoDB'){
