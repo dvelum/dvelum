@@ -354,9 +354,9 @@ class Model
      * Get record by id
      * @param integer $id
      * @param array|string $fields — optional — the list of fields to retrieve
-     * @return array|false
+     * @return array
      */
-    public function getItem($id, $fields = ['*'])
+    public function getItem($id, $fields = ['*']) : array
     {
         $primaryKey = $this->getPrimaryKey();
         $query = $this->query()
@@ -368,7 +368,7 @@ class Model
         $result = $query->fetchRow();
 
         if(empty($result)){
-            $result = false;
+            $result = [];
         }
         return $result;
     }

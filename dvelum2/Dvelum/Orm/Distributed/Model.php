@@ -37,13 +37,13 @@ class Model extends Orm\Model
      * @param array|string $fields — optional — the list of fields to retrieve
      * @return array|false
      */
-    public function getItem($id, $fields = ['*'])
+    public function getItem($id, $fields = ['*']) : array
     {
         $sharding = Orm\Distributed::factory();
         $shard = $sharding->findObjectShard($this->getObjectName(), $id);
 
         if(empty($shard)){
-            return false;
+            return [];
         }
 
         $db = $this->getDbShardConnection($shard);
@@ -57,7 +57,7 @@ class Model extends Orm\Model
         $result = $query->fetchRow();;
 
         if(empty($result)){
-            $result = false;
+            $result = [];
         }
         return $result;
     }
