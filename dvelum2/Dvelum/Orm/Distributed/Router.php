@@ -20,7 +20,9 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Distributed;
 
+use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Orm\Distributed;
 use Dvelum\Orm\RecordInterface;
 use Dvelum\Service;
 
@@ -40,7 +42,7 @@ class Router
      */
     protected $objectToRoute;
 
-    static public function factory() : self
+    static public function factory(): self
     {
         return Service::get('ShardingRouter');
     }
@@ -53,14 +55,13 @@ class Router
 
     protected function init()
     {
-        foreach ($this->config as $route)
-        {
-            if(!$route['enabled']){
+        foreach ($this->config as $route) {
+            if (!$route['enabled']) {
                 continue;
             }
             $this->routes[$route['id']] = $route;
-            if(isset($route['objects']) && !empty($route['objects'])){
-                foreach ($route['objects'] as $object){
+            if (isset($route['objects']) && !empty($route['objects'])) {
+                foreach ($route['objects'] as $object) {
                     $this->objectToRoute[$object] = $route['id'];
                 }
             }
@@ -72,12 +73,12 @@ class Router
      * @param  string $objectName
      * @return bool
      */
-    public function hasRoutes(string $objectName) : bool
+    public function hasRoutes(string $objectName): bool
     {
-        if(!count($this->routes)){
+        if (!count($this->routes)) {
             return false;
         }
-        if(isset($this->objectToRoute[$objectName]) && !empty($this->objectToRoute[$objectName])){
+        if (isset($this->objectToRoute[$objectName]) && !empty($this->objectToRoute[$objectName])) {
             return true;
         }
 
@@ -89,12 +90,19 @@ class Router
      * @param RecordInterface $record
      * @return null|string
      */
-    public function findShard(RecordInterface $record) : ?string
+    public function findShard(RecordInterface $record): ?string
     {
         $objectName = $record->getName();
-        if(isset($this->objectToRoute[$objectName])){
-            return $this->objectToRoute[$objectName];
-        }else{
+        if (isset($this->objectToRoute[$objectName])) {
+            $config = $this->routes[$this->objectToRoute[$objectName]];
+            $adapterClass = $config['adapter'];
+            /**
+             * @var \Dvelum\Orm\Distributed\Router\RouteInterface $adapter
+             */
+            $adapterConfig = Config\Factory::create($config['config'][$objectName], 'ROUTER_' . $config['id'] .'_'. $objectName);
+            $adapter = new $adapterClass(Distributed::factory(), $adapterConfig);
+            return $adapter->getShard($record);
+        } else {
             return null;
         }
     }

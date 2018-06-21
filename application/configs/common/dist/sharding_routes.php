@@ -1,9 +1,9 @@
 <?php
 return [];
-
+/*
 return [
     [
-        'id' => '',
+        'id' => 'with_parent_route',
         'title' => '',
         'objects' => [],
         'shard_groups' => [],
@@ -22,3 +22,4 @@ return [
         'enabled' => false
     ]
 ];
+*/
