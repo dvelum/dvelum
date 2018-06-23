@@ -97,7 +97,7 @@ class VirtualBucket extends UserKeyNoID
 
         if ($fieldObject->isNumeric()) {
             $bucket = $this->getNumericMapper()->keyToBucket($keyData[$keyField]);
-        } elseif ($fieldObject->isText()) {
+        } elseif ($fieldObject->isText(true)) {
             $bucket = $this->getStringMapper()->keyToBucket($keyData[$keyField]);
         }
 

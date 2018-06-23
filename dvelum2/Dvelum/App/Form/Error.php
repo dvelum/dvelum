@@ -15,7 +15,7 @@ class Error
         $this->code = $code;
     }
 
-    public function getField() : string
+    public function getField() : ?string
     {
         return $this->field;
     }

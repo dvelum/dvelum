@@ -251,15 +251,29 @@ class Config
             $dataLink['distributed'] = false;
 
 
-        if($this->isDistributed() && $this->getShardingType()!==self::SHARDING_TYPE_KEY_NO_INDEX){
-            $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
-                $this->settings->get('configPath').'distributed/pk_field.php'
-            )->__toArray();
-        }else{
-            $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
-                $this->settings->get('configPath').'system/pk_field.php'
-            )->__toArray();
+        $keyConfig = 'system/pk_field.php';
+
+        if($this->isDistributed()){
+            $shardingType = $this->getShardingType();
+            switch ($shardingType)
+            {
+                case self::SHARDING_TYPE_KEY_NO_INDEX:
+                    break;
+                case self::SHARDING_TYPE_VIRTUAL_BUCKET:
+                    // not using auto increment
+                    if($this->getBucketMapperKey() == $pKeyName){
+                        $keyConfig = 'distributed/pk_field.php';
+                    }
+                    break;
+                default:
+                    // not using autoincrement
+                    $keyConfig = 'distributed/pk_field.php';
+                    break;
+            }
         }
+        $dataLink['fields'][$pKeyName] = Cfg::storage()->get(
+            $this->settings->get('configPath') . $keyConfig
+        )->__toArray();
 
         /*
          * System index init
@@ -270,8 +284,8 @@ class Config
             'unique'=>true,
             'primary'=>true,
             'system'=> true,
-             // distributed fields does not use auto increment index
-            'db_auto_increment'=>!$dataLink['distributed'],
+             // distributed objects does not use auto increment index
+            'db_auto_increment'=>$dataLink['fields'][$pKeyName]['db_auto_increment'],
             'is_search' =>true,
             'lazyLang'=>true
         );
@@ -1390,6 +1404,24 @@ class Config
             return true;
         }else{
             return false;
+        }
+    }
+
+    /**
+     * Chek if object loader requires Shard
+     * @return bool
+     */
+    public function isShardRequired() : bool
+    {
+        if(!$this->isDistributed()){
+            return false;
+        }
+        switch ($this->getShardingType()){
+            case self::SHARDING_TYPE_VIRTUAL_BUCKET:
+            case self::SHARDING_TYPE_KEY_NO_INDEX:
+                return true;
+            default :
+                return false;
         }
     }
     /**

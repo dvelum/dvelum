@@ -192,12 +192,12 @@ class Model extends Orm\Model
 
     /**
      * Create Orm\Model\Query
-     * @return Orm\Model\Query
+     * @return Orm\Distributed\Model\Query
      * @throws Exception
      */
     public function query(): Orm\Model\Query
     {
-        return new Query($this);
+        return new Model\Query($this);
     }
 
     /**
@@ -243,5 +243,14 @@ class Model extends Orm\Model
         ];
 
         return !(boolean) $model->query()->fields(['count' => 'COUNT(*)'])->filters($filters)->fetchOne();
+    }
+
+    /**
+     * Get insert object
+     * @return Orm\Distributed\Model\Insert
+     */
+    public function insert() : Orm\Model\Insert
+    {
+        return new Orm\Model\Insert($this);
     }
 }

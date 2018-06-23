@@ -361,7 +361,6 @@ class Controller extends App\Backend\Controller
      */
     public function editAction()
     {
-
         $id = $this->request->post('id', 'integer', false);
         if (!$id) {
             $this->createAction();
@@ -418,6 +417,7 @@ class Controller extends App\Backend\Controller
             return;
         }
         $id = $this->request->post('id', 'integer', false);
+        $shard = $this->request->post('shard', 'string', null);
 
         if (!$id) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -428,7 +428,7 @@ class Controller extends App\Backend\Controller
             /**
              * @var Orm\RecordInterface $object
              */
-            $object = Orm\Record::factory($this->objectName, $id);
+            $object = Orm\Record::factory($this->objectName, $id, $shard);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
@@ -473,7 +473,8 @@ class Controller extends App\Backend\Controller
      */
     public function insertObject(RecordInterface $object)
     {
-        $isRevControl = $object->getConfig()->isRevControl();
+        $objectConfig = $object->getConfig();
+        $isRevControl = $objectConfig->isRevControl();
 
         if($isRevControl) {
             $author = $object->get('author_id');
@@ -486,7 +487,6 @@ class Controller extends App\Backend\Controller
                 }
             }
         }
-
         $objectModel = Model::factory($object->getName());
         $db = $objectModel->getDbConnection();
         $db->beginTransaction();
@@ -518,6 +518,9 @@ class Controller extends App\Backend\Controller
             $result = ['id' => $recId];
         }
 
+        if($objectConfig->isShardRequired()){
+            $result['shard'] = $object->getShard();
+        }
 
         $eventData = new \stdClass();
         $eventData->object = $object;
@@ -540,7 +543,8 @@ class Controller extends App\Backend\Controller
      */
     public function updateObject(RecordInterface $object)
     {
-        $isRevControl = $object->getConfig()->isRevControl();
+        $objectConfig = $object->getConfig();
+        $isRevControl = $objectConfig->isRevControl();
 
         if($isRevControl) {
             $author = $object->get('author_id');
@@ -586,6 +590,10 @@ class Controller extends App\Backend\Controller
                 return;
             }
             $result = ['id' => $object->getId()];
+        }
+
+        if($objectConfig->isShardRequired()){
+            $result['shard'] = $object->getShard();
         }
 
         $eventData = new \stdClass();
@@ -691,6 +699,13 @@ class Controller extends App\Backend\Controller
         $id = $this->request->post('id', 'int', false);
         $objectName = $this->getObjectName();
         $objectConfig = Orm\Record\Config::factory($objectName);
+        $shard = false;
+        if($objectConfig->isShardRequired()){
+            $shard = $this->request->post('shard', 'string', '');
+            if(empty($shard)){
+                return [];
+            }
+        }
 
         if (!$id) {
             return [];
@@ -700,7 +715,7 @@ class Controller extends App\Backend\Controller
             /**
              * @var $obj Orm\Record
              */
-            $obj = Orm\Record::factory($objectName, $id);
+            $obj = Orm\Record::factory($objectName, $id, $shard);
         } catch (\Exception $e) {
             Model::factory($objectName)->logError($e->getMessage());
             return [];

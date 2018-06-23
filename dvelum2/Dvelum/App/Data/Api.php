@@ -37,7 +37,7 @@ class Api
 
         $model = Model::factory($object);
 
-        if($ormObjectConfig->isDistributed()){
+        if($ormObjectConfig->isDistributed() && empty($this->apiRequest->getShard())){
             $model = Model::factory($ormObjectConfig->getDistributedIndexObject());
         }
 
@@ -45,6 +45,10 @@ class Api
             ->params($this->apiRequest->getPagination())
             ->filters($this->apiRequest->getFilters())
             ->search($this->apiRequest->getQuery());
+
+        if($ormObjectConfig->isDistributed() && !empty($this->apiRequest->getShard())){
+            $this->dataQuery->setShard($this->apiRequest->getShard());
+         }
     }
 
     public function getList()
@@ -57,7 +61,7 @@ class Api
 
         $object = $this->apiRequest->getObjectName();
         $ormObjectConfig = Orm\Record\Config::factory($object);
-        if($ormObjectConfig->isDistributed()){
+        if($ormObjectConfig->isDistributed() && empty($this->apiRequest->getShard())){
             $indexConfig = Orm\Record\Config::factory($ormObjectConfig->getDistributedIndexObject());
             $fields = array_keys($indexConfig->getFields());
         }

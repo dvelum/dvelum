@@ -35,7 +35,7 @@ class Orm extends AbstractAdapter
             $cache = $this->config->get('cache');
         }
 
-        $orm = new Dvelum\Orm();
+        $orm = new Dvelum\Orm\Service();
 
         $orm->init(
             Config::storage()->get('orm.php'),

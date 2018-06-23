@@ -599,5 +599,8 @@
   'ORM_SHARD_VIRTUAL_BUCKET' => 'Шардирование по Virtual Bucket  f(ключ) -> bucket -> shard',
   'SETTINGS' => 'Настройки',
   'DATA_SAVED' =>  'Данные успешно сохранены',
-  'BUCKET' => 'Virtual Bucket'
+  'BUCKET' => 'Virtual Bucket',
+  'FIND_BUCKET'  => 'Найти Bucket',
+  'SHARD_DATA_EDITOR' => 'Редактор данных шарда',
+  'OPEN_EDITOR' => 'Открыть редактор'
 ); 

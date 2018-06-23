@@ -7,7 +7,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
     extend:'Ext.window.Window',
     objectName:'',
     controllerUrl:'',
-    width:800,
+    width:900,
     height:600,
     maximizable:true,
     readOnly:false,
@@ -25,6 +25,8 @@ Ext.define('app.crud.orm.DataViewWindow', {
 
     modal:true,
     relatedGrids:null,
+    shard:0,
+    shardField:null,
 
     initComponent:function(){
 
@@ -54,7 +56,8 @@ Ext.define('app.crud.orm.DataViewWindow', {
             url:this.controllerUrl + 'viewconfig',
             method: 'post',
             params:{
-                d_object:this.objectName
+                d_object:this.objectName,
+                shard:this.shard
             },
             scope:this,
             success: function(response, request) {
@@ -74,6 +77,9 @@ Ext.define('app.crud.orm.DataViewWindow', {
     },
     configurate:function(data){
 
+        this.setTitle(data.title);
+        this.shardField = data.shardField;
+
         this.dataStore =  Ext.create('Ext.data.Store', {
             fields:data.fields,
             remoteSort:true,
@@ -85,7 +91,8 @@ Ext.define('app.crud.orm.DataViewWindow', {
                 sortParam:"pager[sort]",
                 startParam:"pager[start]",
                 extraParams:{
-                    d_object:this.objectName
+                    d_object:this.objectName,
+                    shard:this.shard
                 },
                 reader: {
                     type:'json',
@@ -98,10 +105,9 @@ Ext.define('app.crud.orm.DataViewWindow', {
             autoLoad: true
         });
 
-
         var cols = [];
 
-        if(!this.selectMode)
+        if(!this.selectMode && data.canEditObject)
         {
             cols.push({
                 xtype:'actioncolumn',
@@ -114,7 +120,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
                         tooltip:appLang.EDIT,
                         handler:function(grid, rowIndex, colIndex){
                             var rec = grid.getStore().getAt(rowIndex);
-                            this.showEdit(rec.get('id'));
+                            this.showEdit(rec);
                         }
                     }
                 ]
@@ -125,7 +131,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
             cols.push(item);
         });
 
-        if(!this.selectMode)
+        if(!this.selectMode && data.canEditObject)
         {
             cols.push(
                 {
@@ -139,7 +145,11 @@ Ext.define('app.crud.orm.DataViewWindow', {
                             tooltip:appLang.DELETE,
                             handler:function(grid, rowIndex, colIndex){
                                 var rec = grid.getStore().getAt(rowIndex);
-                                this.deleteItem(rec.get('id'));
+                                var shard = null;
+                                if (this.shardField) {
+                                    shard = rec.get(me.shardField);
+                                }
+                                this.deleteItem(rec.get('id') , shard);
                             }
                         }
                     ]
@@ -148,7 +158,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
 
         var tBar = [];
 
-        if(!this.selectMode && !this.readOnly)
+        if(!this.selectMode && !this.readOnly && !this.shard)
         {
             tBar.push({
                 text:appLang.ADD_ITEM,
@@ -162,6 +172,59 @@ Ext.define('app.crud.orm.DataViewWindow', {
             isLocal:false,
             fieldNames:data.searchFields
         });
+        var me = this;
+
+        this.shardSelector = Ext.create('Ext.form.field.ComboBox',{
+            queryMode:'local',
+            displayField:'id',
+            forceSelection:true,
+            valueField:'id',
+            store: Ext.create('Ext.data.Store',{
+                model:'app.comboStringModel',
+                autoLoad:true,
+                proxy: {
+                    type: 'ajax',
+                    url:this.controllerUrl + 'shardList',
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data',
+                        idProperty: 'id'
+                    }
+                },
+                remoteSort:false,
+                sorters: [{
+                    property : 'id',
+                    direction: 'ASC'
+                }]
+            })
+        });
+        if(data.selectShard){
+            tBar.push(
+                '-',
+                appLang.SHARD_DATA_EDITOR +':',
+                this.shardSelector,
+                {
+                    xtype:'button',
+                    text:appLang.OPEN_EDITOR,
+                    iconCls:'gridIcon',
+                    handler:function(){
+                      this.showShard(this.shardSelector.getValue());
+                    },
+                    scope:this
+                },
+            )
+        }
+        if(data.findBucket){
+            tBar.push('-',{
+                xtype:'button',
+                iconCls:'searchIcon',
+                text:appLang.FIND_BUCKET,
+                handler:function(){
+                    me.showFindBucket(data.findBucket);
+                },
+                scope:this
+            });
+        }
 
         tBar.push('->', this.searchField);
 
@@ -183,7 +246,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
             })
         });
 
-        if(this.selectMode){
+        if(this.selectMode || !data.canEditObject){
             this.dataGrid.on('celldblclick',function(table, td, cellIndex, record, tr, rowIndex, e, eOpts ){
                 this.fireEvent('select',record);
                 if(this.closeOnSelect){
@@ -192,7 +255,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
             },this);
         }else{
             this.dataGrid.on('celldblclick',function(table, td, cellIndex, record, tr, rowIndex, e, eOpts ){
-                this.showEdit(record.get(this.primaryKey));
+                this.showEdit(record);
             },this);
         }
         this.add(this.dataGrid);
@@ -209,7 +272,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
             this.close();
         }
     },
-    showEdit:function(id)
+    showEdit:function(record)
     {
         if(!this.editorCfg)
         {
@@ -228,7 +291,25 @@ Ext.define('app.crud.orm.DataViewWindow', {
                         Ext.Msg.alert(appLang.MESSAGE , response.msg);
                     } else {
                         me.editorCfg = response.data;
-                        me.createEditWindow(id);
+                        var shard = null;
+                        if(!Ext.isEmpty(me.editorCfg.shard)){
+
+                        }
+                        if(!record){
+                            this.createEditWindow(null, null);
+                        }else {
+                            if (this.shardField) {
+                                me.createEditWindow(
+                                    record.get(me.primaryKey),
+                                    record.get(me.shardField)
+                                );
+                            } else {
+                                me.createEditWindow(
+                                    record.get(this.primaryKey),
+                                    null
+                                );
+                            }
+                        }
                     }
                     me.getEl().unmask();
                 },
@@ -238,10 +319,20 @@ Ext.define('app.crud.orm.DataViewWindow', {
                 }
             });
         }else{
-            this.createEditWindow(id);
+            if(!record){
+                this.createEditWindow(null, null);
+            }else{
+                if(this.shardField){
+                    this.createEditWindow(record.get(this.primaryKey), record.get(this.shardField));
+                }else{
+                    this.createEditWindow(record.get(this.primaryKey), null);
+                }
+            }
+
+
         }
     },
-    createEditWindow:function(id)
+    createEditWindow:function(id, shard)
     {
         var win;
         var me = this;
@@ -304,6 +395,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
                 hasPreview:false,
                 items:fields,
                 dataItemId:id,
+                dataItemShard:shard,
                 primaryKey:this.primaryKey,
                 controllerUrl:this.controllerUrl,
                 canEdit:!this.readOnly,
@@ -324,6 +416,7 @@ Ext.define('app.crud.orm.DataViewWindow', {
                 width:800,
                 height:800,
                 dataItemId:id,
+                dataItemShard:shard,
                 canEdit:!this.readOnly,
                 canDelete:!this.readOnly,
                 primaryKey:this.primaryKey,
@@ -340,12 +433,34 @@ Ext.define('app.crud.orm.DataViewWindow', {
                 }
             });
         }
+
+        if(id && !Ext.isEmpty(this.editorCfg.readOnlyAfterCreate)){
+            var form = win.getForm().getForm();
+            Ext.Array.each(this.editorCfg.readOnlyAfterCreate,function(item){
+                var field = form.findField(item);
+                if(field && field.setReadOnly){
+                    field.setReadOnly(true);
+                }
+            });
+        }
+
+        if(!id && !Ext.isEmpty(this.editorCfg.readOnlyAfterCreate)){
+            win.on('dataSaved',function(){
+                var form = win.getForm().getForm();
+                Ext.Array.each(this.editorCfg.readOnlyAfterCreate,function(item){
+                    var field = form.findField(item);
+                    if(field && field.setReadOnly){
+                        field.setReadOnly(true);
+                    }
+                });
+            },this)
+        }
         win.show();
     },
     /**
      * Delete record
      */
-    deleteItem : function(itemId){
+    deleteItem : function(itemId, shard){
         if(!Ext.isNumeric(itemId)){
             return false;
         }
@@ -357,7 +472,8 @@ Ext.define('app.crud.orm.DataViewWindow', {
             method: 'post',
             params: {
                 'id':itemId,
-                'd_object':this.objectName
+                'd_object':this.objectName,
+                'shard':shard
             },
             success: function(response, request) {
                 response =  Ext.JSON.decode(response.responseText);
@@ -368,5 +484,175 @@ Ext.define('app.crud.orm.DataViewWindow', {
                 }
             }
         });
+    },
+    /**
+     * show shard view
+     * @param shard
+     */
+    showShard:function(shard)
+    {
+        if(Ext.isEmpty(shard)){
+            return;
+        }
+        var win = Ext.create('app.crud.orm.DataViewWindow',{
+            objectName:this.objectName,
+            title:this.title,
+            isVc:this.isVc,
+            modal:true,
+            readOnly:this.readOnly,
+            primaryKey:this.primaryKey,
+            shardKey:this.shardField,
+            controllerUrl:app.crud.orm.Actions.dataViewController,
+            shard:shard
+        });
+        win.show();
+    },
+    showFindBucket:function(bucketConfig){
+        Ext.create('app.crud.orm.DataViewFindBucketWindow',{
+            fieldName:bucketConfig.field,
+            objectName:this.objectName,
+            controllerUrl:this.controllerUrl,
+            listeners:{
+                bucket_selected:{
+                    fn:function(bucket){
+                        this.searchField.setValue(bucket);
+                    },
+                    scope:this
+                }
+            }
+        }).show();
+    },
+    destroy:function(){
+        if(!Ext.isEmpty(this.relatedGrids)){
+            Ext.Object.each(this.relatedGrids , function(key, item){
+                if(item && item.destroy){
+                    item.destroy();
+                }
+            });
+        }
+        this.shardSelector.destroy();
+        this.dataGrid.destroy();
+        this.dataStore.destroy();
+        this.searchField.destroy();
+        this.callParent(arguments);
+    }
+});
+Ext.define('app.crud.orm.DataViewFindBucketWindow',{
+    extend:'Ext.window.Window',
+    width:300,
+    height:150,
+    bodyCls:'formBody',
+    padding:10,
+    layout:'fit',
+    title:appLang.FIND_BUCKET,
+    resizable:false,
+    modal:true,
+    controllerUrl:'',
+
+    initComponent:function() {
+       var me = this;
+
+       this.bucketField = Ext.create('Ext.form.field.Text',{
+           border:false,
+           cls:'formBody',
+           readOnly:true,
+           name:'bucket',
+           fieldLabel:appLang.BUCKET,
+       });
+
+       this.items = [
+           {
+               xtype:'form',
+               bodyCls:'formBody',
+               padding:10,
+               border:false,
+               bodyBorder:false,
+               fieldDefaults:{
+                   anchor:'100%',
+                   labelAlign:'right',
+                   labelWidth:100
+               },
+               items:[
+                   {
+                       xtype:'textfield',
+                       fieldLabel:this.fieldName,
+                       enableKeyEvents:true,
+                       listeners:{
+                           change:{
+                               fn:function(field, newValue) {
+                                   me.applyButton.disable();
+                                   me.bucketField.reset();
+                                   me.findBucket(newValue);
+                               },
+                               scope:me,
+                               buffer:400
+                           }
+                       }
+                   },
+                   this.bucketField
+               ]
+           }
+       ];
+       this.applyButton = Ext.create('Ext.Button',{
+           text:appLang.SEARCH,
+           disabled:true,
+           handler:function(){
+               this.applyBucket();
+           },
+           scope:this
+       });
+       this.buttons=[
+           this.applyButton,
+           {
+               text:appLang.CLOSE,
+               handler:this.close
+           }
+       ];
+       this.callParent();
+    },
+    findBucket:function(fieldValue){
+
+        if(!fieldValue.length){
+            return;
+        }
+        var me = this;
+        Ext.Ajax.request({
+            url:this.controllerUrl + 'findBucket',
+            method: 'post',
+            params:{
+                d_object:this.objectName,
+                value:fieldValue
+            },
+            scope:this,
+            success: function(response, request) {
+                response =  Ext.JSON.decode(response.responseText);
+                if(!response.success){
+                    Ext.Msg.alert(appLang.MESSAGE , response.msg);
+                } else {
+                    if(response.data.bucket){
+                        this.bucketField.setValue(response.data.bucket);
+                        this.applyButton.enable();
+                    }else{
+                        this.bucketField.reset();
+                    }
+
+                }
+                me.getEl().unmask();
+            },
+            failure:function(){
+                me.getEl().unmask();
+                app.ajaxFailure(arguments);
+            }
+        });
+    },
+    destroy:function(){
+        this.applyButton.destroy();
+        this.bucketField.destroy();
+
+        this.callParent(arguments);
+    },
+    applyBucket:function(){
+        this.fireEvent('bucket_selected', this.bucketField.getValue());
+        this.close();
     }
 });

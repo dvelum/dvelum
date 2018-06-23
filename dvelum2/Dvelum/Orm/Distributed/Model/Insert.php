@@ -18,34 +18,26 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Distributed;
+namespace Dvelum\Orm\Distributed\Model;
 
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
 
-class Query extends Orm\Model\Query
+class Insert extends Orm\Model\Insert
 {
-    /**
-     * @var \Dvelum\Db\ManagerInterface
-     */
-    protected $connectionManager;
 
     public function __construct(Model $model)
     {
-        $this->table = $model->table();
-        $this->model = $model;
-        $this->connectionManager = $model->getDbManager();
+        parent::__construct($model);
+        $this->db = null;
     }
 
-    public function fields($fields): \Dvelum\Orm\Model\Query
+    /**
+     * Set Shard
+     * @param string $shard
+     */
+    public function setShard(string $shard) : void
     {
-        $objectConfig = $this->model->getObjectConfig();
-        if(is_array($fields)) {
-            foreach ($fields as $k=> &$v){
-                if(is_numeric($k) && !$objectConfig->isSystemField($v)){
-                    unset($fields[$k]);
-                }
-            }unset($v);
-        }
-        return \Dvelum\Orm\Model\Query::fields($fields);
+        $this->db = $this->model->getDbShardConnection($shard);
     }
 }

@@ -10,6 +10,7 @@ class Request
     protected $query;
     protected $filters;
     protected $config;
+    protected $shard;
 
     public function __construct(\Dvelum\Request $request)
     {
@@ -18,6 +19,7 @@ class Request
         $this->filters = array_merge($request->post($this->config->get('filterParam')  , 'array' , []), $request->extFilters());
         $this->query = $request->post($this->config->get('searchParam')  , 'string' , null);
         $this->object = $request->post($this->config->get('objectParam') , 'string' , '');
+        $this->shard = $request->post($this->config->get('shardParam') , 'string' , '');
     }
 
     public function getFilters()
@@ -72,5 +74,22 @@ class Request
     public function getQuery()
     {
         return $this->query;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getShard()
+    {
+        return $this->shard;
+    }
+
+    /**
+     * @param mixed $shard
+     */
+    public function setShard($shard): void
+    {
+        $this->shard = $shard;
     }
 }

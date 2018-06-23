@@ -27,7 +27,7 @@ class Record extends Orm\Record
 {
     protected $shard = null;
     /**
-     * @var Store $store
+     * @var Orm\Distributed\Record\Store $store
      */
     protected $store;
 
@@ -47,5 +47,10 @@ class Record extends Orm\Record
         $store = $this->model->getStore();
         $store->setShard((string)$this->shard);
         parent::loadData();
+    }
+
+    public function getShard() : string
+    {
+        return $this->get(Orm\Distributed::factory()->getShardField());
     }
 }
