@@ -255,6 +255,13 @@ Ext.define('app.editWindow',{
 	},
 	getContentFields:function(){
 
+		if(this.itemsConfig){
+			Ext.Object.each(this.itemsConfig, function(item){
+				if(item.name && item.name === this.primaryKey){
+					this.getForm().getForm().findField(this.primaryKey).disable();
+				}
+			},this);
+		}
 		if(!this.useTabs){
 			this.contentPanel = Ext.create('Ext.Panel',{
 				layout:'form',
@@ -379,20 +386,22 @@ Ext.define('app.editWindow',{
 			layout:'fit',
 			frame:false,
 			split:true,
-			items:this.getContentFields(),
+			items:[{
+                fieldLabel:"id",
+                name:this.primaryKey,
+                xtype:"hidden"
+            },{
+                name:this.shardKey,
+                xtype:'hidden'
+            }],
 			fieldDefaults: this.fieldDefaults
 		});
 
+        var formItems = this.getContentFields();
 
-		this.editForm.add({
-			fieldLabel:"id",
-			name:this.primaryKey,
-			xtype:"hidden"
-		},{
-			name:this.shardKey,
-			xtype:'hidden'
-		});
-
+        if(formItems){
+            this.editForm.add(formItems);
+		}
 		this.saveBtn = new Ext.Button({
 			text:appLang.SAVE,
 			listeners:{

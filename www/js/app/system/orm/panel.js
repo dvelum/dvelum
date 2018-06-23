@@ -462,7 +462,7 @@ Ext.define('app.crud.orm.Main',{
 			]
 		}).show();
 	},
-	rebuildAllObjects:function(callback){
+	rebuildAllObjects:function(cmp, callback){
 		Ext.Msg.confirm(appLang.CONFIRMATION, appLang.MSG_CONFIRM_REBUILD, function(btn){
 			if(btn != 'yes')
 				return;
@@ -472,7 +472,7 @@ Ext.define('app.crud.orm.Main',{
 				oNamesList.push(record.get('name'));
 			},this);
 
-			this.dataGrid.getEl().mask(appLang.SAVING);
+            cmp.getEl().mask(appLang.SAVING);
 			Ext.Ajax.request({
 				url: app.crud.orm.Actions.buildAllObjects,
 				method: 'post',
@@ -482,7 +482,7 @@ Ext.define('app.crud.orm.Main',{
 					'names[]':oNamesList
 				},
 				success: function(response, request) {
-					this.dataGrid.getEl().unmask();
+                    cmp.dataGrid.getEl().unmask();
 					response =  Ext.JSON.decode(response.responseText);
 					if(response.success){
 						if(!Ext.isEmpty(callback)){
@@ -493,7 +493,7 @@ Ext.define('app.crud.orm.Main',{
 					}
 				},
 				failure:function() {
-					this.dataGrid.getEl().unmask();
+                    cmp.getEl().unmask();
 					Ext.Msg.alert(appLang.MESSAGE, appLang.MSG_LOST_CONNECTION);
 				}
 			});
@@ -710,7 +710,7 @@ Ext.define('app.crud.orm.Main',{
         });
 
         win.on('RebuildAllCall',function(){
-            this.rebuildAllObjects(function(){
+            this.rebuildAllObjects(cmp, function(){
                 win.validateAllObjects();
             });
         },this);

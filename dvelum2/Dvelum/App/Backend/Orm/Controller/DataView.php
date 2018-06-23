@@ -289,26 +289,16 @@ class DataView extends ApiController
 
         foreach ($objectFieldList as $field)
         {
-            if (is_string($field) && $field == $objectConfig->getPrimaryKey() && !$objectConfig->isDistributed()) {
+            if (is_string($field) && $field == $objectConfig->getPrimaryKey()) {
                 continue;
             }
 
             if($objectConfig->isDistributed()){
                 // distributed fields fills automatically
                 if(in_array($field, array_keys($objectConfig->getDistributedFields()))){
-                    continue;
-                }
-
-                // virtual bucket sharding by Primary Key
-                // requires primary key
-                if(
-                    $field == $objectConfig->getPrimaryKey()
-                    &&
-                    $objectConfig->getShardingType() == Orm\Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET
-                    &&
-                    $objectConfig->getShardingKey() != $objectConfig->getPrimaryKey()
-                ){
-                 continue;
+                    if($field!=$objectConfig->getShardingKey()){
+                        continue;
+                    }
                 }
             }
 
