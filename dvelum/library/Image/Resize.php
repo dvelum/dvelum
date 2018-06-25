@@ -115,7 +115,9 @@ class Image_Resize
         if($imgInfo[0] < $width && $imgInfo[1] < $height)
         {
             $result = self::saveImage($im , $newImgPath , $imgInfo[2]);
-            imagedestroy($im);
+            if($im){
+                imagedestroy($im);
+            }
             return $result;
         }
 
