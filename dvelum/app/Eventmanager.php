@@ -31,6 +31,7 @@ class Eventmanager extends Orm\Record\Event\Manager
     {
         $objectName = ucfirst($object->getName());
         $triggerClass = \Utils_String::classFromString('Trigger_' . $objectName);
+        $namespacedClass =  \Utils_String::classFromString('\\App\\Trigger\\' . $objectName);
 
         if(class_exists($triggerClass) && method_exists($triggerClass, $code))
         {
@@ -38,8 +39,14 @@ class Eventmanager extends Orm\Record\Event\Manager
             if($this->_cache)
                 $trigger->setCache($this->_cache);
             $trigger->$code($object);
+        }elseif (class_exists($namespacedClass) && method_exists($namespacedClass, $code)){
+            $trigger = new $namespacedClass();
+            if($this->_cache){
+                $trigger->setCache($this->_cache);
+            }
+            $trigger->$code($object);
         }
-        elseif(method_exists('Trigger', $code))
+        elseif(method_exists('\\Trigger', $code))
         {
             $trigger = new \Trigger();
 
