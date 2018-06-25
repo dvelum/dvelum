@@ -32,6 +32,7 @@ class Query extends Orm\Model\Query
     /**
      * Set Shard
      * @param string $shard
+     * @return Query
      */
     public function setShard(string $shard) : Query
     {
