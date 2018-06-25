@@ -36,6 +36,7 @@ class Query extends Orm\Model\Query
     public function setShard(string $shard) : void
     {
         $this->db = $this->model->getDbShardConnection($shard);
+        return $this;
     }
 /*
     public function fields($fields): \Dvelum\Orm\Model\Query
