@@ -641,7 +641,7 @@ class Model
     public function logError(string $message): void
     {
         $log = $this->getLogsAdapter();
-        if (!empty($log)) {
+        if (empty($log)) {
             return;
         }
         $log->log(\Psr\Log\LogLevel::ERROR, get_called_class() . ': ' . $message);
