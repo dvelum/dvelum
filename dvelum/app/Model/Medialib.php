@@ -239,27 +239,39 @@ class Model_Medialib extends Model
             }
 
             if ($types && is_array($types)) {
-                foreach ($types as $typename) {
-                    if (isset($thumbSizes[$typename])) {
+                foreach ($types as $typename)
+                {
+                    if (isset($thumbSizes[$typename]))
+                    {
                         $saveName = str_replace($v['ext'], '-' . $typename . $v['ext'], $path);
-
-                        if ($conf['image']['thumb_types'][$typename] == 'crop') {
-                            Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName,
-                                true, true);
-                        } else {
-                            Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName,
-                                true, false);
+                        switch($typename){
+                            case 'crop' :
+                                Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true,true);
+                                break;
+                            case 'resize_fit':
+                                Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true, false);
+                                break;
+                            case 'resize':
+                                Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, false ,false);
+                                break;
                         }
                     }
                 }
             } else {
-                foreach ($thumbSizes as $k => $item) {
+                foreach ($thumbSizes as $k => $item)
+                {
                     $saveName = str_replace($v['ext'], '-' . $k . $v['ext'], $path);
 
-                    if ($conf['image']['thumb_types'][$k] == 'crop') {
-                        Image_Resize::resize($path, $item[0], $item[1], $saveName, true, true);
-                    } else {
-                        Image_Resize::resize($path, $item[0], $item[1], $saveName, true, false);
+                    switch($conf['image']['thumb_types'][$k]){
+                        case 'crop' :
+                            Image_Resize::resize($path, $item[0], $item[1], $saveName, true,true);
+                            break;
+                        case 'resize_fit':
+                            Image_Resize::resize($path, $item[0], $item[1], $saveName,true, false);
+                            break;
+                        case 'resize':
+                            Image_Resize::resize($path, $item[0], $item[1], $saveName, false ,false);
+                            break;
                     }
                 }
             }
