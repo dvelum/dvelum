@@ -33,7 +33,7 @@ class Query extends Orm\Model\Query
      * Set Shard
      * @param string $shard
      */
-    public function setShard(string $shard) : void
+    public function setShard(string $shard) : Query
     {
         $this->db = $this->model->getDbShardConnection($shard);
         return $this;
