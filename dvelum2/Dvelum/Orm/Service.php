@@ -18,9 +18,11 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum;
+namespace Dvelum\Orm;
+
 use Dvelum\Cache\CacheInterface;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Orm;
 use Dvelum\Orm\{
     Record, Model, Exception
 };
@@ -29,8 +31,9 @@ use Dvelum\Db;
 use Dvelum\Security\CryptServiceInterface;
 use Dvelum\Utils;
 use Dvelum\Config;
+use Dvelum\Log;
 
-class Orm
+class Service
 {
     protected $configObjects = [];
     protected $configFiles = [];
@@ -92,7 +95,7 @@ class Orm
             'dataCache' => $cache,
             'defaultDbManager' => $dbManager,
             'logLoader'=> function() use ($orm){
-               return $orm->getLog();
+                return $orm->getLog();
             }
         ]);
 
@@ -227,6 +230,9 @@ class Orm
             if(!$config->isDistributed()){
                 return new Record($name, $id);
             }else{
+                if($config->isShardRequired() && !empty($id) && empty($shard)){
+                    throw new \Exception('Shard is required for Object '.$name);
+                }
                 return new DistributedRecord($name, $id, $shard);
             }
         }

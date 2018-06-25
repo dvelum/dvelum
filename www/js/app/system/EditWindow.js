@@ -20,6 +20,10 @@ Ext.define('app.editWindow',{
 	 * @property integer
 	 */
 	dataItemId:null,
+    /**
+	 * @property string
+     */
+	dataItemShard:null,
 	/**
 	 * @property {Ext.Toolbar.TextItem}
 	 */
@@ -85,6 +89,10 @@ Ext.define('app.editWindow',{
 	 * Object primary key
 	 */
 	primaryKey:'id',
+    /**
+	 * Object shard key
+     */
+	shardKey:'shard',
 	/**
 	 * Extra params for requests
 	 * @property {Object}
@@ -148,13 +156,20 @@ Ext.define('app.editWindow',{
 				}
 
 				var dataId = action.result.data.id;
+                var dataShard = null;
+
+                if (!Ext.isEmpty(action.result.data.shard)) {
+                    dataShard = action.result.data.shard
+				}
 
 				if(me.canDelete && dataId != 0){
 					me.deleteBtn.show();
 				}
 
 				me.dataItemId = dataId;
+                me.dataItemShard = dataShard;
 				me.editForm.getForm().findField(me.primaryKey).setValue(dataId);
+                me.editForm.getForm().findField(me.shardKey).setValue(dataShard);
 
 				if(!me.hideEastPanel){
 					me.historyPanel.setRecordId(dataId);
@@ -174,7 +189,7 @@ Ext.define('app.editWindow',{
 	 * Load form data
 	 * @param {integer} itemId - record id
 	 */
-	loadData: function(itemId)
+	loadData: function(itemId, shard)
 	{
 		var form = this.editForm.getForm();
 		var me = this;
@@ -185,7 +200,8 @@ Ext.define('app.editWindow',{
 			method:'post',
 			params: Ext.apply({
 				'id':itemId,
-				'd_object':this.objectName
+				'd_object':this.objectName,
+				'shard' : shard,
 			},this.extraParams),
 			success: function(form, action)
 			{
@@ -223,7 +239,8 @@ Ext.define('app.editWindow',{
 			method: 'post',
 			params: Ext.apply({
 				'id':this.editForm.getForm().findField(this.primaryKey).getValue(),
-				'd_object':this.objectName
+				'd_object':this.objectName,
+				'shard':this.editForm.getForm().findField(this.shardKey).getValue(),
 			},this.extraParams),
 			success: function(response, request) {
 				response =  Ext.JSON.decode(response.responseText);
@@ -238,6 +255,13 @@ Ext.define('app.editWindow',{
 	},
 	getContentFields:function(){
 
+		if(this.itemsConfig){
+			Ext.Object.each(this.itemsConfig, function(item){
+				if(item.name && item.name === this.primaryKey){
+					this.getForm().getForm().findField(this.primaryKey).disable();
+				}
+			},this);
+		}
 		if(!this.useTabs){
 			this.contentPanel = Ext.create('Ext.Panel',{
 				layout:'form',
@@ -362,17 +386,22 @@ Ext.define('app.editWindow',{
 			layout:'fit',
 			frame:false,
 			split:true,
-			items:this.getContentFields(),
+			items:[{
+                fieldLabel:"id",
+                name:this.primaryKey,
+                xtype:"hidden"
+            },{
+                name:this.shardKey,
+                xtype:'hidden'
+            }],
 			fieldDefaults: this.fieldDefaults
 		});
 
+        var formItems = this.getContentFields();
 
-		this.editForm.add({
-			fieldLabel:"id",
-			name:this.primaryKey,
-			xtype:"hidden"
-		});
-
+        if(formItems){
+            this.editForm.add(formItems);
+		}
 		this.saveBtn = new Ext.Button({
 			text:appLang.SAVE,
 			listeners:{
@@ -418,7 +447,7 @@ Ext.define('app.editWindow',{
 
 		if(this.dataItemId){
 			this.on('show',function(){
-				this.loadData(this.dataItemId);
+				this.loadData(this.dataItemId, this.dataItemShard);
 			},this);
 		}
 

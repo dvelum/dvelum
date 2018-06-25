@@ -18,7 +18,7 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\Orm\Distributed;
+namespace Dvelum\Orm\Distributed\Record;
 
 use Dvelum\Orm\Distributed;
 use Dvelum\Orm;

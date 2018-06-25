@@ -597,5 +597,8 @@
   'ORM_SHARD_VIRTUAL_BUCKET' => 'Sharding by Virtual Buckets  f(key) -> bucket -> shard',
   'SETTINGS'=> 'Settings',
   'DATA_SAVED' =>  'Data saved successfully',
-  'BUCKET' => 'Virtual Bucket'
+  'BUCKET' => 'Virtual Bucket',
+  'FIND_BUCKET'  => 'Find Bucket',
+  'SHARD_DATA_EDITOR'  => 'Shard data editor',
+  'OPEN_EDITOR' => 'Open editor'
 );

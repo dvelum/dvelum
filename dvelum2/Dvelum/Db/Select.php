@@ -110,16 +110,13 @@ class Select
      * @param array $columns
      * @return self
      */
-    public function columns($columns) : self
+    public function columns($columns = "*") : self
     {
         if (!is_array($columns)) {
             if ($columns !== '*')
                 $columns = $this->convertColumnsString($columns);
             else
                 $columns = [$columns];
-        }
-        if(empty($columns)){
-            $columns = ['*'];
         }
         $this->from['columns'] = $columns;
         return $this;

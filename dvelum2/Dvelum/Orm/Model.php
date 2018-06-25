@@ -294,7 +294,7 @@ class Model
 
     /**
      * Get storage adapter
-     * @return Orm\Record\Store
+     * @return Orm\Distributed\Record\Store
      */
     public function getStore(): Orm\Record\Store
     {
@@ -712,5 +712,14 @@ class Model
             // trigger_error('Deprecated method call'. get_called_class().'::'.$name,E_USER_NOTICE);
             return call_user_func_array([$deprecatedFunctions[$objectName],$name], $arguments);
         }
+    }
+
+    /**
+     * Get insert object
+     * @return Model\Insert
+     */
+    public function insert() : Model\Insert
+    {
+        return new Orm\Model\Insert($this);
     }
 }

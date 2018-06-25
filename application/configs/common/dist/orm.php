@@ -72,7 +72,7 @@ return [
     /*
      * Distributed objects storage
      */
-    'distributed_storage' => '\\Dvelum\\Orm\\Distributed\\Store',
+    'distributed_storage' => '\\Dvelum\\Orm\\Distributed\\Record\\Store',
     /*
      * Object translations dir
      */

@@ -10,6 +10,7 @@ Ext.define('app.crud.orm.FieldWindow', {
 	dataForm:null,
 	objectList:null,
 	uniqueData:null,
+    isNew:true,
 	closeAction:'destroy',
 
 	dictionaryUrl:null,
@@ -710,7 +711,11 @@ Ext.define('app.crud.orm.FieldWindow', {
 		this.items = [this.dataForm];
 
 //		this.dbTypeSelected('boolean');
-
+        if(!this.fieldName){
+            this.isNew = true;
+        }else{
+            this.isNew = false;
+        }
 		if(this.objectName && this.fieldName){
 			var handle = this;
 			this.on('show' , function(){
@@ -893,6 +898,10 @@ Ext.define('app.crud.orm.FieldWindow', {
 				[],
 				[this.fieldSetDefault,this.fieldDefaultNum,this.fieldScale,this.fieldPrecision]
 			);
+            if(this.isNew){
+                this.fieldScale.setValue(12);
+                this.fieldPrecision.setValue(2);
+            }
 			return;
 		}
 
@@ -901,6 +910,10 @@ Ext.define('app.crud.orm.FieldWindow', {
 				[this.fieldDefaultNum,this.fieldUnsigned],
 				[this.fieldSetDefault,this.fieldIsSearch,this.fieldAllowHtml,this.fieldDefaultString,this.fieldLen]
 			);
+
+			if(this.isNew){
+                this.fieldLen.setValue(255);
+            }
 			return;
 		}
 

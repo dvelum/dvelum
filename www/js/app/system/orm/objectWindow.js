@@ -90,9 +90,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			}]
 		});
 
-
-
-
 		this.searchField = Ext.create('SearchPanel',{
 			store:this.dataStore,
 			fieldNames:['name' , 'title'],
@@ -141,7 +138,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 		fieldsTbar.push(decryptButton);
 		fieldsTbar.push('->');
 		fieldsTbar.push(this.searchField);
-
 
 		var titleRenderer = function(value, metaData, record, rowIndex, colIndex, store){
 			if(record.get('broken'))
@@ -269,7 +265,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			}
 		},this);
 
-
 		this.indexGrid = Ext.create('Ext.grid.Panel',{
 			store: this.indexStore,
 			frame: false,
@@ -340,7 +335,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 			}
 			]
 		});
-
 
 		if(app.crud.orm.canEdit){
 			var mainConfButtons =[{
@@ -915,10 +909,13 @@ Ext.define('app.crud.orm.ObjectWindow', {
                                 }
                                 form.findField('sharding_type').show();
                                 form.findField('sharding_type').enable();
+                                form.findField('rev_control').setValue(false);
+                                form.findField('rev_control').disable();
                             }else{
                                 me.distributedIndexGrid.disable();
                                 form.findField('sharding_type').hide();
                                 form.findField('sharding_type').disable();
+                                form.findField('rev_control').enable();
                             }
                         },
                         scope:this
@@ -1190,6 +1187,11 @@ Ext.define('app.crud.orm.ObjectWindow', {
 					handle.tabPanel.add(handle.indexGrid);
                     configForm.findField('readonly').show();
                     configForm.findField('locked').show();
+                    handle.distributedIndexGrid.disable();
+                    handle.distributedIndexStore.proxy.setExtraParam('object' , handle.objectName);
+                    handle.tabPanel.add(handle.distributedIndexGrid);
+                    handle.distributedIndexGrid.disable();
+
 				}
                 configForm.findField('link_title').show();
                 configForm.findField('sharding_key').getStore().proxy.extraParams['object'] = handle.objectName;
@@ -1199,6 +1201,9 @@ Ext.define('app.crud.orm.ObjectWindow', {
 
 				handle.dataStore.load();
 				handle.indexStore.load();
+				if(configForm.findField('distributed').getValue()){
+                    handle.distributedIndexStore.load();
+                }
 				handle.setTitle(appLang.EDIT_OBJECT + ' &laquo;' + handle.objectName + '&raquo; ');
 
 				handle.fireEvent('dataSaved');

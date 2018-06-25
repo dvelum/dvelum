@@ -81,7 +81,13 @@ $wwwRoot = Request::wwwRoot();
     <title><?php echo $this->get('page')->title;?>  .:: BACK OFFICE PANEL ::.  </title>
     <link rel="shortcut icon" href="<?php echo $wwwRoot;?>i/favicon.png" />
     <?php
-    echo $res->includeCss(false);
+
+    if(!empty($this->get('development'))){
+        echo $res->includeCss(false);
+    }else{
+        echo $res->includeCss(true);
+    }
+
     echo $res->includeJsByTag(true , false , 'head');
     ?>
 </head>
@@ -99,7 +105,16 @@ $wwwRoot = Request::wwwRoot();
 </div>
 <?php
     echo $res->includeJsByTag(true , false , 'external');
-    echo $res->includeJs(true , true);
+    //echo $res->includeJs(true , true);
+    // PLATFORM DEVELOPMENT
+
+    if(!empty($this->get('development'))){
+        echo $res->includeJs(true , true);
+    }else{
+        echo $res->includeJs(true , false);
+    }
+
+
 ?>
 </body>
 </html>

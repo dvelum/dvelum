@@ -32,7 +32,7 @@ use Dvelum\Orm\RecordInterface;
 class DataView extends ApiController
 {
     /**
-     * @var Orm $ormService
+     * @var Orm\Service $ormService
      */
     protected $ormService;
 
@@ -91,26 +91,61 @@ class DataView extends ApiController
         }
     }
 
+    public function shardListAction()
+    {
+        $distributed = Orm\Distributed::factory();
+        $shards = $distributed->getShards();
+        $list = [];
+        foreach ($shards as $item){
+            $list[] = ['id' => $item['id']];
+        }
+        $this->response->success($list);
+    }
+
     public function viewConfigAction()
     {
         $object = $this->request->post('d_object', 'string', false);
+        $shard = $this->request->post('shard', 'string', '');
 
         if (!$object || !$this->ormService->configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        $cfg = $this->ormService->config($object);
+        $objectConfig = $this->ormService->config($object);
+        $title = $objectConfig->getTitle();
 
-        $fields = $cfg->getFields();
+
+        $fields = $objectConfig->getFields();
         $fieldsCfg = [];
         $columns = [];
         $systemColumns = [];
-        $searchFields = $cfg->getSearchFields();
+        $searchFields = $objectConfig->getSearchFields();
+        $selectShard = false;
+        $findBucket = false;
+        $canEditObject = true;
+        $shardField = false;
 
-        $objectConfig = Orm\Record\Config::factory($object);
-        if($objectConfig->isDistributed()){
+        if(empty($shard) && $objectConfig->isDistributed()){
+            $shadrdingType = $objectConfig->getShardingType();
+            $title.= ' INDEX';
             $fields =  Orm\Record\Config::factory($objectConfig->getDistributedIndexObject())->getFields();
+            if($shadrdingType == Orm\Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET){
+                $findBucket = [
+                  'field' => $objectConfig->getField($objectConfig->getBucketMapperKey())->getTitle(),
+                ];
+                $canEditObject = false;
+            }
+            $selectShard = true;
+            if($shadrdingType == Orm\Record\Config::SHARDING_TYPE_KEY_NO_INDEX){
+                $canEditObject = false;
+            }
+        }
+
+        if($objectConfig->isShardRequired()){
+            $shardField = Orm\Distributed::factory()->getShardField();
+        }else{
+            $shardField = false;
         }
 
         foreach ($fields as $name => $field)
@@ -187,7 +222,12 @@ class DataView extends ApiController
         $result = array(
             'fields' => $fieldsCfg,
             'columns' => $columns,
-            'searchFields' => $searchFields
+            'searchFields' => $searchFields,
+            'selectShard' => $selectShard,
+            'findBucket' => $findBucket,
+            'title'=> $title,
+            'canEditObject' =>$canEditObject,
+            'shardField'=>$shardField
         );
 
         $this->response->success($result);
@@ -249,8 +289,17 @@ class DataView extends ApiController
 
         foreach ($objectFieldList as $field)
         {
-            if (is_string($field) && $field == 'id' && !$objectConfig->isDistributed()) {
+            if (is_string($field) && $field == $objectConfig->getPrimaryKey()) {
                 continue;
+            }
+
+            if($objectConfig->isDistributed()){
+                // distributed fields fills automatically
+                if(in_array($field, array_keys($objectConfig->getDistributedFields()))){
+                    if($field!=$objectConfig->getShardingKey()){
+                        continue;
+                    }
+                }
             }
 
             $fieldCfg = $objectConfig->getFieldConfig($field);
@@ -311,12 +360,26 @@ class DataView extends ApiController
         }
 
         $tab->items = '[' . implode(',', $data) . ']';
+        $shardKey = 'shard';
 
+        if($objectConfig->isShardRequired()){
+            $shardKey = Orm\Distributed::factory()->getShardField();
+        }
+
+        $mapKey = null;
+        if($objectConfig->isDistributed()){
+            $mapKey = $objectConfig->getBucketMapperKey();
+            if(empty($mapKey)){
+                $mapKey = $objectConfig->getShardingKey();
+            }
+        }
         $this->response->success([
             'related' => $related,
             'fields' => str_replace(["\n", "\t"], '', '[' . implode(',', $tabs) . ']'),
             'readOnly' => intval($readOnly),
-            'primaryKey' => $objectConfig->getPrimaryKey()
+            'primaryKey' => $objectConfig->getPrimaryKey(),
+            'shardKey' => $shardKey,
+            'readOnlyAfterCreate' => [$mapKey]
         ]);
     }
 
@@ -352,5 +415,40 @@ class DataView extends ApiController
         $this->canViewObjects[] = $object;
 
         parent::objectTitleAction();
+    }
+
+    public function findBucketAction()
+    {
+        $object = $this->request->post('d_object', 'string', null);
+
+        if(!$object || !$this->ormService->configExists($object)) {
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
+
+        $value = $this->request->post('value', 'string', '');
+        if(empty($value)){
+            $this->response->success(['bucket'=>null]);
+        }
+
+        $objectConfig = $this->ormService->config($object);
+        $mapField = $objectConfig->getBucketMapperKey();
+        $field = $objectConfig->getField($mapField);
+
+        /**
+         * @var Orm\Distributed\Key\Strategy\VirtualBucket $keyGen;
+         */
+        $keyGen = Orm\Distributed::factory()->getKeyGenerator($object);
+        if($field->isNumeric()){
+            $bucket = $keyGen->getNumericMapper()->keyToBucket((int) $value);
+        }else{
+            $bucket = $keyGen->getStringMapper()->keyToBucket((string)$value);
+        }
+        if(!empty($bucket)){
+            $bucket = $bucket->getId();
+        }else{
+            $bucket = null;
+        }
+        $this->response->success(['bucket'=>$bucket]);
     }
 }

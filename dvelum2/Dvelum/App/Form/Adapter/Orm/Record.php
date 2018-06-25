@@ -42,12 +42,25 @@ class Record extends Form\Adapter
             $this->config->get('idFieldType'),
             $this->config->get('idFieldDefault')
         );
+        $shard = $this->request->post(
+            $this->config->get('shardField'),
+            $this->config->get('shardFieldType'),
+            $this->config->get('shardFieldDefault')
+        );
+
+        if(empty($id)){
+            $id = null;
+        }
+
+        if(empty($shard)){
+            $shard = null;
+        }
 
         try{
             /**
              * @var Orm\Record $obj
              */
-            $obj = Orm\Record::factory($this->config->get('orm_object'), $id);
+            $obj = Orm\Record::factory($this->config->get('orm_object'), $id, $shard);
         }catch(\Exception $e){
              $this->errors[] = new Form\Error($this->lang->get('CANT_EXEC'), null, 'init_object');
              return false;
@@ -122,6 +135,7 @@ class Record extends Form\Adapter
         if($id){
             $obj->setId($id);
         }
+
 
         $this->object = $obj;
         return true;

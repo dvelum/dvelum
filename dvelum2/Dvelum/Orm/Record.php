@@ -763,10 +763,10 @@ class Record implements RecordInterface
     static public function factory(string $name , $id = false, $shard = false)
     {
         /**
-         * @var Orm $service
+         * @var \Dvelum\Orm\Service $service
          */
         $service = Service::get('orm');
-        return $service->object($name, $id, $shard);
+        return $service->record($name, $id, $shard);
     }
 
     /**
