@@ -72,7 +72,7 @@ class Module extends Router
         $cacheManager = new \Cache_Manager();
         $cache = $cacheManager->get('data');
 
-        if ($pageVersion) {
+        if ($pageVersion && empty($request->getPart(1))) {
             $user = User::factory();
             if ($user->isAuthorized() && $user->isAdmin()) {
                 $pageData = array_merge(
@@ -140,9 +140,9 @@ class Module extends Router
             $pageModel = Model::factory('Page');
             $db = $pageModel->getDbConnection();
             $sql = $db->select()->from($pageModel->table(), array(
-                    'code',
-                    'func_code'
-                ))->where('`published` = 1')->where('`func_code` !="" ');
+                'code',
+                'func_code'
+            ))->where('`published` = 1')->where('`func_code` !="" ');
             $list = $db->fetchAll($sql);
             if ($cache) {
                 $cache->save($list, self::CACHE_KEY_ROUTES);
