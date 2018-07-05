@@ -38,6 +38,12 @@ interface EngineInterface
     public function setCache(?CacheInterface $cache): void;
 
     /**
+     * Set lifetime for cache data
+     * @param int $sec
+     */
+    public function setCacheLifetime(int $sec) : void;
+
+    /**
      * Set multiple properties
      * @deprecated
      * @param array $data

@@ -38,13 +38,18 @@ class ActiveTemplate implements EngineInterface
     private $data = [];
 
     /**
-     * @property CacheInterface $cache
+     * @property CacheInterface|null $cache
      */
     protected $cache = null;
     /**
      * @property boolean $useCache
      */
     protected $useCache = true;
+
+    /**
+     * @var int $cacheLifetime
+     */
+    protected $cacheLifetime = false;
 
     /**
      * @property ConfigInterface $config
@@ -96,7 +101,7 @@ class ActiveTemplate implements EngineInterface
         $result = \ob_get_clean();
 
         if($this->cache && $this->useCache){
-            $this->cache->save($result , $hash);
+            $this->cache->save($result , $hash, $this->cacheLifetime);
         }
         return $result;
     }
@@ -220,5 +225,14 @@ class ActiveTemplate implements EngineInterface
             $tpl->disableCache();
 
         return $tpl->render($templatePath);
+    }
+
+    /**
+     * Set lifetime for cache data
+     * @param int $sec
+     */
+    public function setCacheLifetime(int $sec) : void
+    {
+        $this->cacheLifetime = $sec;
     }
 }
