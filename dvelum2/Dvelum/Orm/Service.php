@@ -389,7 +389,12 @@ class Service
         $nameSpacedClassName = 'App\\'.str_replace('_','\\', $className);
 
         $modelSettings = $this->modelSettings;
-        $modelSettings['storeLoader'] = $this->storeLoader;
+
+        if($this->config($objectName)->isDistributed()) {
+            $modelSettings['storeLoader'] = $this->distributedStoreLoader;
+        } else {
+            $modelSettings['storeLoader'] = $this->storeLoader;
+        }
 
         /*
          * Instantiate real or virtual model
@@ -400,7 +405,6 @@ class Service
             $this->models[$listName] = new $nameSpacedClassName($objectName, $modelSettings, $this->config);
         } else {
             if($this->config($objectName)->isDistributed()){
-                $modelSettings['storeLoader'] = $this->distributedStoreLoader;
                 $this->models[$listName] = new Orm\Distributed\Model($objectName, $modelSettings, $this->config);
             }else{
                 $this->models[$listName] = new Model($objectName, $modelSettings, $this->config);
