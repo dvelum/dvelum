@@ -217,6 +217,9 @@ Ext.define('app.objectLink.Field', {
             }
         }
     },
+    getObjectLabelValue: function(){
+        return this.dataFieldLabel.getValue();
+    },
     destroy: function () {
         this.dataField.destroy();
         this.dataFieldLabel.destroy();
