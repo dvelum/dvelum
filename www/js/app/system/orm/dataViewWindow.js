@@ -605,7 +605,8 @@ Ext.define('app.crud.orm.DataViewFindBucketWindow',{
            this.applyButton,
            {
                text:appLang.CLOSE,
-               handler:this.close
+               handler:this.close,
+               scope:this
            }
        ];
        this.callParent();
