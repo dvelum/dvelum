@@ -135,7 +135,8 @@ foreach ($shardsConfig as $item)
     $shardId = $item['id'];
     echo "\t" . 'BUILD ' . $shardId . ' ' . PHP_EOL;
 
-    foreach ($registeredObjects as $index => $object) {
+    foreach ($registeredObjects as $index => $object)
+    {
         if (!\Dvelum\Orm\Record\Config::factory($object)->isDistributed()) {
             unset($registeredObjects[$index]);
             continue;
@@ -145,12 +146,41 @@ foreach ($shardsConfig as $item)
 
         $builder = \Dvelum\Orm\Record\Builder::factory($object);
         $builder->setConnection(\Dvelum\Orm\Model::factory($object)->getDbShardConnection($shardId));
-        if ($builder->build(true, true)) {
+
+        if ($builder->build(false, true)) {
             echo 'OK' . PHP_EOL;
         } else {
             $success = false;
             echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
         }
+
+        $model = \Dvelum\Orm\Model::factory($object);
+        $db = $model->getDbShardConnection($shardId);
+        $db->query('SET FOREIGN_KEY_CHECKS=0;');
+        $db->delete($model->table());
+        $db->query('SET FOREIGN_KEY_CHECKS=1;');
+
+    }
+}
+
+foreach ($shardsConfig as $item)
+{
+    $shardId = $item['id'];
+    echo "\t" . 'BUILD KEYS ' . $shardId . ' ' . PHP_EOL;
+
+    foreach ($registeredObjects as $index => $object)
+    {
+        echo "\t\t" . $object . ' : ';
+
+        $builder = \Dvelum\Orm\Record\Builder::factory($object);
+        $builder->setConnection(\Dvelum\Orm\Model::factory($object)->getDbShardConnection($shardId));
+
+        if ($builder->build(true, true)) {
+            echo 'OK' . PHP_EOL;
+        } else {
+            $success = false;
+            echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
+        };
     }
 }
 
@@ -161,15 +191,6 @@ foreach ($shardsConfig as $item)
 $session = \Dvelum\App\Session\User::factory();
 $session->setId(1);
 $session->setAuthorized();
-
-$modelContent = \Dvelum\Orm\Model::factory('Page');
-$modelContent->getDbConnection()->delete($modelContent->table());
-
-$modelUser = \Dvelum\Orm\Model::factory('User');
-$modelUser->getDbConnection()->delete($modelUser->table());
-
-$modelGroup = \Dvelum\Orm\Model::factory('Group');
-$modelGroup->getDbConnection()->delete($modelGroup->table());
 
 $group = \Dvelum\Orm\Record::factory('Group');
 $group->setInsertId(1);
