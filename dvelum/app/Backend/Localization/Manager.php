@@ -48,7 +48,7 @@ class Backend_Localization_Manager
         foreach ($langs as $file)
         {
             $file = str_replace($paths,'' , $file);
-            if(strpos($file , 'index')===false && basename($file)!=='objects.php')
+            if(strpos($file , 'index')===false && basename($file)!=='objects.php' && strpos($file ,'/objects/')==false)
                 $data[] = substr($file,0,-4);
         }
         return array_unique($data);
@@ -540,7 +540,7 @@ class Backend_Localization_Manager
             }
 
             if(!@file_put_contents($filePath, 'var '.$varName.' = '.Lang::lang($name)->getJsObject().';'))
-               throw new Exception($this->_lang->get('CANT_WRITE_FS') . ' ' . $filePath);
+                throw new Exception($this->_lang->get('CANT_WRITE_FS') . ' ' . $filePath);
         }
     }
 }
