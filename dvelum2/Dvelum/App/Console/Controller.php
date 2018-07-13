@@ -244,7 +244,7 @@ class Controller extends App\Controller implements Router\RouterInterface
             trigger_error('Undefined Action Adapter ' . $adapterCls);
         }
 
-        $adapter = new $adapterCls;
+        $adapter = new $adapterCls($actionConfig);
 
         switch ($actionConfig['type']) {
             case 'action' :
@@ -252,7 +252,11 @@ class Controller extends App\Controller implements Router\RouterInterface
                     trigger_error($adapterCls . ' is not instance of ActionInterface');
                 }
                 $params = $this->request->getPathParts(1);
-                $adapter->init($this->appConfig, $params);
+                $config = [];
+                if(isset($actionConfig['config'])){
+                    $config = $actionConfig['config'];
+                }
+                $adapter->init($this->appConfig, $params , $config);
                 $result = $adapter->run();
                 echo '[' . $action . ' : ' . $adapter->getInfo() . ']' . PHP_EOL;
                 if ($result) {

@@ -29,6 +29,7 @@ abstract class Action implements ActionInterface
      * @var ConfigInterface
      */
     protected $appConfig;
+    protected $config;
     protected $stat = [];
     /**
      * Action params
@@ -41,10 +42,11 @@ abstract class Action implements ActionInterface
      * @param array $params
      * @return void
      */
-    public function init(ConfigInterface $appConfig, array $params = []): void
+    public function init(ConfigInterface $appConfig, array $params = [], array $config = []): void
     {
         $this->appConfig = $appConfig;
         $this->params = $params;
+        $this->config = $config;
     }
 
     /**

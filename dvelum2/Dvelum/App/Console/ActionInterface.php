@@ -27,9 +27,10 @@ interface ActionInterface
     /**
      * @param ConfigInterface $appConfig
      * @param array $params
+     * @param array $config
      * @return void
      */
-    public function init(ConfigInterface $appConfig, array $params = []): void;
+    public function init(ConfigInterface $appConfig, array $params = [], array $config = []): void;
 
     /**
      * Get job statistics as string
