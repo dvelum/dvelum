@@ -48,11 +48,11 @@ class Store extends \Dvelum\Orm\Record\Store
     }
 
     /**
-    * Load record data
-    * @param string $objectName
-    * @param int $id
-    * @return array
-    */
+     * Load record data
+     * @param string $objectName
+     * @param int $id
+     * @return array
+     */
     public function load($objectName, $id): array
     {
         /**
@@ -120,7 +120,10 @@ class Store extends \Dvelum\Orm\Record\Store
             $db->commit();
 
         }catch (Exception $e) {
-            $this->sharding->deleteIndex($object, $insertId);
+            $sType = $object->getConfig()->getShardingType();
+            if($insertId && $sType == Orm\Record\Config::SHARDING_TYPE_GLOABAL_ID || $sType == Orm\Record\Config::SHARDING_TYPE_KEY){
+                $this->sharding->deleteIndex($object, $insertId);
+            }
             $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
             return false;
         }
