@@ -26,6 +26,7 @@ use Dvelum\Orm\Distributed\Router;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Record;
+use Dvelum\Orm\RecordInterface;
 use \Exception;
 
 class UserKeyNoID implements GeneratorInterface
@@ -86,7 +87,8 @@ class UserKeyNoID implements GeneratorInterface
         /**
          * @var Record\Config\Field $field
          */
-        foreach ($fieldList as $field){
+        foreach ($fieldList as $field)
+        {
             $fieldName = $field->getName();
 
             if(($this->exceptIndexPrimaryKey && $fieldName == $primary) || $fieldName == $this->shardField){
@@ -104,7 +106,7 @@ class UserKeyNoID implements GeneratorInterface
                 return null;
             }
         }
-        return $this->reserveKey($object->getName(), $indexData);
+        return $this->reserveKey($object, $indexData);
     }
 
     /**
@@ -197,16 +199,16 @@ class UserKeyNoID implements GeneratorInterface
 
     /**
      * Reserve
-     * @param string $objectName
+     * @param RecordInterface $object
      * @param array $keyData
      * @return Reserved|null
      */
-    public function reserveKey(string $objectName , array $keyData) : ?Reserved
+    public function reserveKey(RecordInterface $object , array $keyData) : ?Reserved
     {
-        $result = $this->insertOrGetKey($objectName, $keyData);
+        $result = $this->insertOrGetKey($object, $keyData);
         if(empty($result)){
             // try restart
-            $result =  $this->insertOrGetKey($objectName, $keyData);
+            $result =  $this->insertOrGetKey($object, $keyData);
         }
         return $result;
     }
@@ -262,19 +264,21 @@ class UserKeyNoID implements GeneratorInterface
     }
 
     /**
-     * @param string $objectName
+     * @param RecordInterface $object
      * @param array $keyData
      * @return Reserved|null
      * @throws Exception
      */
-    protected function insertOrGetKey(string $objectName , array $keyData) : ?Reserved
+    protected function insertOrGetKey(RecordInterface $record , array $keyData) : ?Reserved
     {
+        $objectName = $record->getName();
         $objectConfig = Record\Config::factory($objectName);
         $indexObject = $objectConfig->getDistributedIndexObject();
         $model = Model::factory($indexObject);
         $keyName = $objectConfig->getShardingKey();
 
         $data = $model->query()->filters([$keyName=>$keyData[$keyName]])->params(['limit'=>1])->fetchRow();
+
         if(!empty($data)){
             $reserved = new Reserved();
             $reserved->setShard($data[$this->shardField]);

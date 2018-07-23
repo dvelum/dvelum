@@ -628,6 +628,9 @@ class Record implements RecordInterface
         try {
             if(!$this->getId()){
                 $id = $store->insert($this , $useTransaction);
+                if(empty($id)){
+                    return false;
+                }
                 $this->setId($id);
             } else {
                 $id = (int) $store->update($this , $useTransaction);

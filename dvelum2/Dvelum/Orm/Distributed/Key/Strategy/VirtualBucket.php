@@ -26,6 +26,7 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Distributed\Key\Reserved;
 use Dvelum\Orm\Distributed\Key\Strategy\VirtualBucket\MapperInterface;
 use Dvelum\Orm\Record;
+use Dvelum\Orm\RecordInterface;
 
 class VirtualBucket extends UserKeyNoID
 {
@@ -81,13 +82,13 @@ class VirtualBucket extends UserKeyNoID
 
     /**
      * Reserve
-     * @param string $objectName
+     * @param RecordInterface $object
      * @param array $keyData
      * @return Reserved|null
      */
-    public function reserveKey(string $objectName, array $keyData): ?Reserved
+    public function reserveKey(RecordInterface $object, array $keyData): ?Reserved
     {
-        $config = Record\Config::factory($objectName);
+        $config = $object->getConfig();
         $keyField = $config->getBucketMapperKey();
 
         $fieldObject = $config->getField($keyField);
@@ -96,9 +97,9 @@ class VirtualBucket extends UserKeyNoID
 
 
         if ($fieldObject->isNumeric()) {
-            $bucket = $this->getNumericMapper()->keyToBucket($keyData[$keyField]);
+            $bucket = $this->getNumericMapper()->keyToBucket($object->get($keyField));
         } elseif ($fieldObject->isText(true)) {
-            $bucket = $this->getStringMapper()->keyToBucket($keyData[$keyField]);
+            $bucket = $this->getStringMapper()->keyToBucket($object->get($keyField));
         }
 
         if (empty($bucket)) {
@@ -108,7 +109,7 @@ class VirtualBucket extends UserKeyNoID
         $keyData[$this->bucketField] = $bucket->getId();
 
         unset($keyData[$config->getPrimaryKey()]);
-        $result = parent::reserveKey($objectName, $keyData);
+        $result = parent::reserveKey($object, $keyData);
 
         if (!empty($result)) {
             $result->setBucket($bucket->getId());
