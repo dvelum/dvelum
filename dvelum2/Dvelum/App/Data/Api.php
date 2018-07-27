@@ -26,6 +26,10 @@ class Api
      * @var Model\Query
      */
     protected $dataQuery;
+    /**
+     * @var bool $useApproximateCount
+     */
+    protected $useApproximateCount = false;
 
     public function __construct(Api\Request $request, User $user)
     {
@@ -48,7 +52,7 @@ class Api
 
         if($ormObjectConfig->isDistributed() && !empty($this->apiRequest->getShard())){
             $this->dataQuery->setShard($this->apiRequest->getShard());
-         }
+        }
     }
 
     public function getList()
@@ -70,7 +74,7 @@ class Api
 
     public function getCount() : int
     {
-        return  $this->dataQuery->getCount();
+        return  $this->dataQuery->getCount($this->isUseApproximateCount());
     }
 
     /**
@@ -113,5 +117,21 @@ class Api
             $result[] = $v->getName();
         }
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseApproximateCount(): bool
+    {
+        return $this->useApproximateCount;
+    }
+
+    /**
+     * @param bool $useApproximateCount
+     */
+    public function setUseApproximateCount(bool $useApproximateCount): void
+    {
+        $this->useApproximateCount = $useApproximateCount;
     }
 }

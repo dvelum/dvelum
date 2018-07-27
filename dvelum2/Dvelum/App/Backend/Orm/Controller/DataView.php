@@ -23,11 +23,13 @@ namespace Dvelum\App\Backend\Orm\Controller;
 use Dvelum\App\Backend\Api\Controller as ApiController;
 use Dvelum\App\Controller\Event;
 use Dvelum\App\Controller\EventManager;
+use Dvelum\App\Session\User;
 use Dvelum\Service;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Orm;
 use Dvelum\Orm\RecordInterface;
+use Dvelum\App\Data\Api;
 
 class DataView extends ApiController
 {
@@ -132,7 +134,7 @@ class DataView extends ApiController
             $fields =  Orm\Record\Config::factory($objectConfig->getDistributedIndexObject())->getFields();
             if($shadrdingType == Orm\Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET){
                 $findBucket = [
-                  'field' => $objectConfig->getField($objectConfig->getBucketMapperKey())->getTitle(),
+                    'field' => $objectConfig->getField($objectConfig->getBucketMapperKey())->getTitle(),
                 ];
                 $canEditObject = false;
             }
@@ -450,5 +452,17 @@ class DataView extends ApiController
             $bucket = null;
         }
         $this->response->success(['bucket'=>$bucket]);
+    }
+
+    /**
+     * @param Api\Request $request
+     * @param User $user
+     * @return Api
+     */
+    protected function getApi(Api\Request $request, User $user): Api
+    {
+        $api = parent::getApi($request, $user);
+        $api->setUseApproximateCount(true);
+        return $api;
     }
 }
