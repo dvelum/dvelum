@@ -39,19 +39,4 @@ class Query extends Orm\Model\Query
         $this->db = $this->model->getDbShardConnection($shard);
         return $this;
     }
-/*
-    public function fields($fields): \Dvelum\Orm\Model\Query
-    {
-        $objectConfig = $this->model->getObjectConfig();
-
-        if(is_array($fields)) {
-            foreach ($fields as $k=> &$v){
-                if(is_numeric($k) && !$objectConfig->isSystemField($v)){
-                    unset($fields[$k]);
-                }
-            }unset($v);
-        }
-        return \Dvelum\Orm\Model\Query::fields($fields);
-    }
-*/
 }

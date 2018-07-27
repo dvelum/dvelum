@@ -106,10 +106,13 @@ class Stat
         return $data;
     }
 
-    public function getDetails($objectName)
+    public function getDetails($objectName, ?Adapter $db = null) : array
     {
         $objectModel = Model::factory($objectName);
-        $data = $this->getTableInfo($objectName, $objectModel->getDbConnection());
+        if(empty($db)){
+            $db = $objectModel->getDbConnection();
+        }
+        $data = $this->getTableInfo($objectName, $db);
         return [$data];
     }
 
@@ -165,7 +168,7 @@ class Stat
         return $data;
     }
 
-    public function getDistributedDetails(string $objectName) : array
+    public function getDistributedDetails(string $objectName, ?string $shard = null) : array
     {
         $config = Orm\Record\Config::factory($objectName);
         if(!$config->isDistributed()){
@@ -180,11 +183,17 @@ class Stat
 
         if(!empty($shards))
         {
-            foreach ($shards as $info)
-            {
-                $shardInfo = $this->getTableInfo($objectName, $objectModel->getDbManager()->getDbConnection($connectionName,null, $info['id']));
-                $shardInfo['name'] = $info['id'].' : '.$table;
+            if(!empty($shard)){
+                $shardInfo = $this->getTableInfo($objectName, $objectModel->getDbManager()->getDbConnection($connectionName,null, $shard));
+                $shardInfo['name'] = $shard.' : '.$table;
                 $data[] = $shardInfo;
+            }else{
+                foreach ($shards as $info)
+                {
+                    $shardInfo = $this->getTableInfo($objectName, $objectModel->getDbManager()->getDbConnection($connectionName,null, $info['id']));
+                    $shardInfo['name'] = $info['id'].' : '.$table;
+                    $data[] = $shardInfo;
+                }
             }
         }
         return $data;

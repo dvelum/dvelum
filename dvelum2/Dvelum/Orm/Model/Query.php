@@ -24,6 +24,7 @@ use Dvelum\Db\Adapter;
 use Dvelum\Db;
 use Dvelum\Db\Select\Filter;
 use Dvelum\Orm\Model;
+use Dvelum\Orm\Stat;
 
 class Query
 {
@@ -396,9 +397,10 @@ class Query
 
     /**
      * Count the number of rows that satisfy the filters
+     * @param bool approximate - Get approximate count for innodb table (only for queries without filters)
      * @return int
      */
-    public function getCount(): int
+    public function getCount(bool $approximateValue = false): int
     {
         $joins = $this->joins;
         $filters = $this->filters;
@@ -412,17 +414,33 @@ class Query
             }
             unset($config);
         }
+        $count = 0;
 
-        $sqlQuery = new Model\Query($this->model);
-        $sqlQuery->setDbConnection($this->db);
-        $sqlQuery->fields(['count' => 'COUNT(*)'])
-                 ->filters($filters)->search($query, $searchType)
-                 ->joins($joins);
-
-        $data = $sqlQuery->fetchOne($sqlQuery->__toString());
-        if (empty($data)) {
-            $data = 0;
+        if($approximateValue && empty($filters) && empty($query)) {
+            $stat = new Stat();
+            $config = $this->model->getObjectConfig();
+            $data = $stat->getDetails($config->getName(), $this->db);
+            if(!empty($data) && isset($data[0]) && isset($data[0]['records'])){
+                $count = (int) str_replace(' ', '', $data[0]['records']);
+            }
         }
-        return (int)$data;
+
+        // get exact count
+        if($count < 10000)
+        {
+            $sqlQuery = new Model\Query($this->model);
+            $sqlQuery->setDbConnection($this->db);
+            $sqlQuery->fields(['count' => 'COUNT(*)'])
+                ->filters($filters)->search($query, $searchType)
+                ->joins($joins);
+
+            $count = $sqlQuery->fetchOne($sqlQuery->__toString());
+        }
+
+
+        if (empty($count)) {
+            $count = 0;
+        }
+        return (int)$count;
     }
 }
