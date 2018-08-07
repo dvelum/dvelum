@@ -15,5 +15,5 @@ return array(
      */
     'router' => 'Module', // 'Module','Path','Config'
     // Default Frontend Controller
-    'default_controller' => 'Dvelum\\App\\Frontend\\Index\\Controller',
+    'default_controller' => '\\Dvelum\\App\\Frontend\\Index\\Controller',
 );
