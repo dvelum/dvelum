@@ -581,10 +581,10 @@ class Model
 
     /**
      * Set DB connections manager (since 0.9.1)
-     * @param \Db_Manager_Interface $manager
+     * @param Db\ManagerInterface $manager
      * @return void
      */
-    public function setDbManager(\Db_Manager_Interface $manager): void
+    public function setDbManager(Db\ManagerInterface $manager): void
     {
         $conName = $this->lightConfig->get('connection');
         $this->dbManager = $manager;
