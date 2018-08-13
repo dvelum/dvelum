@@ -435,7 +435,7 @@ class Record implements RecordInterface
                 throw new Exception('Invalid length for bit value ['.$name.']  ('.$this->getName().')');
         }
 
-        if(isset($this->data[$name]))
+        if(array_key_exists($name, $this->data))
         {
             if($field->isBoolean() && intval($this->data[$name]) === intval($value) ) {
                 unset($this->updates[$name]);
