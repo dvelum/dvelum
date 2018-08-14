@@ -245,7 +245,8 @@ Ext.define('app.crud.menu.EditorPanel',{
             valueLinkType:record.get('link_type'),
             valueUrl:record.get('url'),
             valueResourceId:record.get('resource_id'),
-            nodeId:record.get('id')
+            nodeId:record.get('id'),
+            controllerUrl: this.controllerUrl
         });
 
         win.on('itemSelected',function(pageId , title , published ,link_type , url , resource_id){
