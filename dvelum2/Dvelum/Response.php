@@ -76,6 +76,10 @@ class Response
             throw new Exception('Response already sent');
         }
 
+        if($this->format === self::FORMAT_JSON){
+            $this->header('Content-Type: application/json');
+        }
+
         echo $this->buffer;
 
         if(function_exists('fastcgi_finish_request')){
