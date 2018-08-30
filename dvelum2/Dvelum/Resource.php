@@ -343,7 +343,7 @@ class Resource
         }
 
         if($this->cache)
-            $this->cache->save(\md5($dataHash), $listHash);
+            $this->cache->save(\md5($dataHash), $listHash, 60);
 
         return \md5($dataHash);
     }
