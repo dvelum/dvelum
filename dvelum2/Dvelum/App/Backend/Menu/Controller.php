@@ -157,6 +157,13 @@ class Controller extends Backend\Ui\Controller
             $event->setError($this->lang->get('CANT_CREATE'));
             return;
         }
+        /**
+         * @var \Model_Menu $menuModel
+         */
+        $menuModel = Model::factory('Menu');
+        $menuModel->resetCachedMenuLinks($object->getId());
+        $blockManager = \Dvelum\Service::get('blockManager');
+        $blockManager->invalidateCacheBlockMenu($object->getId());
     }
 
     /**
