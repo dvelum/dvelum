@@ -33,9 +33,6 @@ $configStorage->setConfig($bootCfg['config_storage']);
  */
 $configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->__toArray());
 
-//add test configs
-\Dvelum\File::rmdirRecursive('./tests/data/configs/' , false);
-\Dvelum\File::copyDir('./tests/data/test_objects/', './tests/data/configs/objects/');
 
 $storage = \Dvelum\Config::storage();
 $storage->addPath('./tests/data/configs/');
