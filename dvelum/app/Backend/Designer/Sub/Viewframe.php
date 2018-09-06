@@ -170,7 +170,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$tpl->development = $this->_configMain['development'];
 		$tpl->resource = $res;
 		$tpl->useCSRFToken = $backendConfig->get('use_csrf_token');
-		$tpl->theme = $adminTheme;
+		$tpl->theme = $designerTheme;
 
 		$this->response->put($tpl->render($this->page->getTemplatesPath().'designer/viewframe.php'));
 	    $this->response->send();
