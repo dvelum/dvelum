@@ -62,7 +62,11 @@ class Filter
         switch ($filter) {
             case 'array' :
                 if (!is_array($value)) {
-                    $value = array($value);
+                    if(!empty($value)){
+                        $value = [$value];
+                    }else{
+                        $value = [];
+                    }
                 }
                 break;
             case 'bool' :
