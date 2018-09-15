@@ -95,7 +95,7 @@ Ext.define('designer.store.sortersWindow',{
                             model:'designer.store.fieldsModel',
                             proxy: {
                                 type: 'ajax',
-                                url:app.createUrl([designer.controllerUrl ,'store','allfields']),
+                                url:app.createUrl([designer.controllerUrl ,'store','allFields']),
                                 reader: {
                                     type: 'json',
                                     idProperty: 'name',
@@ -151,19 +151,19 @@ Ext.define('designer.store.sortersWindow',{
 
         this.items = [this.dataGrid];
 
-    this.buttons = [
-                    {
-                        text:desLang.save,
-                        handler:this.saveData,
-                        scope:this
-                    },{
-                        text:desLang.close,
-                        handler:function(){
-                        this.close();
-                        },
-                        scope:this
-                    }
-                    ];
+        this.buttons = [
+            {
+                text:desLang.save,
+                handler:this.saveData,
+                scope:this
+            },{
+                text:desLang.close,
+                handler:function(){
+                    this.close();
+                },
+                scope:this
+            }
+        ];
 
         this.callParent(arguments);
     },
@@ -896,7 +896,7 @@ Ext.define('designer.store.proxyWindow',{
         this.proxyProperties.updateLayout();
         this.proxyProperties.dataGrid.getStore().on('load',function(store){
             store.remove('type');
-            },this);
+        },this);
     },
     /**
      * Change type
