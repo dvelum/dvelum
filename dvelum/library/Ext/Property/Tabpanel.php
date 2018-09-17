@@ -11,7 +11,7 @@ class Ext_Property_Tabpanel extends Ext_Property_Panel
 	public $tabBar = self::Object;
 	public $tabBarHeaderPosition = self::Number;
 	public $tabPosition = self::String;
-	public $tabRotation = self::String;
+	public $tabRotation = self::Number;
 	public $tabStretchMax = self::Boolean;
 	
 	static public $extend = 'Ext.tab.Panel';
