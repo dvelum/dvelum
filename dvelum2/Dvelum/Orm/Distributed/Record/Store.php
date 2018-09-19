@@ -142,14 +142,17 @@ class Store extends \Dvelum\Orm\Record\Store
 
         $db = $indexModel->getDbConnection();
         $db->beginTransaction();
-        try{
-            $o = Orm\Record::factory($indexObject, $object->getId());
-            $o->delete(false);
-        }catch (Exception $e){
-            if ($this->log) {
-                $this->log->log(LogLevel::ERROR, $object->getName() . ' cant delete index' . $object->getId());
+
+        if($objectConfig->hasDistributedIndexRecord()){
+            try{
+                $o = Orm\Record::factory($indexObject, $object->getId());
+                $o->delete(false);
+            }catch (Exception $e){
+                if ($this->log) {
+                    $this->log->log(LogLevel::ERROR, $object->getName() . ' cant delete index' . $object->getId());
+                }
+                return false;
             }
-            return false;
         }
 
         if(!parent::deleteRecord($object)){

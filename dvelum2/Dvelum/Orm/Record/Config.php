@@ -74,7 +74,7 @@ class Config
      * List of system fields used for sharding
      * @var array
      */
-     protected $distributedFields;
+    protected $distributedFields;
 
     /**
      * @var string $name
@@ -86,14 +86,14 @@ class Config
      * Translation adapter
      * @var Orm\Record\Config\Translator
      */
-     protected $translator = false;
+    protected $translator = false;
 
     /**
      * Translation flag
      * @var boolean
      */
     protected $translated = false;
-    
+
     /**
      * Database table prefix
      * @var string
@@ -284,7 +284,7 @@ class Config
             'unique'=>true,
             'primary'=>true,
             'system'=> true,
-             // distributed objects does not use auto increment index
+            // distributed objects does not use auto increment index
             'db_auto_increment'=>$dataLink['fields'][$pKeyName]['db_auto_increment'],
             'is_search' =>true,
             'lazyLang'=>true
@@ -924,10 +924,10 @@ class Config
     public function removeField(string $name) : void
     {
         $fields = $this->getFieldsConfig();
-        
+
         if(!isset($fields[$name]))
             return;
-        
+
         unset($fields[$name]);
         $this->config->set('fields' , $fields);
 
@@ -1458,6 +1458,20 @@ class Config
     }
 
     /**
+     * CHeck if object has global distributed index
+     */
+    public function hasDistributedIndexRecord()
+    {
+        if($this->isDistributed()){
+            $sharding = $this->getShardingType();
+            if(in_array($sharding,[self::SHARDING_TYPE_GLOABAL_ID,self::SHARDING_TYPE_KEY])){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get system sharding fields
      * @return array
      */
@@ -1523,7 +1537,7 @@ class Config
                 }
                 break;
             case self::SHARDING_TYPE_VIRTUAL_BUCKET:
-                    $key = Orm\Distributed::factory()->getBucketField();
+                $key = Orm\Distributed::factory()->getBucketField();
                 break;
         }
         return $key;
