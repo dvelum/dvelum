@@ -384,7 +384,8 @@ class Resource
                 $s .= '<link rel="stylesheet" type="text/css" href="' . $this->config->get('wwwRoot') . $cachedUrl . '" />' . "\n";
             }else{
                 foreach($this->cssFiles as $k => $v){
-                    $s .= '<link rel="stylesheet" type="text/css" href="' . $this->config->get('wwwRoot') . $v->file . '" />' . "\n";
+                    $mTime = filemtime($this->config->get('wwwPath')  . '/' . $v->file);
+                    $s .= '<link rel="stylesheet" type="text/css" href="' . $this->config->get('wwwRoot') . $v->file . '?m='.$mTime.'" />' . "\n";
                 }
             }
         }
