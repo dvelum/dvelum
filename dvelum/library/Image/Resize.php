@@ -69,6 +69,8 @@ class Image_Resize
                 break;
             case IMAGETYPE_PNG :
                 $im = imagecreatefrompng($path);
+                imageAlphaBlending($im, true);
+                imageSaveAlpha($im, true);
                 break;
             default :
                 trigger_error('Unsupported file type!' , E_USER_WARNING);
@@ -116,7 +118,7 @@ class Image_Resize
         {
             $result = self::saveImage($im , $newImgPath , $imgInfo[2]);
             if($im){
-                imagedestroy($im);
+                @imagedestroy($im);
             }
             return $result;
         }
