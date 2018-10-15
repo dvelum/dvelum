@@ -823,61 +823,33 @@ Ext.define('Ext.Fix.EXTJS-22672', {
         return focusPosition;
     }
 });
+// Enable text selection for display field
+(function () {
+    Ext.override(Ext.form.field.Display, {
+        fieldSubTpl:['<div id="{id}" data-ref="inputEl" role="textbox" aria-readonly="true"',
+            ' aria-labelledby="{cmpId}-labelEl" {inputAttrTpl}',
+            ' tabindex="<tpl if="tabIdx != null">{tabIdx}<tpl else>-1</tpl>"',
+            '<tpl if="fieldStyle"> style="{fieldStyle}"</tpl>',
+            ' class="{fieldCls} {fieldCls}-{ui} x-selectable">{value}</div>']
+    });
 
-/*
- * Tooltips cut fix fo FF/Mac 4.2.x
- *
- Ext.define('Ext.SubPixelRoundingFix', {
- override: 'Ext.dom.Element',
- getWidth: function(contentWidth, preciseWidth) {
- var me = this,
- dom = me.dom,
- hidden = me.isStyle('display', 'none'),
- rect, width, floating;
-
- if (hidden) {
- return 0;
- }
- // Gecko will in some cases report an offsetWidth that is actually less than the width of the
- // text contents, because it measures fonts with sub-pixel precision but rounds the calculated
- // value down. Using getBoundingClientRect instead of offsetWidth allows us to get the precise
- // subpixel measurements so we can force them to always be rounded up. See
- // https://bugzilla.mozilla.org/show_bug.cgi?id=458617
- // Rounding up ensures that the width includes the full width of the text contents.
- if (Ext.supports.BoundingClientRect) {
- rect = dom.getBoundingClientRect();
- // IE9 is the only browser that supports getBoundingClientRect() and
- // uses a filter to rotate the element vertically.  When a filter
- // is used to rotate the element, the getHeight/getWidth functions
- // are not inverted (see setVertical).
- width = (me.vertical && !Ext.isIE9 && !Ext.supports.RotatedBoundingClientRect) ?
- (rect.bottom - rect.top) : (rect.right - rect.left);
- width = preciseWidth ? width : Math.ceil(width);
- } else {
- width = dom.offsetWidth;
- }
-
- // IE9/10 Direct2D dimension rounding bug: https://sencha.jira.com/browse/EXTJSIV-603
- // there is no need make adjustments for this bug when the element is vertically
- // rotated because the width of a vertical element is its rotated height
- if (Ext.supports.Direct2DBug && !me.vertical) {
- // get the fractional portion of the sub-pixel precision width of the element's text contents
- floating = me.adjustDirect2DDimension('width');
- if (preciseWidth) {
- width += floating;
- }
- // IE9 also measures fonts with sub-pixel precision, but unlike Gecko, instead of rounding the offsetWidth down,
- // it rounds to the nearest integer. This means that in order to ensure that the width includes the full
- // width of the text contents we need to increment the width by 1 only if the fractional portion is less than 0.5
- else if (floating > 0 && floating < 0.5) {
- width++;
- }
- }
-
- if (contentWidth) {
- width -= me.getBorderWidth("lr") + me.getPadding("lr");
- }
- return (width < 0) ? 0 : width;
- }
- });
- */
+    Ext.override(Ext.view.Table, {
+        cellTpl: [
+            '<td class="{tdCls}" {tdAttr} {cellAttr:attributes}',
+            ' style="width:{column.cellWidth}px;<tpl if="tdStyle">{tdStyle}</tpl>"',
+            '<tpl if="column.cellFocusable === false">',
+            ' role="presentation"',
+            '<tpl else>',
+            ' role="{cellRole}" tabindex="-1"',
+            '</tpl>',
+            '  data-columnid="{[values.column.getItemId()]}">',
+            '<div class="' + Ext.baseCSSPrefix + 'grid-cell-inner {innerCls} x-selectable" ',
+            'style="text-align:{align};<tpl if="style">{style}</tpl>" ',
+            '{cellInnerAttr:attributes}>{value}</div>',
+            '</td>',
+            {
+                priority: 0
+            }
+        ]
+    });
+})();
