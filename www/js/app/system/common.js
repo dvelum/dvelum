@@ -823,33 +823,3 @@ Ext.define('Ext.Fix.EXTJS-22672', {
         return focusPosition;
     }
 });
-// Enable text selection for display field
-(function () {
-    Ext.override(Ext.form.field.Display, {
-        fieldSubTpl:['<div id="{id}" data-ref="inputEl" role="textbox" aria-readonly="true"',
-            ' aria-labelledby="{cmpId}-labelEl" {inputAttrTpl}',
-            ' tabindex="<tpl if="tabIdx != null">{tabIdx}<tpl else>-1</tpl>"',
-            '<tpl if="fieldStyle"> style="{fieldStyle}"</tpl>',
-            ' class="{fieldCls} {fieldCls}-{ui} x-selectable">{value}</div>']
-    });
-
-    Ext.override(Ext.view.Table, {
-        cellTpl: [
-            '<td class="{tdCls}" {tdAttr} {cellAttr:attributes}',
-            ' style="width:{column.cellWidth}px;<tpl if="tdStyle">{tdStyle}</tpl>"',
-            '<tpl if="column.cellFocusable === false">',
-            ' role="presentation"',
-            '<tpl else>',
-            ' role="{cellRole}" tabindex="-1"',
-            '</tpl>',
-            '  data-columnid="{[values.column.getItemId()]}">',
-            '<div class="' + Ext.baseCSSPrefix + 'grid-cell-inner {innerCls} x-selectable" ',
-            'style="text-align:{align};<tpl if="style">{style}</tpl>" ',
-            '{cellInnerAttr:attributes}>{value}</div>',
-            '</td>',
-            {
-                priority: 0
-            }
-        ]
-    });
-})();
