@@ -23,7 +23,6 @@ namespace  Dvelum\Db;
 
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
-use Dvelum\Db\ManagerInterface;
 use Dvelum\Orm\Distributed;
 
 class Manager implements ManagerInterface
@@ -134,10 +133,11 @@ class Manager implements ManagerInterface
     /**
      * Get Db Connection config
      * @param string $name
+     * @param string|null $workMode
      * @throws \Exception
      * @return ConfigInterface
      */
-    public function getDbConfig(string $name, string $workMode = null) : ConfigInterface
+    public function getDbConfig(string $name, ?string $workMode = null) : ConfigInterface
     {
         if(empty($workMode)){
             $workMode = $this->appConfig->get('development');

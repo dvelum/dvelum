@@ -24,7 +24,6 @@ use Dvelum\Db\Select\Filter;
 use Dvelum\Orm;
 use Dvelum\Utils;
 use \Exception;
-use Dvelum\Config\ConfigInterface;
 
 /**
  * Base class for data models

@@ -148,7 +148,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
                 $item->children = array();
 
                 if($tree->hasChilds($v['id']))
-                    $item->children = $this->_fillContainers($tree ,  $v['id'] , false);
+                    $item->children = $this->_fillContainers($tree, $v['id']);
 
                 $result[] = $item;
                 continue;
@@ -207,7 +207,6 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
     {
         $config = array(
             'Docked'=>'objectDocked',
-            'Window'=>'objectWindowIcon',
             'Text'=> 'textFieldIcon',
             'Textarea'=>'textareaIcon',
             'Checkbox'=>'checkboxIcon',
@@ -470,7 +469,7 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
             $o->leaf=false;
             $o->iconCls = '';
             $o->allowDrag = false;
-            $o->children = $this->_fillContainers($item['project']->getTree() , 0 , false);
+            $o->children = $this->_fillContainers($item['project']->getTree() , 0);
             $result[] = $o;
         }
 

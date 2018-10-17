@@ -2,8 +2,6 @@
 namespace Dvelum\Orm;
 
 use PHPUnit\Framework\TestCase;
-use Dvelum\Orm\Record;
-use Dvelum\Orm\Model;
 
 use Dvelum\App\Session\User;
 
@@ -38,7 +36,6 @@ class RecordTest extends TestCase
             'published'=>true,
             'published_version'=>0,
             'editor_id'=>$user->getId(),
-            'author_id'=>$user->getId(),
             'date_created'=>date('Y-m-d H:i:s'),
             'date_updated'=>date('Y-m-d H:i:s'),
             'author_id'=>$user->getId(),
@@ -222,7 +219,7 @@ class RecordTest extends TestCase
         $iId = time();
         $o = Record::factory('Page');
         $o->setInsertId($iId);
-        $userId = \User::getInstance()->id;
+        $userId = \User::getInstance()->getId();
 
         $this->assertEquals($iId , $o->getInsertId());
         $o->setValues(array(

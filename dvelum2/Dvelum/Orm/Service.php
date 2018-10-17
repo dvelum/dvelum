@@ -23,15 +23,13 @@ namespace Dvelum\Orm;
 use Dvelum\Cache\CacheInterface;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm;
-use Dvelum\Orm\{
-    Record, Model, Exception
-};
 use Dvelum\Orm\Distributed\Record as DistributedRecord;
 use Dvelum\Db;
 use Dvelum\Security\CryptServiceInterface;
 use Dvelum\Utils;
 use Dvelum\Config;
 use Dvelum\Log;
+use Psr\Log\LoggerInterface;
 
 class Service
 {
@@ -58,6 +56,7 @@ class Service
      * @var Record\Store $distributedStorage
      */
     protected $distributedStorage = null;
+    protected $distributedStoreLoader;
     /**
      * @var \Eventmanager $eventManager
      */
@@ -67,7 +66,7 @@ class Service
      */
     protected $config;
     /**
-     * @var \Log $log
+     * @var LoggerInterface $log
      */
     protected $log = false;
 
@@ -206,6 +205,7 @@ class Service
     /**
      * @param string $name
      * @param bool $id
+     * @param string|bool $shard
      * @deprecated
      * @throws \Exception
      * @return mixed
@@ -218,7 +218,7 @@ class Service
      * Factory method of object creation is preferable to use, cf. method  __construct() description
      * @param string $name
      * @param int|int[]|bool $id , optional default false
-     * @param  string $shard. optional
+     * @param string|bool $shard. optional
      * @throws \Exception
      * @return Orm\Record|Orm\Record[]
      */
@@ -318,7 +318,7 @@ class Service
         $name = strtolower($name);
 
         if ($force || !isset($this->configObjects[$name])) {
-            $config = new Record\Config($name, $force, $this->configSettings);
+            $config = new Record\Config($name, $this->configSettings, $force);
             $orm = $this;
             $loader = function () use ($orm){
                 return $orm->cryptService();

@@ -28,6 +28,7 @@ use Dvelum\Log;
 use Dvelum\Lang;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Utils;
+use Zend\Db\Metadata\Object\ColumnObject;
 use Zend\Db\Sql\Ddl;
 use Dvelum\Config as Cfg;
 use \Exception;
@@ -221,9 +222,9 @@ abstract class AbstractAdapter implements BuilderInterface
     }
     /**
      * Get Existing Columns
-     * @return \Zend\Db\Metadata\Object\TableObject
+     * @return ColumnObject[]
      */
-    protected function getExistingColumns()
+    protected function getExistingColumns() : array
     {
         return $this->db->getMeta()->getAdapter()->getColumns($this->model->table());
     }
@@ -418,6 +419,8 @@ abstract class AbstractAdapter implements BuilderInterface
             return false;
         }
 
+        $sql = null;
+
         try
         {
             $model = Model::factory($this->objectName);
@@ -580,10 +583,13 @@ abstract class AbstractAdapter implements BuilderInterface
 
             /*
              * Build database
-            */
+             */
             $builder = Builder::factory($newObjectName, true);
-            return  $builder->build();
+            if(!$builder->build()){
+                return false;
+            }
         }
+        return true;
     }
 
     /**
@@ -678,7 +684,7 @@ abstract class AbstractAdapter implements BuilderInterface
             }
 
             $cfg = Orm\Record\Config::factory($newObjectName);
-            $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->_objectName.' & '.$linkedObject);
+            $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->objectName.' & '.$linkedObject);
 
             if(!Cfg::storage()->save($cfg)){
                 $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $cfg->getName();

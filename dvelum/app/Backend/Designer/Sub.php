@@ -6,7 +6,7 @@ class Backend_Designer_Sub
 	 */
 	protected $_lang;
 	/**
-	 * @var Zend_Db_Adapter_Abstract
+	 * @var Dvelum\Db\Adapter
 	 */
 	protected $_db;
 	/**
@@ -43,7 +43,7 @@ class Backend_Designer_Sub
 		$this->_configMain = Config::storage()->get('main.php');
 		$this->_lang = Lang::lang();
         /**
-         * @var \Dvelum\Orm $service
+         * @var \Dvelum\Orm\Service $service
          */
 		$service = \Dvelum\Service::get('orm');
 		$this->_db = $service->getModelSettings()->get('defaultDbManager')->getDbConnection('default');

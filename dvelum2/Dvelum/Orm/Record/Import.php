@@ -76,7 +76,7 @@ class Import
 
     /**
      * @todo cleanup the code
-     * @param \Db_Adapter $dbAdapter
+     * @param Db\Adapter $dbAdapter
      * @param string $tableName
      * @param mixed $adapterPrefix, optional default - false
      * @throws Exception
@@ -84,7 +84,7 @@ class Import
      */
     public function createConfigByTable(Db\Adapter $dbAdapter , string $tableName , $adapterPrefix = false)
     {
-        $config = array();
+        $config = [];
         
         if($adapterPrefix && strpos($tableName, $adapterPrefix) === 0)
         {

@@ -28,6 +28,9 @@ use Dvelum\Config;
 
 class Distributed
 {
+    /**
+     * @var Distributed $instance
+     */
     static protected $instance = false;
 
     protected $config;
@@ -97,7 +100,6 @@ class Distributed
     /**
      * Get object shard id
      * @param string $objectName
-     * @param mixed $objectId
      * @param mixed $distributedKey
      * @return mixed
      */
@@ -108,10 +110,11 @@ class Distributed
     }
 
     /**
-     * @param $objectName
-     * @param array $objectId
-     * @param array $distributedkeys
-     * @return array  [shard_id=>[key1,key2,key3], shard_id2=>[...]]
+     * Find object shards, return [shard_id=>[key1,key2,key3], shard_id2=>[...]]
+     * @param string $objectName
+     * @param array $distributedKeys
+     * @return array
+     * @throws \Exception
      */
     public function findObjectsShards(string $objectName, array $distributedKeys) : array
     {
@@ -123,9 +126,9 @@ class Distributed
     /**
      * Reserve object id, add to routing table
      * @param $record
-     * @return ?Reserved
+     * @return Reserved|null
      */
-    public function reserveIndex(Record $record) : ?Reserved
+    public function reserveIndex(RecordInterface $record) : ?Reserved
     {
         $keyGen = $this->keyGenerators[$record->getConfig()->getShardingType()];
 
@@ -148,7 +151,7 @@ class Distributed
      * @param $indexId
      * @return bool
      */
-    public function deleteIndex(Record $record, $indexId) : bool
+    public function deleteIndex(RecordInterface $record, $indexId) : bool
     {
         return $this->keyGenerators[$record->getConfig()->getShardingType()]->deleteIndex($record, $indexId);
     }

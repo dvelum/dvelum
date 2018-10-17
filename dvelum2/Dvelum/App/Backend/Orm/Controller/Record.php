@@ -31,7 +31,7 @@ use Dvelum\Response;
 class Record extends Controller
 {
     /**
-     * @var Orm $ormService
+     * @var \Dvelum\Orm\Service $ormService
      */
     protected $ormService;
 
@@ -508,7 +508,7 @@ class Record extends Controller
         $tables = $db->listTables();
 
         /**
-         * @var Orm
+         * @var \Dvelum\Orm\Service
          */
         $ormService = Service::get('orm');
 

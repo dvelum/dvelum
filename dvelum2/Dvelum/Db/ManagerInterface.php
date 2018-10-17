@@ -19,7 +19,6 @@
 namespace  Dvelum\Db;
 
 use Dvelum\Config\ConfigInterface;
-use Dvelum\Db;
 
 interface ManagerInterface extends \Db_Manager_Interface
 {

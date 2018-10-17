@@ -271,7 +271,7 @@ class Stat
             }
 
             $hasBroken = false;
-            $builder->setConnection($model->getDbManager()->getDbConnection($connectionName,null,$item['id']));
+            $builder->setConnection($model->getDbManager()->getDbConnection($connectionName,null, (string) $item['id']));
             $valid = $builder->validate();
 
             if(!empty($builder->getBrokenLinks()))

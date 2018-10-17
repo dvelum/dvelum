@@ -72,8 +72,11 @@ class Format
             $s .= $days . ' days ';
         }
 
-        $s .= str_pad($hours, 2, '0', STR_PAD_LEFT) . ':' . str_pad($minutes, 2, '0',
-                STR_PAD_LEFT) . ':' . str_pad($seconds, 2, '0', STR_PAD_LEFT);
+        $s .= str_pad((string) $hours, 2, '0', STR_PAD_LEFT) .
+            ':' .
+            str_pad((string) $minutes, 2, '0', STR_PAD_LEFT) .
+            ':' .
+            str_pad((string) $seconds, 2, '0', STR_PAD_LEFT);
         return $s;
     }
 

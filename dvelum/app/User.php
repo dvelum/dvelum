@@ -15,7 +15,7 @@ class User
      */
 	protected $model;
 	
-	protected $info = array();
+	protected $info = [];
 	protected $id = false;
 	
 	protected $authChecked = false;

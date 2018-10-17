@@ -170,13 +170,9 @@ class Utils
     {
         try {
             file_put_contents($file, '<?php return ' . var_export($data, true) . '; ');
+            chmod($file, 0775);
         } catch (\Throwable $e) {
             return false;
-        }
-        try{
-
-        }catch (\Throwable $e){
-            chmod($file, 0775);
         }
         return true;
     }

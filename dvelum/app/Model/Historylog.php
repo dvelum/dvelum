@@ -65,7 +65,7 @@ class Model_Historylog extends Model
       */
     public function getLog($table_name , $record_id , $start = 0 , $limit = 25){
 
-         $sql =  $this->_dbSlave->select()
+         $sql =  $this->getSlaveDbConnection()->select()
                   ->from(array('l'=>$this->table()) , array('type','date'))
                   ->where('l.table_name = ?', $table_name)
                   ->where('l.record_id = ?' , $record_id)
@@ -76,7 +76,7 @@ class Model_Historylog extends Model
                    ->order('l.date DESC')
                    ->limit($limit , $start);
 
-          $data = $this->_dbSlave->fetchAll($sql);
+          $data = $this->getSlaveDbConnection()->fetchAll($sql);
 
           if(!empty($data)){
               foreach ($data as $k=>&$v){

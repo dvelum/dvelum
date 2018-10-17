@@ -70,7 +70,7 @@ class Backend_Tasks_Controller extends Backend_Controller
     public function testAction()
     {
         /**
-         * @var \Dvelum\Orm $service
+         * @var \Dvelum\Orm\Service $service
          */
         $service = \Dvelum\Service::get('orm');
         $db = $service->getModelSettings()->get('defaultDbManager')->getDbConnection('default');

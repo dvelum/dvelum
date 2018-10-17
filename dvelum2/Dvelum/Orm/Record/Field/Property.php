@@ -246,7 +246,7 @@ class Property
      */
     public function __set($key , $value)
     {
-        if(in_array(self::$acceptedData , $key))
+        if(in_array($key, self::$acceptedData,true ))
             $this->data[$key] = $value;
         else
             throw new \Exception('Invalid property name');

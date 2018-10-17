@@ -21,7 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\Config;
 
 use Dvelum\Config;
-use Dvelum\Config\ConfigInterface;
+
 
 /**
  * Configuration Object Factory
@@ -145,7 +145,7 @@ class Factory
 
     /**
      * Instantiate storage
-     * @return \Store
+     * @return \Store_Interface
      */
     static protected function connectLocalStore()
     {
@@ -155,7 +155,7 @@ class Factory
 
     /**
      * Cache data again
-     * @property $key - optional
+     * @property mixed $key - optional
      * @return void
      */
     static public function cache($key = false)
@@ -174,7 +174,7 @@ class Factory
         {
             if(self::$store->keyExists($key))
             {
-                self::$cache->save(self::$store->get($key));
+                self::$cache->save(self::$store->get($key), (string) $key);
             }
         }
     }
@@ -207,6 +207,7 @@ class Factory
     /**
      * Create new config object
      * @param array $data
+     * @param string|null $name
      * @return ConfigInterface
      */
     static public function create(array $data, ?string $name = null) : ConfigInterface

@@ -19,6 +19,7 @@
 declare(strict_types=1);
 
 namespace Dvelum\App\Backend\Logs;
+
 use Dvelum\App\Backend;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -30,62 +31,62 @@ use \Exception;
 
 class Controller extends Backend\Ui\Controller
 {
-	protected  $canViewObjects = ['User'];
+    protected $canViewObjects = ['User'];
 
     public function getModule(): string
     {
         return 'Logs';
     }
+
     public function getObjectName(): string
     {
         return 'Historylog';
     }
 
-	public function listAction()
-	{
-		$pager = $this->request->post('pager', 'array', []);
-		$filter = $this->request->post('filter', 'array', []);
+    public function listAction()
+    {
+        $pager = $this->request->post('pager', 'array', []);
+        $filter = $this->request->post('filter', 'array', []);
 
-		$history = Model::factory('Historylog');
+        $history = Model::factory('Historylog');
 
-        if(isset($filter['date']) && !empty($filter['date'])){
-            $date = date('Y-m-d' ,strtotime($filter['date']));
-            $filter['date'] =  new Select\Filter(
+        if (isset($filter['date']) && !empty($filter['date'])) {
+            $date = date('Y-m-d', strtotime($filter['date']));
+            $filter['date'] = new Select\Filter(
                 'date',
                 [
-                    $date.' 00:00:00', $date.' 23:59:59'
+                    $date . ' 00:00:00', $date . ' 23:59:59'
                 ],
                 Select\Filter::BETWEEN
             );
         }
 
-        $fields = ['date','type','id','object','user_id','record_id'];
+        $fields = ['date', 'type', 'id', 'object', 'user_id', 'record_id'];
         $data = $history
             ->query()
             ->params($pager)
             ->filters($filter)
             ->fields($fields)->fetchAll();
 
-		if(!empty($data))
-		{
-            $users = Utils::fetchCol('user_id' , $data);
-            $users = Record::factory('User' , $users);
+        if (!empty($data)) {
+            $users = Utils::fetchCol('user_id', $data);
+            $users = Record::factory('User', $users);
 
-			foreach ($data as $k=>&$v)
-			{
-                if(!empty($v['user_id']) && isset($users[$v['user_id']])){
+            foreach ($data as $k => &$v) {
+                if (!empty($v['user_id']) && isset($users[$v['user_id']])) {
                     $v['user_name'] = $users[$v['user_id']]->getTitle();
                 }
-                if(!empty($v['object']) && Record\Config::configExists($v['object'])){
+                if (!empty($v['object']) && Record\Config::configExists($v['object'])) {
                     $v['object_title'] = Record\Config::factory($v['object'])->getTitle();
                 }
-			}unset($v);
-		}
+            }
+            unset($v);
+        }
 
-		$this->response->success($data , [
-		    'count'=>$history->query()->filters($filter)->getCount()
+        $this->response->success($data, [
+            'count' => $history->query()->filters($filter)->getCount()
         ]);
-	}
+    }
 
     /**
      * Get list of registered DB Objects
@@ -95,8 +96,8 @@ class Controller extends Backend\Ui\Controller
         $manager = new Orm\Record\Manager();
         $list = $manager->getRegisteredObjects();
         $data = [];
-        foreach ($list as $object){
-            $data[] = ['id'=>$object, 'title' => Record\Config::factory($object)->getTitle()];
+        foreach ($list as $object) {
+            $data[] = ['id' => $object, 'title' => Record\Config::factory($object)->getTitle()];
         }
         $this->response->success($data);
     }
@@ -106,19 +107,19 @@ class Controller extends Backend\Ui\Controller
      */
     public function changesListAction()
     {
-        $filter = $this->request->post('filter' , Filter::FILTER_ARRAY , false);
+        $filter = $this->request->post('filter', Filter::FILTER_ARRAY, false);
 
-        if(empty($filter['id'])){
+        if (empty($filter['id'])) {
             $this->response->success();
             return;
         }
 
         $id = intval($filter['id']);
 
-        try{
-            $rec = Orm\Record::factory('Historylog' , $id);
-        }catch (Exception $e){
-            Model::factory('Historylog')->logError('Invalid id requested: '.$id);
+        try {
+            $rec = Orm\Record::factory('Historylog', $id);
+        } catch (Exception $e) {
+            Model::factory('Historylog')->logError('Invalid id requested: ' . $id);
             $this->response->success();
             return;
         }
@@ -126,23 +127,23 @@ class Controller extends Backend\Ui\Controller
         $before = $rec->get('before');
         $after = $rec->get('after');
 
-        if(empty($before) && empty($after)){
+        if (empty($before) && empty($after)) {
             $this->response->success();
             return;
         }
 
-        $before = json_decode($before , true);
-        $after = json_decode($after , true);
+        $before = json_decode($before, true);
+        $after = json_decode($after, true);
 
         $data = [];
-        if(!empty($before)){
-            foreach($before as $field=>$value){
+        if (!empty($before)) {
+            foreach ($before as $field => $value) {
                 $data[$field]['id'] = $field;
                 $data[$field]['before'] = $value;
             }
         }
-        if(!empty($after)){
-            foreach($after as $field=>$value){
+        if (!empty($after)) {
+            foreach ($after as $field => $value) {
                 $data[$field]['id'] = $field;
                 $data[$field]['after'] = $value;
             }

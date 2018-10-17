@@ -9,7 +9,7 @@ class Ext_Object_Instance extends Ext_Object
 
    /**
     * Always not extended
-    * @var boolen _isExtended
+    * @var bool _isExtended
     */
    protected $_isExtended = false;
 

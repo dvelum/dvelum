@@ -51,7 +51,7 @@ class EventManager
             if(is_callable($listener->handler)){
                 ($listener->handler)($e);
             }else{
-                call_user_func_array($listener->handler, $e);
+                call_user_func_array($listener->handler, [$e]);
             }
 
             if($e->hasError()){

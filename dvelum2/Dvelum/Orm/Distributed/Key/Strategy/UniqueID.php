@@ -65,7 +65,8 @@ class UniqueID implements GeneratorInterface
      * Reserve object id, add to routing table
      * @param Record $object
      * @param string $shard
-     * @return ?Reserved
+     * @return Reserved|null
+     * @throws Exception
      */
     public function reserveIndex(Record $object , string $shard) : ?Reserved
     {
@@ -112,7 +113,7 @@ class UniqueID implements GeneratorInterface
 
             return $result;
         }catch (Exception $e){
-            $db->rollBack();
+            $db->rollback();
             $model->logError('Sharding::reserveIndex '.$e->getMessage());
             return null;
         }
@@ -143,8 +144,9 @@ class UniqueID implements GeneratorInterface
     /**
      * Get shards for list of objects
      * @param string $objectName
-     * @param array $objectIds
+     * @param array $distributedKeys
      * @return array  [shard_id=>[key1,key2,key3], shard_id2=>[...]]
+     * @throws Exception
      */
     public function findObjectsShards(string $objectName, array $distributedKeys) : array
     {

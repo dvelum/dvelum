@@ -128,7 +128,7 @@ class Config
     static public function getInstance($name , $force = false)
     {
         /**
-         * @var Orm $service
+         * @var \Dvelum\Orm\Service $service
          */
         $service = Service::get('orm');
         return $service->config($name, $force);
@@ -146,7 +146,7 @@ class Config
     {
         /**
          * Runtime call optimization
-         * @var Orm $service
+         * @var \Dvelum\Orm\Service $service
          */
         static $service = false;
         if(empty($service)){
@@ -165,7 +165,7 @@ class Config
     }
 
 
-    public function __construct($name , $force = false, Cfg\ConfigInterface $settings)
+    public function __construct($name , Cfg\ConfigInterface $settings, $force = false)
     {
         $this->settings = $settings;
         $this->name = strtolower($name);
@@ -188,7 +188,7 @@ class Config
     static public function configExists(string $name) : bool
     {
         /**
-         * @var Orm $service
+         * @var \Dvelum\Orm\Service $service
          */
         $service = Service::get('orm');
         return $service->configExists($name);
@@ -240,7 +240,6 @@ class Config
 
     /**
      * Prepare config, load system properties
-     * @throws Exception
      */
     protected function loadProperties()
     {
@@ -757,7 +756,7 @@ class Config
      */
     public function setFieldLink(string $field , string $linkedObject) : bool
     {
-        if(!$this->isLink($field))
+        if(!$this->getField($field)->isLink())
             return false;
 
         $cfg = & $this->config->dataLink();
@@ -1389,7 +1388,8 @@ class Config
     public function getCryptService() : CryptServiceInterface
     {
         if(empty($this->cryptService)){
-            $this->cryptService = $this->cryptServiceLoader();
+            $service = $this->cryptServiceLoader;
+            $this->cryptService = $service();
         }
         return $this->cryptService;
     }

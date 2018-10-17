@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpMissingParentCallCommonInspection */
+/** @noinspection PhpMissingParentCallCommonInspection */
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -22,7 +23,6 @@ namespace Dvelum\App\Backend\Orm\Controller;
 use Dvelum\{
     App\Backend\Orm,
     Config,
-    Db,
     Db\Adapter,
     Request,
     Response
@@ -386,8 +386,9 @@ class Connections extends \Dvelum\App\Backend\Controller
         $meta = $connection->getMeta();
         $columns = $meta->getColumns($table);
 
-        foreach ($columns as $v=>$k)
-            $data[] = ['name'=>$v, 'type'=>$k['data_type']];
+        foreach ($columns as $v=>$k){
+            $data[] = ['name'=>$v, 'type'=>$k->getDataType()];
+        }
 
         $this->response->success($data);
     }

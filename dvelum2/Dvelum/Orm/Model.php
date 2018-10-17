@@ -92,6 +92,11 @@ class Model
      * @var \Cache_Interface
      */
     protected $cache;
+    /**
+     * @var \Cache_Interface
+     * @deprecated
+     */
+    protected $_cache;
 
     /**
      * DB table prefix
@@ -134,6 +139,8 @@ class Model
 
     /**
      * @param string $objectName
+     * @param Config\ConfigInterface $settings
+     * @param Config\ConfigInterface $ormConfig
      * @throws \Exception
      */
     public function __construct(string $objectName, Config\ConfigInterface $settings, Config\ConfigInterface $ormConfig)
@@ -313,7 +320,7 @@ class Model
     {
         /**
          * Runtime call optimization
-         * @var Orm $service
+         * @var \Dvelum\Orm\Service $service
          */
         static $service = false;
         if(empty($service)){
@@ -376,6 +383,7 @@ class Model
     /**
      *  Get the object data using cache
      * @param integer $id - object identifier
+     * @param mixed $lifetime
      * @return array
      */
     public function getCachedItem($id , $lifetime = false)
@@ -404,7 +412,7 @@ class Model
      * Get data record by field value using cache. Returns first occurrence
      * @param string $field - field name
      * @param string $value - field value
-     * @throws Exception
+     * @throws \Exception
      * @return array
      */
     public function getCachedItemByField(string $field, $value)
@@ -551,7 +559,7 @@ class Model
      * @param string $fieldName — field name
      * @param mixed $fieldValue — field value
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public function checkUnique(int $recordId, string $fieldName, $fieldValue): bool
     {
@@ -619,7 +627,8 @@ class Model
 
     /**
      * Get logs Adapter
-     * @return ?LoggerInterface
+     * @return LoggerInterface|null
+     * @throws \Exception
      */
     public function getLogsAdapter() : ?LoggerInterface
     {
@@ -712,6 +721,8 @@ class Model
             // trigger_error('Deprecated method call'. get_called_class().'::'.$name,E_USER_NOTICE);
             return call_user_func_array([$deprecatedFunctions[$objectName],$name], $arguments);
         }
+
+        throw new \Exception('Undefined method '.$name);
     }
 
     /**

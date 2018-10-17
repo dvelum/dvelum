@@ -3,14 +3,10 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Backend\Orm;
 
-use Dvelum\App\Backend\Orm\Manager;
-use Dvelum\App\Backend\Orm\Connections;
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Lang;
-use Dvelum\View;
-use Dvelum\Template;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\App\Router\RouterInterface;
@@ -31,18 +27,18 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         'distributed' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Distributed',
     ];
 
-    public function route(Request $request, Response $response) : void
+    public function route(Request $request, Response $response): void
     {
         $action = $request->getPart(2);
-        if(isset($this->routes[$action])){
+        if (isset($this->routes[$action])) {
             $router = new \Dvelum\App\Router\Backend();
             $router->runController($this->routes[$action], $request->getPart(3), $request, $response);
             return;
         }
 
-        if(method_exists($this,$action.'Action')){
-            $this->{$action.'Action'}();
-        }else{
+        if (method_exists($this, $action . 'Action')) {
+            $this->{$action . 'Action'}();
+        } else {
             $this->indexAction();
         }
     }
@@ -67,7 +63,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $ormConfig = Config::storage()->get('orm.php');
         Orm\Record\Builder::writeLog($ormConfig['use_orm_build_log']);
         Orm\Record\Builder::setLogsPath($ormConfig['log_path']);
-        Orm\Record\Builder::setLogPrefix($this->appConfig['development_version'].'_build_log.sql');
+        Orm\Record\Builder::setLogPrefix($this->appConfig['development_version'] . '_build_log.sql');
     }
 
     public function indexAction()
@@ -75,14 +71,14 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $version = Config::storage()->get('versions.php')->get('orm');
         $dbConfigs = [];
 
-        foreach ($this->appConfig->get('db_configs') as $k=>$v){
-            $dbConfigs[]= [
-                'id'=>$k ,
-                'title'=>$this->lang->get($v['title'])
+        foreach ($this->appConfig->get('db_configs') as $k => $v) {
+            $dbConfigs[] = [
+                'id' => $k,
+                'title' => $this->lang->get($v['title'])
             ];
         }
         //tooltips
-        $lPath = $this->appConfig->get('language').'/orm.php';
+        $lPath = $this->appConfig->get('language') . '/orm.php';
 
         /**
          * @var Lang $langService
@@ -91,14 +87,14 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $langService->addLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
 
         $this->resource->addInlineJs('
-          var canPublish =  '.((integer)$this->moduleAcl->canPublish($this->module)).';
-          var canEdit = '.((integer)$this->moduleAcl->canEdit($this->module)).';
-          var canDelete = '.((integer)$this->moduleAcl->canDelete($this->module)).';
-          var useForeignKeys = '.((integer)$this->appConfig['foreign_keys']).';
+          var canPublish =  ' . ((integer)$this->moduleAcl->canPublish($this->module)) . ';
+          var canEdit = ' . ((integer)$this->moduleAcl->canEdit($this->module)) . ';
+          var canDelete = ' . ((integer)$this->moduleAcl->canDelete($this->module)) . ';
+          var useForeignKeys = ' . ((integer)$this->appConfig['foreign_keys']) . ';
           var canUseBackup = false;
-          var dbConfigsList = '.json_encode($dbConfigs).';
-          var ormTooltips = '.Lang::lang('orm_tooltips')->getJson().';
-          var shardingEnabled = '.intval(Config::storage()->get('orm.php')->get('sharding')).';
+          var dbConfigsList = ' . json_encode($dbConfigs) . ';
+          var ormTooltips = ' . Lang::lang('orm_tooltips')->getJson() . ';
+          var shardingEnabled = ' . intval(Config::storage()->get('orm.php')->get('sharding')) . ';
         ');
 
         $this->resource->addJs('/js/app/system/SearchPanel.js', 0);
@@ -119,9 +115,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         $this->resource->addCss('/css/system/joint.min.css', 1);
 
-        $this->resource->addJs('/js/lib/uml/lodash.min.js', 2 , true , 'external');
-        $this->resource->addJs('/js/lib/uml/backbone-min.js', 3 , true , 'external');
-        $this->resource->addJs('/js/lib/uml/joint.min.js', 4 , true , 'external');
+        $this->resource->addJs('/js/lib/uml/lodash.min.js', 2, true, 'external');
+        $this->resource->addJs('/js/lib/uml/backbone-min.js', 3, true, 'external');
+        $this->resource->addJs('/js/lib/uml/joint.min.js', 4, true, 'external');
         $this->resource->addJs('/js/app/system/crud/orm.js', 7);
     }
 
@@ -134,9 +130,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $stat = new Orm\Stat();
         $data = $stat->getInfo();
 
-        if($this->request->post('hideSysObj', 'boolean', false)){
+        if ($this->request->post('hideSysObj', 'boolean', false)) {
             foreach ($data as $k => $v)
-                if($v['system'])
+                if ($v['system'])
                     unset($data[$k]);
             sort($data);
         }
@@ -150,15 +146,15 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     {
         $object = $this->request->post('object', 'string', '');
 
-        if(!Orm\Record\Config::configExists($object)){
+        if (!Orm\Record\Config::configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
         $stat = new Orm\Stat();
         $config = Orm\Record\Config::factory($object);
-        if($config->isDistributed()){
+        if ($config->isDistributed()) {
             $data = $stat->getDistributedDetails($object);
-        }else{
+        } else {
             $data = $stat->getDetails($object);
         }
         $this->response->success($data);
@@ -169,7 +165,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
      */
     public function buildAllAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -178,17 +174,15 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         $flag = false;
         $ormConfig = Config::storage()->get('orm.php');
-        if($ormConfig->get('foreign_keys'))
-        {
+        if ($ormConfig->get('foreign_keys')) {
             /*
              * build only fields
              */
-            foreach ($names as $name)
-            {
-                try{
+            foreach ($names as $name) {
+                try {
                     $builder = Orm\Record\Builder::factory($name);
                     $builder->build(false);
-                }catch(\Exception $e){
+                } catch (\Exception $e) {
                     $flag = true;
                 }
             }
@@ -196,31 +190,29 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             /*
              * Add foreign keys
              */
-            foreach ($names as $name)
-            {
-                try{
+            foreach ($names as $name) {
+                try {
                     $builder = Orm\Record\Builder::factory($name);
-                    if(!$builder->buildForeignKeys(true , true))
+                    if (!$builder->buildForeignKeys(true, true))
                         $flag = true;
-                }catch(\Exception $e){
+                } catch (\Exception $e) {
                     $flag = true;
                 }
             }
 
-        }else{
-            foreach ($names as $name)
-            {
-                try{
+        } else {
+            foreach ($names as $name) {
+                try {
                     $builder = Orm\Record\Builder::factory($name);
                     $builder->build();
-                }catch(\Exception $e){
+                } catch (\Exception $e) {
                     $flag = true;
                 }
             }
         }
 
 
-        if($ormConfig->get('sharding')) {
+        if ($ormConfig->get('sharding')) {
 
             $sharding = Config::storage()->get('sharding.php');
             $shardsFile = $sharding->get('shards');
@@ -269,9 +261,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $manager = new Connections($this->appConfig->get('db_configs'));
         $list = $manager->getConnections(0);
         $data = [];
-        if(!empty($list)) {
-            foreach($list as $k=>$v) {
-                $data[] = ['id'=> $k];
+        if (!empty($list)) {
+            foreach ($list as $k => $v) {
+                $data[] = ['id' => $k];
             }
         }
         $this->response->success($data);
@@ -282,12 +274,12 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
      */
     public function listAclAction()
     {
-        $list = [['id'=>'','title'=>'---']];
+        $list = [['id' => '', 'title' => '---']];
         $files = \File::scanFiles('./dvelum/app/Acl', array('.php'), true, \File::Files_Only);
-        foreach ($files as $v){
+        foreach ($files as $v) {
             $path = str_replace('./dvelum/app/', '', $v);
             $name = \Utils::classFromPath($path);
-            $list[] = ['id'=>$name,'title'=>$name];
+            $list[] = ['id' => $name, 'title' => $name];
         }
         $this->response->success($list);
     }
@@ -299,8 +291,8 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     public function connectionTypesAction()
     {
         $data = array();
-        foreach ($this->appConfig->get('db_configs') as $k=>$v){
-            $data[]= ['id'=>$k , 'title'=>$this->lang->get($v['title'])];
+        foreach ($this->appConfig->get('db_configs') as $k => $v) {
+            $data[] = ['id' => $k, 'title' => $this->lang->get($v['title'])];
         }
         $this->response->success($data);
     }
@@ -313,11 +305,10 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $validators = [];
         $files = \File::scanFiles('./dvelum/library/Validator', array('.php'), false, \File::Files_Only);
 
-        foreach ($files as $v)
-        {
+        foreach ($files as $v) {
             $name = substr(basename($v), 0, -4);
-            if($name != 'Interface')
-                $validators[] = ['id'=>'Validator_'.$name, 'title'=>$name];
+            if ($name != 'Interface')
+                $validators[] = ['id' => 'Validator_' . $name, 'title' => $name];
         }
 
         $this->response->success($validators);
@@ -347,7 +338,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         );
 
-        if(!$this->appConfig->get('development')){
+        if (!$this->appConfig->get('development')) {
             die('Use development mode');
         }
 
@@ -355,18 +346,18 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $totalSize = 0;
 
         $wwwPath = $this->appConfig->get('wwwPath');
-        foreach ($sources as $filePath){
-            $s.=file_get_contents($wwwPath.$filePath)."\n";
-            $totalSize+=filesize($wwwPath.$filePath);
+        foreach ($sources as $filePath) {
+            $s .= file_get_contents($wwwPath . $filePath) . "\n";
+            $totalSize += filesize($wwwPath . $filePath);
         }
 
         $time = microtime(true);
-        file_put_contents($wwwPath.'js/app/system/ORM.js', \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($s));
+        file_put_contents($wwwPath . 'js/app/system/ORM.js', \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($s));
         echo '
-			Compilation time: '.number_format(microtime(true)-$time,5).' sec<br>
-			Files compiled: '.sizeof($sources).' <br>
-			Total size: '.\Utils::formatFileSize($totalSize).'<br>
-			Compiled File size: '.\Utils::formatFileSize(filesize($wwwPath.'js/app/system/ORM.js')).' <br>
+			Compilation time: ' . number_format(microtime(true) - $time, 5) . ' sec<br>
+			Files compiled: ' . sizeof($sources) . ' <br>
+			Total size: ' . \Utils::formatFileSize($totalSize) . '<br>
+			Compiled File size: ' . \Utils::formatFileSize(filesize($wwwPath . 'js/app/system/ORM.js')) . ' <br>
 		';
         exit;
     }

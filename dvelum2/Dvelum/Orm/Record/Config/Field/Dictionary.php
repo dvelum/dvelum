@@ -20,7 +20,6 @@
 declare(strict_types=1);
 
 namespace Dvelum\Orm\Record\Config\Field;
-use Dvelum\Orm\Record\Config\Field;
 
 class Dictionary extends \Dvelum\Orm\Record\Config\Field
 {

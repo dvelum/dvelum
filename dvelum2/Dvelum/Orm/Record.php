@@ -132,7 +132,7 @@ class Record implements RecordInterface
         if(empty($data))
             throw new Exception('Cannot find object '.$this->name.':'.$this->id);
 
-        $links = $this->config->getLinks([Record\config::LINK_OBJECT_LIST]);
+        $links = $this->config->getLinks([Record\Config::LINK_OBJECT_LIST]);
 
         if(!empty($links))
         {
@@ -760,7 +760,8 @@ class Record implements RecordInterface
      * Factory method of object creation is preferable to use, cf. method  __construct() description
      * @param string $name
      * @param int|int[]|bool $id , optional default false
-     * @throws Exception
+     * @param string|bool $shard
+     * @throws \Exception
      * @return RecordInterface|RecordInterface[]
      */
     static public function factory(string $name , $id = false, $shard = false)
@@ -775,6 +776,7 @@ class Record implements RecordInterface
     /**
      * Check for required fields
      * @return bool | array
+     * @throws \Exception
      */
     protected function hasRequired()
     {

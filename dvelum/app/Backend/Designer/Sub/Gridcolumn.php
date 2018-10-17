@@ -200,7 +200,7 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		$column = Request::post('column','string',false);
 
 		if($column === false)
-			Response::jsonErrot($this->_lang->WRONG_REQUEST . ' code 1');
+			Response::jsonError($this->_lang->WRONG_REQUEST . ' code 1');
 
 		if($object->getClass()!=='Grid' || !$object->columnExists($column))
 			Response::jsonError($this->_lang->WRONG_REQUEST  . ' code 2');
@@ -233,7 +233,7 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		$column = Request::post('column','string',false);
 
 		if($actionName === false || $column === false)
-			Response::jsonErrot($this->_lang->WRONG_REQUEST . ' code 1');
+			Response::jsonError($this->_lang->WRONG_REQUEST . ' code 1');
 
 		if($object->getClass()!=='Grid' || !$object->columnExists($column))
 			Response::jsonError($this->_lang->WRONG_REQUEST  . ' code 2');
@@ -263,7 +263,7 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		$column = Request::post('column','string',false);
 
 		if($actionName === false || $column === false)
-			Response::jsonErrot($this->_lang->WRONG_REQUEST . ' code 1');
+			Response::jsonError($this->_lang->WRONG_REQUEST . ' code 1');
 
 		if($object->getClass()!=='Grid' || !$object->columnExists($column))
 			Response::jsonError($this->_lang->WRONG_REQUEST  . ' code 2');
@@ -289,7 +289,7 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		$column = Request::post('column','string',false);
 
 		if($column === false)
-			Response::jsonErrot($this->_lang->WRONG_REQUEST . ' code 1');
+			Response::jsonError($this->_lang->WRONG_REQUEST . ' code 1');
 
 		if($object->getClass()!=='Grid' || !$object->columnExists($column))
 			Response::jsonError($this->_lang->WRONG_REQUEST  . ' code 2');
@@ -324,7 +324,7 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		$data = [];
 
 		if($column === false)
-			Response::jsonErrot($this->_lang->WRONG_REQUEST . ' code 1');
+			Response::jsonError($this->_lang->WRONG_REQUEST . ' code 1');
 
 		if($object->getClass()!=='Grid' || !$object->columnExists($column))
 			Response::jsonError($this->_lang->WRONG_REQUEST  . ' code 2');
@@ -369,7 +369,7 @@ class Backend_Designer_Sub_Gridcolumn extends Backend_Designer_Sub
 		$column = Request::post('column','string',false);
 
 		if($column === false)
-			Response::jsonErrot($this->_lang->WRONG_REQUEST . ' code 1');
+			Response::jsonError($this->_lang->WRONG_REQUEST . ' code 1');
 
 		if($object->getClass()!=='Grid' || !$object->columnExists($column))
 			Response::jsonError($this->_lang->WRONG_REQUEST  . ' code 2');

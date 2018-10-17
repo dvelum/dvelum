@@ -127,7 +127,7 @@ abstract class Bgtask_Storage
 	/**
 	 * Add task record
 	 * @param string $description
-	 * @return inter  - task pid
+	 * @return integer  - task pid
 	 */
 	abstract public function addTaskRecord($description);
 }

@@ -22,7 +22,6 @@ declare(strict_types=1);
 namespace Dvelum\App\Router;
 
 use Dvelum\App\Router;
-use Dvelum\App\Auth;
 use Dvelum\Config;
 use Dvelum\Request;
 use Dvelum\Response;

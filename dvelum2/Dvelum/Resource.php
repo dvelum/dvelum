@@ -31,7 +31,7 @@ use Dvelum\Config\ConfigInterface;
 class Resource
 {
     /**
-     * @var Config\Config
+     * @var Config\ConfigInterface
      */
     protected $config;
 
@@ -82,7 +82,7 @@ class Resource
      * @param string $file- file path relate to document root
      * @param mixed $order  - include order
      * @param boolean $minified - file already minified
-     * @param string $tag - file ident
+     * @param string|bool $tag
      */
     public function addJs($file, $order = false, $minified = false, $tag = false)
     {

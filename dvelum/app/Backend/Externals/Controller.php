@@ -190,7 +190,7 @@ class Backend_Externals_Controller extends Backend_Controller
     public function repoItemsListAction()
     {
         $repo = Request::post('repo', Filter::FILTER_STRING, false);
-        $params = Request::post('pager' , FILTER::FILTER_ARRAY, []);
+        $params = Request::post('pager' , Filter::FILTER_ARRAY, []);
 
         $externalsLang = Lang::lang('externals');
 

@@ -27,6 +27,8 @@
  {
      protected $writePath;
 
+     protected $_data = [];
+
      public function __construct($name , $autoRead = true)
      {
          $this->writePath = $name;
@@ -36,7 +38,7 @@
          if($autoRead)
              $this->_data = $this->_readFile($name);
          else
-         	 $this->_data = array();
+         	 $this->_data = [];
      }
      
     /**

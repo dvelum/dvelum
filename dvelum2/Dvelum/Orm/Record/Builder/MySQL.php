@@ -22,15 +22,10 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Record\Builder;
 
-use Dvelum\Config as Cfg;
 use Dvelum\Db\Metadata\ColumnObject;
 use Dvelum\Orm;
 use Dvelum\Orm\Exception;
-use Dvelum\Orm\Record\Config;
 use Dvelum\Orm\Record\Builder;
-use Dvelum\Lang;
-use Dvelum\Orm\Model;
-use Dvelum\Utils;
 
 
 /**
@@ -897,7 +892,7 @@ class MySQL extends AbstractAdapter
      *
      * @param string $newName - new table name (without prefix)
      * @return boolean
-     * @throws Exception
+     * @throws \Exception
      */
     public function renameTable($newName)
     {

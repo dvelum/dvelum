@@ -20,7 +20,8 @@ declare(strict_types=1);
 
 namespace Dvelum\Db\Metadata;
 
-use Zend\Db\Adapter\Adapter;
+
+use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Exception\InvalidArgumentException;
 use Zend\Db\Metadata\MetadataInterface;
 use Zend\Db\Metadata\Source;
@@ -33,11 +34,11 @@ class Factory
     /**
      * Create source from adapter
      *
-     * @param  Adapter $adapter
+     * @param  AdapterInterface $adapter
      * @return MetadataInterface
      * @throws InvalidArgumentException If adapter platform name not recognized.
      */
-    public static function createSourceFromAdapter(Adapter $adapter)
+    public static function createSourceFromAdapter(AdapterInterface $adapter)
     {
         $platformName = $adapter->getPlatform()->getName();
 

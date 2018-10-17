@@ -10,7 +10,7 @@ class Backend_Designer_Sub_Code extends Backend_Designer_Sub
         $project = $this->_getProject();
 
         if(! $project->objectExists($object))
-            Response::jsonError($this->_lang->WRONG_REQUEST);
+            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
 
         $projectCfg = $project->getConfig();
         Ext_Code::setRunNamespace($projectCfg['runnamespace']);

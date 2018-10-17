@@ -26,7 +26,7 @@ interface Store_Interface{
     public function keyExists($key);
     /**
      * Remove data from storage
-     * @param sting $key
+     * @param string $key
      * @return void
      */ 
     public function remove($key);

@@ -24,7 +24,7 @@ use Zend\Db;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Adapter\Driver\ResultInterface;
 use Zend\Db\ResultSet\ResultSet;
-use Zend\Db\Metadata\MetadataInterface;
+
 
 /**
  * Class Adapter

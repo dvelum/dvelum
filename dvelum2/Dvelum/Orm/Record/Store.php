@@ -192,7 +192,7 @@ class Store
         if(!$success)
         {
             if($transact && $transaction)
-                $db->rollBack();
+                $db->rollback();
             return false;
         }
         else
@@ -289,7 +289,7 @@ class Store
         if(!$success)
         {
             if($transact && $transaction)
-                $db->rollBack();
+                $db->rollback();
             return false;
         }
         else
@@ -359,7 +359,7 @@ class Store
         if(!$success)
         {
             if($transact && $transaction)
-                $db->rollBack();
+                $db->rollback();
             return false;
         }
         else
@@ -524,7 +524,7 @@ class Store
         if(!$success)
         {
             if($transact && $transaction)
-                $db->rollBack();
+                $db->rollback();
             return false;
         }
         else
@@ -864,7 +864,7 @@ class Store
             if($success){
                 $db->commit();
             }else{
-                $db->rollBack();
+                $db->rollback();
             }
         }
 
@@ -931,7 +931,7 @@ class Store
          * @var \Model_Historylog $history
          */
         $history = Model::factory($this->config['historyObject']);
-        $userId = \Dvelum\App\Session\User::getInstance()->id;
+        $userId = \Dvelum\App\Session\User::getInstance()->getId();
 
         /*
          * Save history if required
@@ -953,10 +953,14 @@ class Store
         }
         return true;
     }
+
     /**
      * Validate unique fields, object field groups
      * Returns array of errors or null .
-     * @return  array | null
+     * @param $objectName
+     * @param $recordId
+     * @param $groupsData
+     * @return array|null
      */
     public function validateUniqueValues($objectName, $recordId, $groupsData) : ?array
     {

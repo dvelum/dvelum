@@ -107,7 +107,7 @@ class Select
 
     /**
      * Set columns
-     * @param array $columns
+     * @param array|string $columns
      * @return self
      */
     public function columns($columns = "*") : self
@@ -578,6 +578,10 @@ class Select
         }
     }
 
+    /**
+     * @param array|string $table
+     * @return string
+     */
     protected function tableAlias($table) : string
     {
         static $cache = [];
@@ -613,6 +617,8 @@ class Select
     }
 
     /**
+     * @param $table
+     * @param array $columns
      * @return array
      */
     protected function tableFieldsList($table, array $columns) : array

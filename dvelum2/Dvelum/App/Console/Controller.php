@@ -23,11 +23,11 @@ namespace Dvelum\App\Console;
 
 use Dvelum\App;
 use Dvelum\Config;
-use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 use Dvelum\App\Router;
 use Dvelum\Request;
 use Dvelum\Response;
+use Psr\Log\LogLevel;
 
 class Controller extends App\Controller implements Router\RouterInterface
 {
@@ -105,7 +105,7 @@ class Controller extends App\Controller implements Router\RouterInterface
     protected function logMessage($text)
     {
         if ($this->log) {
-            $this->log->log(get_called_class() . ':: ' . $text);
+            $this->log->log(LogLevel::ERROR, get_called_class() . ' :: '. $text);
         }
     }
 

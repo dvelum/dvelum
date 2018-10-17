@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Modules;
 
 use Dvelum\App\Backend;
-use Dvelum\Orm\Record;
 use Dvelum\App\Module\Generator\GeneratorInterface;
 use Dvelum\App\Module\Manager;
 use Dvelum\Orm;

@@ -20,12 +20,9 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Distributed\Key\Strategy;
 
-use Dvelum\Orm\Distributed\Key\GeneratorInterface;
-
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Distributed\Key\Reserved;
 use Dvelum\Orm\Distributed\Key\Strategy\VirtualBucket\MapperInterface;
-use Dvelum\Orm\Record;
 use Dvelum\Orm\RecordInterface;
 
 class VirtualBucket extends UserKeyNoID

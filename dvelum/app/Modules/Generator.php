@@ -574,7 +574,7 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud
       $acceptedControllerDirs = $this->appConfig->get('backend_controllers_dirs');
       $controllerDir =  $this->appConfig->get('local_controllers') . $acceptedControllerDirs[0] . '/' . str_replace('_' , '/' , $name);
       $this->_createControllerFile($controllerDir , $controllerContent);
-      @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php' , $controllerContent, 0775);
+      @chmod( $controllerDir . DIRECTORY_SEPARATOR . 'Controller.php', 0775);
 
 
       /*

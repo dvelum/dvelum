@@ -87,7 +87,7 @@ class Controller extends Backend\Ui\Controller
             $uploadCategory = null;
         }
 
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -150,7 +150,7 @@ class Controller extends Backend\Ui\Controller
      */
     public function cropAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -189,7 +189,7 @@ class Controller extends Backend\Ui\Controller
      */
     public function removeAction()
     {
-        if(!$this->checkCanDelete()){
+        if (!$this->checkCanDelete()) {
             return;
         }
 
@@ -212,7 +212,7 @@ class Controller extends Backend\Ui\Controller
      */
     public function updateAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -295,15 +295,14 @@ class Controller extends Backend\Ui\Controller
             $this->response->success(array('exists' => false));
         }
 
-        if ($item['type'] == 'image')
-        {
+        if ($item['type'] == 'image') {
             $stamp = 1;
 
-            if(!empty($item['modified'])) {
+            if (!empty($item['modified'])) {
                 $stamp = date('ymdhis', strtotime($item['modified']));
             }
 
-            $icon = \Model_Medialib::getImgPath($item['path'], $item['ext'], 'thumbnail', true). '?m=' . $stamp;
+            $icon = \Model_Medialib::getImgPath($item['path'], $item['ext'], 'thumbnail', true) . '?m=' . $stamp;
 
         } else {
             $icon = $this->appConfig->get('wwwroot') . 'i/unknown.png';

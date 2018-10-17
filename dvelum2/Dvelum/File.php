@@ -174,7 +174,7 @@ class File
          * ZIPARCHIVE::CREATE (integer)
          * Create the archive if it does not exist.
          */
-        if($zip->open($fileName , \ZIPARCHIVE::CREATE) !== true)
+        if($zip->open($fileName , \ZipArchive::CREATE) !== true)
             return false;
 
         if(is_string($files))

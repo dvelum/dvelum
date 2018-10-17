@@ -133,7 +133,7 @@ class Model_Medialib extends Model
     /**
      * Add author selection join to the query.
      * Used with rev_control objects
-     * @param \Db_Select | Zend_Db_Select $sql
+     * @param \Dvelum\Db\Select\ | \Zend\Db\Sql\Select $sql
      * @param string $fieldAlias
      * @return void
      */
@@ -232,8 +232,13 @@ class Model_Medialib extends Model
         $thumbSizes = $conf['image']['sizes'];
         $count = 0;
 
+        $appConfig = Config::storage()->get('main.php');
+
+        $uploadsDir =  $appConfig->get('wwwpath');
+
         foreach ($data as $v) {
-            $path = DOC_ROOT . $v['path'];
+
+            $path = str_replace('//','/',$uploadsDir . $v['path']);
             if (!file_exists($path)) {
                 continue;
             }
@@ -294,7 +299,7 @@ class Model_Medialib extends Model
         $appConfig = Config::storage()->get('main.php');
         ini_set('max_execution_time', 18000);
         ini_set('memory_limit', '384M');
-        $docRoot = $appConfig['wwwPath'];
+        $docRoot = $appConfig['wwwpath'];
         $conf = $this->getConfig()->__toArray();
         $thumbSizes = $conf['image']['sizes'];
 

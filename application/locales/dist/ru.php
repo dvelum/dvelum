@@ -106,7 +106,6 @@
   'DATA_TABLE' => 'Таблица данных',
   'DATA_SIZE' => 'Размер данных',
   'DATE' => 'Дата',
-  'DB_MSG_UNIQUE_PRIMARY' => 'PRIMARY KEY  поле должно быть уникальным, числовым и с auto-increment.',
   'DEFAULT_BLOCK_MAP' => 'Карта блоков по умолчанию',
   'DELETE' => 'Удалить',
   'DELETE_FIELD' => 'Удалить поле',

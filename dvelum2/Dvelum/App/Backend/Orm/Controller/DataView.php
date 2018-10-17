@@ -54,7 +54,7 @@ class DataView extends ApiController
     {
         $dataObject = $this->request->post('d_object', 'string', false);
 
-        if(!$dataObject || !$this->ormService->configExists($dataObject)){
+        if (!$dataObject || !$this->ormService->configExists($dataObject)) {
             return 'Orm';
         }
         return ucfirst($dataObject);
@@ -71,11 +71,11 @@ class DataView extends ApiController
      * @param Event $event
      * @return void
      */
-    public function prepareList(Event $event) : void
+    public function prepareList(Event $event): void
     {
         $data = &$event->getData()->data;
 
-        if(empty($data)){
+        if (empty($data)) {
             return;
         }
 
@@ -83,10 +83,9 @@ class DataView extends ApiController
         $config = $this->ormService->config($object);
         $fields = $config->getFields();
 
-        foreach ($data as &$row){
-            foreach ($fields as $item)
-            {
-                if($item->isText()){
+        foreach ($data as &$row) {
+            foreach ($fields as $item) {
+                if ($item->isText()) {
                     $row[$item->getName()] = '[text]';
                 }
             }
@@ -98,7 +97,7 @@ class DataView extends ApiController
         $distributed = Orm\Distributed::factory();
         $shards = $distributed->getShards();
         $list = [];
-        foreach ($shards as $item){
+        foreach ($shards as $item) {
             $list[] = ['id' => $item['id']];
         }
         $this->response->success($list);
@@ -128,30 +127,29 @@ class DataView extends ApiController
         $canEditObject = true;
         $shardField = false;
 
-        if(empty($shard) && $objectConfig->isDistributed()){
+        if (empty($shard) && $objectConfig->isDistributed()) {
             $shadrdingType = $objectConfig->getShardingType();
-            $title.= ' INDEX';
-            $fields =  Orm\Record\Config::factory($objectConfig->getDistributedIndexObject())->getFields();
-            if($shadrdingType == Orm\Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET){
+            $title .= ' INDEX';
+            $fields = Orm\Record\Config::factory($objectConfig->getDistributedIndexObject())->getFields();
+            if ($shadrdingType == Orm\Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET) {
                 $findBucket = [
                     'field' => $objectConfig->getField($objectConfig->getBucketMapperKey())->getTitle(),
                 ];
                 $canEditObject = false;
             }
             $selectShard = true;
-            if($shadrdingType == Orm\Record\Config::SHARDING_TYPE_KEY_NO_INDEX){
+            if ($shadrdingType == Orm\Record\Config::SHARDING_TYPE_KEY_NO_INDEX) {
                 $canEditObject = false;
             }
         }
 
-        if($objectConfig->isShardRequired()){
+        if ($objectConfig->isShardRequired()) {
             $shardField = Orm\Distributed::factory()->getShardField();
-        }else{
+        } else {
             $shardField = false;
         }
 
-        foreach ($fields as $name => $field)
-        {
+        foreach ($fields as $name => $field) {
             $fieldCfg = new \stdClass();
             $fieldCfg->name = $name;
 
@@ -227,9 +225,9 @@ class DataView extends ApiController
             'searchFields' => $searchFields,
             'selectShard' => $selectShard,
             'findBucket' => $findBucket,
-            'title'=> $title,
-            'canEditObject' =>$canEditObject,
-            'shardField'=>$shardField
+            'title' => $title,
+            'canEditObject' => $canEditObject,
+            'shardField' => $shardField
         );
 
         $this->response->success($result);
@@ -239,7 +237,7 @@ class DataView extends ApiController
     {
         $object = $this->request->post('d_object', 'string', null);
 
-        if(!$object || !$this->ormService->configExists($object)) {
+        if (!$object || !$this->ormService->configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -247,9 +245,8 @@ class DataView extends ApiController
         $config = $this->ormService->config($object);
         $fields = $config->getFields();
 
-        foreach ($fields as $item)
-        {
-            if($item->isLink()){
+        foreach ($fields as $item) {
+            if ($item->isLink()) {
                 $this->listLinks[] = $item->getName();
             }
         }
@@ -260,7 +257,7 @@ class DataView extends ApiController
     {
         $object = $this->request->post('d_object', 'string', null);
 
-        if(!$object || !$this->ormService->configExists($object)) {
+        if (!$object || !$this->ormService->configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -289,16 +286,15 @@ class DataView extends ApiController
 
         $readOnly = $objectConfig->isReadOnly();
 
-        foreach ($objectFieldList as $field)
-        {
+        foreach ($objectFieldList as $field) {
             if (is_string($field) && $field == $objectConfig->getPrimaryKey()) {
                 continue;
             }
 
-            if($objectConfig->isDistributed()){
+            if ($objectConfig->isDistributed()) {
                 // distributed fields fills automatically
-                if(in_array($field, array_keys($objectConfig->getDistributedFields()))){
-                    if($field!=$objectConfig->getShardingKey()){
+                if (in_array($field, array_keys($objectConfig->getDistributedFields()))) {
+                    if ($field != $objectConfig->getShardingKey()) {
                         continue;
                     }
                 }
@@ -310,7 +306,7 @@ class DataView extends ApiController
 
             if ($fieldObj->isMultiLink()) {
                 $linkedObject = $fieldObj->getLinkedObject();
-                $linkedCfg =  $this->ormService->config($linkedObject);
+                $linkedCfg = $this->ormService->config($linkedObject);
                 $related[] = array(
                     'field' => $field,
                     'object' => $linkedObject,
@@ -364,14 +360,14 @@ class DataView extends ApiController
         $tab->items = '[' . implode(',', $data) . ']';
         $shardKey = 'shard';
 
-        if($objectConfig->isShardRequired()){
+        if ($objectConfig->isShardRequired()) {
             $shardKey = Orm\Distributed::factory()->getShardField();
         }
 
         $mapKey = null;
-        if($objectConfig->isDistributed()){
+        if ($objectConfig->isDistributed()) {
             $mapKey = $objectConfig->getBucketMapperKey();
-            if(empty($mapKey)){
+            if (empty($mapKey)) {
                 $mapKey = $objectConfig->getShardingKey();
             }
         }
@@ -405,11 +401,11 @@ class DataView extends ApiController
         return true;
     }
 
-    public function objectTitleAction() : void
+    public function objectTitleAction(): void
     {
         $object = $this->request->post('object', 'string', null);
 
-        if(!$object || !$this->ormService->configExists($object)) {
+        if (!$object || !$this->ormService->configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -423,14 +419,14 @@ class DataView extends ApiController
     {
         $object = $this->request->post('d_object', 'string', null);
 
-        if(!$object || !$this->ormService->configExists($object)) {
+        if (!$object || !$this->ormService->configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
         $value = $this->request->post('value', 'string', '');
-        if(empty($value)){
-            $this->response->success(['bucket'=>null]);
+        if (empty($value)) {
+            $this->response->success(['bucket' => null]);
         }
 
         $objectConfig = $this->ormService->config($object);
@@ -438,20 +434,20 @@ class DataView extends ApiController
         $field = $objectConfig->getField($mapField);
 
         /**
-         * @var Orm\Distributed\Key\Strategy\VirtualBucket $keyGen;
+         * @var Orm\Distributed\Key\Strategy\VirtualBucket $keyGen ;
          */
         $keyGen = Orm\Distributed::factory()->getKeyGenerator($object);
-        if($field->isNumeric()){
-            $bucket = $keyGen->getNumericMapper()->keyToBucket((int) $value);
-        }else{
+        if ($field->isNumeric()) {
+            $bucket = $keyGen->getNumericMapper()->keyToBucket((int)$value);
+        } else {
             $bucket = $keyGen->getStringMapper()->keyToBucket((string)$value);
         }
-        if(!empty($bucket)){
+        if (!empty($bucket)) {
             $bucket = $bucket->getId();
-        }else{
+        } else {
             $bucket = null;
         }
-        $this->response->success(['bucket'=>$bucket]);
+        $this->response->success(['bucket' => $bucket]);
     }
 
     /**

@@ -58,7 +58,6 @@ class ModelTest extends TestCase
 			'published'=>true,
 			'published_version'=>0,
 			'editor_id'=>$user->getId(),
-			'author_id'=>$user->getId(),
 			'date_created'=>date('Y-m-d H:i:s'),
 			'date_updated'=>date('Y-m-d H:i:s'),
 			'author_id'=>$user->getId(),

@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Frontend;
 
 use Dvelum\{
-    App, Config, Config\ConfigInterface, Lang, Request, Response, Service, Orm\Model, Resource, View
+    App, Config, Config\ConfigInterface, Lang, Request, Response, Service, Orm\Model, Resource
 };
 
 class Controller extends App\Controller
@@ -59,7 +59,7 @@ class Controller extends App\Controller
         $page->setTemplatesPath('public/');
 
         /**
-         * @var BlockManager $blockManager
+         * @var App\BlockManager $blockManager
          */
         $blockManager = Service::get('blockManager');
 

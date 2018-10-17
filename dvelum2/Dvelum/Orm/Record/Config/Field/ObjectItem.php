@@ -25,7 +25,6 @@ use Dvelum\Orm;
 
 class ObjectItem extends \Dvelum\Orm\Record\Config\Field
 {
-
     /**
      * Apply value filter
      * @param mixed $value

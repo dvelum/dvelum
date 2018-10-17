@@ -32,8 +32,8 @@ use Dvelum\Config;
 class AsArray extends Config\File\AbstractAdapter
 {
     /**
-     * (non-PHPdoc)
-     * @see library/Config/File#readFile($data)
+     * @param string $name
+     * @return array
      */
     protected function readFile(string $name) : array
     {

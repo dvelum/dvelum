@@ -675,6 +675,7 @@ class Controller extends App\Backend\Controller
         $eventData = new \stdClass();
         $eventData->data = $result;
 
+
         if (!$this->eventManager->fireEvent(EventManager::AFTER_LOAD, $eventData)) {
             $this->response->error($this->eventManager->getError());
             return;
@@ -713,7 +714,7 @@ class Controller extends App\Backend\Controller
 
         try {
             /**
-             * @var $obj Orm\Record
+             * @var Orm\Record $obj
              */
             $obj = Orm\Record::factory($objectName, $id, $shard);
         } catch (\Exception $e) {

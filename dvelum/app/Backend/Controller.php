@@ -85,6 +85,11 @@ abstract class Backend_Controller extends Controller
      */
     protected $moduleAcl;
 
+    /**
+     * @var \Dvelum\Cache\CacheInterface
+     */
+    protected $_cache = false;
+
     public function __construct()
     {
         parent::__construct();
@@ -400,7 +405,11 @@ abstract class Backend_Controller extends Controller
             if(!empty($userLang) && $userLang!=$this->_configMain->get('language') && in_array($userLang, $acceptedLanguages , true)){
                 $this->_configMain->set('language' , $userLang);
                 Lang::addDictionaryLoader($userLang ,  $userLang . '.php' , Config\Factory::File_Array);
-                Lang::setDefaultDictionary($userLang);
+                /**
+                 * @var \Dvelum\Lang
+                 */
+                $langService = \Dvelum\Service::get('lang');
+                $langService->setDefaultDictionary($userLang);
                 Dictionary::setConfigPath($this->_configMain->get('dictionary_folder') . $this->_configMain->get('language').'/');
             }
         }

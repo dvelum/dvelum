@@ -277,7 +277,7 @@ class Designer_Project
 	/**
 	 * Change object parent
 	 * @param string $name - object name
-	 * @param sting $newParent - new parent object name
+	 * @param string $newParent - new parent object name
 	 * @return boolean - success flag
 	 */
 	public function changeParent($name , $newParent)

@@ -21,7 +21,7 @@ class Cache
 	/**
 	 * Factory method
 	 * @param array $options - cache backend config
-	 * @return Cache_Abstract
+	 * @return \Dvelum\Cache\CacheInterface|false
 	 */
 	static public function factory($options)
 	{

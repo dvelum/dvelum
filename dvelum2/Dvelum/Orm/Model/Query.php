@@ -244,7 +244,8 @@ class Query
                 }
                 $sql->order($sort);
             } else {
-                $sql->order(array($params['sort'] => $params['dir']));
+                $sortField = $params['sort'];
+                $sql->order([$sortField => $params['dir']]);
             }
         }
     }
@@ -434,7 +435,7 @@ class Query
                 ->filters($filters)->search($query, $searchType)
                 ->joins($joins);
 
-            $count = $sqlQuery->fetchOne($sqlQuery->__toString());
+            $count = $sqlQuery->fetchOne();
         }
 
 

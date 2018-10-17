@@ -93,13 +93,13 @@ class Controller extends App\Controller
         $this->initSession();
     }
 
-    protected function initSession() : bool
+    protected function initSession(): bool
     {
         $auth = new App\Auth($this->request, $this->appConfig);
 
-        if($this->request->get('logout' , 'boolean' , false)){
+        if ($this->request->get('logout', 'boolean', false)) {
             $auth->logout();
-            if(!$this->request->isAjax()){
+            if (!$this->request->isAjax()) {
                 $this->response->redirect($this->request->url([$this->appConfig->get('adminPath')]));
                 return false;
             }
@@ -107,12 +107,11 @@ class Controller extends App\Controller
 
         $this->user = $auth->auth();
 
-        if(!$this->user->isAuthorized() || !$this->user->isAdmin())
-        {
-            if($this->request->isAjax()){
+        if (!$this->user->isAuthorized() || !$this->user->isAdmin()) {
+            if ($this->request->isAjax()) {
                 $this->response->error($this->lang->get('MSG_AUTHORIZE'));
                 return false;
-            }else{
+            } else {
                 $this->loginAction();
                 return true;
             }
@@ -127,12 +126,12 @@ class Controller extends App\Controller
             && in_array($userLang, $acceptedLanguages, true)
         ) {
             $this->appConfig->set('language', $userLang);
-            Lang::addDictionaryLoader((string) $userLang, $userLang . '.php', Config\Factory::File_Array);
-            Service::get('Lang')->setDefaultDictionary((string) $userLang);
+            Lang::addDictionaryLoader((string)$userLang, $userLang . '.php', Config\Factory::File_Array);
+            Service::get('Lang')->setDefaultDictionary((string)$userLang);
             Service::get('Dictionary')->setConfig(Config\Factory::create([
                 'configPath' => $this->appConfig->get('dictionary_folder') . $this->appConfig->get('language') . '/'
             ]));
-       }
+        }
 
         // switch theme
         $userTheme = $this->user->getSettings()->get('theme');
@@ -146,24 +145,24 @@ class Controller extends App\Controller
 
 
         $this->moduleAcl = $this->user->getModuleAcl();
-        
+
         /*
          * Check is valid module requested
          */
-        if(!$this->validateModule()){
+        if (!$this->validateModule()) {
             return false;
         }
 
-       /*
-        * Check CSRF token
-        */
-        if($this->backofficeConfig->get('use_csrf_token') && $this->request->hasPost()) {
-           if(!$this->validateCsrfToken()){
-               return false;
-           }
+        /*
+         * Check CSRF token
+         */
+        if ($this->backofficeConfig->get('use_csrf_token') && $this->request->hasPost()) {
+            if (!$this->validateCsrfToken()) {
+                return false;
+            }
         }
 
-        if(!$this->checkCanView()){
+        if (!$this->checkCanView()) {
             return false;
         }
 
@@ -174,9 +173,9 @@ class Controller extends App\Controller
      * Check view permissions
      * @return bool
      */
-    protected function checkCanView() : bool
+    protected function checkCanView(): bool
     {
-        if(!$this->moduleAcl->canView($this->module)){
+        if (!$this->moduleAcl->canView($this->module)) {
             $this->response->error($this->lang->get('CANT_VIEW'));
             return false;
         }
@@ -187,9 +186,9 @@ class Controller extends App\Controller
      * Check edit permissions
      * @return bool
      */
-    protected function checkCanEdit() : bool
+    protected function checkCanEdit(): bool
     {
-        if(!$this->moduleAcl->canEdit($this->module)){
+        if (!$this->moduleAcl->canEdit($this->module)) {
             $this->response->error($this->lang->get('CANT_MODIFY'));
             return false;
         }
@@ -200,9 +199,9 @@ class Controller extends App\Controller
      * Check delete permissions
      * @return bool
      */
-    protected function checkCanDelete() : bool
+    protected function checkCanDelete(): bool
     {
-        if(!$this->moduleAcl->canDelete($this->module)){
+        if (!$this->moduleAcl->canDelete($this->module)) {
             $this->response->error($this->lang->get('CANT_DELETE'));
             return false;
         }
@@ -213,9 +212,9 @@ class Controller extends App\Controller
      * Check publish permissions
      * @return bool
      */
-    protected function checkCanPublish() : bool
+    protected function checkCanPublish(): bool
     {
-        if(!$this->moduleAcl->canPublish($this->module)){
+        if (!$this->moduleAcl->canPublish($this->module)) {
             $this->response->error($this->lang->get('CANT_PABLISH'));
             return false;
         }
@@ -226,7 +225,7 @@ class Controller extends App\Controller
      * Validate CSRF security token
      * @return bool
      */
-    protected function validateCsrfToken() : bool
+    protected function validateCsrfToken(): bool
     {
         $csrf = new \Security_Csrf();
         $csrf->setOptions([
@@ -234,25 +233,25 @@ class Controller extends App\Controller
             'cleanupLimit' => $this->backofficeConfig->get('use_csrf_token_garbage_limit')
         ]);
 
-        if(!$csrf->checkHeader() && !$csrf->checkPost()){
+        if (!$csrf->checkHeader() && !$csrf->checkPost()) {
             $this->response->error($this->lang->get('MSG_NEED_CSRF_TOKEN'));
             return false;
         }
         return true;
     }
 
-    protected function validateModule() : bool
+    protected function validateModule(): bool
     {
         $moduleManager = new \Modules_Manager();
 
-        if(in_array($this->module, $this->backofficeConfig->get('system_controllers'),true) || $this->module == 'index'){
+        if (in_array($this->module, $this->backofficeConfig->get('system_controllers'), true) || $this->module == 'index') {
             return true;
         }
 
         /*
          * Redirect for undefined module
          */
-        if(!$moduleManager->isValidModule($this->module)){
+        if (!$moduleManager->isValidModule($this->module)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return false;
         }
@@ -262,7 +261,7 @@ class Controller extends App\Controller
         /*
          * disabled module
          */
-        if($moduleCfg['active'] == false){
+        if ($moduleCfg['active'] == false) {
             $this->response->error($this->lang->get('CANT_VIEW'));
             return false;
         }
@@ -270,7 +269,7 @@ class Controller extends App\Controller
         /*
          * dev module at production
          */
-        if($moduleCfg['dev'] && ! $this->appConfig['development']){
+        if ($moduleCfg['dev'] && !$this->appConfig['development']) {
             $this->response->error($this->lang->get('CANT_VIEW'));
             return false;
         }
@@ -279,12 +278,11 @@ class Controller extends App\Controller
     }
 
 
-
     /**
      * Get controller configuration
      * @return ConfigInterface
      */
-    protected function getConfig() : ConfigInterface
+    protected function getConfig(): ConfigInterface
     {
         return Config::storage()->get('backend/controller.php');
     }
@@ -294,11 +292,11 @@ class Controller extends App\Controller
      * @throws \Exception
      * @return string
      */
-    public function getModule() : string
+    public function getModule(): string
     {
         $manager = new \Modules_Manager();
-        $module =  $manager->getControllerModule(get_called_class());
-        if(empty($module)){
+        $module = $manager->getControllerModule(get_called_class());
+        if (empty($module)) {
             throw new \Exception('Undefined module');
         }
         return $module;
@@ -308,9 +306,9 @@ class Controller extends App\Controller
      * Get name of the object, which edits the controller
      * @return string
      */
-    public function getObjectName() : string
+    public function getObjectName(): string
     {
-        return str_replace(array('Backend_', '_Controller','\\Backend\\','\\Controller') , '' , get_called_class());
+        return str_replace(array('Backend_', '_Controller', '\\Backend\\', '\\Controller'), '', get_called_class());
     }
 
     /**
@@ -320,18 +318,18 @@ class Controller extends App\Controller
     {
         $module = $this->getModule();
 
-        $this->includeScripts($this->resource);
+        $this->includeScripts();
 
         $this->resource->addInlineJs('
-	        var canEdit = ' . intval($this->moduleAcl->canEdit($module) ). ';
+	        var canEdit = ' . intval($this->moduleAcl->canEdit($module)) . ';
 	        var canDelete = ' . intval($this->moduleAcl->canDelete($module)) . ';
 	    ');
 
         $objectName = $this->getObjectName();
-        if(!empty($objectName)){
+        if (!empty($objectName)) {
             $objectConfig = \Dvelum\Orm\Record\Config::factory($this->getObjectName());
 
-            if($objectConfig->isRevControl()){
+            if ($objectConfig->isRevControl()) {
                 $this->resource->addInlineJs('
                     var canPublish = ' . intval($this->moduleAcl->canPublish($this->module)) . ';
                 ');
@@ -340,14 +338,14 @@ class Controller extends App\Controller
 
         $this->includeScripts();
 
-        $modulesConfig = Config\Factory::config(Config\Factory::File_Array , $this->appConfig->get('backend_modules'));
+        $modulesConfig = Config\Factory::config(Config\Factory::File_Array, $this->appConfig->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($this->module);
 
-        if(strlen($moduleCfg['designer']))
+        if (strlen($moduleCfg['designer']))
             $this->runDesignerProject($moduleCfg['designer']);
         else
-            if(file_exists($this->appConfig->get('jsPath').'app/system/crud/' . strtolower($this->module) . '.js'))
-                $this->resource->addJs('/js/app/system/crud/' . strtolower($this->module) .'.js' , 4);
+            if (file_exists($this->appConfig->get('jsPath') . 'app/system/crud/' . strtolower($this->module) . '.js'))
+                $this->resource->addJs('/js/app/system/crud/' . strtolower($this->module) . '.js', 4);
     }
 
     /**
@@ -359,17 +357,16 @@ class Controller extends App\Controller
         $media->includeScripts();
         $cfg = Config::storage()->get('js_inc_backend.php');
 
-        if($cfg->getCount())
-        {
+        if ($cfg->getCount()) {
             $js = $cfg->get('js');
-            if(!empty($js))
-                foreach($js as $file => $config)
-                    $this->resource->addJs($file , $config['order'] , $config['minified']);
+            if (!empty($js))
+                foreach ($js as $file => $config)
+                    $this->resource->addJs($file, $config['order'], $config['minified']);
 
             $css = $cfg->get('css');
-            if(!empty($css))
-                foreach($css as $file => $config)
-                    $this->resource->addCss($file , $config['order']);
+            if (!empty($css))
+                foreach ($css as $file => $config)
+                    $this->resource->addCss($file, $config['order']);
         }
     }
 
@@ -378,7 +375,7 @@ class Controller extends App\Controller
      * @param string $project - path to project file
      * @param string | boolean $renderTo
      */
-    protected function runDesignerProject($project , $renderTo = false)
+    protected function runDesignerProject($project, $renderTo = false)
     {
         $manager = new \Designer_Manager($this->appConfig);
         $project = $manager->findWorkingCopy($project);
@@ -394,7 +391,7 @@ class Controller extends App\Controller
         $template = View::factory();
         $templateData['wwwRoot'] = $this->appConfig->get('wwwroot');
 
-        if($this->backofficeConfig->get('use_csrf_token')){
+        if ($this->backofficeConfig->get('use_csrf_token')) {
             $templateData['csrf'] = [
                 'csrfToken' => (new \Security_Csrf())->createToken(),
                 'csrfFieldName' => \Security_Csrf::POST_VAR
@@ -402,7 +399,7 @@ class Controller extends App\Controller
         }
 
         $template->setData($templateData);
-        $this->response->put($template->render('system/'.$this->backofficeConfig->get('theme') . '/login.php'));
+        $this->response->put($template->render('system/' . $this->backofficeConfig->get('theme') . '/login.php'));
         $this->response->send();
     }
 
@@ -426,7 +423,7 @@ class Controller extends App\Controller
             app.wwwRoot = "' . $wwwRoot . '";
         	app.admin = "' . $this->request->url([$adminPath]) . '";
         	app.delimiter = "' . $urlDelimiter . '";
-        	app.root = "' . $this->request->url([$adminPath, $controllerCode,'']) . '";
+        	app.root = "' . $this->request->url([$adminPath, $controllerCode, '']) . '";
         ');
 
         $modulesManager = new \Modules_Manager();
@@ -453,6 +450,7 @@ class Controller extends App\Controller
 
         $this->response->put($template->render($templatesPath . 'layout.php'));
     }
+
     /**
      * Get desktop module info
      */
@@ -460,25 +458,22 @@ class Controller extends App\Controller
     {
         $moduleName = $this->getModule();
 
-        $modulesConfig = Config::factory(Config\Factory::File_Array , $this->appConfig->get('backend_modules'));
+        $modulesConfig = Config::factory(Config\Factory::File_Array, $this->appConfig->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($moduleName);
 
         $projectData = [];
 
-        if(strlen($moduleCfg['designer']))
-        {
+        if (strlen($moduleCfg['designer'])) {
             $manager = new \Designer_Manager($this->appConfig);
             $project = $manager->findWorkingCopy($moduleCfg['designer']);
-            $projectData =  $manager->compileDesktopProject($project, 'app.__modules.'.$moduleName , $moduleName);
+            $projectData = $manager->compileDesktopProject($project, 'app.__modules.' . $moduleName, $moduleName);
             $projectData['isDesigner'] = true;
             $modulesManager = new \Modules_Manager();
             $modulesList = $modulesManager->getList();
             $projectData['title'] = (isset($modulesList[$this->module])) ? $modulesList[$moduleName]['title'] : '';
-        }
-        else
-        {
-            if(file_exists($this->appConfig->get('jsPath').'app/system/desktop/' . strtolower($moduleName) . '.js'))
-                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($moduleName) .'.js';
+        } else {
+            if (file_exists($this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($moduleName) . '.js'))
+                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($moduleName) . '.js';
         }
         return $projectData;
     }

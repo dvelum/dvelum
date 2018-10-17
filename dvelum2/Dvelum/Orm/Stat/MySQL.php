@@ -3,15 +3,14 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Stat;
 
-use Dvelum\Orm\Model;
 use Dvelum\Db\Adapter;
 
 class MySQL
 {
     /**
      * Get Database tables info
-     * @param Model $model
-     * @param ?string $tableName
+     * @param Adapter $dbAdapter
+     * @param string|null $tableName
      * @throws \Exception
      * @return array
      */

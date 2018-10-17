@@ -43,27 +43,27 @@ abstract class Controller extends Backend\Api\Controller
         $moduleName = $this->getModule();
         $objectConfig = Orm\Record\Config::factory($objectName);
         $moduleAcl = $this->user->getModuleAcl();
-        $modulesConfig = Config::factory(Config\Factory::File_Array , $this->appConfig->get('backend_modules'));
+        $modulesConfig = Config::factory(Config\Factory::File_Array, $this->appConfig->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($moduleName);
 
         $this->includeScripts();
 
         $this->resource->addInlineJs(
-        PHP_EOL . ' var canEdit = ' . intval($moduleAcl->canEdit($moduleName)) . ';'.
-              PHP_EOL . ' var canDelete = ' . intval($moduleAcl->canDelete($moduleName)) . ';'
+            PHP_EOL . ' var canEdit = ' . intval($moduleAcl->canEdit($moduleName)) . ';' .
+            PHP_EOL . ' var canDelete = ' . intval($moduleAcl->canDelete($moduleName)) . ';'
         );
 
-        if($objectConfig->isRevControl()){
-            $this->resource->addInlineJs(PHP_EOL.' var canPublish =  ' . intval($moduleAcl->canPublish($moduleName)) . ';');
-            $this->resource->addJs('/js/app/system/ContentWindow.js' , 1);
-            $this->resource->addJs('/js/app/system/RevisionPanel.js' , 2);
+        if ($objectConfig->isRevControl()) {
+            $this->resource->addInlineJs(PHP_EOL . ' var canPublish =  ' . intval($moduleAcl->canPublish($moduleName)) . ';');
+            $this->resource->addJs('/js/app/system/ContentWindow.js', 1);
+            $this->resource->addJs('/js/app/system/RevisionPanel.js', 2);
         }
 
-        if(strlen($moduleCfg['designer'])){
+        if (strlen($moduleCfg['designer'])) {
             $this->runDesignerProject($moduleCfg['designer']);
-        } else{
-            if(file_exists($this->appConfig->get('jsPath').'app/system/crud/' . strtolower($moduleName) . '.js')){
-                $this->resource->addJs('/js/app/system/crud/' . strtolower($moduleName) .'.js' , 4);
+        } else {
+            if (file_exists($this->appConfig->get('jsPath') . 'app/system/crud/' . strtolower($moduleName) . '.js')) {
+                $this->resource->addJs('/js/app/system/crud/' . strtolower($moduleName) . '.js', 4);
             }
         }
     }
@@ -72,9 +72,10 @@ abstract class Controller extends Backend\Api\Controller
     {
         $objectConfig = Orm\Record\Config::factory($this->getObjectName());
         // Add additional fields for VC Records UI
-        if($objectConfig->isRevControl()){
+        if ($objectConfig->isRevControl()) {
             $this->listLinks = array_merge($this->listLinks, $this->revControlFields);
         }
-        return parent::listAction();
+
+        parent::listAction();
     }
 }

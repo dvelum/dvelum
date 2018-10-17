@@ -61,11 +61,11 @@ class Crypt extends Controller
         $signalModel = Model::factory('Bgtask_Signal');
 
         //disable profiling in dev mode
-        if($this->appConfig->get('development')) {
+       // if($this->appConfig->get('development')) {
             //$taskModel->getDbConnection()->getProfiler()->setEnabled(false);
             //$signalModel->getDbConnection()->getProfiler()->setEnabled(false);
             //$objectModel->getDbConnection()->getProfiler()->setEnabled(false);
-        }
+       // }
 
         $logger =  new \Bgtask_Log_File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
 
@@ -108,11 +108,11 @@ class Crypt extends Controller
         $signalModel = Model::factory('Bgtask_Signal');
 
         //disable profiling in dev mode
-        if($this->appConfig->get('development')) {
+        //if($this->appConfig->get('development')) {
 //            $taskModel->getDbConnection()->getProfiler()->setEnabled(false);
 //            $signalModel->getDbConnection()->getProfiler()->setEnabled(false);
 //            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
-        }
+      //  }
 
         $logger =  new \Bgtask_Log_File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
 

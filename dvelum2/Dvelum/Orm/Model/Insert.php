@@ -123,7 +123,7 @@ class Insert
         }
         unset($val);
 
-        $sql = 'INSERT INTO ' . $this->db->quoteIdentifier($this->table()) . ' (' . implode(',',
+        $sql = 'INSERT INTO ' . $this->db->quoteIdentifier($this->model->table()) . ' (' . implode(',',
                 $keys) . ') VALUES (' . implode(',', $values) . ') ON DUPLICATE KEY UPDATE ';
 
         $updates = [];

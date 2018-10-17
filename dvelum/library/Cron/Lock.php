@@ -24,7 +24,7 @@ class Cron_Lock
     protected $startTime = 0;
     /**
      * Название приложения
-     * @var unknown
+     * @var string
      */
     protected $task= 'task';
     /**

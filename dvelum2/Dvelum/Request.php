@@ -22,7 +22,6 @@ declare(strict_types=1);
 namespace Dvelum;
 
 use Dvelum\Config\ConfigInterface;
-use Dvelum\Filter;
 
 /**
  * Request wrapper

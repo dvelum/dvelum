@@ -10,7 +10,7 @@ class Ext_Grid_Filtersfeature extends Ext_Object
     protected $_filters = array();
     /**
      * Get filters list
-     * @return marray
+     * @return array
      */
     public function getFilters()
     {

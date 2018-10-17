@@ -49,6 +49,7 @@ abstract class AbstractAdapter implements GeneratorInterface
      * AbstractAdapter constructor.
      * @param ConfigInterface $appConfig
      * @param ConfigInterface $designerConfig
+     * @param ConfigInterface $generatorConfig
      */
     public function __construct(ConfigInterface $appConfig, ConfigInterface $designerConfig, ConfigInterface $generatorConfig)
     {

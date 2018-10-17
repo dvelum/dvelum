@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm;
 
 use Dvelum\Config;
+use Dvelum\Lang;
 use Dvelum\Config\ConfigInterface;
 
 class Connections
@@ -75,7 +76,7 @@ class Connections
     public function removeConnection($id)
     {
         $writePath = Config::storage()->getWrite();
-        $errors = array();
+        $errors = [];
         /*
          * Check for write permissions before operation
          */

@@ -25,7 +25,6 @@ use Dvelum\Orm;
 use Dvelum\Request;
 use Dvelum\Utils;
 use Dvelum\View;
-use Dvelum\Utils\Strings;
 
 class Simple extends AbstractAdapter
 {
@@ -627,7 +626,7 @@ class Simple extends AbstractAdapter
         */
         $acceptedDirs = $this->appConfig->get('backend_controllers_dirs');
         $controllerDir = $this->appConfig->get('local_controllers') . str_replace('\\','/', $controllerNamespace);
-        $this->createControllerFile($controllerDir, $controllerCode);
+        $controllerFile = $this->createControllerFile($controllerDir, $controllerCode);
 
         /*
          * Designer project
@@ -660,7 +659,7 @@ class Simple extends AbstractAdapter
         $urlTemplates =  $this->designerConfig->get('templates');
 
 
-        $controllerUrl = Request::factory()->url(array($urlTemplates['adminpath'] , $object , '') , false);
+        $controllerUrl = Request::factory()->url(array($urlTemplates['adminpath'] , $object , ''));
         $storeUrl = Request::factory()->url(array($urlTemplates['adminpath'] ,  $object , 'list'));
 
         $modelName = str_replace('_', '', $objectName) . 'Model';
@@ -670,7 +669,7 @@ class Simple extends AbstractAdapter
         $model->idProperty = $primaryKey;
         $model->addFields($storeFields);
 
-        $project->addObject(\Designer_Project::COMPONENT_ROOT , $model, -10);
+        $project->addObject(\Designer_Project::COMPONENT_ROOT , $model);
 
         $dataStore = \Ext_Factory::object('Data_Store');
         $dataStore->setName('dataStore');
@@ -954,11 +953,11 @@ class Simple extends AbstractAdapter
          * Save designer project
          */
         $designerStorage = \Designer_Factory::getStorage($this->designerConfig);
+
         if(!$designerStorage->save($projectFile , $project , $this->designerConfig->get('vcs_support'))){
             @unlink($controllerFile);
             throw new \Exception('Can`t create Designer project');
         }
         return true;
     }
-
 }

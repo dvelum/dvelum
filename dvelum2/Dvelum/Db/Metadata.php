@@ -43,7 +43,7 @@ class Metadata
     {
         foreach ($this->metadata->getConstraints($tableName) as $constraint) {
             /**
-             * @var $constraint Db\Metadata\Object\ConstraintObject
+             * @var Db\Metadata\Object\ConstraintObject $constraint
              */
             if (!$constraint->hasColumns()) {
                 continue;
@@ -77,7 +77,7 @@ class Metadata
         $data = [];
         foreach ($this->metadata->getColumns($tableName) as $column){
             /**
-             * @var $column Db\Metadata\Object\ColumnObject
+             * @var Db\Metadata\Object\ColumnObject $column
              */
             $name = $column->getName();
             $data[$name] = $column;
@@ -99,7 +99,7 @@ class Metadata
         $data = [];
         foreach ($this->metadata->getColumns($tableName) as $column){
             /**
-             * @var $column Db\Metadata\Object\ColumnObject
+             * @var Db\Metadata\Object\ColumnObject $column
              */
             $name = $column->getName();
             $data[$name] = [

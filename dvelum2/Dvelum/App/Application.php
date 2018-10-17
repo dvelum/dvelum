@@ -31,13 +31,11 @@ use Dvelum\{
     Config,
     Config\ConfigInterface,
     Db,
-    Orm,
     Lang,
     Utils,
     Service,
     Cache\CacheInterface
 };
-use \Exception;
 
 
 /**
@@ -226,9 +224,8 @@ class Application
      */
     protected function initDb()
     {
-        $templatesPath = $this->config->get('templates');
         $dev = $this->config->get('development');
-        $dbErrorHandler = function ( Db\Adapter\Event $e) use($templatesPath , $dev){
+        $dbErrorHandler = function ( Db\Adapter\Event $e) use( $dev){
             $response = Response::factory();
             $request = Request::factory();
             if($request->isAjax()){

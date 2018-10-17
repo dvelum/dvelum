@@ -40,6 +40,7 @@ abstract class Action implements ActionInterface
     /**
      * @param ConfigInterface $appConfig
      * @param array $params
+     * @param array $config
      * @return void
      */
     public function init(ConfigInterface $appConfig, array $params = [], array $config = []): void

@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Distributed\Key;
 
-use Dvelum\Orm\Distributed\Router;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Record;
 
@@ -58,7 +57,7 @@ interface GeneratorInterface
     /**
      * Get shards for list of objects
      * @param string $objectName
-     * @param array $objectIds
+     * @param array $distributedKeys
      * @return array  [shard_id=>[key1,key2,key3], shard_id2=>[...]]
      */
     public function findObjectsShards(string $objectName, array $distributedKeys) : array;

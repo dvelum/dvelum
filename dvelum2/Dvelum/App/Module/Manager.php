@@ -337,9 +337,11 @@ class Manager
      * @param $path
      * @param array $skipList
      * @param & array $result
+     * @param string $classPrefix
      * @return void
+     * @throws \Exception
      */
-    public function findControllers(string $path, $skipList, & $result, $classPrefix = '') : void
+    public function findControllers(string $path, $skipList, & $result, string $classPrefix = '') : void
     {
         $folders = File::scanFiles($path, false, true, File::Dirs_Only);
 

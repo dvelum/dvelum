@@ -22,7 +22,6 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Record;
 
 use Dvelum\Service;
-use Dvelum\Orm;
 
 /**
  * Db_Object Manager class
@@ -52,7 +51,7 @@ class Manager
 			$list = array();
 
             /**
-             * @var Orm $ormService
+             * @var \Dvelum\Orm\Service $ormService
              */
 			$ormService = Service::get('orm');
 			$cfgPath = $ormService->getConfigSettings()->get('configPath');

@@ -26,7 +26,7 @@ use Dvelum\Orm\Model;
 use Dvelum\Orm\RecordInterface;
 use Dvelum\App\Controller\EventManager;
 use Dvelum\App\Controller\Event;
-use \Exception;
+
 
 class Controller extends Backend\Ui\Controller
 {
@@ -34,6 +34,7 @@ class Controller extends Backend\Ui\Controller
     {
         return 'Menu';
     }
+
     public function getObjectName(): string
     {
         return 'Menu';
@@ -55,7 +56,7 @@ class Controller extends Backend\Ui\Controller
         /**
          * @var \Model_Medialib $mediaModel
          */
-        $mediaModel =  Model::factory('Medialib');
+        $mediaModel = Model::factory('Medialib');
         $mediaModel->includeScripts($this->resource);
 
         $this->resource->addJs('/js/app/system/SearchPanel.js', 0);
@@ -77,11 +78,11 @@ class Controller extends Backend\Ui\Controller
      * @param Event $event
      * @return void
      */
-    public function prepareData(Event $event) : void
+    public function prepareData(Event $event): void
     {
         $data = &$event->getData()->data;
 
-        if(empty($data)){
+        if (empty($data)) {
             return;
         }
 
@@ -91,18 +92,19 @@ class Controller extends Backend\Ui\Controller
          * Prepare  multi link properties
          */
         $fields = $objectConfig->getFields();
-
+        $object = Record::factory($this->getObjectName(), $data['id']);
         foreach ($fields as $field) {
 
             $fieldName = $field->getName();
 
-            if ($fieldName== 'id' || empty($data[$fieldName])) {
+            if ($fieldName == 'id' || empty($data[$fieldName])) {
                 continue;
             }
 
             if ($field->isObjectLink() || $field->isMultiLink()) {
                 $linkObject = $field->getLinkedObject();
-                $data[$fieldName] = array_values($this->collectLinksData($data[$fieldName], $linkObject));
+
+                $data[$fieldName] = array_values($this->collectLinksData($fieldName, $object, $linkObject));
             }
         }
 
@@ -127,11 +129,11 @@ class Controller extends Backend\Ui\Controller
      * @param Event $event
      * @return void
      */
-    public function afterInsert(Event $event) : void
+    public function afterInsert(Event $event): void
     {
         $eventData = $event->getData();
 
-        if(!isset($eventData->object) || !$eventData->object instanceof RecordInterface){
+        if (!isset($eventData->object) || !$eventData->object instanceof RecordInterface) {
             $event->setError($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -141,7 +143,7 @@ class Controller extends Backend\Ui\Controller
          */
         $object = $eventData->object;
 
-        $linksData =  $this->request->post('data', 'raw', false);
+        $linksData = $this->request->post('data', 'raw', false);
 
         if (strlen($linksData)) {
             $linksData = json_decode($linksData, true);
@@ -163,11 +165,11 @@ class Controller extends Backend\Ui\Controller
      * @param Event $event
      * @return void
      */
-    public function afterUpdate(Event $event) : void
+    public function afterUpdate(Event $event): void
     {
         $eventData = $event->getData();
 
-        if(!isset($eventData->object) || !$eventData->object instanceof RecordInterface){
+        if (!isset($eventData->object) || !$eventData->object instanceof RecordInterface) {
             $event->setError($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -176,7 +178,7 @@ class Controller extends Backend\Ui\Controller
          * @var RecordInterface $object
          */
         $object = $eventData->object;
-        $linksData =  $this->request->post('data', 'raw', false);
+        $linksData = $this->request->post('data', 'raw', false);
 
         if (strlen($linksData)) {
             $linksData = json_decode($linksData, true);
@@ -206,7 +208,7 @@ class Controller extends Backend\Ui\Controller
     /**
      * Import Site structure
      */
-    public function importAction() : void
+    public function importAction(): void
     {
         /**
          * @var \Model_Menu_Item $menuModel

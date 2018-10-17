@@ -16,6 +16,10 @@ class Backend_Designer_Sub_Gridcolumnactionevents extends Backend_Designer_Sub_C
      * @var Ext_Grid_Column_Action
      */
     protected $_column;
+    /**
+     * @var string|null
+     */
+    protected $_action = null;
 
     public function __construct()
     {

@@ -57,7 +57,7 @@ abstract class Designer_Storage_Adapter_Abstract
 	/**
 	 * Save Db_Query object
 	 * @param string $id
-	 * @param Db_Query $obj
+	 * @param Designer_Project $obj
 	 * @param boolean $export, default false
 	 * @return boolean
 	 */

@@ -22,7 +22,6 @@ namespace Dvelum\Orm\Distributed\Key\Strategy;
 
 use Dvelum\Orm\Distributed\Key\GeneratorInterface;
 use Dvelum\Orm\Distributed\Key\Reserved;
-use Dvelum\Orm\Distributed\Router;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Record;
@@ -69,7 +68,8 @@ class UserKeyNoID implements GeneratorInterface
      * Reserve object id, add to routing table
      * @param Record $object
      * @param string $shard
-     * @return ?Reserved
+     * @return Reserved|null
+     * @throws Exception
      */
     public function reserveIndex(Record $object , string $shard) : ?Reserved
     {
@@ -137,8 +137,9 @@ class UserKeyNoID implements GeneratorInterface
     /**
      * Get shards for list of objects
      * @param string $objectName
-     * @param array $objectIds
+     * @param array $distributedKeys
      * @return array  [shard_id=>[key1,key2,key3], shard_id2=>[...]]
+     * @throws Exception
      */
     public function findObjectsShards(string $objectName, array $distributedKeys) : array
     {

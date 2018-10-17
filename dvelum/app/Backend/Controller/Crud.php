@@ -320,7 +320,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         $ormConfig = Config::storage()->get('orm.php');
 
-        if($ormConfig>get('vc_clear_on_delete'))
+        if($ormConfig->get('vc_clear_on_delete'))
             Model::factory('Vc')->removeItemVc($this->_objectName , $id);
 
         if(!$object->delete())

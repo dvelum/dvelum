@@ -237,9 +237,13 @@ class Store extends \Dvelum\Orm\Record\Store
     }
 
     /**
-     * Validate unique fields, object field groups
+     *  Validate unique fields, object field groups
      * Returns array of errors or null .
-     * @return  array | null
+     * @param $objectName
+     * @param $recordId
+     * @param $groupsData
+     * @return array|null
+     * @throws Orm\Exception
      */
     public function validateUniqueValues($objectName, $recordId, $groupsData) : ?array
     {

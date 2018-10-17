@@ -5,40 +5,40 @@ class Debug
 	 * Script startup time
 	 * @var float
 	 */
-	protected static $_scriptStartTime = false;
+	protected static $scriptStartTime = false;
 	/**
 	 * Database profiler
-	 * @var Zend_Db_Profiler
+	 * @var array $dbProfilers
 	 */
-	static protected  $_dbProfilers = [];
-	static protected  $_timers = array();
-	static protected  $_loadedClasses = array();
-	static protected  $_loadedConfigs = array();
-	static protected  $_cacheCores = array();
+	static protected  $dbProfilers = [];
+	static protected  $timers = [];
+	static protected  $loadedClasses = [];
+	static protected  $loadedConfigs = [];
+	static protected  $cacheCores = [];
 	
 	static public function setCacheCores(array $data)
 	{
-		self::$_cacheCores = $data;
+		self::$cacheCores = $data;
 	}
 
 	static public function setScriptStartTime($time)
 	{
-		self::$_scriptStartTime = $time;
+		self::$scriptStartTime = $time;
 	}
 
-	static public function addDbProfiler(\Zend\Db\Adapter\Profiler\Profiler $profiler)
+	static public function addDbProfiler(\Zend\Db\Adapter\Profiler\ProfilerInterface $profiler)
 	{
-		self::$_dbProfilers[] =  $profiler;
+		self::$dbProfilers[] =  $profiler;
 	}
 	
 	static public function setLoadedClasses(array $data)
 	{
-		self::$_loadedClasses = $data;
+		self::$loadedClasses = $data;
 	}
 
 	static public function setLoadedConfigs(array $data)
 	{
-		self::$_loadedConfigs = $data;
+		self::$loadedConfigs = $data;
 	}
 
 	/**
@@ -61,37 +61,37 @@ class Debug
 		
 		$str = '';
 		
-		if(self::$_scriptStartTime)
-			$str .= '<b>Time:</b> ' . number_format((microtime(true) - self::$_scriptStartTime) , 5) . "sec.<br>\n";
+		if(self::$scriptStartTime)
+			$str .= '<b>Time:</b> ' . number_format((microtime(true) - self::$scriptStartTime) , 5) . "sec.<br>\n";
 		
 		$str .= '<b>Memory:</b> ' . number_format((memory_get_usage() / (1024 * 1024)) , 3) . "mb<br>\n"
              . '<b>Memory peak:</b> ' . number_format((memory_get_peak_usage() / (1024 * 1024)) , 3) . "mb<br>\n"
              . '<b>Includes:</b> ' . count(get_included_files()) . "<br>\n"
-             . '<b>Autoloaded:</b> ' . count(self::$_loadedClasses) . "<br>\n"
-             . '<b>Config files:</b> ' . count(self::$_loadedConfigs) . "<br>\n";
+             . '<b>Autoloaded:</b> ' . count(self::$loadedClasses) . "<br>\n"
+             . '<b>Config files:</b> ' . count(self::$loadedConfigs) . "<br>\n";
 
-		if(!empty(self::$_dbProfilers)) {
+		if(!empty(self::$dbProfilers)) {
 			$str.= self::getQueryProfiles($options);
 		}
 
 
 		if($options['configs'])
-			$str .= "<b>Configs (".count(self::$_loadedConfigs)."):</b>\n<br> " . implode("\n\t <br>" , self::$_loadedConfigs). '<br>';
+			$str .= "<b>Configs (".count(self::$loadedConfigs)."):</b>\n<br> " . implode("\n\t <br>" , self::$loadedConfigs). '<br>';
 
 		if($options['autoloader'])
-			$str .= "<b>Autoloaded (".count(self::$_loadedClasses)."):</b>\n<br> " . implode("\n\t <br>" , self::$_loadedClasses) . '<br>';
+			$str .= "<b>Autoloaded (".count(self::$loadedClasses)."):</b>\n<br> " . implode("\n\t <br>" , self::$loadedClasses) . '<br>';
 
 		if($options['includes'])
 			$str .= "<b>Includes (".count(get_included_files())."):</b>\n<br> " . implode("\n\t <br>" , get_included_files());
 
 
-		if(!empty(self::$_cacheCores) && self::$_cacheCores && $options['cache'])
+		if(!empty(self::$cacheCores) && self::$cacheCores && $options['cache'])
 		{
 		    $body= '';	    
 		    $globalCount = array('load'=>0,'save'=>0 ,'remove'=>0,'total'=>0);	    
 		    $globalTotal = 0;
 		    
-			foreach (self::$_cacheCores as $name=>$cacheCore)
+			foreach (self::$cacheCores as $name=>$cacheCore)
 			{	
 				if(!$cacheCore)
 					continue;
@@ -149,7 +149,7 @@ class Debug
 	 */
 	static public function startTimer($name)
 	{
-		self::$_timers[$name] = array(
+		self::$timers[$name] = array(
 				'start' => microtime(true) , 
 				'stop' => 0
 		);
@@ -162,11 +162,11 @@ class Debug
 	 */
 	static public function stopTimer($name)
 	{
-		if(!isset(self::$_timers[$name]))
+		if(!isset(self::$timers[$name]))
 			return 0;
 		
-		self::$_timers[$name]['stop'] = microtime(true);
-		return self::$_timers[$name]['stop'] - self::$_timers[$name]['start'];
+		self::$timers[$name]['stop'] = microtime(true);
+		return self::$timers[$name]['stop'] - self::$timers[$name]['start'];
 	}
 
 	/**
@@ -176,14 +176,14 @@ class Debug
 	 */
 	static public function getTimerTime($timer)
 	{
-		if(!isset(self::$_timers[$timer]))
+		if(!isset(self::$timers[$timer]))
 			return 0;
 		
-		if(!self::$_timers[$timer]['stop'])
+		if(!self::$timers[$timer]['stop'])
 			return self::stopTimer($timer);
 		
-		self::$_timers[$timer]['stop'] = microtime(true);
-		return self::$_timers[$timer]['stop'] - self::$_timers[$timer]['start'];
+		self::$timers[$timer]['stop'] = microtime(true);
+		return self::$timers[$timer]['stop'] - self::$timers[$timer]['start'];
 	}
 
     static protected function getQueryProfiles($options)
@@ -194,7 +194,7 @@ class Debug
 		$totalTime = 0;
 		$profiles = [];
 
-		foreach(self::$_dbProfilers as $prof)
+		foreach(self::$dbProfilers as $prof)
 		{
 			$totalCount += count($prof->getProfiles());
 			//$totalTime += $prof->getTotalElapsedSecs();

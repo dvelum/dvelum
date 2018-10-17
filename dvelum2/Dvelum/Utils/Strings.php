@@ -95,6 +95,7 @@ class Strings
      * @param string $string
      * @param integer $tabsCount , optional, default = 1
      * @param string $indent , optional, default = "\t"
+     * @param bool $ignoreFirstLine
      * @return string
      */
     static public function addIndent(string $string , int $tabsCount = 1 , string $indent="\t" , bool $ignoreFirstLine = false) : string
@@ -138,8 +139,10 @@ class Strings
 
     /**
      * Encrypt string
-     * @param string $string
-     * @return $string
+     * @param $string
+     * @param $key
+     * @param $iv
+     * @return string
      */
     static public function encrypt($string ,$key , $iv) : string
     {
@@ -160,9 +163,12 @@ class Strings
 
         return base64_encode($encrypted);
     }
+
     /**
      * Decrypt string
-     * @param string $string
+     * @param $string
+     * @param $key
+     * @param $iv
      * @return string
      */
     static public function decrypt($string , $key , $iv): string

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpMissingBreakStatementInspection */
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov

@@ -68,7 +68,7 @@ class Designer_Project_Events
 	
 	/**
 	 * Check if Object has local events
-	 * @param unknown_type $object
+	 * @param mixed $object
 	 * @return boolean
 	 */
 	public function objectHasLocalEvents($object)

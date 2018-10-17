@@ -69,12 +69,12 @@ class Backend extends \Dvelum\App\Router
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Router::findUrl()
+     * @param string $module
+     * @return string
      */
     public function findUrl(string $module): string
     {
         $cfg = Config::storage()->get('backend.php');
-        return Request::factory()->url([$cfg['adminPath'], $module], false);
+        return Request::factory()->url([$cfg['adminPath'], $module]);
     }
 }

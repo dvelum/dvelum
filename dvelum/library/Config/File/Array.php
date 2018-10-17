@@ -29,6 +29,11 @@ class Config_File_Array extends Config_File
 	 * @var mixed
 	 */
 	protected $_applyTo;
+
+    /**
+     * @var string
+     */
+	protected $_name;
     /**
      * (non-PHPdoc)
      * @see library/Config/File#_readFile($data)
@@ -76,10 +81,11 @@ class Config_File_Array extends Config_File
     			return false;	
     		}
     	}
+
         if(Utils::exportArray($this->_name, $data)!==false){
-           Config::cache();              
            return true;     
-        }   
+        }
+
         return false; 
     }
 	/**

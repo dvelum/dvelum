@@ -19,6 +19,7 @@
 declare(strict_types=1);
 
 namespace Dvelum\App\Backend\Acl;
+
 use Dvelum\App\Backend;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Record;
@@ -30,10 +31,12 @@ class Controller extends Backend\Ui\Controller
     {
         return 'Acl';
     }
+
     public function getObjectName(): string
     {
         return 'Acl';
     }
+
     /**
      * (non-PHPdoc)
      * @see Backend_Controller::indexAction()
@@ -41,42 +44,44 @@ class Controller extends Backend\Ui\Controller
     public function indexAction()
     {
         $module = $this->getModule();
-        $this->resource->addJs('/js/app/system/Acl.js' , true , 1);
-        $this->resource->addJs('/js/app/system/crud/acl.js' , true , 2);
+        $this->resource->addJs('/js/app/system/Acl.js', true, 1);
+        $this->resource->addJs('/js/app/system/crud/acl.js', true, 2);
 
         $this->resource->addInlineJs('
-        	var canEdit = ' . ((integer) $this->moduleAcl->canEdit($module)) . ';
-        	var canDelete = ' . ((integer) $this->moduleAcl->canDelete($module)) . ';
+        	var canEdit = ' . ((integer)$this->moduleAcl->canEdit($module)) . ';
+        	var canDelete = ' . ((integer)$this->moduleAcl->canDelete($module)) . ';
         ');
     }
+
     /**
      * Groups list action
      */
     public function groupListAction()
     {
         $data = Model::factory('Group')
-                ->query()
-                ->fields([
-                    'id' ,
-                    'title' ,
-                    'system'
-                ])->fetchAll();
+            ->query()
+            ->fields([
+                'id',
+                'title',
+                'system'
+            ])->fetchAll();
 
         $this->response->success($data);
     }
+
     /**
      * List permissions action
      */
     public function permissionsAction()
     {
-        $user = $this->request->post('user_id' , 'int' , 0);
-        $group = $this->request->post('group_id' , 'int' , 0);
+        $user = $this->request->post('user_id', 'int', 0);
+        $group = $this->request->post('group_id', 'int', 0);
 
-        if($user && $group){
+        if ($user && $group) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
 
-        if($group){
+        if ($group) {
             /**
              * @var \Model_Acl_Simple
              */
@@ -85,38 +90,35 @@ class Controller extends Backend\Ui\Controller
         }
 
 
-        if(!empty($data))
-            $data = Utils::rekey('object' , $data);
+        if (!empty($data))
+            $data = Utils::rekey('object', $data);
 
         $manager = new Record\Manager();
         $objects = $manager->getRegisteredObjects();
 
-        foreach($objects as $name)
-        {
-            if(!isset($data[$name]))
-            {
+        foreach ($objects as $name) {
+            if (!isset($data[$name])) {
                 $data[$name] = array(
-                    'object' => $name ,
+                    'object' => $name,
                     'create' => false,
-                    'view' => false ,
-                    'edit' => false ,
-                    'delete' => false ,
-                    'user_id'=>null,
-                    'publish'=>false,
-                    'group_id'=>$group
+                    'view' => false,
+                    'edit' => false,
+                    'delete' => false,
+                    'user_id' => null,
+                    'publish' => false,
+                    'group_id' => $group
                 );
             }
         }
 
-        foreach($data as $k => &$v)
-        {
-            if(!Record\Config::configExists($k)) {
+        foreach ($data as $k => &$v) {
+            if (!Record\Config::configExists($k)) {
                 unset($data[$k]);
                 continue;
             }
             $cfg = Record\Config::factory($k);
 
-            if($cfg->isRevControl())
+            if ($cfg->isRevControl())
                 $v['rc'] = true;
             else
                 $v['rc'] = false;
@@ -126,43 +128,45 @@ class Controller extends Backend\Ui\Controller
         unset($v);
         $this->response->success(array_values($data));
     }
+
     /**
      * Save permissions action
      */
     public function savePermissionsAction()
     {
-       if(!$this->checkCanEdit()){
-           return;
-       }
+        if (!$this->checkCanEdit()) {
+            return;
+        }
 
-        $data = $this->request->post('data' , 'raw' , false);
-        $groupId = $this->request->post('group_id' , 'int' , false);
-        $data = json_decode($data , true);
+        $data = $this->request->post('data', 'raw', false);
+        $groupId = $this->request->post('group_id', 'int', false);
+        $data = json_decode($data, true);
 
-        if(empty($data) || ! $groupId){
+        if (empty($data) || !$groupId) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
 
-        if(Model::factory('acl_simple')->updateGroupPermissions($groupId , $data))
+        if (Model::factory('acl_simple')->updateGroupPermissions($groupId, $data))
             $this->response->success();
         else
             $this->response->error($this->lang->get('CANT_EXEC'));
     }
+
     /**
      * Get desktop module info
      */
     public function desktopModuleInfo()
     {
         $projectData = [];
-        $projectData['includes']['js'][] =  '/js/app/system/Acl.js';
+        $projectData['includes']['js'][] = '/js/app/system/Acl.js';
         $module = $this->getModule();
         /*
          * Module bootstrap
          */
-        if(file_exists($this->appConfig->get('jsPath').'app/system/desktop/' . strtolower($module) . '.js'))
-            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($module) .'.js';
+        if (file_exists($this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($module) . '.js'))
+            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($module) . '.js';
 
         return $projectData;
     }

@@ -11,7 +11,7 @@ class Model_Links extends Model
      */
     public function clearObjectLinks(Orm\Record $object)
     {
-        $this->_db->delete($this->table(),'src = '.$this->_db->quote($object->getName()).' AND src_id = '.intval($object->getId()));
+        $this->db->delete($this->table(),'src = '.$this->db->quote($object->getName()).' AND src_id = '.intval($object->getId()));
     }
     /**
      * Clear links for object list
@@ -20,9 +20,9 @@ class Model_Links extends Model
      */
     public function clearLinksFor($objectName , array $objectsIds)
     {
-    	$this->_db->delete(
+    	$this->db->delete(
     		$this->table(),
-    		'`src` = ' . $this->_db->quote($objectName).' 
+    		'`src` = ' . $this->db->quote($objectName).' 
     			AND
     		 `src_id` IN('.\Utils::listIntegers($objectsIds).')'
         );

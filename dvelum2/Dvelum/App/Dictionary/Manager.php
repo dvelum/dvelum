@@ -58,6 +58,11 @@ class Manager
     static protected $validDictionary = [];
 
     /**
+     * @var ConfigInterface
+     */
+    protected $appConfig;
+
+    /**
      * @param ConfigInterface $appConfig
      * @param mixed  \Cache_Interface | false $cache
      * @throws \Exception
@@ -116,7 +121,7 @@ class Manager
     /**
      * Create dictionary
      * @param string $name
-     * @param string $language , optional
+     * @param string|bool $language , optional
      * @return bool
      */
     public function create(string $name, $language = false): bool

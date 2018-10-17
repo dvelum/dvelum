@@ -26,10 +26,6 @@
 class Page
 {
     protected static $instance;
-    /**
-     * @var Externals_Expert
-     */
-    protected $externalsExpert = false;
     protected $templatesPath = '';
     public $title = '';
     public $html_title = '';
@@ -72,15 +68,6 @@ class Page
     public function setOgProperty($key , $value)
     {
         $this->ogData[$key] = $value;
-    }
-
-    /**
-     * Define Externals expert adapter
-     * @param Externals_Expert $expert
-     */
-    public function setExternalsExpert(Externals_Expert $expert)
-    {
-        $this->externalsExpert = $expert;
     }
 
     /**
