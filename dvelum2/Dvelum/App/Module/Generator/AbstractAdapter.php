@@ -90,7 +90,7 @@ abstract class AbstractAdapter implements GeneratorInterface
 
         // initComponent
         $initTemplate = View::factory();
-        $m = $methodsManager->addMethod($grid->getName() ,
+        $methodsManager->addMethod($grid->getName() ,
             'initComponent' ,
             [],
             $initTemplate->render('generator/simple/initComponent.php')

@@ -740,10 +740,6 @@ class Config
      */
     public function setFieldConfig(string $field , array $config) : void
     {
-        $title = '';
-        if(isset($config['title']))
-            $title = $config['title'];
-
         $cfg = & $this->config->dataLink();
         $cfg['fields'][$field] = $config;
     }

@@ -49,7 +49,7 @@ class UserKeyNoID implements GeneratorInterface
      * @param $distributedKey
      * @return bool
      */
-    public function deleteIndex(Record $object, $distributedKey) : bool
+    public function deleteIndex(RecordInterface $object, $distributedKey) : bool
     {
         $objectConfig = $object->getConfig();
         $indexObject = $objectConfig->getDistributedIndexObject();
@@ -71,7 +71,7 @@ class UserKeyNoID implements GeneratorInterface
      * @return Reserved|null
      * @throws Exception
      */
-    public function reserveIndex(Record $object , string $shard) : ?Reserved
+    public function reserveIndex(RecordInterface $object , string $shard) : ?Reserved
     {
         $objectConfig = $object->getConfig();
         $indexObject = $objectConfig->getDistributedIndexObject();
@@ -176,7 +176,7 @@ class UserKeyNoID implements GeneratorInterface
      * @param Record $record
      * @return null|string
      */
-    public function detectShard(Record $record): ?string
+    public function detectShard(RecordInterface $record): ?string
     {
         $objectConfig = $record->getConfig();
         $indexObject = $objectConfig->getDistributedIndexObject();
@@ -285,9 +285,8 @@ class UserKeyNoID implements GeneratorInterface
             $reserved->setShard($data[$this->shardField]);
             return $reserved;
         }
-
+        $db = $model->getDbConnection();
         try{
-            $db = $model->getDbConnection();
             $db->beginTransaction();
             $db->insert($model->table(),$keyData);
             $id = $db->lastInsertId($model->table());

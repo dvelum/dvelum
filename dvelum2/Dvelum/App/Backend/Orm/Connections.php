@@ -75,7 +75,6 @@ class Connections
      */
     public function removeConnection($id)
     {
-        $writePath = Config::storage()->getWrite();
         $errors = [];
         /*
          * Check for write permissions before operation

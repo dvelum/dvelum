@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpTooManyParametersInspection */
+/** @noinspection PhpTooManyParametersInspection */
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -511,7 +512,7 @@ abstract class Generic extends AbstractAdapter
      * @param string $toField
      * @return string
      */
-    protected function getForeignKeyId(string $fromDb, string $fromTable, string $fromField, string$toDb, string $toTable, string $toField)
+    protected function getForeignKeyId(string $fromDb, string $fromTable, string $fromField, string $toDb, string $toTable, string $toField)
     {
         return md5($fromDb.'.'.$fromTable.'.'.$fromField.'-'.$toDb.'.'.$toTable.'.'.$toField);
     }

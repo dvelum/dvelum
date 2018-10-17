@@ -244,8 +244,7 @@ class Query
                 }
                 $sql->order($sort);
             } else {
-                $sortField = $params['sort'];
-                $sql->order([$sortField => $params['dir']]);
+                $sql->order([(string)$params['sort'] => $params['dir']]);
             }
         }
     }

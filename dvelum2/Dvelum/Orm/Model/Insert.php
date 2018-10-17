@@ -101,10 +101,10 @@ class Insert
 
     /**
      * Insert single record on duplicate key update
-     * @param array $record
+     * @param array $data
      * @return bool
      */
-    public function onDuplicateKeyUpdate(array $record): bool
+    public function onDuplicateKeyUpdate(array $data): bool
     {
         if (empty($data)) {
             return true;

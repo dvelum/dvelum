@@ -1,0 +1,12 @@
+includes:
+	- vendor/phpstan/phpstan/conf/config.level1.neon
+parameters:
+	bootstrap: %currentWorkingDirectory%/tests/phpstan/bootstrap.php
+	excludes_analyse:
+	    -  %currentWorkingDirectory%/application/templates
+	    -  %currentWorkingDirectory%/dvelum/templates
+	autoload_directories:
+	    -  %currentWorkingDirectory%/application
+	    -  %currentWorkingDirectory%/dvelum
+	    -  %currentWorkingDirectory%/dvelum2
+	autoload_files: []

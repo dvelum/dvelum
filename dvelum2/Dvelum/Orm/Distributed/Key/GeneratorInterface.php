@@ -22,6 +22,7 @@ namespace Dvelum\Orm\Distributed\Key;
 
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Record;
+use Dvelum\Orm\RecordInterface;
 
 interface GeneratorInterface
 {
@@ -37,7 +38,7 @@ interface GeneratorInterface
      * @param string $shard
      * @return null|Reserved
      */
-    public function reserveIndex(Record $object, string $shard): ?Reserved;
+    public function reserveIndex(RecordInterface $object, string $shard): ?Reserved;
 
     /**
      * Delete reserved index
@@ -45,7 +46,7 @@ interface GeneratorInterface
      * @param $distributedKey
      * @return bool
      */
-    public function deleteIndex(Record $record, $distributedKey) : bool;
+    public function deleteIndex(RecordInterface $record, $distributedKey) : bool;
 
     /**
      * Get object shard id
@@ -67,5 +68,5 @@ interface GeneratorInterface
      * @param Record $record
      * @return null|string
      */
-    public function detectShard(Record $record): ?string;
+    public function detectShard(RecordInterface $record): ?string;
 }

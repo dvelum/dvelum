@@ -96,8 +96,8 @@ class Expert
     {
         $relatedConfig = Record::factory($relatedObject);
         $relatedObjectModel = Model::factory($relatedObject);
-        $fields = array();
-        $singleRelated = array();
+        $fields = [];
+
         foreach ($links as $field => $type) {
             if ($type !== 'object')
                 continue;
@@ -106,7 +106,7 @@ class Expert
         }
 
         if (empty($fields))
-            return array();
+            return [];
 
         $db = $relatedObjectModel->getDbConnection();
         $sql = $db->select()->from($relatedObjectModel->table(), array($relatedConfig->getPrimaryKey()));
@@ -123,7 +123,7 @@ class Expert
 
 
         if (empty($data))
-            return array();
+            return [];
 
         return Utils::fetchCol($relatedConfig->getPrimaryKey(), $data);
     }

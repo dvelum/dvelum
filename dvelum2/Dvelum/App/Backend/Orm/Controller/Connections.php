@@ -490,7 +490,6 @@ class Connections extends \Dvelum\App\Backend\Controller
             $cfg['driver'] = $cfg['adapter'];
             $db = new Adapter($cfg);
             $db->query('SET NAMES ' . $cfg['charset']);
-            $tables = $db->listTables();
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('CANT_CONNECT') . ' ' . $e->getMessage());
             return;

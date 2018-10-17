@@ -60,7 +60,6 @@ class MySQL extends AbstractAdapter
      */
     public function prepareEngineUpdate() : ?string
     {
-        $config = $this->objectConfig->__toArray();
         $conf = $this->db->fetchRow('SHOW TABLE STATUS WHERE `name` = "' . $this->model->table() . '"');
 
         if(!$conf || !isset($conf['Engine']))
@@ -455,7 +454,6 @@ class MySQL extends AbstractAdapter
     public function prepareKeysUpdate(bool $dropOnly = false) : array
     {
         $updates = [];
-        $curTable = $this->model->table();
         /*
          * Get foreign keys form ORM
          */
@@ -771,9 +769,9 @@ class MySQL extends AbstractAdapter
         if(!empty($cmd))
         {
             $dbCfg = $this->db->getConfig();
+            $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->model->table() . '` ' . implode(',' , $cmd) . ';';
             try
             {
-                $sql = 'ALTER TABLE `' . $dbCfg['dbname'] . '`.`' . $this->model->table() . '` ' . implode(',' , $cmd) . ';';
                 $this->db->query($sql);
                 $this->logSql($sql);
                 if($buildForeignKeys)

@@ -124,7 +124,7 @@ class Field extends Controller
                 }
 
                 try {
-                    $cf = Orm\Record\Config::factory($linkedObject);
+                    Orm\Record\Config::factory($linkedObject);
                 }catch(Exception $e){
                     $this->response->error($this->lang->get('FILL_FORM') , [['id'=>'object','msg'=>$this->lang->get('INVALID_VALUE')]]);
                     return;

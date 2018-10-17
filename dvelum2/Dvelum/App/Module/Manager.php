@@ -350,8 +350,6 @@ class Manager
 
         foreach ($folders as $item)
         {
-            $name = basename($item);
-
             if(file_exists($item.'/Controller.php'))
             {
                 $name = str_replace($path.'/', '', $item.'/Controller.php');

@@ -478,7 +478,6 @@ class Select
             if ($item['bind'] === false) {
                 $where[] = $item['condition'];
             } else {
-                $items = [];
                 if (is_array($item['bind'])) {
                     $list = [];
 
@@ -586,7 +585,7 @@ class Select
     {
         static $cache = [];
 
-        $data = '';
+        $hash =  null;
 
         // performance patch
         if ($this->localCache) {
@@ -639,12 +638,12 @@ class Select
 
             if (is_int($key))
                 $table = $table[$key];
-
-            $table = $key;
+            else
+                $table = $key;
         }
 
         foreach ($columns as $k => $v) {
-            $v = (string)$v;
+            $v = (string) $v;
             $wordsCount = str_word_count($v, 0, "_*\"");
 
             if (is_int($k)) {

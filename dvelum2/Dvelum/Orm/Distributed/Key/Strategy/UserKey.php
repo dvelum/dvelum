@@ -22,16 +22,18 @@ namespace Dvelum\Orm\Distributed\Key\Strategy;
 
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Record;
+use Dvelum\Orm\RecordInterface;
 
 
 class UserKey extends UniqueID
 {
     /**
      * Detect object shard by own rules
-     * @param Record $record
+     * @param RecordInterface $record
      * @return null|string
+     * @throws \Exception
      */
-    public function detectShard(Record $record): ?string
+    public function detectShard(RecordInterface $record): ?string
     {
         $objectConfig = $record->getConfig();
         $indexObject = $objectConfig->getDistributedIndexObject();

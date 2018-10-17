@@ -863,13 +863,15 @@ class Record implements RecordInterface
         if($this->logger)
             $store->setLog($this->logger);
 
-        $this->published_version = 0;
-        $this->published = false;
-        $this->date_updated = date('Y-m-d H:i:s');
         /**
          * @todo refactor
          */
-        $this->editor_id = User::factory()->getId();
+        $this->setValues([
+            'published_version' => 0,
+            'published' => false,
+            'date_updated' =>  date('Y-m-d H:i:s'),
+            'editor_id' =>  User::factory()->getId()
+        ]);
 
         return $store->unpublish($this , $useTransaction);
     }
@@ -916,14 +918,16 @@ class Record implements RecordInterface
             }
         }
 
-        $this->published = true;
-        $this->date_updated = date('Y-m-d H:i:s');
-        $this->editor_id = User::factory()->getId();
+        $this->setValues([
+            'published' => true,
+            'date_updated' => date('Y-m-d H:i:s'),
+            'editor_id' => User::factory()->getId(),
+            'published_version' => $this->getVersion()
+        ]);
 
-        if(empty($this->date_published))
+        if(empty($this->get('date_published')))
             $this->set('date_published' , date('Y-m-d H:i:s'));
 
-        $this->published_version = $this->getVersion();
         return $store->publish($this , $useTransaction);
     }
 

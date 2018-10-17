@@ -145,6 +145,7 @@ class Model extends Orm\Model
     final public function getItems(array $ids, $fields = '*', $useCache = false)
     {
         $data = false;
+        $cacheKey = null;
 
         if (empty($ids)) {
             return [];

@@ -172,7 +172,7 @@ class ConfigTest extends TestCase
     {
         $cfg = Record\Config::factory('test');
         $this->assertEquals('user', $cfg->getField('link')->getLinkedObject());
-        $this->assertEquals('user', $cfg->getField('multilink')->getLinkedObject());
+        $this->assertEquals('page', $cfg->getField('multilink')->getLinkedObject());
     }
 
     public function testGetLinkedDictionary()

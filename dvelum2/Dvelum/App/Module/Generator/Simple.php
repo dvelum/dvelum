@@ -624,7 +624,7 @@ class Simple extends AbstractAdapter
         /*
          * Create controller
         */
-        $acceptedDirs = $this->appConfig->get('backend_controllers_dirs');
+       // $acceptedDirs = $this->appConfig->get('backend_controllers_dirs');
         $controllerDir = $this->appConfig->get('local_controllers') . str_replace('\\','/', $controllerNamespace);
         $controllerFile = $this->createControllerFile($controllerDir, $controllerCode);
 

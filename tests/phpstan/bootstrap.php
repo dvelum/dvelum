@@ -47,5 +47,3 @@ $configStorage->addPath('./application/configs/test/');
  */
 $autoloaderCfg = ConfigFactory::storage()->get('autoloader.php')->__toArray();
 $autoloader->setConfig($autoloaderCfg);
-
-//require_once DVELUM_ROOT . '/vendor/autoload.php';

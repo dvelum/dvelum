@@ -68,8 +68,8 @@ class Module extends Router
             return;
         }
 
-        $cacheManager = new \Cache_Manager();
-        $cache = $cacheManager->get('data');
+        //$cacheManager = new \Cache_Manager();
+        //$cache = $cacheManager->get('data');
 
         if ($pageVersion && empty($request->getPart(1))) {
             $user = User::factory();

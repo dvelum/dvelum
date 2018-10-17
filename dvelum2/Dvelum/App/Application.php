@@ -137,12 +137,6 @@ class Application
         ]));
 
         Utils::setSalt($this->config->get('salt'));
-
-        /*
-         * Init lang dictionary (Lazy Load)
-         */
-        $lang = $this->config->get('language');
-
         /*
          * Register Services
          */

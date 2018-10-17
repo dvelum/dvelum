@@ -68,7 +68,6 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
     public function indexAction()
     {
-        $version = Config::storage()->get('versions.php')->get('orm');
         $dbConfigs = [];
 
         foreach ($this->appConfig->get('db_configs') as $k => $v) {

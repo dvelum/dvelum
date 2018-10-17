@@ -78,7 +78,7 @@ class Record extends Form\Adapter
         $fields = $this->getFields($obj);
 
         $objectConfig = $obj->getConfig();
-        $systemFields = $objectConfig->getSystemFieldsConfig();
+        //$systemFields = $objectConfig->getSystemFieldsConfig();
 
         foreach($fields as $name)
         {

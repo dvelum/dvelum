@@ -295,13 +295,15 @@ class Utils
      */
     static public function sortByField(array $data, string $field): array
     {
+        $index = [];
+
         foreach ($data as $id => $item) {
             $index[$id] = $item[$field];
         }
 
         asort($index);
 
-        $result = array();
+        $result = [];
 
         foreach ($index as $id => $value) {
             $result[] = $data[$id];
@@ -318,6 +320,8 @@ class Utils
      */
     static public function sortByProperty(array $list, string $property): array
     {
+        $index = [];
+
         foreach ($list as $id => $item) {
             $index[$id] = $item->{$property};
         }

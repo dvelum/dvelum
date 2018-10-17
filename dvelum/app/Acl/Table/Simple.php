@@ -21,20 +21,20 @@ class Acl_Table_Simple extends Orm\Record\Acl
     protected $_defaultPermissionsModel = 'Acl_Simple';
     /**
      * Permissions list
-     * @var array
+     * @var array|null
      */
     protected $_permissions = null;
     /**
      * Permissions model
-     * @var Model
+     * @var \Model_Permissions
      */
     protected $_permissionsModel = null;
 
     protected function _loadPermissions()
     {
         // try to load from static cache
-        if(is_null($this->_permissions)  && isset(self::$_rights[$this->_user->id])){
-            $this->_permissions = self::$_rights[$this->_user->id];
+        if(is_null($this->_permissions)  && isset(self::$_rights[$this->_user->getId()])){
+            $this->_permissions = self::$_rights[$this->_user->getId()];
             return;
         }
 
@@ -43,7 +43,7 @@ class Acl_Table_Simple extends Orm\Record\Acl
             $this->_permissionsModel = Model::factory($this->_defaultPermissionsModel);
 
         //get permissions
-        $permissions = $this->_permissionsModel->getPermissions($this->_user->id , $this->_user->group_id);
+        $permissions = $this->_permissionsModel->getPermissions($this->_user->getId() , $this->_user->group_id);
 
         //static cache
         self::$_rights[$this->_user->id] = $permissions;

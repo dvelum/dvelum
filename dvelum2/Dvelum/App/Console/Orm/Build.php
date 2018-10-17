@@ -14,7 +14,6 @@ class Build extends Console\Action
         $ormConfig = Config::storage()->get('orm.php');
         $dbObjectManager = new Orm\Record\Manager();
         $success = true;
-        $t = microtime(true);
 
         echo "BUILD OBJECTS " . PHP_EOL;
 

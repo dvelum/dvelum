@@ -95,7 +95,6 @@ class Controller extends Backend\Ui\Controller
         $this->resource->addJs('/js/app/system/Page.js', 3);
 
         $moduleManager = new \Modules_Manager_Frontend();
-        $fModules = Config::storage()->get($this->appConfig->get('frontend_modules'));
 
         $funcList = [];
 
@@ -620,8 +619,8 @@ class Controller extends Backend\Ui\Controller
      */
     public function desktopModuleInfo()
     {
-        $modulesConfig = Config::storage()->get($this->appConfig->get('backend_modules'));
-        $moduleCfg = $modulesConfig->get($this->getModule());
+       // $modulesConfig = Config::storage()->get($this->appConfig->get('backend_modules'));
+       // $moduleCfg = $modulesConfig->get($this->getModule());
 
         $projectData = [];
         $projectData['includes']['js'][] = '/js/app/system/BlocksPanel.js';

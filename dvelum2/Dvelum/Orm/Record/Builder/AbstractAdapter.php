@@ -500,10 +500,6 @@ abstract class AbstractAdapter implements BuilderInterface
         $usePrefix = true;
         $indexConnection = $shardingConfig->get('dist_index_connection');
 
-        $objectModel = Model::factory($this->objectName);
-        $db = $this->db;
-        $tablePrefix = $objectModel->getDbPrefix();
-
         $oConfigPath = $this->objectConfig->getConfigPath();
         $configDir  = Cfg::storage()->getWrite() . $oConfigPath;
 
@@ -518,7 +514,6 @@ abstract class AbstractAdapter implements BuilderInterface
         $distribIndexes = $this->objectConfig->getDistributedIndexesConfig();
 
         foreach ($distribIndexes as $conf){
-            $field = $conf['field'];
             if(!$conf['is_system']){
                 $field = $this->objectConfig->getField($conf['field']);
                 $fieldList[$conf['field']] = $field->__toArray();
@@ -686,7 +681,7 @@ abstract class AbstractAdapter implements BuilderInterface
             $cfg = Orm\Record\Config::factory($newObjectName);
             $cfg->setObjectTitle($lang->get('RELATIONSHIP_MANY_TO_MANY').' '.$this->objectName.' & '.$linkedObject);
 
-            if(!Cfg::storage()->save($cfg)){
+            if(!$cfg->save()){
                 $this->errors[] = $lang->get('CANT_WRITE_FS') . ' ' . $cfg->getName();
                 return false;
             }
@@ -695,8 +690,11 @@ abstract class AbstractAdapter implements BuilderInterface
              * Build database
             */
             $builder = Builder::factory($newObjectName, true);
-            return $builder->build();
+            if(!$builder->build()){
+                return false;
+            }
         }
+        return true;
     }
 
     /**
@@ -708,7 +706,6 @@ abstract class AbstractAdapter implements BuilderInterface
             return [];
         }
 
-        $mainIndexes = $this->objectConfig->getIndexesConfig(false);
         $updates = [];
 
         $idObject = $this->objectConfig->getDistributedIndexObject();

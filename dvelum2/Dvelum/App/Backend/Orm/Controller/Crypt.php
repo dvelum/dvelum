@@ -56,7 +56,7 @@ class Crypt extends Controller
 
         $container = $this->decryptContainerPrefix . $object;
 
-        $objectModel = Model::factory($object);
+        //$objectModel = Model::factory($object);
         $taskModel = Model::factory('bgtask');
         $signalModel = Model::factory('Bgtask_Signal');
 
@@ -103,7 +103,7 @@ class Crypt extends Controller
 
         $container = $this->encryptContainerPrefix . $object;
 
-        $objectModel = Model::factory($object);
+        //$objectModel = Model::factory($object);
         $taskModel = Model::factory('bgtask');
         $signalModel = Model::factory('Bgtask_Signal');
 

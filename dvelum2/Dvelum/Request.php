@@ -253,8 +253,6 @@ class Request
      */
     public function extFilters($container = 'storefilter' , $method = 'POST')
     {
-        $result = [];
-
         if($method == 'POST'){
             $data = self::post($container, 'raw', []);
         }else{

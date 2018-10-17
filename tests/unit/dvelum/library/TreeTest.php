@@ -25,7 +25,7 @@ class TreeTest extends TestCase
 	public function testItemExists()
 	{
 		$tree = new Tree();
-		$item = new stdClass();
+
 		$tree->addItem(1, 0 , 'item1');
 		
 		$this->assertTrue($tree->itemExists(1));
@@ -37,7 +37,7 @@ class TreeTest extends TestCase
 	public function testGetItemsCount()
 	{	
 		$tree = new Tree();
-		$item = new stdClass();
+
 		$tree->addItem(1, 0 , 'item1');
 		$this->assertEquals($tree->getItemsCount() , 1);
 		$tree->addItem(2, 1 , 100);
@@ -190,7 +190,7 @@ class TreeTest extends TestCase
 	public function testGetChilds()
 	{
 		$tree = new Tree();
-		$item = new stdClass();
+
 		$tree->addItem(1, 0 , 'item1');
 		$tree->addItem(2, 1 , 100);
 		$tree->addItem(3, 1 , 200);
@@ -228,7 +228,7 @@ class TreeTest extends TestCase
 	public function testChangeParent()
 	{
 		$tree = new Tree();
-		$item = new stdClass();
+
 		$tree->addItem(1, 0 , 'item1');
 		$tree->addItem(2, 1 , 100);
 		$tree->addItem(3, 1 , 200);

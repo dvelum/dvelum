@@ -18,6 +18,7 @@
  */
 
 namespace Dvelum\Orm\Record;
+
 use Dvelum\Db;
 use Exception;
 
@@ -31,7 +32,7 @@ use Exception;
 class Import
 {
     protected $errors = [];
-    
+
     public function getErrors()
     {
         return $this->errors;
@@ -43,7 +44,7 @@ class Import
      * @param string $table
      * @return bool
      */
-    public function isValidPrimaryKey(Db\Adapter $db , string $table) : bool
+    public function isValidPrimaryKey(Db\Adapter $db, string $table): bool
     {
         /**
          * @var Db\Metadata $meta
@@ -51,7 +52,7 @@ class Import
         $meta = $db->getMeta();
         $primary = $meta->findPrimaryKey($table);
 
-        if(empty($primary)){
+        if (empty($primary)) {
             $this->errors[] = 'No primary key';
             return false;
         }
@@ -59,7 +60,7 @@ class Import
         $column = $meta->getAdapter()->getColumn($primary, $table);
         $dataType = strtolower($column->getDataType());
 
-        if(!in_array($dataType , Builder::$numTypes , true)){
+        if (!in_array($dataType, Builder::$numTypes, true)) {
             $this->errors[] = 'PRIMARY KEY is not numeric';
             return false;
         }
@@ -78,25 +79,22 @@ class Import
      * @todo cleanup the code
      * @param Db\Adapter $dbAdapter
      * @param string $tableName
-     * @param mixed $adapterPrefix, optional default - false
+     * @param mixed $adapterPrefix , optional default - false
      * @throws Exception
      * @return array
      */
-    public function createConfigByTable(Db\Adapter $dbAdapter , string $tableName , $adapterPrefix = false)
+    public function createConfigByTable(Db\Adapter $dbAdapter, string $tableName, $adapterPrefix = false)
     {
         $config = [];
-        
-        if($adapterPrefix && strpos($tableName, $adapterPrefix) === 0)
-        {
+
+        if ($adapterPrefix && strpos($tableName, $adapterPrefix) === 0) {
             $config['table'] = substr($tableName, strlen($adapterPrefix));
             $config['use_db_prefix'] = true;
-        }
-        else
-        {
+        } else {
             $config['table'] = $tableName;
             $config['use_db_prefix'] = false;
         }
-        
+
         $config['readonly'] = false;
         $config['system'] = false;
         $config['locked'] = false;
@@ -110,9 +108,9 @@ class Import
         $meta = $dbAdapter->getMeta();
         $primary = $meta->findPrimaryKey($tableName);
 
-        if(empty($primary))
-            return false;
-                
+        if (empty($primary))
+            return [];
+
         $config['primary_key'] = $primary;
         $config['link_title'] = $primary;
 
@@ -120,126 +118,116 @@ class Import
 
         $engine = $dbAdapter->fetchRow('SHOW TABLE STATUS WHERE `Name` = "' . $tableName . '"');
 
-       // $indexes = $dbAdapter->fetchAll('SHOW INDEX FROM `' . $tableName . '`');
+        // $indexes = $dbAdapter->fetchAll('SHOW INDEX FROM `' . $tableName . '`');
         $indexes = $dbAdapter->getMeta()->getConstraints($tableName);
-        
+
         $index = [];
         $indexGroups = [];
-        foreach($indexes as $k => $v)
-        {
+        foreach ($indexes as $k => $v) {
             /**
              * @var \Zend\Db\Metadata\Object\ConstraintObject $v
              */
-            if($v->isForeignKey()){
+            if ($v->isForeignKey()) {
                 continue;
             }
 
             $hash = $meta->indexHashByColumns($v->getColumns());
 
-            if(strtolower($hash) == $config['primary_key'])
+            if (strtolower($hash) == $config['primary_key'])
                 continue;
-            
+
             $flag = false;
-            if(!empty($index))
-                foreach($index as $key => &$val)
-                {
-                    if($key == $hash)
-                    {
+            if (!empty($index))
+                foreach ($index as $key => &$val) {
+                    if ($key == $hash) {
                         $val['columns'][] = $hash;
                         $flag = true;
-                        
-                        if($v->isUnique())
+
+                        if ($v->isUnique())
                             $indexGroups[$hash][] = $hash;
-                        
+
                         break;
                     }
                 }
-            
+
             unset($val);
-            if($flag)
+            if ($flag)
                 continue;
-            
-            if($v->getType() == 'FULLTEXT')
+
+            if ($v->getType() == 'FULLTEXT')
                 $index[$hash]['fulltext'] = true;
             else
                 $index[$hash]['fulltext'] = false;
-            
+
             /**
-    		 * Non_unique 
-			 * 0 if the index cannot contain duplicates, 1 if it can.
-    		 */
-            if(!$v->isUnique())
-            {
+             * Non_unique
+             * 0 if the index cannot contain duplicates, 1 if it can.
+             */
+            if (!$v->isUnique()) {
                 $index[$hash]['unique'] = false;
-            }
-            else
-            {
+            } else {
                 $index[$hash]['unique'] = true;
                 $indexGroups[$hash][] = $hash;
             }
-            
+
             $index[$hash]['columns'] = $v->getColumns();
         }
-        
+
         $fields = [];
         $objectFields = [];
-        foreach($columns as $k => $v)
-        {
+        foreach ($columns as $k => $v) {
             /**
              * @var \Zend\Db\Metadata\Object\ColumnObject $v
              */
             $name = $v->getName();
-            if(strtolower($name) == $config['primary_key'])
+            if (strtolower($name) == $config['primary_key'])
                 continue;
 
             $objectFields[$name] = array(
-                'title' => $name ,
+                'title' => $name,
                 'db_type' => strtolower($v->getDataType())
             );
-            
-            $fieldLink = & $objectFields[$name];
-            
-            if(!empty($v->getCharacterMaximumLength()))
+
+            $fieldLink = &$objectFields[$name];
+
+            if (!empty($v->getCharacterMaximumLength()))
                 $fieldLink['db_len'] = $v->getCharacterMaximumLength();
-            
-            if($v->getColumnDefault() !== null)
+
+            if ($v->getColumnDefault() !== null)
                 $fieldLink['db_default'] = $v->getColumnDefault();
-            
-            if($v->getIsNullable())
-            {
-               $fieldLink['db_isNull'] = true;
-               $fieldLink['required'] = false;
+
+            if ($v->getIsNullable()) {
+                $fieldLink['db_isNull'] = true;
+                $fieldLink['required'] = false;
+            } else {
+                $fieldLink['db_isNull'] = false;
+                $fieldLink['required'] = true;
             }
-            else
-            {
-               $fieldLink['db_isNull'] = false;
-               $fieldLink['required'] = true;
-            }
-            
-            if($v->getNumericUnsigned())
-               $fieldLink['db_unsigned'] = true;
-            
-            if(!empty($v->getNumericPrecision()))
-               $fieldLink['db_scale'] = $v->getNumericPrecision();
-            
-            if(!empty($v->getNumericScale()))
-               $fieldLink['db_precision'] = $v->getNumericScale();
-            
-            if(array_key_exists((string) $name , $indexGroups))
-               $fieldLink['unique'] = $indexGroups[$name];
-            
+
+            if ($v->getNumericUnsigned())
+                $fieldLink['db_unsigned'] = true;
+
+            if (!empty($v->getNumericPrecision()))
+                $fieldLink['db_scale'] = $v->getNumericPrecision();
+
+            if (!empty($v->getNumericScale()))
+                $fieldLink['db_precision'] = $v->getNumericScale();
+
+            if (array_key_exists((string)$name, $indexGroups))
+                $fieldLink['unique'] = $indexGroups[$name];
+
 //            if($v['IDENTITY'])
 //               $fieldLink['auto_increment'] = true;
-            
+
             unset($fieldLink);
         }
-        
+
         $config['engine'] = $engine['Engine'];
         $config['fields'] = $objectFields;
- 
-        if(!empty($index))
+
+        if (!empty($index))
             $config['indexes'] = $index;
-        
+
         return $config;
     }
 }

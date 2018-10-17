@@ -7,7 +7,7 @@ class User extends \User
     /**
      * @return User
      */
-    static public function factory()
+    static public function factory() : \User
     {
        return static::getInstance();
     }

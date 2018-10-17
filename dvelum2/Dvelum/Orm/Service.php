@@ -66,7 +66,7 @@ class Service
      */
     protected $config;
     /**
-     * @var LoggerInterface $log
+     * @var \Log $log
      */
     protected $log = false;
 
@@ -142,6 +142,10 @@ class Service
         return $this->cryptService;
     }
 
+    /**
+     * @return \Log|null
+     * @throws \Exception
+     */
     public function getLog():?\Log
     {
         if($this->log!==false){

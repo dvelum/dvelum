@@ -25,6 +25,7 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\Record;
 use Dvelum\Orm\Distributed\Key\Reserved;
+use Dvelum\Orm\RecordInterface;
 use \Exception;
 
 class UniqueID implements GeneratorInterface
@@ -42,11 +43,11 @@ class UniqueID implements GeneratorInterface
     }
     /**
      * Delete reserved index
-     * @param Record $object
+     * @param RecordInterface $object
      * @param mixed $indexId
      * @return bool
      */
-    public function deleteIndex(Record $object, $indexId) : bool
+    public function deleteIndex(RecordInterface $object, $indexId) : bool
     {
         $objectConfig = $object->getConfig();
         $indexObject = $objectConfig->getDistributedIndexObject();
@@ -68,7 +69,7 @@ class UniqueID implements GeneratorInterface
      * @return Reserved|null
      * @throws Exception
      */
-    public function reserveIndex(Record $object , string $shard) : ?Reserved
+    public function reserveIndex(RecordInterface $object , string $shard) : ?Reserved
     {
         $objectConfig = $object->getConfig();
         $indexObject = $objectConfig->getDistributedIndexObject();
@@ -171,10 +172,10 @@ class UniqueID implements GeneratorInterface
 
     /**
      * Detect object shard by own rules
-     * @param Record $record
+     * @param RecordInterface $record
      * @return null|string
      */
-    public function detectShard(Record $record): ?string
+    public function detectShard(RecordInterface $record): ?string
     {
         return null;
     }

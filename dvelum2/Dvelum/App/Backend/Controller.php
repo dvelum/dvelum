@@ -321,9 +321,9 @@ class Controller extends App\Controller
         $this->includeScripts();
 
         $this->resource->addInlineJs('
-	        var canEdit = ' . intval($this->moduleAcl->canEdit($module)) . ';
-	        var canDelete = ' . intval($this->moduleAcl->canDelete($module)) . ';
-	    ');
+            var canEdit = ' . intval($this->moduleAcl->canEdit($module)) . ';
+            var canDelete = ' . intval($this->moduleAcl->canDelete($module)) . ';
+        ');
 
         $objectName = $this->getObjectName();
         if (!empty($objectName)) {

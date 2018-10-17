@@ -240,7 +240,6 @@ class Tree
      */
     protected function remove($id): void
     {
-        $item = $this->getItem($id);
         $children = $this->getChildren($id);
 
         if (!empty($children)) {
