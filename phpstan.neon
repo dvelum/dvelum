@@ -1,5 +1,5 @@
 includes:
-	- vendor/phpstan/phpstan/conf/config.level1.neon
+	- vendor/phpstan/phpstan/conf/config.level7.neon
 parameters:
 	bootstrap: %currentWorkingDirectory%/tests/phpstan/bootstrap.php
 	excludes_analyse:
@@ -10,3 +10,4 @@ parameters:
 	    -  %currentWorkingDirectory%/dvelum
 	    -  %currentWorkingDirectory%/dvelum2
 	autoload_files: []
+	polluteCatchScopeWithTryAssignments: true
