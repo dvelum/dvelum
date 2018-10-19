@@ -148,7 +148,6 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
         if(!strlen($name) || !$project->objectExists($name))
             Response::jsonError('Undefined Store object');
 
-        $project = $project;
         $object = $project->getObject($name);
 
         Response::jsonSuccess($this->prepareList($object));

@@ -370,7 +370,7 @@ abstract class Backend_Controller extends Controller
     /**
      * Send JSON error message
      *
-     * @return string
+     * @return void
      */
     protected function _errorResponse($msg)
     {
@@ -397,7 +397,7 @@ abstract class Backend_Controller extends Controller
         $uid = false;
 
         if($user->isAuthorized()) {
-            $uid = $user->id;
+            $uid = $user->getId();
             $userLang = $user->getSettings()->get('language');
             $langManager = new Backend_Localization_Manager($this->_configMain);
             $acceptedLanguages = $langManager->getLangs(true);

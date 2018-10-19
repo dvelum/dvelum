@@ -135,7 +135,7 @@ class Model_Historylog extends Model
                 'after'=>$after
             ));
 
-            $id = $o->save(false , false);
+            $id = $o->save(false);
             if(!$id)
                 throw new Exception('Cannot save object state ' . $objectName . '::' . $objectId);
 

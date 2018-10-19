@@ -127,34 +127,36 @@ class Property
         $s = '';
         $isNumber = false;
 
-        switch(strtolower($this->db_type))
+        $dbType = strtolower($this->data['db_type']);
+
+        switch($dbType)
         {
             case 'boolean' :
                 $this->data['db_isNull'] = false;
-                $s .= '`' . $this->name . '` ' . $this->data['db_type'] . ' ';
+                $s .= '`' . $this->name . '` ' . $dbType . ' ';
                 break;
             case 'tinyint' :
             case 'smallint' :
             case 'mediumint' :
             case 'int' :
             case 'bigint' :
-                $this->data['db_len'] = self::$numberLength[$this->db_type];
+                $this->data['db_len'] = self::$numberLength[$dbType];
 
-                $s .= '`' . $this->name . '` ' . $this->data['db_type'] . ' (' . $this->data['db_len'] . ')';
+                $s .= '`' . $this->name . '` ' . $dbType . ' (' . $this->data['db_len'] . ')';
 
-                if(isset($this->data['db_unsigned']) && $this->data['db_unsigned'] && strtolower($this->db_type) != 'boolean')
+                if(isset($this->data['db_unsigned']) && $this->data['db_unsigned'] && strtolower($dbType) != 'boolean')
                     $s .= ' UNSIGNED ';
 
-                if($this->db_type !== 'boolean' && isset($this->data['db_auto_increment']) && $this->data['db_auto_increment'])
+                if($dbType !== 'boolean' && isset($this->data['db_auto_increment']) && $this->data['db_auto_increment'])
                     $s .= ' AUTO_INCREMENT ';
 
                 $isNumber = true;
                 break;
 
             case 'bit' :
-                $s .= '`' . $this->name . '` ' . $this->data['db_type'] . ' ';
+                $s .= '`' . $this->name . '` ' . $dbType . ' ';
 
-                if(isset($this->data['db_unsigned']) && $this->data['db_unsigned'] && strtolower($this->db_type) != 'boolean')
+                if(isset($this->data['db_unsigned']) && $this->data['db_unsigned'] && strtolower($dbType) != 'boolean')
                     $s .= ' UNSIGNED ';
 
                 $isNumber = true;
@@ -164,7 +166,7 @@ class Property
             case 'double' :
             case 'decimal' :
 
-                $s .= '`' . $this->name . '` ' . $this->data['db_type'] . '(' . $this->data['db_scale'] . ',' . $this->data['db_precision'] . ') ';
+                $s .= '`' . $this->name . '` ' . $dbType . '(' . $this->data['db_scale'] . ',' . $this->data['db_precision'] . ') ';
 
                 if(isset($this->data['db_unsigned']) && $this->data['db_unsigned'])
                     $s .= ' UNSIGNED ';
@@ -187,7 +189,7 @@ class Property
                         $this->data['db_default'] = '';
                 */
 
-                $s = '`' . $this->name . '` ' . $this->data['db_type'] . ' (' . $this->data['db_len'] . ')  ';
+                $s = '`' . $this->name . '` ' . $dbType . ' (' . $this->data['db_len'] . ')  ';
 
                 break;
             case 'date' :
@@ -197,14 +199,14 @@ class Property
                 if(isset($this->data['db_default']) && !strlen((string)$this->data['db_default'])){
                     unset($this->data['db_default']);
                 }
-                $s = '`' . $this->name . '` ' . $this->data['db_type'] . ' ';
+                $s = '`' . $this->name . '` ' . $dbType . ' ';
                 break;
             case 'tinytext' :
             case 'text' :
             case 'mediumtext' :
             case 'longtext' :
 
-                $s = '`' . $this->name . '` ' . $this->data['db_type'] . ' ';
+                $s = '`' . $this->name . '` ' . $dbType . ' ';
                 if(isset($this->data['db_default']))
                     unset($this->data['db_default']);
                 if(!isset($this->data['required']) || !$this->data['required'])
@@ -290,8 +292,6 @@ class Property
             case 'tinytext' :
             case 'text' :
             case 'bit' :
-            case 'char' :
-            case 'varchar' :
             case 'mediumtext' :
             case 'longtext' :
             case 'char' :

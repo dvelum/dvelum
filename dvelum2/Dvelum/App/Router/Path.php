@@ -48,8 +48,9 @@ class Path extends Router
         $controller = $request->getPart(0);
         $controller = ucfirst(Filter::filterValue('pagecode' , $controller));
 
-        if($controller !== false && strlen($controller)){
+        $controllerClass = 'Frontend\\Index\\Controller';
 
+        if($controller !== false && strlen($controller)){
             $classNamespace1 = 'Frontend_' . $controller . '_Controller';
             $classNamespace2 = 'Frontend\\' . $controller . '\\Controller';
             $classNamespace3 = 'Dvelum\\App\\Frontend\\' . $controller . '\\Controller';
@@ -60,11 +61,8 @@ class Path extends Router
                 $controllerClass = $classNamespace2;
             }elseif (class_exists($classNamespace3)){
                 $controllerClass = $classNamespace3;
-            }else{
-                $controllerClass = 'Frontend\\Index\\Controller';
             }
         }
-
         $this->runController($controllerClass , $request->getPart(1), $request, $response);
     }
 

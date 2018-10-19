@@ -29,7 +29,7 @@ class Store
     * Store factory
     * @param int $type - const
     * @param string $name
-    * @return Store_Interface or boolean false
+    * @return Store_Interface|bool
     */
    static public function factory($type = Store::Local, $name = 'default')
    {

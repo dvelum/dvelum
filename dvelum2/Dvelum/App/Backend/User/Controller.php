@@ -129,7 +129,7 @@ class Controller extends App\Backend\Api\Controller
         $user = $this->request->post('user_id', 'int', 0);
         $group = $this->request->post('group_id', 'int', 0);
 
-        $data = array();
+        $data = [];
 
         if ($user && $group) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
@@ -199,7 +199,7 @@ class Controller extends App\Backend\Api\Controller
         $manager = new ModuleManager();
         $modules = $manager->getRegisteredModules();
         $list = $manager->getList();
-
+        $data = [];
         foreach ($modules as $name) {
             if (!isset($data[$name])) {
                 $data[$name] = array(

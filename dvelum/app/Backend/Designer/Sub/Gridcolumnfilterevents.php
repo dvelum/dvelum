@@ -123,7 +123,7 @@ class Backend_Designer_Sub_Gridcolumnfilterevents extends Backend_Designer_Sub_C
         $project = $this->_getProject();
         $event = $this->_getEvent();
         $eObject = $this->_getEventObject();
-        $eventManager = $project->getEventManager()->removeObjectEvent($eObject, $event);
+        $project->getEventManager()->removeObjectEvent($eObject, $event);
         $this->_storeProject();
         Response::jsonSuccess();
     }

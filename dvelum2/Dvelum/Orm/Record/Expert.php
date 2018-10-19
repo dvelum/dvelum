@@ -10,7 +10,7 @@ use Dvelum\Orm\Record;
  * Db_Object information expert
  * Helps to find  relations between objects
  * @author Kirill A Egorov kirill.a.egorov@gmail.com
- * @copyright Copyright (C) 2011-2012  Kirill A Egorov,
+ * @copyright Copyright (C) 2011-2018  Kirill A Egorov,
  * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
  * @license General Public License version 3
  *
@@ -94,7 +94,7 @@ class Expert
      */
     static protected function _getSingleLinks($objectId, $relatedObject, $links)
     {
-        $relatedConfig = Record::factory($relatedObject);
+        $relatedConfig = Config::factory($relatedObject);
         $relatedObjectModel = Model::factory($relatedObject);
         $fields = [];
 
@@ -137,7 +137,7 @@ class Expert
      */
     static protected function _getMultiLinks($objectName, $objectId)
     {
-        $ormConfig = Config::storage()->get('orm.php');
+        $ormConfig = \Dvelum\Config::storage()->get('orm.php');
         $linksModel = Model::factory($ormConfig->get('links_object'));
         $db = $linksModel->getDbConnection();
         $linkTable = $linksModel->table();
@@ -148,7 +148,7 @@ class Expert
             ->where('`target_id` =?', $objectId);
         $links = $db->fetchAll($sql);
 
-        $data = array();
+        $data = [];
 
         if (!empty($links))
             foreach ($links as $record)

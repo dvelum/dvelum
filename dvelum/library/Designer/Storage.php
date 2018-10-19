@@ -21,10 +21,10 @@
 class Designer_Storage
 {
     /**
-     * @property Cache_Interface
+     * @property \Dvelum\Cache\CacheInterface|bool
      */
     protected static $_cache = false;
-    protected static $_instances = array();
+    protected static $_instances = [];
 
     /**
      * Storage adapter
@@ -102,7 +102,7 @@ class Designer_Storage
     /**
      * Load Designer_Project
      * @param string $id
-     * @return Designer_Project
+     * @return Designer_Project|bool
      */
     public function load($id)
     {

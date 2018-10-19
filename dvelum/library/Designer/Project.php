@@ -206,12 +206,12 @@ class Designer_Project
 		{
 			if(in_array($object->getClass(),self::$_nonDraggable,true) && $parent!==Designer_Project::COMPONENT_ROOT){
 				$parent = Designer_Project::LAYOUT_ROOT;
-				$object->isExtendedComponent(false);
+				$object->isExtendedComponent();
 			}
 
 			if(!$this->objectExists($parent)){
 				$parent = Designer_Project::LAYOUT_ROOT;
-				$object->isExtendedComponent(false);
+				$object->isExtendedComponent();
 			}
 		}
 		return $this->_tree->addItem($object->getName() , $parent , $object);

@@ -12,7 +12,7 @@ class Model_Medialib extends Model
      * Get item record by its path
      * @param string $path
      * @param array $fields - optional
-     * @return array
+     * @return int
      */
     public function getIdByPath($path)
     {
@@ -40,7 +40,7 @@ class Model_Medialib extends Model
             'path' => $path,
             'size' => $size,
             'type' => $type,
-            'user_id' => User::getInstance()->id,
+            'user_id' => User::getInstance()->getId(),
             'ext' => $ext,
             'date' => date('Y-m-d H:i:s'),
             'category' => $category,
@@ -159,7 +159,7 @@ class Model_Medialib extends Model
             $obj->setValues($data);
             $obj->save();
             $hLog = Model::factory('Historylog');
-            $hLog->log(\Dvelum\App\Session\User::getInstance()->id, $id, Model_Historylog::Update, $this->table());
+            $hLog->log(\Dvelum\App\Session\User::getInstance()->getId(), $id, Model_Historylog::Update, $this->table());
             return true;
         } catch (Exception $e) {
             return false;
@@ -356,7 +356,7 @@ class Model_Medialib extends Model
 
     /**
      * Get media library config
-     * @return Config_File_Array
+     * @return Config\ConfigInterface
      */
     public function getConfig()
     {
@@ -376,7 +376,7 @@ class Model_Medialib extends Model
      * Update category for set of items
      * @param array $items
      * @param integer $catalog
-     * @return number
+     * @return bool
      */
     public function updateItemsCategory(array $items, $catalog)
     {

@@ -52,6 +52,8 @@ class Controller extends App\Controller implements Router\RouterInterface
      * @var array $actions
      */
     protected $actions;
+    protected $managedTasks;
+    protected $jobs;
 
     public function __construct(Request $request, Response $response)
     {
@@ -67,7 +69,18 @@ class Controller extends App\Controller implements Router\RouterInterface
         $actions = Config::storage()->get('console_actions.php');
 
         foreach ($actions as $k => $v) {
-            $this->actions[strtolower($k)] = $v;
+            $k = strtolower($k);
+            switch ($v['type']){
+                case 'action' :
+                    $this->actions[$k] = $v;
+                    break;
+                case 'job' :
+                    $this->jobs[$k] = $v;
+                    break;
+                case 'managed_task' :
+                    $this->managedTasks[$k] = $v;
+                    break;
+            }
         }
 
         $log = $this->consoleConfig->get('log');
@@ -111,11 +124,11 @@ class Controller extends App\Controller implements Router\RouterInterface
 
     /**
      * Launch background task using file lock
-     * console command ./console.php /console/task/[task name]/[time limit]/[thread]
      * @param string $name
      * @param array $params
+     * @return bool
      */
-    protected function launchTask($name, $params)
+    protected function launchManagedTask($name, $params)
     {
         $thread = 0;
 
@@ -129,25 +142,27 @@ class Controller extends App\Controller implements Router\RouterInterface
             $threadName = $name;
         }
 
-        $appCfg = $this->tasks->get($name);
+        $appCfg = $this->managedTasks[$name];
         $appCfg['thread'] = $thread;
         $appCfg['params'] = $params;
 
         $adapter = $appCfg['adapter'];
 
+        $lockConfig = $this->consoleConfig->get('lockConfig');
+
         if (isset($params[0])) {
-            $this->cronConfig['time_limit'] = intval($params[0]);
-            $this->cronConfig['intercept_limit'] = intval($params[0]);
+            $lockConfig['time_limit'] = intval($params[0]);
+            $lockConfig['intercept_limit'] = intval($params[0]);
         }
 
-        $lock = new \Cron_Lock($this->cronConfig);
+        $lock = new \Cron_Lock($lockConfig);
 
         if ($this->log) {
             $lock->setLogsAdapter($this->log);
         }
 
         if (!$lock->launch($threadName)) {
-            exit();
+            exit(1);
         }
 
         $appCfg['lock'] = $lock;
@@ -158,38 +173,39 @@ class Controller extends App\Controller implements Router\RouterInterface
         $tManager->setStorage($bgStorage);
 
         if ($this->log) {
-            $tManager->setLogger($this->log);
+            $log = new \Bgtask_Log_File($this->log->getFileName());
+            $tManager->setLogger($log);
         }
 
         $tManager->launch(\Bgtask_Manager::LAUNCHER_SILENT, $adapter, $appCfg);
-
         $lock->finish();
     }
 
     /**
      * Launch job using file lock
-     * console command ./console.php /console/job/[job name]/[time limit]/[thread]
      * @param string $name
      * @param array $params - job params
      * @param string $method
      */
     protected function launchJob($name, array $params, $method = 'run')
     {
-        $appCfg = $this->tasks->get($name);
+        $appCfg = $this->jobs[$name];
 
         $appCfg['params'] = $params;
         $appCfg['thread'] = 0;
 
+        $lockConfig = $this->consoleConfig->get('lockConfig');
+
         if (isset($params[0])) {
-            $this->consoleConfig['time_limit'] = intval($params[0]);
-            $this->consoleConfig['intercept_timeout'] = intval($params[0]);
+            $lockConfig['time_limit'] = intval($params[0]);
+            $lockConfig['intercept_timeout'] = intval($params[0]);
         }
 
         if (isset($params[1])) {
             $appCfg['thread'] = $params[1];
         }
 
-        $lock = new \Cron_Lock($this->cronConfig);
+        $lock = new \Cron_Lock($lockConfig);
 
         if ($this->log) {
             $lock->setLogsAdapter($this->log);
@@ -201,12 +217,17 @@ class Controller extends App\Controller implements Router\RouterInterface
         $config->setData($appCfg);
         $config->set('lock', $lock);
 
+        /**
+         * @var \Cronjob_Abstract $o
+         */
         $o = new $adapter($config);
 
         if (!$o->$method()) {
+            $resultCode = 1;
             $msg = '1 ' . $name . '_job' . ': error';
         } else {
             $msg = '0 ' . $name . '_job' . ': ' . $o->getStatString();
+            $resultCode = 0;
         }
 
         $this->logMessage($msg);
@@ -214,6 +235,8 @@ class Controller extends App\Controller implements Router\RouterInterface
         echo $msg . "\n";
 
         $lock->finish();
+
+        exit($resultCode);
     }
 
     /**
@@ -246,39 +269,40 @@ class Controller extends App\Controller implements Router\RouterInterface
 
         $adapter = new $adapterCls($actionConfig);
 
-        switch ($actionConfig['type']) {
-            case 'action' :
-                if (!$adapter instanceof \Dvelum\App\Console\ActionInterface) {
-                    trigger_error($adapterCls . ' is not instance of ActionInterface');
-                }
-                $params = $this->request->getPathParts(1);
-                $config = [];
-                if(isset($actionConfig['config'])){
-                    $config = $actionConfig['config'];
-                }
-                $adapter->init($this->appConfig, $params , $config);
-                $result = $adapter->run();
-                echo '[' . $action . ' : ' . $adapter->getInfo() . ']' . PHP_EOL;
-                if ($result) {
-                    exit(0);
-                } else {
-                    exit(1);
-                }
-                break;
-            case 'job' :
-                break;
-            case 'task' :
-                break;
+        if (!$adapter instanceof \Dvelum\App\Console\ActionInterface) {
+            trigger_error($adapterCls . ' is not instance of ActionInterface');
+        }
+
+        $params = $this->request->getPathParts(1);
+        $config = [];
+
+        if(isset($actionConfig['config'])){
+            $config = $actionConfig['config'];
+        }
+
+        $adapter->init($this->appConfig, $params , $config);
+        $result = $adapter->run();
+
+        echo '[' . $action . ' : ' . $adapter->getInfo() . ']' . PHP_EOL;
+
+        if ($result) {
+            exit(0);
+        } else {
+            exit(1);
         }
     }
 
-    public function taskAction()
+    /**
+     * console command ./console.php /managedTask/[task name]/[time limit]/[thread]
+     * @throws \Exception
+     */
+    public function managedTaskAction()
     {
         $action = $this->request->getPart(1);
 
-        if ($this->configs->offsetExists($action)) {
+        if ($this->managedTasks->offsetExists($action)) {
             $params = $this->request->getPathParts(2);
-            $this->launchTask($action, $params);
+            $this->launchManagedTask($action, $params);
         } else {
             echo 'Undefined Task';
         }
@@ -287,12 +311,13 @@ class Controller extends App\Controller implements Router\RouterInterface
 
     /**
      * Launch Cron Job
+     * console command ./console.php /job/[job name]/[time limit]/[thread]
      */
     public function jobAction()
     {
         $action = $this->request->getPart(1);
 
-        if ($this->configs->offsetExists($action)) {
+        if (isset($this->jobs[$action])) {
             $params = $this->request->getPathParts(2);
             $this->launchJob($action, $params, 'run');
         } else {

@@ -104,6 +104,7 @@ class Designer_Project_Events
 	/**
 	 * Remove event for object
 	 * @param string $object
+     * @return void
 	 */
 	public function removeObjectEvent($object , $event)
 	{

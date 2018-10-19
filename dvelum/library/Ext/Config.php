@@ -64,7 +64,7 @@ class Ext_Config
 	
 	/**
 	 * Get object events
-	 * @return array
+	 * @return Ext_Events
 	 */
 	public  function getEvents()
 	{

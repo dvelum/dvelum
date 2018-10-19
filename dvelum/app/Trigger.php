@@ -60,14 +60,14 @@ class Trigger
                     Model_Historylog::Create,
                     $object->getName() ,
                     $object->getId() ,
-                    User::getInstance()->id,
+                    User::getInstance()->getId(),
                     date('Y-m-d H:i:s'),
                     null ,
                     json_encode($object->getData())
                 );
             }else{
                 Model::factory($logObject)->log(
-                    User::getInstance()->id,
+                    User::getInstance()->getId(),
                     $object->getId() ,
                     Model_Historylog::Create,
                     $object->getName()
@@ -101,14 +101,14 @@ class Trigger
                     Model_Historylog::Delete,
                     $object->getName() ,
                     $object->getId() ,
-                    User::getInstance()->id,
+                    User::getInstance()->getId(),
                     date('Y-m-d H:i:s'),
                     json_encode($object->getData()),
                     null
                 );
             }else{
                 Model::factory($logObject)->log(
-                    User::getInstance()->id,
+                    User::getInstance()->getId(),
                     $object->getId() ,
                     Model_Historylog::Delete,
                     $object->getName()
@@ -144,14 +144,14 @@ class Trigger
                     Model_Historylog::Update,
                     $object->getName() ,
                     $object->getId() ,
-                    User::getInstance()->id,
+                    User::getInstance()->getId(),
                     date('Y-m-d H:i:s'),
                     json_encode($before),
                     json_encode($after)
                 );
             }else{
                 Model::factory($logObject)->log(
-                    User::getInstance()->id,
+                    User::getInstance()->getId(),
                     $object->getId() ,
                     Model_Historylog::Update,
                     $object->getName()
@@ -168,7 +168,7 @@ class Trigger
         if($object->getConfig()->hasHistory())
         {
                 Model::factory($logObject)->log(
-                    User::getInstance()->id,
+                    User::getInstance()->getId(),
                     $object->getId() ,
                     Model_Historylog::Publish,
                     $object->getName()

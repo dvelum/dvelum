@@ -8,9 +8,8 @@ class Backend_Designer_Import
     /**
      *
      * @param string $objectName            
-     * @param array $fields
-     *            - fields to check
-     * @return array or false on error
+     * @param array $fields - fields to check
+     * @return array|bool on error
      */
     static public function checkImportORMFields($objectName , array $fields)
     {
@@ -53,7 +52,7 @@ class Backend_Designer_Import
      * @param Adapter $db
      * @param array $fields - fields to check
      * @param string $table            
-     * @return array or false on error
+     * @return array|bool on error
      */
     static public function checkImportDBFields(Adapter $db , array $fields , $table)
     {

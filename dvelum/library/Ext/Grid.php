@@ -29,6 +29,9 @@ class Ext_Grid extends Ext_Object
 	 * @var Tree
 	 */
 	protected $_columns;
+    /**
+     * @var bool | Ext_Grid_Filtersfeature
+     */
 	protected $_filtersFeature = false;
 		
 	static public $advancedProperties = array(
@@ -185,7 +188,7 @@ class Ext_Grid extends Ext_Object
 	
 	/**
 	 * Get columns JS config
-	 * @return string
+	 * @return array
 	 */
 	public function getColumnsConfig()
 	{
@@ -322,7 +325,7 @@ class Ext_Grid extends Ext_Object
 			{
 				$remoteRoot = '';
 				
-				if(isset($this->_advancedPropertyValues['remoteRoot']) && $this->_advancedPropertyValues['remoteRoot']);
+				if(isset($this->_advancedPropertyValues['remoteRoot']) && $this->_advancedPropertyValues['remoteRoot'])
 					$remoteRoot = 'remoteRoot: "'.$this->_advancedPropertyValues['remoteRoot'].'"';
 				
 					

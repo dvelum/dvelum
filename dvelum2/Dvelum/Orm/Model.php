@@ -467,6 +467,7 @@ class Model
     public function getItems(array $ids, $fields = '*', $useCache = false)
     {
         $data = false;
+        $cacheKey = '';
 
         if (empty($ids)) {
             return [];

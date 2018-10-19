@@ -11,7 +11,7 @@ class Upload_File extends Upload_AbstractAdapter
      *
      * @param array $data- $_FILES array item
      * @param boolean $formUpload  - optional, default true
-     * @return array / false on error
+     * @return array|bool on error
      */
     public function upload(array $data , $path , $formUpload = true)
     {

@@ -161,7 +161,7 @@ class Backend_Designer_Sub_Grid extends Backend_Designer_Sub
 			switch ($v['type']){
 				case 'boolean':	$column = Ext_Factory::object('Grid_Column_Boolean');
 					break;
-				case 'integer': $column = Ext_Factory::object('Grid_Column_Number');
+				case 'integer':
 				case 'float':	$column = Ext_Factory::object('Grid_Column_Number');
 					break;
 				case 'date': 	$column = Ext_Factory::object('Grid_Column_Date');

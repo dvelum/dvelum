@@ -77,6 +77,8 @@ class Controller extends Backend\Ui\Controller
         $user = $this->request->post('user_id', 'int', 0);
         $group = $this->request->post('group_id', 'int', 0);
 
+        $data = [];
+
         if ($user && $group) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
@@ -146,9 +148,11 @@ class Controller extends Backend\Ui\Controller
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
-
-
-        if (Model::factory('acl_simple')->updateGroupPermissions($groupId, $data))
+        /**
+         * @var \Model_Acl_Simple $aclModel
+         */
+        $aclModel = Model::factory('acl_simple');
+        if ($aclModel->updateGroupPermissions($groupId, $data))
             $this->response->success();
         else
             $this->response->error($this->lang->get('CANT_EXEC'));

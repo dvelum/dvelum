@@ -46,4 +46,5 @@ $configStorage->addPath('./application/configs/test/');
  * Setting autoloader config
  */
 $autoloaderCfg = ConfigFactory::storage()->get('autoloader.php')->__toArray();
+$autoloaderCfg['psr-4']['Dvelum'] = DVELUM_ROOT.'/tests/unit/dvelum2/Dvelum';
 $autoloader->setConfig($autoloaderCfg);

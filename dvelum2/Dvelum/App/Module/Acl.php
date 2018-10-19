@@ -13,7 +13,7 @@ class Acl
 
     protected $permissions;
 
-    public function __construct(Session\User $user)
+    public function __construct(\User $user)
     {
         $this->user = $user;
     }

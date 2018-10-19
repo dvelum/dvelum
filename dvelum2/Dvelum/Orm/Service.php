@@ -66,7 +66,7 @@ class Service
      */
     protected $config;
     /**
-     * @var \Log $log
+     * @var LoggerInterface $log
      */
     protected $log = false;
 
@@ -143,10 +143,10 @@ class Service
     }
 
     /**
-     * @return \Log|null
+     * @return LoggerInterface|null
      * @throws \Exception
      */
-    public function getLog():?\Log
+    public function getLog(): ? LoggerInterface
     {
         if($this->log!==false){
             return $this->log;
@@ -181,6 +181,7 @@ class Service
             $storeClass = $this->config->get('storage');
             $this->storage = new $storeClass($storageOptions);
             $this->storage->setEventManager($this->eventManager);
+
             if(!empty($this->log)){
                 $this->storage->setLog($this->log);
             }

@@ -135,7 +135,7 @@ class Backend_Designer_Sub_Gridfilterevents extends Backend_Designer_Sub
 	public function removeeventAction(){
 	    $project = $this->_getProject();
 	    $event = $this->_getEvent();
-	    $eventManager = $project->getEventManager()->removeObjectEvent($this->_filter->getName() , $event);
+	    $project->getEventManager()->removeObjectEvent($this->_filter->getName() , $event);
 	    $this->_storeProject();
 	    Response::jsonSuccess();
 	}

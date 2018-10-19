@@ -104,7 +104,7 @@ class Backend_Designer_Sub_Gridcolumnevents extends Backend_Designer_Sub_Column_
         $project = $this->_getProject();
         $event = $this->_getEvent();
         $eObject = $this->_getEventObject();
-        $eventManager = $project->getEventManager()->removeObjectEvent($eObject , $event);
+        $project->getEventManager()->removeObjectEvent($eObject , $event);
         $this->_storeProject();
         Response::jsonSuccess();
     }

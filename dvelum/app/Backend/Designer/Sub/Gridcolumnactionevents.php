@@ -124,7 +124,7 @@ class Backend_Designer_Sub_Gridcolumnactionevents extends Backend_Designer_Sub_C
     public function removeeventAction(){
         $project = $this->_getProject();
         $event = $this->_getEvent();
-        $eventManager = $project->getEventManager()->removeObjectEvent($this->_action->getName() , $event);
+        $project->getEventManager()->removeObjectEvent($this->_action->getName() , $event);
         $this->_storeProject();
         Response::jsonSuccess();
     }

@@ -112,7 +112,7 @@ class Modules_Generator
       ));
 
       foreach($linksToShow as $k=>$v){
-          if($objectConfig->isSystem($v)){
+          if($objectConfig->getField($v)->isSystem()){
               unset($linksToShow[$v]);
           }
       }
@@ -186,7 +186,7 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
       $model->idProperty = $primaryKey;
       $model->addFields($storeFields);
 
-      $project->addObject(Designer_Project::COMPONENT_ROOT , $model, -10);
+      $project->addObject(Designer_Project::COMPONENT_ROOT , $model);
 
       $dataStore = Ext_Factory::object('Data_Store');
       $dataStore->setName('dataStore');
@@ -541,7 +541,7 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
       ));
 
       foreach($linksToShow as $k=>$v){
-          if($objectConfig->isSystem($v)){
+          if($objectConfig->getField($v)->isSystem()){
               unset($linksToShow[$v]);
           }
       }
@@ -604,7 +604,7 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud
       $model->idProperty = $primaryKey;
       $model->addFields($storeFields);
 
-      $project->addObject(Designer_Project::COMPONENT_ROOT , $model, -10);
+      $project->addObject(Designer_Project::COMPONENT_ROOT , $model);
 
 
       $dataStore = Ext_Factory::object('Data_Store');

@@ -222,6 +222,7 @@ class BlockManager
     protected function renderBlock(array $config)
     {
         $class = self::DEFAULT_BLOCK;
+        $cacheKey = '';
 
         if($config['is_system'] && strlen($config['sys_name']) && class_exists($config['sys_name']))
             $class = $config['sys_name'];

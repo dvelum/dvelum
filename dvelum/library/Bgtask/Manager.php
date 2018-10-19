@@ -50,7 +50,7 @@ class Bgtask_Manager
 
     /**
      * Task Storage
-     * @var Bgtask_Storage
+     * @var \Bgtask_Storage
      */
     protected $_storage = null;
 
@@ -124,7 +124,7 @@ class Bgtask_Manager
      * Sends a signal to a background process
      * @param integer $pid
      * @param integer $signal - const
-     * @return void
+     * @return bool
      */
     public function signal($pid , $signal)
     {
@@ -139,7 +139,7 @@ class Bgtask_Manager
      */
     public function setConfig($pid , array $config)
     {
-        return $this->_storage->setConfig($pid, $config);
+        $this->_storage->setConfig($pid, $config);
     }
 
     /**
