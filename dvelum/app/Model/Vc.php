@@ -21,7 +21,8 @@ class Model_Vc extends Model
             $ivKey = $object->get($ivField);
 
             if (empty($ivKey)) {
-                $ivKey = Utils_String::createEncryptIv();
+                $service = new \Dvelum\Security\CryptService(Dvelum\Config::storage()->get('crypt.php'));
+                $ivKey = $service->createVector();
                 $newData[$ivField] = $ivKey;
             }
 
