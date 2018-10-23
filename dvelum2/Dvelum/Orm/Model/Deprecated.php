@@ -334,6 +334,7 @@ class Deprecated
         $data = false;
         $cache = $this->model->getCacheAdapter();
         $slave = $this->model->getSlaveDbConnection();
+        $cacheKey = '';
 
         if ($useCache && $cache) {
             $cacheKey = $this->model->getCacheKey(array('list', serialize(func_get_args())));
@@ -383,6 +384,7 @@ class Deprecated
     public function getCount($filters = false, $query = false, $useCache = false)
     {
         $cParams = '';
+        $cacheKey = '';
         $data = false;
 
         $cache = $this->model->getCacheAdapter();

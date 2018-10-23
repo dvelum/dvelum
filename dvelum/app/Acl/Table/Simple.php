@@ -46,7 +46,7 @@ class Acl_Table_Simple extends Orm\Record\Acl
         $permissions = $this->_permissionsModel->getPermissions($this->_user->getId() , $this->_user->group_id);
 
         //static cache
-        self::$_rights[$this->_user->id] = $permissions;
+        self::$_rights[$this->_user->getId()] = $permissions;
 
         $this->_permissions = $permissions;
     }
@@ -56,7 +56,7 @@ class Acl_Table_Simple extends Orm\Record\Acl
     public function resetPermissions()
     {
         $this->_permissions = null;
-        unset(self::$_rights[$this->_user->id]);
+        unset(self::$_rights[$this->_user->getId()]);
     }
     /**
      * Set permissions model object

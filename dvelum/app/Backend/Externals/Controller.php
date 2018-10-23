@@ -92,7 +92,7 @@ class Backend_Externals_Controller extends Backend_Controller
             Response::jsonError($e->getMessage());
         }
 
-        if(!$this->externalsManager->postInstall($id , true)) {
+        if(!$this->externalsManager->postInstall($id)) {
             $errors = $this->externalsManager->getErrors();
             Response::jsonError($this->_lang->get('CANT_EXEC').' '.implode(', ', $errors));
         }

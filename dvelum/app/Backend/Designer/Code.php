@@ -30,7 +30,7 @@ class Backend_Designer_Code
         $reflector = new ReflectionClass($controllerName);
 
         if (!$reflector->isSubclassOf('\\Dvelum\\App\\Backend\\Controller') && !$reflector->isSubclassOf('Backend_Controller') && !$reflector->isSubclassOf('Frontend_Controller')) {
-            return [];
+            return '';
         }
 
         $url = [];

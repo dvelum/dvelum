@@ -21,7 +21,8 @@ class Model_Vc extends Model
             $ivKey = $object->get($ivField);
 
             if (empty($ivKey)) {
-                $ivKey = Utils_String::createEncryptIv();
+                $service = new \Dvelum\Security\CryptService(Dvelum\Config::storage()->get('crypt.php'));
+                $ivKey = $service->createVector();
                 $newData[$ivField] = $ivKey;
             }
 
@@ -33,7 +34,7 @@ class Model_Vc extends Model
             $vObject = Orm\Record::factory('vc');
             $vObject->set('date', date('Y-m-d'));
             $vObject->set('data', base64_encode(serialize($newData)));
-            $vObject->set('user_id', User::getInstance()->id);
+            $vObject->set('user_id', User::getInstance()->getId());
             $vObject->set('version', $newVersion);
             $vObject->set('record_id', $object->getId());
             $vObject->set('object_name', $object->getName());

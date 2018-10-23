@@ -194,7 +194,7 @@ class Backend_Designer_Sub_Editor extends Backend_Designer_Sub_Properties
 		$name = $this->_getObject()->getName();
 		$project = $this->_getProject();
 		
-		$eventManager = $project->getEventManager()->removeObjectEvent($name , $event);
+		$project->getEventManager()->removeObjectEvent($name , $event);
 		$this->_storeProject();
 		Response::jsonSuccess();
 	}

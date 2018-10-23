@@ -41,7 +41,7 @@ abstract class Bgtask_Storage
 	 * Send signal
 	 * @param integer $pid
 	 * @param integer $signal - const
-	 * @return void
+	 * @return bool
 	 */
 	abstract public function signal($pid , $signal);
 

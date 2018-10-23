@@ -239,10 +239,10 @@ class Designer_Debugger
    /**
     * Get methods for Ext Object
     * @param string $objectName
-    * @return Designer_Project_Methods
+    * @return array
     */
     public function getObjectLocalMethods($objectName)
     {
-      return $this->_project->getMethodManager($objectName)->getObjectMethods($objectName);
+      return $this->_project->getMethodManager()->getObjectMethods($objectName);
     }
 }

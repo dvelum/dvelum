@@ -140,7 +140,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
         $uid = false;
 
         if($user->isAuthorized())
-            $uid = $user->id;
+            $uid = $user->getId();
 
         if(! $uid || ! $user->isAdmin()){
             if(Request::isAjax())
@@ -198,7 +198,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
     /**
      * Send JSON error message
      *
-     * @return string
+     * @return void
      */
     protected function _errorResponse($msg){
         if(Request::isAjax())

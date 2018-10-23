@@ -51,14 +51,14 @@ return [
     ],
     // test task
     'testTask'=>array(
-        'type' => 'task',
+        'type' => 'managed_task',
         'property_1' => 10,
         'property_2' => 100,
         'adapter' => 'Task_Cronjob_Test'
     ),
     // test job
     'testJob'=>array(
-        'type' => 'task',
+        'type' => 'job',
         'adapter' => 'Cronjob_Test'
     )
 ];

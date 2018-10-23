@@ -52,12 +52,12 @@ class Application
 
     /**
      * Application config
-     * @var Config\Adapter
+     * @var Config\ConfigInterface
      */
     protected $config;
 
     /**
-     * @var \Cache_Interface
+     * @var CacheInterface|null
      */
     protected $cache;
 

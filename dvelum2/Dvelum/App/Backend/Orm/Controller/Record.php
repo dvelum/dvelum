@@ -121,6 +121,7 @@ class Record extends Controller
         $shardObjects = [];
 
         $checkColumns = false;
+        $tableExists = false;
 
         if(strlen($shard) && $objectConfig->isDistributed()){
             $model = Orm\Model::factory($name);

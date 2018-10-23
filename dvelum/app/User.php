@@ -20,6 +20,9 @@ class User
 	
 	protected $authChecked = false;
 
+    /**
+     * @var bool | User_Auth_Abstract
+     */
 	protected $authProvider = false;
 
     protected $moduleAcl = false;
@@ -131,7 +134,7 @@ class User
 
 	/**
 	 * Set user auth provider
-	 * @param User_Auth_Abstract $authProvider
+	 * @param \User_Auth_Abstract $authProvider
 	 */
 	public function setAuthProvider($authProvider)
 	{
@@ -140,7 +143,7 @@ class User
 
 	/**
 	 * Get user auth provider
-	 * @return User_Auth_Abstract $authProvider
+	 * @return \User_Auth_Abstract $authProvider
 	 */
 	public function getAuthProvider()
 	{

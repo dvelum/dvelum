@@ -679,11 +679,10 @@ class Designer_Project_Code
 
         if($this->_project->hasChilds($name))
         {
-            $childs = $this->_project->getChilds($name);
+            $children = $this->_project->getChilds($name);
 
-            foreach($childs as $k => $item)
+            foreach($children as $k => $item)
             {
-                $itemObject = $item['data'];
                 $oClass = $item['data']->getClass();
 
                 switch($oClass)
@@ -701,7 +700,7 @@ class Designer_Project_Code
                             continue;
 
                         $menu = $this->_compileConfig($item['id']);
-
+                        break;
 
                     default:
                         $items[] =  $this->_compileConfig($item['id']);

@@ -545,7 +545,7 @@ class Install_Controller
                 'title'=>$this->localization->get('ADMINISTRATORS') ,
                 'system'=>true
             ));
-            $group->save(true, false);
+            $group->save(true);
             $groupId = $group->getId();
 
             // Set user group

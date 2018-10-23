@@ -36,7 +36,7 @@ abstract class Frontend_Controller_Authorised extends Frontend_Controller
     $uid = false;
   
     if($user->isAuthorized())
-      $uid = $user->id;
+      $uid = $user->getId();
   
     if(!$uid){
       if(Request::isAjax())
@@ -64,7 +64,7 @@ abstract class Frontend_Controller_Authorised extends Frontend_Controller
   /**
    * Send JSON error message
    *
-   * @return string
+   * @return void
    */
   protected function _errorResponse($msg)
   {

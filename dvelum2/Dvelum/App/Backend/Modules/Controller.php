@@ -252,6 +252,8 @@ class Controller extends Backend\Controller
             'icon' => Filter::FILTER_STRING
         ];
 
+        $data = [];
+
         foreach ($acceptedFields as $name => $type) {
             if ($type === Filter::FILTER_BOOLEAN) {
                 $data[$name] = $this->request->post($name, $type, false);

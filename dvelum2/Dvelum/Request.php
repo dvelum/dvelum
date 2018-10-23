@@ -311,7 +311,7 @@ class Request
      */
     public function files() : array
     {
-        if(!isset($_FILES) || empty($_FILES)) {
+        if(empty($_FILES)) {
             return [];
         }
 

@@ -519,6 +519,9 @@ class Controller extends App\Backend\Controller
         }
 
         if($objectConfig->isShardRequired()){
+            /**
+             * @var Orm\Distributed\Record $object
+             */
             $result['shard'] = $object->getShard();
         }
 

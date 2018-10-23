@@ -623,6 +623,7 @@ class Select
     protected function tableFieldsList($table, array $columns) : array
     {
         static $cache = [];
+        $hash = '';
 
         // performance patch
         if ($this->localCache) {

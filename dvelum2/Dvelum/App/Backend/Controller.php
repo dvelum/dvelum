@@ -42,7 +42,7 @@ class Controller extends App\Controller
     protected $config;
     /**
      * Localization adapter
-     * @var Lang
+     * @var Lang\Dictionary
      */
     protected $lang;
     /**

@@ -61,8 +61,8 @@ class Ext_Component_JSObject extends Ext_Object
                             $result[] = $v['key'].':false';
                         }
                         break;
-                    default:
-                        $k.':null';
+                   // default:
+                   //     $k.':null';
                 }
             }unset($v);
             $data = $result;

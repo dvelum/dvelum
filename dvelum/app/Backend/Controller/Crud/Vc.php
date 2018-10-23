@@ -339,16 +339,16 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
     public function insertObject(RecordInterface $object)
     {
         $object->published = false;
-        $object->author_id = User::getInstance()->id;
+        $object->author_id = User::getInstance()->getId();
         $object->date_created = date('Y-m-d H:i:s');
 
         if(!$recId = $object->save())
-            Response::jsonError($this->_lang->CANT_CREATE);
+            Response::jsonError($this->_lang->get('CANT_CREATE'));
 
         $versNum = Model::factory('Vc')->newVersion($object);
 
         if(!$versNum)
-            Response::jsonError($this->_lang->CANT_CREATE);
+            Response::jsonError($this->_lang->get('CANT_CREATE'));
 
         $stagingUrl = $this->getStagingUrl($object);
 
