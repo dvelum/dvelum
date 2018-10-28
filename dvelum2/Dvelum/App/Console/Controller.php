@@ -126,7 +126,7 @@ class Controller extends App\Controller implements Router\RouterInterface
      * Launch background task using file lock
      * @param string $name
      * @param array $params
-     * @return bool
+     * @return void
      */
     protected function launchManagedTask($name, $params)
     {
