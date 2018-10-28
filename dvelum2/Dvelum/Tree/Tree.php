@@ -1,7 +1,7 @@
 <?php
 /**
  *  DVelum project https://github.com/dvelum/dvelum
- *  Copyright (C) 2011-2017  Kirill Yegorov
+ *  Copyright (C) 2011-2018  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,18 +18,21 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum;
+namespace Dvelum\Tree;
 
 use \Exception as Exception;
 
 /**
  * Class optimized for fast work with tree structures.
  * Easily handles up to 25000-30000 sets of elements (less than 1 second to fill out)
- * Copyright (C) 2011  Kirill Yegorov
+ * Copyright (C) 2011-2018  Kirill Yegorov
  * @package Dvelum
  */
 class Tree
 {
+    /**
+     * @var Item[]
+     */
     protected $items = [];
     protected $children = [];
 
@@ -45,7 +48,7 @@ class Tree
             return false;
         }
 
-        $this->items[$id]['order'] = $order;
+        $this->items[$id]->setOrder($order);
         return true;
     }
 
@@ -81,39 +84,31 @@ class Tree
      */
     public function getItemsCount(): int
     {
-        return sizeof($this->items);
+        return count($this->items);
     }
 
     /**
      * Add a node to the tree
-     * @param mixed $id — unique identifier
+     * @param mixed $id — unique identifier cannot be 0
      * @param mixed $parent — parent node identifier
      * @param mixed $data — node data
      * @param bool|integer $order - sorting order, not required
      * @return bool —  successfully invoked
      */
-    public function addItem($id, $parent, $data, $order = false): bool
+    public function addItem($id, $parent, $data, ?int $order = null): bool
     {
-        if ($this->itemExists($id) || (string)$id === '0') {
+        if ((string) $id === '0' || isset($this->items[$id])) {
             return false;
         }
 
-        if ($order === false && isset($this->children[$parent])) {
-            $order = sizeof($this->children[$parent]);
-        }
-
-        $this->items[$id] = [
-            'id' => $id,
-            'parent' => $parent,
-            'data' => $data,
-            'order' => $order
-        ];
+        $item = new Item($id, $parent, $data, $order);
+        $this->items[$id] = $item;
 
         if (!isset($this->children[$parent])) {
             $this->children[$parent] = [];
         }
 
-        $this->children[$parent][$id] = &$this->items[$id];
+        $this->children[$parent][] = $id;
         return true;
     }
 
@@ -121,15 +116,15 @@ class Tree
      * Update the node data
      * @param mixed $id — node identifier
      * @param mixed $data — node data
-     * @return bool —  successfully invoked
+     * @return bool — successfully invoked
      */
-    public function updateItem($id, $data): bool
+    public function updateItem($id, array $data): bool
     {
-        if (!$this->itemExists($id) || (string)$id === '0') {
+        if ((string) $id === '0' || !isset($this->items[$id])) {
             return false;
         }
 
-        $this->items[$id]['data'] = $data;
+        $this->items[$id]->setData($data);
         return true;
     }
 
@@ -137,9 +132,9 @@ class Tree
      * Get node structure by ID
      * @param mixed $id
      * @throws Exception
-     * @return array - an array with keys ('id','parent','order','data')
+     * @return Item - an array with keys ('id','parent','order','data')
      */
-    public function getItem($id): array
+    public function getItem($id): Item
     {
         if ($this->itemExists($id)) {
             return $this->items[$id];
@@ -150,18 +145,18 @@ class Tree
 
     /**
      * Get node data by ID
-     * @param string $id
+     * @param mixed $id
      * @return mixed
+     * @throws \Exception
      */
     public function getItemData($id)
     {
-        $data = $this->getItem($id);
-        return $data['data'];
+        return $this->getItem($id)->getData();
     }
 
     /**
      * Check if the node has child elements
-     * @param string $id — node identifier
+     * @param mixed $id — node identifier
      * @return boolean
      */
     public function hasChildren($id): bool
@@ -183,13 +178,15 @@ class Tree
         $data = [];
         if($this->hasChildren($id))
         {
-            $childs = $this->getChildren($id);
-            foreach($childs as $k => $v)
+            $elements = $this->getChildren($id);
+            foreach($elements as $k => $v)
             {
-                $data[] = $v['id'];
-                $subChilds = $this->getChildrenRecursive($v['id']);
-                if(!empty($subChilds))
-                    $data = array_merge($data , $subChilds);
+                $id = $v->getId();
+                $data[] = $id;
+                $subElements = $this->getChildrenRecursive($id);
+                if(!empty($subElements)){
+                    $data = array_merge($data , $subElements);
+                }
             }
         }
         return $data;
@@ -201,20 +198,28 @@ class Tree
             return;
         }
 
-        $tmp = array();
-
-        foreach ($this->children[$id] as $key => &$dat) {
-            $tmp[$dat['id']] = $dat['order'];
+        $tmp = [];
+        $chCount = 0;
+        foreach ($this->children[$id] as $itemId) {
+            /**
+             * @var Item $dat
+             */
+            $order = $this->items[$itemId]->getOrder();
+            if(is_null($order)){
+                $order = $chCount;
+            }
+            $tmp[$itemId] = $order;
+            $chCount++;
         }
         unset($dat);
 
-        $this->children[$id] = array();
+        $this->children[$id] = [];
         asort($tmp);
 
         $sort = 0;
         foreach ($tmp as $key => $order) {
-            $this->items[$key]['order'] = $sort;
-            $this->children[$id][$this->items[$key]['id']] = &$this->items[$key];
+            $this->items[$key]->setOrder($sort);
+            $this->children[$id][] = $key;
             $sort++;
         }
     }
@@ -230,7 +235,12 @@ class Tree
             return [];
         }
 
-        return $this->children[$id];
+        $data = [];
+        foreach ($this->children[$id] as $itemId){
+            $data[] = $this->items[$itemId];
+        }
+
+        return $data;
     }
 
     /**
@@ -243,8 +253,8 @@ class Tree
         $children = $this->getChildren($id);
 
         if (!empty($children)) {
-            foreach ($children as $k => &$v) {
-                $this->remove($v['id']);
+            foreach ($children as $k => $v) {
+                $this->remove($v->getId());
             }
         }
 
@@ -252,28 +262,30 @@ class Tree
             unset($this->children[$id]);
         }
 
-        $parent = $this->items[$id]['parent'];
+        $parent = $this->items[$id]->getParent();
 
-        if (!empty($this->children[$parent]) && isset($this->children[$parent][$id])) {
-            unset($this->children[$parent][$id]);
+        if (!empty($this->children[$parent])) {
+            foreach ($this->children[$parent] as $index =>$item){
+                if($item === $id){
+                    unset($this->children[$parent][$index]);
+                }
+            }
         }
-
         unset($this->items[$id]);
     }
 
     /**
      * Get the parent node identifier by the child node identifier
      * @param string $id — child node identifier
-     * @return mixed string or false
+     * @return int|string|null
      */
     public function getParentId($id)
     {
-        if (!$this->itemExists($id)) {
-            return false;
+        if (!isset($this->items[$id])) {
+            return null;
         }
 
-        $data = $this->getItem($id);
-        return $data['parent'];
+        return $this->items[$id]->getParent();
     }
 
     /**
@@ -284,18 +296,22 @@ class Tree
      */
     public function changeParent($id, $newParent): bool
     {
-        if (!$this->itemExists($id) || (!$this->itemExists($newParent) && (string)$newParent !== '0') || (string)$id == (string)$newParent) {
+        if (!isset($this->items[$id]) || !isset($this->items[$newParent]) || (string) $id == (string) $newParent) {
             return false;
         }
 
-        $oldParent = $this->items[$id]['parent'];
-        $this->items[$id]['parent'] = $newParent;
+        $oldParent = $this->items[$id]->getParent();
+        $this->items[$id]->setParent($newParent);
 
-        if (!empty($this->children[$oldParent]) && isset($this->children[$oldParent][$id])) {
-            unset($this->children[$oldParent][$id]);
+        if (!empty($this->children[$oldParent])) {
+            foreach ($this->children[$oldParent] as $index =>$item){
+                if($item === $id){
+                    unset($this->children[$oldParent][$index]);
+                }
+            }
         }
 
-        $this->children[$newParent][$id] = &$this->items[$id];
+        $this->children[$newParent][] = $id;
         return true;
     }
 
@@ -313,7 +329,7 @@ class Tree
 
     /**
      * Get structures of the tree elements (nodes)
-     * @return array - an array with keys ('id','parent','order','data')
+     * @return Item[] - an array with Item
      */
     public function getItems(): array
     {
@@ -328,20 +344,24 @@ class Tree
     public function getParentsList($id): array
     {
         $parents = [];
-        if (!$this->itemExists($id)) {
+        if (!isset($this->items[$id])) {
             return [];
         }
 
-        while ($this->getParentId($id)) {
-            $p = $this->getParentId($id);
-            $parents[] = $p;
-            $id = $p;
+        $parentId = $id;
+        while ($parentId) {
+            $p = $this->items[$parentId]->getParent();
+            if(isset($this->items[$p])){
+                $parentId = $p;
+                $parents[] = $p;
+            }else{
+                $parentId = false;
+            }
         }
 
         if (!empty($parents)) {
             $parents = array_reverse($parents);
         }
-
         return $parents;
     }
 }
