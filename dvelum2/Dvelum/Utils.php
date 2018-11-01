@@ -101,10 +101,10 @@ class Utils
         }
 
         foreach ($data as $v) {
-            if (is_object($v)) {
-                $result[] = $v->{$key};
-            } else {
+            if(!is_object($v) || $v instanceof \ArrayAccess){
                 $result[] = $v[$key];
+            } else {
+                $result[] = $v->{$key};
             }
         }
         return $result;
