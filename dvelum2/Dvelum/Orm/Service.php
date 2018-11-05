@@ -326,7 +326,7 @@ class Service
             $config = new Record\Config($name, $this->configSettings, $force);
             $orm = $this;
             $loader = function () use ($orm){
-                return $orm->cryptService();
+                return $orm->getCryptService();
             };
             $config->setCryptServiceLoader($loader);
             $this->configObjects[$name] = $config;
