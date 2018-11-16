@@ -279,12 +279,19 @@ class MySQL extends AbstractAdapter
                 }
                 elseif(in_array($v['db_type'] , Builder::$numTypes , true) && isset(Orm\Record\Field\Property::$numberLength[$v['db_type']]))
                 {
-                    $lenCmp = (int) Orm\Record\Field\Property::$numberLength[$v['db_type']] != (int) $column->getNumericPrecision();
+                    /**
+                     * @todo ZF gives getNumericPrecision 19 for bigint(20)
+                     * int types length check disabled
+                     */
+                    // $lenCmp = (int) Orm\Record\Field\Property::$numberLength[$v['db_type']] != (int) $column->getNumericPrecision();
                 }
                 else
                 {
-                    if(isset($v['db_len']))
-                        $lenCmp = (int) $v['db_len'] != (int) $column->getCharacterMaximumLength();
+                    if(isset($v['db_len'])){
+                        if((int) $v['db_len'] != (int) $column->getCharacterMaximumLength()){
+                            $lenCmp = true;
+                        }
+                    }
                 }
 
                 /*
@@ -914,7 +921,6 @@ class MySQL extends AbstractAdapter
         {
             $this->errors[] = $e->getMessage() . ' <br>SQL: ' . $sql;
             return false;
-
         }
     }
 }
