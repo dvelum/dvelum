@@ -981,7 +981,8 @@ class Config
      */
     public function isSystem() : bool
     {
-        if($this->config->offsetExists('system') && $this->config['system'])
+        $link = & $this->config->dataLink();
+        if(isset($link['system']) && $this->config['system'])
             return true;
         else
             return false;
@@ -1285,14 +1286,17 @@ class Config
      */
     public function isIndexObject()
     {
+        $link = & $this->config->dataLink();
         if(
-            $this->isSystem()
+            isset($link['system'])
             &&
-            $this->config->offsetExists('data_object')
+            $link['system']
             &&
-            !empty($this->config->get('data_object'))
+            isset($link['data_object'])
             &&
-            Config::factory($this->config->get('data_object'))->isDistributed()
+            !empty($link['data_object'])
+            &&
+            Config::factory($link['data_object'])->isDistributed()
         ){
             return true;
         }else{
@@ -1396,7 +1400,9 @@ class Config
      */
     public function isDistributed() : bool
     {
-        if($this->config->offsetExists('distributed') && $this->config->get('distributed')){
+        $link = & $this->config->dataLink();
+
+        if(isset($link['distributed']) && $link['distributed']){
             return true;
         }else{
             return false;
