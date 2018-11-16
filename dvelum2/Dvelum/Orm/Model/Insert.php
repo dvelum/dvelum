@@ -119,7 +119,13 @@ class Insert
 
         $values = array_values($data);
         foreach ($values as &$val) {
-            $val = $this->db->quote($val);
+            if(is_bool($val)){
+                $val = intval($val);
+            }elseif (is_null($val)){
+                $val = 'NULL';
+            }else{
+                $val = $this->db->quote($val);
+            }
         }
         unset($val);
 
