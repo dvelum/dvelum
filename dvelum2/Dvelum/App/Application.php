@@ -99,7 +99,9 @@ class Application
             return;
         }
 
-        date_default_timezone_set($this->config->get('timezone'));
+        $config = & $this->config->dataLink();
+
+        date_default_timezone_set($config['timezone']);
 
         /*
          * Init cache connection
@@ -120,23 +122,23 @@ class Application
 
         $request = Request::factory();
         $request->setConfig(Config\Factory::create([
-            'delimiter' => $this->config->get('urlDelimiter'),
-            'extension' => $this->config->get('urlExtension'),
-            'wwwRoot' => $this->config->get('wwwRoot')
+            'delimiter' => $config['urlDelimiter'],
+            'extension' => $config['urlExtension'],
+            'wwwRoot' => $config['wwwRoot']
         ]));
 
         $resource = Resource::factory();
         $resource->setConfig(Config\Factory::create([
-            'jsCacheUrl' => $this->config->get('jsCacheUrl'),
-            'jsCachePath' => $this->config->get('jsCachePath'),
-            'cssCacheUrl' => $this->config->get('cssCacheUrl'),
-            'cssCachePath' => $this->config->get('cssCachePath'),
-            'wwwRoot' => $this->config->get('wwwRoot'),
-            'wwwPath' => $this->config->get('wwwPath'),
+            'jsCacheUrl' => $config['jsCacheUrl'],
+            'jsCachePath' => $config['jsCachePath'],
+            'cssCacheUrl' => $config['cssCacheUrl'],
+            'cssCachePath' => $config['cssCachePath'],
+            'wwwRoot' => $config['wwwRoot'],
+            'wwwPath' => $config['wwwPath'],
             'cache' => $cache
         ]));
 
-        Utils::setSalt($this->config->get('salt'));
+        Utils::setSalt($config['salt']);
         /*
          * Register Services
          */
@@ -150,7 +152,7 @@ class Application
         );
 
         // init external modules
-        $externalsCfg = $this->config->get('externals');
+        $externalsCfg = $config['externals'];
         if ($externalsCfg['enabled']) {
             $this->initExternals();
         }
