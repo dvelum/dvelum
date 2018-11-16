@@ -31,7 +31,11 @@ class Eventmanager extends Orm\Record\Event\Manager
     {
         $objectName = ucfirst($object->getName());
         $triggerClass = \Utils_String::classFromString('Trigger_' . $objectName);
-        $namespacedClass =  \Utils_String::classFromString('\\App\\Trigger\\' . $objectName);
+
+        $name = explode('_', $objectName);
+        $name = array_map('ucfirst', $name);
+
+        $namespacedClass =  \Utils_String::classFromString('\\App\\Trigger\\' . implode('\\', $name));
 
         if(class_exists($triggerClass) && method_exists($triggerClass, $code))
         {
