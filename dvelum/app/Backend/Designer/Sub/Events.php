@@ -164,6 +164,7 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
         else
             $info['params'] = '';
 
+
         Response::jsonSuccess($info);
     }
 
@@ -188,6 +189,7 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
         $event = $this->_getEvent();
 
         $eventManager = $project->getEventManager();
+
         if($object && $eventManager->isLocalEvent($object->getName() , $event))
         {
             $newName = Request::post('new_name' , Filter::FILTER_ALPHANUM , '');
@@ -197,6 +199,11 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
 
             $params = Request::post('params', Filter::FILTER_STRING, '');
             $code = Request::post('code', Filter::FILTER_RAW, '');
+            $buffer = Request::post('buffer', Filter::FILTER_INTEGER, false);
+
+            if(empty($buffer)){
+                $buffer = false;
+            }
 
             if(!$eventManager->eventExists($object->getName(), $event))
                 Response::jsonError($this->_lang->WRONG_REQUEST);
@@ -219,7 +226,7 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
                 }
                 $params = $paramsArray;
             }
-            $eventManager->setEvent($object->getName(), $event, $code , $params , true);
+            $eventManager->setEvent($object->getName(), $event, $code , $params , true, $buffer);
 
             if($newName!==$event)
             {
@@ -241,6 +248,11 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
     public function setcodeAction()
     {
         $objectName = Request::post('object' , 'string' , '');
+        $buffer = Request::post('buffer', Filter::FILTER_INTEGER, false);
+
+        if(empty($buffer)){
+            $buffer = false;
+        }
         $project = $this->_getProject();
 
         if(!strlen($objectName))
@@ -249,7 +261,7 @@ class Backend_Designer_Sub_Events extends Backend_Designer_Sub
         $event = $this->_getEvent();
         $code = Request::post('code' , 'raw' , '');
 
-        $project->getEventManager()->setEvent($objectName , $event , $code);
+        $project->getEventManager()->setEvent($objectName , $event , $code, false, false, $buffer);
         $this->_storeProject();
         Response::jsonSuccess();
     }

@@ -180,10 +180,15 @@ class Backend_Designer_Sub_Editor extends Backend_Designer_Sub_Properties
 		$objectName = $this->_getObject()->getName();
 		$project = $this->_getProject();
 
+        $buffer = Request::post('buffer', Filter::FILTER_INTEGER, false);
+        if(empty($buffer)){
+            $buffer = false;
+        }
+
 		$event = $this->_getEvent();
 		$code = Request::post('code', 'raw', '');
 		$events = $this->_getObject()->getConfig()->getEvents();
-		$project->getEventManager()->setEvent($objectName, $event, $code, $events->$event);
+		$project->getEventManager()->setEvent($objectName, $event, $code, $events->$event, false, $buffer);
 		$this->_storeProject();
 		Response::jsonSuccess();
 	}

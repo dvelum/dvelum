@@ -1,5 +1,5 @@
 <?php
-class Backend_Designer_Sub_FilterEvents extends Backend_Designer_Sub_Events
+class Backend_Designer_Sub_Filterevents extends Backend_Designer_Sub_Events
 {
     protected function _getObject()
     {

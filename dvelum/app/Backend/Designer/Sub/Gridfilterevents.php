@@ -123,10 +123,14 @@ class Backend_Designer_Sub_Gridfilterevents extends Backend_Designer_Sub
 	
 	    $event = $this->_getEvent();
 	    $code = Request::post('code', 'raw', '');
+        $buffer = Request::post('buffer', Filter::FILTER_INTEGER, false);
+        if(empty($buffer)){
+            $buffer = false;
+        }
 	    $events = $this->_filter->getConfig()->getEvents();
 	    
 
-	    $project->getEventManager()->setEvent($this->_filter->getName(), $event, $code , $events->$event);
+	    $project->getEventManager()->setEvent($this->_filter->getName(), $event, $code , $events->$event, false, $buffer);
 	    $this->_storeProject();
 	    Response::jsonSuccess();
 	}

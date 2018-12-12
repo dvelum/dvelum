@@ -38,7 +38,7 @@ class Designer_Project_Events
 	 * @param string $params , optional default - false
 	 * @param boolean $isLocal, optional default - false
 	 */
-	public function setEvent($object , $event , $code , $params = false, $isLocal = false)
+	public function setEvent($object , $event , $code , $params = false, $isLocal = false, $buffer = false)
 	{
 		if(!isset($this->_events[$object]))
 			$this->_events[$object] = array();
@@ -48,7 +48,8 @@ class Designer_Project_Events
 			'event'=>$event,
 			'code'=>$code,
 			'params'=>$params,
-		    'is_local'=>$isLocal
+		    'is_local'=>$isLocal,
+            'buffer'=> $buffer
 		);
 	}
 	

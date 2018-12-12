@@ -19,11 +19,12 @@ Ext.define('designer.eventsEditor',{
 	extend:'Ext.grid.Panel',
 	scrollable:true,
 	controllerUrl:null,
-	
 	searchField:null,
 	columnLines:true,
-	viewConfig:{stripeRows: true, enableTextSelection: true},
-	
+	viewConfig:{
+		stripeRows: true,
+		enableTextSelection: true
+	},
 	initComponent:function(){
 		
 		if(!this.controllerUrl.length){
@@ -200,6 +201,7 @@ Ext.define('designer.eventsEditorWindow',{
 	paramsString:'',
 	editor:null,
 	loadedConfig:null,
+	bufferField:null,
 	
 	constructor:function(){
 		this.extraParams = {};
@@ -228,12 +230,22 @@ Ext.define('designer.eventsEditorWindow',{
 		
 		this.buttons = [this.saveButton , this.cancelButton];
 
+		this.bufferField = Ext.create('Ext.form.field.Number',{
+			fieldLabel:'Buffer, ms',
+			labelWidth:90,
+			labelAlign:'right',
+			width:150
+		});
+
+		this.tbar = [
+			'->',
+			this.bufferField
+		];
 
 		this.dataForm  = Ext.create('Ext.form.Panel',{
 			bodyPadding:5,
 			bodyCls:'formBody',
 			border:false,
-			bosyPadding:5,
 			autoHeight:true,
 			split:false,
 			items:[
@@ -299,6 +311,7 @@ Ext.define('designer.eventsEditorWindow',{
 		 	scope:this,
 		 	params:this.extraParams,
 		    success: function(response, request) {
+
 		 		response =  Ext.JSON.decode(response.responseText);
 		 		if(!response.success){	 			
 		 			Ext.Msg.alert(appLang.MESSAGE,response.msg);
@@ -350,6 +363,11 @@ Ext.define('designer.eventsEditorWindow',{
 				        }
 				     });
 		 		}
+
+		 		if(!Ext.isEmpty(me.loadedConfig.buffer) && me.loadedConfig.buffer!==false){
+					me.bufferField.setValue(me.loadedConfig.buffer);
+				}
+
 		 		this.add(me.editor);
 		 		this.saveButton.enable();
 		    },
@@ -364,7 +382,8 @@ Ext.define('designer.eventsEditorWindow',{
 		
 		var params = Ext.clone(this.extraParams);
 		params['code'] = code;
-		
+		params['buffer'] = this.bufferField.getValue();
+
 		if(this.loadedConfig.is_local){
 			var form = this.dataForm.getForm();
 			params['new_name'] = form.findField('new_name').getValue();
@@ -397,5 +416,15 @@ Ext.define('designer.eventsEditorWindow',{
 		    }
 		 });
 		
+	},
+	destroy:function(){
+		this.saveButton.destroy();
+		this.bufferField.destroy();
+		this.cancelButton.destroy();
+		this.dataForm.destroy();
+		this.extraParams = null;
+		this.buttons = null;
+		this.loadedConfig = null;
+		this.callParent(arguments);
 	}
 });

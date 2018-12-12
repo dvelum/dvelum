@@ -114,9 +114,13 @@ class Backend_Designer_Sub_Gridcolumnactionevents extends Backend_Designer_Sub_C
 
         $event = $this->_getEvent();
         $code = Request::post('code', 'raw', '');
+        $buffer = Request::post('buffer', Filter::FILTER_INTEGER, false);
+        if(empty($buffer)){
+            $buffer = false;
+        }
         $events = $this->_action->getConfig()->getEvents();
 
-        $project->getEventManager()->setEvent($this->_action->getName(), $event, $code , $events->$event);
+        $project->getEventManager()->setEvent($this->_action->getName(), $event, $code , $events->$event, false, $buffer);
         $this->_storeProject();
         Response::jsonSuccess();
     }
