@@ -203,11 +203,17 @@ class Controller extends App\Backend\Controller
             $fields = ['id' => $primaryKey];
         }
 
-        $count = $model->query()->search($query)->getCount();
+
+        $dataModel = $model;
+        if($objectConfig->isDistributed()){
+            $dataModel = Model::factory($objectConfig->getDistributedIndexObject());
+        }
+
+        $count = $dataModel->query()->search($query)->getCount();
         $data = [];
 
         if ($count) {
-            $data = $model->query()->filters($filter)->params($pager)->fields($fields)->search($query)->fetchAll();
+            $data = $dataModel->query()->filters($filter)->params($pager)->fields($fields)->search($query)->fetchAll();
 
             if (!empty($data)) {
                 $objectIds = \Utils::fetchCol('id', $data);
@@ -979,7 +985,7 @@ class Controller extends App\Backend\Controller
             return $this->request->url(['/']);
         }
 
-        return $this->request->url([$stagingUrl, 'item', $object->getId()]);
+        return $this->request->url([$stagingUrl, 'item', $object->getId(),'']);
     }
 
     /**
