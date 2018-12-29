@@ -23,6 +23,8 @@ namespace Dvelum\Orm\Distributed\Key\Strategy;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Distributed\Key\Reserved;
 use Dvelum\Orm\Distributed\Key\Strategy\VirtualBucket\MapperInterface;
+use Dvelum\Orm\Distributed\Model;
+use Dvelum\Orm\Record\Config;
 use Dvelum\Orm\RecordInterface;
 
 class VirtualBucket extends UserKeyNoID
@@ -115,6 +117,51 @@ class VirtualBucket extends UserKeyNoID
 
         if (!empty($result)) {
             $result->setBucket($bucket->getId());
+        }
+        return $result;
+    }
+
+    /**
+     * Get shards for list of objects
+     * @param string $objectName
+     * @param array $distributedKeys
+     * @return array  [shard_id=>[key1,key2,key3], shard_id2=>[...]]
+     * @throws \Exception
+     */
+    public function findObjectsShards(string $objectName, array $distributedKeys) : array
+    {
+        $config = Config::factory($objectName);
+        $keyField = $config->getBucketMapperKey();
+
+        $fieldObject = $config->getField($keyField);
+
+        if ($fieldObject->isNumeric()) {
+            $mapper = $this->getNumericMapper();
+        } elseif ($fieldObject->isText(true)) {
+            $mapper = $this->getStringMapper();
+        }
+
+        $indexObject = $config->getDistributedIndexObject();
+        $indexModel = Model::factory($indexObject);
+
+        /**
+         * @var Model $objectModel
+         */
+        $objectModel = Model::factory($objectName);
+
+        $result = [];
+
+        foreach ($distributedKeys as $key)
+        {
+            $bucket = $mapper->keyToBucket($key);
+            $shard = $indexModel->query()->filters([$this->bucketField=>$bucket->getId()])->fields([$this->shardField])->fetchOne();
+            if(!empty($shard)){
+                $query = $objectModel->query()->setShard($shard)->filters([$keyField=>$key]);
+                $count = $query->getCount();
+                if($count){
+                    $result[$shard][] = $key;
+                }
+            }
         }
         return $result;
     }
