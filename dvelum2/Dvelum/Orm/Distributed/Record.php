@@ -36,7 +36,7 @@ class Record extends Orm\Record
         $this->shard = $shard;
         $config = Config::factory($name);
         if ($config->getShardingType() === Config::SHARDING_TYPE_KEY_NO_INDEX && empty($shard) && !empty($id)) {
-            throw new Orm\Exception('Sharded object with type of Config::SHARDING_TYPE_KEY_NO_INDEX requires shard to be defained at constructor');
+            throw new Orm\Exception('Sharded object with type of Config::SHARDING_TYPE_KEY_NO_INDEX requires shard to be defined at constructor');
         }
 
         parent::__construct($name, $id);
