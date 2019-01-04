@@ -45,70 +45,76 @@ class AsArray implements StorageInterface
     /**
      * Get config by local path
      * @param string $localPath
-     * @param boolean $useCache, optional
-     * @param boolean $merge, optional merge with main config
+     * @param boolean $useCache , optional
+     * @param boolean $merge , optional merge with main config
      * @throws \Exception
      * @return ConfigInterface
      */
-    public function get(string $localPath , bool $useCache = true , bool $merge = true) : ConfigInterface
+    public function get(string $localPath, bool $useCache = true, bool $merge = true): ConfigInterface
     {
         // storage config prohibits merging
-        if($this->config['file_array']['apply_to'] === false)
+        if ($this->config['file_array']['apply_to'] === false) {
             $merge = false;
+        }
 
-        $key = $localPath.intval($merge);
+        $key = $localPath . intval($merge);
 
-        if(isset(static::$runtimeCache[$key]) && $useCache)
+        if (isset(static::$runtimeCache[$key]) && $useCache) {
             return static::$runtimeCache[$key];
+        }
 
         $data = false;
 
         $list = $this->config['file_array']['paths'];
 
-        if(!$merge)
+        if (!$merge) {
             $list = array_reverse($list);
+        }
 
-        foreach($list as $path)
-        {
-            if(!file_exists($path . $localPath))
+        foreach ($list as $path) {
+            if (!file_exists($path . $localPath)) {
                 continue;
+            }
 
             $cfg = $path . $localPath;
 
-
-            if($this->config['debug'])
+            if ($this->config['debug']) {
                 $this->debugInfo[] = $cfg;
+            }
 
-            if(!$merge){
+            if (!$merge) {
                 $data = include $cfg;
                 break;
             }
 
-            if($data === false){
+            if ($data === false) {
                 $data = include $cfg;
-            }else{
+            } else {
                 $cfgData = include $cfg;
-                if($data === false){
+                if ($data === false) {
                     $data = [];
                 }
-                $data = array_merge($data , $cfgData);
+                $data = array_merge($data, $cfgData);
             }
         }
 
-        if($data === false)
+        if ($data === false) {
             throw new \Exception('Getting undefined config [' . $localPath . ']');
+        }
 
-        $object = new Config\File\AsArray($this->config['file_array']['write'] . $localPath , false);
+        $object = new Config\File\AsArray($this->config['file_array']['write'] . $localPath, false);
 
-        if($this->config['file_array']['apply_to']!==false && $merge)
-            $object->setParentId($this->config['file_array']['apply_to'] . $localPath );
+        if ($this->config['file_array']['apply_to'] !== false && $merge) {
+            $object->setParentId($this->config['file_array']['apply_to'] . $localPath);
+        }
 
         // fast data injection
-        $link = & $object->dataLink();
+        $link = &$object->dataLink();
         $link = $data;
 
-        if($useCache)
+        if ($useCache) {
             static::$runtimeCache[$key] = $object;
+        }
 
         return $object;
     }
@@ -119,19 +125,22 @@ class AsArray implements StorageInterface
      * @throws \Exception
      * @return bool
      */
-    public function create(string $id) : bool
+    public function create(string $id): bool
     {
         $file = $this->getWrite() . $id;
-
         $dir = dirname($file);
-        if(!file_exists($dir) && !@mkdir($dir,0775, true))
-            throw new \Exception('Cannot create '.$dir);
 
-        if(\File::getExt($file)!=='.php')
+        if (!file_exists($dir) && !@mkdir($dir, 0775, true)) {
+            throw new \Exception('Cannot create ' . $dir);
+        }
+
+        if (\Dvelum\File::getExt($file) !== '.php') {
             throw new \Exception('Invalid file name');
+        }
 
-        if(\Utils::exportArray($file, array())!==false)
+        if (\Dvelum\Utils::exportArray($file, []) !== false) {
             return true;
+        }
 
         return false;
     }
@@ -145,10 +154,10 @@ class AsArray implements StorageInterface
     {
         $list = array_reverse($this->config['file_array']['paths']);
 
-        foreach($list as $path)
-        {
-            if(!file_exists($path . $localPath))
+        foreach ($list as $path) {
+            if (!file_exists($path . $localPath)) {
                 continue;
+            }
 
             return $path . $localPath;
         }
@@ -161,20 +170,23 @@ class AsArray implements StorageInterface
      * @param bool $recursive - optional, default false
      * @return array
      */
-    public function getList($path = false, $recursive = false) : array
+    public function getList($path = false, $recursive = false): array
     {
         $files = [];
-        foreach($this->config['file_array']['paths'] as $item)
-        {
-            if($path)
-                $item.=$path;
+        foreach ($this->config['file_array']['paths'] as $item) {
+            if ($path) {
+                $item .= $path;
+            }
 
-            if(!is_dir($item))
+            if (!is_dir($item)) {
                 continue;
+            }
 
-            $list = \File::scanFiles($item , array('.php'), $recursive , \File::Files_Only);
-            if(!empty($list))
-                $files = array_merge($files , $list);
+            $list = \Dvelum\File::scanFiles($item, ['.php'], $recursive, \Dvelum\File::Files_Only);
+
+            if (!empty($list)) {
+                $files = array_merge($files, $list);
+            }
 
         }
         return $files;
@@ -185,12 +197,12 @@ class AsArray implements StorageInterface
      * @param $localPath
      * @return bool
      */
-    public function exists(string $localPath) : bool
+    public function exists(string $localPath): bool
     {
-        foreach($this->config['file_array']['paths'] as $path)
-        {
-            if(file_exists($path . $localPath))
+        foreach ($this->config['file_array']['paths'] as $path) {
+            if (file_exists($path . $localPath)) {
                 return true;
+            }
         }
         return false;
     }
@@ -199,7 +211,7 @@ class AsArray implements StorageInterface
      * Get storage paths
      * @return array
      */
-    public function getPaths() : array
+    public function getPaths(): array
     {
         return $this->config['file_array']['paths'];
     }
@@ -209,7 +221,7 @@ class AsArray implements StorageInterface
      * @param string $path
      * @return void
      */
-    public function addPath(string $path) : void
+    public function addPath(string $path): void
     {
         $this->config['file_array']['paths'][] = $path;
     }
@@ -219,7 +231,7 @@ class AsArray implements StorageInterface
      * @param $path
      * @return void
      */
-    public function prependPath(string $path) : void
+    public function prependPath(string $path): void
     {
         \array_unshift($this->config['file_array']['paths'], $path);
     }
@@ -228,7 +240,7 @@ class AsArray implements StorageInterface
      * Get write path
      * @return string
      */
-    public function getWrite() : string
+    public function getWrite(): string
     {
         return $this->config['file_array']['write'];
     }
@@ -237,7 +249,7 @@ class AsArray implements StorageInterface
      * Get src file path (to apply)
      * @return string
      */
-    public function getApplyTo() : string
+    public function getApplyTo(): string
     {
         return $this->config['file_array']['apply_to'];
     }
@@ -246,7 +258,7 @@ class AsArray implements StorageInterface
      * Get debug information. (loaded configs)
      * @return array
      */
-    public function getDebugInfo() : array
+    public function getDebugInfo(): array
     {
         return $this->debugInfo;
     }
@@ -256,9 +268,9 @@ class AsArray implements StorageInterface
      * @param array $options
      * @return void
      */
-    public function setConfig(array $options) : void
+    public function setConfig(array $options): void
     {
-        foreach($options as $k=>$v){
+        foreach ($options as $k => $v) {
             $this->config[$k] = $v;
         }
     }
@@ -268,41 +280,42 @@ class AsArray implements StorageInterface
      * @param ConfigInterface $config
      * @return bool
      */
-    public function save(ConfigInterface $config) : bool
+    public function save(ConfigInterface $config): bool
     {
         $parentId = $config->getParentId();
         $id = $config->getName();
 
         $configData = $config->__toArray();
 
-
-        if(!empty($parentId) && \file_exists($parentId)) {
+        if (!empty($parentId) && \file_exists($parentId)) {
             $src = include $parentId;
             $data = [];
-            foreach($configData as $k=>$v){
-                if(!isset($src[$k]) || $src[$k]!=$v){
+            foreach ($configData as $k => $v) {
+                if (!isset($src[$k]) || $src[$k] != $v) {
                     $data[$k] = $v;
                 }
             }
-        }else{
+        } else {
             $data = $configData;
         }
 
-        if(\file_exists($id)) {
-            if(!\is_writable($id))
+        if (\file_exists($id)) {
+            if (!\is_writable($id)) {
                 return false;
+            }
         } else {
             $dir = dirname($id);
 
-            if(!\file_exists($dir)) {
-                if(!@mkdir($dir,0775,true))
+            if (!\file_exists($dir)) {
+                if (!@mkdir($dir, 0775, true)) {
                     return false;
-            } elseif(!\is_writable($dir)) {
+                }
+            } elseif (!\is_writable($dir)) {
                 return false;
             }
         }
 
-        if(\Utils::exportArray($id, $data)!==false){
+        if (\Utils::exportArray($id, $data) !== false) {
             Config\Factory::cache();
             return true;
         }
@@ -312,7 +325,7 @@ class AsArray implements StorageInterface
     /**
      * Reset cached configs
      */
-    public function resetConfigCache() : void
+    public function resetConfigCache(): void
     {
         static::$runtimeCache = [];
     }
