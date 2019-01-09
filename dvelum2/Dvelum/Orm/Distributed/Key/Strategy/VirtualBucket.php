@@ -139,6 +139,8 @@ class VirtualBucket extends UserKeyNoID
             $mapper = $this->getNumericMapper();
         } elseif ($fieldObject->isText(true)) {
             $mapper = $this->getStringMapper();
+        }else{
+            throw new \Exception('Undefined mapper type for '.$objectName.'.'.$keyField);
         }
 
         $indexObject = $config->getDistributedIndexObject();
