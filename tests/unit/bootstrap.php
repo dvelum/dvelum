@@ -42,26 +42,14 @@ $storage->addPath('./tests/data/configs/');
  */
 $config = ConfigFactory::storage()->get('main.php');
 $config->set('development', 2);
+$config->set('db_configs', [
+    2 => [
+        'title' => 'TEST',
+        'dir' =>  './tests/data/configs/test/db/'
+    ]
+]);
+$configStorage->addPath('./application/configs/test/');
 
-switch ($config->get('development')){
-    // production
-    case 0 :
-        $configStorage->addPath('./application/configs/prod/');
-        break;
-    // development
-    case 1 :
-        $configStorage->addPath('./application/configs/dev/');
-        /*
-         * Disable op caching for development mode
-         */
-        ini_set('opcache.enable', 0);
-        $configStorage->setConfig(['debug' => true]);
-        break;
-    // test
-    case 2 :
-        $configStorage->addPath('./application/configs/test/');
-        break;
-}
 /*
  * Setting autoloader config
  */
