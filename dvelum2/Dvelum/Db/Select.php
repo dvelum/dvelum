@@ -569,10 +569,6 @@ class Select
         if($this->dbAdapter){
             return $this->dbAdapter->quote((string)$value);
         }else{
-            trigger_error(
-                'Attempting to quote a value in ' . get_class($this) .
-                ' without extension/driver support can introduce security vulnerabilities in a production environment'
-            );
             return '\'' . addcslashes((string) $value, "\x00\n\r\\'\"\x1a") . '\'';
         }
     }
