@@ -6,6 +6,8 @@ parameters:
 	    -  %currentWorkingDirectory%/application/templates
 	    -  %currentWorkingDirectory%/dvelum/templates
 	    -  %currentWorkingDirectory%/vendor
+	    -  %currentWorkingDirectory%/dvelum/library/Cache/Memcached.php
+	    -  %currentWorkingDirectory%/dvelum2/Dvelum/Cache/Memcached.php
 	autoload_directories:
 	    -  %currentWorkingDirectory%/application
 	    -  %currentWorkingDirectory%/dvelum
