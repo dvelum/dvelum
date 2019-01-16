@@ -9,7 +9,6 @@ class SelectTest extends TestCase
     protected function getSelect()
     {
         $select = new Select();
-        $select->setDbAdapter(Model::factory('User')->getDbConnection());
         return $select;
     }
 	
