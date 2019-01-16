@@ -111,7 +111,7 @@ class ConfigTest extends TestCase
     public function testGetLinkTittle()
     {
         $cfg = Record\Config::factory('page');
-        $this->assertEquals($cfg->getLinkTitle(), 'menu_title');
+        $this->assertEquals($cfg->getLinkTitle(), '/ {code} / {menu_title} /');
     }
 
     public function testIsFloat()
