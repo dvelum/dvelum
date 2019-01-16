@@ -3,10 +3,11 @@ sudo: false
 
 php:
   - 7.2
+  - 7.3
 
 before_script:
   - composer self-update
-  - composer install --dev --prefer-dist --no-interaction
+  - composer install --prefer-dist --no-interaction
 
 script:
   - ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-clover=coverage.xml
