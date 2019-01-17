@@ -176,11 +176,9 @@ class Tree
     public function getChildrenRecursive($id): array
     {
         $data = [];
-        if($this->hasChildren($id))
-        {
+        if($this->hasChildren($id)) {
             $elements = $this->getChildren($id);
-            foreach($elements as $k => $v)
-            {
+            foreach($elements as $v) {
                 $id = $v->getId();
                 $data[] = $id;
                 $subElements = $this->getChildrenRecursive($id);
@@ -201,9 +199,6 @@ class Tree
         $tmp = [];
         $chCount = 0;
         foreach ($this->children[$id] as $itemId) {
-            /**
-             * @var Item $dat
-             */
             $order = $this->items[$itemId]->getOrder();
             if(is_null($order)){
                 $order = $chCount;
@@ -211,7 +206,6 @@ class Tree
             $tmp[$itemId] = $order;
             $chCount++;
         }
-        unset($dat);
 
         $this->children[$id] = [];
         asort($tmp);

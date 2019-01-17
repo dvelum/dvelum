@@ -763,7 +763,7 @@ abstract class AbstractAdapter implements BuilderInterface
     {
         $updates = [];
         $list = $this->objectConfig->getManyToMany();
-        foreach($list as $objectName=>$fields)
+        foreach($list as $fields)
         {
             if(!empty($fields)){
                 foreach($fields as $fieldName=>$linkType){

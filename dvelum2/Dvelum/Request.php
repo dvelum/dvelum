@@ -330,7 +330,7 @@ class Request
             if(!is_array($data['name'])){
                 $result[$key] = $data;
             } else {
-                foreach($data['name'] as $subKey => $subVal){
+                foreach($data['name'] as $subKey => $value){
                     $result[$key][$subKey] = [
                         'name' => $data['name'][$subKey] ,
                         'type' => $data['type'][$subKey] ,

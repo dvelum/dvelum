@@ -304,6 +304,7 @@ class Backend_Localization_Manager
     public function addRecord($dictionary , $key , array $langs)
     {
         $isSub = false;
+        $dictionaryName = $dictionary;
 
         if(strpos($dictionary, '/')!==false)
         {
@@ -442,7 +443,8 @@ class Backend_Localization_Manager
         $writePath = Lang::storage()->getWrite() . $dictionary . '.php';
 
         $langConfig = Lang::storage()->get($dictionary . '.php');
-        foreach ($data as $k=>$rec)
+
+        foreach ($data as $rec)
             $langConfig->set( $rec['id'] , $rec['title']);
 
         $storage = Lang::storage();

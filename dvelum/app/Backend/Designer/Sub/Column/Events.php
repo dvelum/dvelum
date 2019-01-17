@@ -51,6 +51,8 @@ abstract class Backend_Designer_Sub_Column_Events extends Backend_Designer_Sub
         if(empty($config))
             return '';
 
+        $paramsArray = [];
+
         foreach ($config as $pName=>$pType)
             $paramsArray[] = '<span style="color:green;">' . $pType . '</span> ' . $pName;
 

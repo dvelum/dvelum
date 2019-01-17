@@ -168,7 +168,7 @@ class Adapter
             $resultSet->initialize($result);
             $result = [];
             foreach ($resultSet as $item){
-                foreach ($item as $index => $v){
+                foreach ($item as $v){
                     $result[] = $v;
                     break;
                 }

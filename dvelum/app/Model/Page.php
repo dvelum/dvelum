@@ -38,7 +38,7 @@ class Model_Page extends Model
         $vc = Model::factory('Vc');
         $maxRevisions = $vc->getLastVersion('page', $ids);
 
-        foreach ($data as $k => &$v) {
+        foreach ($data as &$v) {
             if (isset($maxRevisions[$v['id']])) {
                 $v['last_version'] = $maxRevisions[$v['id']];
             } else {
@@ -81,7 +81,7 @@ class Model_Page extends Model
 
         $appConfig = Config::storage()->get('main.php');
 
-        foreach ($childs as $k => $v) {
+        foreach ($childs as $v) {
             $row = $v['data'];
             $obj = new stdClass();
 
@@ -102,7 +102,7 @@ class Model_Page extends Model
                 $obj->allowDrag = false;
             }
 
-            $cld = array();
+            $cld = [];
             if ($tree->hasChilds($row['id'])) {
                 $cld = $this->_fillChilds($tree, $row['id']);
             }
@@ -253,13 +253,14 @@ class Model_Page extends Model
     public function getTree()
     {
         static $tree = false;
+        $cacheKey = '';
 
         if ($tree instanceof Tree) {
             return $tree;
         }
 
         if ($this->cache) {
-            $cacheKey = $this->getCacheKey(array('pages_tree_data'));
+            $cacheKey = $this->getCacheKey(['pages_tree_data']);
             $tree = $this->cache->load($cacheKey);
         }
 
@@ -279,7 +280,7 @@ class Model_Page extends Model
         $tree = new Tree();
 
         if (!empty($data)) {
-            foreach ($data as $k => $v) {
+            foreach ($data as $v) {
                 $tree->addItem($v['id'], $v['parent_id'], $v);
             }
         }

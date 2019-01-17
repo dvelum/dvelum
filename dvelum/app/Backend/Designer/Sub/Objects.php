@@ -119,14 +119,14 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
      */
     protected function _fillContainers(Tree $tree , $root = 0)
     {
-        $exceptions = array('Store', 'Data_Store', 'Data_Store_Tree', 'Data_Store_Buffered', 'Model');
+        //$exceptions = array('Store', 'Data_Store', 'Data_Store_Tree', 'Data_Store_Buffered', 'Model');
         $result = array();
         $childs = $tree->getChilds($root);
 
         if(empty($childs))
             return array();
 
-        foreach($childs as $k=>$v)
+        foreach($childs as $v)
         {
             $object = $v['data'];
 

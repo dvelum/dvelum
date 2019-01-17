@@ -288,7 +288,7 @@ class Deprecated
             }
         }
 
-        foreach ($data as $key => &$row) {
+        foreach ($data as &$row) {
             if ($author) {
                 if (isset($usersData[$row['author_id']])) {
                     $row[$author] = $usersData[$row['author_id']]['name'];

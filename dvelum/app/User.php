@@ -34,6 +34,11 @@ class User
     protected $session = false;
 
     /**
+     * @var array $permissions
+     */
+    protected $permissions;
+
+    /**
      * Authorizing the user: successful authorization returns
      * the link to the object, while failure to authorize returns false
      * @param string $user
@@ -197,7 +202,7 @@ class User
 
     /**
      * Check if the User has administrative access to the system
-     * @return boolean
+     * @return bool
      */
     public function isAdmin()
     {
@@ -208,7 +213,7 @@ class User
             $this->loadData();
         }
 
-        return (boolean) $this->admin;
+        return (boolean) $this->get('admin');
     }
 
     /**

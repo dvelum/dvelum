@@ -276,6 +276,7 @@ class Backend_Designer_Sub_Store extends Backend_Designer_Sub{
             $db = $conManager->getDbConnection($connectionId, $conType);
         }catch (Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
+            return;
         }
 
         $data = Backend_Designer_Import::checkImportDBFields($db, $fields, $table);

@@ -173,7 +173,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
         $template = \Dvelum\View::factory();
         $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
         Response::put($template->render('public/backoffice_login.php'));
-        Application::close();
+        exit();
     }
 
     public function indexAction(){

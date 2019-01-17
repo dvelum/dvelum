@@ -86,10 +86,8 @@ class Controller extends App\Backend\Api\Controller
 
         $this->addLinkedInfo($objectConfig,['user_name'=>'user_id'], $data, $objectConfig->getPrimaryKey());
 
-        if(!empty($data))
-        {
-            foreach ($data as $k=>&$v)
-            {
+        if(!empty($data)) {
+            foreach ($data as &$v) {
                 if(isset(\Model_Historylog::$actions[$v['type']])){
                     $v['type'] = \Model_Historylog::$actions[$v['type']];
                 }

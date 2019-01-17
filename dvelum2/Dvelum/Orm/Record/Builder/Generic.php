@@ -415,7 +415,7 @@ abstract class Generic extends AbstractAdapter
             return [];
         }
 
-        foreach($indexes as $k => $v)
+        foreach($indexes as $v)
         {
             /**
              * @var Metadata\Object\ConstraintObject $v
@@ -449,7 +449,6 @@ abstract class Generic extends AbstractAdapter
                 $configIndexes[$this->getIndexId($item['columns'])] = $item;
             }
         }
-        $cmd = [];
 
         /*
          * Drop invalid indexes

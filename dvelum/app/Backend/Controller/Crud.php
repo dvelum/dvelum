@@ -312,6 +312,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             $object =  Orm\Record::factory($this->_objectName , $id);
         }catch(Exception $e){
             Response::jsonError($this->_lang->WRONG_REQUEST);
+            return;
         }
 
         $acl = $object->getAcl();

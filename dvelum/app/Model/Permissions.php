@@ -311,24 +311,23 @@ class Model_Permissions extends Model
      * Set group permissions
      * @param integer $group
      * @param string $module
-     * @param boolean $view
-     * @param boolean $edit
-     * @param boolean $delete
-     * @param boolean $publish
-     * @return boolean
+     * @param bool $view
+     * @param bool $edit
+     * @param bool $delete
+     * @param bool $publish
+     * @return bool
+     * @throws \Exception
      */
     public function setGroupPermissions($group, $module, $view, $edit, $delete, $publish)
     {
-        $data = $this->getList(
-            false,
-            array(
+        $data = $this->query()
+            ->filters([
                 'group_id' => $group,
                 'user_id' => null,
                 'module' => $module
-            ),
-            array('id'),
-            false
-        );
+            ])
+            ->fields(['id'])
+            ->fetchAll();
 
         $objectId = false;
 

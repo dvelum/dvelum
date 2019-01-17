@@ -13,15 +13,16 @@ class Model_Menu extends Model
     public function getCachedMenuLinks($menuId) : array
     {
         $menuRecord = $this->getCachedItem($menuId);
+        $cacheKey = '';
 
         if (!$menuRecord) {
-            return array();
+            return [];
         }
 
         $list = false;
 
         if ($this->cache) {
-            $cacheKey = $this->getCacheKey(array('links', $menuId));
+            $cacheKey = $this->getCacheKey(['links', $menuId]);
             $list = $this->cache->load($cacheKey);
         }
 

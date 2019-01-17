@@ -725,15 +725,15 @@ class Controller extends Backend\Controller
         }
 
         sort($files);
-        $list = array();
+        $list = [];
 
-        foreach ($files as $k => $fpath) {
-            $text = basename($fpath);
-            $list[] = array(
+        foreach ($files as $filePath) {
+            $text = basename($filePath);
+            $list[] = [
                 'name' => $text,
-                'url' => str_replace($dirPath, $this->appConfig->get('wwwroot'), $fpath),
-                'path' => str_replace($dirPath, '', $fpath),
-            );
+                'url' => str_replace($dirPath, $this->appConfig->get('wwwroot'), $filePath),
+                'path' => str_replace($dirPath, '', $filePath),
+            ];
         }
         $this->response->success($list);
     }

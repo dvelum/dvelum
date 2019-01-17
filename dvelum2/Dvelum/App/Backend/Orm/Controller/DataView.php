@@ -342,7 +342,6 @@ class DataView extends ApiController
 
                 if ($newField !== false) {
                     $newField->setName($field);
-                    $fieldClass = $newField->getClass();
 
                     if ($readOnly && $newField->getConfig()->isValidProperty('readOnly')) {
                         $newField->readOnly = true;

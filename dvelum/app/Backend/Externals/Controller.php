@@ -207,6 +207,7 @@ class Backend_Externals_Controller extends Backend_Controller
            $list = $client->getList($params);
         }catch (Exception $e){
             Response::jsonError($e->getMessage());
+            return;
         }
 
         Response::jsonArray($list);

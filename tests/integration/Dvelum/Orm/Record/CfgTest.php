@@ -5,7 +5,7 @@ use Dvelum\Orm\Record\Builder;
 use Dvelum\Orm\Record;
 use Dvelum\Orm\Model;
 
-class ConfigTest extends TestCase
+class CfgTest extends TestCase
 {
     public function testRenameField()
     {

@@ -14,12 +14,12 @@ class Ext_Code
 		self::$_namespace = $name;
 	}
 	
-	static public function getNamespace($name)
+	static public function getNamespace()
 	{
 		return self::$_namespace;
 	}
 	
-	static public function getRunNamespace($name)
+	static public function getRunNamespace()
 	{
 		return self::$_runNamespace;
 	}

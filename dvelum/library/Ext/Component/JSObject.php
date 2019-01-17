@@ -41,7 +41,7 @@ class Ext_Component_JSObject extends Ext_Object
         {
             $data = json_decode($data, true);
             $result = [];
-            foreach ($data as $k=>$v)
+            foreach ($data as $v)
             {
                 switch ($v['type'])
                 {

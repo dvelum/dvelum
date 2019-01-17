@@ -17,8 +17,6 @@ class Backend_Designer_Sub_Gridcolumnfilterevents extends Backend_Designer_Sub_C
      */
     protected  function _checkFilter()
     {
-        $name = Request::post('id', 'string', '');
-
         $filter = $this->_column->filter;
 
         if(empty($filter) || !$filter instanceof Ext_Grid_Filter)
@@ -59,7 +57,7 @@ class Backend_Designer_Sub_Gridcolumnfilterevents extends Backend_Designer_Sub_C
 
         $events = $this->_filter->getConfig()->getEvents();
 
-        $result = array();
+        $result = [];
         $id =1;
         foreach ($events as $name=>$config)
         {

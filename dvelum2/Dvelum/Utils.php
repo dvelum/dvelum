@@ -76,7 +76,7 @@ class Utils
     static public function collectData(string $keyField, string $valueField, array $data): array
     {
         $result = [];
-        foreach ($data as $k => $v) {
+        foreach ($data as $v) {
             if (!isset($v[$keyField]) || !isset($v[$valueField])) {
                 throw new \Exception('Invalid key');
             }

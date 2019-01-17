@@ -205,10 +205,10 @@ class Request
     static public function files()
     {
         if(!isset($_FILES) || empty($_FILES)) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result =[];
 
         if(empty($_FILES)) {
             return $result;
@@ -223,14 +223,14 @@ class Request
             if(!is_array($data['name'])){
                 $result[$key] = $data;
             } else {
-                foreach($data['name'] as $subkey => $subval){
-                    $result[$key][$subkey] = array(
-                        'name' => $data['name'][$subkey] ,
-                        'type' => $data['type'][$subkey] ,
-                        'tmp_name' => $data['tmp_name'][$subkey] ,
-                        'error' => $data['error'][$subkey] ,
-                        'size' => $data['size'][$subkey]
-                    );
+                foreach($data['name'] as $subKey => $value){
+                    $result[$key][$subKey] = [
+                        'name' => $data['name'][$subKey] ,
+                        'type' => $data['type'][$subKey] ,
+                        'tmp_name' => $data['tmp_name'][$subKey] ,
+                        'error' => $data['error'][$subKey] ,
+                        'size' => $data['size'][$subKey]
+                    ];
                 }
 
             }

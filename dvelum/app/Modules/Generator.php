@@ -540,7 +540,7 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
           false
       ));
 
-      foreach($linksToShow as $k=>$v){
+      foreach($linksToShow as $v){
           if($objectConfig->getField($v)->isSystem()){
               unset($linksToShow[$v]);
           }

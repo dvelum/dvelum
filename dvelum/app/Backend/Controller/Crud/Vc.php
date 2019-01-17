@@ -17,6 +17,7 @@
  * (creating, editing, updating and deleting)
  * for ORM object under version control
  */
+
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -35,24 +36,25 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $this->_resource->addInlineJs('
             var canPublish =  ' . intval($this->_user->canPublish($this->_module)) . ';
         ');
-        $this->_resource->addJs('/js/app/system/ContentWindow.js' , 1);
-        $this->_resource->addJs('/js/app/system/RevisionPanel.js' , 2);
+        $this->_resource->addJs('/js/app/system/ContentWindow.js', 1);
+        $this->_resource->addJs('/js/app/system/RevisionPanel.js', 2);
     }
 
     /**
      * Check object owner
-     * @param \Db_Object  $object
+     * @param \Db_Object $object
      */
     protected function _checkOwner(RecordInterface $object)
     {
-        if(!$object->getConfig()->isRevControl()){
+        if (!$object->getConfig()->isRevControl()) {
             return;
         }
 
-        if($this->_user->onlyOwnRecords($this->getModule()) && $object->author_id !== $this->_user->getId()){
+        if ($this->_user->onlyOwnRecords($this->getModule()) && $object->author_id !== $this->_user->getId()) {
             Response::jsonError($this->_lang->CANT_ACCESS);
         }
     }
+
     /**
      * Check edit permissions
      */
@@ -60,6 +62,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
     {
         parent::_checkCanEdit();
     }
+
     /**
      * Check delete permissions
      */
@@ -68,12 +71,13 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         parent::_checkCanDelete();
 
     }
+
     /**
      * Check for permissions to publish the object
      */
     protected function _checkCanPublish()
     {
-        if(!User::getInstance()->canPublish($this->_module))
+        if (!User::getInstance()->canPublish($this->_module))
             Response::jsonError($this->_lang->CANT_PUBLISH);
     }
 
@@ -83,40 +87,38 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     protected function _getList()
     {
-        $pager = Request::post('pager' , 'array' , []);
-        $filter = Request::post('filter' , 'array' , []);
-        $query = Request::post('search' , 'string' , null);
+        $pager = Request::post('pager', 'array', []);
+        $filter = Request::post('filter', 'array', []);
+        $query = Request::post('search', 'string', null);
 
-        $filter = array_merge($filter , Request::extFilters());
+        $filter = array_merge($filter, Request::extFilters());
 
-        if($this->_user->onlyOwnRecords($this->_module)){
+        if ($this->_user->onlyOwnRecords($this->_module)) {
             $filter['author_id'] = $this->_user->getId();
         }
 
         $dataModel = Model::factory($this->_objectName);
-        $vc = Model::factory('vc');
 
-        $data = $dataModel->getListVc($pager , $filter , $query , $this->_listFields , 'user' , 'updater');
 
-        if(empty($data))
-            return ['data' => [], 'count'=>0];
+        $data = $dataModel->getListVc($pager, $filter, $query, $this->_listFields, 'user', 'updater');
 
-        $ids = Utils::fetchCol('id' , $data);
+        if (empty($data))
+            return ['data' => [], 'count' => 0];
 
-        if(!empty($this->_listLinks)){
+        if (!empty($this->_listLinks)) {
             $objectConfig = Orm\Record\Config::factory($this->_objectName);
-            if(!in_array($objectConfig->getPrimaryKey(),$this->_listFields,true)){
-                throw new Exception('listLinks requires primary key for object '.$objectConfig->getName());
+            if (!in_array($objectConfig->getPrimaryKey(), $this->_listFields, true)) {
+                throw new Exception('listLinks requires primary key for object ' . $objectConfig->getName());
             }
             $this->addLinkedInfo($objectConfig, $this->_listLinks, $data, $objectConfig->getPrimaryKey());
         }
 
         return [
-            'data'=> $data,
-            'count'=> $dataModel->query()
-                                ->filters($filter)
-                                ->search($query)
-                                ->getCount()
+            'data' => $data,
+            'count' => $dataModel->query()
+                ->filters($filter)
+                ->search($query)
+                ->getCount()
         ];
     }
 
@@ -126,16 +128,15 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * @param integer $version
      * @return array
      */
-    protected function _loadData(RecordInterface $object , $version)
+    protected function _loadData(RecordInterface $object, $version)
     {
         $id = $object->getId();
         $vc = Model::factory('Vc');
 
-        if(!$version)
-            $version = $vc->getLastVersion($this->_objectName , $id);
+        if (!$version)
+            $version = $vc->getLastVersion($this->_objectName, $id);
 
-        if($version)
-        {
+        if ($version) {
             try {
                 $object->loadVersion($version);
             } catch (Exception $e) {
@@ -154,7 +155,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             $data['published'] = $object->get('published');
             $data['staging_url'] = static::getStagingUrl($object);
 
-        }else{
+        } else {
             $data = $object->getData();
             $data['id'] = $object->getId();
         }
@@ -163,9 +164,9 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
          * Prepare Object List properties
          */
         $linkedObjects = $object->getConfig()->getLinks([Orm\Record\Config::LINK_OBJECT_LIST]);
-        foreach($linkedObjects as $linkObject => $fieldCfg){
-            foreach($fieldCfg as $field => $linkCfg){
-                $data[$field] = $this->_collectLinksData($field, $object , $linkObject);
+        foreach ($linkedObjects as $linkObject => $fieldCfg) {
+            foreach ($fieldCfg as $field => $linkCfg) {
+                $data[$field] = $this->_collectLinksData($field, $object, $linkObject);
             }
         }
         return $data;
@@ -178,19 +179,19 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     protected function _getData()
     {
-        $id = Request::post('id' , 'integer' , false);
-        $version = Request::post('version' , 'integer' , 0);
+        $id = Request::post('id', 'integer', false);
+        $version = Request::post('version', 'integer', 0);
         $data = array();
 
-        if($id){
-            try{
-                $obj = \Db_Object::factory($this->_objectName , $id);
-            }catch(Exception $e){
+        if ($id) {
+            try {
+                $obj = \Db_Object::factory($this->_objectName, $id);
+            } catch (Exception $e) {
                 Model::factory($this->_objectName)->logError($e->getMessage());
                 return [];
             }
             $this->_checkOwner($obj);
-            $data = $this->_loadData($obj , $version);
+            $data = $this->_loadData($obj, $version);
         }
         return $data;
     }
@@ -203,12 +204,12 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
     public function loaddataAction()
     {
         $result = $this->_getData();
-        if(empty($result))
+        if (empty($result))
             Response::jsonError($this->_lang->get('CANT_EXEC'));
         else
             Response::jsonSuccess($result);
     }
-    
+
     /**
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::deleteAction()
@@ -216,22 +217,23 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
     public function deleteAction()
     {
         $this->_checkCanDelete();
-        $id = Request::post('id' , 'integer' , false);
+        $id = Request::post('id', 'integer', false);
 
-        try{
-            $object = Orm\Record::factory($this->_objectName , $id);
-        }catch(Exception $e){
+        try {
+            $object = Orm\Record::factory($this->_objectName, $id);
+        } catch (Exception $e) {
             Response::jsonError($this->_lang->WRONG_REQUEST);
+            return;
         }
 
         $this->_checkOwner($object);
 
         $ormConfig = Config::storage()->get('orm.php');
 
-        if($ormConfig->get('vc_clear_on_delete'))
-            Model::factory('Vc')->removeItemVc($this->_objectName , $id);
+        if ($ormConfig->get('vc_clear_on_delete'))
+            Model::factory('Vc')->removeItemVc($this->_objectName, $id);
 
-        if(!$object->delete())
+        if (!$object->delete())
             Response::jsonError($this->_lang->CANT_EXEC);
 
         Response::jsonSuccess();
@@ -244,23 +246,23 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     public function unpublishAction()
     {
-        $id = Request::post('id' , 'integer' , false);
+        $id = Request::post('id', 'integer', false);
 
-        if(!$id)
+        if (!$id)
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         $this->_checkCanPublish();
 
-        try{
-            $object = Orm\Record::factory($this->_objectName , $id);
-        }catch(Exception $e){
+        try {
+            $object = Orm\Record::factory($this->_objectName, $id);
+        } catch (Exception $e) {
             Response::jsonError($this->_lang->CANT_EXEC);
         }
 
         $this->_checkOwner($object);
-        
+
         $acl = $object->getAcl();
-        if($acl && !$acl->canPublish($object))
+        if ($acl && !$acl->canPublish($object))
             Response::jsonError($this->_lang->CANT_PUBLISH);
 
         $this->unpublishObject($object);
@@ -273,34 +275,34 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     public function publishAction()
     {
-        $id = Request::post('id' , 'integer' , false);
-        $vers = Request::post('vers' , 'integer' , false);
+        $id = Request::post('id', 'integer', false);
+        $vers = Request::post('vers', 'integer', false);
 
-        if(!$id || !$vers)
+        if (!$id || !$vers)
             Response::jsonError($this->_lang->WRONG_REQUEST);
 
         $this->_checkCanPublish();
 
-        try{
-            $object = Orm\Record::factory($this->_objectName , $id);
-        }catch(Exception $e){
-            Response::jsonError($this->_lang->CANT_EXEC . '. ' .  $e->getMessage());
+        try {
+            $object = Orm\Record::factory($this->_objectName, $id);
+        } catch (Exception $e) {
+            Response::jsonError($this->_lang->CANT_EXEC . '. ' . $e->getMessage());
         }
 
         $this->_checkOwner($object);
-        
+
         $acl = $object->getAcl();
 
-        if($acl && !$acl->canPublish($object))
-           Response::jsonError($this->_lang->CANT_PUBLISH);
+        if ($acl && !$acl->canPublish($object))
+            Response::jsonError($this->_lang->CANT_PUBLISH);
 
-        try{
-			$object->loadVersion($vers);
-        }catch(Exception $e){
+        try {
+            $object->loadVersion($vers);
+        } catch (Exception $e) {
             Response::jsonError($this->_lang->VERSION_INCOPATIBLE);
         }
 
-        if(!$object->publish())
+        if (!$object->publish())
             Response::jsonError($this->_lang->CANT_EXEC);
 
         Response::jsonSuccess();
@@ -318,7 +320,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $frontConfig = Config::storage()->get('frontend.php');
         $routerClass = '\\Dvelum\\App\\Router\\' . $frontConfig->get('router');
 
-        if(!class_exists($routerClass)) {
+        if (!class_exists($routerClass)) {
             $routerClass = $frontConfig->get('router');
         }
 
@@ -326,10 +328,10 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
         $stagingUrl = $frontendRouter->findUrl(strtolower($object->getName()));
 
-        if(!strlen($stagingUrl))
+        if (!strlen($stagingUrl))
             return Request::url(array('/'));
 
-        return Request::url(array($stagingUrl,'item',$object->getId()));
+        return Request::url(array($stagingUrl, 'item', $object->getId()));
     }
 
     /**
@@ -342,23 +344,23 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
         $object->author_id = User::getInstance()->getId();
         $object->date_created = date('Y-m-d H:i:s');
 
-        if(!$recId = $object->save())
+        if (!$recId = $object->save())
             Response::jsonError($this->_lang->get('CANT_CREATE'));
 
         $versNum = Model::factory('Vc')->newVersion($object);
 
-        if(!$versNum)
+        if (!$versNum)
             Response::jsonError($this->_lang->get('CANT_CREATE'));
 
         $stagingUrl = $this->getStagingUrl($object);
 
         Response::jsonSuccess(
-                array(
-                        'id' => $recId,
-                        'version' => $versNum,
-                        'published' => false,
-                        'staging_url' => $stagingUrl
-                )
+            array(
+                'id' => $recId,
+                'version' => $versNum,
+                'published' => false,
+                'staging_url' => $stagingUrl
+            )
         );
     }
 
@@ -366,28 +368,28 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * (non-PHPdoc)
      * @see Backend_Controller_Crud::updateObject()
      */
-    public function updateObject(RecordInterface  $object)
+    public function updateObject(RecordInterface $object)
     {
         $author = $object->get('author_id');
-        if(empty($author)){
-            $object->set('author_id' , $this->_user->getId());
-        }else{
+        if (empty($author)) {
+            $object->set('author_id', $this->_user->getId());
+        } else {
             $this->_checkOwner($object);
         }
 
-        if(!$object->saveVersion())
-        	Response::jsonError($this->_lang->CANT_CREATE);
+        if (!$object->saveVersion())
+            Response::jsonError($this->_lang->CANT_CREATE);
 
         $stagingUrl = $this->getStagingUrl($object);
 
         Response::jsonSuccess(
-                array(
-                        'id' => $object->getId(),
-                        'version' => $object->getVersion(),
-                        'staging_url' => $stagingUrl,
-                        'published_version' => $object->get('published_version'),
-                        'published' => $object->get('published')
-                )
+            array(
+                'id' => $object->getId(),
+                'version' => $object->getVersion(),
+                'staging_url' => $stagingUrl,
+                'published_version' => $object->get('published_version'),
+                'published' => $object->get('published')
+            )
         );
     }
 
@@ -399,10 +401,10 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      */
     public function unpublishObject(RecordInterface $object)
     {
-        if(!$object->get('published'))
+        if (!$object->get('published'))
             Response::jsonError($this->_lang->NOT_PUBLISHED);
 
-        if(!$object->unpublish())
+        if (!$object->unpublish())
             Response::jsonError($this->_lang->CANT_EXEC);
 
         Response::jsonSuccess();

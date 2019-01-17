@@ -34,6 +34,8 @@ class Install_Controller
 
     protected $session;
     protected $wwwRoot;
+    protected $wwwPath;
+    protected $_action;
 
     /**
      * @var Dvelum\Autoload $autoloader

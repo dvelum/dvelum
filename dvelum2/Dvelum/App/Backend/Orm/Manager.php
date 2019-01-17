@@ -75,7 +75,6 @@ class Manager
 			}
 		}
 
-			
 		$localisations = $this->getLocalisations();
 		$langWritePath = Lang::storage()->getWrite();
 		$objectsWrite = Config::storage()->getWrite();

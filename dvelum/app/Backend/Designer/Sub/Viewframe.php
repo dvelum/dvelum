@@ -11,7 +11,7 @@ class Backend_Designer_Sub_Viewframe extends Backend_Designer_Sub
 		$designerConfig = Config::storage()->get('designer.php');
         $backendConfig = Config::storage()->get('backend.php');
 
-        $adminTheme = $backendConfig->get('theme');
+        //$adminTheme = $backendConfig->get('theme');
         // change theme
 		$designerTheme = $designerConfig->get('application_theme');
         $backendConfig->set('theme' , $designerTheme);

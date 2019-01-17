@@ -572,7 +572,6 @@ class Controller extends App\Backend\Controller
         $db->beginTransaction();
 
         $result = [];
-
         if ($isRevControl) {
 
             if (!$object->saveVersion(false)) {
@@ -580,9 +579,6 @@ class Controller extends App\Backend\Controller
                 $db->rollback();
                 return;
             }
-
-            $stagingUrl = $this->getStagingUrl($object);
-
             $result = [
                 'id' => $object->getId(),
                 'version' => $object->getVersion(),
@@ -662,8 +658,6 @@ class Controller extends App\Backend\Controller
      */
     public function loadDataAction()
     {
-        $objectName = $this->getObjectName();
-
         if (!$this->eventManager->fireEvent(EventManager::BEFORE_LOAD, new \stdClass())) {
             $this->response->error($this->eventManager->getError());
             return;
@@ -802,7 +796,7 @@ class Controller extends App\Backend\Controller
             Orm\Record\Config::LINK_DICTIONARY
         ], false);
 
-        foreach ($fieldsToShow as $resultField => $objectField) {
+        foreach ($fieldsToShow as $objectField) {
             if (!isset($links[$objectField])) {
                 throw new \Exception($objectField . ' is not Link');
             }

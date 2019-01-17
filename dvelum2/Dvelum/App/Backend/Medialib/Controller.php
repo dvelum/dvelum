@@ -60,7 +60,7 @@ class Controller extends Backend\Ui\Controller
         $wwwRoot = $this->appConfig->get('wwwRoot');
 
         if (!empty($data)) {
-            foreach ($data as $k => &$v) {
+            foreach ($data as &$v) {
                 if ($v['type'] == 'image') {
                     $v['srcpath'] = \Model_Medialib::addWebRoot(str_replace($v['ext'], '', $v['path']));
                     $v['thumbnail'] = \Model_Medialib::getImgPath($v['path'], $v['ext'], 'thumbnail', true);
@@ -122,7 +122,7 @@ class Controller extends Backend\Ui\Controller
 
         $data = [];
 
-        foreach ($uploaded as $k => &$v) {
+        foreach ($uploaded as &$v) {
             $path = str_replace($docRoot, '/', $v['path']);
 
             $id = $mediaModel->addItem($v['title'], $path, $v['size'], $v['type'], $v['ext'], $uploadCategory);

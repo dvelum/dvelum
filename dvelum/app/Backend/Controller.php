@@ -410,7 +410,7 @@ abstract class Backend_Controller extends Controller
                  */
                 $langService = \Dvelum\Service::get('lang');
                 $langService->setDefaultDictionary($userLang);
-                Dictionary::setConfigPath($this->_configMain->get('dictionary_folder') . $this->_configMain->get('language').'/');
+              //  Dictionary::setConfigPath($this->_configMain->get('dictionary_folder') . $this->_configMain->get('language').'/');
             }
         }
 
