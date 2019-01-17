@@ -15,6 +15,7 @@ parameters:
 	    -  %currentWorkingDirectory%/tests/unit/dvelum/app
 	    -  %currentWorkingDirectory%/tests/unit/dvelum/library
 	    -  %currentWorkingDirectory%/tests/unit/dvelum2
+	    -  %currentWorkingDirectory%/tests/integration
 	autoload_files: []
 	polluteCatchScopeWithTryAssignments: true
 	reportUnmatchedIgnoredErrors: false
