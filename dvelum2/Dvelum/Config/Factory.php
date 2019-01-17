@@ -34,11 +34,11 @@ class Factory
     const File_Array = 1;
 
     /**
-     * @var \Store_Interface
+     * @var \Store_Interface|bool
      */
     protected static $store = false;
     /**
-     * @var \Cache_Interface
+     * @var \Cache_Interface|bool
      */
     protected static $cache = false;
 
@@ -80,6 +80,7 @@ class Factory
     {
         $store = self::$store;
         $cache = self::$cache;
+
         if(!$store)
             $store = self::connectLocalStore();
 

@@ -51,7 +51,7 @@ abstract class AbstractAdapter
 
     /**
      * Prepare key, normalize, add prefix
-     * @param $key
+     * @param mixed $key
      * @return string
      */
     protected function prepareKey($key) : string

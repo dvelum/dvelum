@@ -147,10 +147,10 @@ class AsArray implements StorageInterface
 
     /**
      * Find path for config file (no merge)
-     * @param $localPath
-     * @return mixed
+     * @param string $localPath
+     * @return string | bool
      */
-    public function getPath($localPath)
+    public function getPath(string $localPath)
     {
         $list = array_reverse($this->config['file_array']['paths']);
 
@@ -194,7 +194,7 @@ class AsArray implements StorageInterface
 
     /**
      * Check if config file exists
-     * @param $localPath
+     * @param string $localPath
      * @return bool
      */
     public function exists(string $localPath): bool
@@ -228,7 +228,7 @@ class AsArray implements StorageInterface
 
     /**
      * Prepend config path
-     * @param $path
+     * @param string $path
      * @return void
      */
     public function prependPath(string $path): void

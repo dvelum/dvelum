@@ -109,7 +109,7 @@ class Adapter
 
     /**
      * Fetch results
-     * @param $sql
+     * @param string $sql
      * @return array
      */
     public function fetchAll($sql) : array

@@ -41,7 +41,7 @@ class Adapter extends \Config_Abstract implements  ConfigInterface
 
     /**
      * Config name
-     * @var string
+     * @var string|null
      */
     protected $name;
 

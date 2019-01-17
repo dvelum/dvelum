@@ -35,10 +35,10 @@ interface StorageInterface
 
     /**
      * Find path for config file (no merge)
-     * @param $localPath
-     * @return mixed
+     * @param string $localPath
+     * @return string | bool
      */
-    public function getPath($localPath);
+    public function getPath(string $localPath);
 
     /**
      * Get list of available configs
@@ -50,7 +50,7 @@ interface StorageInterface
 
     /**
      * Check if config file exists
-     * @param $localPath
+     * @param string $localPath
      * @return bool
      */
     public function exists(string $localPath) : bool;
@@ -70,7 +70,7 @@ interface StorageInterface
 
     /**
      * Prepend config path
-     * @param $path
+     * @param string $path
      * @return void
      */
     public function prependPath(string $path) : void;

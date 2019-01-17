@@ -137,7 +137,7 @@ class Autoload
 
     /**
      * PSR-0 autoload
-     * @param $class
+     * @param string $class
      * @return bool
      */
     public function psr0(string $class) : bool

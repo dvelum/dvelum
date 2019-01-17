@@ -32,10 +32,13 @@ class Template extends AbstractAdapter
     {
         $config = Config::storage()->get('template.php');
 
-        $cache = $this->config->offsetExists('cache');
+        $cache = null;
 
-        if(!$cache instanceof CacheInterface){
-            $cache = null;
+        if($this->config->offsetExists('cache')){
+            $cache = $this->config->get('cache');
+            if(!$cache instanceof CacheInterface){
+                $cache = null;
+            }
         }
 
         $service = new Service($config, $cache);
