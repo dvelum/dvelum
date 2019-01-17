@@ -243,7 +243,7 @@ abstract class Backend_Controller extends Controller
             false
         );
 
-        foreach($fieldsToShow as $resultField => $objectField)
+        foreach($fieldsToShow as $objectField)
         {
             if(!isset($links[$objectField]))
                 throw new Exception($objectField.' is not Link');

@@ -55,7 +55,7 @@ class Utils
     {
         $result = array();
 
-        foreach ($data as $k => $v) {
+        foreach ($data as $v) {
             if (!isset($v[$key])) {
                 throw new \Exception('Invalid key');
             }

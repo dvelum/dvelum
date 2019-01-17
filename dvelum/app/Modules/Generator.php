@@ -111,7 +111,7 @@ class Modules_Generator
           false
       ));
 
-      foreach($linksToShow as $k=>$v){
+      foreach($linksToShow as $v){
           if($objectConfig->getField($v)->isSystem()){
               unset($linksToShow[$v]);
           }

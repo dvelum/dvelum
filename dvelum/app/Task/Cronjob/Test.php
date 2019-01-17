@@ -17,7 +17,6 @@ class Task_Cronjob_Test extends Task_Cronjob_Abstract
     public function run()
     {
         $property1 = $this->_config['property_1'];
-        $property2 = $this->_config['property_2'];
 
         $this->log('Property 1 = '. $property1);
 

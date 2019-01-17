@@ -72,9 +72,6 @@ class Backend_Tasks_Controller extends Backend_Controller
         /**
          * @var \Dvelum\Orm\Service $service
          */
-        $service = \Dvelum\Service::get('orm');
-        //$db = $service->getModelSettings()->get('defaultDbManager')->getDbConnection('default');
-        //$db->getProfiler()->setEnabled(false);
         $this->_tManager->launch(Bgtask_Manager::LAUNCHER_JSON, 'Task_Test' , []);
     }
 

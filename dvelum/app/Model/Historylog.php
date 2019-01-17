@@ -81,7 +81,7 @@ class Model_Historylog extends Model
         $data = $this->getSlaveDbConnection()->fetchAll($sql);
 
         if (!empty($data)) {
-            foreach ($data as $k=>&$v) {
+            foreach ($data as &$v) {
                 if (isset(self::$actions[$v['type']])) {
                     $v['type'] = self::$actions[$v['type']];
                 } else {
