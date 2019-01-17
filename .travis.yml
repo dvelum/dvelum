@@ -15,7 +15,6 @@ script:
 
 after_script:
   - php vendor/bin/codacycoverage clover coverage.xml
-  - bash <(curl -s https://codecov.io/bash
 
 cache:
   directories:
