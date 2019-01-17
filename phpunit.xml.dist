@@ -16,8 +16,8 @@
     <filter>
         <whitelist>
             <directory suffix=".php">./application/classes</directory>
-            <directory suffix=".php">./application/controllers</directory>
-            <directory suffix=".php">./dvelum</directory>
+            <directory suffix=".php">./dvelum/app</directory>
+            <directory suffix=".php">./dvelum/library</directory>
             <directory suffix=".php">./dvelum2</directory>
             <exclude>
                 <directory suffix=".phtml">./</directory>

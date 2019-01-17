@@ -25,6 +25,76 @@ class ConfigTest extends TestCase
         $cfg->setObjectTitle($oldTitle);
     }
 
+    public function testCanUseForeignKeys()
+    {
+        $cfg = Record\Config::factory('Page');
+        $this->assertTrue($cfg->canUseForeignKeys());
+
+        $cfg = Record\Config::factory('Historylog');
+        $this->assertFalse($cfg->canUseForeignKeys());
+    }
+
+    public function testGetFields()
+    {
+        $cfg = Record\Config::factory('Page');
+        $fields = $cfg->getFields();
+        $this->assertArrayHasKey('id', $fields);
+        $this->assertTrue($fields['id'] instanceof Record\Config\Field);
+    }
+
+    public function testGetLinks()
+    {
+        $cfg = Record\Config::factory('Page');
+        $links = $cfg->getLinks();
+        $this->assertTrue(isset($links['user']['author_id']));
+    }
+
+    public function  testHasDbPrefix()
+    {
+        $cfg = Record\Config::factory('Page');
+        $this->assertTrue($cfg->hasDbPrefix());
+    }
+
+    public function testGetValidator()
+    {
+        $cfg = Record\Config::factory('Page');
+        $this->assertFalse($cfg->getValidator('id'));
+    }
+
+    public function testToArray()
+    {
+        $cfg = Record\Config::factory('Page');
+        $array = $cfg->__toArray();
+        $this->assertTrue(is_array($array));
+        $this->assertTrue(isset($array['fields']));
+        $data = $cfg->getData();
+        $this->assertEquals($array, $data);
+        $data['title'] = 'title 1';
+        $cfg->setData($data);
+        $this->assertEquals($cfg->getTitle(), 'title 1');
+    }
+
+
+    public function testIsReadOnly()
+    {
+        $cfg = Record\Config::factory('Page');
+        $this->assertFalse($cfg->isReadOnly());
+    }
+
+    public function testIsLocked()
+    {
+        $cfg = Record\Config::factory('Page');
+        $this->assertFalse($cfg->isLocked());
+    }
+
+    public function testIsTransact()
+    {
+        $cfg = Record\Config::factory('Page');
+        $this->assertTrue($cfg->isTransact());
+        $cfg = Record\Config::factory('bgtask_signal');
+        $this->assertFalse($cfg->isTransact());
+    }
+
     public function testSave()
     {
         $cfg = Record\Config::factory('Page');
@@ -113,8 +183,13 @@ class ConfigTest extends TestCase
     {
         $cfg = Record\Config::factory('test');
         $this->assertFalse($cfg->isSystem());
+
         $cfg = Record\Config::factory('page');
         $this->assertTrue($cfg->isSystem());
+
+
+        $this->assertTrue($cfg->isSystemField('id'));
+        $this->assertFalse($cfg->isSystemField('code'));
     }
 
     public function testgetLinkTitle()
@@ -132,9 +207,10 @@ class ConfigTest extends TestCase
 
     public function testHasHistory()
     {
-        $cfg = Record\Config::factory('test');
+        $cfg = Record\Config::factory('Page');
         $this->assertTrue($cfg->hasHistory());
-        $cfg = Record\Config::factory('historylog');
+        $this->assertFalse($cfg->hasExtendedHistory());
+        $cfg = Record\Config::factory('Historylog');
         $this->assertFalse($cfg->hasHistory());
     }
 
