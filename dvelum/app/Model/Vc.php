@@ -64,30 +64,31 @@ class Model_Vc extends Model
             $sql = $this->dbSlave->select()
                 ->from(
                     $this->table(),
-                    array('max_version' => 'MAX(version)')
+                    ['max_version' => 'MAX(version)']
                 )
                 ->where('record_id =?', $record_id)
                 ->where('object_name =?', $objectName);
             return (integer)$this->dbSlave->fetchOne($sql);
 
-        } else {
-            $sql = $this->dbSlave->select()
-                ->from($this->table(), array('max_version' => 'MAX(version)', 'rec' => 'record_id'))
-                ->where('`record_id` IN(?)', $record_id)
-                ->where('`object_name` =?', $objectName)
-                ->group('record_id');
-
-            $revs = $this->dbSlave->fetchAll($sql);
-
-            if (empty($revs))
-                return array();
-
-            $data = array();
-            foreach ($revs as $k => $v)
-                $data[$v['rec']] = $v['max_version'];
-
-            return $data;
         }
+
+        $sql = $this->dbSlave->select()
+            ->from($this->table(), array('max_version' => 'MAX(version)', 'rec' => 'record_id'))
+            ->where('`record_id` IN(?)', $record_id)
+            ->where('`object_name` =?', $objectName)
+            ->group('record_id');
+
+        $revs = $this->dbSlave->fetchAll($sql);
+
+        if (empty($revs))
+            return [];
+
+        $data = [];
+        foreach ($revs as $v)
+            $data[$v['rec']] = $v['max_version'];
+
+        return $data;
+
     }
 
     /**

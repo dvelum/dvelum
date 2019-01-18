@@ -535,10 +535,10 @@ class Backend_Localization_Manager
                 mkdir($jsPath.'/'.$dir , 0755 , true);
             }
 
+            $varName = basename($name).'Lang';
+
             if(strpos($name , '/')===false){
                 $varName = 'appLang';
-            }else{
-                $varName = basename($name).'Lang';
             }
 
             if(!@file_put_contents($filePath, 'var '.$varName.' = '.Lang::lang($name)->getJsObject().';'))

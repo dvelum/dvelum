@@ -108,11 +108,12 @@ class Frontend extends Manager
         {
             foreach($list as $k=>&$v)
             {
+                $cfg['dist'] = true;
+
                 if($this->curConfig && $this->curConfig->offsetExists($k)){
                     $cfg['dist'] = false;
-                }else{
-                    $cfg['dist'] = true;
                 }
+
                 $v['id'] = $v['code'];
             }
         }

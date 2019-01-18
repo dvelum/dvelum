@@ -64,9 +64,9 @@ class Dictionary
 
         if ($this->data->offsetExists($key)) {
             return $this->data->get($key);
-        } else {
-            return '[' . $key . ']';
         }
+
+        return '[' . $key . ']';
     }
 
 

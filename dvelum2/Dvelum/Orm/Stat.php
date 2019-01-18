@@ -46,8 +46,6 @@ class Stat
         if(empty($names))
             return [];
 
-        $tables = [];
-
         /*
          * forming result set
          */

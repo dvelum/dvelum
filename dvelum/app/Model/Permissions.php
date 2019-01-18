@@ -50,7 +50,7 @@ class Model_Permissions extends Model
          * (additional approved rights)
          */
         if (!empty($userRights)) {
-            foreach ($userRights as $k => $v) {
+            foreach ($userRights as $v) {
                 foreach (self::$_fields as $field) {
                     if ($field == 'module')
                         continue;

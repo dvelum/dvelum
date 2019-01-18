@@ -109,7 +109,7 @@ class Api
         $config = Orm\Record\Config::factory($objectName);
 
         $fields = $config->getFields();
-        foreach($fields as $k=>$v)
+        foreach($fields as $v)
         {
             if($v->isText() || $v->isMultiLink()){
                 continue;

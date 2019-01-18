@@ -43,8 +43,8 @@ class UserSettings
     {
         if(isset($this->data[$name])){
             return $this->data[$name];
-        }else{
-            return null;
         }
+
+        return null;
     }
 }

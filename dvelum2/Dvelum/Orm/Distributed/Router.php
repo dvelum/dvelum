@@ -102,8 +102,8 @@ class Router
             $adapterConfig = Config\Factory::create($config['config'][$objectName], 'ROUTER_' . $config['id'] .'_'. $objectName);
             $adapter = new $adapterClass(Distributed::factory(), $adapterConfig);
             return $adapter->getShard($record);
-        } else {
-            return null;
         }
+
+        return null;
     }
 }
