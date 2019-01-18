@@ -448,9 +448,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
         if(empty($result)){
             Response::jsonSuccess([]);
-        }else{
-            Response::jsonArray($result);
         }
+
+        Response::jsonArray($result);
     }
 
 

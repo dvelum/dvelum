@@ -89,12 +89,13 @@ class MySQL extends Builder\Generic
     {
         if(!$objectField->isBoolean()){
             return parent::compareTypes($column, $objectField, $dataTypes);
-        }else{
-            if($column->getDataType() !=='tinyint'){
-                return true;
-            }
-            return false;
         }
+
+        if($column->getDataType() !=='tinyint'){
+            return true;
+        }
+
+        return false;
     }
 
     /**

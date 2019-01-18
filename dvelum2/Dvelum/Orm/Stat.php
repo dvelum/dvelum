@@ -75,8 +75,6 @@ class Stat
             if(isset($config['save_history']) && !$config['save_history'])
                 $saveHistory = false;
 
-
-
             $data[] = [
                 'name'=>$objectName,
                 'table'=>$objectTable,
@@ -275,11 +273,14 @@ class Stat
             if(!empty($builder->getBrokenLinks()))
                 $hasBroken = true;
 
+            /*
             if($hasBroken || !$valid) {
                 $group =  $lang->get('INVALID_STRUCTURE');
             }else{
                 $group =  $lang->get('VALID_STRUCTURE');
             }
+            */
+
             $result[] = [
                 'title' => $config->getTitle(),
                 'name'  => $objectName,

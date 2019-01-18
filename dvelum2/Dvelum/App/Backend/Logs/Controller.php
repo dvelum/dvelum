@@ -72,7 +72,7 @@ class Controller extends Backend\Ui\Controller
             $users = Utils::fetchCol('user_id', $data);
             $users = Record::factory('User', $users);
 
-            foreach ($data as $k => &$v) {
+            foreach ($data as &$v) {
                 if (!empty($v['user_id']) && isset($users[$v['user_id']])) {
                     $v['user_name'] = $users[$v['user_id']]->getTitle();
                 }

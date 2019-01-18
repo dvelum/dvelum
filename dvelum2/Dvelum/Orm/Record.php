@@ -136,7 +136,7 @@ class Record implements RecordInterface
 
         if(!empty($links))
         {
-            foreach($links as $object => $fields)
+            foreach($links as $fields)
             {
                 foreach($fields as $field=>$linkType)
                 {
@@ -1060,9 +1060,9 @@ class Record implements RecordInterface
             $this->version = $version;
             $this->commitChanges();
             return true;
-        }else{
-            return false;
         }
+
+        return false;
     }
 
     /**
