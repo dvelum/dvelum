@@ -8,6 +8,7 @@ $wwwRoot = $this->get('wwwRoot');
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 	<title>Log into BackOffice panel</title>
+    <script type="text/javascript" src="<?php echo $wwwRoot;?>js/app/login.js"></script>
 	<link href="<?php echo $wwwRoot;?>css/system/login.css" rel="stylesheet" type="text/css">
 	<!--[if IE]>
 		<link rel="stylesheet" href="<?php echo $wwwRoot;?>css/system/style_ieFix.css" type="text/css"/>
@@ -47,8 +48,9 @@ $wwwRoot = $this->get('wwwRoot');
 						<div class="clear"></div>
 					</div>
 -->
+                    <div class="formRow errRow" style="display:none;" id="errorMsg"></div>
 					<div class="loginControl">
-						<input type="submit" value="LOG IN" class="dv_button LogMeIn"/>
+						<input type="button" value="LOG IN" id="loginBtn" class="dv_button LogMeIn"/>
 						<div class="clear"></div>
 					</div>
 				</fieldset>

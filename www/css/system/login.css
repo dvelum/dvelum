@@ -173,6 +173,7 @@ input[type=submit], input[type=reset], input[type=button], button { padding: 7px
 .loginPage input[type=text], .loginPage input[type=password] { width: 100%!important }
 .loginPage #footer .wrapper { padding-left: 0; }
 .loginPage .formRow { padding: 18px 14px; }
+.loginPage .errRow { padding: 18px 14px; color: #ea0000 }
 
 .loginWrapper { margin: -119px 0 0 -170px; position: absolute; top: 50%; left: 50%; }
 .loginWrapper .widget { width: 340px; background: #f9f9f9; border: 1px solid #cdcdcd; display: block;}

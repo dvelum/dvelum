@@ -600,5 +600,6 @@
   'BUCKET' => 'Virtual Bucket',
   'FIND_BUCKET'  => 'Find Bucket',
   'SHARD_DATA_EDITOR'  => 'Shard data editor',
-  'OPEN_EDITOR' => 'Open editor'
+  'OPEN_EDITOR' => 'Open editor',
+  'WRONG_USERNAME_PASSWORD' => 'Wrong username or password'
 );
