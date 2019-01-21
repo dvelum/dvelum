@@ -7,7 +7,7 @@ class Permissions
     public $edit = false;
     public $publish = false;
     public $delete = false;
-    public $onlyOwn = false;
+    public $only_own = false;
     public $module = '';
 
     public function __construct(array $data = [])

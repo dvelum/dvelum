@@ -51,6 +51,17 @@ class Request
         $this->pagination['dir'] = $direction;
     }
 
+    /**
+     * Set limitation
+     * @param int|null $start
+     * @param int|null $limit
+     */
+    public function addLimit(?int $start, ?int $limit)
+    {
+        $this->pagination['start'] = $start;
+        $this->pagination['limit'] = $limit;
+    }
+
     public function resetFilter($key)
     {
         unset($this->filters[$key]);

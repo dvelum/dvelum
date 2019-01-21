@@ -77,10 +77,10 @@ class Controller extends Backend\Ui\Controller
 
         $this->eventManager->on(EventManager::BEFORE_LIST, function (Event $event) use ($apiRequest) {
             if ($this->user->getModuleAcl()->onlyOwnRecords($this->getModule())) {
-                $filters['author_id'] = $this->user->getId();
+                $apiRequest->addFilter('author_id', $this->user->getId());
             }
-            $apiRequest->addFilter('author_id', $this->user->getId());
             $apiRequest->addSort('order_no', 'ASC');
+            $apiRequest->addLimit(null, null);
         });
 
         $this->eventManager->on(EventManager::AFTER_LIST, [$this, 'prepareList']);
@@ -141,10 +141,11 @@ class Controller extends Backend\Ui\Controller
         $maxRevisions = $vcModel->getLastVersion('page', $ids);
 
         foreach ($data as $k => &$v) {
-            if (isset($maxRevisions[$v['id']]))
+            if (isset($maxRevisions[$v['id']])) {
                 $v['last_version'] = $maxRevisions[$v['id']];
-            else
+            } else {
                 $v['last_version'] = 0;
+            }
         }
         unset($v);
     }
@@ -175,10 +176,11 @@ class Controller extends Backend\Ui\Controller
 
         $model = Model::factory('Page');
 
-        if ($model->checkUnique($id, 'code', $code))
+        if ($model->checkUnique($id, 'code', $code)) {
             $this->response->success(['code' => $code]);
-        else
+        } else {
             $this->response->error($this->lang->get('SB_UNIQUE'));
+        }
     }
 
     /**
@@ -329,13 +331,15 @@ class Controller extends Backend\Ui\Controller
         $fields = ['id', 'title' => $obj->getConfig()->getLinkTitle(), 'is_system'];
         $usedRC = $obj->getConfig()->isRevControl();
 
-        if ($usedRC)
+        if ($usedRC) {
             $fields[] = 'published';
+        }
 
         $oData = $model->getItems($ids, $fields);
 
-        if (!empty($data))
+        if (!empty($data)) {
             $oData = Utils::rekey('id', $oData);
+        }
 
         /*
          * Find out deleted records
@@ -347,13 +351,21 @@ class Controller extends Backend\Ui\Controller
         foreach ($ids as $id) {
             if (in_array($id, $deleted)) {
                 $title = '';
-                if (isset($data[$id]['title']))
+                if (isset($data[$id]['title'])) {
                     $title = $data[$id]['title'];
+                }
                 $item = array('id' => $id, 'deleted' => 1, 'title' => $title, 'published' => 1, 'is_system' => 0);
-                if ($usedRC)
+                if ($usedRC) {
                     $item['published'] = 0;
+                }
             } else {
-                $item = array('id' => $id, 'deleted' => 0, 'title' => $oData[$id]['title'], 'published' => 1, 'is_system' => $oData[$id]['is_system']);
+                $item = array(
+                    'id' => $id,
+                    'deleted' => 0,
+                    'title' => $oData[$id]['title'],
+                    'published' => 1,
+                    'is_system' => $oData[$id]['is_system']
+                );
                 if ($usedRC) {
                     $item['published'] = $oData[$id]['published'];
                 }
@@ -413,9 +425,11 @@ class Controller extends Backend\Ui\Controller
          * parent_id and order_no can be changed outside of version control
          */
         $publishException = array('id', 'order_no', 'parent_id');
-        foreach ($publishException as $field)
-            if (array_key_exists($field, $data))
+        foreach ($publishException as $field) {
+            if (array_key_exists($field, $data)) {
                 unset($data[$field]);
+            }
+        }
 
         if (empty($data)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
@@ -426,8 +440,9 @@ class Controller extends Backend\Ui\Controller
 
         foreach ($data as $k => $v) {
             if ($object->fieldExists($k)) {
-                if ($objectConfig->getField($k)->isMultiLink() && !empty($v))
+                if ($objectConfig->getField($k)->isMultiLink() && !empty($v)) {
                     $v = array_keys($v);
+                }
                 try {
                     $object->set($k, $v);
                 } catch (\Exception $e) {
@@ -535,8 +550,9 @@ class Controller extends Backend\Ui\Controller
         if (!empty($themes)) {
             foreach ($themes as $name) {
                 $code = basename($name);
-                if ($code[0] != '.')
+                if ($code[0] != '.') {
                     $result[] = array('id' => $code, 'title' => $code);
+                }
             }
         }
 
@@ -594,10 +610,11 @@ class Controller extends Backend\Ui\Controller
         $this->checkCanEdit();
 
         $data = $this->request->post('blocks', 'raw', '');
-        if (strlen($data))
+        if (strlen($data)) {
             $data = json_decode($data, true);
-        else
+        } else {
             $data = [];
+        }
 
         /**
          * @var \Model_Blockmapping $blockMapping
@@ -605,9 +622,11 @@ class Controller extends Backend\Ui\Controller
         $blockMapping = Model::factory('Blockmapping');
         $blockMapping->clearMap(0);
 
-        if (!empty($data))
-            foreach ($data as $place => $items)
+        if (!empty($data)) {
+            foreach ($data as $place => $items) {
                 $blockMapping->addBlocks(0, $place, Utils::fetchCol('id', $items));
+            }
+        }
 
         $blockManager = new \Dvelum\App\BlockManager();
         $blockManager->invalidateDefaultMap();
@@ -619,8 +638,8 @@ class Controller extends Backend\Ui\Controller
      */
     public function desktopModuleInfo()
     {
-       // $modulesConfig = Config::storage()->get($this->appConfig->get('backend_modules'));
-       // $moduleCfg = $modulesConfig->get($this->getModule());
+        // $modulesConfig = Config::storage()->get($this->appConfig->get('backend_modules'));
+        // $moduleCfg = $modulesConfig->get($this->getModule());
 
         $projectData = [];
         $projectData['includes']['js'][] = '/js/app/system/BlocksPanel.js';
@@ -640,8 +659,9 @@ class Controller extends Backend\Ui\Controller
         /*
          * Module bootstrap
          */
-        if (file_exists($this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($this->getModule()) . '.js'))
+        if (file_exists($this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($this->getModule()) . '.js')) {
             $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->getModule()) . '.js';
+        }
 
         return $projectData;
     }

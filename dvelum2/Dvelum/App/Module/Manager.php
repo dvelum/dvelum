@@ -22,6 +22,8 @@ namespace Dvelum\App\Module;
 
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Request;
+use Dvelum\Response;
 use Dvelum\Service;
 use Dvelum\Lang;
 use Dvelum\File;
@@ -395,7 +397,6 @@ class Manager
      * Check if module uses version control
      * @name string - module name
      * @return bool
-     * @todo refactor
      */
     public function isVcModule(string $name) : bool
     {
@@ -409,7 +410,18 @@ class Manager
 
         if($reflector->isSubclassOf('Backend_Controller_Crud_Vc'))
             return true;
-        else
-            return false;
+
+        if($reflector->isSubclassOf('\\Dvelum\\App\\Backend\\Controller')){
+            /**
+             * @var \Dvelum\App\Backend\Controller $controller
+             */
+            $controller = new $class(Request::factory(), Response::factory());
+            $object = $controller->getObjectName();
+            if(\Dvelum\Orm\Record\Config::configExists($object)){
+                $config = \Dvelum\Orm\Record\Config::factory($object);
+                return $config->isRevControl();
+            }
+        }
+        return false;
     }
 }
