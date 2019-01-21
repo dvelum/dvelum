@@ -252,9 +252,9 @@ class Application
 
         if ($page === $this->config->get('adminPath')) {
             $this->routeBackOffice();
+        }else{
+            $this->routeFrontend();
         }
-
-        $this->routeFrontend();
     }
 
     /**
