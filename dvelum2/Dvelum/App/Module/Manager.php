@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Module;
 
+use Dvelum\App\Session\User;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Request;
@@ -412,11 +413,23 @@ class Manager
             return true;
 
         if($reflector->isSubclassOf('\\Dvelum\\App\\Backend\\Controller')){
+
+            // temporary view permissions
+            $user = User::factory();
+            $moduleAcl = $user->getModuleAcl();
+            $permissions = $moduleAcl->getPermissions();
+            foreach ($permissions as $permission){
+                /**
+                 * @var Permissions $permission
+                 */
+                $permission->view = true;
+            }
             /**
              * @var \Dvelum\App\Backend\Controller $controller
              */
             $controller = new $class(Request::factory(), Response::factory());
             $object = $controller->getObjectName();
+
             if(\Dvelum\Orm\Record\Config::configExists($object)){
                 $config = \Dvelum\Orm\Record\Config::factory($object);
                 return $config->isRevControl();
