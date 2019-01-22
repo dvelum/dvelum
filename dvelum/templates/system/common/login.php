@@ -9,6 +9,7 @@ $wwwRoot = $this->get('wwwRoot');
     <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
     <title>Log into BackOffice panel</title>
     <script type="text/javascript" src="<?php echo $wwwRoot;?>js/app/login.js"></script>
+    <script>var backendPath = "<?php echo $this->get('backendPath'); ?>"</script>
     <link href="<?php echo $wwwRoot;?>css/system/login.css" rel="stylesheet" type="text/css">
     <!--[if IE]>
         <link rel="stylesheet" href="<?php echo $wwwRoot;?>css/system/style_ieFix.css" type="text/css"/>
@@ -20,7 +21,7 @@ $wwwRoot = $this->get('wwwRoot');
         <div class="loginLogo"><img src="<?php echo $wwwRoot;?>i/logo.large.png" alt=""></div>
         <div class="widget">
             <div class="title"><h6>BackOffice Panel</h6></div>
-            <form action="" id="validate" class="form" method="post">
+            <div class="form">
                 <?php
                     if(!empty($this->csrf))
                         echo '<input type="hidden" name="'. $this->csrf['csrfFieldName'] .'" value="'. $this->csrf['csrfToken'] .'"/>';
@@ -54,7 +55,7 @@ $wwwRoot = $this->get('wwwRoot');
                         <div class="clear"></div>
                     </div>
                 </fieldset>
-            </form>
+            </div>
         </div>
     </div>
     <div id="footer">

@@ -474,6 +474,10 @@ abstract class Backend_Controller extends Controller
     {
         $template = \Dvelum\View::factory();
         $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
+        $template->set('backendPath' , str_replace(
+            '//', '/',
+            $template->get('wwwRoot').'/'.$this->_configMain->get('adminPath')
+        ));
         Response::put($template->render('system/'.$this->_configBackend->get('theme') . '/login.php'));
         exit;
     }
