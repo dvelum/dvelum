@@ -27,6 +27,7 @@ $wwwRoot = $this->get('wwwRoot');
                         echo '<input type="hidden" name="'. $this->csrf['csrfFieldName'] .'" value="'. $this->csrf['csrfToken'] .'"/>';
                 ?>
                 <fieldset>
+
                     <div class="formRow">
                         <label for="login">Username:</label>
                         <div class="loginInput"><input name="ulogin" class="validate[required]" id="login" type="text"></div>

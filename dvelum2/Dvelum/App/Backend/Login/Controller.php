@@ -28,14 +28,12 @@ class Controller extends App\Controller{
         $action = $this->request->getPart(2);
         if(!$action){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
-            return false;
+            return;
         }
 
         $methodName = $action.'Action';
         if(method_exists($this,$methodName))
             $this->$methodName();
-
-        return false;
     }
 
     public function loginAction(){
@@ -64,11 +62,11 @@ class Controller extends App\Controller{
             $ses->set('auth', true);
             $ses->set('auth_id', $user->getId());
             $this->response->success();
-            return false;
+            return;
         }
 
         $this->response->error($this->lang->get('WRONG_USERNAME_PASSWORD'));
-        return false;
+        return;
     }
 
     public function logoutAction(){
@@ -78,6 +76,6 @@ class Controller extends App\Controller{
         if (!$this->request->isAjax()) {
             $this->response->redirect($this->request->url([$this->appConfig->get('adminPath')]));
         }
-        return false;
+        return;
     }
 }
