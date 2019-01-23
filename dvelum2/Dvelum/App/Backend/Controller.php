@@ -390,6 +390,10 @@ class Controller extends App\Controller
     {
         $template = View::factory();
         $templateData['wwwRoot'] = $this->appConfig->get('wwwroot');
+        $templateData['backendPath'] = str_replace(
+            '//', '/',
+            $templateData['wwwRoot'].'/'.$this->appConfig->get('adminPath')
+        );
 
         if ($this->backofficeConfig->get('use_csrf_token')) {
             $templateData['csrf'] = [

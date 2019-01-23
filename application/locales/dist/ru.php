@@ -601,5 +601,6 @@
   'BUCKET' => 'Virtual Bucket',
   'FIND_BUCKET'  => 'Найти Bucket',
   'SHARD_DATA_EDITOR' => 'Редактор данных шарда',
-  'OPEN_EDITOR' => 'Открыть редактор'
+  'OPEN_EDITOR' => 'Открыть редактор',
+  'WRONG_USERNAME_PASSWORD' => 'Неверное имя пользователя или пароль'
 ); 

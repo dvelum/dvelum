@@ -19,7 +19,8 @@ return array(
         'Backend_Mediacategory_Controller',
         'Backend_Permissions_Controller',
         'Dvelum\\App\\Backend\\Vcs\\Controller',
-        'Dvelum\\App\\Backend\\History\\Controller'
+        'Dvelum\\App\\Backend\\History\\Controller',
+        'Dvelum\\App\\Backend\\Login\\Controller'
     ),
     //reserved object names
     'system_objects' => array(
