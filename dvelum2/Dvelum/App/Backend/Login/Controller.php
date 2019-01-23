@@ -66,7 +66,6 @@ class Controller extends App\Controller{
         }
 
         $this->response->error($this->lang->get('WRONG_USERNAME_PASSWORD'));
-        return;
     }
 
     public function logoutAction(){
@@ -76,6 +75,5 @@ class Controller extends App\Controller{
         if (!$this->request->isAjax()) {
             $this->response->redirect($this->request->url([$this->appConfig->get('adminPath')]));
         }
-        return;
     }
 }
