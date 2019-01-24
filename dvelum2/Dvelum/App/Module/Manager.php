@@ -413,21 +413,10 @@ class Manager
             return true;
 
         if($reflector->isSubclassOf('\\Dvelum\\App\\Backend\\Controller')){
-
-            // temporary view permissions
-            $user = User::factory();
-            $moduleAcl = $user->getModuleAcl();
-            $permissions = $moduleAcl->getPermissions();
-            foreach ($permissions as $permission){
-                /**
-                 * @var Permissions $permission
-                 */
-                $permission->view = true;
-            }
             /**
              * @var \Dvelum\App\Backend\Controller $controller
              */
-            $controller = new $class(Request::factory(), Response::factory());
+            $controller = new $class(Request::factory(), Response\Stub::factory());
             $object = $controller->getObjectName();
 
             if(\Dvelum\Orm\Record\Config::configExists($object)){

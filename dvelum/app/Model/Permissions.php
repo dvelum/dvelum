@@ -206,8 +206,12 @@ class Model_Permissions extends Model
 
         if ($errors)
             return false;
-        else
-            return true;
+
+        if ($this->cache){
+            $this->cache->remove('group_permissions' . $groupId);
+        }
+
+        return true;
     }
 
     /**
