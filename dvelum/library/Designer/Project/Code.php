@@ -180,7 +180,7 @@ class Designer_Project_Code
                     case 'Docked' :
 
                         if(!$this->_project->hasChilds($item['id']))
-                            continue;
+                            break;
 
                         $result = $this->_compileItem($item['id']);
                         $layoutCode .= $result['layout'];
@@ -192,7 +192,7 @@ class Designer_Project_Code
 
                     case 'Menu' :
                         if(!$this->_project->hasChilds($item['id']))
-                            continue;
+                            break;
 
                         $menu = $this->_compileConfig($item['id']);
                         break;
