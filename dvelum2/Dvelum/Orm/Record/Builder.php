@@ -150,12 +150,12 @@ class Builder
 
     /**
      * Write SQL log
-     * @param boolean $flag
+     * @param bool $flag
      * @return void
      */
-    static public function writeLog($flag): void
+    static public function writeLog(bool $flag): void
     {
-        self::$writeLog = (boolean)$flag;
+        self::$writeLog = $flag;
     }
 
     /**
@@ -183,9 +183,9 @@ class Builder
      * @param bool $flag
      * @return void
      */
-    static public function useForeignKeys($flag): void
+    static public function useForeignKeys(bool $flag): void
     {
-        self::$foreignKeys = (bool)$flag;
+        self::$foreignKeys = $flag;
     }
 
     /**

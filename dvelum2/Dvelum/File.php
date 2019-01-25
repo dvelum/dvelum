@@ -302,6 +302,9 @@ class File
             }
         }
 
+        /**
+         * @var \RecursiveDirectoryIterator $iterator
+         */
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator(
                 $source,

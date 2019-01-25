@@ -253,6 +253,10 @@ class MySQL extends AbstractAdapter
              */
             $incrementCmp = false;
 
+            /**
+             * @var \Dvelum\Db\Metadata\ColumnObject $column
+             */
+
             // Compare PRIMARY KEY Sequence
             if($name == $this->objectConfig->getPrimaryKey() &&  $column->isAutoIncrement() !== (bool) $v['db_auto_increment']){
                 $incrementCmp = true;
@@ -274,7 +278,7 @@ class MySQL extends AbstractAdapter
                     /*
                      * @note ZF3 has inverted scale and precision values
                      */
-                    if((int) $v['db_scale'] != (int) $column->getNumericPrecision() || (int) $v['db_precision'] != (int) $column->getNumericScale())
+                    if((int) $v['db_scale'] != $column->getNumericPrecision() || (int) $v['db_precision'] != $column->getNumericScale())
                         $lenCmp = true;
                 }
                 elseif(in_array($v['db_type'] , Builder::$numTypes , true) && isset(Orm\Record\Field\Property::$numberLength[$v['db_type']]))
@@ -353,12 +357,12 @@ class MySQL extends AbstractAdapter
                     'info' => [
                         'object' => $this->objectName,
                         'cmp_flags' =>[
-                            'type' => (boolean) $typeCmp,
-                            'length' => (boolean) $lenCmp,
-                            'null' => (boolean) $nullCmp,
-                            'default' => (boolean) $defaultCmp,
-                            'unsigned' => (boolean) $unsignedCmp,
-                            'increment' => (boolean) $incrementCmp
+                            'type' => $typeCmp,
+                            'length' => $lenCmp,
+                            'null' =>  $nullCmp,
+                            'default' =>  $defaultCmp,
+                            'unsigned' =>  $unsignedCmp,
+                            'increment' => $incrementCmp
                         ]
                     ]
                 );
@@ -376,27 +380,26 @@ class MySQL extends AbstractAdapter
      */
     public function prepareIndexUpdates() : array
     {
-        $updates = array();
+        $updates = [];
         /*
          * Get indexes form database table
          */
         $indexes = $this->db->fetchAll('SHOW INDEX FROM `' . $this->model->table() . '`');
-        $realIndexes = array();
+        $realIndexes = [];
 
         if(empty($indexes))
-            return array();
+            return [];
 
-        foreach($indexes as $k => $v)
+        foreach($indexes as $v)
         {
-
-            $isFulltext = (boolean) ($v['Index_type'] === 'FULLTEXT');
+            $isFulltext = ($v['Index_type'] === 'FULLTEXT');
 
             if(!isset($realIndexes[$v['Key_name']]))
-                $realIndexes[$v['Key_name']] = array(
-                    'columns' => array() ,
+                $realIndexes[$v['Key_name']] = [
+                    'columns' => [] ,
                     'fulltext' => $isFulltext ,
-                    'unique' => (boolean) (! $v['Non_unique'])
-                );
+                    'unique' => (!$v['Non_unique'])
+                ];
 
             $realIndexes[$v['Key_name']]['columns'][] = $v['Column_name'];
         }

@@ -29,7 +29,7 @@ use Dvelum\Config;
 class Distributed
 {
     /**
-     * @var Distributed $instance
+     * @var Distributed|bool $instance
      */
     static protected $instance = false;
 
@@ -102,6 +102,7 @@ class Distributed
      * @param string $objectName
      * @param mixed $distributedKey
      * @return mixed
+     * @throws \Exception
      */
     public function findObjectShard(string $objectName, $distributedKey)
     {
@@ -125,7 +126,7 @@ class Distributed
 
     /**
      * Reserve object id, add to routing table
-     * @param $record
+     * @param RecordInterface $record
      * @return Reserved|null
      */
     public function reserveIndex(RecordInterface $record) : ?Reserved
@@ -147,8 +148,8 @@ class Distributed
 
     /**
      * Delete reserved index
-     * @param Record $record
-     * @param $indexId
+     * @param RecordInterface $record
+     * @param mixed $indexId
      * @return bool
      */
     public function deleteIndex(RecordInterface $record, $indexId) : bool
@@ -157,7 +158,7 @@ class Distributed
     }
     /**
      * Get shard info by id
-     * @param $id
+     * @param mixed $id
      * @return array|bool
      */
     public function getShardInfo($id)
@@ -181,6 +182,7 @@ class Distributed
     /**
      * Get object field with shard id
      * @return string
+     * @throws \Exception
      */
     public function getShardField() : string
     {

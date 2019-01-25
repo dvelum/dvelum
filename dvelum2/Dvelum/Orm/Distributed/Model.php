@@ -34,7 +34,8 @@ class Model extends Orm\Model
      * Get record by id
      * @param integer $id
      * @param array|string $fields — optional — the list of fields to retrieve
-     * @return array|false
+     * @return array
+     * @throws \Exception
      */
     public function getItem($id, $fields = ['*']) : array
     {
@@ -63,9 +64,10 @@ class Model extends Orm\Model
 
     /**
      * Get record by id from shard
-     * @param $id
+     * @param mixed $id
      * @param string $shard
      * @return array
+     * @throws \Exception
      */
     public function getItemFromShard($id, string $shard) : array
     {
@@ -118,8 +120,8 @@ class Model extends Orm\Model
     * Note check only IndexObject
     * Get Item by field value. Returns first occurrence
     * @param string $fieldName
-    * @param $value
-    * @param string $fields
+    * @param mixed $value
+    * @param string|array $fields
     * @return array|null
     * @throws Exception
     */
@@ -247,9 +249,9 @@ class Model extends Orm\Model
 
     /**
      * Get insert object
-     * @return Orm\Distributed\Model\Insert
+     * @return Orm\Model\InsertInterface
      */
-    public function insert() : Orm\Model\Insert
+    public function insert() : Orm\Model\InsertInterface
     {
         return new Orm\Model\Insert($this);
     }

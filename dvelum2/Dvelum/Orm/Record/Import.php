@@ -213,7 +213,7 @@ class Import
             if (!empty($v->getNumericScale()))
                 $fieldLink['db_precision'] = $v->getNumericScale();
 
-            if (array_key_exists((string)$name, $indexGroups))
+            if (array_key_exists($name, $indexGroups))
                 $fieldLink['unique'] = $indexGroups[$name];
 
 //            if($v['IDENTITY'])

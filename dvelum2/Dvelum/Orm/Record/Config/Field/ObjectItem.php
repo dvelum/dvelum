@@ -42,7 +42,11 @@ class ObjectItem extends \Dvelum\Orm\Record\Config\Field
                 }
                 $value = $value->getId();
             }else{
-                $value = $value->__toString();
+                if(method_exists($value,'__toString')){
+                    $value = $value->__toString();
+                }else{
+                    $value = null;
+                }
             }
         }
 
@@ -54,8 +58,8 @@ class ObjectItem extends \Dvelum\Orm\Record\Config\Field
     }
     /**
      * Validate value
-     * @param $value
-     * @return boolean
+     * @param mixed $value
+     * @return bool
      */
     public function validate($value) : bool
     {

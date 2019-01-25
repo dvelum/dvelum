@@ -39,10 +39,16 @@ class Service
     protected $engineConfig;
 
     /**
-     * @var CacheInterface
+     * @var CacheInterface|bool
      */
     protected $cache = false;
 
+    /**
+     * Service constructor.
+     * @param ConfigInterface $config
+     * @param CacheInterface|null $cache
+     * @throws \Exception
+     */
     public function __construct(ConfigInterface $config, ?CacheInterface $cache)
     {
         $this->adapterClass = $config->get('template_engine');

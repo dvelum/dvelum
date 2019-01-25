@@ -83,44 +83,53 @@ class Ext_Config
 
 	public function __get($name)
 	{
-		if($name === 'xtype')
-			return $this->_properties->getXtype();
-		
-		if($name === 'ftype')
-		    return $this->_properties->getFtype();
-			
-		if($name === 'extend')
-			return $this->_properties->getExtend();	
-			
-			
-		if(!$this->_properties->isValid($name))
-			throw new Exception('Trying to get undefined property ' . get_class($this->_properties) . '->' . $name);
-	
-		if(!is_array($this->_data) || !isset($this->_data[$name]))
-				return '';		
-		
-		return $this->_data[$name];
+		return $this->get($name);
 	}
+
+	public function get($name)
+    {
+        if($name === 'xtype')
+            return $this->_properties->getXtype();
+
+        if($name === 'ftype')
+            return $this->_properties->getFtype();
+
+        if($name === 'extend')
+            return $this->_properties->getExtend();
+
+
+        if(!$this->_properties->isValid($name))
+            throw new Exception('Trying to get undefined property ' . get_class($this->_properties) . '->' . $name);
+
+        if(!is_array($this->_data) || !isset($this->_data[$name]))
+            return '';
+
+        return $this->_data[$name];
+    }
+
+	public function set($name , $value)
+    {
+        if(!$this->_properties->isValid($name))
+            throw new Exception('Trying to set undefined property ' . get_class($this->_properties) . '->' . $name);
+
+        switch ($this->_properties->$name) {
+            case Ext_Property::Boolean:
+                if((is_string($value) && strlen($value)) || !is_string($value))
+                    $value = Filter::filterValue('boolean', $value);
+                break;
+        }
+
+        return $this->_data[$name] = $value;
+    }
 
 	public function __set($name , $value)
 	{
-	
-		if(!$this->_properties->isValid($name))
-			throw new Exception('Trying to set undefined property ' . get_class($this->_properties) . '->' . $name);
-		
-		switch ($this->_properties->$name) {
-			case Ext_Property::Boolean:
-				if((is_string($value) && strlen($value)) || !is_string($value))
-					$value = Filter::filterValue('boolean', $value);
-				break;
-		}
-		
-		return $this->_data[$name] = $value;
+        return $this->set($name , $value);
 	}
 
 	public function setValues(array $data){
 	    foreach ($data as $k=>$v){
-	        $this->__set($k,$v);
+	        $this->set($k,$v);
         }
     }
 

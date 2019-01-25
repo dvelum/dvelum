@@ -31,7 +31,7 @@ class Store_LocalTest extends TestCase
 	public function testSetValues()
 	{
 		$store = Store::factory(Store::Local , 'test');
-		$values = array('key'=>'val','key2'=>'val2');
+		$values = ['key'=>'val','key2'=>'val2'];
 		$store->setValues($values);	
 		$v = $store->get('key2');
 		$this->assertEquals( 'val2', $v);		

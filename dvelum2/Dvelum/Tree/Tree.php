@@ -92,7 +92,7 @@ class Tree
      * @param mixed $id — unique identifier cannot be 0
      * @param mixed $parent — parent node identifier
      * @param mixed $data — node data
-     * @param bool|integer $order - sorting order, not required
+     * @param null|integer $order - sorting order, not required
      * @return bool —  successfully invoked
      */
     public function addItem($id, $parent, $data, ?int $order = null): bool
@@ -115,7 +115,7 @@ class Tree
     /**
      * Update the node data
      * @param mixed $id — node identifier
-     * @param mixed $data — node data
+     * @param array $data — node data
      * @return bool — successfully invoked
      */
     public function updateItem($id, array $data): bool

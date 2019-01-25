@@ -16,19 +16,33 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+declare(strict_types=1);
 
-namespace Dvelum\Log\File;
+namespace Dvelum\Orm\Model;
 
-class Sql extends \Dvelum\Log\File implements \Log
+use Dvelum\Orm\Model;
+
+interface InsertInterface
 {
     /**
-     * @param mixed $level
-     * @param string $message
-     * @param array $context
-     * @return void
+     * InsertInterface constructor.
+     * @param Model $model
      */
-    public function log($level, $message, array $context = []) : void
-    {
-        file_put_contents($this->file, $message ."\n", FILE_APPEND);
-    }
+    public function __construct(Model $model);
+
+    /**
+     * Insert multiple rows (not safe but fast)
+     * @param array $records
+     * @param int $chunkSize, optional default 500
+     * @param bool $ignore - optional default false Ignore errors
+     * @return bool
+     */
+    public function bulkInsert(array $records, int $chunkSize = 500, bool $ignore = false): bool;
+
+    /**
+     * Insert single record on duplicate key update
+     * @param array $data
+     * @return bool
+     */
+    public function onDuplicateKeyUpdate(array $data): bool;
 }

@@ -34,7 +34,7 @@ interface GeneratorInterface
 
     /**
      * Reserve object id, save route
-     * @param Record $object
+     * @param RecordInterface $object
      * @param string $shard
      * @return null|Reserved
      */
@@ -42,8 +42,8 @@ interface GeneratorInterface
 
     /**
      * Delete reserved index
-     * @param Record $record
-     * @param $distributedKey
+     * @param RecordInterface $record
+     * @param mixed $distributedKey
      * @return bool
      */
     public function deleteIndex(RecordInterface $record, $distributedKey) : bool;
@@ -65,7 +65,7 @@ interface GeneratorInterface
 
     /**
      * Detect object shard by own rules
-     * @param Record $record
+     * @param RecordInterface $record
      * @return null|string
      */
     public function detectShard(RecordInterface $record): ?string;

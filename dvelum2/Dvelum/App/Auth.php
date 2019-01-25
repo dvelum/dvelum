@@ -109,7 +109,7 @@ class Auth
 
         $providerCfg = Config::storage()->get('auth/' . $provider . '.php', false, true);
 
-        if (!$providerCfg)
+        if (empty($providerCfg))
             throw new \Exception('Wrong auth provider config: ' . 'auth/' . $provider . '.php');
 
         $authProvider = \User_Auth::factory($providerCfg);

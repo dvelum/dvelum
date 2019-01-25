@@ -29,11 +29,10 @@ class LangTest extends TestCase
 		
 		$lang = Lang::lang();
 		
-		$this->assertEquals($lang->ACTION , 'Action');
+
 		$this->assertEquals($lang->get('ACTION') , 'Action');
 
 		$lang = Lang::lang('ru');
-		$this->assertEquals($lang->ACTION , 'Действие');
 		$this->assertEquals($lang->get('ACTION') , 'Действие');
 		
 	}

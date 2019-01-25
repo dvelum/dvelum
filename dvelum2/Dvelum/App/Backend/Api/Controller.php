@@ -775,7 +775,7 @@ class Controller extends App\Backend\Controller
      * @param Orm\Record\Config $cfg
      * @param array $fieldsToShow list of link fields to process ( key - result field, value - object field)
      * object field will be used as result field for numeric keys
-     * @param array & $data rows from  Model::getList result
+     * @param array &$data rows from  Model::getList result
      * @param string $pKey - name of Primary Key field in $data
      * @throws \Exception
      */

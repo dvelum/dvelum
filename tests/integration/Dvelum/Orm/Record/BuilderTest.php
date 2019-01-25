@@ -60,6 +60,9 @@ class BuilderTest extends TestCase
 
     public function testCheckEngineCompatibility()
     {
+        /**
+         * @var Builder\MySQL $o
+         */
         $o = Builder::factory('Page');
         $this->assertTrue($o->checkEngineCompatibility('myisam'));
         $this->assertTrue($o->checkEngineCompatibility('innodb'));

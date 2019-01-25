@@ -54,7 +54,7 @@ class Model
 
     /**
      * Database connection
-     * @var \Db_Adapter
+     * @var Db\Adapter
      */
     protected $db;
 
@@ -66,12 +66,12 @@ class Model
 
     /**
      * Db_Object config
-     * @var Orm\Record\Config
+     * @var Orm\Record\Config | null
      */
     private $objectConfig = null;
 
     /**
-     * @var Config\ConfigInterface
+     * @var Config\ConfigInterface | null
      */
     private $lightConfig = null;
 
@@ -89,11 +89,11 @@ class Model
 
     /**
      * Current Cache_Interface
-     * @var \Cache_Interface
+     * @var \Cache_Interface | bool
      */
     protected $cache;
     /**
-     * @var \Cache_Interface
+     * @var \Cache_Interface | bool
      * @deprecated
      */
     protected $_cache;
@@ -106,7 +106,7 @@ class Model
 
     /**
      * Connection manager
-     * @var \Db_Manager_Interface
+     * @var  \Dvelum\Db\ManagerInterface
      */
     protected $dbManager;
 
@@ -118,13 +118,13 @@ class Model
 
     /**
      * Current error log adapter
-     * @var \Psr\Log\LoggerInterface | false
+     * @var \Psr\Log\LoggerInterface | false | null
      */
     protected $log = false;
 
     /**
      * List of search fields
-     * @var array | false
+     * @var array | null
      */
     protected $searchFields = null;
 
@@ -185,6 +185,7 @@ class Model
     /**
      * Get current Db connectionName
      * @return string
+     * @throws \Exception
      */
     public function getConnectionName() : string
     {
@@ -440,8 +441,8 @@ class Model
     /**
      * Get Item by field value. Returns first occurrence
      * @param string $fieldName
-     * @param $value
-     * @param string $fields
+     * @param mixed $value
+     * @param string|array $fields
      * @return array|null
      * @throws \Exception
      */
@@ -507,7 +508,7 @@ class Model
     /**
      * Get object title
      * @param Orm\RecordInterface $object - object for getting title
-     * @return mixed|string - object title
+     * @return string - object title
      * @throws \Exception
      */
     public function getTitle(Orm\RecordInterface $object) : string
@@ -619,7 +620,7 @@ class Model
 
     /**
      * Set current log adapter
-     * @param mixed \Log | false  $log
+     * @param \Psr\Log\LoggerInterface|false  $log
      */
     public function setLog($log): void
     {
@@ -728,9 +729,9 @@ class Model
 
     /**
      * Get insert object
-     * @return Model\Insert
+     * @return Model\InsertInterface
      */
-    public function insert() : Model\Insert
+    public function insert() : Model\InsertInterface
     {
         return new Orm\Model\Insert($this);
     }

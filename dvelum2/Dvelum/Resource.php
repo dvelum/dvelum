@@ -36,7 +36,7 @@ class Resource
     protected $config;
 
     /**
-     * @var \Cache_Interface
+     * @var \Cache_Interface|bool
      */
     protected $cache = false;
 

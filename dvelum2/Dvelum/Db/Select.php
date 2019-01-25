@@ -35,7 +35,7 @@ class Select
     public $localCache = true;
 
     /**
-     * @var Adapter $dbAdapter
+     * @var Adapter|bool $dbAdapter
      */
     protected $dbAdapter = false;
 
@@ -265,9 +265,9 @@ class Select
     }
 
     /**
-     * @param $table
-     * @param $cond
-     * @param $cols
+     * @param string|array $table
+     * @param string $cond
+     * @param array $cols
      * @param string $type
      * @return Select
      */
@@ -323,7 +323,7 @@ class Select
 
     /**
      * Adding offset
-     * @param $offset
+     * @param int $offset
      * @return self
      */
     public function offset($offset) : self
@@ -338,11 +338,11 @@ class Select
      * @param int $rowCount Use this many rows per page.
      * @return self
      */
-    public function limitPage($page, $rowCount) : self
+    public function limitPage(int $page, int $rowCount) : self
     {
         $page = ($page > 0) ? $page : 1;
         $rowCount = ($rowCount > 0) ? $rowCount : 1;
-        $this->limit = array('count' => (int)$rowCount, 'offset' => (int)$rowCount * ($page - 1));
+        $this->limit = array('count' => $rowCount, 'offset' => $rowCount * ($page - 1));
         return $this;
     }
 
@@ -555,7 +555,7 @@ class Select
 
     /**
      * Quote a raw string.
-     * @param string $value Raw string
+     * @param mixed $value Raw string
      * @return string Quoted string
      */
     protected function quote($value) : string
@@ -612,7 +612,7 @@ class Select
     }
 
     /**
-     * @param $table
+     * @param mixed $table
      * @param array $columns
      * @return array
      */

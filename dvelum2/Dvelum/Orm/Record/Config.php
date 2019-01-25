@@ -54,7 +54,7 @@ class Config
     protected $settings;
 
     /**
-     * @var Cfg\Adapter
+     * @var Cfg\ConfigInterface
      */
     protected $config;
 
@@ -84,13 +84,13 @@ class Config
 
     /**
      * Translation adapter
-     * @var Orm\Record\Config\Translator
+     * @var Orm\Record\Config\Translator | bool
      */
     protected $translator = false;
 
     /**
      * Translation flag
-     * @var boolean
+     * @var bool
      */
     protected $translated = false;
 
@@ -104,7 +104,7 @@ class Config
 
     /**
      * Access Control List
-     * @var Acl
+     * @var Acl | bool
      */
     protected $acl = false;
 
@@ -113,7 +113,7 @@ class Config
      */
     private $cryptService = null;
     /**
-     * @var callable $cryptServiceLoader
+     * @var callable|null $cryptServiceLoader
      */
     protected $cryptServiceLoader = null;
 
@@ -410,7 +410,7 @@ class Config
      * @throws Exception
      * @return array
      */
-    public function getFieldConfig($field) : array
+    public function getFieldConfig(string $field) : array
     {
         $this->prepareTranslation();
 
@@ -775,10 +775,10 @@ class Config
 
     /**
      * Configure distributed index
-     * @param $index
+     * @param string $index
      * @param array $config
      */
-    public function setDistributedIndexConfig($index, array $config)
+    public function setDistributedIndexConfig(string $index, array $config)
     {
         $indexes = $this->getDistributedIndexesConfig();
         $indexes[$index] = $config;
@@ -968,9 +968,9 @@ class Config
 
     /**
      * Get Config object
-     * @return Cfg\Adapter
+     * @return Cfg\ConfigInterface
      */
-    public function getConfig() : Cfg\Adapter
+    public function getConfig() : Cfg\ConfigInterface
     {
         return $this->config;
     }
@@ -1237,11 +1237,11 @@ class Config
 
     /**
      * Get name of relations Db_Object
-     * @param $field
-     * @return mixed  false || string
+     * @param string $field
+     * @return bool|string
      * @throws Exception
      */
-    public function getRelationsObject($field)
+    public function getRelationsObject(string $field)
     {
         $cfg = $this->getFieldConfig($field);
 

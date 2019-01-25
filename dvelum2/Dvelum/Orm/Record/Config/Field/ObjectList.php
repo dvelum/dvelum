@@ -30,6 +30,7 @@ class ObjectList extends Field
      * Apply value filter
      * @param mixed $value
      * @return mixed
+     * @throws \Exception
      */
     public function filter($value)
     {
@@ -42,7 +43,11 @@ class ObjectList extends Field
                 }
                 $value = $value->getId();
             }else{
-                $value = [intval($value->__toString())];
+                if(method_exists($value,'__toString')){
+                    $value = intval($value->__toString());
+                }else{
+                    $value = [];
+                }
             }
         }
 
@@ -54,7 +59,7 @@ class ObjectList extends Field
 
     /**
      * Validate value
-     * @param $value
+     * @param mixed $value
      * @return bool
      */
     public function validate($value) : bool

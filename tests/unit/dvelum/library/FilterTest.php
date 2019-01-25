@@ -5,9 +5,9 @@ class FilterTest extends TestCase
 {
 	public function testFilterValue()
 	{
-		$this->assertEquals(Filter::filterValue('integer', 123) ,  (integer)123);
-		$this->assertEquals(Filter::filterValue('float', 12.2) ,  (float)12.2);
-		$this->assertEquals(Filter::filterValue('str', 333) ,  (string)333);
+		$this->assertEquals(Filter::filterValue('integer', 123) ,  123);
+		$this->assertEquals(Filter::filterValue('float', 12.2) ,  12.2);
+		$this->assertEquals(Filter::filterValue('str', 333) ,  '333');
 		$this->assertEquals(Filter::filterValue('cleaned_string', " <a href='test'>Test</a>") ,  '&lt;a href=&#039;test&#039;&gt;Test&lt;/a&gt;');
 		$this->assertEquals(Filter::filterValue('email', 'cmd<03>@aa.ss') ,  'cmd03@aa.ss');
 		$this->assertEquals(Filter::filterValue('raw', 'saa') ,  'saa');

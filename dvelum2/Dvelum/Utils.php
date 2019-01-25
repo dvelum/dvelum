@@ -362,8 +362,8 @@ class Utils
     }
 
     /**
-     * @param $array1
-     * @param $array2
+     * @param array $array1
+     * @param array $array2
      * @return array
      */
     static public function array_diff_assoc_recursive($array1, $array2) : array

@@ -54,7 +54,7 @@ class Db extends \Psr\Log\AbstractLogger implements \Log
      * Db constructor.
      * @param string $logName
      * @param \Dvelum\Db\Adapter $dbConnection
-     * @param $tableName
+     * @param string $tableName
      */
     public function __construct(string $logName , \Dvelum\Db\Adapter $dbConnection , string $tableName)
     {

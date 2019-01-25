@@ -119,18 +119,20 @@ class Request
     /**
      * Set configuration options
      * @param ConfigInterface $config
+     * @return void
      */
-    public function setConfig(ConfigInterface $config)
+    public function setConfig(ConfigInterface $config) : void
     {
         $this->config = $config;
     }
 
     /**
      * Set configuration option value
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed $value
+     * @return void
      */
-    public function setConfigOption(string $name , $value)
+    public function setConfigOption(string $name , $value) : void
     {
         $this->config->set($name, $value);
     }

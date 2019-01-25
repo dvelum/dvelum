@@ -47,7 +47,7 @@ class Response
 
     /**
      * Send redirect header
-     * @param $location
+     * @param mixed $location
      */
     public function redirect($location) : void
     {

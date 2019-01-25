@@ -179,7 +179,7 @@ class Adapter
     }
 
     /**
-     * @param $sql
+     * @param mixed $sql
      * @return mixed
      */
     public function fetchOne($sql)
@@ -215,7 +215,7 @@ class Adapter
 
     /**
      * Fetch row from result set
-     * @param $sql
+     * @param mixed $sql
      * @return array
      */
     public function fetchRow($sql) : ?array

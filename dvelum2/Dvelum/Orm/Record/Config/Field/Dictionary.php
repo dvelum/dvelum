@@ -38,7 +38,7 @@ class Dictionary extends \Dvelum\Orm\Record\Config\Field
 
     /**
      * Validate value
-     * @param $value
+     * @param mixed $value
      * @return bool
      */
     public function validate($value) : bool

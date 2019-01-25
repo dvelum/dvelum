@@ -197,13 +197,14 @@ class Stat
 
     /**
      * Validate Db object
-     * @param $objectName
+     * @param string $objectName
      * @return array
+     * @throws \Exception
      */
-    public function validate($objectName) : array
+    public function validate(string $objectName) : array
     {
         /**
-         * @var  Lang $lang
+         * @var Lang\Dictionary $lang
          */
         $lang = Service::get('lang')->getDictionary();
         $config = Record\Config::factory($objectName);

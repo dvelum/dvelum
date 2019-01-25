@@ -36,7 +36,7 @@ class Dictionary
     protected $loader;
 
     /**
-     * @var ConfigInterface
+     * @var ConfigInterface|bool
      */
     protected $data = false;
 

@@ -36,7 +36,7 @@ class Query
      */
     protected $model;
     /**
-     * @var Adapter $db
+     * @var Adapter | null  $db
      */
     protected $db;
 
@@ -68,7 +68,7 @@ class Query
     }
 
     /**
-     * @param mixed $table
+     * @param string $table
      * @return Query
      */
     public function table(string $table): Query
@@ -120,7 +120,7 @@ class Query
     }
 
     /**
-     * @param $fields
+     * @param mixed $fields
      * @return Query
      */
     public function fields($fields): Query
@@ -397,7 +397,7 @@ class Query
 
     /**
      * Count the number of rows that satisfy the filters
-     * @param bool approximate - Get approximate count for innodb table (only for queries without filters)
+     * @param bool $approximateValue - Get approximate count for innodb table (only for queries without filters)
      * @return int
      */
     public function getCount(bool $approximateValue = false): int

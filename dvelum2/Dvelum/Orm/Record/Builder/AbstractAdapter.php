@@ -62,7 +62,7 @@ abstract class AbstractAdapter implements BuilderInterface
     protected $dbPrefix;
 
     /**
-     * @var Log\File
+     * @var Log\File | bool
      */
     protected $log = false;
 
@@ -89,6 +89,7 @@ abstract class AbstractAdapter implements BuilderInterface
 
     /**
      * @param ConfigInterface $config
+     * @throws \Exception
      */
     public function __construct(ConfigInterface $config)
     {
@@ -205,9 +206,9 @@ abstract class AbstractAdapter implements BuilderInterface
         $linksUpdates = $this->getObjectsUpdatesInfo();
 
         $this->validationErrors = [
-            'keys' => (int) $updateKeys,
-            'shards' => (int) $shardUpdates,
-            'links' => (int) $linksUpdates,
+            'keys' => !empty($updateKeys),
+            'shards' => !empty($shardUpdates),
+            'links' => !empty($linksUpdates)
         ];
 
         if(!empty($updateKeys) || !empty($shardUpdates) || !empty($linksUpdates))
@@ -486,9 +487,10 @@ abstract class AbstractAdapter implements BuilderInterface
     /**
      * Update distributed objects
      * @param array $list
-     * @return mixed
+     * @return bool
+     * @throws \Exception
      */
-    protected function updateDistributed( array $list) : bool
+    protected function updateDistributed(array $list) : bool
     {
         $shardingConfig = Cfg::storage()->get('sharding.php');
 
@@ -596,6 +598,9 @@ abstract class AbstractAdapter implements BuilderInterface
     protected function updateRelations(array $list) : bool
     {
         $lang = Lang::lang();
+        /**
+         * @var bool $usePrefix
+         */
         $usePrefix = true;
         $connection = $this->objectConfig->get('connection');
 

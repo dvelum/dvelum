@@ -42,7 +42,7 @@ class Controller
      */
     protected $appConfig;
     /**
-     * @var Resource
+     * @var \Dvelum\Resource $resource
      */
     protected $resource;
 

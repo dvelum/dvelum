@@ -52,13 +52,13 @@ class Record implements RecordInterface
 
     /**
      * Insert ID
-     * @var integer
+     * @var integer|bool
      */
     protected $insertId = false;
 
     /**
      * Access Control List Adapter
-     * @var Record\Acl
+     * @var Record\Acl | bool
      */
     protected $acl = false;
     /**
@@ -68,7 +68,7 @@ class Record implements RecordInterface
     protected $disableAclCheck = false;
 
     /**
-     * @var Model
+     * @var Model|\Dvelum\Orm\Distributed\Model
      */
     protected $model;
 
@@ -112,7 +112,8 @@ class Record implements RecordInterface
 
     /**
      * Disable ACL create permissions check
-     * @param $bool $bool
+     * @param bool $bool
+     * @return void
      */
     public function disableAcl(bool $bool) : void
     {
@@ -302,7 +303,7 @@ class Record implements RecordInterface
 
     /**
      * Set the object identifier (existing DB ID)
-     * @param integer $id
+     * @param mixed $id
      * @return void
      * @throws Exception
      */
@@ -353,10 +354,11 @@ class Record implements RecordInterface
     /**
      * Check if the listed objects exist
      * @param string $name
-     * @param mixed integer/array $ids
+     * @param integer|array $ids
      * @return bool
+     * @throws \Exception
      */
-    static public function objectExists($name , $ids) : bool
+    static public function objectExists(string $name , $ids) : bool
     {
         if(!Record\Config::configExists($name))
             return false;
@@ -693,6 +695,7 @@ class Record implements RecordInterface
      * Validate unique fields, object field groups
      * Returns array of errors or null .
      * @return  array | null
+     * @throws \Exception
      */
     public function validateUniqueValues(): ?array
     {
@@ -750,10 +753,12 @@ class Record implements RecordInterface
 
     /**
      * Get object title
+     * @return string
+     * @throws \Exception
      */
     public function getTitle() : string
     {
-        return (string)$this->model->getTitle($this);
+        return $this->model->getTitle($this);
     }
 
     /**

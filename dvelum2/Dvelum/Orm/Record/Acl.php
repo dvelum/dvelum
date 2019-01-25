@@ -34,7 +34,7 @@ abstract class Acl
 
     /**
      * Current user
-     * @var \User
+     * @var \User | bool
      */
     protected $_user = false;
 

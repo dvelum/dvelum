@@ -110,6 +110,9 @@ class Expert
 
         $db = $relatedObjectModel->getDbConnection();
         $sql = $db->select()->from($relatedObjectModel->table(), array($relatedConfig->getPrimaryKey()));
+        /**
+         * @var bool $first
+         */
         $first = true;
         foreach ($fields as $field) {
             if ($first) {

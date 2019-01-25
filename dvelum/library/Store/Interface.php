@@ -13,6 +13,18 @@ interface Store_Interface{
      */
     public function set($key,$val);
     /**
+     * Set values from array
+     * @param array $array
+     * @return mixed
+     */
+    public function setValues(array $array);
+    /**
+     * Replace store data
+     * @param array $data
+     * @return mixed
+     */
+    public function setData(array $data);
+    /**
      * Get stored value by key
      * @param string $key
      * @return mixed

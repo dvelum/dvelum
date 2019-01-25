@@ -107,7 +107,7 @@ class ModelTest extends TestCase
 	{
 		$page = $this->createPage();
 		$pageModel =  Model::factory('Page');
-		$this->assertEquals(1 , $pageModel->getCount(array('code'=>$page->get('code'))));
+		$this->assertEquals(1 , $pageModel->query()->filters(array('code'=>$page->get('code')))->getCount());
 	}
 	/**
 	 * @todo check params , filters
@@ -115,7 +115,7 @@ class ModelTest extends TestCase
 	public function testGetList()
 	{
 		$pageModel =  Model::factory('Page');
-		$items = $pageModel->getList(array(),array('code'=>'index'),array('id','code'));
+		$items = $pageModel->query()->filters(array('code'=>'index'))->fields(array('id','code'))->fetchAll();
 		$this->assertEquals('index' , $items[0]['code'] = 'index');	
 	}
 	/**
@@ -125,7 +125,7 @@ class ModelTest extends TestCase
 	{
 		$pageModel =  Model::factory('Page');
 		$page = $this->createPage();
-		$items = $pageModel->getListVc(array(),array('code'=>$page->get('code')), false , array('id','code'));
+		$items = $pageModel->query()->filters(array('code'=>$page->get('code')))->fields(array('id','code'))->fetchAll();
 		$this->assertEquals($page->get('code') , $items[0]['code']);
 	}
 }

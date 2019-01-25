@@ -41,13 +41,15 @@ use Psr\Log\LoggerInterface;
 class Store
 {
     /**
-     * @var Event\Manager (optional)
+     * @var Event\Manager | null (optional)
      */
     protected $eventManager = null;
+
     /**
-     * @var \Log
+     * @var LoggerInterface | bool
      */
     protected $log = false;
+
     /**
      * @var array
      */
@@ -57,6 +59,10 @@ class Store
         'versionObject' => 'Vc'
     ];
 
+    /**
+     * Store constructor.
+     * @param array $config
+     */
     public function __construct(array $config = [])
     {
         if(empty($options))
@@ -120,6 +126,7 @@ class Store
         $objectModel = Model::factory($object->getName());
         return $objectModel->getDbManager()->getDbConnection($objectModel->getDbConnectionName(), null, null);
     }
+
     /**
      * Update Db object
      * @param Orm\RecordInterface $object
@@ -922,10 +929,12 @@ class Store
             return false;
         }
 
-        /*
+        /**
          * Clear object links (links from object)
+         * @var \Model_Links $linksModel
          */
-        Model::factory($this->config['linksObject'])->clearLinksFor($objectName , $ids);
+        $linksModel = Model::factory($this->config['linksObject']);
+        $linksModel->clearLinksFor($objectName , $ids);
 
         /**
          * @var \Model_Historylog $history
@@ -957,12 +966,12 @@ class Store
     /**
      * Validate unique fields, object field groups
      * Returns array of errors or null .
-     * @param $objectName
-     * @param $recordId
-     * @param $groupsData
+     * @param string $objectName
+     * @param mixed $recordId
+     * @param array $groupsData
      * @return array|null
      */
-    public function validateUniqueValues($objectName, $recordId, $groupsData) : ?array
+    public function validateUniqueValues(string $objectName, $recordId, array $groupsData) : ?array
     {
 
         $model = Model::factory($objectName);

@@ -179,7 +179,7 @@ class Deprecated
      * @param string $fields
      * @param bool $author
      * @param bool $lastEditor
-     * @param bool $joins
+     * @param array|bool $joins
      * @return array
      * @deprecated
      */
@@ -224,7 +224,7 @@ class Deprecated
      * @param string $fields
      * @param bool $author
      * @param bool $lastEditor
-     * @param bool $joins
+     * @param array|bool $joins
      * @return array
      * @deprecated
      */
@@ -282,7 +282,7 @@ class Deprecated
 
         if (!empty($ids)) {
             array_unique($ids);
-            $usersData = Model::factory('User')->getList(false, array('id' => $ids), array('id', 'name'));
+            $usersData = Model::factory('User')->query()->filters(['id' => $ids])->fields(['id', 'name'])->fetchAll();
             if (!empty($usersData)) {
                 $usersData = \Utils::rekey('id', $usersData);
             }

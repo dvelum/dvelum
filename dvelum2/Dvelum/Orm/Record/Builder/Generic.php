@@ -216,11 +216,11 @@ abstract class Generic extends AbstractAdapter
                     'info' => [
                         'object' => $this->objectName,
                         'cmp_flags' =>[
-                            'type' => (boolean) $typeCmp,
-                            'length' => (boolean) $lenCmp,
-                            'null' => (boolean) $nullCmp,
-                            'default' => (boolean) $defaultCmp,
-                            'increment' => (boolean) $incrementCmp
+                            'type' =>  $typeCmp,
+                            'length' =>  $lenCmp,
+                            'null' =>  $nullCmp,
+                            'default' =>  $defaultCmp,
+                            'increment' =>  $incrementCmp
                         ]
                     ]
                 );
@@ -472,7 +472,7 @@ abstract class Generic extends AbstractAdapter
         {
             foreach($configIndexes as $index => $config)
             {
-                if(!array_key_exists((string) $index , $realIndexes))
+                if(!array_key_exists($index , $realIndexes))
                 {
                     $updates[] = array(
                         'name' => $index ,

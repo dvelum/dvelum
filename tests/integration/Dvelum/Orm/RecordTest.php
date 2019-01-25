@@ -53,7 +53,7 @@ class RecordTest extends TestCase
     {
         $page = $this->createPage();
         $o = Record::factory('page' , $page->getId());
-        $this->assertEquals($o->code, $page->get('code'));
+        $this->assertEquals($o->get('code'), $page->get('code'));
         $code = date('ymdHis').'testSave';
         $this->assertTrue($o->set('code', $code));
         $saved = $o->save();
@@ -158,8 +158,8 @@ class RecordTest extends TestCase
         $somePage = $this->createPage();
         $page = Record::factory('page');
         $code = date('ymdHiss');
-        $page->code = $code;
-        $page->author_id = 1;
+        $page->set('code', $code);
+        $page->set('author_id', 1);
 
         $this->assertFalse($page->save());
         $page->delete();

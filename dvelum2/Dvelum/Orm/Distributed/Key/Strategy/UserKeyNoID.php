@@ -45,17 +45,17 @@ class UserKeyNoID implements GeneratorInterface
 
     /**
      * Delete reserved index
-     * @param Record $object
-     * @param $distributedKey
+     * @param RecordInterface $object
+     * @param mixed $distributedKey
      * @return bool
      */
     public function deleteIndex(RecordInterface $object, $distributedKey) : bool
     {
-        $objectConfig = $object->getConfig();
-        $indexObject = $objectConfig->getDistributedIndexObject();
-        $model = Model::factory($indexObject);
-        $db = $model->getDbConnection();
         try{
+            $objectConfig = $object->getConfig();
+            $indexObject = $objectConfig->getDistributedIndexObject();
+            $model = Model::factory($indexObject);
+            $db = $model->getDbConnection();
             $db->delete($model->table(), $db->quoteIdentifier($db->quoteIdentifier($objectConfig->getShardingKey()) .' = '.$db->quote($distributedKey)));
             return true;
         }catch (Exception $e){
@@ -217,8 +217,9 @@ class UserKeyNoID implements GeneratorInterface
     /**
      * Detect shard for user key
      * @param string $objectName
-     * @param $key
+     * @param mixed $key
      * @return null|string
+     * @throws \Exception
      */
     public function detectShardByKey(string $objectName,  $key) : ? string
     {
@@ -265,7 +266,7 @@ class UserKeyNoID implements GeneratorInterface
     }
 
     /**
-     * @param RecordInterface $object
+     * @param RecordInterface $record
      * @param array $keyData
      * @return Reserved|null
      * @throws Exception

@@ -23,14 +23,14 @@ namespace Dvelum\Orm\Model;
 use Dvelum\Orm\Model;
 use Dvelum\Db\Adapter;
 
-class Insert
+class Insert implements InsertInterface
 {
     /**
      * @var Model $model
      */
     protected $model;
     /**
-     * @var Adapter $db
+     * @var Adapter|null $db
      */
     protected $db;
 
@@ -47,7 +47,7 @@ class Insert
      * @param bool $ignore - optional default false Ignore errors
      * @return bool
      */
-    public function bulkInsert(array $records, int $chunkSize = 500, bool $ignore = false)
+    public function bulkInsert(array $records, int $chunkSize = 500, bool $ignore = false) : bool
     {
         if (empty($records)) {
             return true;

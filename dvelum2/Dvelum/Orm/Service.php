@@ -66,17 +66,25 @@ class Service
      */
     protected $config;
     /**
-     * @var LoggerInterface $log
+     * @var LoggerInterface|bool $log
      */
     protected $log = false;
 
     protected $translator = false;
+
     protected $language;
 
     protected $storeLoader;
 
     protected $store;
 
+    /**
+     * @param ConfigInterface $config
+     * @param Db\ManagerInterface $dbManager
+     * @param string $language
+     * @param CacheInterface|null $cache
+     * @throws \Exception
+     */
     public function init(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, CacheInterface $cache = null)
     {
         $this->config = $config;
@@ -125,6 +133,10 @@ class Service
         return $this->config;
     }
 
+    /**
+     * @return bool|Record\Config\Translator
+     * @throws \Exception
+     */
     public function getTranslator()
     {
         if(empty($this->translator)){
@@ -134,10 +146,14 @@ class Service
         }
         return  $this->translator;
     }
-    public function getCryptService() : \Dvelum\Security\CryptService
+
+    /**
+     * @return CryptServiceInterface
+     */
+    public function getCryptService() : \Dvelum\Security\CryptServiceInterface
     {
         if(empty($this->cryptService)){
-            $this->cryptService =  new \Dvelum\Security\CryptService( Config::storage()->get('crypt.php'));
+            $this->cryptService =  new \Dvelum\Security\CryptService(Config::storage()->get('crypt.php'));
         }
         return $this->cryptService;
     }
@@ -336,10 +352,11 @@ class Service
 
     /**
      * Object config existence check
-     * @param $name
+     * @param string $name
      * @return bool
+     * @throws \Exception
      */
-    public function configExists($name): bool
+    public function configExists(string $name): bool
     {
         $name = strtolower($name);
 

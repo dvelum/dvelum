@@ -27,7 +27,8 @@ interface RecordInterface
 
     /**
      * Disable ACL create permissions check
-     * @param $bool $bool
+     * @param bool $bool
+     * @return void
      */
     public function disableAcl(bool $bool): void;
 

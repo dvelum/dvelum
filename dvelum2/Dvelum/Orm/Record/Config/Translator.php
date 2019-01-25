@@ -31,7 +31,7 @@ class Translator
 
     protected $translation = false;
     /**
-     * @var \Lang
+     * @var \Dvelum\Lang\Dictionary | bool
      */
     protected $lang = false;
 
@@ -93,9 +93,10 @@ class Translator
     /**
      * Translate Object config
      * @param string $objectName
-     * @param array & $objectConfig
+     * @param array $objectConfig
+     * @throws \Exception
      */
-    public function translate($objectName, & $objectConfig)
+    public function translate(string $objectName, & $objectConfig)
     {
         $translation = $this->getTranslation($objectName);
 
