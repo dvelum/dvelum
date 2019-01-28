@@ -2,7 +2,7 @@
     'table' => 'test',
     'engine' => 'InnoDB',
     'connection' => 'default',
-    'rev_control' => true,
+    'rev_control' => false,
     'save_history' => true,
     'link_title' => '',
     'disable_keys' => false,
