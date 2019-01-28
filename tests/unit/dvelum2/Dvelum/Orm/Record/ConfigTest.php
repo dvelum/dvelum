@@ -244,4 +244,55 @@ class ConfigTest extends TestCase
         $cfg = Record\Config::factory('test');
         $this->assertEquals('link_type', $cfg->getField('dictionary')->getLinkedDictionary());
     }
+
+    public function testGetSearchFields()
+    {
+        $cfg = Record\Config::factory('test');
+        $searchFields = $cfg->getSearchFields();
+        $this->assertEquals(2, sizeof($searchFields));
+        $this->assertTrue(in_array('id', $searchFields, true));
+        $this->assertTrue(in_array('varchar', $searchFields, true));
+    }
+
+    public function testIsRevControl()
+    {
+        $cfg = Record\Config::factory('test');
+        $this->assertFalse($cfg->isRevControl());
+
+        $cfg = Record\Config::factory('page');
+        $this->assertTrue($cfg->isRevControl());
+    }
+
+    public function testIsSystemField()
+    {
+        $cfg = Record\Config::factory('test');
+        $this->assertFalse($cfg->isSystemField('varchar'));
+        $this->assertTrue($cfg->isSystemField('id'));
+
+        $cfg = Record\Config::factory('page');
+        $this->assertTrue($cfg->isSystemField('author'));
+    }
+
+    public function testGetForeignKeys()
+    {
+        $cfg = Record\Config::factory('page');
+        $keys = $cfg->getForeignKeys();
+        $keys = \Dvelum\Utils::rekey('curField', $keys);
+        $this->assertTrue(isset($keys['parent_id']));
+        $this->assertTrue(isset($keys['author_id']));
+        $this->assertTrue(isset($keys['editor_id']));
+    }
+
+    public function testIsVcField()
+    {
+        $cfg = Record\Config::factory('page');
+        $this->assertTrue($cfg->isVcField('author_id'));
+        $this->assertFalse($cfg->isVcField('code'));
+    }
+
+    public function testHasManyToMany()
+    {
+        $cfg = Record\Config::factory('test');
+        $this->assertFalse($cfg->hasManyToMany());
+    }
 }

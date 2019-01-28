@@ -23,6 +23,18 @@
                     'db_default' => 0,
                     'db_unsigned' => false,
                 ),
+            'varchar' =>
+                array (
+                    'type' => '',
+                    'unique' => '',
+                    'db_isNull' => true,
+                    'required' => false,
+                    'validator' => '',
+                    'db_type' => 'varchar',
+                    'db_default' => '',
+                    'is_search'=> true,
+                    'db_unsigned' => false,
+                ),
             'float' =>
                 array (
                     'type' => '',
