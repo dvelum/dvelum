@@ -270,7 +270,7 @@ class ConfigTest extends TestCase
         $this->assertTrue($cfg->isSystemField('id'));
 
         $cfg = Record\Config::factory('page');
-        $this->assertTrue($cfg->isSystemField('author'));
+        $this->assertTrue($cfg->isSystemField('author_id'));
     }
 
     public function testGetForeignKeys()
