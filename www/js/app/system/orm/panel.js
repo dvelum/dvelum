@@ -472,7 +472,7 @@ Ext.define('app.crud.orm.Main',{
 				oNamesList.push(record.get('name'));
 			},this);
 
-            cmp.getEl().mask(appLang.SAVING);
+            cmp.dataGrid.getEl().mask(appLang.SAVING);
 			Ext.Ajax.request({
 				url: app.crud.orm.Actions.buildAllObjects,
 				method: 'post',
@@ -709,7 +709,7 @@ Ext.define('app.crud.orm.Main',{
             objectsStore:this.dataStore
         });
 
-        win.on('RebuildAllCall',function(){
+        win.on('RebuildAllCall',function(cmp){
             this.rebuildAllObjects(cmp, function(){
                 win.validateAllObjects();
             });
