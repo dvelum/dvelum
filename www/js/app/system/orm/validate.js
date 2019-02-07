@@ -63,7 +63,7 @@ Ext.define('app.orm.validate.Window',{
                iconCls:'buildIcon',
                scope:me,
                handler:function(){
-                   me.fireEvent('RebuildAllCall')
+                   me.fireEvent('RebuildAllCall',this)
                }
            },'->',
            {
