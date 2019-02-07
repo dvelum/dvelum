@@ -207,6 +207,7 @@ class Model_Medialib extends Model
         $resource->addJs('/js/lib/jquery.Jcrop.min.js', 2, true, 'external');
 
         $resource->addInlineJs('
+            Ext.ns("app");
             app.maxFileSize = "' . ini_get('upload_max_filesize') . '";
             app.mediaConfig = ' . json_encode($conf) . ';
             app.imageSize = ' . json_encode($conf['image']['sizes']) . ';
