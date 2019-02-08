@@ -91,7 +91,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
      */
     protected function  getApiRequest(Dvelum\Request $request) : Data\Api\Request
     {
-        return new Data\Api\Request($request);
+        $request = new Data\Api\Request($request);
+        $request->setObjectName($this->getObjectName());
+        return $request;
     }
 
     /**
