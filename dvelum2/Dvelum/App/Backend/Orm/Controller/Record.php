@@ -189,6 +189,8 @@ class Record extends Controller
             return;
         }
 
+        session_write_close();
+
         $name = $this->request->post('name', 'string', false);
         $shard = $this->request->post('shard', 'string', '');
 
