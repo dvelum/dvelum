@@ -433,6 +433,15 @@ class Request
     }
 
     /**
+     * Set GET data
+     * @param array $data
+     */
+    public function setGetParams(array $data) : void
+    {
+        $this->updatedGet = $data;
+    }
+
+    /**
      * Redefine $_GET parameter
      * @param string $name — parameter name
      * @param mixed $value — parameter value
