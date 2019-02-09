@@ -500,11 +500,11 @@ class Store
     }
     /**
      * Insert Db object
-     * @param Orm\Record $object
+     * @param Orm\RecordInterface $object
      * @param boolean $transaction - optional , use transaction if available
      * @return int | bool -  inserted id
      */
-    public function insert(Orm\Record $object , $transaction = true)
+    public function insert(Orm\RecordInterface $object , $transaction = true)
     {
         if($object->getConfig()->isReadOnly())
         {
@@ -664,7 +664,7 @@ class Store
     protected function insertRecord(Orm\RecordInterface $object , array $data)
     {
         $db = $this->getDbConnection($object);
-        $objectTable = $object->getTable();
+        $objectTable = Model::factory($object->getName())->table();
 
         try {
             $db->insert($objectTable, $object->serializeLinks($data));
@@ -684,7 +684,10 @@ class Store
     {
         $db = $this->getDbConnection($object);
         try{
-            $db->delete($object->getTable(), $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId());
+            $db->delete(
+                Model::factory($object->getName())->table(),
+                $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' =' . $object->getId()
+            );
             return true;
         }catch (Exception $e){
            if($this->log){
@@ -714,7 +717,11 @@ class Store
 
         if(!empty($updates)){
             try{
-                $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
+                $db->update(
+                    Model::factory($object->getName())->table() ,
+                    $updates,
+                    $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId()
+                );
             }catch (Exception $e){
                 if($this->log){
                     $this->log->log(LogLevel::ERROR,$object->getName().'::update '.$e->getMessage());

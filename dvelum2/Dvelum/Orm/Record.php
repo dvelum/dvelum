@@ -20,9 +20,9 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm;
 
+use Dvelum\Orm\Record\DataModel;
+use Dvelum\Orm\Record\ErrorMessage;
 use Dvelum\Service;
-use Psr\Log\LogLevel;
-use Dvelum\App\Session\User;
 
 /**
  * Database Object class. ORM element.
@@ -32,11 +32,8 @@ use Dvelum\App\Session\User;
 class Record implements RecordInterface
 {
     /**
-     * Error log adapter
-     * @var \Psr\Log\LoggerInterface| bool
+     * @var string
      */
-    protected $logger = false;
-
     protected $name;
 
     /**
@@ -79,6 +76,11 @@ class Record implements RecordInterface
     protected $version = 0;
 
     /**
+     * @var DataModel|null
+     */
+    protected $dataModel = null;
+
+    /**
      * The object constructor takes its name and identifier,
      * (the parameter is not required), if absent,
      * there will be created a new object. If ORM lacks the object with the specified
@@ -96,15 +98,13 @@ class Record implements RecordInterface
 
         $this->config = Record\Config::factory($name);
         $this->primaryKey = $this->config->getPrimaryKey();
-        $this->model = Model::factory($name);
         $this->acl = $this->config->getAcl();
-        $this->logger = $this->model->getLogsAdapter();
 
-        if($this->id){
+        if ($this->id) {
             $this->checkCanRead();
             $this->loadData();
-        }else{
-            if($this->acl && !$this->disableAclCheck) {
+        } else {
+            if ($this->acl && !$this->disableAclCheck) {
                 $this->checkCanCreate();
             }
         }
@@ -115,9 +115,17 @@ class Record implements RecordInterface
      * @param bool $bool
      * @return void
      */
-    public function disableAcl(bool $bool) : void
+    public function disableAcl(bool $bool): void
     {
         $this->disableAclCheck = $bool;
+    }
+
+    protected function getDataModel(): DataModel
+    {
+        if (empty($this->dataModel)) {
+            $this->dataModel = new DataModel();
+        }
+        return $this->dataModel;
     }
 
     /**
@@ -125,52 +133,10 @@ class Record implements RecordInterface
      * @throws \Exception
      * @return void
      */
-    protected function loadData() : void
+    protected function loadData(): void
     {
-        $store = $this->model->getStore();
-        $data = $store->load($this->name, $this->id);
-
-        if(empty($data))
-            throw new Exception('Cannot find object '.$this->name.':'.$this->id);
-
-        $links = $this->config->getLinks([Record\Config::LINK_OBJECT_LIST]);
-
-        if(!empty($links))
-        {
-            foreach($links as $fields)
-            {
-                foreach($fields as $field=>$linkType)
-                {
-                    if($this->config->getField($field)->isManyToManyLink()){
-                        $relationsObject = $this->config->getRelationsObject($field);
-                        $relationsData = Model::factory($relationsObject)->query()
-                            ->params(['sort'=>'order_no', 'dir' =>'ASC'])
-                            ->filters(['source_id'=>$this->id])
-                            ->fields(['target_id'])->fetchAll();
-                    }else{
-                        $linkedObject = $this->config->getField($field)->getLinkedObject();
-                        $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
-                        $linksModel = Model::factory($linksObject);
-                        $relationsData = $linksModel->query()
-                            ->params(['sort'=>'order','dir'=>'ASC'])
-                            ->filters([
-                                'src' => $this->name,
-                                'src_id' => $this->id,
-                                'src_field' =>$field,
-                                'target' => $linkedObject
-                            ])
-                            ->fields(['target_id'])
-                            ->fetchAll();
-
-
-                    }
-                    if(!empty($relationsData)){
-                        $data[$field] = \Utils::fetchCol('target_id',$relationsData);
-                    }
-                }
-            }
-        }
-
+        $dataModel = $this->getDataModel();
+        $data = $dataModel->load($this);
         $this->setRawData($data);
     }
 
@@ -180,32 +146,32 @@ class Record implements RecordInterface
      * @return void
      * @throws \Exception
      */
-    public function setRawData(array $data) : void
+    public function setRawData(array $data): void
     {
         unset($data[$this->primaryKey]);
         $iv = false;
 
-        if($this->config->hasEncrypted()){
+        if ($this->config->hasEncrypted()) {
             $ivField = $this->config->getIvField();
-            if(isset($data[$ivField]) && !empty($data[$ivField])){
+            if (isset($data[$ivField]) && !empty($data[$ivField])) {
                 $iv = $data[$ivField];
             }
         }
 
-        foreach($data as $field => &$value)
-        {
+        foreach ($data as $field => &$value) {
             $fieldObject = $this->getConfig()->getField($field);
 
-            if($fieldObject->isBoolean()){
-                if($value)
+            if ($fieldObject->isBoolean()) {
+                if ($value) {
                     $value = true;
-                else
+                } else {
                     $value = false;
+                }
             }
 
-            if($fieldObject->isEncrypted()){
-                $value = (string) $value;
-                if(is_string($iv) && strlen($value) && strlen($iv)){
+            if ($fieldObject->isEncrypted()) {
+                $value = (string)$value;
+                if (is_string($iv) && strlen($value) && strlen($iv)) {
                     $value = $this->config->getCryptService()->decrypt($value, $iv);
                 }
             }
@@ -218,35 +184,39 @@ class Record implements RecordInterface
      * Get object fields
      * @return array
      */
-    public function getFields() : array
+    public function getFields(): array
     {
         return array_keys($this->config->get('fields'));
     }
 
     /**
      * Get the object data, returns the associative array ‘field name’
-     * @param boolean $withUpdates, optional default true
+     * @param boolean $withUpdates , optional default true
      * @return array
      */
-    public function getData($withUpdates = true) : array
+    public function getData($withUpdates = true): array
     {
-        if($this->acl)
+        if ($this->acl) {
             $this->checkCanRead();
+        }
 
         $data = $this->data;
         $data[$this->primaryKey] = $this->id;
 
-        if($withUpdates)
-            foreach ($this->updates as $k=>$v)
+        if ($withUpdates) {
+            foreach ($this->updates as $k => $v) {
                 $data[$k] = $v;
+            }
+        }
 
         return $data;
     }
+
     /**
      * Get object name
      * @return string
      */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -263,10 +233,11 @@ class Record implements RecordInterface
     /**
      * Get the full name of the database storing the object data (with prefix)
      * @return string
+     * @deprecated
      */
-    public function getTable() : string
+    public function getTable(): string
     {
-        return $this->model->table();
+        return Model::factory($this->getName())->table();
     }
 
     /**
@@ -274,7 +245,7 @@ class Record implements RecordInterface
      * not saved in the database
      * @return bool
      */
-    public function hasUpdates() : bool
+    public function hasUpdates(): bool
     {
         return !empty($this->updates);
     }
@@ -283,7 +254,7 @@ class Record implements RecordInterface
      * Get ORM configuration object (data structure helper)
      * @return Record\Config
      */
-    public function getConfig() : Record\Config
+    public function getConfig(): Record\Config
     {
         return $this->config;
     }
@@ -293,10 +264,11 @@ class Record implements RecordInterface
      * @return array
      * @throws Exception
      */
-    public function getUpdates() : array
+    public function getUpdates(): array
     {
-        if($this->acl)
+        if ($this->acl) {
             $this->checkCanRead();
+        }
 
         return $this->updates;
     }
@@ -307,25 +279,28 @@ class Record implements RecordInterface
      * @return void
      * @throws Exception
      */
-    public function setId($id) : void
+    public function setId($id): void
     {
-        if($this->acl && !$this->disableAclCheck)
+        if ($this->acl && !$this->disableAclCheck) {
             $this->checkCanEdit();
+        }
 
-        $this->id = (int) $id;
+        $this->id = (int)$id;
     }
 
     /**
      * Commit the object data changes (without saving)
      * @return void
      */
-    public function commitChanges() : void
+    public function commitChanges(): void
     {
-        if(empty($this->updates))
+        if (empty($this->updates)) {
             return;
+        }
 
-        foreach ($this->updates as $k=>$v)
+        foreach ($this->updates as $k => $v) {
             $this->data[$k] = $v;
+        }
 
         $this->updates = [];
     }
@@ -335,7 +310,7 @@ class Record implements RecordInterface
      * @param string $name
      * @return bool
      */
-    public function fieldExists(string $name) : bool
+    public function fieldExists(string $name): bool
     {
         return $this->config->fieldExists($name);
     }
@@ -346,7 +321,7 @@ class Record implements RecordInterface
      * @param string $field - field name
      * @return string
      */
-    public function getLinkedObject(string $field) : string
+    public function getLinkedObject(string $field): string
     {
         return $this->config->getField($field)->getLinkedObject();
     }
@@ -358,31 +333,36 @@ class Record implements RecordInterface
      * @return bool
      * @throws \Exception
      */
-    static public function objectExists(string $name , $ids) : bool
+    static public function objectExists(string $name, $ids): bool
     {
-        if(!Record\Config::configExists($name))
-            return false;
-
-        try {
-            $cfg = Record\Config::factory($name);
-        }catch (Exception $e){
+        if (!Record\Config::configExists($name)) {
             return false;
         }
 
-        if(!is_array($ids))
+        try {
+            $cfg = Record\Config::factory($name);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        if (!is_array($ids)) {
             $ids = array($ids);
+        }
 
         $model = Model::factory($name);
         $data = $model->getItems($ids);
 
-        if(empty($data))
+        if (empty($data)) {
             return false;
+        }
 
         $data = \Utils::fetchCol($cfg->getPrimaryKey(), $data);
 
-        foreach ($ids as $v)
-            if(!in_array(intval($v) , $data , true))
+        foreach ($ids as $v) {
+            if (!in_array(intval($v), $data, true)) {
                 return false;
+            }
+        }
         return true;
     }
 
@@ -392,11 +372,13 @@ class Record implements RecordInterface
      * @throws Exception
      * @return void
      */
-    public function setValues(array $values) : void
+    public function setValues(array $values): void
     {
-        if(!empty($values))
-            foreach ($values as $k => $v)
+        if (!empty($values)) {
+            foreach ($values as $k => $v) {
                 $this->set($k, $v);
+            }
+        }
     }
 
     /**
@@ -406,10 +388,11 @@ class Record implements RecordInterface
      * @return bool
      * @throws Exception
      */
-    public function set(string $name , $value) : bool
+    public function set(string $name, $value): bool
     {
-        if($this->acl)
+        if ($this->acl) {
             $this->checkCanEdit();
+        }
 
         $propConf = $this->config->getFieldConfig($name);
         $validator = $this->getConfig()->getValidator($name);
@@ -417,34 +400,35 @@ class Record implements RecordInterface
         $field = $this->getConfig()->getField($name);
 
         // set null for empty links
-        if($field->isObjectLink() && empty($value)){
+        if ($field->isObjectLink() && empty($value)) {
             $value = null;
         }
 
         // Validate value using special validator
         // Skip validation if value is null and object field can be null
-        if ($validator && (!$field->isNull() || !is_null($value)) && !call_user_func_array([$validator, 'validate'], [$value])){
-            throw new Exception('Invalid value for field ' . $name. ' ('.$this->getName().')');
+        if ($validator && (!$field->isNull() || !is_null($value)) && !call_user_func_array([$validator, 'validate'],
+                [$value])) {
+            throw new Exception('Invalid value for field ' . $name . ' (' . $this->getName() . ')');
         }
 
         $value = $field->filter($value);
-        if(!$field->validate($value)){
-            throw new Exception('Invalid value for field '. $name.'. '.$field->getValidationError(). ' ('.$this->getName().')');
+        if (!$field->validate($value)) {
+            throw new Exception('Invalid value for field ' . $name . '. ' . $field->getValidationError() . ' (' . $this->getName() . ')');
         }
 
-        if(isset($propConf['db_len']) && $propConf['db_len']){
-            if($propConf['db_type'] == 'bit' && (strlen($value) > $propConf['db_len'] || strlen($value) < $propConf['db_len']))
-                throw new Exception('Invalid length for bit value ['.$name.']  ('.$this->getName().')');
+        if (isset($propConf['db_len']) && $propConf['db_len']) {
+            if ($propConf['db_type'] == 'bit' && (strlen($value) > $propConf['db_len'] || strlen($value) < $propConf['db_len'])) {
+                throw new Exception('Invalid length for bit value [' . $name . ']  (' . $this->getName() . ')');
+            }
         }
 
-        if(array_key_exists($name, $this->data))
-        {
-            if($field->isBoolean() && intval($this->data[$name]) === intval($value) ) {
+        if (array_key_exists($name, $this->data)) {
+            if ($field->isBoolean() && intval($this->data[$name]) === intval($value)) {
                 unset($this->updates[$name]);
                 return true;
             }
 
-            if($this->data[$name] === $value) {
+            if ($this->data[$name] === $value) {
                 unset($this->updates[$name]);
                 return true;
             }
@@ -460,24 +444,28 @@ class Record implements RecordInterface
      * @throws Exception
      * @return void
      */
-    public function __set($key , $value) : void
+    public function __set($key, $value): void
     {
-        if($key===$this->primaryKey)
+        if ($key === $this->primaryKey) {
             $this->setId($value);
-        else
+        } else {
             $this->set($key, $value);
+        }
     }
 
-    public function __isset($key) : bool
+    public function __isset($key): bool
     {
-        if($key === $this->primaryKey)
+        if ($key === $this->primaryKey) {
             return isset($this->id);
+        }
 
-        if(!isset($this->data[$key]) && !isset($this->updates[$key]))
+        if (!isset($this->data[$key]) && !isset($this->updates[$key])) {
             return false;
+        }
 
         return true;
     }
+
     /**
      * @param string $key
      * @throws Exception
@@ -485,8 +473,9 @@ class Record implements RecordInterface
      */
     public function __get($key)
     {
-        if($key===$this->primaryKey)
+        if ($key === $this->primaryKey) {
             return $this->getId();
+        }
 
         return $this->get($key);
     }
@@ -501,22 +490,27 @@ class Record implements RecordInterface
      */
     public function get(string $name)
     {
-        if($this->acl)
+        if ($this->acl) {
             $this->checkCanRead();
+        }
 
-        if($name === $this->primaryKey)
+        if ($name === $this->primaryKey) {
             return $this->getId();
+        }
 
-        if(!$this->fieldExists($name))
-            throw new Exception('Invalid property requested ['.$name.']');
+        if (!$this->fieldExists($name)) {
+            throw new Exception('Invalid property requested [' . $name . ']');
+        }
 
         $value = null;
 
-        if(isset($this->data[$name]))
+        if (isset($this->data[$name])) {
             $value = $this->data[$name];
+        }
 
-        if(isset($this->updates[$name]))
+        if (isset($this->updates[$name])) {
             $value = $this->updates[$name];
+        }
 
         return $value;
     }
@@ -530,13 +524,23 @@ class Record implements RecordInterface
      */
     public function getOld(string $name)
     {
-        if($this->acl)
+        if ($this->acl) {
             $this->checkCanRead();
+        }
 
-        if(!$this->fieldExists($name))
-            throw new Exception('Invalid property requested ['.$name.']');
+        if (!$this->fieldExists($name)) {
+            throw new Exception('Invalid property requested [' . $name . ']');
+        }
 
         return $this->data[$name];
+    }
+
+    /**
+     * @param string $message
+     */
+    public function addErrorMessage(string $message): void
+    {
+        $this->errors[] = $message;
     }
 
     /**
@@ -545,134 +549,31 @@ class Record implements RecordInterface
      * If data update in your code is carried out within an external transaction
      * set the value to  false,
      * otherwise, the first update will lead to saving the changes
-     * @return integer | boolean;
+     * @return int | bool;
+     * @throws Exception
      */
     public function save($useTransaction = true)
     {
-        if($this->acl){
-            try{
-                $this->checkCanEdit();
-            }catch (Exception $e){
-                $this->errors[] = $e->getMessage();
-
-                if($this->logger)
-                    $this->logger->log(LogLevel::ERROR , $e->getMessage());
-                return false;
-            }
-        }
-
-        $store = $this->model->getStore();
-
-        if($this->logger)
-            $store->setLog($this->logger);
-
-        if($this->config->isReadOnly())
-        {
-            $text = 'ORM :: cannot save readonly object '. $this->config->getName();
-            $this->errors[] = $text;
-
-            if($this->logger)
-                $this->logger->log(LogLevel::ERROR, $text);
-
-            return false;
-        }
-
-        if($this->config->hasEncrypted()){
-            $ivField = $this->config->getIvField();
-            $ivData = $this->get($ivField);
-            if(empty($ivData)){
-                $this->set($ivField , $this->config->getCryptService()->createVector());
-            }
-        }
-
-        if($this->config->isRevControl())
-        {
-            if(!$this->getId()){
-                $this->set('date_created', date('Y-m-d H:i:s'));
-                $this->set('date_updated', date('Y-m-d H:i:s'));
-                $this->set('published' , false);
-                $this->set('author_id',  User::getInstance()->getId());
-            }else{
-                $this->set('date_updated', date('Y-m-d H:i:s'));
-                $this->set('editor_id',  User::getInstance()->getId());
-            }
-        }
-
-        $emptyFields = $this->hasRequired();
-
-        if($emptyFields!==true)
-        {
-            $text = 'ORM :: Fields can not be empty. '.$this->getName().' ['.implode(',', $emptyFields).']';
-            $this->errors[] = $text;
-
-            if($this->logger)
-                $this->logger->log(LogLevel::ERROR, $text);
-
-            return false;
-        }
-
-        $values = $this->validateUniqueValues();
-
-        if(!empty($values))
-        {
-            foreach($values as $k => $v) {
-                $text = 'The Field value should be unique '.$k . ':' . $v;
-                $this->errors[] = $text;
-            }
-
-            if($this->logger){
-                $this->logger->log(LogLevel::ERROR, $this->getName() . ' ' . implode(', ' , $this->errors));
-            }
-
-            return false;
-        }
-
-        try {
-            if(!$this->getId()){
-                $id = $store->insert($this , $useTransaction);
-                if(empty($id)){
-                    return false;
-                }
-                $this->setId($id);
-            } else {
-                $id = (int) $store->update($this , $useTransaction);
-            }
-
-            $this->commitChanges();
-            return $id;
-
-        }catch (\Exception $e){
-            $this->errors[] = $e->getMessage();
-            if($this->logger){
-                $this->logger->log(LogLevel::ERROR, $e->getMessage());
-            }
+        $dataModel = $this->getDataModel();
+        if ($dataModel->save($this, $useTransaction)) {
+            return $this->getId();
+        } else {
             return false;
         }
     }
 
     /**
      * Deleting an object
-     * @param boolean $useTransaction — using a transaction when changing data is optional.
+     * @param bool $useTransaction — using a transaction when changing data is optional.
      * If data update in your code is carried out within an external transaction
      * set the value to  false,
      * otherwise, the first update will lead to saving the changes
      * @return bool - success flag
      */
-    public function delete($useTransaction = true) : bool
+    public function delete($useTransaction = true): bool
     {
-        if($this->acl){
-            try{
-                $this->checkCanDelete();
-            }catch (Exception $e){
-                $this->errors[] = $e->getMessage();
-
-                if($this->logger)
-                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
-                return false;
-            }
-        }
-        $store  = $this->model->getStore();
-        return $store->delete($this, $useTransaction);
+        $dataModel = $this->getDataModel();
+        return $dataModel->delete($this, $useTransaction);
     }
 
     /**
@@ -680,11 +581,10 @@ class Record implements RecordInterface
      * @param array $data
      * @return array
      */
-    public function serializeLinks(array $data) : array
+    public function serializeLinks(array $data): array
     {
-        foreach ($data as $k=>$v)
-        {
-            if($this->config->getField($k)->isMultiLink()) {
+        foreach ($data as $k => $v) {
+            if ($this->config->getField($k)->isMultiLink()) {
                 unset($data[$k]);
             }
         }
@@ -701,52 +601,51 @@ class Record implements RecordInterface
     {
         $uniqGroups = [];
 
-        foreach ($this->config->get('fields') as $k=>$v)
-        {
-            if($k===$this->primaryKey)
+        foreach ($this->config->get('fields') as $k => $v) {
+            if ($k === $this->primaryKey) {
                 continue;
+            }
 
-            if(!$this->config->getField($k)->isUnique())
+            if (!$this->config->getField($k)->isUnique()) {
                 continue;
+            }
 
-            $value  = $this->get($k);
-            if(is_array($value))
+            $value = $this->get($k);
+            if (is_array($value)) {
                 $value = serialize($value);
+            }
 
-            if(is_array($v['unique']))
-            {
-                foreach ($v['unique'] as $val)
-                {
-                    if(!isset($uniqGroups[$val]))
+            if (is_array($v['unique'])) {
+                foreach ($v['unique'] as $val) {
+                    if (!isset($uniqGroups[$val])) {
                         $uniqGroups[$val] = [];
+                    }
 
                     $uniqGroups[$val][$k] = $value;
                 }
-            }
-            else
-            {
+            } else {
                 $v['unique'] = strval($v['unique']);
 
-                if(!isset($uniqGroups[$v['unique']]))
+                if (!isset($uniqGroups[$v['unique']])) {
                     $uniqGroups[$v['unique']] = [];
-
+                }
                 $uniqGroups[$v['unique']][$k] = $value;
             }
         }
 
-        if(empty($uniqGroups))
+        if (empty($uniqGroups)) {
             return null;
+        }
 
-        $store = $this->model->getStore();
-
-        return $store->validateUniqueValues($this->getName(), $this->getId(), $uniqGroups);
+        $dataModel = $this->getDataModel();
+        return $dataModel->validateUniqueValues($this, $uniqGroups);
     }
 
     /**
      * Convert object into string representation
      * @return string
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         return strval($this->getId());
     }
@@ -756,9 +655,9 @@ class Record implements RecordInterface
      * @return string
      * @throws \Exception
      */
-    public function getTitle() : string
+    public function getTitle(): string
     {
-        return $this->model->getTitle($this);
+        return Model::factory($this->getName())->getTitle($this);
     }
 
     /**
@@ -769,7 +668,7 @@ class Record implements RecordInterface
      * @throws \Exception
      * @return RecordInterface|RecordInterface[]
      */
-    static public function factory(string $name , $id = false, $shard = false)
+    static public function factory(string $name, $id = false, $shard = false)
     {
         /**
          * @var \Dvelum\Orm\Service $service
@@ -778,169 +677,84 @@ class Record implements RecordInterface
         return $service->record($name, $id, $shard);
     }
 
-    /**
-     * Check for required fields
-     * @return bool | array
-     * @throws \Exception
-     */
-    protected function hasRequired()
-    {
-        $emptyFields = [];
-        $fields = $this->getFields();
-
-        foreach ($fields as $name)
-        {
-            $field = $this->config->getField($name);
-            if(!$field->isRequired() || $field->isSystem())
-                continue;
-
-            $val = $this->get($name);
-            if(!strlen((string)$val))
-                $emptyFields[]= $name;
-        }
-
-        if(empty($emptyFields))
-            return true;
-        else
-            return $emptyFields;
-    }
 
     /**
      * Get errors
      * @return array
      */
-    public function getErrors() : array
+    public function getErrors(): array
     {
         return $this->errors;
     }
 
     protected function checkCanRead()
     {
-        if($this->acl && !$this->acl->canRead($this))
-            throw new Exception('You do not have permission to view data in this object ['.$this->getName().':'.$this->getId().'].');
+        if ($this->acl && !$this->acl->canRead($this)) {
+            throw new Exception(ErrorMessage::factory()->cantRead($this));
+        }
     }
 
     protected function checkCanEdit()
     {
-        if($this->acl && !$this->acl->canEdit($this))
-            throw new Exception('You do not have permission to edit data in this object ['.$this->getName().':'.$this->getId().'].');
+        if ($this->acl && !$this->acl->canEdit($this)) {
+            throw new Exception(ErrorMessage::factory()->cantEdit($this));
+        }
     }
 
     protected function checkCanDelete()
     {
-        if($this->acl && !$this->acl->canDelete($this))
-            throw new Exception('You do not have permission to delete this object ['.$this->getName().':'.$this->getId().'].');
+        if ($this->acl && !$this->acl->canDelete($this)) {
+            throw new Exception(ErrorMessage::factory()->cantDelete($this));
+        }
     }
 
     protected function checkCanCreate()
     {
-        if($this->acl && !$this->acl->canCreate($this))
-            throw new Exception('You do not have permission to create object ['.$this->getName().'].');
+        if ($this->acl && !$this->acl->canCreate($this)) {
+            throw new Exception(ErrorMessage::factory()->cantCreate($this));
+        }
     }
 
     protected function checkCanPublish()
     {
-        if($this->acl && !$this->acl->canPublish($this))
-            throw new Exception('You do not have permission to publish object ['.$this->getName().'].');
+        if ($this->acl && !$this->acl->canPublish($this)) {
+            throw new Exception(ErrorMessage::factory()->cantPublish($this));
+        }
     }
 
     /**
      * Unpublish VC object
-     * @param bool $log  - log changes
+     * @param bool $log - log changes
      * @param bool $useTransaction — using a transaction when changing data is optional.
      * @return bool
      */
-    public function unpublish($log = true , $useTransaction = true) : bool
+    public function unpublish($useTransaction = true): bool
     {
-        if($this->acl){
-            try{
-                $this->checkCanPublish();
-            }catch (Exception $e){
-                $this->errors[] = $e->getMessage();
-
-                if($this->logger)
-                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
-                return false;
-            }
-        }
-
-        $store  = $this->model->getStore();
-        if($this->logger)
-            $store->setLog($this->logger);
-
-        /**
-         * @todo refactor
-         */
-        $this->setValues([
-            'published_version' => 0,
-            'published' => false,
-            'date_updated' =>  date('Y-m-d H:i:s'),
-            'editor_id' =>  User::factory()->getId()
-        ]);
-
-        return $store->unpublish($this , $useTransaction);
+        $dataModel = $this->getDataModel();
+        return $dataModel->unpublish($this, $useTransaction);
     }
 
     /**
      * Publish VC object
      * @param bool|int $version - optional, default current version
-     * @param bool $log - log changes
      * @param bool $useTransaction — using a transaction when changing data is optional.
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
-    public function publish($version = false , $log = true , $useTransaction = true): bool
+    public function publish($version = false, $useTransaction = true): bool
     {
-        if($this->acl){
-            try{
-                $this->checkCanPublish();
-            }catch (Exception $e){
-                $this->errors[] = $e->getMessage();
-
-                if($this->logger)
-                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
-                return false;
-            }
+        $dataModel = $this->getDataModel();
+        if(empty($version)){
+            $version = null;
         }
-
-        $store  = $this->model->getStore();
-
-        if($this->logger)
-            $store->setLog($this->logger);
-
-        if($version && $version !== $this->getVersion())
-        {
-            try{
-                $this->loadVersion($version);
-            }
-            catch (Exception $e)
-            {
-                $this->errors[] = $e->getMessage();
-
-                if($this->logger)
-                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
-                return false;
-            }
-        }
-
-        $this->setValues([
-            'published' => true,
-            'date_updated' => date('Y-m-d H:i:s'),
-            'editor_id' => User::factory()->getId(),
-            'published_version' => $this->getVersion()
-        ]);
-
-        if(empty($this->get('date_published')))
-            $this->set('date_published' , date('Y-m-d H:i:s'));
-
-        return $store->publish($this , $useTransaction);
+        return $dataModel->publish($this, $version, $useTransaction);
     }
 
     /**
      * Get loaded version
      * @return int
      */
-    public function getVersion() : int
+    public function getVersion(): int
     {
         return $this->version;
     }
@@ -948,65 +762,19 @@ class Record implements RecordInterface
     /**
      * Load version
      * @param int $vers
-     * @return void
+     * @return bool
      * @throws \Exception
      */
-    public function loadVersion(int $vers) :void
+    public function loadVersion(int $vers): bool
     {
-        $this->rejectChanges();
-        $versionObject = $this->model->getStore()->getVersionObjectName();
-
-        /**
-         * @var \Model_Vc $vc
-         */
-        $vc = Model::factory($versionObject);
-
-        $data = $vc->getData($this->getName() , $this->getId() , $vers);
-
-        $pKey = $this->config->getPrimaryKey();
-
-        if(isset($data[$pKey]))
-            unset($data[$pKey]);
-
-        if(empty($data))
-            throw new Exception('Cannot load version for ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers);
-
-        $iv = false;
-        if($this->config->hasEncrypted()){
-            $ivField = $this->config->getIvField();
-            if(isset($data[$ivField]) && !empty($data[$ivField])){
-                $iv = $data[$ivField];
-            }
-        }
-
-        foreach($data as $k => $v)
-        {
-            if($this->fieldExists($k))
-            {
-                try{
-
-                    if($this->config->getField($k)->isEncrypted()){
-                        $v = (string) $v;
-                        if(is_string($iv) && strlen($v) && strlen($iv)){
-                            $v = $this->config->getCryptService()->decrypt($v, $iv);
-                        }
-                    }
-
-                    if($k!== $this->config->getPrimaryKey() && !$this->config->isVcField($k))
-                        $this->set($k , $v);
-
-                }catch(Exception $e){
-                    throw new Exception('Cannot load version data ' . $this->getName() . ':' . $this->getId() . '. v:' . $vers.'. This version contains incompatible data. ' . $e->getMessage());
-                }
-            }
-        }
-        $this->version = $vers;
+        $dataModel = $this->getDataModel();
+        return $dataModel->loadVersion($this, $vers);
     }
 
     /**
      * Reject changes
      */
-    public function rejectChanges() : void
+    public function rejectChanges(): void
     {
         $this->updates = [];
     }
@@ -1017,57 +785,13 @@ class Record implements RecordInterface
      * @throws \Exception
      * @return bool
      */
-    public function saveVersion(bool $useTransaction = true) : bool
+    public function saveVersion(bool $useTransaction = true): bool
     {
-        if(!$this->config->isRevControl()){
+        if (!$this->config->isRevControl()) {
             return $this->save($useTransaction);
         }
-
-        if($this->config->hasEncrypted()){
-            $ivField = $this->config->getIvField();
-            $ivData = $this->get($ivField);
-            if(empty($ivData)){
-                $this->set($ivField , $this->config->getCryptService()->createVector());
-            }
-        }
-
-        if($this->acl)
-        {
-            try{
-                $this->checkCanEdit();
-            }catch (Exception $e){
-                $this->errors[] = $e->getMessage();
-
-                if($this->logger)
-                    $this->logger->log(LogLevel::ERROR, $e->getMessage());
-                return false;
-            }
-        }
-
-        if(!$this->getId())
-        {
-            if(!$this->save($useTransaction))
-                return false;
-        }
-
-        $this->set('date_updated', date('Y-m-d H:i:s'));
-        $this->set('editor_id', User::getInstance()->getId());
-
-        $store  = $this->model->getStore();
-
-        if($this->logger){
-            $store->setLog($this->logger);
-        }
-
-        $version = $store->addVersion($this , $useTransaction);
-
-        if($version){
-            $this->version = $version;
-            $this->commitChanges();
-            return true;
-        }
-
-        return false;
+        $dataModel = $this->getDataModel();
+        return $dataModel->saveVersion($this, $useTransaction);
     }
 
     /**
@@ -1102,9 +826,18 @@ class Record implements RecordInterface
      * @param string $name
      * @return bool
      */
-    public function isInstanceOf(string $name):bool
+    public function isInstanceOf(string $name): bool
     {
         $name = strtolower($name);
         return $name === $this->getName();
+    }
+
+    /**
+     * Set data version
+     * @param int $version
+     */
+    public function setVersion(int $version): void
+    {
+        $this->version = $version;
     }
 }

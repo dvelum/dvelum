@@ -137,11 +137,10 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
             $version = $vc->getLastVersion($this->_objectName, $id);
 
         if ($version) {
-            try {
-                $object->loadVersion($version);
-            } catch (Exception $e) {
-                Model::factory($object->getName())->logError('Cannot load version ' . $version . ' for ' . $object->getName() . ':' . $object->getId());
+
+            if(!$object->loadVersion($version)){
                 Response::jsonError($this->_lang->get('CANT_LOAD'));
+                return;
             }
 
             $data = $object->getData();
@@ -293,17 +292,17 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
         $acl = $object->getAcl();
 
-        if ($acl && !$acl->canPublish($object))
+        if ($acl && !$acl->canPublish($object)){
             Response::jsonError($this->_lang->CANT_PUBLISH);
+        }
 
-        try {
-            $object->loadVersion($vers);
-        } catch (Exception $e) {
+        if(!$object->loadVersion($vers)){
             Response::jsonError($this->_lang->VERSION_INCOPATIBLE);
         }
 
-        if (!$object->publish())
+        if (!$object->publish()){
             Response::jsonError($this->_lang->CANT_EXEC);
+        }
 
         Response::jsonSuccess();
     }

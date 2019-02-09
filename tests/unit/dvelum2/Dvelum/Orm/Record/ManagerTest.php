@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-class ManagerTestTest extends TestCase
+class ManagerTest extends TestCase
 {
     public function testGetRegisteredObjects()
     {

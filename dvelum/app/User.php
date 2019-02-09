@@ -222,9 +222,8 @@ class User
      */
     public function setAuthorized()
     {
-        $ses = Store::factory(Store::Session);
-        $ses->set('auth' , true);
-        $ses->set('auth_id' , $this->id);
+        $this->session->set('auth' , true);
+        $this->session->set('auth_id' , $this->id);
         $this->authChecked = true;
     }
 
@@ -262,6 +261,7 @@ class User
     {
         if($this->session->keyExists('auth') && $this->session->get('auth') && $this->session->keyExists('auth_id') && $this->session->get('auth_id')){
             $this->setId($this->session->get('auth_id'));
+            $this->setAuthorized();
         }
     }
 
