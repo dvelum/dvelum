@@ -31,9 +31,9 @@ use Dvelum\Config\ConfigInterface;
 class Resource
 {
     /**
-     * @var Config\ConfigInterface
+     * @var Config\ConfigInterface|null
      */
-    protected $config;
+    protected $config = null;
 
     /**
      * @var \Cache_Interface|bool
@@ -217,7 +217,7 @@ class Resource
         $fileList = $this->jsFiles;
 
         foreach ($fileList as $k=>$v){
-            if($v->tag != $tag){
+            if($v->tag !== $tag){
                 unset($fileList[$k]);
             }
         }
@@ -226,9 +226,9 @@ class Resource
         /*
          * Raw files
          */
-        if(!empty($this->_rawFiles)){
-            foreach($this->_rawFiles as $file){
-                if(strpos($file,'http')==0){
+        if(!empty($this->rawFiles) && empty($tag)){
+            foreach($this->rawFiles as $file){
+                if(strpos($file,'http')===0){
                     $s .= '<script type="text/javascript" src="' . $file . '"></script>' . "\n";
                 }else{
                     $s .= '<script type="text/javascript" src="' . $this->config->get('wwwRoot') . $file . '"></script>' . "\n";
@@ -318,7 +318,7 @@ class Resource
      * @param array $files - File paths relative to the document root directory
      * @return string
      */
-    protected function getFileHash(array $files)
+    public function getFileHash(array $files)
     {
         $listHash = \md5(\serialize($files));
         /*
@@ -424,5 +424,13 @@ class Resource
     public function cleanInlineJs()
     {
         $this->rawJs = '';
+    }
+
+    /**
+     * @return ConfigInterface|null
+     */
+    public function getConfig() : ?ConfigInterface
+    {
+        return $this->config;
     }
 }
