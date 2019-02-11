@@ -120,7 +120,10 @@ class Record implements RecordInterface
         $this->disableAclCheck = $bool;
     }
 
-    protected function getDataModel(): DataModel
+    /**
+     * @return DataModel
+     */
+    public function getDataModel(): DataModel
     {
         if (empty($this->dataModel)) {
             $this->dataModel = new DataModel();

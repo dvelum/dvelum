@@ -24,6 +24,20 @@ class RecordTest extends TestCase
         $this->assertEquals(10, $object->getId());
     }
 
+    public function testSetInsertId()
+    {
+        $object = $this->createObject();
+        $object->setInsertId(123);
+        $this->assertEquals(123, $object->getInsertId());
+    }
+
+    public function  testSetVersion()
+    {
+        $object = $this->createObject();
+        $object->setVersion(2);
+        $this->assertEquals(2, $object->getVersion());
+    }
+
     public function testDisableAcl()
     {
         $object = $this->createObject();
@@ -131,5 +145,22 @@ class RecordTest extends TestCase
     {
         $object = $this->createObject();
         $this->assertTrue($object->isInstanceOf('Page'));
+    }
+
+    public function testSet()
+    {
+        $object = $this->createObject();
+        $object->set('code' ,'pageCode');
+        $object->published = true;
+        $this->assertEquals('pageCode', $object->get('code'));
+        $this->assertEquals(true, $object->get('published'));
+        $object->setId(23);
+        $this->assertEquals(23, $object->getId());
+    }
+
+    public function testGetDataModel()
+    {
+        $object = $this->createObject();
+        $this->assertTrue($object->getDataModel() instanceof Record\DataModel);
     }
 }
