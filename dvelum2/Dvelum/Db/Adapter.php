@@ -248,7 +248,11 @@ class Adapter
             $this->init();
         }
 
-        return $this->adapter->getPlatform()->quoteIdentifier($string);
+        if($this->adapter->getPlatform()->getName() === 'MySQL'){
+            return '`'.str_replace(['`','.'], ['','`.`'], $string).'`';
+        }else{
+            return $this->adapter->getPlatform()->quoteIdentifier($string);
+        }
     }
 
     public function quote($value)
