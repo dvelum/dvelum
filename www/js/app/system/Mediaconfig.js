@@ -157,6 +157,7 @@ Ext.define('app.crud.mediaconfig.Main',{
                             break;
                         case 'resize_fit': return appLang.RESIZE_FIT;
                             break;
+                        case 'resize_to_frame': return appLang.RESIZE_TO_FRAME;
                     }
                     return '';
                 }

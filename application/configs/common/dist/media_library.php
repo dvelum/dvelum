@@ -38,9 +38,9 @@
             'thumb_types' =>
                 array (
                     'icon' => 'crop',
-                    'thumbnail' => 'crop',
-                    'medium' => 'crop',
-                    'large' => 'crop',
+                    'thumbnail' => 'resize_to_frame',
+                    'medium' => 'resize_to_frame',
+                    'large' => 'resize',
                 ),
         ),
     'audio' =>

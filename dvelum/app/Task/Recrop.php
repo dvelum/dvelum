@@ -82,6 +82,9 @@ class Task_Recrop extends Bgtask_Abstract
                     case 'resize':
                         Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, false ,false);
                         break;
+                    case 'resize_to_frame':
+                        Image_Resize::resizeToFrame($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName);
+                        break;
                 }
             }                  
             /*

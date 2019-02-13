@@ -168,6 +168,68 @@ class Image_Resize
         return self::saveImage($newImg , $newImgPath , $imgInfo[2]);
     }
 
+    static public function resizeToFrame($imgPath , $width , $height , $newImgPath)
+    {
+        /*
+        * Check if GD extension is loaded
+        */
+        if(!extension_loaded('gd') && !extension_loaded('gd2'))
+        {
+            trigger_error("GD is not loaded" , E_USER_WARNING);
+            return false;
+        }
+
+        /*
+         * Get Image size info
+         */
+        $imgInfo = getimagesize($imgPath);
+        $im = self::createImg($imgPath , $imgInfo[2]);
+
+        /*
+        * If image sizes less then need just save image into the new location
+        */
+        if($imgInfo[0] < $width && $imgInfo[1] < $height) {
+            $nWidth = $width;
+            $nHeight = $height;
+        }else{
+
+
+            $nWidth = $imgInfo[0];
+            $nHeight = $imgInfo[1];
+
+            if($width < $nWidth){
+                $scale = $width / $nWidth;
+                $nWidth = $width;
+                $nHeight = $nHeight * $scale;
+            }
+
+            if($height < $nHeight){
+                $scale = $height / $nHeight;
+                $nHeight = $height;
+                $nWidth = $nWidth*$scale;
+            }
+        }
+
+
+        $nWidth = round($nWidth);
+        $nHeight = round($nHeight);
+
+
+        $newImg = self::_createDuplicateLayer($imgInfo[2] , $width , $height);
+
+        $whiteBackground = imagecolorallocatealpha($newImg , 255 , 255 , 255 , 0);
+        imagefilledrectangle($newImg , 0 , 0 , $width , $height , $whiteBackground);
+
+
+        $posX = ($width - $nWidth) / 2;
+        $posY = ($height - $nHeight) / 2;
+
+        imagecopyresampled($newImg , $im , $posX, $posY, 0 , 0 , $nWidth , $nHeight , $imgInfo[0] , $imgInfo[1]);
+        imagedestroy($im);
+
+        return self::saveImage($newImg , $newImgPath , $imgInfo[2]);
+    }
+
     /**
      * Create image resource for manipulation,
      * transparent for IMG_GIF and IMG_PNG
