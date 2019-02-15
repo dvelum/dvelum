@@ -31,6 +31,7 @@ class RequestTest extends TestCase
         $this->assertEquals('test', $request->getPart(0));
         $this->assertEquals('request', $request->getPart(1));
         $this->assertEquals('uri', $request->getPart(2));
+        $this->assertEquals(null, $request->getPart(4));
     }
 
     public function testGet()
@@ -67,5 +68,11 @@ class RequestTest extends TestCase
         $request = Request::factory();
         $request->setGetParams(['param'=>'val1','param2'=>'val2']);
         $this->assertEquals(['param'=>'val1','param2'=>'val2'],$request->getArray());
+    }
+
+    public function testUrl()
+    {
+        $request = Request::factory();
+        $this->assertEquals('/my/path',$request->url(['my','path']));
     }
 }
