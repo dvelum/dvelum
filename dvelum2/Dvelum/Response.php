@@ -126,10 +126,7 @@ class Response
                 }
                 break;
             case self::FORMAT_JSON :
-                $message = ['success'=>true];
-                if(!empty($data)){
-                    $message['data'] = $data;
-                }
+                $message = ['success'=>true,'data'=>$data];
                 if(!empty($params)){
                     $message = array_merge($message, $params);
                 }

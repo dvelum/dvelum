@@ -180,6 +180,20 @@ class Controller extends App\Backend\Controller
         $objectCfg = Orm\Record\Config::factory($object);
         $primaryKey = $objectCfg->getPrimaryKey();
 
+        if(isset($pager['sort']) ){
+            if($pager['sort'] ==='title'){
+                $linkTitle = $objectCfg->getLinkTitle();
+            }else{
+                $linkTitle = $pager['sort'];
+            }
+
+            if($objectCfg->fieldExists($linkTitle)){
+                $pager['sort'] = $linkTitle;
+            }else{
+                unset($pager['sort']);
+            }
+        }
+
         $objectConfig = Orm\Record\Config::factory($object);
 
         // Check ACL permissions

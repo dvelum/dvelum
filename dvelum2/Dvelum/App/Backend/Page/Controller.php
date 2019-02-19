@@ -485,7 +485,7 @@ class Controller extends Backend\Ui\Controller
                 $this->user->getId(),
                 $object->getId(),
                 \Model_Historylog::Publish,
-                $object->getTable()
+                Model::factory($object->getName())->table()
             );
         }
         $this->response->success();

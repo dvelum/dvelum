@@ -395,7 +395,11 @@ app.storeException = function (proxy, response, operation, eOpts) {
         Ext.Msg.alert(appLang.MESSAGE, appLang.INVALID_RESPONSE);
         return;
     }
-    var resp = Ext.JSON.decode(response.responseText);
+    try {
+        var resp = Ext.JSON.decode(response.responseText);
+    } catch (e){
+        Ext.Msg.alert(appLang.MESSAGE, appLang.INVALID_RESPONSE);
+    }
     if (resp && resp.msg != null) {
         Ext.Msg.alert(appLang.MESSAGE, resp.msg);
     } else {

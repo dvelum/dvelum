@@ -75,7 +75,7 @@ class Manager implements ManagerInterface
              * Enable Db profiler for development mode Attention! Db Profiler causes
              * memory leaks at background tasks. (Dev mode)
              */
-            if($this->appConfig->get('development')){
+            if($this->appConfig->get('development') && $this->appConfig->offsetExists('use_db_profiler') && $this->appConfig->get('use_db_profiler')){
                 $cfg->set('profiler' , true);
             }
 
@@ -105,6 +105,7 @@ class Manager implements ManagerInterface
     {
         $db = new Adapter($cfg);
         $isDevMode = $this->appConfig->get('development');
+
         $initFunction = function(\Dvelum\Db\Adapter\Event $e) use ($db, $isDevMode, $cfg){
             if($isDevMode){
                 $profiler = $db->getProfiler();

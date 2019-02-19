@@ -68,6 +68,7 @@ interface RecordInterface
     /**
      * Get the full name of the database storing the object data (with prefix)
      * @return string
+     * @deprecated
      */
     public function getTable(): string;
 
@@ -187,7 +188,7 @@ interface RecordInterface
      * @property boolean $new
      * @return array | null
      */
-    public function validateUniqueValues(): ? array;
+    public function validateUniqueValues(): ?array;
 
     /**
      * Convert object into string representation
@@ -208,21 +209,19 @@ interface RecordInterface
 
     /**
      * Unpublish VC object
-     * @param boolean $log - log changes
-     * @param boolean $useTransaction — using a transaction when changing data is optional.
+     * @param bool $useTransaction — using a transaction when changing data is optional.
      * @return bool
      */
-    public function unpublish($log = true, $useTransaction = true): bool;
+    public function unpublish($useTransaction = true): bool;
 
     /**
      * Publish VC object
      * @param bool|int $version - optional, default current version
-     * @param boolean $log - log changes
-     * @param boolean $useTransaction — using a transaction when changing data is optional.
+     * @param bool $useTransaction — using a transaction when changing data is optional.
      * @return bool
      * @throws Exception
      */
-    public function publish($version = false, $log = true, $useTransaction = true): bool;
+    public function publish($version = false, $useTransaction = true): bool;
 
     /**
      * Get loaded version
@@ -234,8 +233,9 @@ interface RecordInterface
      * Load version
      * @param int $vers
      * @throws Exception
+     * @return bool
      */
-    public function loadVersion(int $vers): void;
+    public function loadVersion(int $vers): bool ;
 
     /**
      * Reject changes
@@ -273,4 +273,16 @@ interface RecordInterface
      * @return bool
      */
     public function isInstanceOf(string $name): bool;
+
+    /**
+     * Add error message
+     * @param string $message
+     */
+    public function addErrorMessage(string $message): void;
+
+    /**
+     * Set data version identifier
+     * @param int $version
+     */
+    public function setVersion(int $version): void;
 }

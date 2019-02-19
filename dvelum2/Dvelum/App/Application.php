@@ -237,6 +237,13 @@ class Application
             }
         };
 
+        $useProfiler = false;
+        if($dev && $this->config->get('debug_panel')){
+            $useProfiler = Config::storage()->get('debug_panel.php')->get('options')['sql'];
+        }
+
+        $this->config->set('use_db_profiler', $useProfiler);
+
         $conManager = new Db\Manager($this->config);
         $conManager->setConnectionErrorHandler($dbErrorHandler);
         return $conManager;

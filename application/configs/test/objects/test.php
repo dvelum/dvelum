@@ -28,6 +28,7 @@
                     'type' => '',
                     'unique' => '',
                     'db_isNull' => true,
+                    'db_len' => 255,
                     'required' => false,
                     'validator' => '',
                     'db_type' => 'varchar',

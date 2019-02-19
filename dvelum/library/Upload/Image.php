@@ -31,6 +31,9 @@ class Upload_Image extends Upload_File
                     case 'resize':
                         Image_Resize::resize($data['path'], $xy[0], $xy[1], $newName, false ,false);
                         break;
+                    case 'resize_to_frame':
+                        Image_Resize::resizeToFrame($data['path'], $xy[0], $xy[1], $newName);
+                        break;
                 }
                 if($name == 'icon')
                     $data['thumb'] = $newName;

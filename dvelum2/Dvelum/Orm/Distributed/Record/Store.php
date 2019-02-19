@@ -109,13 +109,14 @@ class Store extends \Dvelum\Orm\Record\Store
         $data = $object->serializeLinks($data);
         $db = $this->getDbConnection($object);
 
+        $model = Model::factory($object->getName());
         try {
             $db->beginTransaction();
             if(empty($insertId)) {
-                $db->insert($object->getTable(), $data);
-                $insertId = $db->lastInsertId($object->getTable());
+                $db->insert($model->table(), $data);
+                $insertId = $db->lastInsertId($model->table());
             }else{
-                $db->insert($object->getTable(), $data);
+                $db->insert($model->table(), $data);
             }
             $db->commit();
 
@@ -213,13 +214,14 @@ class Store extends \Dvelum\Orm\Record\Store
             }
         }
 
+        $model = Model::factory($object->getName());
         if(!empty($updates)){
             try{
                 if(!empty($indexUpdates)){
                     $indexDb->beginTransaction();
                     $indexDb->update($indexModel->table(),$indexUpdates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
                 }
-                $db->update($object->getTable() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
+                $db->update($model->table() , $updates, $db->quoteIdentifier($object->getConfig()->getPrimaryKey()).' = '.$object->getId());
                 if(!empty($indexUpdates)){
                     $indexDb->commit();
                 }

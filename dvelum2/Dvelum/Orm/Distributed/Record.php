@@ -44,7 +44,8 @@ class Record extends Orm\Record
 
     public function loadData(): void
     {
-        $store = $this->model->getStore();
+        $model = Model::factory($this->getName());
+        $store = $model->getStore();
         $store->setShard((string)$this->shard);
         parent::loadData();
     }

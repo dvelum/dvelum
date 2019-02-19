@@ -19,7 +19,7 @@ return [
                 'parent_field' => 'user_id'
             ]
         ],
-        'enabled' => false
+        'enabled' => true
     ]
 ];
 */

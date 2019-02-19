@@ -20,6 +20,7 @@ Ext.define('app.objectLink.Field', {
     layout: 'fit',
     readOnly: false,
     allowBlank: true,
+    valueType:'integer',
     /**
      * Extra params for requests
      * @property {Object}
@@ -108,6 +109,7 @@ Ext.define('app.objectLink.Field', {
             objectName: this.objectName,
             controllerUrl: this.controllerUrl + this.ajaxActions.list,
             title: this.fieldLabel,
+            valueType:this.valueType,
             extraParams: this.extraParams
         });
 
@@ -234,6 +236,7 @@ Ext.define('app.objectLink.SelectWindow', {
     objectName: '',
     fieldName: '',
     singleSelect: true,
+    valueType:'integer',
     /**
      * Extra params for requests
      * @property {Object}
@@ -251,7 +254,7 @@ Ext.define('app.objectLink.SelectWindow', {
 
         this.dataStore = Ext.create('Ext.data.Store', {
             fields: [
-                {name: 'id', type: 'integer'},
+                {name: 'id', type: this.valueType},
                 {name: 'title', type: 'string'},
                 {name: 'published', type: 'boolean'},
                 {name: 'deleted', type: 'boolean'}
@@ -345,6 +348,7 @@ Ext.define('app.objectLink.Panel', {
     alias: 'widget.objectlinkpanel',
     name: '',
     objectName: '',
+    valueType:'integer',
     controllerUrl: '',
 
     initComponent: function () {
@@ -358,6 +362,7 @@ Ext.define('app.objectLink.Panel', {
             height: 500,
             selectMode: true,
             objectName: this.objectName,
+            valueType:this.valueType,
             controllerUrl: this.controllerUrl + 'linkedlist',
             title: this.fieldLabel,
             extraParams: this.extraParams

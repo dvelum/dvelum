@@ -168,6 +168,8 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             return;
         }
 
+        session_write_close();
+
         $dbObjectManager = new Orm\Record\Manager();
         $names = $dbObjectManager->getRegisteredObjects();
 
