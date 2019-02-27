@@ -99,8 +99,15 @@ class ModelTest extends TestCase
 	{
 		$pageModel =  Model::factory('Page');
 		$page = $this->createPage();
+		$page2 = $this->createPage();
 		$item = $pageModel->getItem($page->getId(),array('id','code'));
 		$this->assertEquals($page->get('code') , $item['code']);
+
+		$item2 = $pageModel->getCachedItem($page->getId());
+		$this->assertEquals($item['code'], $item2['code']);
+
+		$this->assertFalse($pageModel->checkUnique($page->getId(), 'code', $page2->get('code')));
+        $this->assertTrue($pageModel->checkUnique($page->getId(), 'code', $page2->get('code').'1'));
 	}
 
 	public function testGetCount()
@@ -128,4 +135,28 @@ class ModelTest extends TestCase
 		$items = $pageModel->query()->filters(array('code'=>$page->get('code')))->fields(array('id','code'))->fetchAll();
 		$this->assertEquals($page->get('code') , $items[0]['code']);
 	}
+
+	public function testGetObjectConfig()
+    {
+        $model = Model::factory('Page');
+        $config = $model->getObjectConfig();
+        $this->assertTrue($config instanceof Record\Config);
+        $this->assertEquals('page', $config->getName());
+    }
+
+    public function testRemove()
+    {
+        $model = Model::factory('Page');
+        $page = $this->createPage();
+        $this->assertTrue($model->remove($page->getId()));
+        $this->assertFalse($model->remove($page->getId()));
+        $this->assertEquals(0 , $model->query()->filters(['id'=>$page->getId()])->getCount());
+    }
+
+    public function testInsert()
+    {
+        $model = Model::factory('Page');
+        $insert = $model->insert();
+        $this->assertTrue($insert instanceof Model\Insert);
+    }
 }
