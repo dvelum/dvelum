@@ -26,7 +26,8 @@
         "docs": "https://docs.dvelum.net"
     },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "classmap-authoritative": true
     },
     "require": {
         "php":">=7.2.0",
