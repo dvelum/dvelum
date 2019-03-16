@@ -103,6 +103,9 @@ class CryptService implements CryptServiceInterface
             ];
         }
         $res = openssl_pkey_new($this->privateKeyOptions);
+        if(empty($res)){
+            throw new \Exception('openssl_pkey_new empty result');
+        }
         openssl_pkey_export($res, $key);
         return $key;
     }
