@@ -455,7 +455,13 @@ class Install_Controller
 
         if(extension_loaded('openssl')){
             $service = new \Dvelum\Security\CryptService($mainCfgStorage->get('crypt.php'));
-            $key = $service->createPrivateKey();
+            if($service->canCrypt()){
+                try{
+                    $key = $service->createPrivateKey();
+                }catch (\Exception $e){
+                    $key = md5(uniqid(md5(time())));
+                }
+            }
         }else{
             $key = md5(uniqid(md5(time())));
         }
