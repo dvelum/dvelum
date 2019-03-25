@@ -762,14 +762,14 @@ class Designer_Project_Code
                     case 'Docked' :
 
                         if(!$this->_project->hasChilds($item['id']))
-                            continue;
+                            break;
 
                         $docked = $this->_compileConfig($item['id']);
                         break;
 
                     case 'Menu' :
                         if(!$this->_project->hasChilds($item['id']))
-                            continue;
+                            break;
 
                         $menu = $this->_compileConfig($item['id']);
                         break;
@@ -837,7 +837,7 @@ class Designer_Project_Code
 
                 case 'Docked' :
                     if(!$this->_project->hasChilds($item['id']))
-                        continue;
+                        break;
 
                     $docked[] = $item['data'];
                     break;
@@ -845,7 +845,7 @@ class Designer_Project_Code
                 case 'Menu' :
 
                     if(!$this->_project->hasChilds($item['id']))
-                        continue;
+                        break;
 
                     $menu[] = $item['data'];
                     break;
