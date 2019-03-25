@@ -60,16 +60,6 @@
             'icon' => 'i/system/icons/log.png',
             'id' => 'Logs',
         ),
-    'Designer' =>
-        array (
-            'id' => 'Designer',
-            'dev' => true,
-            'active' => true,
-            'class' => 'Backend_Designer_Controller',
-            'designer' => '',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/designer.png',
-        ),
     'Localization' =>
         array (
             'id' => 'Localization',
