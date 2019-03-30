@@ -353,8 +353,6 @@ class Controller extends App\Controller
      */
     public function includeScripts()
     {
-        $media = Model::factory('Medialib');
-        $media->includeScripts();
         $cfg = Config::storage()->get('js_inc_backend.php');
 
         if ($cfg->getCount()) {
@@ -377,7 +375,7 @@ class Controller extends App\Controller
      */
     protected function runDesignerProject($project, $renderTo = false)
     {
-        $manager = new \Dvelum\Designer\Manager($this->appConfig);
+        $manager = new \Designer_Manager($this->appConfig);
         $project = $manager->findWorkingCopy($project);
         $manager->renderProject($project, $renderTo, $this->module);
     }

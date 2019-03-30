@@ -93,7 +93,7 @@ class Application
      * Initialize the application, configure the settings, inject dependencies
      * Adjust the settings necessary for running the system
      */
-    public function init()
+    protected function init()
     {
         if ($this->initialized) {
             return;
@@ -269,6 +269,7 @@ class Application
      */
     public function runConsole()
     {
+        $this->init();
         $request = Request::factory();
         $response = Response::factory();
         $config = Config::storage()->get('console.php');

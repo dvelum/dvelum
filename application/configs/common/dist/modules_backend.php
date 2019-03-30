@@ -19,16 +19,6 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/tasks.png',
         ),
-    'Blocks' =>
-        array (
-            'id' => 'Blocks',
-            'dev' => false,
-            'active' => true,
-            'class' => '\\Dvelum\\App\\Backend\\Blocks\\Controller',
-            'designer' => '',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/blocks.png',
-        ),
     'Orm' =>
         array (
             'id' => 'Orm',
@@ -70,16 +60,6 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/localize.png',
         ),
-    'Medialib' =>
-        array (
-            'id' => 'Medialib',
-            'dev' => false,
-            'active' => true,
-            'class' => '\\Dvelum\\App\\Backend\\Medialib\\Controller',
-            'designer' => '',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/media.png',
-        ),
     'Mediaconfig' =>
         array (
             'id' => 'Mediaconfig',
@@ -90,16 +70,6 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/mediaconfig.png',
         ),
-    'Menu' =>
-        array (
-            'id' => 'Menu',
-            'dev' => false,
-            'active' => true,
-            'class' => '\\Dvelum\\App\\Backend\\Menu\\Controller',
-            'designer' => '',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/menu.png',
-        ),
     'Modules' =>
         array (
             'id' => 'Modules',
@@ -109,16 +79,6 @@
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/modules.png',
-        ),
-    'Page' =>
-        array (
-            'id' => 'Page',
-            'dev' => false,
-            'active' => true,
-            'class' => '\\Dvelum\\App\\Backend\\Page\\Controller',
-            'designer' => '',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/pages.png',
         ),
     'User' =>
         array (

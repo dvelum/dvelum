@@ -1,4 +1,26 @@
 <?php
+/**
+ *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+declare(strict_types=1);
+
+namespace Dvelum\App;
 
 use Dvelum\Config;
 use Dvelum\Orm;
@@ -8,7 +30,7 @@ use Dvelum\Cache\CacheInterface;
 
 /**
  * Default Trigger
- * Handle Db_Object Events
+ * Handle ORM Record Events
  */
 class Trigger
 {
@@ -31,16 +53,16 @@ class Trigger
     /**
      * @var CacheInterface | false
      */
-    protected $_cache = false;
+    protected $cache = false;
 
     public function setCache(CacheInterface $cache)
     {
-        $this->_cache = $cache;
+        $this->cache = $cache;
     }
 
-    protected function _getItemCacheKey(Orm\RecordInterface $object)
+    protected function getItemCacheKey(Orm\RecordInterface $object)
     {
-        $objectModel = \Model::factory($object->getName());
+        $objectModel = Model::factory($object->getName());
         return $objectModel->getCacheKey(array('item', $object->getId()));
     }
 
@@ -64,7 +86,7 @@ class Trigger
         if ($config->hasHistory()) {
             if ($config->hasExtendedHistory()) {
                 Model::factory($logObject)->saveState(
-                    Model_Historylog::Create,
+                    \Model_Historylog::Create,
                     $object->getName(),
                     $object->getId(),
                     User::getInstance()->getId(),
@@ -76,24 +98,24 @@ class Trigger
                 Model::factory($logObject)->log(
                     User::getInstance()->getId(),
                     $object->getId(),
-                    Model_Historylog::Create,
+                    \Model_Historylog::Create,
                     $object->getName()
                 );
             }
         }
 
-        if (!$this->_cache)
+        if (!$this->cache)
             return;
 
-        $this->_cache->remove($this->_getItemCacheKey($object));
+        $this->cache->remove($this->getItemCacheKey($object));
     }
 
     public function onAfterUpdate(Orm\RecordInterface $object)
     {
-        if (!$this->_cache)
+        if (!$this->cache)
             return;
 
-        $this->_cache->remove($this->_getItemCacheKey($object));
+        $this->cache->remove($this->getItemCacheKey($object));
     }
 
     public function onAfterDelete(Orm\RecordInterface $object)
@@ -104,7 +126,7 @@ class Trigger
         if ($object->getConfig()->hasHistory()) {
             if ($config->hasExtendedHistory()) {
                 Model::factory($logObject)->saveState(
-                    Model_Historylog::Delete,
+                   \Model_Historylog::Delete,
                     $object->getName(),
                     $object->getId(),
                     User::getInstance()->getId(),
@@ -116,16 +138,16 @@ class Trigger
                 Model::factory($logObject)->log(
                     User::getInstance()->getId(),
                     $object->getId(),
-                    Model_Historylog::Delete,
+                    \Model_Historylog::Delete,
                     $object->getName()
                 );
             }
         }
 
-        if (!$this->_cache)
+        if (!$this->cache)
             return;
 
-        $this->_cache->remove($this->_getItemCacheKey($object));
+        $this->cache->remove($this->getItemCacheKey($object));
     }
 
     public function onAfterUpdateBeforeCommit(Orm\RecordInterface $object)
@@ -145,7 +167,7 @@ class Trigger
 
             if ($config->hasExtendedHistory()) {
                 Model::factory($logObject)->saveState(
-                    Model_Historylog::Update,
+                    \Model_Historylog::Update,
                     $object->getName(),
                     $object->getId(),
                     User::getInstance()->getId(),
@@ -157,7 +179,7 @@ class Trigger
                 Model::factory($logObject)->log(
                     User::getInstance()->getId(),
                     $object->getId(),
-                    Model_Historylog::Update,
+                    \Model_Historylog::Update,
                     $object->getName()
                 );
             }
@@ -166,14 +188,13 @@ class Trigger
 
     public function onAfterPublish(Orm\RecordInterface $object)
     {
-        $config = $object->getConfig();
         $logObject = $this->ormConfig->get('history_object');
 
         if ($object->getConfig()->hasHistory()) {
             Model::factory($logObject)->log(
                 User::getInstance()->getId(),
                 $object->getId(),
-                Model_Historylog::Publish,
+                \Model_Historylog::Publish,
                 $object->getName()
             );
         }
@@ -185,13 +206,12 @@ class Trigger
             return;
         }
 
-        $config = $object->getConfig();
         $logObject = $this->ormConfig->get('history_object');
 
         Model::factory($logObject)->log(
             User::getInstance()->getId(),
             $object->getId(),
-            Model_Historylog::Unpublish,
+            \Model_Historylog::Unpublish,
             $object->getName()
         );
     }
@@ -207,10 +227,9 @@ class Trigger
         Model::factory($logObject)->log(
             User::getInstance()->getId(),
             $object->getId(),
-            Model_Historylog::NewVersion,
+            \Model_Historylog::NewVersion,
             $object->getName()
         );
-
     }
 
     public function onAfterInsertBeforeCommit(Orm\RecordInterface $object)

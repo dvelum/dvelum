@@ -82,4 +82,3 @@ if(!class_exists($appClass))
 
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);
-$app->init();

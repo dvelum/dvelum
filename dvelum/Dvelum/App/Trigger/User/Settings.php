@@ -1,7 +1,10 @@
 <?php
+namespace Dvelum\App\Trigger\User;
 use Dvelum\Orm;
+use Dvelum\Orm\Model;
+use Dvelum\App\Trigger;
 
-class Trigger_User_Settings extends Trigger
+class Settings extends Trigger
 {
     public function onAfterAdd(Orm\RecordInterface $object)
     {
@@ -23,9 +26,9 @@ class Trigger_User_Settings extends Trigger
 
     public function clearCache(Orm\RecordInterface $object)
     {
-        if($this->_cache){
+        if($this->cache){
             $model = Model::factory('User_Settings');
-            $this->_cache->remove($model->getCacheKey(array('item', 'user', $object->get('user'))));
+            $this->cache->remove($model->getCacheKey(array('item', 'user', $object->get('user'))));
         }
     }
 }

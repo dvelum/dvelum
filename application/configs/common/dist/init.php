@@ -18,7 +18,7 @@ return array(
     'autoloader' => array(
         'paths' => array(
             './dvelum/library',
-            './dvelum2'
+            './dvelum'
         )
     ),
 );

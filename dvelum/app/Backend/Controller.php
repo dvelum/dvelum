@@ -346,11 +346,6 @@ abstract class Backend_Controller extends Controller
      */
     public function includeScripts()
     {
-        /**
-         * @var Model_Medialib $media
-         */
-        $media = Model::factory('Medialib');
-        $media->includeScripts();
         $cfg = Config::storage()->get('js_inc_backend.php');
 
         if($cfg->getCount())
