@@ -60,16 +60,6 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/localize.png',
         ),
-    'Mediaconfig' =>
-        array (
-            'id' => 'Mediaconfig',
-            'dev' => true,
-            'active' => true,
-            'class' => 'Backend_Mediaconfig_Controller',
-            'designer' => '',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/mediaconfig.png',
-        ),
     'Modules' =>
         array (
             'id' => 'Modules',

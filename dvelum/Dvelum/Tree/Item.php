@@ -46,7 +46,7 @@ class Item implements \ArrayAccess
      * @param mixed $data
      * @param int|null $order
      */
-    public function __construct($id, $parent, $data, ?int $order = null)
+    public function __construct($id = null, $parent = null, $data = null, ?int $order = null)
     {
         $this->id = $id;
         $this->parent = $parent;
@@ -118,7 +118,7 @@ class Item implements \ArrayAccess
         $this->order = $order;
     }
 
-    public function offsetExists($offset) : bool
+    public function offsetExists($offset): bool
     {
         return isset($this->$offset);
     }
@@ -136,5 +136,15 @@ class Item implements \ArrayAccess
     public function offsetUnset($offset)
     {
         $this->$offset = null;
+    }
+
+    public function __toArray()
+    {
+        return [
+            'id' => $this->id,
+            'parent' => $this->parent,
+            'data' => $this->data,
+            'order' => $this->order
+        ];
     }
 }

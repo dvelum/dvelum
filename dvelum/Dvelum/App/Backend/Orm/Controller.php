@@ -110,7 +110,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $this->resource->addJs('/js/app/system/SelectWindow.js', 2);
         $this->resource->addJs('/js/app/system/ObjectLink.js', 3);
 
-        Model::factory('Medialib')->includeScripts();
+        //Model::factory('Medialib')->includeScripts();
 
         $this->resource->addCss('/css/system/joint.min.css', 1);
 

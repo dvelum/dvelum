@@ -24,6 +24,7 @@ namespace Dvelum\App\Backend;
 use Dvelum\App;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Designer\Manager;
 use Dvelum\Orm\Model;
 use Dvelum\App\Session;
 use Dvelum\Lang;
@@ -466,7 +467,7 @@ class Controller extends App\Controller
         $projectData = [];
 
         if (strlen($moduleCfg['designer'])) {
-            $manager = new \Designer_Manager($this->appConfig);
+            $manager = new Manager($this->appConfig);
             $project = $manager->findWorkingCopy($moduleCfg['designer']);
             $projectData = $manager->compileDesktopProject($project, 'app.__modules.' . $moduleName, $moduleName);
             $projectData['isDesigner'] = true;
