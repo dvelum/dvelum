@@ -1,1 +1,0 @@
-this.deleteModule(grid.getStore().getAt(rowIndex));

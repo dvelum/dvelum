@@ -293,6 +293,7 @@ class Controller extends App\Backend\Controller
         $client = new $repoList[$repo]['adapter']($config);
         $client->setLanguage($this->appConfig->get('language'));
         $client->setLocalization($externalsLang);
+        $client->setTmpDir($this->appConfig->get('tmp'));
 
         return $client;
     }
@@ -304,50 +305,28 @@ class Controller extends App\Backend\Controller
     {
         $repo =  $this->request->post('repo', Filter::FILTER_STRING, false);
         $app =  $this->request->post('app', Filter::FILTER_STRING, false);
-        $version =  $this->request->post('version', Filter::FILTER_STRING, false);
+        $version =  $this->request->post('vers', Filter::FILTER_STRING, '');
 
-        $externalsLang = Lang::lang('externals');
-
-        if(!extension_loaded('zip')){
-            Response::jsonError($externalsLang->get('error_need_zip'));
+        if(empty($app) || empty($repo) || empty($version)){
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
 
         $client = $this->getClient($repo);
         if(!$client){
-            Response::jsonError($this->_lang->get('WRONG_REQUEST'));
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
         }
-
-        $tmpFile = $this->_configMain->get('tmp').uniqid().'.zip';
 
         try{
-            if(!$client->download($app, $version, $tmpFile)){
-                Response::jsonError($this->_lang->get('CANT_EXEC'));
-            }
-        }catch (Exception $e){
-            Response::jsonError($e->getMessage());
+           if($client->download($app, $version)){
+               $this->response->success();
+           }else{
+               $this->response->error($this->lang->get('CANT_EXEC'));
+           }
+        }catch (\Exception $e){
+            $this->response->error($e->getMessage());
+            return;
         }
-
-        $tmpDir = $this->_configMain->get('tmp').$app;
-
-        if(!is_dir($tmpDir)){
-            if(!mkdir($tmpDir,0775)){
-                Response::jsonError($this->_lang->get('CANT_WRITE_FS').$tmpDir);
-            }
-        }
-
-        if(!File::unzipFiles($tmpFile, $tmpDir)){
-            Response::jsonError($externalsLang->get('error_cant_extract').' '.$tmpFile);
-        }
-
-        $externalsCfg = $this->_configMain->get('externals');
-
-        if(!File::copyDir($tmpDir, $externalsCfg['path'])){
-            Response::jsonError($this->_lang->get('CANT_WRITE_FS') . ' ' . $externalsCfg['path']);
-        }
-
-        @unlink($tmpFile);
-        File::rmdirRecursive($tmpDir, true);
-
-        Response::jsonSuccess();
     }
 }

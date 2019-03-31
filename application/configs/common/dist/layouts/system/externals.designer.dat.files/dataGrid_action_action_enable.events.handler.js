@@ -1,1 +1,0 @@
-this.enableModule(grid.getStore().getAt(rowIndex));

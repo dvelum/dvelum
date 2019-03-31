@@ -56,8 +56,14 @@ interface ClientInterface
      * Download add-on
      * @param string $app
      * @param string $version
-     * @param string $saveTo
-     * @return boolean
+     * @return bool
      */
-    public function download(string $app, string $version, string $saveTo): bool;
+    public function download(string $app, string $version): bool;
+
+    /**
+     * Set tmp dir for downloads
+     * @param string $dir
+     */
+    public function setTmpDir(string $dir): void;
+
 }

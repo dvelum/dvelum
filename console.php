@@ -99,7 +99,6 @@ if(!class_exists($appClass))
 
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);
-$app->init();
 $request = Request::factory();
 $request->setUri($_SERVER['argv'][1]);
 $app->runConsole();

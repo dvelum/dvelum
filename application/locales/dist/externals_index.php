@@ -11,4 +11,5 @@
   9 => 'installed',
   10 => 'downloads',
   11 => 'app_page',
+  12 => 'cant_find_url'
 ); 

@@ -191,8 +191,11 @@ return array(
                 'adapter' => '\\Dvelum\\Externals\\Client\\Packagist',
                 'adapterConfig' => [
                     'vendor' => 'dvelum',
-                    'type'=>'dvelum-module'
-                ]
+                    'type'=>'dvelum-module',
+                    //Path to composer command
+                    'composer_path' => 'composer',
+                    'download_path' => './modules'
+                ],
             ]
         ]
     ],
@@ -200,5 +203,5 @@ return array(
      * Composer autoloader breaks autoloaders queue with prepend option by default
      * it makes impossible to override vendor classes. It also slow. Using autoloader config is preferable
      */
-    'use_composer_autoload' => true
+    'use_composer_autoload' => true,
 );
