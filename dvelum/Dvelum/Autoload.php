@@ -48,7 +48,7 @@ class Autoload
     public function __construct(array $config)
     {
         $this->setConfig($config);
-        spl_autoload_register([$this , 'load']);
+        spl_autoload_register([$this , 'load'], true, true);
     }
 
     /**

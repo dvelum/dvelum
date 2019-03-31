@@ -14,7 +14,6 @@
       'border' => 0.0,
       'frame' => false,
       'isExtended' => true,
-      'defineOnly' => true,
     ),
     'state' => 
     array (

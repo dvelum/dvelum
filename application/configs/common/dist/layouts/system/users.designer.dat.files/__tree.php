@@ -1,17 +1,17 @@
 <?php return array (
-  '_Layout_' => 
-  array (
-    'id' => '_Layout_',
-    'parent' => false,
-    'data' => '_Layout_.config.php',
-    'order' => 1,
-  ),
   '_Component_' => 
   array (
     'id' => '_Component_',
     'parent' => false,
     'data' => '_Component_.config.php',
     'order' => 0,
+  ),
+  '_Layout_' => 
+  array (
+    'id' => '_Layout_',
+    'parent' => false,
+    'data' => '_Layout_.config.php',
+    'order' => 1,
   ),
   'Groups__docked' => 
   array (
@@ -83,40 +83,40 @@
     'data' => 'usersPanel_tools.config.php',
     'order' => 0,
   ),
-  'Permissions' => 
+  'usersStore' => 
   array (
-    'id' => 'Permissions',
+    'id' => 'usersStore',
     'parent' => '_Component_',
-    'data' => 'Permissions.config.php',
-    'order' => 2,
+    'data' => 'usersStore.config.php',
+    'order' => 8,
   ),
-  'permissionsStore' => 
+  'permissionsStoreModel' => 
   array (
-    'id' => 'permissionsStore',
+    'id' => 'permissionsStoreModel',
     'parent' => '_Component_',
-    'data' => 'permissionsStore.config.php',
-    'order' => 5,
+    'data' => 'permissionsStoreModel.config.php',
+    'order' => 15,
   ),
-  'Groups' => 
+  'individualPermissions' => 
   array (
-    'id' => 'Groups',
+    'id' => 'individualPermissions',
     'parent' => '_Component_',
-    'data' => 'Groups.config.php',
-    'order' => 4,
+    'data' => 'individualPermissions.config.php',
+    'order' => 3,
   ),
-  'accountTypesStoreModel' => 
+  'groupsStoreModel' => 
   array (
-    'id' => 'accountTypesStoreModel',
+    'id' => 'groupsStoreModel',
     'parent' => '_Component_',
-    'data' => 'accountTypesStoreModel.config.php',
-    'order' => 11,
+    'data' => 'groupsStoreModel.config.php',
+    'order' => 14,
   ),
-  'statusStoreModel' => 
+  'Users' => 
   array (
-    'id' => 'statusStoreModel',
+    'id' => 'Users',
     'parent' => '_Component_',
-    'data' => 'statusStoreModel.config.php',
-    'order' => 12,
+    'data' => 'Users.config.php',
+    'order' => 0,
   ),
   'usersStoreModel' => 
   array (
@@ -125,19 +125,19 @@
     'data' => 'usersStoreModel.config.php',
     'order' => 13,
   ),
-  'groupsStore' => 
+  'editWindow' => 
   array (
-    'id' => 'groupsStore',
+    'id' => 'editWindow',
     'parent' => '_Component_',
-    'data' => 'groupsStore.config.php',
-    'order' => 10,
+    'data' => 'editWindow.config.php',
+    'order' => 1,
   ),
-  'mainPanel' => 
+  'accountTypesStore' => 
   array (
-    'id' => 'mainPanel',
+    'id' => 'accountTypesStore',
     'parent' => '_Component_',
-    'data' => 'mainPanel.config.php',
-    'order' => 16,
+    'data' => 'accountTypesStore.config.php',
+    'order' => 7,
   ),
   'statusStore' => 
   array (
@@ -153,54 +153,54 @@
     'data' => 'individualPermissionsStore.config.php',
     'order' => 6,
   ),
-  'accountTypesStore' => 
+  'mainPanel' => 
   array (
-    'id' => 'accountTypesStore',
+    'id' => 'mainPanel',
     'parent' => '_Component_',
-    'data' => 'accountTypesStore.config.php',
-    'order' => 7,
+    'data' => 'mainPanel.config.php',
+    'order' => 16,
   ),
-  'editWindow' => 
+  'groupsStore' => 
   array (
-    'id' => 'editWindow',
+    'id' => 'groupsStore',
     'parent' => '_Component_',
-    'data' => 'editWindow.config.php',
-    'order' => 1,
+    'data' => 'groupsStore.config.php',
+    'order' => 10,
   ),
-  'Users' => 
+  'statusStoreModel' => 
   array (
-    'id' => 'Users',
+    'id' => 'statusStoreModel',
     'parent' => '_Component_',
-    'data' => 'Users.config.php',
-    'order' => 0,
+    'data' => 'statusStoreModel.config.php',
+    'order' => 12,
   ),
-  'groupsStoreModel' => 
+  'accountTypesStoreModel' => 
   array (
-    'id' => 'groupsStoreModel',
+    'id' => 'accountTypesStoreModel',
     'parent' => '_Component_',
-    'data' => 'groupsStoreModel.config.php',
-    'order' => 14,
+    'data' => 'accountTypesStoreModel.config.php',
+    'order' => 11,
   ),
-  'individualPermissions' => 
+  'Groups' => 
   array (
-    'id' => 'individualPermissions',
+    'id' => 'Groups',
     'parent' => '_Component_',
-    'data' => 'individualPermissions.config.php',
-    'order' => 3,
+    'data' => 'Groups.config.php',
+    'order' => 4,
   ),
-  'permissionsStoreModel' => 
+  'permissionsStore' => 
   array (
-    'id' => 'permissionsStoreModel',
+    'id' => 'permissionsStore',
     'parent' => '_Component_',
-    'data' => 'permissionsStoreModel.config.php',
-    'order' => 15,
+    'data' => 'permissionsStore.config.php',
+    'order' => 5,
   ),
-  'usersStore' => 
+  'Permissions' => 
   array (
-    'id' => 'usersStore',
+    'id' => 'Permissions',
     'parent' => '_Component_',
-    'data' => 'usersStore.config.php',
-    'order' => 8,
+    'data' => 'Permissions.config.php',
+    'order' => 2,
   ),
   'groupsStoreInstance' => 
   array (

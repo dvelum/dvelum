@@ -23,6 +23,8 @@ namespace Dvelum\App;
 
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Config;
+use Dvelum\File;
+use Dvelum\Utils;
 
 /**
  * Classmap builder
@@ -47,7 +49,7 @@ class Classmap
 
     public function load()
     {
-        $map = Config::storage()->get($this->autoloaderCfg);
+        $map = Config::storage()->get($this->autoloaderCfg->get('map'));
         if(!empty($map)){
             $this->map = $map->__toArray();
         }
@@ -82,7 +84,7 @@ class Classmap
      * Find PHP Classes
      * @param $path
      * @param $exceptPath
-     * @throws Exception
+     * @throws \Exception
      */
     protected function findClasses(string $path , string $exceptPath)
     {
@@ -124,7 +126,7 @@ class Classmap
                                 $this->map[$class] = $item;
                             }
                         }
-                    }catch (Error $e){
+                    }catch (\Error $e){
                         echo $e->getMessage()."\n";
                     }
                 }
@@ -140,7 +142,7 @@ class Classmap
      * @param string $path
      * @param string $exceptPath
      * @param string $baseSpace
-     * @throws Exception
+     * @throws \Exception
      */
     protected function findPsr4Classes(string $path , string $exceptPath, string $baseSpace)
     {

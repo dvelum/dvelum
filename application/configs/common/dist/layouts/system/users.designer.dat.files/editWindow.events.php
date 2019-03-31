@@ -6,5 +6,6 @@
     'code' => false,
     'params' => '',
     'is_local' => true,
+    'buffer' => false,
   ),
 ); 

@@ -27,5 +27,7 @@ $wwwRoot = Request::wwwRoot();
     <?php  echo $this->get('resource')->includeJsByTag(true , false, 'head'); ?>
     <?php echo $this->get('resource')->includeJs(true , false); ?>
 </head>
-<body id="content"></body>
+<body id="content">
+<?=$page->text;?>
+</body>
 </html>

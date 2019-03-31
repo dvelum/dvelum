@@ -17,7 +17,6 @@
       'frame' => false,
       'hidden' => false,
       'isExtended' => true,
-      'defineOnly' => true,
     ),
     'state' => 
     array (

@@ -26,6 +26,7 @@ class Controller extends App\Frontend\Controller
 {
     public function indexAction()
     {
-
+        $page = \Page::getInstance();
+        $page->text = '<h2>Index</h2>';
     }
 }

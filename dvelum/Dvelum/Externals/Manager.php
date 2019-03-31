@@ -148,6 +148,7 @@ class Manager
         $autoLoadPaths = [];
         $autoLoadPathsPsr4 = [];
         $configPaths = [];
+        $templatesPaths = [];
         $langPaths = [];
 
         foreach ($modules as $index => $config) {
@@ -179,7 +180,7 @@ class Manager
             }
 
             if (!empty($modCfg['templates'])) {
-                $configPaths[] = str_replace(['./', '//'], [$path, ''], $modCfg['templates'] . '/');
+                $templatesPaths[] = str_replace(['./', '//'], [$path, ''], $modCfg['templates'] . '/');
             }
 
         }
@@ -238,9 +239,9 @@ class Manager
             }
         }
         // Add Templates paths
-        if (!empty($configPaths)) {
+        if (!empty($templatesPaths)) {
             $templateStorage = \Dvelum\View::storage();
-            foreach ($configPaths as $path) {
+            foreach ($templatesPaths as $path) {
                 $templateStorage->addPath($path);
             }
         }
@@ -249,7 +250,7 @@ class Manager
     /**
      * Check for external modules
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public function hasModules()
     {

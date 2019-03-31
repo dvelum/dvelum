@@ -6,5 +6,6 @@
     'code' => 'Users.events.itemdblclick.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

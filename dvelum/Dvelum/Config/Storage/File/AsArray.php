@@ -94,6 +94,7 @@ class AsArray implements StorageInterface
                 if ($data === false) {
                     $data = [];
                 }
+
                 $data = array_merge($data, $cfgData);
             }
         }

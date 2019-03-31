@@ -55,7 +55,7 @@ class Manager
     {
         $this->appConfig = Config::storage()->get('main.php');
         $configPath = $this->appConfig->get($this->mainConfigKey);
-        $this->config = Config\Factory::storage()->get($configPath, false, true);
+        $this->config = Config::storage()->get($configPath, false, true);
 
         $this->distConfig = new Config\File\AsArray(Config::storage()->getApplyTo() . $configPath);
 

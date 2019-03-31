@@ -53,32 +53,15 @@ class Controller extends App\Controller
     {
         header('Content-Type: text/html; charset=utf-8');
 
-        $vers = $this->request->get('vers', 'int', false);
-
         $page = \Page::getInstance();
         $page->setTemplatesPath('public/');
-
-        /**
-         * @var App\BlockManager $blockManager
-         */
-        $blockManager = Service::get('blockManager');
-
-        if ($vers) {
-            $blockManager->disableCache();
-        }
-
-        if ($page->show_blocks) {
-            $blockManager->init($page->id, $page->default_blocks, $vers);
-        }
 
         $layoutPath = $page->getThemePath() . 'layout.php';
         $this->render($layoutPath, [
             'development' => $this->appConfig->get('development'),
             'page' => $page,
             'path' => $page->getThemePath(),
-            'blockManager' => $blockManager,
-            'resource' => Resource::factory(),
-            'pagesTree' => Model::factory('Page')->getTree()
+            'resource' => Resource::factory()
         ], false);
     }
 }

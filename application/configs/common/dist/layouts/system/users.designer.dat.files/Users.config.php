@@ -12,7 +12,6 @@
       'viewConfig' => '{enableTextSelection: true}',
       'title' => '[js:] appLang.USERS',
       'isExtended' => true,
-      'defineOnly' => true,
     ),
     'state' => 
     array (

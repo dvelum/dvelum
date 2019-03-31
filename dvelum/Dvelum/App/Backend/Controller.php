@@ -376,7 +376,7 @@ class Controller extends App\Controller
      */
     protected function runDesignerProject($project, $renderTo = false)
     {
-        $manager = new \Designer_Manager($this->appConfig);
+        $manager = new Manager($this->appConfig);
         $project = $manager->findWorkingCopy($project);
         $manager->renderProject($project, $renderTo, $this->module);
     }

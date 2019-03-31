@@ -6,5 +6,6 @@
     'code' => 'Groups_action_delete.events.handler.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

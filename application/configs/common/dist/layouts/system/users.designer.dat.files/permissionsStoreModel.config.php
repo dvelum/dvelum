@@ -10,7 +10,6 @@
       'associations' => '[]',
       'idProperty' => 'id',
       'validators' => '[]',
-      'defineOnly' => true,
     ),
     'state' => 
     array (

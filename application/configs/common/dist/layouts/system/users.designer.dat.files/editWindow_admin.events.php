@@ -6,5 +6,6 @@
     'code' => 'editWindow_admin.events.change.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

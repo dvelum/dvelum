@@ -312,8 +312,10 @@ class Application
             return;
         }
 
+        /*
         $auth = new Auth($request, $this->config);
         $auth->auth();
+         */
 
         /*
          * Start routing

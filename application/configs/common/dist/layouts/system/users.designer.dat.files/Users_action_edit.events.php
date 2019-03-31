@@ -11,5 +11,6 @@
       'colIndex' => 'integer',
     ),
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

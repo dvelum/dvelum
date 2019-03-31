@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Modules;
 
 use Dvelum\App\Backend;
+use Dvelum\App\Classmap;
 use Dvelum\App\Module\Generator\GeneratorInterface;
 use Dvelum\App\Module\Manager;
 use Dvelum\Orm;
@@ -759,7 +760,7 @@ class Controller extends Backend\Controller
      */
     public function createClassMap()
     {
-        $mapBuilder = new \Classmap($this->appConfig);
+        $mapBuilder = new Classmap($this->appConfig);
         $mapBuilder->update();
         return $mapBuilder->save();
     }

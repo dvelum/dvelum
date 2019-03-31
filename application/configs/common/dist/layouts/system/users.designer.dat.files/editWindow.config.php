@@ -14,7 +14,6 @@
       'resizable' => false,
       'width' => 405.0,
       'isExtended' => true,
-      'defineOnly' => true,
     ),
   ),
 ); 
