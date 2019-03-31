@@ -94,7 +94,7 @@
         array (
             'dev' => true,
             'active' => true,
-            'class' => 'Backend_Externals_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Externals\\Controller',
             'designer' => '/system/externals.designer.dat',
             'in_menu' => true,
             'icon' => 'i/system/icons/external_modules.png',

@@ -1,7 +1,7 @@
 <?php
 /**
  *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- *  Copyright (C) 2011-2017  Kirill Yegorov
+ *  Copyright (C) 2011-2019  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace Dvelum\App;
 
 use Dvelum\{
+    Externals,
     Request,
     Response,
     Resource,
@@ -34,8 +35,7 @@ use Dvelum\{
     Lang,
     Utils,
     Service,
-    Cache\CacheInterface
-};
+    Cache\CacheInterface};
 
 
 /**
@@ -152,10 +152,7 @@ class Application
         );
 
         // init external modules
-        $externalsCfg = $config['externals'];
-        if ($externalsCfg['enabled']) {
-            $this->initExternals();
-        }
+        $this->initExternals();
 
         $request = Request::factory();
         $response = Response::factory();
@@ -178,13 +175,13 @@ class Application
     {
         $externals = Config\Factory::storage()->get('external_modules.php');
 
-        \Externals_Manager::setConfig([
+        Externals\Manager::setConfig([
             'appConfig' => $this->config,
             'autoloader' => $this->autoloader
         ]);
 
         if ($externals->getCount()) {
-            \Externals_Manager::factory()->loadModules();
+            Externals\Manager::factory()->loadModules();
         }
     }
 

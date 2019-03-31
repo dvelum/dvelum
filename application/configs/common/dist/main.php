@@ -182,15 +182,17 @@ return array(
      * External modules configuration
      */
     'externals' =>[
-        'enabled' => true,
         'path' => './modules',
         'resources_path' => $wwwPath . 'resources/',
         'resources_root' => $wwwRoot . 'resources/',
         'repo' => [
-            [
-                'id' => 'dvelum_official',
+            'dvelum-packagist'=> [
                 'title' => 'DVelum official',
-                'url' => 'https://addons.dvelum.net/api_v2/modules/'
+                'adapter' => '\\Dvelum\\Externals\\Client\\Packagist',
+                'adapterConfig' => [
+                    'vendor' => 'dvelum',
+                    'type'=>'dvelum-module'
+                ]
             ]
         ]
     ],
