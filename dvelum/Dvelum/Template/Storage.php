@@ -97,4 +97,13 @@ class Storage
     {
         $this->config['paths'][] = $path;
     }
+
+    /**
+     * Set paths
+     * @param array $paths
+     */
+    public function setPaths(array $paths):void
+    {
+        $this->config['paths'] = $paths;
+    }
 }

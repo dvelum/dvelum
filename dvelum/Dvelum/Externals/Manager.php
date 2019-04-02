@@ -241,9 +241,14 @@ class Manager
         // Add Templates paths
         if (!empty($templatesPaths)) {
             $templateStorage = \Dvelum\View::storage();
-            foreach ($templatesPaths as $path) {
-                $templateStorage->addPath($path);
-            }
+            $paths = $templateStorage->getPaths();
+            $mainPath = array_shift($paths);
+            // main path
+            $pathsResult = [];
+            $pathsResult[] = $mainPath;
+            $pathsResult = array_merge($pathsResult, $templatesPaths, $paths);
+
+            $templateStorage->setPaths($pathsResult);
         }
     }
 
