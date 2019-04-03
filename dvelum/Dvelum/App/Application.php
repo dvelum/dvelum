@@ -1,6 +1,6 @@
 <?php
 /**
- *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App;
 
-use Dvelum\{
+use Dvelum\{Debug,
     Externals,
     Request,
     Response,
@@ -205,7 +205,7 @@ class Application
         }
 
         if ($this->config->get('development')) {
-            \Debug::setCacheCores($cacheManager->getRegistered());
+            Debug::setCacheCores($cacheManager->getRegistered());
         }
 
         return $cacheManager->get('data');

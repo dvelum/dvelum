@@ -1,11 +1,12 @@
 <?php
 use PHPUnit\Framework\TestCase;
+use \Dvelum\Store\Factory;
 
 class Store_LocalTest extends TestCase
 {
 	public function testGetCount()
 	{
-		$store = Store::factory(Store::Local , 'test');
+		$store = Factory::get(Factory::LOCAL , 'test');
 		$this->assertEquals(0 , $store->getCount());
 		$store->set('key','val');
 		$this->assertEquals(1 , $store->getCount());
@@ -13,7 +14,7 @@ class Store_LocalTest extends TestCase
 	
 	public function testGetData()
 	{
-		$store = Store::factory(Store::Local , 'test');
+		$store = Factory::get(Factory::LOCAL  , 'test');
 		$store->set('key','val');
 		$store->set('key2','val2');		
 		$this->assertEquals( array('key'=>'val','key2'=>'val2'), $store->getData());
@@ -21,7 +22,7 @@ class Store_LocalTest extends TestCase
 	
 	public function testSet()
 	{
-		$store = Store::factory(Store::Local , 'test');
+		$store = Factory::get(Factory::LOCAL  , 'test');
 		$value = array('key'=>'val','key2'=>'val2');
 		$store->set('key',$value);
 		$this->assertEquals( $value, $store->get('key'));
@@ -30,7 +31,7 @@ class Store_LocalTest extends TestCase
 		
 	public function testSetValues()
 	{
-		$store = Store::factory(Store::Local , 'test');
+		$store = Factory::get(Factory::LOCAL  , 'test');
 		$values = ['key'=>'val','key2'=>'val2'];
 		$store->setValues($values);	
 		$v = $store->get('key2');
@@ -39,7 +40,7 @@ class Store_LocalTest extends TestCase
 	
 	public function testRemove()
 	{
-		$store = Store::factory(Store::Local , 'test');
+		$store = Factory::get(Factory::LOCAL  , 'test');
 		$store->set('key','val');
 		$store->set('key2','val2');
 		$store->remove('key');
@@ -48,7 +49,7 @@ class Store_LocalTest extends TestCase
 	
 	public function testClear()
 	{
-		$store = Store::factory(Store::Local , 'test');
+		$store = Factory::get(Factory::LOCAL  , 'test');
 		$store->set('key','val');
 		$store->set('key2','val2');
 		$store->clear();
@@ -58,7 +59,7 @@ class Store_LocalTest extends TestCase
 	
 	public function testSetData()
 	{
-		$store = Store::factory(Store::Local , 'test');
+		$store = Factory::get(Factory::LOCAL  , 'test');
 		$store->set('key','val');
 		$data = array('key2'=>'val2','key3'=>'val3');
 		$store->setData($data);

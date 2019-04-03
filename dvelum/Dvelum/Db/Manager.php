@@ -110,7 +110,7 @@ class Manager implements ManagerInterface
             if($isDevMode){
                 $profiler = $db->getProfiler();
                 if(!empty($profiler)){
-                    \Debug::addDbProfiler($profiler);
+                    \Dvelum\Debug::addDbProfiler($profiler);
                 }
             }
 

@@ -78,13 +78,13 @@ class Auth
                 }
 
                 if($user->isAuthorized()){
-                    $ses = \Store::factory(\Store::Session);
+                    $ses =  \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::SESSION);
                     $ses->set('auth' , true);
                     $ses->set('auth_id', $user->getId());
                 }
 
             }else{
-                $ses = \Store::factory(\Store::Session);
+                $ses =  \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::SESSION);
 
                 if($ses->keyExists('auth') && $ses->get('auth') && $ses->keyExists('auth_id')){
                     $user->setId($ses->get('auth_id'));

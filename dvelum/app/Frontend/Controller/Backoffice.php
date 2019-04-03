@@ -1,6 +1,6 @@
 <?php
 /*
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net Copyright
+ * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net Copyright
  * (C) 2011-2013 Kirill A Egorov This program is free software: you can
  * redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the
@@ -78,7 +78,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
         $this->checkAuth();
 
         if($this->_configBackoffice->get('use_csrf_token')){
-            $csrf = new Security_Csrf();
+            $csrf = new \Dvelum\Security\Csrf();
             $this->_page->csrfToken = $csrf->createToken();
         }
     }
@@ -152,7 +152,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
          * Check CSRF token
          */
         if($this->_configBackoffice->get('use_csrf_token') && Request::hasPost()){
-            $csrf = new Security_Csrf();
+            $csrf = new \Dvelum\Security\Csrf();
             $csrf->setOptions(
                 array(
                     'lifetime' => $this->_configBackoffice->get('use_csrf_token_lifetime'),

@@ -1,6 +1,6 @@
 <?php
 /*
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
+ * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
  * Copyright (C) 2011-2015  Kirill A Egorov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -144,9 +144,9 @@ echo ob_get_clean();
 if($config['development'] && $config->get('debug_panel') && !\Dvelum\Request::factory()->isAjax())
 {
     $debugCfg = \Dvelum\Config::storage()->get('debug_panel.php');
-    Debug::setScriptStartTime($scriptStart);
-    Debug::setLoadedClasses($autoloader->getLoadedClasses());
-    Debug::setLoadedConfigs(\Dvelum\Config::storage()->getDebugInfo());
-    echo Debug::getStats($debugCfg->get('options'));
+    \Dvelum\Debug::setScriptStartTime($scriptStart);
+    \Dvelum\Debug::setLoadedClasses($autoloader->getLoadedClasses());
+    \Dvelum\Debug::setLoadedConfigs(\Dvelum\Config::storage()->getDebugInfo());
+    echo \Dvelum\Debug::getStats($debugCfg->get('options'));
 }
 exit;

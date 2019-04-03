@@ -1,6 +1,6 @@
 <?php
 /**
- *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@ namespace Dvelum\App\Backend\Orm\Controller;
 use Dvelum\App\Backend\Controller;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\Store\Factory;
 
 
 class Crypt extends Controller
@@ -157,7 +158,7 @@ class Crypt extends Controller
                 return;
         }
 
-        $session = \Store_Session::getInstance();
+        $session = Factory::get(Factory::SESSION);
 
         if(!$session->keyExists($container)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));

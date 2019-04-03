@@ -2,7 +2,7 @@
 /**
  * Class optimized for fast work with tree structures.
  * Easily handles up to 25000-30000 sets of elements (less than 1 second to fill out)
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
+ * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
  * Copyright (C) 2011  Kirill A Egorov
  *
  * This program is free software: you can redistribute it and/or modify

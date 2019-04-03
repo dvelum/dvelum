@@ -10,7 +10,7 @@ class Store_Session extends Store_Local
     static protected $_prefix = 'sc_';
     /**
      * @param string $name - optional
-     * @return Store_Session
+     * @return \Dvelum\Store\Session
      */
 	static public function getInstance($name = "default")
 	{

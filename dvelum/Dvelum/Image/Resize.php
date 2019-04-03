@@ -1,7 +1,7 @@
 <?php
 /**
- *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- *  Copyright (C) 2011-2017  Kirill Yegorov
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2019  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+declare(strict_types=1);
+
+namespace Dvelum\Image;
 
 /**
- * Image Resizer Component
- * @package Image
- * @author Kirill A Egorov kirill.a.egorov@gmail.com
+ * Image Resize Component
  */
-class Image_Resize
+class Resize
 {
-
     const L_TYPE_H = 1;
     const L_TYPE_V = 2;
     const L_TYPE_S = 3;

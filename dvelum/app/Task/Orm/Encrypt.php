@@ -2,6 +2,7 @@
 
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\Store\Factory;
 
 class Task_Orm_Encrypt extends Bgtask_Abstract
 {
@@ -42,7 +43,7 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
         /*
          * Save task ID into session for UI
          */
-        $session = Store_Session::getInstance();
+        $session = Factory::get(Factory::SESSION);
         $session->set($container , $this->_pid);
         $this->goBackground();
 

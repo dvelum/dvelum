@@ -31,7 +31,7 @@ $res->addCss('/css/system/'.$theme.'/style.css' , 3);
 
 $token = '';
 if($this->get('useCSRFToken')){
-    $csrf = new Security_Csrf();
+    $csrf = new \Dvelum\Security\Csrf();
     $token = $csrf->createToken();
 }
 

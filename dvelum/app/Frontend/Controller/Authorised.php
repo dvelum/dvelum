@@ -48,7 +48,7 @@ abstract class Frontend_Controller_Authorised extends Frontend_Controller
      * Check CSRF token
     */
     if($this->_configFrontend->get('use_csrf_token') && Request::hasPost()){
-      $csrf = new Security_Csrf();
+      $csrf = new \Dvelum\Security\Csrf();
       $csrf->setOptions(
               array(
                       'lifetime' => $this->_configFrontend->get('use_csrf_token_lifetime'),

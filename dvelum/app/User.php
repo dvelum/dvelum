@@ -2,6 +2,8 @@
 
 use Dvelum\Orm\Model as Model;
 use Dvelum\App\Session\UserSettings;
+use Dvelum\Store\Factory;
+
 /**
  * The class is used to identify the current system User.
  * @author Kirill Egorov
@@ -29,7 +31,7 @@ class User
     protected $settings;
 
     /**
-     * @var Store_Session
+     * @var \Dvelum\Store\Session
      */
     protected $session = false;
 
@@ -74,7 +76,7 @@ class User
 
     protected function __construct()
     {
-        $this->session = Store_Session::getInstance();
+        $this->session = Factory::get(Factory::SESSION);
         $this->checkAuthSession();
     }
 
@@ -246,7 +248,7 @@ class User
      */
     public function logout()
     {
-        $ses = Store::factory(Store::Session);
+        $ses = Dvelum\Store\Factory::get(Dvelum\Store\Factory::SESSION);
         $ses->set('auth' , false);
         $ses->set('auth_id' , false);
         $this->authChecked = false;

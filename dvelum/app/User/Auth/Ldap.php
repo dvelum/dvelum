@@ -124,7 +124,7 @@ class User_Auth_Ldap extends User_Auth_Abstract
 	 */
 	private function saveCredentials($credentials)
 	{
-		Store::factory(Store::Session, $this->config->get('adapter'))->set('credentials',$credentials);
+        \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::SESSION, $this->config->get('adapter'))->set('credentials',$credentials);
 	}
 
 	/**
@@ -134,7 +134,7 @@ class User_Auth_Ldap extends User_Auth_Abstract
 	private function getCredentials()
 	{
 		if($this->config->get('saveCredentials'))
-			return Store::factory(Store::Session, $this->config->get('adapter'))->get('credentials');
+			return  \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::SESSION, $this->config->get('adapter'))->get('credentials');
 		else
 			return false;
 	}
@@ -148,7 +148,7 @@ class User_Auth_Ldap extends User_Auth_Abstract
 		if(!$this->bindStatus) {
 			$credentials = $this->getCredentials();
 			if(!$credentials)
-				throw new Exception('No saved LDAP credentials! Do User_Auth_Ldap::auth($login, $password) first!');
+				throw new \Exception('No saved LDAP credentials! Do User_Auth_Ldap::auth($login, $password) first!');
 
 			$this->bindStatus = @ldap_bind($this->lc,$credentials['dn'],$credentials['password']);
 		}

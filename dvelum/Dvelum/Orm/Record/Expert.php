@@ -11,7 +11,7 @@ use Dvelum\Orm\Record;
  * Helps to find  relations between objects
  * @author Kirill A Egorov kirill.a.egorov@gmail.com
  * @copyright Copyright (C) 2011-2018  Kirill A Egorov,
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
+ * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
  * @license General Public License version 3
  *
  * @todo Test (its betta version)

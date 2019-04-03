@@ -9,6 +9,7 @@
  *  notCroped - boolean flag  - crop only autocroped images
  */
 use Dvelum\Config;
+use \Dvelum\Image\Resize;
 
 class Task_Recrop extends Bgtask_Abstract
 {
@@ -74,16 +75,16 @@ class Task_Recrop extends Bgtask_Abstract
 
                 switch($conf['image']['thumb_types'][$typename]){
                     case 'crop' :
-                        Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true,true);
+                        Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true,true);
                         break;
                     case 'resize_fit':
-                        Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true, false);
+                        Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true, false);
                         break;
                     case 'resize':
-                        Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, false ,false);
+                        Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, false ,false);
                         break;
                     case 'resize_to_frame':
-                        Image_Resize::resizeToFrame($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName);
+                        Resize::resizeToFrame($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName);
                         break;
                 }
             }                  

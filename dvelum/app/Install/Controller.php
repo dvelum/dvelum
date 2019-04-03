@@ -44,7 +44,7 @@ class Install_Controller
 
     public function __construct()
     {
-        $this->session = Store::factory(Store::Session , 'install');
+        $this->session = \Dvelum\Store\Factory::get(\Dvelum\Store\Factory::SESSION , 'install');
         $this->appConfig = Config::storage()->get('main.php' , false , false);
         $this->wwwPath = DVELUM_WWW_PATH;
         $this->docRoot = DVELUM_ROOT;

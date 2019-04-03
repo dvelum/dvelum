@@ -1,6 +1,6 @@
 <?php
 /*
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
+ * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
  * Kirill A Egorov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -181,7 +181,7 @@ abstract class Backend_Controller extends Controller
 
     protected function validateCsrfToken()
     {
-        $csrf = new \Security_Csrf();
+        $csrf = new \Dvelum\Security\Csrf();
         $csrf->setOptions([
             'lifetime' => $this->_configBackend->get('use_csrf_token_lifetime'),
             'cleanupLimit' => $this->_configBackend->get('use_csrf_token_garbage_limit')
@@ -419,7 +419,7 @@ abstract class Backend_Controller extends Controller
          * Check CSRF token
          */
         if($this->_configBackend->get('use_csrf_token') && Request::hasPost()){
-            $csrf = new Security_Csrf();
+            $csrf = new \Dvelum\Security\Csrf();
             $csrf->setOptions(
                 array(
                     'lifetime' => $this->_configBackend->get('use_csrf_token_lifetime'),
@@ -427,7 +427,7 @@ abstract class Backend_Controller extends Controller
                 ));
 
             if(!$csrf->checkHeader() && !$csrf->checkPost())
-                $this->_errorResponse($this->_lang->MSG_NEED_CSRF_TOKEN);
+                $this->_errorResponse($this->_lang->get('MSG_NEED_CSRF_TOKEN'));
         }
 
         $this->_user = $user;

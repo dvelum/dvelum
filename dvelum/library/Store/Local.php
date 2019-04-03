@@ -1,11 +1,14 @@
 <?php
+
+use Dvelum\Store\AdapterInterface;
+
 /**
  * The class allows you to store data locally in the form of key value pairs
  * Note that null value causes the keyExists() method return false (for better perfomance)
  * @author Kirill A Egorov 2008
  * @package Store
  */
-class Store_Local implements Store_Interface
+class Store_Local implements AdapterInterface
 {
 	protected $_storage;
 	protected $_name;
@@ -103,7 +106,7 @@ class Store_Local implements Store_Interface
 
 	/**
 	 * (non-PHPdoc)
-	 * @see Store_Interface::clear()
+	 * @see AdapterInterface::clear()
 	 */
 	public function clear()
 	{

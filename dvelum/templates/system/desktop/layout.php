@@ -27,7 +27,7 @@
 
 	$token = '';
 	if($this->get('useCSRFToken')){
-		$csrf = new Security_Csrf();
+		$csrf = new \Dvelum\Security\Csrf();
 		$token = $csrf->createToken();
 	}
 

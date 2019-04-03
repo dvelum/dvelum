@@ -87,7 +87,7 @@ class User_Auth_Kerberos extends User_Auth_Abstract
      */
     private function saveCredentials($credentials)
     {
-        Store::factory(Store::Session, $this->config->get('adapter'))->set('credentials', $credentials);
+        \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::SESSION, $this->config->get('adapter'))->set('credentials', $credentials);
     }
 
     /**
@@ -97,7 +97,7 @@ class User_Auth_Kerberos extends User_Auth_Abstract
     private function getCredentials()
     {
         if ($this->config->get('saveCredentials'))
-            return Store::factory(Store::Session, $this->config->get('adapter'))->get('credentials');
+            return  \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::SESSION, $this->config->get('adapter'))->get('credentials');
         else
             return false;
     }

@@ -22,6 +22,7 @@ namespace Dvelum\Config;
 
 use Dvelum\Cache\CacheInterface;
 use Dvelum\Config;
+use Dvelum\Store\AdapterInterface;
 
 
 /**
@@ -35,7 +36,7 @@ class Factory
     const File_Array = 1;
 
     /**
-     * @var \Store_Interface|bool
+     * @var AdapterInterface|bool
      */
     protected static $store = false;
     /**
@@ -147,11 +148,11 @@ class Factory
 
     /**
      * Instantiate storage
-     * @return \Store_Interface
+     * @return AdapterInterface
      */
     static protected function connectLocalStore()
     {
-        self::$store = \Store::factory(\Store::Local , 'class_' . __CLASS__);
+        self::$store =  \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::LOCAL , 'class_' . __CLASS__);
         return self::$store;
     }
 

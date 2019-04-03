@@ -28,6 +28,7 @@ use Dvelum\Designer\Manager;
 use Dvelum\Orm\Model;
 use Dvelum\App\Session;
 use Dvelum\Lang;
+use Dvelum\Security\Csrf;
 use Dvelum\Service;
 use Dvelum\View;
 use Dvelum\Request;
@@ -228,7 +229,7 @@ class Controller extends App\Controller
      */
     protected function validateCsrfToken(): bool
     {
-        $csrf = new \Security_Csrf();
+        $csrf = new Csrf();
         $csrf->setOptions([
             'lifetime' => $this->backofficeConfig->get('use_csrf_token_lifetime'),
             'cleanupLimit' => $this->backofficeConfig->get('use_csrf_token_garbage_limit')
@@ -396,8 +397,8 @@ class Controller extends App\Controller
 
         if ($this->backofficeConfig->get('use_csrf_token')) {
             $templateData['csrf'] = [
-                'csrfToken' => (new \Security_Csrf())->createToken(),
-                'csrfFieldName' => \Security_Csrf::POST_VAR
+                'csrfToken' => (new Csrf())->createToken(),
+                'csrfFieldName' => Csrf::POST_VAR
             ];
         }
 

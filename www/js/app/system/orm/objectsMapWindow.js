@@ -1,5 +1,5 @@
 /**
- * DVelum project http://code.google.com/p/dvelum/ , dvelum.net
+ * DVelum project https://github.com/dvelum/dvelum , dvelum.net
  *
  * @author Nicolas Berezin 2012
  */

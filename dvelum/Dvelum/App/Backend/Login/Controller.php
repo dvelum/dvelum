@@ -58,7 +58,7 @@ class Controller extends App\Controller{
         }
 
         if($user->isAuthorized()){
-            $ses = \Store::factory(\Store::Session);
+            $ses =  \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::SESSION);
             $ses->set('auth', true);
             $ses->set('auth_id', $user->getId());
             $this->response->success();

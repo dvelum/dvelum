@@ -1,13 +1,17 @@
 <?php
+
+use Dvelum\Store\AdapterInterface;
 use PHPUnit\Framework\TestCase;
+
+use \Dvelum\Store\Factory;
 
 class StoreTest extends TestCase
 {
 	public function testFactory()
 	{
-		$this->assertInstanceOf('Store_Local' , Store::factory());
-		$this->assertInstanceOf('Store_Local' , Store::factory(Store::Local));
-		$this->assertInstanceOf('Store_Session' , Store::factory(Store::Session));
+		$this->assertInstanceOf('\Dvelum\Store\AdapterInterface' , Factory::get());
+		$this->assertInstanceOf('\Dvelum\Store\Local' , Factory::get(Factory::LOCAL));
+		$this->assertInstanceOf('\Dvelum\Store\Session' , Factory::get(Factory::SESSION));
 		$this->assertEquals(false , Store::factory('Undefined type'));
 	}
 }

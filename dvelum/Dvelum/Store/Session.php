@@ -1,7 +1,7 @@
 <?php
 /**
  * DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
- * Copyright (C) 2011-2017  Kirill Yegorov
+ * Copyright (C) 2010-2019  Kirill Yegorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
-namespace Dvelum\App\Module\Generator;
 
-use Dvelum\Config\ConfigInterface;
+namespace Dvelum\Store;
 
-interface GeneratorInterface
+/**
+ * Session storage
+ * @author Kirill A Egorov 2008
+ * @package Store
+ */
+class Session extends Local
 {
-    public function __construct(
-        ConfigInterface $appConfig,
-        ConfigInterface $designerConfig,
-        ConfigInterface $generatorConfig
-    );
+    protected $prefix = 'sc_';
+    /**
+     * (non-PHPdoc)
+     * @see www/library/Store/Store_Local#_storageConnect()
+     */
+    protected function storageConnect()
+    {
+        @session_start();
 
-    public function createVcModule(string $object, string $controllerClass, string $projectFile);
-    public function createModule(string $object,  string $controllerClass, string $projectFile);
+        if(!isset($_SESSION[$this->prefix][$this->name]))
+            $_SESSION[$this->prefix][$this->name] = [];
+
+        $this->storage = &$_SESSION[$this->prefix][$this->name];
+    }
 }
