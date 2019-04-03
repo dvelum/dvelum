@@ -53,7 +53,7 @@ require __DIR__ . '/vendor/autoload.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/dvelum/Dvelum/Autoload.php';
+require DVELUM_ROOT . '/dvelum/classes/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 use \Dvelum\Config\Factory as ConfigFactory;
