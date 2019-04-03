@@ -25,7 +25,7 @@ class Install_Controller
     protected $localization;
 
     /**
-     * @var Config_Abstract $applicationConfig
+     * @var Config\ConfigInterface $applicationConfig
      */
     protected $appConfig;
 

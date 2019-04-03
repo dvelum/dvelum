@@ -39,14 +39,14 @@ abstract class Backend_Controller extends Controller
     /**
      * Link to Config object of the backend application
      *
-     * @var Config_Abstract
+     * @var Config\ConfigInterface
      */
     protected $_configBackend;
 
     /**
      * Link to Config object of the connected JS files
      *
-     * @var Config_Abstract
+     * @var Config\ConfigInterface
      */
     protected $_configJs;
 
@@ -285,7 +285,7 @@ abstract class Backend_Controller extends Controller
         }
 
         foreach($listedObjects as $object => $ids){
-            $listedObjects[$object] = Db_Object::factory($object, array_unique($ids));
+            $listedObjects[$object] = Orm\Record::factory($object, array_unique($ids));
         }
 
         foreach ($data as &$row)
@@ -611,7 +611,7 @@ abstract class Backend_Controller extends Controller
         /*
          * Define frontend JS variables
          */
-        $res = Resource::getInstance();
+        $res = \Dvelum\Resource::factory();
         $res->addInlineJs('
             app.wwwRoot = "' . $wwwRoot . '";
         	app.admin = "' . $request->url([$adminPath]) . '";

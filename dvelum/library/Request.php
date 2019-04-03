@@ -410,14 +410,14 @@ class Request
             $filter = json_decode($filter , true);
 
         $operators = [
-            'gt' => Db_Select_Filter::GT,
-            'lt' => Db_Select_Filter::LT,
-            'like' => Db_Select_Filter::LIKE,
-            '=' => Db_Select_Filter::EQ,
-            'eq'=> Db_Select_Filter::EQ,
-            'on' => Db_Select_Filter::EQ,
-            'in' => Db_Select_Filter::IN,
-            'ne' => Db_Select_Filter::NOT
+            'gt' => \Dvelum\Db\Select\Filter::GT,
+            'lt' => \Dvelum\Db\Select\Filter::LT,
+            'like' => \Dvelum\Db\Select\Filter::LIKE,
+            '=' => \Dvelum\Db\Select\Filter::EQ,
+            'eq'=> \Dvelum\Db\Select\Filter::EQ,
+            'on' => \Dvelum\Db\Select\Filter::EQ,
+            'in' => \Dvelum\Db\Select\Filter::IN,
+            'ne' => \Dvelum\Db\Select\Filter::NOT
         ];
 
         foreach ($filter as $data)
@@ -425,7 +425,7 @@ class Request
             if(!empty($data['operator']))
                 $operator = $data['operator'];
             else
-                $operator = Db_Select_Filter::EQ;
+                $operator = \Dvelum\Db\Select\Filter::EQ;
             $value = $data['value'];
             $field = $data['property'];
 
@@ -434,9 +434,9 @@ class Request
             }
 
             if($operator == 'like'){
-                $result[] = new Db_Select_Filter($field , $value.'%' ,$operators[$operator]);
+                $result[] = new \Dvelum\Db\Select\Filter($field , $value.'%' ,$operators[$operator]);
             }else{
-                $result[] = new Db_Select_Filter($field , $value ,$operators[$operator]);
+                $result[] = new \Dvelum\Db\Select\Filter($field , $value ,$operators[$operator]);
             }
         }
         return $result;

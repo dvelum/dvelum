@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Dictionary;
 
+use Dvelum\Cache\CacheInterface;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\File;
@@ -41,7 +42,7 @@ class Manager
      */
     protected $path = '';
     /**
-     * @var \Cache_Interface
+     * @var CacheInterface|bool
      */
     protected $cache = false;
     /**

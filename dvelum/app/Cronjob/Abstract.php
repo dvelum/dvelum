@@ -25,7 +25,7 @@ abstract class Cronjob_Abstract
 {
     /**
      * Job config
-     * @var Config_Abstract
+     * @var \Dvelum\Config\ConfigInterface
      */
     protected $_config;
     /**
@@ -41,9 +41,9 @@ abstract class Cronjob_Abstract
     protected $_lock = false;
 
     /**
-     * @param Config_Abstract $config
+     * @param \Dvelum\Config\ConfigInterface $config
      */
-    public function __construct(Config_Abstract $config)
+    public function __construct(\Dvelum\Config\ConfigInterface $config)
     {
     	$this->_config = $config;
     	$this->_stat = array();

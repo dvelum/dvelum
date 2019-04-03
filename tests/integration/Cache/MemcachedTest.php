@@ -19,7 +19,7 @@ class Cache_MemcachedTest extends TestCase
 						]
 				]
 		];
-		return new Cache_Memcached($cfg);
+		return new \Dvelum\Cache\Memcached($cfg);
 	}
 	
 	public function testSave()

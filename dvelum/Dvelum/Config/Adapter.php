@@ -26,7 +26,7 @@ namespace Dvelum\Config;
  * @abstract
  * @package Config
  */
-class Adapter extends \Config_Abstract implements  ConfigInterface
+class Adapter implements ConfigInterface
 {
     /**
      * Parent config identifier

@@ -3,7 +3,7 @@ abstract class Frontend_Controller_Authorised extends Frontend_Controller
 {
   /**
    * Frontend configuration object
-   * @var Config_Abstract
+   * @var \Dvelum\Config\ConfigInterface
    */
   protected $_configFrontend;
   /**
@@ -81,7 +81,7 @@ abstract class Frontend_Controller_Authorised extends Frontend_Controller
   {
     $template = \Dvelum\View::factory();
     $template->set('wwwRoot' , $this->_configMain->get('wwwroot'));
-    $template->resource = Resource::getInstance();
+    $template->resource = \Dvelum\Resource::factory();
     Response::put($template->render('public/backoffice_login.php'));
   }
 }

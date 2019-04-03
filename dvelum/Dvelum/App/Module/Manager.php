@@ -146,7 +146,7 @@ class Manager
     {
         $class = str_replace(['\\','Backend_','_Controller','_App_','App_'], ['_','','','_',''], $class);
         $class = trim(strtolower($class),'_');
-        return \Utils_String::formatClassName($class);
+        return \Dvelum\Utils\Strings::formatClassName($class);
     }
 
     /**

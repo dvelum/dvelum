@@ -26,7 +26,7 @@ abstract class Controller
     /**
      * Link to Resource object
      *
-     * @var Resource
+     * @var \Dvelum\Resource
      */
     protected $_resource;
 
@@ -46,7 +46,7 @@ abstract class Controller
 
     /**
      * Application config
-     * @var Config_Abstract
+     * @var \Dvelum\Config\ConfigInterface
      */
     protected $_configMain;
 

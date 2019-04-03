@@ -42,7 +42,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
     /**
      * Check object owner
-     * @param \Db_Object $object
+     * @param RecordInterface $object
      */
     protected function _checkOwner(RecordInterface $object)
     {
@@ -124,7 +124,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
     /**
      * Get the object data ready to be sent
-     * @param \Db_Object $object
+     * @param RecordInterface $object
      * @param integer $version
      * @return array
      */
@@ -184,7 +184,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
 
         if ($id) {
             try {
-                $obj = \Db_Object::factory($this->_objectName, $id);
+                $obj = Orm\Record::factory($this->_objectName, $id);
             } catch (Exception $e) {
                 Model::factory($this->_objectName)->logError($e->getMessage());
                 return [];
@@ -396,7 +396,7 @@ abstract class Backend_Controller_Crud_Vc extends Backend_Controller_Crud
      * Unpublish object
      * Sends JSON reply in the result
      * and closes the application.
-     * @param Db_Object $object
+     * @param RecordInterface $object
      */
     public function unpublishObject(RecordInterface $object)
     {

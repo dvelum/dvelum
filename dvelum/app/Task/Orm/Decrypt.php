@@ -56,7 +56,7 @@ class Task_Orm_Decrypt extends Bgtask_Abstract
             $this->finish();
 
         $filter = array(
-            $ivField=> new Db_Select_Filter($ivField , false , Db_Select_Filter::NOT_NULL)
+            $ivField=> new \Dvelum\Db\Select\Filter($ivField , false , \Dvelum\Db\Select\Filter::NOT_NULL)
         );
 
         $model = Model::factory($object);

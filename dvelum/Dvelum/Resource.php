@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum;
 
+use Dvelum\Cache\CacheInterface;
 use Dvelum\Config\ConfigInterface;
 
 /**
@@ -36,7 +37,7 @@ class Resource
     protected $config = null;
 
     /**
-     * @var \Cache_Interface|bool
+     * @var CacheInterface|bool
      */
     protected $cache = false;
 

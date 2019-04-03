@@ -194,7 +194,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             return [];
 
         try{
-            $obj = Db_Object::factory($this->_objectName , $id);
+            $obj = Orm\Record::factory($this->_objectName , $id);
         }catch(Exception $e){
             Model::factory($this->_objectName)->logError($e->getMessage());
             return [];

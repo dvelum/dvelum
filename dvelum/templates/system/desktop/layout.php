@@ -3,7 +3,7 @@
 
     $theme = 'gray';
 
-    $res = Resource::getInstance();
+    $res = \Dvelum\Resource::factory();
     $res->addJs('/js/app/system/common.js' , -2);
     $res->addJs('/js/app/system/Desktop.js' , -1);
 

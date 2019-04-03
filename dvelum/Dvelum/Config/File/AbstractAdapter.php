@@ -29,6 +29,11 @@ use Dvelum\Config;
  */
 abstract class AbstractAdapter extends Config\Adapter
 {
+    /**
+     * AbstractAdapter constructor.
+     * @param string $name
+     * @param bool $autoRead
+     */
     public function __construct(string $name , bool $autoRead = true)
     {
         parent::__construct($name);

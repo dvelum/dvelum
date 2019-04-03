@@ -20,7 +20,7 @@ namespace  Dvelum\Db;
 
 use Dvelum\Config\ConfigInterface;
 
-interface ManagerInterface extends \Db_Manager_Interface
+interface ManagerInterface
 {
     /**
      * Get Database connection

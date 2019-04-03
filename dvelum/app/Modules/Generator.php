@@ -5,11 +5,11 @@ use Dvelum\Config;
 class Modules_Generator
 {
    /**
-    * @var Config_Abstract
+    * @var Config\ConfigInterface
     */
    protected $designerConfig;
    /**
-    * @var Config_Abstract
+    * @var Config\ConfigInterface
     */
    protected $appConfig;
 
@@ -52,7 +52,7 @@ class Modules_Generator
       $lang = Lang::lang();
 
       //prepare class name
-      $name = Utils_String::formatClassName($object);
+      $name = \Dvelum\Utils\Strings::formatClassName($object);
 
       $jsName = str_replace('_','', $name);
       $runNamespace = 'app'.$jsName.'Application';
@@ -482,7 +482,7 @@ class Backend_' . $name . '_Controller extends Backend_Controller_Crud_Vc
       $lang = Lang::lang();
 
       //prepare class name
-      $name = Utils_String::formatClassName($object);
+      $name = \Dvelum\Utils\Strings::formatClassName($object);
 
       $jsName = str_replace('_','', $name);
       $runNamespace = 'app'.$jsName.'Application';

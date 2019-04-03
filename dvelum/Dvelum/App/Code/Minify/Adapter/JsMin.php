@@ -26,7 +26,7 @@ class JsMin implements AdapterInterface
 {
     public function minify(string $source): string
     {
-        return \Code_Js_Minify::minify($source);
+        return \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($source);
     }
 
     /**
@@ -42,7 +42,7 @@ class JsMin implements AdapterInterface
         foreach ($files as $file){
             $source.= file_get_contents($file)."\n";
         }
-        file_put_contents($toFile , \Code_Js_Minify::minify($source));
+        file_put_contents($toFile , \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($source));
         return true;
     }
 }

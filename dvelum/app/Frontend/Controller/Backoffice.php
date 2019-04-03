@@ -26,21 +26,21 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
     /**
      * Link to Config object of the frontend application
      *
-     * @var Config_Abstract
+     * @var Config\ConfigInterface
      */
     protected $_configFrontend;
 
     /**
      * Link to Config object of the backend application
      *
-     * @var Config_Abstract
+     * @var Config\ConfigInterface
      */
     protected $_configBackoffice;
 
     /**
      * Link to Config object of the connected JS files
      *
-     * @var Config_Abstract
+     * @var Config\ConfigInterface
      */
     protected $_configJs;
 
@@ -59,7 +59,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
 
     public function __construct(){
         $this->_page = Page::getInstance();
-        $this->_resource = Resource::getInstance();
+        $this->_resource = \Dvelum\Resource::factory();
         $this->_module = $this->getModule();
         $this->_lang = Lang::lang();
         $this->_configMain = Config::storage()->get('main.php');

@@ -517,7 +517,7 @@ class Connections extends \Dvelum\App\Backend\Controller
             $newObjectName = strtolower(str_replace('_', '', $cfg['dbname'])) . $newObjectName;
             if ($manager->objectExists($newObjectName)) {
                 $k = 0;
-                $alphabet = \Utils_String::alphabetEn();
+                $alphabet = \Dvelum\Utils\Strings::alphabetEn();
 
                 while ($manager->objectExists($newObjectName)) {
                     if (!isset($alphabet[$k])) {

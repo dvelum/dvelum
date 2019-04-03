@@ -9,6 +9,7 @@
 
 use Dvelum\Orm;
 use Dvelum\Cache\CacheInterface;
+use Dvelum\Utils\Strings;
 
 class Eventmanager extends Orm\Record\Event\Manager
 {
@@ -30,12 +31,12 @@ class Eventmanager extends Orm\Record\Event\Manager
     public function fireEvent(string $code, Orm\RecordInterface $object)
     {
         $objectName = ucfirst($object->getName());
-        $triggerClass = \Utils_String::classFromString('Trigger_' . $objectName);
+        $triggerClass = \Dvelum\Utils\Strings::classFromString('Trigger_' . $objectName);
 
         $name = explode('_', $objectName);
         $name = array_map('ucfirst', $name);
 
-        $namespacedClass =  \Utils_String::classFromString('\\App\\Trigger\\' . implode('\\', $name));
+        $namespacedClass =  \Dvelum\Utils\Strings::classFromString('\\App\\Trigger\\' . implode('\\', $name));
 
         if(class_exists($triggerClass) && method_exists($triggerClass, $code))
         {

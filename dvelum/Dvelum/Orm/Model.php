@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm;
 
+use Dvelum\Cache\CacheInterface;
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Db;
@@ -89,11 +90,11 @@ class Model
 
     /**
      * Current Cache_Interface
-     * @var \Cache_Interface | bool
+     * @var CacheInterface | bool
      */
     protected $cache;
     /**
-     * @var \Cache_Interface | bool
+     * @var CacheInterface| bool
      * @deprecated
      */
     protected $_cache;

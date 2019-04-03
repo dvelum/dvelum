@@ -7,7 +7,7 @@ use Dvelum\Service;
 class Backend_Localization_Manager
 {
     /**
-     * @var Config_Abstract
+     * @var ConfigInterface
      */
     protected $_appConfig;
     /**

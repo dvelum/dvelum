@@ -85,7 +85,7 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
             if(!empty($ignore)){
                 $filters = array(
                   $ivField => null,
-                  $primaryKey=> new Db_Select_Filter($primaryKey,$ignore,Db_Select_Filter::NOT_IN)
+                  $primaryKey=> new \Dvelum\Db\Select\Filter($primaryKey,$ignore,\Dvelum\Db\Select\Filter::NOT_IN)
                 );
             }else{
                 $filters = array(

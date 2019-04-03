@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Config;
 
+use Dvelum\Cache\CacheInterface;
 use Dvelum\Config;
 
 
@@ -38,7 +39,7 @@ class Factory
      */
     protected static $store = false;
     /**
-     * @var \Cache_Interface|bool
+     * @var CacheInterface|bool
      */
     protected static $cache = false;
 
@@ -53,7 +54,7 @@ class Factory
     }
     /**
      * Set cache adapter
-     * @param \Cache_Interface $core
+     * @param CacheInterface $core
      */
     public static function setCacheCore($core)
     {
@@ -62,7 +63,7 @@ class Factory
 
     /**
      * Get cache adapter
-     * @return \Cache_Interface | false
+     * @return CacheInterface | false
      */
     public static function getCacheCore()
     {
