@@ -46,7 +46,7 @@ class Config extends Router
         $defaultController =  $frontConfig->get('default_controller');
 
         $controller = $request->getPart(0);
-        $pathCode = \Filter::filterValue('pagecode' , $controller);
+        $pathCode = \Dvelum\Filter::filterValue('pagecode' , $controller);
         $routes = Cfg::factory(Cfg\Factory::File_Array , $this->appConfig->get('frontend_modules'))->__toArray();
 
         if(isset($routes[$pathCode]) && class_exists($routes[$pathCode]['class']))

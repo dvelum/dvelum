@@ -35,6 +35,6 @@ class Time extends Field
             return null;
         }
 
-        return \Filter::filterValue('string' , $value);
+        return \Dvelum\Filter::filterValue('string' , $value);
     }
 }

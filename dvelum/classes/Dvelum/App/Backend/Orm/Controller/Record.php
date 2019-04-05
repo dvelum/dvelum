@@ -318,7 +318,7 @@ class Record extends Controller
         }
 
         $objectName = $this->request->post('objectName', 'string', false);
-        $deleteTable = $this->request->post('delete_table', \Filter::FILTER_BOOLEAN, false);
+        $deleteTable = $this->request->post('delete_table', \Dvelum\Filter::FILTER_BOOLEAN, false);
 
         if (!$objectName) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));

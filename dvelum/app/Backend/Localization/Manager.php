@@ -145,7 +145,7 @@ class Backend_Localization_Manager
         $indexPath =  Lang::storage()->getPath($indexName);
         $writePath =  Lang::storage()->getWrite();
         if(!file_exists($indexPath) && !file_exists($writePath . $indexName)) {
-            if(!Utils::exportArray($writePath . $indexFile , array())){
+            if(!\Dvelum\Utils::exportArray($writePath . $indexFile , array())){
                 throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath . $indexName);
             }
         }
@@ -206,7 +206,7 @@ class Backend_Localization_Manager
         $writePath =  Lang::storage()->getWrite();
 
         if(!file_exists($writePath . $indexName)){
-            if(!Utils::exportArray($writePath . $indexName , array())){
+            if(!\Dvelum\Utils::exportArray($writePath . $indexName , array())){
                 throw new ErrorException($this->_lang->get('CANT_WRITE_FS') . ' ' . $writePath . $indexName);
             }
         }
@@ -481,7 +481,7 @@ class Backend_Localization_Manager
         if(!file_exists($indexLocation) && !@mkdir($indexLocation , 0775 , true))
             throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$indexLocation);
 
-        if(!Utils::exportArray($indexPath, array()))
+        if(!\Dvelum\Utils::exportArray($indexPath, array()))
             throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$indexPath);
 
         $langs = $this->getLangs(true);
@@ -495,7 +495,7 @@ class Backend_Localization_Manager
 
             $filePath = $fileLocation . '/' . $name . '.php';
 
-            if(!Utils::exportArray($filePath, array()))
+            if(!\Dvelum\Utils::exportArray($filePath, array()))
                 throw new Exception($this->_lang->get('CANT_WRITE_FS').' '.$filePath);
         }
     }

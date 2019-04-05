@@ -21,6 +21,7 @@ namespace Dvelum\Orm\Model;
 
 use Dvelum\Orm\Model;
 use Dvelum\Db;
+use Dvelum\Utils;
 
 /**
  * Backward compatibility for deprecated Model methods
@@ -166,7 +167,7 @@ class Deprecated
             }
 
             if (isset($fields[$field]) && isset($fields[$field]['db_type']) && $fields[$field]['db_type'] === 'boolean') {
-                $filters[$field] = \Filter::filterValue(\Filter::FILTER_BOOLEAN, $val);
+                $filters[$field] = \Dvelum\Filter::filterValue(\Dvelum\Filter::FILTER_BOOLEAN, $val);
             }
         }
         return $filters;
@@ -284,7 +285,7 @@ class Deprecated
             array_unique($ids);
             $usersData = Model::factory('User')->query()->filters(['id' => $ids])->fields(['id', 'name'])->fetchAll();
             if (!empty($usersData)) {
-                $usersData = \Utils::rekey('id', $usersData);
+                $usersData = Utils::rekey('id', $usersData);
             }
         }
 

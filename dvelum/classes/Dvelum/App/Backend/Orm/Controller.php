@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm;
 
 use Dvelum\Config;
+use Dvelum\File;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Lang;
@@ -11,6 +12,7 @@ use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\App\Router\RouterInterface;
 use Dvelum\Service;
+use Dvelum\Utils;
 
 class Controller extends \Dvelum\App\Backend\Controller implements RouterInterface
 {
@@ -130,9 +132,11 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $data = $stat->getInfo();
 
         if ($this->request->post('hideSysObj', 'boolean', false)) {
-            foreach ($data as $k => $v)
-                if ($v['system'])
+            foreach ($data as $k => $v) {
+                if ($v['system']) {
                     unset($data[$k]);
+                }
+            }
             sort($data);
         }
         $this->response->success($data);
@@ -194,8 +198,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             foreach ($names as $name) {
                 try {
                     $builder = Orm\Record\Builder::factory($name);
-                    if (!$builder->buildForeignKeys(true, true))
+                    if (!$builder->buildForeignKeys(true, true)) {
                         $flag = true;
+                    }
                 } catch (\Exception $e) {
                     $flag = true;
                 }
@@ -211,7 +216,6 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
                 }
             }
         }
-
 
         if ($ormConfig->get('sharding')) {
 
@@ -248,10 +252,11 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         }
 
 
-        if ($flag)
+        if ($flag) {
             $this->response->error($this->lang->get('CANT_EXEC'));
-        else
+        } else {
             $this->response->success();
+        }
     }
 
     /**
@@ -276,10 +281,10 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     public function listAclAction()
     {
         $list = [['id' => '', 'title' => '---']];
-        $files = \File::scanFiles('./dvelum/app/Acl', array('.php'), true, \File::Files_Only);
+        $files = File::scanFiles('./dvelum/app/Acl', array('.php'), true, \File::Files_Only);
         foreach ($files as $v) {
             $path = str_replace('./dvelum/app/', '', $v);
-            $name = \Utils::classFromPath($path);
+            $name = Utils::classFromPath($path);
             $list[] = ['id' => $name, 'title' => $name];
         }
         $this->response->success($list);
@@ -308,8 +313,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         foreach ($files as $v) {
             $name = substr(basename($v), 0, -4);
-            if ($name != 'Interface')
+            if ($name != 'Interface') {
                 $validators[] = ['id' => 'Validator_' . $name, 'title' => $name];
+            }
         }
 
         $this->response->success($validators);
@@ -355,11 +361,11 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $time = microtime(true);
         file_put_contents($wwwPath . 'js/app/system/ORM.js', \Dvelum\App\Code\Minify\Minify::factory()->minifyJs($s));
         echo '
-			Compilation time: ' . number_format(microtime(true) - $time, 5) . ' sec<br>
-			Files compiled: ' . sizeof($sources) . ' <br>
-			Total size: ' . \Utils::formatFileSize($totalSize) . '<br>
-			Compiled File size: ' . \Utils::formatFileSize(filesize($wwwPath . 'js/app/system/ORM.js')) . ' <br>
-		';
+            Compilation time: ' . number_format(microtime(true) - $time, 5) . ' sec<br>
+            Files compiled: ' . sizeof($sources) . ' <br>
+            Total size: ' . Utils::formatFileSize($totalSize) . '<br>
+            Compiled File size: ' . Utils::formatFileSize(filesize($wwwPath . 'js/app/system/ORM.js')) . ' <br>
+        ';
         exit;
     }
 
@@ -379,7 +385,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     public function desktopModuleInfo()
     {
         $version = Config::storage()->get('versions.php')->get('orm');
-        $dbConfigs = array();
+        $dbConfigs = [];
         foreach ($this->appConfig->get('db_configs') as $k => $v) {
             $dbConfigs[] = array('id' => $k, 'title' => $this->lang->get($v['title']));
         }

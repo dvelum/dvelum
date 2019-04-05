@@ -449,7 +449,7 @@ class Install_Controller
             Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.dirname($writePath));
         }
 
-        if(!Utils::exportArray($writePath . 'main.php' , $mainConfig))
+        if(!\Dvelum\Utils::exportArray($writePath . 'main.php' , $mainConfig))
             Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.$writePath);
 
 
@@ -763,7 +763,7 @@ class Install_Controller
             ];
 
             foreach ($blockMap as $place=>$items)
-                $blockMapping->addBlocks(0 , $place , Utils::fetchCol('id', $items));
+                $blockMapping->addBlocks(0 , $place , \Dvelum\Utils::fetchCol('id', $items));
 
             return true;
 

@@ -25,6 +25,7 @@ use Dvelum\Config;
 use Dvelum\Lang;
 use Dvelum\Request;
 use Dvelum\Response;
+use Dvelum\Filter;
 
 /**
  * Back office
@@ -43,7 +44,7 @@ class Backend extends \Dvelum\App\Router
         $configBackend = Config::storage()->get('backend.php');
 
         $controllerCode = $request->getPart(1);
-        $controller = \Dvelum\Utils\Strings::formatClassName(\Filter::filterValue('pagecode', $controllerCode));
+        $controller = \Dvelum\Utils\Strings::formatClassName(Filter::filterValue('pagecode', $controllerCode));
 
         if (empty($controller)) {
             $controller = 'Index';

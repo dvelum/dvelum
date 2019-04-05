@@ -256,7 +256,7 @@ abstract class Backend_Controller extends Controller
             }
         }
 
-        $rowIds = Utils::fetchCol($pKey , $data);
+        $rowIds = \Dvelum\Utils::fetchCol($pKey , $data);
         $rowObjects = Orm\Record::factory($cfg->getName() , $rowIds);
         $listedObjects = [];
 

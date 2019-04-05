@@ -39,7 +39,7 @@ class Upload_File extends Upload_AbstractAdapter
         $name = str_replace(' ' , '_' , $data['name']);
         $name = preg_replace("/[^A-Za-z0-9_\-\.]/i" , '' , $name);
 
-        $ext = File::getExt($name);
+        $ext = \Dvelum\File::getExt($name);
 
         if(!in_array($ext , $this->_config['extensions'])){
             $this->_error='File extension is not allowed';

@@ -195,7 +195,7 @@ class Resource
          */
         if(!empty($fileList))
         {
-            $fileList = \Utils::sortByProperty($fileList, 'order');
+            $fileList = Utils::sortByProperty($fileList, 'order');
             if($compile)
                 $s .= '<script type="text/javascript" src="' .  $this->config->get('wwwRoot') . $this->compileJsFiles($fileList , $useMin) . '"></script>' . "\n";
             else
@@ -268,7 +268,7 @@ class Resource
     {
         $hash = md5($code);
         $cacheFile = $hash . '.js';
-        $cacheFile = \Utils::createCachePath( $this->config->get('jsCachePath') , $cacheFile);
+        $cacheFile = Utils::createCachePath( $this->config->get('jsCachePath') , $cacheFile);
 
         if(!file_exists($cacheFile))
         {
@@ -289,9 +289,9 @@ class Resource
      */
     protected function compileJsFiles(array $files , bool $minify /*deprecated*/) : string
     {
-        $validHash = $this->getFileHash(\Utils::fetchCol('file' , $files));
+        $validHash = $this->getFileHash(Utils::fetchCol('file' , $files));
 
-        $cacheFile = \Utils::createCachePath($this->config->get('jsCachePath'), $validHash . '.js');
+        $cacheFile = Utils::createCachePath($this->config->get('jsCachePath'), $validHash . '.js');
         $cachedUrl = \str_replace($this->config->get('jsCachePath'), $this->config->get('jsCacheUrl') , $cacheFile);
 
         if(!file_exists($cacheFile)){
@@ -360,7 +360,7 @@ class Resource
 
         if(!empty($this->cssFiles))
         {
-            $this->cssFiles = \Utils::sortByProperty($this->cssFiles, 'order');
+            $this->cssFiles = Utils::sortByProperty($this->cssFiles, 'order');
 
             if($combine)
             {
@@ -369,7 +369,7 @@ class Resource
                     $fileList[] = $v->file;
                 }
                 $validHash = $this->getFileHash($fileList);
-                $cacheFile = \Utils::createCachePath($this->config->get('cssCachePath'), $validHash . '.css');
+                $cacheFile = Utils::createCachePath($this->config->get('cssCachePath'), $validHash . '.css');
                 $cachedUrl = \str_replace($this->config->get('cssCachePath'), $this->config->get('cssCacheUrl') , $cacheFile);
 
                 if(!file_exists($cacheFile)){

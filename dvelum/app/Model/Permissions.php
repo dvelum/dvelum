@@ -33,7 +33,7 @@ class Model_Permissions extends Model
             $groupRights = $this->dbSlave->fetchAll($sql);
 
             if (!empty($groupRights))
-                $data = Utils::rekey('module', $groupRights);
+                $data = \Dvelum\Utils::rekey('module', $groupRights);
         }
         /*
          * Load permissions for user
@@ -133,7 +133,7 @@ class Model_Permissions extends Model
         $data = $this->dbSlave->fetchAll($sql);
 
         if (!empty($data))
-            $data = Utils::rekey('module', $data);
+            $data = \Dvelum\Utils::rekey('module', $data);
 
         /*
          * Cache info
@@ -161,7 +161,7 @@ class Model_Permissions extends Model
      */
     public function updateGroupPermissions($groupId, array $data)
     {
-        $modulesToRemove = Utils::fetchCol('module', $data);
+        $modulesToRemove = \Dvelum\Utils::fetchCol('module', $data);
         if (!empty($modulesToRemove)) {
             try {
                 $this->db->delete($this->table(), '`module` IN (\'' . implode("','", $modulesToRemove) . '\') AND `group_id`=' . intval($groupId));
@@ -231,7 +231,7 @@ class Model_Permissions extends Model
      */
     public function updateUserPermissions($userId, $data)
     {
-        $modulesToRemove = Utils::fetchCol('module', $data);
+        $modulesToRemove = \Dvelum\Utils::fetchCol('module', $data);
         if (!empty($modulesToRemove)) {
             try {
                 $this->db->delete($this->table(), '`module` IN (\'' . implode("','", $modulesToRemove) . '\') AND `user_id`=' . intval($userId));
@@ -251,7 +251,7 @@ class Model_Permissions extends Model
 
             $groupPermissions = $this->dbSlave->fetchAll($sql);
             if (!empty($groupPermissions)) {
-                $groupPermissions = Utils::rekey('module', $groupPermissions);
+                $groupPermissions = \Dvelum\Utils::rekey('module', $groupPermissions);
             }
         }
 

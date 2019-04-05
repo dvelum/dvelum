@@ -250,12 +250,12 @@ class Request
     static public function get($name , $type , $default)
     {
         if(isset(self::$_updatedGet[$name]))
-            {return Filter::filterValue($type , self::$_updatedGet[$name]);}
+            {return \Dvelum\Filter::filterValue($type , self::$_updatedGet[$name]);}
 
         if(!isset($_GET[$name]))
             {return $default;}
         else
-            {return Filter::filterValue($type , $_GET[$name]);}
+            {return \Dvelum\Filter::filterValue($type , $_GET[$name]);}
     }
 
     /**
@@ -270,12 +270,12 @@ class Request
     static public function post($name , $type , $default)
     {
         if(isset(self::$_updatedPost[$name]))
-            {return Filter::filterValue($type , self::$_updatedPost[$name]);}
+            {return \Dvelum\Filter::filterValue($type , self::$_updatedPost[$name]);}
 
         if(!isset($_POST[$name]))
             {return $default;}
         else
-            {return Filter::filterValue($type , $_POST[$name]);}
+            {return \Dvelum\Filter::filterValue($type , $_POST[$name]);}
     }
 
     /**
@@ -350,7 +350,7 @@ class Request
         if(!isset($_SERVER[$name]))
             {return $default;}
 
-        return Filter::filterValue($type , $_SERVER[$name]);
+        return \Dvelum\Filter::filterValue($type , $_SERVER[$name]);
     }
 
     /**

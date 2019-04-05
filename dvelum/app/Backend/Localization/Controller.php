@@ -6,6 +6,7 @@
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
+use Dvelum\Filter;
 
 class Backend_Localization_Controller extends Backend_Controller_Crud
 {

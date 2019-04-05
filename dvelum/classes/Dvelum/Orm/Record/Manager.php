@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Orm\Record;
 
+use Dvelum\File;
 use Dvelum\Service;
 
 /**
@@ -61,7 +62,7 @@ class Manager
 				if(!file_exists($path.$cfgPath))
 					continue;
 
-				$items = \File::scanFiles($path.$cfgPath , array('.php'), false, \File::Files_Only);
+				$items = File::scanFiles($path.$cfgPath , array('.php'), false, \File::Files_Only);
 
 				if(!empty($items))
 				{

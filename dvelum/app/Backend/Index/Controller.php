@@ -34,7 +34,7 @@ class Backend_Index_Controller extends Dvelum\App\Backend\Controller
 
         $modules = $this->user->getModuleAcl()->getAvailableModules();
 
-        $data = \Utils::sortByField($data  , 'title');
+        $data = \Dvelum\Utils::sortByField($data  , 'title');
 
         $isDev = (boolean) $this->appConfig->get('development');
         $wwwRoot = $this->appConfig->get('wwwroot');
@@ -70,7 +70,7 @@ class Backend_Index_Controller extends Dvelum\App\Backend\Controller
      */
     public function moduleInfoAction()
     {
-        $module = $this->request->post('id' , Filter::FILTER_STRING , false);
+        $module = $this->request->post('id' , \Dvelum\Filter::FILTER_STRING , false);
 
         $manager = new Modules_Manager();
         $moduleCfg = $manager->getModuleConfig($module);

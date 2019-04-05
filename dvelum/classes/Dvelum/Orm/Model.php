@@ -25,6 +25,7 @@ use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Db;
 use Dvelum\Service;
+use Dvelum\Utils;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -482,7 +483,7 @@ class Model
 
         if ($data === false) {
             $sql = $this->dbSlave->select()->from($this->table(),
-                $fields)->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . \Utils::listIntegers($ids) . ')');
+                $fields)->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . Utils::listIntegers($ids) . ')');
             $data = $this->dbSlave->fetchAll($sql);
 
             if (!$data) {

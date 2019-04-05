@@ -85,7 +85,7 @@ class Service
      * @param CacheInterface|null $cache
      * @throws \Exception
      */
-    public function init(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, CacheInterface $cache = null)
+    public function __construct(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, CacheInterface $cache = null)
     {
         $this->config = $config;
         $this->language = $language;

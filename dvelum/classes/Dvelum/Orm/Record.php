@@ -23,6 +23,7 @@ namespace Dvelum\Orm;
 use Dvelum\Orm\Record\DataModel;
 use Dvelum\Orm\Record\ErrorMessage;
 use Dvelum\Service;
+use Dvelum\Utils;
 
 /**
  * Database Object class. ORM element.
@@ -359,7 +360,7 @@ class Record implements RecordInterface
             return false;
         }
 
-        $data = \Utils::fetchCol($cfg->getPrimaryKey(), $data);
+        $data = Utils::fetchCol($cfg->getPrimaryKey(), $data);
 
         foreach ($ids as $v) {
             if (!in_array(intval($v), $data, true)) {

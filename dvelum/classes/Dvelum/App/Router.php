@@ -78,7 +78,7 @@ abstract class Router implements Router\RouterInterface
             return;
         }
 
-        if($controller instanceof Router\RouterInterface || $controller instanceof \Router_Interface){
+        if($controller instanceof Router\RouterInterface){
             $controller->route($request, $response);
         }else{
 

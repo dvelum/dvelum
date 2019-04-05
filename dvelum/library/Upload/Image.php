@@ -20,7 +20,7 @@ class Upload_Image extends Upload_File
         if(!empty($data) && !empty($this->_config['sizes']))
         {
             foreach ($this->_config['sizes'] as $name => $xy){
-                $ext = File::getExt($data['path']);
+                $ext = \Dvelum\File::getExt($data['path']);
                 $replace= '-' . $name.$ext;
                 $newName=str_replace($ext, ($replace) , $data['path']);
 

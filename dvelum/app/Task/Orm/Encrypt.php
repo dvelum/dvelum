@@ -63,7 +63,7 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
 
         while(!empty($data))
         {
-            $ids = Utils::fetchCol($primaryKey , $data);
+            $ids = \Dvelum\Utils::fetchCol($primaryKey , $data);
 
             $objectList = Orm\Record::factory($object , $ids);
             $count = 0;

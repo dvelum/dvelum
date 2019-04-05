@@ -270,24 +270,24 @@ class Property
             case 'mediumint' :
             case 'int' :
             case 'bigint' :
-                $value = \Filter::filterValue('int' , $value);
+                $value = \Dvelum\Filter::filterValue('int' , $value);
                 break;
             
             case 'float' :
             case 'double' :
             case 'decimal' :
-                $value = \Filter::filterValue('float' , $value);
+                $value = \Dvelum\Filter::filterValue('float' , $value);
                 
                 break;
             case 'bool' :
             case 'boolean' :
-                $value = \Filter::filterValue('boolean' , $value);
+                $value = \Dvelum\Filter::filterValue('boolean' , $value);
                 break;
             case 'date' :
             case 'time' :
             case 'timestamp' :
             case 'datetime' :
-                $value = \Filter::filterValue('string' , $value);
+                $value = \Dvelum\Filter::filterValue('string' , $value);
                 break;
             case 'tinytext' :
             case 'text' :
@@ -297,7 +297,7 @@ class Property
             case 'char' :
             case 'varchar' :
                 if(!isset($fieldInfo['allow_html']) || !$fieldInfo['allow_html'])
-                    $value = \Filter::filterValue('string' , $value);
+                    $value = \Dvelum\Filter::filterValue('string' , $value);
                 break;
                 //  case 'bit':
                 //		$value = preg_replace ('/[^01]*/', '', $value);

@@ -22,7 +22,7 @@ class Model_Group extends Model
 		$data = $this->dbSlave->fetchAll($sql);
 
 		if(!empty($data))
-			$data = \Utils::collectData('id', 'title', $data);
+			$data = \Dvelum\Utils::collectData('id', 'title', $data);
 		/*
 		 * Store cache
 		 */

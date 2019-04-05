@@ -25,6 +25,7 @@ use Dvelum\Db\Adapter;
 use Dvelum\Lang;
 use Dvelum\Orm;
 use Dvelum\Service;
+use Dvelum\Utils;
 
 class Stat
 {
@@ -147,9 +148,9 @@ class Stat
         if(!empty($tableInfo))
         {
             $records = $tableInfo['rows'];
-            $dataLength = \Utils::formatFileSize($tableInfo['data_length']);
-            $indexLength = \Utils::formatFileSize($tableInfo['index_length']);
-            $size = \Utils::formatFileSize($tableInfo['data_length'] + $tableInfo['index_length']);
+            $dataLength = Utils::formatFileSize($tableInfo['data_length']);
+            $indexLength = Utils::formatFileSize($tableInfo['index_length']);
+            $size = Utils::formatFileSize($tableInfo['data_length'] + $tableInfo['index_length']);
         }
 
         $data = [

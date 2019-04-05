@@ -20,6 +20,7 @@
 declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm;
 
+use Dvelum\File;
 use Dvelum\Orm;
 use Dvelum\Lang;
 use Dvelum\Config;
@@ -141,7 +142,7 @@ class Manager
 			if(!is_dir($path)){
 				continue;
 			}
-			$data =  \File::scanFiles($path, false, false, \File::Dirs_Only);
+			$data =  File::scanFiles($path, false, false, \File::Dirs_Only);
 			foreach($data as $k=>&$v){
 				if(!file_exists($v . '/objects.php')){
 					unset($data[$k]);

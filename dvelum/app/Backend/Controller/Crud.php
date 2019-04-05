@@ -410,7 +410,7 @@ abstract class Backend_Controller_Crud extends Backend_Controller
 
             if(!empty($data))
             {
-                $objectIds = Utils::fetchCol('id' , $data);
+                $objectIds = \Dvelum\Utils::fetchCol('id' , $data);
                 try{
                     $objects = Orm\Record::factory($object ,$objectIds);
                 }catch (Exception $e){

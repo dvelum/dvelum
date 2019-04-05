@@ -32,6 +32,6 @@ class Boolean extends Field
      */
     public function filter($value)
     {
-        return intval(\Filter::filterValue('boolean' , $value));
+        return intval(\Dvelum\Filter::filterValue('boolean' , $value));
     }
 }

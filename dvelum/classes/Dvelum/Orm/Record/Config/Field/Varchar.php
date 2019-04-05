@@ -35,7 +35,7 @@ class Varchar extends \Dvelum\Orm\Record\Config\Field
         }
 
         if(!isset($this->config['allow_html']) || !$this->config['allow_html']){
-            $value = \Filter::filterValue('string' , $value);
+            $value = \Dvelum\Filter::filterValue('string' , $value);
         }
 
         return $value;

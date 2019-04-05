@@ -41,7 +41,7 @@ class Model_Acl_Simple extends Model
             $groupRights = $this->dbSlave->fetchAll($sql);
 
             if(!empty($groupRights))
-                $data =  Utils::rekey('object', $groupRights);
+                $data =  \Dvelum\Utils::rekey('object', $groupRights);
         }
         /*
          * Load permissions for user
@@ -57,7 +57,7 @@ class Model_Acl_Simple extends Model
          * Replace group permissions by permissions redefined for concrete user
          */
         if(!empty($userRights))
-            $data = array_merge($data , Utils::rekey('object', $userRights));
+            $data = array_merge($data , \Dvelum\Utils::rekey('object', $userRights));
 
         /*
          * Cache info
@@ -91,7 +91,7 @@ class Model_Acl_Simple extends Model
         $data = $this->dbSlave->fetchAll($sql);
 
         if(!empty($data))
-            $data =  Utils::rekey('object', $data);
+            $data =  \Dvelum\Utils::rekey('object', $data);
 
         /*
          * Cache info
@@ -120,7 +120,7 @@ class Model_Acl_Simple extends Model
      */
     public function updateGroupPermissions($groupId , array $data)
     {
-        $modulesToRemove = Utils::fetchCol('object', $data);
+        $modulesToRemove = \Dvelum\Utils::fetchCol('object', $data);
         if(!empty($modulesToRemove))
         {
             try{

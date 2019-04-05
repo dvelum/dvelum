@@ -230,7 +230,7 @@ class Controller extends App\Backend\Controller
             $data = $dataModel->query()->filters($filter)->params($pager)->fields($fields)->search($query)->fetchAll();
 
             if (!empty($data)) {
-                $objectIds = \Utils::fetchCol('id', $data);
+                $objectIds = Utils::fetchCol('id', $data);
 
                 try {
                     $objects = Orm\Record::factory($object, $objectIds);

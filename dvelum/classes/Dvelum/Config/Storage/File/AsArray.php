@@ -23,6 +23,7 @@ namespace Dvelum\Config\Storage\File;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Config\Storage\StorageInterface;
+use Dvelum\Utils;
 
 class AsArray implements StorageInterface
 {
@@ -316,7 +317,7 @@ class AsArray implements StorageInterface
             }
         }
 
-        if (\Utils::exportArray($id, $data) !== false) {
+        if (Utils::exportArray($id, $data) !== false) {
             Config\Factory::cache();
             return true;
         }

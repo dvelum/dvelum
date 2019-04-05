@@ -24,7 +24,7 @@ class Model_Links extends Model
     		$this->table(),
     		'`src` = ' . $this->db->quote($objectName).' 
     			AND
-    		 `src_id` IN('.\Utils::listIntegers($objectsIds).')'
+    		 `src_id` IN('.\Dvelum\Utils::listIntegers($objectsIds).')'
         );
     }
 }

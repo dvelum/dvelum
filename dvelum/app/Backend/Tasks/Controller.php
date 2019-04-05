@@ -51,10 +51,10 @@ class Backend_Tasks_Controller extends Backend_Controller
                     $finish = time();
                 }
 
-                $v['runtime'] = Utils::formatTime($finish - strtotime($v['time_started']));
+                $v['runtime'] = \Dvelum\Utils::formatTime($finish - strtotime($v['time_started']));
 
-                $v['memory'] = Utils::formatFileSize($v['memory']);
-                $v['memory_peak'] = Utils::formatFileSize($v['memory_peak']);
+                $v['memory'] = \Dvelum\Utils::formatFileSize($v['memory']);
+                $v['memory_peak'] = \Dvelum\Utils::formatFileSize($v['memory_peak']);
                 if($v['op_total']==0)
                     $v['progress'] = 0;
                 else

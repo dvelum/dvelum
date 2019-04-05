@@ -104,7 +104,7 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
      	
      	$result = array();
      	if(!empty($signals))
-     		$result = Utils::fetchCol('signal', $signals);	
+     		$result = \Dvelum\Utils::fetchCol('signal', $signals);
      	if($clean)
      		$this->_signalModel->clearSignals($pid);
      	return $result;

@@ -290,7 +290,7 @@ class Query
             }
 
             if (isset($fields[$field]) && isset($fields[$field]['db_type']) && $fields[$field]['db_type'] === 'boolean') {
-                $filters[$field] = \Filter::filterValue(\Dvelum\Filter::FILTER_BOOLEAN, $val);
+                $filters[$field] = \Dvelum\Filter::filterValue(\Dvelum\Filter::FILTER_BOOLEAN, $val);
             }
         }
         return $filters;

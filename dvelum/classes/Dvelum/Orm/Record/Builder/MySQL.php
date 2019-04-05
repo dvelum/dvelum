@@ -26,6 +26,7 @@ use Dvelum\Db\Metadata\ColumnObject;
 use Dvelum\Orm;
 use Dvelum\Orm\Exception;
 use Dvelum\Orm\Record\Builder;
+use Dvelum\Utils;
 
 
 /**
@@ -475,7 +476,7 @@ class MySQL extends AbstractAdapter
         $realKeysNames = array();
 
         if(!empty($realKeys))
-            $realKeys = \Utils::rekey('CONSTRAINT_NAME' , $realKeys);
+            $realKeys = Utils::rekey('CONSTRAINT_NAME' , $realKeys);
 
         if(!empty($configForeignKeys))
         {
