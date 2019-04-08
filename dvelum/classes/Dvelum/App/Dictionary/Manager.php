@@ -285,7 +285,7 @@ class Manager
 
         if (!$manager) {
             $cfg = Config::storage()->get('main.php');
-            $cacheManager = new \Cache_Manager();
+            $cacheManager = new \Dvelum\App\Cache\Manager();
             $cache = $cacheManager->get('data');
             $manager = new static($cfg, $cache);
         }

@@ -65,7 +65,7 @@ abstract class Frontend_Controller_Backoffice extends Backend_Controller{
         $this->_lang = Lang::lang();
         $this->_configMain = Config::storage()->get('main.php');
 
-        $cacheManager = new Cache_Manager();
+        $cacheManager = new \Dvelum\App\Cache\Manager();
         $this->_configFrontend = Config::storage()->get('frontend.php');
         $this->_configBackoffice = Config::storage()->get('backend.php');
         $this->_cache = $cacheManager->get('data');

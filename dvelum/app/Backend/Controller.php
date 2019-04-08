@@ -94,7 +94,7 @@ abstract class Backend_Controller extends Controller
     {
         parent::__construct();
 
-        $cacheManager = new Cache_Manager();
+        $cacheManager = new App\Cache\Manager();
         $this->_configBackend = Config::storage()->get('backend.php');
         $this->_module = $this->getModule();
         $this->_cache = $cacheManager->get('data');
