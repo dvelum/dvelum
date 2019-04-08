@@ -28,65 +28,62 @@ use Dvelum\Service;
  * Db_Object Manager class
  * @package Db
  * @subpackage Db_Object
- * @author Kirill A Egorov kirill.a.egorov@gmail.com 
- * @copyright Copyright (C) 2011-2012  Kirill A Egorov, 
+ * @author Kirill A Egorov kirill.a.egorov@gmail.com
+ * @copyright Copyright (C) 2011-2012  Kirill A Egorov,
  * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
  * @license General Public License version 3
  */
-
 class Manager
 {
-	static protected $objects = null;
-	
+    static protected $objects = null;
+
     /**
      * Get list of registered objects (names only)
      * @return array
      */
-    public function getRegisteredObjects() : ?array
+    public function getRegisteredObjects(): ?array
     {
-    	if(is_null(self::$objects))
-    	{
-			self::$objects = array();
-			$paths = \Dvelum\Config::storage()->getPaths();
+        if (is_null(self::$objects)) {
+            self::$objects = [];
+            $paths = \Dvelum\Config::storage()->getPaths();
 
-			$list = array();
+            $list = [];
 
             /**
              * @var \Dvelum\Orm\Service $ormService
              */
-			$ormService = Service::get('orm');
-			$cfgPath = $ormService->getConfigSettings()->get('configPath');
+            $ormService = Service::get('orm');
+            $cfgPath = $ormService->getConfigSettings()->get('configPath');
 
-			foreach($paths as $path)
-			{
-				if(!file_exists($path.$cfgPath))
-					continue;
+            foreach ($paths as $path) {
+                if (!file_exists($path . $cfgPath)) {
+                    continue;
+                }
 
-				$items = File::scanFiles($path.$cfgPath , array('.php'), false, \File::Files_Only);
+                $items = File::scanFiles($path . $cfgPath, array('.php'), false, File::Files_Only);
 
-				if(!empty($items))
-				{
-					foreach ($items as $o){
-						$baseName = substr(basename($o), 0, -4);
-						if(!isset($list[$baseName])){
-							self::$objects[] = $baseName;
-							$list[$baseName] = true;
-						}
-					}
-				}
-			}
-    	}
-    	return self::$objects;
+                if (!empty($items)) {
+                    foreach ($items as $o) {
+                        $baseName = substr(basename($o), 0, -4);
+                        if (!isset($list[$baseName])) {
+                            self::$objects[] = $baseName;
+                            $list[$baseName] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return self::$objects;
     }
-    
+
     /**
      * Check if object exists
      * @param string $name
      * @return bool
      */
-    public function objectExists(string $name) : bool
+    public function objectExists(string $name): bool
     {
-    	$list = $this->getRegisteredObjects();
-    	return in_array(strtolower($name), $list , true);
+        $list = $this->getRegisteredObjects();
+        return in_array(strtolower($name), $list, true);
     }
 }
