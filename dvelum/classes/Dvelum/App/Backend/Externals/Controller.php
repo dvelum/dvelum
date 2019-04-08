@@ -123,7 +123,7 @@ class Controller extends App\Backend\Controller
             return;
         }
 
-        $langManager = new \Backend_Localization_Manager($this->appConfig);
+        $langManager = new App\Backend\Localization\Manager($this->appConfig);
         try{
             $langManager->compileLangFiles();
         }catch (\Exception $e){

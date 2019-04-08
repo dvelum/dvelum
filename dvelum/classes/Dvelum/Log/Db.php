@@ -23,7 +23,7 @@ namespace Dvelum\Log;
  * Class Db
  * @package Dvelum\Log
  */
-class Db extends \Psr\Log\AbstractLogger implements \Log
+class Db extends \Psr\Log\AbstractLogger implements LogInterface
 {
     /**
      * Database Table
@@ -41,13 +41,14 @@ class Db extends \Psr\Log\AbstractLogger implements \Log
      */
     protected $name;
 
-    protected $logFields = array(
+    protected $logFields = [
         'name'=>'name',
         'message'=>'message',
         'date'=>'date',
         'level'=>'level',
         'context'=>'context'
-    );
+    ];
+
     protected $lastError = '';
 
     /**
@@ -63,7 +64,7 @@ class Db extends \Psr\Log\AbstractLogger implements \Log
         $this->db = $dbConnection;
     }
 
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = [])
     {
         try{
             $this->db->insert(

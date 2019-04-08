@@ -1,7 +1,9 @@
 <?php
+
 use Dvelum\Orm;
-use Dvelum\Orm\Model;
 use Dvelum\Config;
+use Dvelum\Lang;
+
 class Modules_Generator
 {
    /**

@@ -494,7 +494,7 @@ class Install_Controller
     }
 
     protected function _compileLangs($mainConfig){
-        $langManager = new Backend_Localization_Manager($mainConfig);
+        $langManager = new \Dvelum\App\Backend\Localization\Manager($mainConfig);
         try{
             $langManager->compileLangFiles();
         }catch (Exception $e){

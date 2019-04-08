@@ -23,6 +23,7 @@ namespace Dvelum\App\Console;
 
 use Dvelum\App;
 use Dvelum\Config;
+use Dvelum\Log\LogInterface;
 use Dvelum\Orm\Model;
 use Dvelum\App\Router;
 use Dvelum\Request;
@@ -33,7 +34,7 @@ class Controller extends App\Controller implements Router\RouterInterface
 {
     /**
      * Logs adapter
-     * @var \Log
+     * @var LogInterface
      */
     protected $log = false;
     /**

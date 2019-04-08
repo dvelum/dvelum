@@ -3,6 +3,7 @@ use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
 use Dvelum\Store\Factory;
+use Dvelum\Lang;
 
 class Task_Orm_Decrypt extends Bgtask_Abstract
 {

@@ -55,7 +55,7 @@
             'id' => 'Localization',
             'dev' => true,
             'active' => true,
-            'class' => 'Backend_Localization_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Localization\\Controller',
             'designer' => '/system/localization.designer.dat',
             'in_menu' => true,
             'icon' => 'i/system/icons/localize.png',

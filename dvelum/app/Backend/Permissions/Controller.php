@@ -1,7 +1,6 @@
 <?php
-use Dvelum\Orm;
-use Dvelum\Orm\Model;
-use Dvelum\Config;
+
+use Dvelum\Lang;
 
 class Backend_Permissions_Controller extends Backend_Controller
 {

@@ -19,7 +19,9 @@
 
 namespace Dvelum\Log\File;
 
-class Sql extends \Dvelum\Log\File implements \Log
+use Dvelum\Log\LogInterface;
+
+class Sql extends \Dvelum\Log\File implements LogInterface
 {
     /**
      * @param mixed $level

@@ -90,9 +90,9 @@ class Cron_Lock
 
     /**
      * Установить адаптер логов
-     * @param Log $log
+     * @param \Dvelum\Log\LogInterface $log
      */
-    public function setLogsAdapter(Log $log)
+    public function setLogsAdapter(\Dvelum\Log\LogInterface $log)
     {
         $this->logsAdapter = $log;
     }

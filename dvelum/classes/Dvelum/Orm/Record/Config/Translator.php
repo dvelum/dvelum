@@ -78,7 +78,7 @@ class Translator
      */
     public function getStorage(): StorageInterface
     {
-        return \Lang::storage();
+        return Lang::storage();
     }
 
     /**

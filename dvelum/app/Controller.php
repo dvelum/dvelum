@@ -59,8 +59,8 @@ abstract class Controller
     {
         $this->_page = Page::getInstance();
         $this->_resource = \Dvelum\Resource::factory();
-        $this->_lang = Lang::lang();
-        $this->_configMain = Config::storage()->get('main.php');
+        $this->_lang = \Dvelum\Lang::lang();
+        $this->_configMain = \Dvelum\Config::storage()->get('main.php');
 
         $this->request = \Dvelum\Request::factory();
     }

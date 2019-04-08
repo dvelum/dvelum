@@ -344,7 +344,7 @@ class Manager
 
         $baseDict = $storage->get($this->baseDir . $baseLocale . '/' . $name . '.php', false, false);
 
-        $locManager = new \Backend_Localization_Manager($this->appConfig);
+        $locManager = new \Dvelum\App\Backend\Localization\Manager($this->appConfig);
 
         foreach ($locManager->getLangs(true) as $locale) {
             if ($locale == $baseLocale) {

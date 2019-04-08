@@ -47,7 +47,6 @@
         array (
           'rootProperty' => 'data',
           'totalProperty' => 'count',
-          'idProperty' => 'id',
         ),
       ),
     ),

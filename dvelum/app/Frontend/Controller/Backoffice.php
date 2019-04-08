@@ -12,6 +12,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 use Dvelum\Config;
+use Dvelum\Lang;
 
 abstract class Frontend_Controller_Backoffice extends Backend_Controller{
     /**

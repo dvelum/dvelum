@@ -18,7 +18,7 @@
  */
 namespace Dvelum\Log;
 
-class Mixed extends \Psr\Log\AbstractLogger implements \Log
+class Mixed extends \Psr\Log\AbstractLogger implements LogInterface
 {
     /**
      * @var File

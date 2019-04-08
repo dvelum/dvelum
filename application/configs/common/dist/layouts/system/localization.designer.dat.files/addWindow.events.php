@@ -9,5 +9,6 @@
       'values' => '{object}',
     ),
     'is_local' => true,
+    'buffer' => false,
   ),
 ); 

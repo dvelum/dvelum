@@ -53,12 +53,15 @@
             'isLink' =>$isLink
 		];
 	}
+
+    $lang = \Dvelum\Lang::lang();
+
 	$menuData[] = [
 		'id' => 'logout',
 		'dev' => false,
 		'url' =>  Request::url([$this->get('adminPath'),'']) . '?logout=1',
 		'isLink'=>true,
-		'title'=>Lang::lang()->get('LOGOUT'),
+		'title'=>$lang->get('LOGOUT'),
 		'icon' => Request::wwwRoot() . 'i/system/icons/logout.png'
 	];
 

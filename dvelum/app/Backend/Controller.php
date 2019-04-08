@@ -394,7 +394,7 @@ abstract class Backend_Controller extends Controller
         if($user->isAuthorized()) {
             $uid = $user->getId();
             $userLang = $user->getSettings()->get('language');
-            $langManager = new Backend_Localization_Manager($this->_configMain);
+            $langManager = new App\Backend\Localization\Manager($this->_configMain);
             $acceptedLanguages = $langManager->getLangs(true);
             // switch language
             if(!empty($userLang) && $userLang!=$this->_configMain->get('language') && in_array($userLang, $acceptedLanguages , true)){

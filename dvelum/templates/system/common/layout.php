@@ -50,11 +50,14 @@ foreach($modules as $data)
         'icon'=> Request::wwwRoot().$data['icon']
     ];
 }
+
+$lang = \Dvelum\Lang::lang();
+
 $menuData[] = [
     'id' => 'logout',
     'dev' => false,
     'url' =>  Request::url([$this->get('adminPath'),'']) . 'login/logout',
-    'title'=>Lang::lang()->get('LOGOUT'),
+    'title'=> $lang->get('LOGOUT'),
     'icon' => Request::wwwRoot() . 'i/system/icons/logout.png'
 ];
 
@@ -96,10 +99,10 @@ $wwwRoot = Request::wwwRoot();
 <div id="header" class="x-hidden">
     <div class="sysVersion"><img src="<?php echo $wwwRoot;?>i/logo-s.png" />
         <span class="num"><?php echo $this->get('version');?></span>
-        <div class="loginInfo"><?php echo Lang::lang()->get('YOU_LOGGED_AS');?>:
+        <div class="loginInfo"><?php echo $lang->get('YOU_LOGGED_AS');?>:
             <span class="name"><?php echo User::getInstance()->getInfo()['name'];?></span>
             <span class="logout"><a href="<?php echo Request::url([$this->get('adminPath'),'']);?>login/logout">
-	   <img src="<?php echo $wwwRoot;?>i/system/icons/logout.png" title="<?php echo Lang::lang()->get('LOGOUT');?>" height="16" width="16">
+	   <img src="<?php echo $wwwRoot;?>i/system/icons/logout.png" title="<?php echo $lang->get('LOGOUT');?>" height="16" width="16">
 	  </a></span>
         </div>
     </div>
