@@ -138,7 +138,6 @@ class Application
             'cache' => $cache
         ]));
 
-        Utils::setSalt($config['salt']);
         /*
          * Register Services
          */

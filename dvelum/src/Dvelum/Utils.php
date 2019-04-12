@@ -30,20 +30,6 @@ use \Tree as Tree;
 class Utils
 {
     /**
-     * @var string
-     */
-    protected static $salt = '';
-
-    /**
-     * Define system hash salt
-     * @param string $salt
-     */
-    static public function setSalt(string $salt): void
-    {
-        self::$salt = $salt;
-    }
-
-    /**
      * Create an array from another array using field as key
      *
      * @param string $key
