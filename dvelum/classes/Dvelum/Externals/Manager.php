@@ -107,7 +107,7 @@ class Manager
                     }
                     $mConfig = include $modulePath . '/config.php';
 
-                    $module = basename($modulePath);
+                   // $module = basename($modulePath);
                     $moduleId = $mConfig['id'];
 
                     if (!$this->config->offsetExists($moduleId)) {
@@ -121,16 +121,44 @@ class Manager
                 }
             }
         }
-//
-//        if ($hasNew) {
-//            if (!Config::storage()->save($this->config)) {
-//                $writePath = Config\Factory::storage()->getWrite();
-//                $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $writePath . 'external_modules.php';
-//                return false;
-//            };
-//        }
+        /*
+        if ($hasNew) {
+           return $this->saveConfig();
+        }
+        */
 
         return true;
+    }
+
+    /**
+     * Save modules configuration
+     * @throws \Exception
+     * @return bool
+     */
+    public function saveConfig() : bool
+    {
+        if (!Config::storage()->save($this->config)) {
+            $writePath = Config\Factory::storage()->getWrite();
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $writePath . 'external_modules.php';
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Add external module
+     * @param string $id
+     * @param array $config
+     * @throws \Exception
+     * @return bool
+     */
+    public function add(string $id , array $config) : bool
+    {
+        if($this->moduleExists($id)){
+            return false;
+        }
+        $this->config->set($id, $config);
+        return $this->saveConfig();
     }
 
     /**

@@ -49,6 +49,17 @@ return [
         'type' => 'action',
         'adapter' => '\\Dvelum\\App\\Console\\Clear\\StaticCache'
     ],
+    //  external add
+    'external-add' =>[
+        'type' => 'action',
+        'adapter' => '\\Dvelum\\App\\Console\\External\\Add'
+    ]
+
+
+
+
+
+    /*
     // test task
     'testTask'=>array(
         'type' => 'managed_task',
@@ -61,4 +72,5 @@ return [
         'type' => 'job',
         'adapter' => 'Cronjob_Test'
     )
+    */
 ];
