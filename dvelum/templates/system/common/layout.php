@@ -37,6 +37,7 @@ if($this->get('useCSRFToken')){
 
 $menuData = [];
 $modules = $this->modules;
+$request = \Dvelum\Request::factory();
 foreach($modules as $data)
 {
     if(!$data['active'] || !$data['in_menu'] || !isset($this->userModules[$data['id']])){
@@ -45,9 +46,9 @@ foreach($modules as $data)
     $menuData[] = [
         'id' => $data['id'],
         'dev' => $data['dev'],
-        'url' =>  Request::url(array($this->get('adminPath'),$data['id'])),
+        'url' =>  $request->url(array($this->get('adminPath'),$data['id'])),
         'title'=> $data['title'],
-        'icon'=> Request::wwwRoot().$data['icon']
+        'icon'=> $request->wwwRoot().$data['icon']
     ];
 }
 
@@ -56,19 +57,19 @@ $lang = \Dvelum\Lang::lang();
 $menuData[] = [
     'id' => 'logout',
     'dev' => false,
-    'url' =>  Request::url([$this->get('adminPath'),'']) . 'login/logout',
+    'url' =>  $request->url([$this->get('adminPath'),'']) . 'login/logout',
     'title'=> $lang->get('LOGOUT'),
-    'icon' => Request::wwwRoot() . 'i/system/icons/logout.png'
+    'icon' => $request->wwwRoot() . 'i/system/icons/logout.png'
 ];
 
 $res->addInlineJs('
 		app.menuData = '.json_encode($menuData).';
 		app.permissions = Ext.create("app.PermissionsStorage");
-		var rights = '.json_encode(User::getInstance()->getPermissions()).';
+		var rights = '.json_encode(User::getInstance()->getModuleAcl()->getPermissions()).';
 		app.permissions.setData(rights);
 	');
 
-$wwwRoot = Request::wwwRoot();
+$wwwRoot = $request->wwwRoot();
 ?>
 <!DOCTYPE html>
 <html>
@@ -101,7 +102,7 @@ $wwwRoot = Request::wwwRoot();
         <span class="num"><?php echo $this->get('version');?></span>
         <div class="loginInfo"><?php echo $lang->get('YOU_LOGGED_AS');?>:
             <span class="name"><?php echo User::getInstance()->getInfo()['name'];?></span>
-            <span class="logout"><a href="<?php echo Request::url([$this->get('adminPath'),'']);?>login/logout">
+            <span class="logout"><a href="<?php echo $request->url([$this->get('adminPath'),'']);?>login/logout">
 	   <img src="<?php echo $wwwRoot;?>i/system/icons/logout.png" title="<?php echo $lang->get('LOGOUT');?>" height="16" width="16">
 	  </a></span>
         </div>

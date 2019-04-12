@@ -4,7 +4,7 @@ if(isset($this->msg))
 else
     $message = '<h1>Something went wrong.</h1>';
 
-$wwwRoot = Request::wwwRoot();
+$wwwRoot = \Dvelum\Request::factory()->wwwRoot();
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" class="systemPage">
 <head>

@@ -4,9 +4,8 @@ return [
     // PSR-0 autoload paths
     'paths' => [
         './application/classes',
-        './dvelum/classes',
-        './dvelum/app',
-        './dvelum/library',
+        './dvelum/src',
+        './dvelum/deprecated',
     ],
     // paths priority (cannot be overridden by external modules)
     'priority'=>[

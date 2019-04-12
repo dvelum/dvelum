@@ -1,7 +1,7 @@
 <?php
 $page = $this->get('page');
 $resource = \Dvelum\Resource::factory();
-$wwwRoot = Request::wwwRoot();
+$wwwRoot = \Dvelum\Request::factory()->wwwRoot();
 ?>
 <!DOCTYPE html>
 <html>

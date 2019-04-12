@@ -17,7 +17,7 @@ return array(
     // Autoloader config
     'autoloader' => array(
         'paths' => array(
-            './dvelum/classes'
+            './dvelum/src'
         )
     ),
 );

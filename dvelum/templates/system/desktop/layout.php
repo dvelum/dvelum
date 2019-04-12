@@ -24,6 +24,7 @@
     $res->addCss('/css/system/style.css' , 2);
     $res->addCss('/css/system/desktop/style.css' , 3);
 
+    $request = \Dvelum\Request::factory();
 
 	$token = '';
 	if($this->get('useCSRFToken')){
@@ -47,9 +48,9 @@
 		$menuData[] = [
 			'id' => $data['id'],
 			'dev' => $data['dev'],
-			'url' =>  Request::url(array($this->get('adminPath'),$data['id'])),
+			'url' =>  $request->url(array($this->get('adminPath'),$data['id'])),
 			'title'=> $data['title'],
-			'icon'=> Request::wwwRoot().$data['icon'],
+			'icon'=> $request->wwwRoot().$data['icon'],
             'isLink' =>$isLink
 		];
 	}
@@ -59,16 +60,16 @@
 	$menuData[] = [
 		'id' => 'logout',
 		'dev' => false,
-		'url' =>  Request::url([$this->get('adminPath'),'']) . '?logout=1',
+		'url' =>  $request->url([$this->get('adminPath'),'']) . '?logout=1',
 		'isLink'=>true,
 		'title'=>$lang->get('LOGOUT'),
-		'icon' => Request::wwwRoot() . 'i/system/icons/logout.png'
+		'icon' => $request->wwwRoot() . 'i/system/icons/logout.png'
 	];
 
 	$res->addInlineJs('
 		app.menuData = '.json_encode($menuData).';
 		app.permissions = Ext.create("app.PermissionsStorage");
-		var rights = '.json_encode(User::getInstance()->getPermissions()).';
+		var rights = '.json_encode(User::getInstance()->getModuleAcl()->getPermissions()).';
 		app.permissions.setData(rights);
 		app.version = "'.$this->get('version').'"
 		app.user = {
@@ -76,7 +77,7 @@
 		}
 	');
 
-	$wwwRoot = Request::wwwRoot();
+	$wwwRoot = $request->wwwRoot();
 ?>
 <!DOCTYPE html>
 <html>

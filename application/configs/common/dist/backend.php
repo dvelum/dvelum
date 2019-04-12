@@ -14,41 +14,25 @@ return array(
         'en',
         'ru'
     ],
-    'system_controllers' => array(
-        'Backend_Index_Controller',
-        'Backend_Mediacategory_Controller',
-        'Backend_Permissions_Controller',
-        'Dvelum\\App\\Backend\\Vcs\\Controller',
-        'Dvelum\\App\\Backend\\History\\Controller',
-        'Dvelum\\App\\Backend\\Login\\Controller'
-    ),
+    'system_controllers' => [
+        '\\Dvelum\\App\\Backend\\Index\\Controller',
+        '\\Dvelum\\App\\Backend\\Permissions\\Controller',
+        '\\Dvelum\\App\\Backend\\Vcs\\Controller',
+        '\\Dvelum\\App\\Backend\\History\\Controller',
+        '\\Dvelum\\App\\Backend\\Login\\Controller'
+    ],
     //reserved object names
-    'system_objects' => array(
+    'system_objects' => [
         'Bgtask',
         'Bgtask_signal',
-        'Blockmapping',
-        'Blocks',
-        'Comment',
         'Group',
         'Historylog',
         'Links',
-        'Medialib',
-        'Menu_item',
-        'Menu',
-        'Page',
         'Permissions',
         'User',
         'Vc',
         'Acl_simple',
-        'Mediacategory',
-        'Sysdocs_class',
-        'Sysdocs_class_method',
-        'Sysdocs_class_method_param',
-        'Sysdocs_class_property',
-        'Sysdocs_file',
-        'Sysdocs_localization'
-
-    ),
+    ],
     'use_csrf_token' => 0,
     // token lifetime seconds by default 2 hours 7200 s
     'use_csrf_token_lifetime' => 7200,

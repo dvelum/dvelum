@@ -14,7 +14,7 @@
             'id' => 'Tasks',
             'dev' => false,
             'active' => true,
-            'class' => 'Backend_Tasks_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Tasks\\Controller',
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/tasks.png',
@@ -94,7 +94,7 @@
         array (
             'dev' => false,
             'active' => true,
-            'class' => 'Backend_User_Auth_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\User\\Auth\\Controller',
             'designer' => '/system/user_auth.designer.dat',
             'in_menu' => true,
             'icon' => 'i/system/icons/user_auth.png',
@@ -104,7 +104,7 @@
         array (
             'dev' => false,
             'active' => true,
-            'class' => 'Dvelum\\App\\Backend\\Settings\\Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Settings\\Controller',
             'designer' => '/system/user_settings.designer.dat',
             'in_menu' => true,
             'icon' => 'i/system/icons/user_settings.png',
