@@ -60,5 +60,10 @@ return [
     'testJob'=>array(
         'type' => 'job',
         'adapter' => 'Cronjob_Test'
-    )
+    ),
+    //external add
+    'external-add' =>[
+        'type' => 'action',
+        'adapter' => '\\Dvelum\\App\\Console\\External\\Add'
+    ]
 ];

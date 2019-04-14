@@ -524,4 +524,35 @@ class Externals_Manager
     {
         return $this->externalsConfig['repo'];
     }
+
+    /**
+     * Save modules configuration
+     * @throws \Exception
+     * @return bool
+     */
+    public function saveConfig() : bool
+    {
+        if (!Config::storage()->save($this->config)) {
+            $writePath = Config\Factory::storage()->getWrite();
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $writePath . 'external_modules.php';
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Add external module
+     * @param string $id
+     * @param array $config
+     * @throws \Exception
+     * @return bool
+     */
+    public function add(string $id , array $config) : bool
+    {
+        if($this->moduleExists($id)){
+            return false;
+        }
+        $this->config->set($id, $config);
+        return $this->saveConfig();
+    }
 }
