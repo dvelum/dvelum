@@ -51,18 +51,20 @@ class EventManager extends Orm\Record\Event\Manager
     public function fireEvent(string $code, Orm\RecordInterface $object)
     {
         $objectName = ucfirst($object->getName());
-        $triggerClass = Strings::classFromString('Trigger_' . $objectName);
 
         $name = explode('_', $objectName);
         $name = array_map('ucfirst', $name);
 
+        $triggerClass = Strings::classFromString('\\Dvelum\\App\\Trigger\\' . implode('\\', $name));
         $namespacedClass =  Strings::classFromString('\\App\\Trigger\\' . implode('\\', $name));
 
         if(class_exists($triggerClass) && method_exists($triggerClass, $code))
         {
             $trigger = new $triggerClass();
-            if($this->cache)
+            if($this->cache){
                 $trigger->setCache($this->cache);
+            }
+
             $trigger->$code($object);
         }elseif (class_exists($namespacedClass) && method_exists($namespacedClass, $code)){
             $trigger = new $namespacedClass();
@@ -74,10 +76,9 @@ class EventManager extends Orm\Record\Event\Manager
         elseif(method_exists('\\Dvelum\\App\\Trigger', $code))
         {
             $trigger = new Trigger();
-
-            if($this->cache)
+            if($this->cache){
                 $trigger->setCache($this->cache);
-
+            }
             $trigger->$code($object);
         }
     }
