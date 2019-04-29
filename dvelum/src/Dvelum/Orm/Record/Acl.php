@@ -19,6 +19,7 @@
 
 namespace Dvelum\Orm\Record;
 
+use Dvelum\App\Session\User;
 use Dvelum\Orm\Record;
 use Dvelum\Orm\RecordInterface;
 
@@ -34,9 +35,9 @@ abstract class Acl
 
     /**
      * Current user
-     * @var \User | bool
+     * @var User | bool
      */
-    protected $_user = false;
+    protected $user = false;
 
     /**
      * Check create permissions
@@ -79,7 +80,7 @@ abstract class Acl
      */
     public function setUser($user)
     {
-        $this->_user = $user;
+        $this->user = $user;
     }
 
     /**

@@ -281,9 +281,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     public function listAclAction()
     {
         $list = [['id' => '', 'title' => '---']];
-        $files = File::scanFiles('./dvelum/app/Acl', array('.php'), true, \File::Files_Only);
+        $files = File::scanFiles('./dvelum/src/Dvelum/App/Acl', ['.php'], true, File::Files_Only);
         foreach ($files as $v) {
-            $path = str_replace('./dvelum/app/', '', $v);
+            $path = str_replace(['./dvelum/src/'], [''], $v);
             $name = Utils::classFromPath($path);
             $list[] = ['id' => $name, 'title' => $name];
         }
@@ -296,7 +296,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     */
     public function connectionTypesAction()
     {
-        $data = array();
+        $data = [];
         foreach ($this->appConfig->get('db_configs') as $k => $v) {
             $data[] = ['id' => $k, 'title' => $this->lang->get($v['title'])];
         }
@@ -309,7 +309,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     public function listValidatorsAction()
     {
         $validators = [];
-        $files = \File::scanFiles('./dvelum/library/Validator', array('.php'), false, \File::Files_Only);
+        $files = File::scanFiles('./dvelum/library/Validator', array('.php'), false, File::Files_Only);
 
         foreach ($files as $v) {
             $name = substr(basename($v), 0, -4);
@@ -326,7 +326,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
      */
     public function compileAction()
     {
-        $sources = array(
+        $sources = [
             'js/app/system/orm/panel.js',
             'js/app/system/orm/dataGrid.js',
             'js/app/system/orm/objectWindow.js',
@@ -343,7 +343,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             'js/app/system/orm/selectObjectsWindow.js',
             'js/app/system/orm/validate.js'
 
-        );
+        ];
 
         if (!$this->appConfig->get('development')) {
             die('Use development mode');
