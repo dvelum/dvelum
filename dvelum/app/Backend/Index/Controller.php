@@ -79,12 +79,14 @@ class Backend_Index_Controller extends Dvelum\App\Backend\Controller
 
         if(!$module || !$this->user->getModuleAcl()->canView($module) || !$moduleCfg['active']){
             $this->response->error($this->lang->get('CANT_VIEW'));
+            return;
         }
 
         $controller = $moduleCfg['class'];
 
         if(!class_exists($controller)){
             $this->response->error('Undefined controller');
+            return;
         }
 
         $controller = new $controller($this->request, $this->response);
