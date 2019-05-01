@@ -1,6 +1,6 @@
 <?php
 return array(
-    'theme' => 'triton', // gray / triton / crisp / desktop / aria / classic
+    'theme' => 'gray', // gray / triton / crisp / desktop / aria / classic
     'desktop_themes' => ['desktop'],
     'themes' => [
         'gray',
