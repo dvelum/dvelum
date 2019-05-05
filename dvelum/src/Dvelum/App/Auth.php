@@ -112,7 +112,7 @@ class Auth
         if (empty($providerCfg))
             throw new \Exception('Wrong auth provider config: ' . 'auth/' . $provider . '.php');
 
-        $authProvider = \User_Auth::factory($providerCfg);
+        $authProvider = \Dvelum\User\Auth::factory($providerCfg);
 
         if (!$authProvider->auth($login, $password))
             return $user;

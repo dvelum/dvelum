@@ -1,6 +1,6 @@
 <?php
 return array(
-	'adapter' => 'User_Auth_Kerberos',
+	'adapter' => '\\Dvelum\\User\\Auth\\Kerberos',
 	'defaultRealm' => 'LOCAL',
 	'saveCredentials' => true
 );

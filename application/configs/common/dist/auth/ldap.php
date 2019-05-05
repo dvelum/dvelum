@@ -1,6 +1,6 @@
 <?php
 return array(
-	'adapter' => 'User_Auth_Ldap',
+	'adapter' => '\\Dvelum\\User\\Auth\\Ldap',
 	'host' => 'ldaps://ldapserver.local',
 	'port' => '636',
 	'protocolVersion' => 3,

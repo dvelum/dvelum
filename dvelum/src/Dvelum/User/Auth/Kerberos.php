@@ -1,22 +1,45 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2019  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+declare(strict_types=1);
+
+namespace Dvelum\User\Auth;
 
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config\ConfigInterface;
+use \Exception;
 
 /**
  * User Auth provider for Kerberos.
  * @author Sergey Leschenko
  */
-class User_Auth_Kerberos extends User_Auth_Abstract
+class Kerberos extends AbstractAdapter
 {
     /**
      * @param ConfigInterface $config - auth provider config
      */
     public function __construct(ConfigInterface $config)
     {
-        if (!extension_loaded('krb5'))
+        if (!extension_loaded('krb5')) {
             throw new Exception('Cannot find php-krb5 extension!');
+        }
 
         parent::__construct($config);
     }
@@ -25,9 +48,9 @@ class User_Auth_Kerberos extends User_Auth_Abstract
      * Auth user
      * @param string $login
      * @param string $password
-     * @return boolean
+     * @return bool
      */
-    public function auth($login, $password)
+    public function auth($login, $password): bool
     {
         $realm = false;
         $l = explode('@', $login, 2);
@@ -36,8 +59,9 @@ class User_Auth_Kerberos extends User_Auth_Abstract
             $realm = $l[1];
         }
 
-        if (!$realm)
+        if (!$realm) {
             $realm = $this->config->get('defaultRealm');
+        }
 
         $principal = $login . '@' . $realm;
 
@@ -47,16 +71,18 @@ class User_Auth_Kerberos extends User_Auth_Abstract
             ->where('`enabled` = 1');
 
         $userData = Model::factory('User')->getSlaveDbConnection()->fetchRow($sql);
-        if (!$userData)
+        if (!$userData) {
             return false;
+        }
 
         $authCfg = Model::factory('User_Auth')->getList(
             false,
             array('type' => 'kerberos', 'user' => $userData['id'])
         );
 
-        if (empty($authCfg))
+        if (empty($authCfg)) {
             return false;
+        }
 
         $authCfg = Orm\Record::factory('User_Auth', $authCfg[0]['id'])->get('config');
         $authCfg = json_decode($authCfg, true);
@@ -72,11 +98,13 @@ class User_Auth_Kerberos extends User_Auth_Abstract
             return false;
         }
 
-        if (!$ticket)
+        if (!$ticket) {
             return false;
+        }
 
-        if ($this->config->get('saveCredentials'))
+        if ($this->config->get('saveCredentials')) {
             $this->saveCredentials(array('principal' => $principal, 'password' => $password));
+        }
 
         $this->userData = $userData;
         return true;
@@ -88,7 +116,8 @@ class User_Auth_Kerberos extends User_Auth_Abstract
      */
     private function saveCredentials($credentials)
     {
-        \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::SESSION, $this->config->get('adapter'))->set('credentials', $credentials);
+        \Dvelum\Store\Factory::get(\Dvelum\Store\Factory::SESSION, $this->config->get('adapter'))->set('credentials',
+            $credentials);
     }
 
     /**
@@ -97,9 +126,11 @@ class User_Auth_Kerberos extends User_Auth_Abstract
      */
     private function getCredentials()
     {
-        if ($this->config->get('saveCredentials'))
-            return  \Dvelum\Store\Factory::get( \Dvelum\Store\Factory::SESSION, $this->config->get('adapter'))->get('credentials');
-        else
+        if ($this->config->get('saveCredentials')) {
+            return \Dvelum\Store\Factory::get(\Dvelum\Store\Factory::SESSION,
+                $this->config->get('adapter'))->get('credentials');
+        } else {
             return false;
+        }
     }
 }

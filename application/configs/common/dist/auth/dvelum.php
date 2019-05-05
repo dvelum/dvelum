@@ -1,4 +1,4 @@
 <?php
 return array(
-	'adapter' => 'User_Auth_Dvelum'
+	'adapter' => '\\Dvelum\\User\\Auth\\Dvelum'
 );
