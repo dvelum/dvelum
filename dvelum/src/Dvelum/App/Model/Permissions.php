@@ -1,12 +1,35 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2019  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+declare(strict_types=1);
+
+namespace Dvelum\App\Model;
 
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\Utils;
+use \Exception;
 
-class Model_Permissions extends Model
+class Permissions extends Model
 {
-    static protected $_fields = array('view', 'edit', 'delete', 'publish', 'module', 'only_own');
+    static protected $fields = ['view', 'edit', 'delete', 'publish', 'module', 'only_own'];
 
     /**
      * Get modules permissions for user
@@ -18,7 +41,7 @@ class Model_Permissions extends Model
     public function getPermissions($userId, $groupId)
     {
         if (empty($userId))
-            throw new \Exception('Need user id');
+            throw new Exception('Need user id');
 
         $data = [];
         /*
@@ -27,19 +50,19 @@ class Model_Permissions extends Model
         if ($groupId) {
 
             $sql = $this->dbSlave->select()
-                ->from($this->table(), self::$_fields)
+                ->from($this->table(), self::$fields)
                 ->where('`group_id` = ' . intval($groupId))
                 ->where('`user_id` IS NULL');
             $groupRights = $this->dbSlave->fetchAll($sql);
 
             if (!empty($groupRights))
-                $data = \Dvelum\Utils::rekey('module', $groupRights);
+                $data = Utils::rekey('module', $groupRights);
         }
         /*
          * Load permissions for user
          */
         $sql = $this->dbSlave->select()
-            ->from($this->table(), self::$_fields)
+            ->from($this->table(), self::$fields)
             ->where('`user_id` = ' . intval($userId))
             ->where('`group_id` IS NULL');
 
@@ -51,7 +74,7 @@ class Model_Permissions extends Model
          */
         if (!empty($userRights)) {
             foreach ($userRights as $v) {
-                foreach (self::$_fields as $field) {
+                foreach (self::$fields as $field) {
                     if ($field == 'module')
                         continue;
                     if (isset($v[$field])) {
@@ -118,7 +141,7 @@ class Model_Permissions extends Model
      */
     public function getGroupPermissions($groupId)
     {
-        $data = array();
+        $data = [];
         /*
          * Check if cache exists
          */
@@ -126,14 +149,14 @@ class Model_Permissions extends Model
             return $data;
 
         $sql = $this->dbSlave->select()
-            ->from($this->table(), self::$_fields)
+            ->from($this->table(), self::$fields)
             ->where('`group_id` = ' . intval($groupId))
             ->where('`user_id` IS NULL');
 
         $data = $this->dbSlave->fetchAll($sql);
 
         if (!empty($data))
-            $data = \Dvelum\Utils::rekey('module', $data);
+            $data = Utils::rekey('module', $data);
 
         /*
          * Cache info
@@ -157,11 +180,11 @@ class Model_Permissions extends Model
      *                                                    ),
      *                                                    ...
      *                                                )
-     * @return boolean
+     * @return bool
      */
-    public function updateGroupPermissions($groupId, array $data)
+    public function updateGroupPermissions($groupId, array $data) : bool
     {
-        $modulesToRemove = \Dvelum\Utils::fetchCol('module', $data);
+        $modulesToRemove = Utils::fetchCol('module', $data);
         if (!empty($modulesToRemove)) {
             try {
                 $this->db->delete($this->table(), '`module` IN (\'' . implode("','", $modulesToRemove) . '\') AND `group_id`=' . intval($groupId));
@@ -176,7 +199,7 @@ class Model_Permissions extends Model
             /**
              * Check if all needed fields are present
              */
-            $diff = array_diff(self::$_fields, array_keys($values));
+            $diff = array_diff(self::$fields, array_keys($values));
 
             if (!empty($diff))
                 continue;
@@ -227,11 +250,11 @@ class Model_Permissions extends Model
      *                                                    ),
      *                                                    ...
      *                                                )
-     * @return boolean
+     * @return bool
      */
-    public function updateUserPermissions($userId, $data)
+    public function updateUserPermissions($userId, $data) : bool
     {
-        $modulesToRemove = \Dvelum\Utils::fetchCol('module', $data);
+        $modulesToRemove = Utils::fetchCol('module', $data);
         if (!empty($modulesToRemove)) {
             try {
                 $this->db->delete($this->table(), '`module` IN (\'' . implode("','", $modulesToRemove) . '\') AND `user_id`=' . intval($userId));
@@ -245,13 +268,13 @@ class Model_Permissions extends Model
 
         if ($userInfo['group_id']) {
             $sql = $this->dbSlave->select()
-                ->from($this->table(), self::$_fields)
+                ->from($this->table(), self::$fields)
                 ->where('`group_id` = ' . intval($userInfo['group_id']))
                 ->where('`user_id` IS NULL');
 
             $groupPermissions = $this->dbSlave->fetchAll($sql);
             if (!empty($groupPermissions)) {
-                $groupPermissions = \Dvelum\Utils::rekey('module', $groupPermissions);
+                $groupPermissions = Utils::rekey('module', $groupPermissions);
             }
         }
 
@@ -261,7 +284,7 @@ class Model_Permissions extends Model
             /**
              * Check if all needed fields are present
              */
-            $diff = array_diff(self::$_fields, array_keys($values));
+            $diff = array_diff(self::$fields, array_keys($values));
 
             if (!empty($diff))
                 continue;
@@ -322,7 +345,7 @@ class Model_Permissions extends Model
      * @return bool
      * @throws \Exception
      */
-    public function setGroupPermissions($group, $module, $view, $edit, $delete, $publish)
+    public function setGroupPermissions($group, $module, $view, $edit, $delete, $publish) : bool
     {
         $data = $this->query()
             ->filters([
@@ -358,9 +381,9 @@ class Model_Permissions extends Model
     /**
      * Remove group permissions
      * @param integer $groupId
-     * @return boolean
+     * @return bool
      */
-    public function removeGroup($groupId)
+    public function removeGroup($groupId) : bool
     {
         $select = $this->dbSlave->select()
             ->from($this->table(), 'id')

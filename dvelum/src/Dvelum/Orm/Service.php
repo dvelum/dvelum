@@ -86,8 +86,12 @@ class Service
      * @param CacheInterface|null $cache
      * @throws \Exception
      */
-    public function __construct(ConfigInterface $config, Db\ManagerInterface $dbManager, string $language, CacheInterface $cache = null)
-    {
+    public function __construct(
+        ConfigInterface $config,
+        Db\ManagerInterface $dbManager,
+        string $language,
+        CacheInterface $cache = null
+    ) {
         $this->config = $config;
         $this->language = $language;
         $this->eventManager = new EventManager();
@@ -102,7 +106,7 @@ class Service
             'hardCacheTime' => $config->get('hard_cache'),
             'dataCache' => $cache,
             'defaultDbManager' => $dbManager,
-            'logLoader'=> function() use ($orm){
+            'logLoader' => function () use ($orm) {
                 return $orm->getLog();
             }
         ]);
@@ -114,22 +118,26 @@ class Service
 
         $this->configSettings = Config\Factory::create([
             'configPath' => $config->get('object_configs'),
-            'translatorLoader' => function() use ($orm){
+            'translatorLoader' => function () use ($orm) {
                 return $orm->getTranslator();
             },
             'useForeignKeys' => $config->get('foreign_keys'),
-            'ivField'=> $config->get('iv_field'),
+            'ivField' => $config->get('iv_field'),
         ]);
 
-        $this->storeLoader = function()use($orm){return $orm->storage();};
-        $this->distributedStoreLoader = function()use($orm){return $orm->distributedStorage();};
+        $this->storeLoader = function () use ($orm) {
+            return $orm->storage();
+        };
+        $this->distributedStoreLoader = function () use ($orm) {
+            return $orm->distributedStorage();
+        };
     }
 
     /**
      * Get ORM configuration options
      * @return ConfigInterface
      */
-    public function getConfig() : ConfigInterface
+    public function getConfig(): ConfigInterface
     {
         return $this->config;
     }
@@ -140,21 +148,21 @@ class Service
      */
     public function getTranslator()
     {
-        if(empty($this->translator)){
+        if (empty($this->translator)) {
             $commonFile = $this->language . '/objects.php';
             $objectsDir = $this->language . '/' . $this->getConfig()->get('translations_dir');
             $this->translator = new Orm\Record\Config\Translator($commonFile, $objectsDir);
         }
-        return  $this->translator;
+        return $this->translator;
     }
 
     /**
      * @return CryptServiceInterface
      */
-    public function getCryptService() : \Dvelum\Security\CryptServiceInterface
+    public function getCryptService(): \Dvelum\Security\CryptServiceInterface
     {
-        if(empty($this->cryptService)){
-            $this->cryptService =  new \Dvelum\Security\CryptService(Config::storage()->get('crypt.php'));
+        if (empty($this->cryptService)) {
+            $this->cryptService = new \Dvelum\Security\CryptService(Config::storage()->get('crypt.php'));
         }
         return $this->cryptService;
     }
@@ -163,9 +171,9 @@ class Service
      * @return LoggerInterface|null
      * @throws \Exception
      */
-    public function getLog(): ? LoggerInterface
+    public function getLog(): ?LoggerInterface
     {
-        if($this->log!==false){
+        if ($this->log !== false) {
             return $this->log;
         }
 
@@ -187,9 +195,9 @@ class Service
         return $this->log;
     }
 
-    public function storage() : Record\Store
+    public function storage(): Record\Store
     {
-        if(empty($this->storage)){
+        if (empty($this->storage)) {
             $storageOptions = [
                 'linksObject' => $this->config->get('links_object'),
                 'historyObject' => $this->config->get('history_object'),
@@ -199,16 +207,16 @@ class Service
             $this->storage = new $storeClass($storageOptions);
             $this->storage->setEventManager($this->eventManager);
 
-            if(!empty($this->log)){
+            if (!empty($this->log)) {
                 $this->storage->setLog($this->log);
             }
         }
         return $this->storage;
     }
 
-    public function distributedStorage() : Record\Store
+    public function distributedStorage(): Record\Store
     {
-        if(empty($this->distributedStorage)){
+        if (empty($this->distributedStorage)) {
             $storageOptions = [
                 'linksObject' => $this->config->get('links_object'),
                 'historyObject' => $this->config->get('history_object'),
@@ -217,7 +225,7 @@ class Service
             $distributedStoreClass = $this->config->get('distributed_storage');
             $this->distributedStorage = new $distributedStoreClass($storageOptions);
             $this->distributedStorage->setEventManager($this->eventManager);
-            if(!empty($this->log)){
+            if (!empty($this->log)) {
                 $this->distributedStorage->setLog($this->log);
             }
         }
@@ -228,32 +236,33 @@ class Service
      * @param string $name
      * @param bool $id
      * @param string|bool $shard
-     * @deprecated
-     * @throws \Exception
      * @return mixed
+     * @throws \Exception
+     * @deprecated
      */
     public function object(string $name, $id = false, $shard = false)
     {
         return $this->record($name, $id, $shard);
     }
+
     /**
      * Factory method of object creation is preferable to use, cf. method  __construct() description
      * @param string $name
      * @param int|int[]|bool $id , optional default false
-     * @param string|bool $shard. optional
-     * @throws \Exception
+     * @param string|bool $shard . optional
      * @return Orm\Record|Orm\Record[]
+     * @throws \Exception
      */
     public function record(string $name, $id = false, $shard = false)
     {
         $config = $this->config($name);
 
         if (!is_array($id)) {
-            if(!$config->isDistributed()){
+            if (!$config->isDistributed()) {
                 return new Record($name, $id);
-            }else{
-                if($config->isShardRequired() && !empty($id) && empty($shard)){
-                    throw new \Exception('Shard is required for Object '.$name);
+            } else {
+                if ($config->isShardRequired() && !empty($id) && empty($shard)) {
+                    throw new \Exception('Shard is required for Object ' . $name);
                 }
                 return new DistributedRecord($name, $id, $shard);
             }
@@ -342,7 +351,7 @@ class Service
         if ($force || !isset($this->configObjects[$name])) {
             $config = new Record\Config($name, $this->configSettings, $force);
             $orm = $this;
-            $loader = function () use ($orm){
+            $loader = function () use ($orm) {
                 return $orm->getCryptService();
             };
             $config->setCryptServiceLoader($loader);
@@ -388,7 +397,7 @@ class Service
      * Get Orm Model Settings
      * @return ConfigInterface
      */
-    public function getModelSettings() : ConfigInterface
+    public function getModelSettings(): ConfigInterface
     {
         return $this->modelSettings;
     }
@@ -409,11 +418,12 @@ class Service
         $objectName = implode('_', array_map('ucfirst', explode('_', $listName)));
 
         $className = 'Model_' . $objectName;
-        $nameSpacedClassName = 'App\\'.str_replace('_','\\', $className);
+        $nameSpacedClassName = '\\App\\' . str_replace('_', '\\', $className);
+        $distModelClassName = '\\Dvelum' . $nameSpacedClassName;
 
         $modelSettings = $this->modelSettings;
 
-        if($this->config($objectName)->isDistributed()) {
+        if ($this->config($objectName)->isDistributed()) {
             $modelSettings['storeLoader'] = $this->distributedStoreLoader;
         } else {
             $modelSettings['storeLoader'] = $this->storeLoader;
@@ -426,10 +436,12 @@ class Service
             $this->models[$listName] = new $className($objectName, $modelSettings, $this->config);
         } elseif (class_exists($nameSpacedClassName)) {
             $this->models[$listName] = new $nameSpacedClassName($objectName, $modelSettings, $this->config);
+        } elseif (class_exists($distModelClassName)) {
+            $this->models[$listName] = new $distModelClassName($objectName, $modelSettings, $this->config);
         } else {
-            if($this->config($objectName)->isDistributed()){
+            if ($this->config($objectName)->isDistributed()) {
                 $this->models[$listName] = new Orm\Distributed\Model($objectName, $modelSettings, $this->config);
-            }else{
+            } else {
                 $this->models[$listName] = new Model($objectName, $modelSettings, $this->config);
             }
         }

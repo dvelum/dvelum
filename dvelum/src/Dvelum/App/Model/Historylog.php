@@ -1,13 +1,35 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2019  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+declare(strict_types=1);
+
+namespace Dvelum\App\Model;
 
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use \Exception;
 
 /**
  * History logger
  * @author Kirill Egorov 2011
  */
-class Model_Historylog extends Model
+class Historylog extends Model
 {
     /**
      * Action types
@@ -38,9 +60,9 @@ class Model_Historylog extends Model
      * @param integer $type
      * @param string $object
      * @throws Exception
-     * @return boolean
+     * @return bool
      */
-    public function log($user_id, $record_id, $type, $object)
+    public function log($user_id, $record_id, $type, $object) : bool
     {
         if (!is_integer($type))
             throw new Exception('History::log Invalid type');
@@ -64,7 +86,7 @@ class Model_Historylog extends Model
      * @param integer $limit - optional
      * @return array
      */
-    public function getLog($table_name, $record_id, $start = 0, $limit = 25)
+    public function getLog($table_name, $record_id, $start = 0, $limit = 25) : array
     {
 
         $sql = $this->getSlaveDbConnection()->select()
@@ -92,19 +114,6 @@ class Model_Historylog extends Model
         } else {
             return [];
         }
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see Model::_queryAddAuthor()
-     */
-    protected function _queryAddAuthor($sql, $fieldAlias): void
-    {
-        $sql->joinLeft(
-            array('u1' => Model::factory('User')->table()),
-            'user_id = u1.id',
-            array($fieldAlias => 'u1.name')
-        );
     }
 
     /**

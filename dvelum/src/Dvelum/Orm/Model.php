@@ -94,11 +94,7 @@ class Model
      * @var CacheInterface | bool
      */
     protected $cache;
-    /**
-     * @var CacheInterface| bool
-     * @deprecated
-     */
-    protected $_cache;
+
 
     /**
      * DB table prefix
@@ -158,9 +154,6 @@ class Model
         } else {
             $this->cache = false;
         }
-
-        // backward compatibility
-        $this->_cache =  &$this->cache;
 
         $this->dbManager = $settings->get('defaultDbManager');
 
@@ -700,7 +693,7 @@ class Model
     }
 
     /**
-     * @return bool|\Cache_Interface
+     * @return bool|CacheInterface
      */
     public function getCacheAdapter()
     {
