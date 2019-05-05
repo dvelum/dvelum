@@ -50,7 +50,6 @@
           'rootProperty' => 'data',
           'totalProperty' => 'count',
           'type' => 'json',
-          'idProperty' => 'id',
         ),
       ),
     ),
