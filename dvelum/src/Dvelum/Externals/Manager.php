@@ -79,6 +79,15 @@ class Manager
     }
 
     /**
+     * Get autoloader
+     * @return Autoload
+     */
+    public function getAutoloader() : Autoload
+    {
+        return $this->autoloader;
+    }
+
+    /**
      * Find externals
      */
     public function scan()

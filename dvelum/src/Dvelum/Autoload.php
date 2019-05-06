@@ -220,4 +220,13 @@ class Autoload
     {
         return $this->debugData;
     }
+
+    /**
+     * Get list of registered autoload paths
+     * @return array
+     */
+    public function getRegisteredPaths() : array
+    {
+        return $this->paths;
+    }
 }

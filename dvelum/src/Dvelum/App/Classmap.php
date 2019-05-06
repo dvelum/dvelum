@@ -23,6 +23,7 @@ namespace Dvelum\App;
 
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Config;
+use Dvelum\Externals\Manager;
 use Dvelum\File;
 use Dvelum\Utils;
 
@@ -59,7 +60,9 @@ class Classmap
     {
         $this->map = [];
 
-        $paths =  $this->autoloaderCfg['paths'];
+        $manager = Manager::factory();
+        $autoloader = $manager->getAutoloader();
+        $paths = $autoloader->getRegisteredPaths();
 
         foreach($paths as $v)
         {
