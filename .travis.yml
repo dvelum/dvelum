@@ -11,7 +11,7 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit -c ./phpunit.xml.dist --coverage-clover coverage.xml
-  - php -d memory_limit=256M ./vendor/bin/phpstan analyse dvelum2 tests/unit tests/integration
+  - php -d memory_limit=256M ./vendor/bin/phpstan analyse dvelum/src tests/unit tests/integration
 
 after_script:
   - php vendor/bin/codacycoverage clover coverage.xml
