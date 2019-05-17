@@ -7,7 +7,7 @@ class FieldTest extends TestCase
 {
     public function testProperties()
     {
-        $config = \Dvelum\Orm\Record\Config::factory('Page');
+        $config = \Dvelum\Orm\Record\Config::factory('user');
         $field = $config->getField('id');
         $this->assertTrue($field->isSystem());
         $this->assertTrue($field->isSearch());
@@ -15,12 +15,13 @@ class FieldTest extends TestCase
         $this->assertTrue($field->isInteger());
         $this->assertTrue($field->isUnsigned());
         $this->assertTrue($field->isUnique());
-        $this->assertTrue($config->getField('code')->isSearch());
+        $this->assertTrue($config->getField('name')->isSearch());
         $this->assertEquals('id' , $field->getName());
         $this->assertEquals('bigint' , $field->getDbType());
 
+        $config = \Dvelum\Orm\Record\Config::factory('user_auth');
 
-        $authorField = $config->getField('author_id');
+        $authorField = $config->getField('user');
         $this->assertEquals('user' , $authorField->getLinkedObject());
         $this->assertEquals('link' , $authorField->getType());
         $this->assertTrue($authorField->isLink());
@@ -36,14 +37,7 @@ class FieldTest extends TestCase
         $this->assertFalse($authorField->isManyToManyLink());
         $this->assertFalse($authorField->isMultiLink());
 
-        $editorField = $config->getField('editor_id');
-        $this->assertTrue($editorField->isNull());
-        $this->assertTrue($editorField->isNumeric());
-        $this->assertFalse($editorField->isSearch());
-        $this->assertFalse($editorField->isRequired());
-        $this->assertFalse($editorField->hasDefault());
-
-        $textField = $config->getField('text');
+        $textField = $config->getField('config');
         $this->assertTrue($textField->isText());
         $this->assertTrue($textField->isHtml());
         $this->assertFalse($textField->isVirtual());

@@ -9,8 +9,8 @@ class ConfigTest extends TestCase
 {
     public function testGetTable()
     {
-        $cfg = Record\Config::factory('Page');
-        $prefix = Model::factory('page')->getDbPrefix();
+        $cfg = Record\Config::factory('User');
+        $prefix = Model::factory('User')->getDbPrefix();
         $this->assertEquals($cfg->getTable(false), $cfg->get('table'));
         $this->assertEquals($cfg->getTable(), $prefix . $cfg->get('table'));
     }
@@ -18,7 +18,7 @@ class ConfigTest extends TestCase
 
     public function testGetObjectTtile()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $oldTitle = $cfg->getTitle();
         $cfg->setObjectTitle('My title');
         $this->assertEquals($cfg->getTitle(), 'My title');
@@ -27,7 +27,7 @@ class ConfigTest extends TestCase
 
     public function testCanUseForeignKeys()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->canUseForeignKeys());
 
         $cfg = Record\Config::factory('Historylog');
@@ -36,7 +36,7 @@ class ConfigTest extends TestCase
 
     public function testGetFields()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $fields = $cfg->getFields();
         $this->assertArrayHasKey('id', $fields);
         $this->assertTrue($fields['id'] instanceof Record\Config\Field);
@@ -44,26 +44,26 @@ class ConfigTest extends TestCase
 
     public function testGetLinks()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User_Auth');
         $links = $cfg->getLinks();
-        $this->assertTrue(isset($links['user']['author_id']));
+        $this->assertTrue(isset($links['user']['user']));
     }
 
     public function  testHasDbPrefix()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->hasDbPrefix());
     }
 
     public function testGetValidator()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $this->assertFalse($cfg->getValidator('id'));
     }
 
     public function testToArray()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $array = $cfg->__toArray();
         $this->assertTrue(is_array($array));
         $this->assertTrue(isset($array['fields']));
@@ -77,19 +77,19 @@ class ConfigTest extends TestCase
 
     public function testIsReadOnly()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $this->assertFalse($cfg->isReadOnly());
     }
 
     public function testIsLocked()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $this->assertFalse($cfg->isLocked());
     }
 
     public function testIsTransact()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->isTransact());
         $cfg = Record\Config::factory('bgtask_signal');
         $this->assertFalse($cfg->isTransact());
@@ -97,7 +97,7 @@ class ConfigTest extends TestCase
 
     public function testSave()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $oldTitle = $cfg->getTitle();
         $cfg->setObjectTitle('My title');
         $this->assertTrue($cfg->save());
@@ -107,68 +107,67 @@ class ConfigTest extends TestCase
 
     public function testRemoveField()
     {
-        $cfg = Record\Config::factory('Page');
-        $fldCfg = $cfg->getFieldConfig('page_title');
-        $cfg->removeField('page_title');
-        $this->assertFalse($cfg->fieldExists('page_title'));
-        $cfg->setFieldConfig('page_title', $fldCfg);
-        $this->assertTrue($cfg->fieldExists('page_title'));
+        $cfg = Record\Config::factory('User');
+        $fldCfg = $cfg->getFieldConfig('name');
+        $cfg->removeField('name');
+        $this->assertFalse($cfg->fieldExists('v'));
+        $cfg->setFieldConfig('name', $fldCfg);
+        $this->assertTrue($cfg->fieldExists('name'));
     }
 
     public function testIsText()
     {
-        $cfg = Record\Config::factory('Page');
-        $this->assertTrue($cfg->getField('text')->isText());
+        $cfg = Record\Config::factory('User_Auth');
+        $this->assertTrue($cfg->getField('config')->isText());
         $this->assertFalse($cfg->getField('id')->isText());
     }
 
     public function testIndexExists()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->indexExists('PRIMARY'));
         $this->assertFalse($cfg->indexExists('undefinedindex'));
     }
 
     public function testIsUnique()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->getField('id')->isUnique());
-        $this->assertTrue($cfg->getField('code')->isUnique());
-        $this->assertFalse($cfg->getField('page_title')->isUnique());
-        $this->assertFalse($cfg->getField('parent_id')->isUnique());
+        $this->assertTrue($cfg->getField('login')->isUnique());
+        $this->assertFalse($cfg->getField('name')->isUnique());
     }
 
     public function testIsHtml()
     {
-        $cfg = Record\Config::factory('page');
-        $this->assertTrue($cfg->getField('text')->isHtml());
-        $this->assertFalse($cfg->getField('code')->isHtml());
+        $cfg = Record\Config::factory('User_Auth');
+        $this->assertTrue($cfg->getField('config')->isHtml());
+        $this->assertFalse($cfg->getField('id')->isHtml());
     }
 
     public function testIsNumeric()
     {
-        $cfg = Record\Config::factory('page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->getField('id')->isNumeric());
-        $this->assertFalse($cfg->getField('code')->isNumeric());
+        $this->assertFalse($cfg->getField('name')->isNumeric());
     }
 
     public function testIsInteger()
     {
-        $cfg = Record\Config::factory('page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->getField('id')->isInteger());
-        $this->assertFalse($cfg->getField('code')->isInteger());
+        $this->assertFalse($cfg->getField('name')->isInteger());
     }
 
     public function testIsSearch()
     {
-        $cfg = Record\Config::factory('page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->getField('id')->isSearch());
-        $this->assertTrue($cfg->getField('code')->isSearch());
+        $this->assertTrue($cfg->getField('name')->isSearch());
     }
 
     public function testGetLinkTittle()
     {
-        $cfg = Record\Config::factory('user');
+        $cfg = Record\Config::factory('User');
         $this->assertEquals($cfg->getLinkTitle(), 'name');
     }
 
@@ -184,7 +183,7 @@ class ConfigTest extends TestCase
         $cfg = Record\Config::factory('test');
         $this->assertFalse($cfg->isSystem());
 
-        $cfg = Record\Config::factory('page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->isSystem());
 
 
@@ -207,7 +206,7 @@ class ConfigTest extends TestCase
 
     public function testHasHistory()
     {
-        $cfg = Record\Config::factory('Page');
+        $cfg = Record\Config::factory('User');
         $this->assertTrue($cfg->hasHistory());
         $this->assertFalse($cfg->hasExtendedHistory());
         $cfg = Record\Config::factory('Historylog');
@@ -259,8 +258,8 @@ class ConfigTest extends TestCase
         $cfg = Record\Config::factory('test');
         $this->assertFalse($cfg->isRevControl());
 
-        $cfg = Record\Config::factory('page');
-        $this->assertTrue($cfg->isRevControl());
+        $cfg = Record\Config::factory('User');
+        $this->assertFalse($cfg->isRevControl());
     }
 
     public function testIsSystemField()
@@ -269,25 +268,25 @@ class ConfigTest extends TestCase
         $this->assertFalse($cfg->isSystemField('varchar'));
         $this->assertTrue($cfg->isSystemField('id'));
 
-        $cfg = Record\Config::factory('page');
-        $this->assertTrue($cfg->isSystemField('author_id'));
+        $cfg = Record\Config::factory('User');
+        $this->assertTrue($cfg->isSystemField('id'));
     }
 
     public function testGetForeignKeys()
     {
-        $cfg = Record\Config::factory('page');
+        $cfg = Record\Config::factory('User_auth');
         $keys = $cfg->getForeignKeys();
         $keys = \Dvelum\Utils::rekey('curField', $keys);
-        $this->assertTrue(isset($keys['parent_id']));
-        $this->assertTrue(isset($keys['author_id']));
-        $this->assertTrue(isset($keys['editor_id']));
+        $this->assertTrue(isset($keys['user']));
+        $this->assertFalse(isset($keys['config']));
     }
+
 
     public function testIsVcField()
     {
-        $cfg = Record\Config::factory('page');
+        $cfg = Record\Config::factory('test');
         $this->assertTrue($cfg->isVcField('author_id'));
-        $this->assertFalse($cfg->isVcField('code'));
+        $this->assertFalse($cfg->isVcField('id'));
     }
 
     public function testHasManyToMany()
