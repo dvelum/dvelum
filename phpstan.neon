@@ -6,12 +6,11 @@ parameters:
 	    -  %currentWorkingDirectory%/application/templates
 	    -  %currentWorkingDirectory%/dvelum/templates
 	    -  %currentWorkingDirectory%/vendor
-	    -  %currentWorkingDirectory%/dvelum/library/Cache/Memcached.php
-	    -  %currentWorkingDirectory%/dvelum2/Dvelum/Cache/Memcached.php
+	    -  %currentWorkingDirectory%/dvelum/src/Dvelum/Cache/Memcached.php
 	autoload_directories:
 	    -  %currentWorkingDirectory%/application
-	    -  %currentWorkingDirectory%/dvelum
-	    -  %currentWorkingDirectory%/dvelum2
+	    -  %currentWorkingDirectory%/dvelum/deprecated
+	    -  %currentWorkingDirectory%/dvelum/src
 	    -  %currentWorkingDirectory%/tests/unit/dvelum/app
 	    -  %currentWorkingDirectory%/tests/unit/dvelum/library
 	    -  %currentWorkingDirectory%/tests/unit/dvelum2
@@ -23,3 +22,5 @@ parameters:
 		- '#Function pinba_[a-zA-Z0-9\\_]#'
 		- '#Function finfo_[a-zA-Z0-9\\_]#'
 		- '#Function ldap_[a-zA-Z0-9\\_]#'
+		- '#Constant LDAP_OPT_PROTOCOL_VERSION [a-zA-Z0-9\\_]#'
+		- '#class KRB5CCache [a-zA-Z0-9\\_]#'

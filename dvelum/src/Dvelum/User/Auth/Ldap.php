@@ -103,6 +103,8 @@ class Ldap extends AbstractAdapter
             ? $authCfg['loginSearchFilter']
             : $this->config->get('loginSearchFilter');
 
+        $value = null;
+
         foreach (array('%l', '%d') as $attr) {
             switch ($attr) {
                 case '%l':

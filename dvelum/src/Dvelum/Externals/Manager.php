@@ -26,6 +26,7 @@ use Dvelum\Orm;
 use Dvelum\Autoload;
 use Dvelum\File;
 use Dvelum\Lang;
+use \Exception;
 
 /**
  * Class Manager
@@ -445,8 +446,8 @@ class Manager
 
             $installer = new $class;
 
-            if (!$installer instanceof Externals_Installer) {
-                $this->errors[] = 'Class ' . $class . ' is not instance of Externals_Installer';
+            if (!$installer instanceof Installer) {
+                $this->errors[] = 'Class ' . $class . ' is not instance of Installer';
             }
 
             $modConfig = Config\Factory::create($modConf, $modConf['id'] . '_config');
@@ -460,7 +461,7 @@ class Manager
             }
         }
         // build JS lang
-        $langManager = new Backend_Localization_Manager($this->appConfig);
+        $langManager = new \Dvelum\App\Backend\Localization\Manager($this->appConfig);
         try {
             $langManager->compileLangFiles();
         } catch (Exception $e) {
@@ -525,11 +526,11 @@ class Manager
 
             $installer = new $class;
 
-            if (!$installer instanceof Externals_Installer) {
+            if (!$installer instanceof Installer) {
                 $this->errors[] = 'Class ' . $class . ' is not instance of Externals_Installer';
             }
 
-            $modConfig = Dvelum\Config\Factory::create($modConf,$modConf['id'] . '_config');
+            $modConfig = \Dvelum\Config\Factory::create($modConf,$modConf['id'] . '_config');
 
             if (!$installer->uninstall($this->appConfig, $modConfig)) {
                 $errors = $installer->getErrors();
