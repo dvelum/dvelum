@@ -204,7 +204,7 @@ class Request
      */
     static public function files()
     {
-        if(!isset($_FILES) || empty($_FILES)) {
+        if(empty($_FILES)) {
             return [];
         }
 

@@ -35,7 +35,7 @@ use Dvelum\Service;
 class Controller extends Backend\Controller
 {
     /**
-     * @var Bgtask_Manager
+     * @var \Bgtask_Manager
      */
     protected $tManager;
 
@@ -69,8 +69,8 @@ class Controller extends Backend\Controller
     public function indexAction()
     {
         $this->resource->addInlineJs('
-        	var canEdit = '.($this->user->getModuleAcl()->canEdit($this->getModule())).';
-        	var canDelete = '.($this->user->getModuleAcl()->canDelete($this->getModule())).';
+            var canEdit = '.($this->user->getModuleAcl()->canEdit($this->getModule())).';
+            var canDelete = '.($this->user->getModuleAcl()->canDelete($this->getModule())).';
         ');
         $this->resource->addJs('/js/app/system/Tasks.js', 4);
         $this->resource->addJs('/js/app/system/crud/'.strtolower($this->getModule()).'.js', 4);

@@ -91,7 +91,7 @@ class Kerberos extends AbstractAdapter
             ? $authCfg['principal']
             : $principal;
 
-        $ticket = new KRB5CCache();
+        $ticket = new \KRB5CCache();
         try {
             $ticket->initPassword($principal, $password);
         } catch (Exception $e) {

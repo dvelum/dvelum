@@ -19,9 +19,13 @@ chdir(DVELUM_ROOT);
  */
 $bootCfg = include DVELUM_ROOT . '/application/configs/common/dist/init.php';
 /*
+ * Register composer autoload
+ */
+require DVELUM_ROOT . '/vendor/autoload.php';
+/*
  * Including Autoloader class
  */
-require_once DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
+require_once DVELUM_ROOT . '/dvelum/src/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 use \Dvelum\Config\Factory as ConfigFactory;
@@ -48,3 +52,15 @@ $configStorage->addPath('./application/configs/test/');
 $autoloaderCfg = ConfigFactory::storage()->get('autoloader.php')->__toArray();
 $autoloaderCfg['psr-4']['Dvelum'] = DVELUM_ROOT.'/tests/unit/dvelum2/Dvelum';
 $autoloader->setConfig($autoloaderCfg);
+
+
+/*
+ * Starting the application
+ */
+$appClass = $config->get('application');
+if(!class_exists($appClass))
+    throw new Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
+
+$app = new $appClass($config);
+$app->setAutoloader($autoloader);
+$app->runTestMode();

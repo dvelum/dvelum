@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Api\Controller as ApiController;
+use Dvelum\App\Backend\Designer\Import;
 use Dvelum\App\Controller\Event;
 use Dvelum\App\Controller\EventManager;
 use Dvelum\App\Session\User;
@@ -338,7 +339,7 @@ class DataView extends ApiController
 					';
                 }
             } else {
-                $newField = \Backend_Designer_Import::convertOrmFieldToExtField($field, $fieldCfg);
+                $newField = Import::convertOrmFieldToExtField($field, $fieldCfg);
 
                 if ($newField !== false) {
                     $newField->setName($field);

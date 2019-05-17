@@ -21,6 +21,8 @@ declare(strict_types=1);
 
 namespace Dvelum\Image;
 
+use Dvelum\File;
+
 /**
  * Image Resize Component
  */

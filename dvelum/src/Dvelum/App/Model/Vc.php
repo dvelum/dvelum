@@ -42,7 +42,7 @@ class Vc extends Model
             $ivKey = $object->get($ivField);
 
             if (empty($ivKey)) {
-                $service = new \Dvelum\Security\CryptService(Dvelum\Config::storage()->get('crypt.php'));
+                $service = new \Dvelum\Security\CryptService(\Dvelum\Config::storage()->get('crypt.php'));
                 $ivKey = $service->createVector();
                 $newData[$ivField] = $ivKey;
             }
@@ -55,7 +55,7 @@ class Vc extends Model
             $vObject = Orm\Record::factory('vc');
             $vObject->set('date', date('Y-m-d'));
             $vObject->set('data', base64_encode(serialize($newData)));
-            $vObject->set('user_id', User::getInstance()->getId());
+            $vObject->set('user_id', \Dvelum\App\Session\User::factory()->getId());
             $vObject->set('version', $newVersion);
             $vObject->set('record_id', $object->getId());
             $vObject->set('object_name', $object->getName());
@@ -66,7 +66,7 @@ class Vc extends Model
 
             return false;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logError('Cannot create new version for ' . $object->getName() . '::' . $object->getId() . ' ' . $e->getMessage());
             return false;
         }

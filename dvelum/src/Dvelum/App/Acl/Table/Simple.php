@@ -26,6 +26,7 @@ namespace Dvelum\App\Acl\Table;
  * access permissions and DB table as storage
  */
 
+use Dvelum\App\Model\Permissions;
 use Dvelum\App\Session\User;
 use Dvelum\Orm;
 
@@ -50,7 +51,7 @@ class Simple extends Orm\Record\Acl
     protected $permissions = null;
     /**
      * Permissions model
-     * @var \Model_Permissions
+     * @var Permissions
      */
     protected $permissionsModel = null;
 

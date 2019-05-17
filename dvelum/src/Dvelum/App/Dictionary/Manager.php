@@ -302,7 +302,7 @@ class Manager
      */
     public function saveChanges(string $name): bool
     {
-        $dict = \Dictionary::factory($name);
+        $dict = Dictionary::factory($name);
         if (!$dict->save()) {
             return false;
         }
@@ -320,7 +320,7 @@ class Manager
      */
     public function rebuildIndex($name) : bool
     {
-        $dict = \Dictionary::factory($name);
+        $dict = Dictionary::factory($name);
         $storage = Config::storage();
 
         $filePath = $this->baseDir . 'index/' . $name . '.php';

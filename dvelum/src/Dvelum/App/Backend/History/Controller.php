@@ -88,8 +88,8 @@ class Controller extends App\Backend\Api\Controller
 
         if(!empty($data)) {
             foreach ($data as &$v) {
-                if(isset(\Model_Historylog::$actions[$v['type']])){
-                    $v['type'] = \Model_Historylog::$actions[$v['type']];
+                if(isset(App\Model\Historylog::$actions[$v['type']])){
+                    $v['type'] = App\Model\Historylog::$actions[$v['type']];
                 }
             }unset($v);
         }

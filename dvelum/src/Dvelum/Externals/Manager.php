@@ -27,6 +27,10 @@ use Dvelum\Autoload;
 use Dvelum\File;
 use Dvelum\Lang;
 
+/**
+ * Class Manager
+ * @package Dvelum\Externals
+ */
 class Manager
 {
     /**

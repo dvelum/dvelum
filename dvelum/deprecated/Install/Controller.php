@@ -426,7 +426,7 @@ class Install_Controller
         if(empty($timezone) || !in_array($timezone, $timezones, true))
             $errors[] = $this->localization->get('TIMEZOME_REQUIRED');
 
-        if(!Validator_Alphanum::validate($adminpath)  || is_dir('./dvelum/app/Backend/'.ucfirst($adminpath)))
+        if(!\Dvelum\Validator\Alphanum::validate($adminpath)  || is_dir('./dvelum/app/Backend/'.ucfirst($adminpath)))
             $errors[] = $this->localization->get('INVALID_ADMINPATH');
 
         if(!empty($errors))
@@ -452,7 +452,7 @@ class Install_Controller
         if(!\Dvelum\Utils::exportArray($writePath . 'main.php' , $mainConfig))
             Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.$writePath);
 
-
+        $key = '';
         if(extension_loaded('openssl')){
             $service = new \Dvelum\Security\CryptService($mainCfgStorage->get('crypt.php'));
             if($service->canCrypt()){

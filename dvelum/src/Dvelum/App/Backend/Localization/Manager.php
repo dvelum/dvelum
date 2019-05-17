@@ -426,6 +426,8 @@ class Manager
             $tmp = explode('/', $dictionary);
             $dictionaryName = $tmp[1];
             $isSub = true;
+        }else{
+            $dictionaryName = $dictionary;
         }
 
         if ($isSub) {

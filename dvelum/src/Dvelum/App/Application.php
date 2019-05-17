@@ -261,6 +261,14 @@ class Application
     }
 
     /**
+     * Start application in test mode
+     */
+    public function runTestMode()
+    {
+        $this->init();
+    }
+
+    /**
      * Start console application
      */
     public function runConsole()

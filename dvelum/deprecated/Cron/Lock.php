@@ -34,7 +34,7 @@ class Cron_Lock
     protected $lockFile = false;
     /**
      * Адаптер логгирования
-     * @var Log
+     * @var Dvelum\Log\LogInterface
      */
     protected $logsAdapter = false;
 

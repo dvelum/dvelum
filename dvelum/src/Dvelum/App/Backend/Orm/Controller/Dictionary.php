@@ -24,7 +24,6 @@ namespace Dvelum\App\Backend\Orm\Controller;
 use Dvelum\App\Backend\Controller;
 use Dvelum\App\Dictionary\Manager;
 
-
 class Dictionary extends Controller
 {
     public function getModule(): string
@@ -105,7 +104,7 @@ class Dictionary extends Controller
         if (empty($name))
             $this->response->error($this->lang->get('WRONG_REQUEST'));
 
-        $list = \Dictionary::factory($name)->getData();
+        $list = \Dvelum\App\Dictionary::factory($name)->getData();
 
         $data = [];
 
@@ -131,7 +130,7 @@ class Dictionary extends Controller
         if(empty($data) || !strlen($dictionaryName))
             $this->response->error($this->lang->get('WRONG_REQUEST'));
 
-        $dictionary = \Dictionary::factory($dictionaryName);
+        $dictionary = \Dvelum\App\Dictionary::factory($dictionaryName);
         foreach ($data as $v)
         {
             if($dictionary->isValidKey($v['key']) && $v['key'] != $v['id'])
@@ -156,7 +155,7 @@ class Dictionary extends Controller
         if(!strlen($name) || !strlen($dictionaryName))
             $this->response->error($this->lang->get('WRONG_REQUEST'));
 
-        $dictionary = \Dictionary::factory($dictionaryName);
+        $dictionary = \Dvelum\App\Dictionary::factory($dictionaryName);
         $dictionary->removeRecord($name);
 
         if(!Manager::factory()->saveChanges($dictionaryName))

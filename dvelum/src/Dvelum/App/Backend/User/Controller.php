@@ -22,6 +22,7 @@ namespace Dvelum\App\Backend\User;
 use Dvelum\App;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\Validator\Email;
 use \Exception;
 use Dvelum\Utils;
 use \Dvelum\App\Module\Manager as ModuleManager;
@@ -436,7 +437,7 @@ class Controller extends App\Backend\Api\Controller
         $id = $this->request->post('id', 'int', false);
         $value = $this->request->post('value', Filter::FILTER_EMAIL, false);
 
-        if (empty($value) || !\Validator_Email::validate($value)) {
+        if (empty($value) || !Email::validate($value)) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }

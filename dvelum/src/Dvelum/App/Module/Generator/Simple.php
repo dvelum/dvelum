@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Module\Generator;
 
+use Dvelum\App\Backend\Designer\Import;
 use Dvelum\Lang;
 use Dvelum\Orm;
 use Dvelum\Request;
@@ -176,7 +177,7 @@ class Simple extends AbstractAdapter
         */
         $eventManager = $project->getEventManager();
 
-        $storeFields = \Backend_Designer_Import::checkImportORMFields($object, $dataFields);
+        $storeFields = Import::checkImportORMFields($object, $dataFields);
 
         foreach ($storeFields as $itemObject) {
             /**
@@ -265,7 +266,7 @@ class Simple extends AbstractAdapter
 
         $eventManager->setEvent('dataGrid', 'itemdblclick', 'this.showEditWindow(record.get("id"));');
 
-        $objectFieldList = \Backend_Designer_Import::checkImportORMFields($object, $objectFields);
+        $objectFieldList = Import::checkImportORMFields($object, $objectFields);
 
         if (!empty($objectFieldList)) {
             /**
@@ -501,7 +502,7 @@ class Simple extends AbstractAdapter
                 continue;
             }
 
-            $newField = \Backend_Designer_Import::convertOrmFieldToExtField($field, $fieldConfig);
+            $newField = Import::convertOrmFieldToExtField($field, $fieldConfig);
 
             if ($newField === false) {
                 continue;
@@ -654,7 +655,7 @@ class Simple extends AbstractAdapter
             \Ext_Factory::object('Data_Field',array('name' => 'updater','type' => 'string')),
         );
 
-        $storeFields = array_merge($storeFields , \Backend_Designer_Import::checkImportORMFields($object ,  $dataFields));
+        $storeFields = array_merge($storeFields , Import::checkImportORMFields($object ,  $dataFields));
 
         $urlTemplates =  $this->designerConfig->get('templates');
 
@@ -715,7 +716,7 @@ class Simple extends AbstractAdapter
 
         $eventManager->setEvent('dataGrid', 'itemdblclick', 'this.showEditWindow(record.get("id"));');
 
-        $objectFieldList = \Backend_Designer_Import::checkImportORMFields($object , $objectFields);
+        $objectFieldList = Import::checkImportORMFields($object , $objectFields);
 
 
         $publishedRec = new \stdClass();
@@ -927,7 +928,7 @@ class Simple extends AbstractAdapter
             if(isset($fieldConfig['hidden']) && $fieldConfig['hidden'])
                 continue;
 
-            $newField = \Backend_Designer_Import::convertOrmFieldToExtField($field , $fieldConfig);
+            $newField = Import::convertOrmFieldToExtField($field , $fieldConfig);
 
             if($newField === false)
                 continue;

@@ -18,6 +18,7 @@
  *
  */
 declare(strict_types=1);
+
 namespace Dvelum\App\Backend\Orm;
 
 use Dvelum\File;
@@ -29,216 +30,218 @@ use \Exception;
 
 class Manager
 {
-	const ERROR_EXEC = 1;
-	const ERROR_FS = 2;	
-	const ERROR_DB = 3;
-	const ERROR_FS_LOCALISATION = 4;
-	const ERROR_INVALID_OBJECT = 5;
-	const ERROR_INVALID_FIELD = 6;
-	const ERROR_HAS_LINKS = 7;
-		
-	/**
-	 * Remove object from ORM
-	 * @param string $name
-	 * @param boolean $deleteTable - optional, default true
-	 * @return integer
-	 */
-	public function removeObject($name , $deleteTable = true)
-	{	
-		//$assoc = Db_Object_Expert::getAssociatedStructures($name);
-		//if(!empty($assoc))
-		//	return self::ERROR_HAS_LINKS;
+    const ERROR_EXEC = 1;
+    const ERROR_FS = 2;
+    const ERROR_DB = 3;
+    const ERROR_FS_LOCALISATION = 4;
+    const ERROR_INVALID_OBJECT = 5;
+    const ERROR_INVALID_FIELD = 6;
+    const ERROR_HAS_LINKS = 7;
 
-		$objectConfig = Orm\Record\Config::factory($name);
-		$manyToMany = $objectConfig->getManyToMany();
+    /**
+     * Remove object from ORM
+     * @param string $name
+     * @param boolean $deleteTable - optional, default true
+     * @return integer
+     */
+    public function removeObject($name, $deleteTable = true)
+    {
+        //$assoc = Db_Object_Expert::getAssociatedStructures($name);
+        //if(!empty($assoc))
+        //	return self::ERROR_HAS_LINKS;
 
-		if(!empty($manyToMany))
-		{
-			$linkedFields = [];
-			foreach($manyToMany as $object=>$fields)
-			{
-				foreach($fields as $fieldName=>$cfg){
-					$linkedFields[] = $fieldName;
-				}
-			}
+        $objectConfig = Orm\Record\Config::factory($name);
+        $manyToMany = $objectConfig->getManyToMany();
 
-			if(!empty($linkedFields))
-			{
-				foreach($linkedFields as $field)
-				{
-					$relatedObject = $objectConfig->getRelationsObject($field);
-					$result = $this->removeObject($relatedObject , $deleteTable);
+        if (!empty($manyToMany)) {
+            $linkedFields = [];
+            foreach ($manyToMany as $object => $fields) {
+                foreach ($fields as $fieldName => $cfg) {
+                    $linkedFields[] = $fieldName;
+                }
+            }
 
-					if($result!==0){
-						return $result;
-					}
-				}
-			}
-		}
+            if (!empty($linkedFields)) {
+                foreach ($linkedFields as $field) {
+                    $relatedObject = $objectConfig->getRelationsObject($field);
+                    $result = $this->removeObject($relatedObject, $deleteTable);
 
-		$localisations = $this->getLocalisations();
-		$langWritePath = Lang::storage()->getWrite();
-		$objectsWrite = Config::storage()->getWrite();
+                    if ($result !== 0) {
+                        return $result;
+                    }
+                }
+            }
+        }
 
-		foreach ($localisations as $file)
-		{
-			if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file)){
+        $localisations = $this->getLocalisations();
+        $langWritePath = Lang::storage()->getWrite();
+        $objectsWrite = Config::storage()->getWrite();
+
+        foreach ($localisations as $file) {
+            if (file_exists($langWritePath . $file) && !is_writable($langWritePath . $file)) {
                 return self::ERROR_FS_LOCALISATION;
             }
 
             $localeName = basename(dirname($file));
             $translator = $this->getTranslator($localeName, $name);
-            if(!$translator->removeObjectTranslation($name, true)){
+            if (!$translator->removeObjectTranslation($name, true)) {
                 return self::ERROR_FS_LOCALISATION;
             }
-		}
+        }
 
         $path = $objectsWrite . Config::storage()->get('orm.php')->get('object_configs') . $name . '.php';
 
-		try{
-		  $cfg = Orm\Record\Config::factory($name);
-		}catch (\Exception $e){
-		  return self::ERROR_FS;
-		}
-		
-		$builder = Orm\Record\Builder::factory($name);
-		
-		if($deleteTable && !$cfg->isLocked() && !$cfg->isReadOnly()){
-		  if(!$builder->remove()){
-			return self::ERROR_DB;
-		  }
-		}
-		
-		if(!@unlink($path))
-			return self::ERROR_FS;
-		
-		$localisationKey = strtolower($name);
+        try {
+            $cfg = Orm\Record\Config::factory($name);
+        } catch (\Exception $e) {
+            return self::ERROR_FS;
+        }
+
+        $builder = Orm\Record\Builder::factory($name);
+
+        if ($deleteTable && !$cfg->isLocked() && !$cfg->isReadOnly()) {
+            if (!$builder->remove()) {
+                return self::ERROR_DB;
+            }
+        }
+
+        if (!@unlink($path)) {
+            return self::ERROR_FS;
+        }
+
+        $localisationKey = strtolower($name);
         $langStorage = Lang::storage();
 
-		foreach ($localisations as $file)
-		{		
-			$cfg = $langStorage->get($file);
-			if($cfg->offsetExists($localisationKey)){
-				$cfg->remove($localisationKey);
+        foreach ($localisations as $file) {
+            $cfg = $langStorage->get($file);
+            if ($cfg->offsetExists($localisationKey)) {
+                $cfg->remove($localisationKey);
                 $langStorage->save($cfg);
-			}
+            }
 
             $localeName = basename(dirname($file));
             $translator = $this->getTranslator($localeName, $name);
             $translator->removeObjectTranslation($name, true);
-		}			 
-		return 0;
-	}
-	/**
-	 * Get list of localization files
-	 */
-	public function getLocalisations()
-	{
-		$paths = Lang::storage()->getPaths();
-		$dirs = [];
+        }
+        return 0;
+    }
 
-		foreach($paths as $path)
-		{
-			if(!is_dir($path)){
-				continue;
-			}
-			$data =  File::scanFiles($path, false, false, \File::Dirs_Only);
-			foreach($data as $k=>&$v){
-				if(!file_exists($v . '/objects.php')){
-					unset($data[$k]);
-					continue;
-				}
-				$v = str_replace($path , '',$v) .'/objects.php';
-			}
-			$dirs = array_merge($dirs,$data);
-		}
-		return array_unique($dirs);
-	}
-	
-	/**
-	 * Get field config
-	 * @param string $object
-	 * @param string $field
-	 * @return false|array
-	 */
-	public function getFieldConfig($object , $field)
-	{
-		try {
-			$cfg = Orm\Record\Config::factory($object);
-		}catch (\Exception $e){
-			return false;
-		}
-		 
-		if(!$cfg->fieldExists($field))
-			return false;
-		 
-		$fieldCfg = $cfg->getFieldConfig($field);
-		$fieldCfg['name'] = $field;
-		
-		if(isset($fieldCfg['db_default']) && $fieldCfg['db_default']!==false){
-		  $fieldCfg['set_default'] = true;
-		}else{
-		  $fieldCfg['set_default'] = false;
-		}
-		 
-		if(!isset($fieldCfg['type']) || empty($fieldCfg['type']))
-			$fieldCfg['type'] = '';
-			
-		if(isset($fieldCfg['link_config']) && !empty($fieldCfg['link_config']))
-			foreach ($fieldCfg['link_config'] as $k=>$v)
-				$fieldCfg[$k] = $v;
-		
-		return $fieldCfg;
-	}
-	/**
-	 * Get index config
-	 * @param string $object
-	 * @param string $index
-	 * @return false|array
-	 */
-	public function getIndexConfig($object , $index)
-	{	
-		try {
-			$cfg = Orm\Record\Config::factory($object);
-		}catch (\Exception $e){
-			return false;
-		}	
-		if(!$cfg->indexExists($index))
-			return false;
-			
-		$data = $cfg->getIndexConfig($index);
-		$data['name'] = $index;
-		return $data;
-	}
-	
-	/**
-	 * Remove object field
-	 * @param string $objectName
-	 * @param string $fieldName
-	 * @return bool  - 0 - success or error code
-	 */
-	public function removeField($objectName , $fieldName)
-	{
-		try{
-			$objectCfg = Orm\Record\Config::factory($objectName);
-		}catch (\Exception $e){
-			return self::ERROR_INVALID_OBJECT;
-		}
+    /**
+     * Get list of localization files
+     */
+    public function getLocalisations()
+    {
+        $paths = Lang::storage()->getPaths();
+        $dirs = [];
 
-		if(!$objectCfg->fieldExists($fieldName))
-			return self::ERROR_INVALID_FIELD;
-		
-		$localisations = $this->getLocalisations();
+        foreach ($paths as $path) {
+            if (!is_dir($path)) {
+                continue;
+            }
+            $data = File::scanFiles($path, false, false, File::Dirs_Only);
+            foreach ($data as $k => &$v) {
+                if (!file_exists($v . '/objects.php')) {
+                    unset($data[$k]);
+                    continue;
+                }
+                $v = str_replace($path, '', $v) . '/objects.php';
+            }
+            $dirs = array_merge($dirs, $data);
+        }
+        return array_unique($dirs);
+    }
 
-		$objectCfg->removeField($fieldName);
+    /**
+     * Get field config
+     * @param string $object
+     * @param string $field
+     * @return false|array
+     */
+    public function getFieldConfig($object, $field)
+    {
+        try {
+            $cfg = Orm\Record\Config::factory($object);
+        } catch (\Exception $e) {
+            return false;
+        }
 
-		if(!$objectCfg->save())
-			return self::ERROR_FS;
-		
-		$localisationKey = strtolower($objectName);
+        if (!$cfg->fieldExists($field)) {
+            return false;
+        }
 
-		foreach ($localisations as $file)
-		{
+        $fieldCfg = $cfg->getFieldConfig($field);
+        $fieldCfg['name'] = $field;
+
+        if (isset($fieldCfg['db_default']) && $fieldCfg['db_default'] !== false) {
+            $fieldCfg['set_default'] = true;
+        } else {
+            $fieldCfg['set_default'] = false;
+        }
+
+        if (!isset($fieldCfg['type']) || empty($fieldCfg['type'])) {
+            $fieldCfg['type'] = '';
+        }
+
+        if (isset($fieldCfg['link_config']) && !empty($fieldCfg['link_config'])) {
+            foreach ($fieldCfg['link_config'] as $k => $v) {
+                $fieldCfg[$k] = $v;
+            }
+        }
+
+        return $fieldCfg;
+    }
+
+    /**
+     * Get index config
+     * @param string $object
+     * @param string $index
+     * @return false|array
+     */
+    public function getIndexConfig($object, $index)
+    {
+        try {
+            $cfg = Orm\Record\Config::factory($object);
+        } catch (\Exception $e) {
+            return false;
+        }
+        if (!$cfg->indexExists($index)) {
+            return false;
+        }
+
+        $data = $cfg->getIndexConfig($index);
+        $data['name'] = $index;
+        return $data;
+    }
+
+    /**
+     * Remove object field
+     * @param string $objectName
+     * @param string $fieldName
+     * @return bool  - 0 - success or error code
+     */
+    public function removeField($objectName, $fieldName)
+    {
+        try {
+            $objectCfg = Orm\Record\Config::factory($objectName);
+        } catch (\Exception $e) {
+            return self::ERROR_INVALID_OBJECT;
+        }
+
+        if (!$objectCfg->fieldExists($fieldName)) {
+            return self::ERROR_INVALID_FIELD;
+        }
+
+        $localisations = $this->getLocalisations();
+
+        $objectCfg->removeField($fieldName);
+
+        if (!$objectCfg->save()) {
+            return self::ERROR_FS;
+        }
+
+        $localisationKey = strtolower($objectName);
+
+        foreach ($localisations as $file) {
             $localeName = basename(dirname($file));
 
             $translator = $this->getTranslator($localeName, $objectName);
@@ -246,57 +249,55 @@ class Manager
 
             unset($translation['fields'][$fieldName]);
 
-		    $langStorage = Lang::storage();
-			$cfg = $langStorage->get($file);
+            $langStorage = Lang::storage();
+            $cfg = $langStorage->get($file);
 
-			if($cfg->offsetExists($localisationKey))
-			{
+            if ($cfg->offsetExists($localisationKey)) {
                 $cfg->offsetUnset($localisationKey);
-                if(!$langStorage->save($cfg)){
+                if (!$langStorage->save($cfg)) {
                     return self::ERROR_FS_LOCALISATION;
                 }
-			}
+            }
 
-            if(!$translator->save($objectName, $translation)){
+            if (!$translator->save($objectName, $translation)) {
                 return self::ERROR_FS_LOCALISATION;
             }
-		}	
-		return 0;
-	}
-	
-	/**
-	 * Rename object field
-	 * @param Orm\Record\Config $cfg
-	 * @param string $oldName
-	 * @param string $newName
-	 * @return integer 0 on success or error code
-	 */
-	public function renameField(Orm\Record\Config $cfg , $oldName , $newName)
-	{
-		$localisations = $this->getLocalisations();
-		$langWritePath = Lang::storage()->getWrite();
+        }
+        return 0;
+    }
 
-		foreach ($localisations as $file){
-            if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file)){
+    /**
+     * Rename object field
+     * @param Orm\Record\Config $cfg
+     * @param string $oldName
+     * @param string $newName
+     * @return integer 0 on success or error code
+     */
+    public function renameField(Orm\Record\Config $cfg, $oldName, $newName)
+    {
+        $localisations = $this->getLocalisations();
+        $langWritePath = Lang::storage()->getWrite();
+
+        foreach ($localisations as $file) {
+            if (file_exists($langWritePath . $file) && !is_writable($langWritePath . $file)) {
                 return self::ERROR_FS_LOCALISATION;
             }
             $localeName = basename(dirname($file));
             $translator = $this->getTranslator($localeName, $cfg->getName());
-            if(!$translator->removeObjectTranslation($cfg->getName(), true)){
+            if (!$translator->removeObjectTranslation($cfg->getName(), true)) {
                 return self::ERROR_FS_LOCALISATION;
             }
         }
 
-		$localisationKey = strtolower($cfg->getName());
+        $localisationKey = strtolower($cfg->getName());
         $langStorage = Lang::storage();
 
-		foreach ($localisations as $file)
-		{
-            $langCfg = $langStorage->get($file,true,true);
+        foreach ($localisations as $file) {
+            $langCfg = $langStorage->get($file, true, true);
 
-            if($langCfg->offsetExists($localisationKey)) {
+            if ($langCfg->offsetExists($localisationKey)) {
                 $langCfg->offsetUnset($localisationKey);
-                if(!$langStorage->save($langCfg)){
+                if (!$langStorage->save($langCfg)) {
                     return self::ERROR_FS_LOCALISATION;
                 }
             }
@@ -305,123 +306,128 @@ class Manager
             $translator = $this->getTranslator($localeName, $cfg->getName());
             $translation = $translator->getTranslation($cfg->getName());
 
-            if(isset($translation['fields'][$oldName])){
+            if (isset($translation['fields'][$oldName])) {
                 $translation['fields'][$newName] = $translation['fields'][$oldName];
             }
             unset($translation['fields'][$oldName]);
 
-            if(!$translator->save($cfg->getName(), $translation)){
-                return self::ERROR_FS_LOCALISATION;
-            }
-		}
-
-        if(!$cfg->renameField($oldName, $newName))
-            return self::ERROR_EXEC;
-
-		return 0;
-	}
-	/**
-	 * Rename Db_Object
-	 * @param string $path - configs path
-	 * @param string $oldName
-	 * @param string $newName
-	 * @return integer 0 on success or error code
-	 */
-	public function renameObject($path , $oldName , $newName)
-	{
-        $objectConfig = Orm\Record\Config::factory($oldName);
-	   /*
-		* Check fs write permissions for associated objects
-		*/
-		$assoc = Orm\Record\Expert::getAssociatedStructures($oldName);
-
-		if(!empty($assoc))
-			foreach ($assoc as $config)
-				if(!is_writable(Config::storage()->getPath($path).strtolower($config['object']).'.php'))
-					return self::ERROR_FS_LOCALISATION;
-		
-	   /*
-		* Check fs write permissions for localisation files
-		*/
-        $langStorage = Lang::storage();
-		$localisations = $this->getLocalisations();
-		$langWritePath = $langStorage->getWrite();
-
-        $translator = $objectConfig->getTranslator();
-
-		foreach ($localisations as $file)
-		{
-            if(file_exists($langWritePath . $file) && !is_writable($langWritePath . $file)){
-                return self::ERROR_FS_LOCALISATION;
-            }
-
-            $localeName = basename(dirname($file));
-            $translator = $this->getTranslator($localeName, $oldName);
-            if(!$translator->removeObjectTranslation($oldName, true)){
+            if (!$translator->save($cfg->getName(), $translation)) {
                 return self::ERROR_FS_LOCALISATION;
             }
         }
 
-		$localisationKey = strtolower($oldName);
-		foreach ($localisations as $file)
-		{
+        if (!$cfg->renameField($oldName, $newName)) {
+            return self::ERROR_EXEC;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Rename Db_Object
+     * @param string $path - configs path
+     * @param string $oldName
+     * @param string $newName
+     * @return integer 0 on success or error code
+     */
+    public function renameObject($path, $oldName, $newName)
+    {
+        $objectConfig = Orm\Record\Config::factory($oldName);
+        /*
+         * Check fs write permissions for associated objects
+         */
+        $assoc = Orm\Record\Expert::getAssociatedStructures($oldName);
+
+        if (!empty($assoc)) {
+            foreach ($assoc as $config) {
+                if (!is_writable(Config::storage()->getPath($path) . strtolower($config['object']) . '.php')) {
+                    return self::ERROR_FS_LOCALISATION;
+                }
+            }
+        }
+
+        /*
+         * Check fs write permissions for localisation files
+         */
+        $langStorage = Lang::storage();
+        $localisations = $this->getLocalisations();
+        $langWritePath = $langStorage->getWrite();
+
+        $translator = $objectConfig->getTranslator();
+
+        foreach ($localisations as $file) {
+            if (file_exists($langWritePath . $file) && !is_writable($langWritePath . $file)) {
+                return self::ERROR_FS_LOCALISATION;
+            }
+
+            $localeName = basename(dirname($file));
+            $translator = $this->getTranslator($localeName, $oldName);
+            if (!$translator->removeObjectTranslation($oldName, true)) {
+                return self::ERROR_FS_LOCALISATION;
+            }
+        }
+
+        $localisationKey = strtolower($oldName);
+        foreach ($localisations as $file) {
             $localeName = basename(dirname($file));
 
-			$cfg = $langStorage->get($file,true,true);
-			if($cfg->offsetExists($localisationKey))
-			{
-				$cfg->remove($localisationKey);
-                if(!$langStorage->save($cfg)){
+            $cfg = $langStorage->get($file, true, true);
+            if ($cfg->offsetExists($localisationKey)) {
+                $cfg->remove($localisationKey);
+                if (!$langStorage->save($cfg)) {
                     return self::ERROR_FS;
                 }
-			}
+            }
 
             $localeName = basename(dirname($file));
             $translator = $this->getTranslator($localeName, $oldName);
             $oldTranslations = $translator->getTranslation($oldName);
-            if(!$translator->removeObjectTranslation($oldName)){
+            if (!$translator->removeObjectTranslation($oldName)) {
                 return self::ERROR_FS_LOCALISATION;
             }
             $translator = $this->getTranslator($localeName, $newName);
-            if(!$translator->save($newName, $oldTranslations)){
+            if (!$translator->save($newName, $oldTranslations)) {
                 return self::ERROR_FS_LOCALISATION;
             }
-		}
-		
-		$newFileName = Config::storage()->getWrite(). $path . $newName . '.php';
-		$oldFileName = Config::storage()->getPath($path) . $oldName . '.php';
+        }
 
-		if(!@rename($oldFileName, $newFileName))
-			return self::ERROR_FS;
+        $newFileName = Config::storage()->getWrite() . $path . $newName . '.php';
+        $oldFileName = Config::storage()->getPath($path) . $oldName . '.php';
 
-		
-		if(!empty($assoc))
-		{
-			foreach ($assoc as $config)
-			{
-				$object = $config['object'];
-				$fields = $config['fields'];
-				
-				$oConfig = Orm\Record\Config::factory($object);
-				
-				foreach ($fields as $fName=>$fType)				
-					if($oConfig->getField($fName)->isLink())
-						if(!$oConfig->setFieldLink($fName, $newName))
-							return self::ERROR_EXEC;
-									
-				if(!$oConfig->save())
-					return self::ERROR_FS;
-			}
-		}
-		return 0;
-	}
+        if (!@rename($oldFileName, $newFileName)) {
+            return self::ERROR_FS;
+        }
+
+
+        if (!empty($assoc)) {
+            foreach ($assoc as $config) {
+                $object = $config['object'];
+                $fields = $config['fields'];
+
+                $oConfig = Orm\Record\Config::factory($object);
+
+                foreach ($fields as $fName => $fType) {
+                    if ($oConfig->getField($fName)->isLink()) {
+                        if (!$oConfig->setFieldLink($fName, $newName)) {
+                            return self::ERROR_EXEC;
+                        }
+                    }
+                }
+
+                if (!$oConfig->save()) {
+                    return self::ERROR_FS;
+                }
+            }
+        }
+        return 0;
+    }
 
     /**
      * Sync Distributed index structure
      * add fields into ObjectId
      * @param string $objectName
-     * @throws Exception
      * @return bool
+     * @throws Exception
      */
     public function syncDistributedIndex($objectName)
     {
@@ -431,9 +437,8 @@ class Manager
         $idObject = $oConfig->getDistributedIndexObject();
         $idObjectConfig = Orm\Record\Config::factory($idObject);
 
-        foreach ($distIndexes as $name=>$info)
-        {
-            if($name == $idObjectConfig->getPrimaryKey()){
+        foreach ($distIndexes as $name => $info) {
+            if ($name == $idObjectConfig->getPrimaryKey()) {
                 continue;
             }
 
@@ -442,11 +447,11 @@ class Manager
             $cfg['db_isNull'] = true;
 
             $unique = false;
-            if(isset($cfg['unique']) && $cfg['unique']){
+            if (isset($cfg['unique']) && $cfg['unique']) {
                 $unique = true;
             }
-            $idObjectConfig->setFieldConfig($name,$cfg);
-            $idObjectConfig->setIndexConfig($name,[
+            $idObjectConfig->setFieldConfig($name, $cfg);
+            $idObjectConfig->setIndexConfig($name, [
                 'columns' => [$name],
                 'fulltext' => false,
                 'unique' => $unique,
@@ -456,7 +461,7 @@ class Manager
     }
 
 
-    public function getTranslator(string $locale, string $objectName) : Translator
+    public function getTranslator(string $locale, string $objectName): Translator
     {
         $ormConfig = Config::storage()->get('orm.php');
         $commonFile = $locale . '/objects.php';

@@ -35,7 +35,7 @@ class Bgtask_Storage_Orm extends Bgtask_Storage
 	protected $_objectModel;
 	
 	/**
-	 * @var Model_Bgtask_Signal
+	 * @var \Dvelum\App\Model\Bgtask\Signal
 	 */
 	protected $_signalModel;
 	

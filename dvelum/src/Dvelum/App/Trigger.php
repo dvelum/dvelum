@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App;
 
+use Dvelum\App\Model\Historylog;
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -86,7 +87,7 @@ class Trigger
         if ($config->hasHistory()) {
             if ($config->hasExtendedHistory()) {
                 Model::factory($logObject)->saveState(
-                    \Model_Historylog::Create,
+                    Historylog::Create,
                     $object->getName(),
                     $object->getId(),
                     User::getInstance()->getId(),
@@ -98,7 +99,7 @@ class Trigger
                 Model::factory($logObject)->log(
                     User::getInstance()->getId(),
                     $object->getId(),
-                    \Model_Historylog::Create,
+                    Historylog::Create,
                     $object->getName()
                 );
             }
@@ -126,7 +127,7 @@ class Trigger
         if ($object->getConfig()->hasHistory()) {
             if ($config->hasExtendedHistory()) {
                 Model::factory($logObject)->saveState(
-                   \Model_Historylog::Delete,
+                    Historylog::Delete,
                     $object->getName(),
                     $object->getId(),
                     User::getInstance()->getId(),
@@ -138,7 +139,7 @@ class Trigger
                 Model::factory($logObject)->log(
                     User::getInstance()->getId(),
                     $object->getId(),
-                    \Model_Historylog::Delete,
+                    Historylog::Delete,
                     $object->getName()
                 );
             }
@@ -167,7 +168,7 @@ class Trigger
 
             if ($config->hasExtendedHistory()) {
                 Model::factory($logObject)->saveState(
-                    \Model_Historylog::Update,
+                    Historylog::Update,
                     $object->getName(),
                     $object->getId(),
                     User::getInstance()->getId(),
@@ -179,7 +180,7 @@ class Trigger
                 Model::factory($logObject)->log(
                     User::getInstance()->getId(),
                     $object->getId(),
-                    \Model_Historylog::Update,
+                    Historylog::Update,
                     $object->getName()
                 );
             }
@@ -194,7 +195,7 @@ class Trigger
             Model::factory($logObject)->log(
                 User::getInstance()->getId(),
                 $object->getId(),
-                \Model_Historylog::Publish,
+                Historylog::Publish,
                 $object->getName()
             );
         }
@@ -211,7 +212,7 @@ class Trigger
         Model::factory($logObject)->log(
             User::getInstance()->getId(),
             $object->getId(),
-            \Model_Historylog::Unpublish,
+            Historylog::Unpublish,
             $object->getName()
         );
     }
@@ -227,7 +228,7 @@ class Trigger
         Model::factory($logObject)->log(
             User::getInstance()->getId(),
             $object->getId(),
-            \Model_Historylog::NewVersion,
+            Historylog::NewVersion,
             $object->getName()
         );
     }

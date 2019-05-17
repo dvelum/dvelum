@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace Dvelum\Orm\Record;
 
 use Dvelum\App\EventManager;
+use Dvelum\App\Model\Historylog;
+use Dvelum\App\Model\Links;
 use Dvelum\Orm;
 use Dvelum\Db;
 use Dvelum\Orm\Model;
@@ -939,13 +941,13 @@ class Store
 
         /**
          * Clear object links (links from object)
-         * @var \Model_Links $linksModel
+         * @var Links $linksModel
          */
         $linksModel = Model::factory($this->config['linksObject']);
         $linksModel->clearLinksFor($objectName , $ids);
 
         /**
-         * @var \Model_Historylog $history
+         * @var Historylog $history
          */
         $history = Model::factory($this->config['historyObject']);
         $userId = \Dvelum\App\Session\User::getInstance()->getId();
@@ -955,7 +957,7 @@ class Store
          */
         if($objectConfig->hasHistory())
             foreach ($ids as $v)
-                $history->log($userId, $v, \Model_Historylog::Delete , $tableName);
+                $history->log($userId, $v, Historylog::Delete , $tableName);
 
         if($this->eventManager)
         {
@@ -990,7 +992,7 @@ class Store
         foreach ($groupsData as $group)
         {
             $sql = $db->select()
-                ->from($model->table() , array('count'=>'COUNT(*)'));
+                ->from($model->table() , ['count'=>'COUNT(*)']);
 
             if($recordId)
                 $sql->where(' '.$db->quoteIdentifier($primaryKey).' != ?', $recordId);
