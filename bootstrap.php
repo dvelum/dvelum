@@ -49,7 +49,7 @@ $bootCfg = include DVELUM_ROOT . '/application/configs/common/dist/init.php';
 /*
  * Register composer autoload
  */
-require __DIR__ . '/vendor/autoload.php';
+require DVELUM_ROOT . '/vendor/autoload.php';
 /*
  * Including Autoloader class
  */
