@@ -6,7 +6,7 @@ return [
         'group' => 'default',
         'weight'=> 6,
         'override' =>[
-            'dbname' => 'dvelum_test_sh1'
+            'prefix' => 'shard1_',
         ],
     ], [
         'id' => 'shard2',
@@ -14,7 +14,7 @@ return [
         'group' => 'default',
         'weight'=> 6,
         'override' =>[
-            'dbname' => 'dvelum_test_sh2'
+            'prefix' => 'shard2_',
         ],
     ],
 ];
