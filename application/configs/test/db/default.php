@@ -1,8 +1,8 @@
 <?php return array (
   'host' => 'localhost',
-  'username' => 'dvelum',
-  'password' => 'dvelum',
-  'dbname' => 'dvelum',
+  'username' => 'dvelum_test',
+  'password' => 'dvelum_test',
+  'dbname' => 'dvelum_test',
   'driver' => 'Mysqli',
   'adapter' => 'Mysqli',
   'transactionIsolationLevel' => 'default',
