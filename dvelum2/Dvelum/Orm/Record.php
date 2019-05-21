@@ -59,7 +59,7 @@ class Record implements RecordInterface
      */
     protected $acl = false;
     /**
-     * System flag. Disable ACL create permissions check
+     * System flag. Disable ACL permissions check
      * @var bool
      */
     protected $disableAclCheck = false;
@@ -101,8 +101,8 @@ class Record implements RecordInterface
         $this->acl = $this->config->getAcl();
 
         if ($this->id) {
-            $this->checkCanRead();
             $this->loadData();
+            $this->checkCanRead();
         } else {
             if ($this->acl && !$this->disableAclCheck) {
                 $this->checkCanCreate();
@@ -199,7 +199,7 @@ class Record implements RecordInterface
      */
     public function getData($withUpdates = true): array
     {
-        if ($this->acl) {
+        if ($this->acl && !$this->disableAclCheck) {
             $this->checkCanRead();
         }
 
