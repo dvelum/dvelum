@@ -494,7 +494,7 @@ class Record implements RecordInterface
      */
     public function get(string $name)
     {
-        if ($this->acl) {
+        if ($this->acl && !$this->disableAclCheck) {
             $this->checkCanRead();
         }
 
