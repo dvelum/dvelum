@@ -80,7 +80,7 @@ class ModelTest extends TestCase
 	{
 		$pageModel =  Model::factory('User');
 		$this->assertEquals(( $pageModel instanceof \Dvelum\App\Model\User ) , true);
-		$this->assertEquals($pageModel->getObjectName() , 'page');
+		$this->assertEquals($pageModel->getObjectName() , 'user');
 		
 		$apiKeys = Model::factory('User');
 		$this->assertEquals(( $apiKeys instanceof Model) , true);

@@ -75,7 +75,7 @@ class Historylog extends Model
             'date' => date('Y-m-d H:i:s'),
             'object' => $object
         ));
-        return $obj->save(false);
+        return (bool) $obj->save(false);
     }
 
     /**
