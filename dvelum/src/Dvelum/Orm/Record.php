@@ -102,8 +102,8 @@ class Record implements RecordInterface
         $this->acl = $this->config->getAcl();
 
         if ($this->id) {
-            $this->checkCanRead();
             $this->loadData();
+            $this->checkCanRead();
         } else {
             if ($this->acl && !$this->disableAclCheck) {
                 $this->checkCanCreate();
@@ -200,7 +200,7 @@ class Record implements RecordInterface
      */
     public function getData($withUpdates = true): array
     {
-        if ($this->acl) {
+        if ($this->acl && !$this->disableAclCheck) {
             $this->checkCanRead();
         }
 
