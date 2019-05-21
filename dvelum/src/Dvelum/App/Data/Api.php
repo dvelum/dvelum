@@ -45,6 +45,14 @@ class Api
             $model = Model::factory($ormObjectConfig->getDistributedIndexObject());
         }
 
+        $filters = $this->apiRequest->getFilters();
+        $permissions = $user->getModuleAcl()->getModulePermissions($request->getObjectName());
+
+        // Check permissions if user can see only own records
+        if($permissions && $permissions->isOnlyOwn()){
+            $filters['author_id']=$user->getId();
+        }
+
         $this->dataQuery = $model->query()
             ->params($this->apiRequest->getPagination())
             ->filters($this->apiRequest->getFilters())
