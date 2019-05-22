@@ -55,5 +55,7 @@ return array(
     // count of tokens to enable garbage collector
     'use_csrf_token_garbage_limit' => 500,
     // Code generator class
-    'modules_generator' => '\\Dvelum\\App\\Module\\Generator\\Simple'
+    'modules_generator' => '\\Dvelum\\App\\Module\\Generator\\Simple',
+    // Menu adapter class
+    'menu_adapter' => '\\Dvelum\\App\\Menu'
 );
