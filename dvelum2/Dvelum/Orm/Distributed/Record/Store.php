@@ -276,7 +276,7 @@ class Store extends \Dvelum\Orm\Record\Store
                 $count = $db->fetchOne($sql);
 
                 if($count > 0){
-                    return array_keys($group);
+                    return $group;
                 }
             }
         }catch (Exception $e){

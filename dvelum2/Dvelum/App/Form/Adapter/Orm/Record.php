@@ -125,7 +125,7 @@ class Record extends Form\Adapter
         {
             $errorList = $obj->validateUniqueValues();
             if(!empty($errorList)){
-                foreach ($errorList as $field){
+                foreach ($errorList as $field => $value){
                     $this->errors[] = new Form\Error($this->lang->get('SB_UNIQUE'), $field);
                 }
                 return false;
