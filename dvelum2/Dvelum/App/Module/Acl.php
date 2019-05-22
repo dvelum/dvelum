@@ -57,7 +57,7 @@ class Acl
     /**
      * Get module permissions
      * @param $module
-     * @return bool | []
+     * @return bool | Permissions
      */
     public function getModulePermissions($module)
     {
