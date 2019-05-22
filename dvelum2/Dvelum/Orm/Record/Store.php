@@ -1005,7 +1005,7 @@ class Store
             $count = $db->fetchOne($sql);
 
             if($count > 0){
-                return array_keys($group);
+                return $group;
             }
         }
         return null;
