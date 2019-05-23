@@ -640,11 +640,60 @@ abstract class Backend_Controller extends Controller
             'development' => $this->_configMain->get('development'),
             'version' => Config::storage()->get('versions.php')->get('core'),
             'lang' => $this->_configMain->get('language'),
-            'modules' => $modulesManager->getList(),
-            'userModules' => User::factory()->getModuleAcl()->getAvailableModules(),
             'useCSRFToken' => $this->_configBackend->get('use_csrf_token'),
             'theme' => $this->_configBackend->get('theme')
         ));
+
+        $menuData = [];
+        $modules = $modulesManager->getList();
+        $userModules = User::factory()->getModuleAcl()->getAvailableModules();
+        foreach($modules as $data)
+        {
+            if(!$data['active'] || !$data['in_menu'] || !isset($userModules[$data['id']])){
+                continue;
+            }
+            $menuData[] = [
+                'id' => $data['id'],
+                'dev' => $data['dev'],
+                'url' =>  $this->request->url(array($this->_configMain->get('adminPath'),$data['id'])),
+                'title'=> $data['title'],
+                'icon'=> $this->request->wwwRoot().$data['icon']
+            ];
+        }
+        $menuData[] = [
+            'id' => 'logout',
+            'dev' => false,
+            'url' =>  $this->request->url([$this->_configMain->get('adminPath'),'']) . 'login/logout',
+            'title'=>Lang::lang()->get('LOGOUT'),
+            'icon' => $this->request->wwwRoot() . 'i/system/icons/logout.png'
+        ];
+        $res->addInlineJs('
+            app.permissions = Ext.create("app.PermissionsStorage");
+            var rights = '.json_encode($this->_user->getPermissions()).';
+            app.permissions.setData(rights);
+        ');
+        $res->addInlineJs('var developmentMode = '.intval($this->_configMain->get('development')).';');
+        $menuAdapterClass = $this->_configBackend->get('menu_adapter');
+        /**
+         * @var $menuAdapter \Dvelum\App\Menu
+         */
+        $menuAdapter = new $menuAdapterClass();
+        $menuAdapter->setOptions([
+            'development' => $this->_configMain->get('development'),
+            'isVertical' => true,
+            'stateful' => true,
+        ]);
+        $menuAdapter->setData($menuData);
+        $menuIncludes = $menuAdapter->getIncludes();
+        if(!empty($menuIncludes['css']))
+            foreach($menuIncludes['css'] as $path => $options)
+                call_user_func_array([$res, 'addCss'], array_merge([$path],$options));
+        if(!empty($menuIncludes['js']))
+            foreach($menuIncludes['js'] as $path => $options)
+                call_user_func_array([$res, 'addJs'], array_merge([$path],$options));
+        $res->addInlineJs('
+            app.menu = '.$menuAdapter->render().';
+        ');
 
         Response::put($template->render($templatesPath . 'layout.php'));
     }
