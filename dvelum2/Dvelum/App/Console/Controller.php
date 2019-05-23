@@ -248,7 +248,12 @@ class Controller extends App\Controller implements Router\RouterInterface
     {
         $this->response = $response;
         $this->request = $request;
-        $this->indexAction();
+        $action = $this->request->getPart(0);
+        if(method_exists($this, $action.'Action')) {
+            $this->{$action.'Action'}();
+        }else{
+            $this->indexAction();
+        }
     }
 
     public function indexAction()
@@ -298,7 +303,7 @@ class Controller extends App\Controller implements Router\RouterInterface
      */
     public function managedTaskAction()
     {
-        $action = $this->request->getPart(1);
+        $action = strtolower($this->request->getPart(1));
 
         if ($this->managedTasks->offsetExists($action)) {
             $params = $this->request->getPathParts(2);
@@ -315,7 +320,7 @@ class Controller extends App\Controller implements Router\RouterInterface
      */
     public function jobAction()
     {
-        $action = $this->request->getPart(1);
+        $action = strtolower($this->request->getPart(1));
 
         if (isset($this->jobs[$action])) {
             $params = $this->request->getPathParts(2);
