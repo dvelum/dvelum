@@ -305,7 +305,7 @@ class Controller extends App\Controller implements Router\RouterInterface
     {
         $action = strtolower($this->request->getPart(1));
 
-        if ($this->managedTasks->offsetExists($action)) {
+        if (isset($this->managedTasks[$action])) {
             $params = $this->request->getPathParts(2);
             $this->launchManagedTask($action, $params);
         } else {
