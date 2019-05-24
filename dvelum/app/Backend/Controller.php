@@ -624,7 +624,9 @@ abstract class Backend_Controller extends Controller
         	app.root = "' . $request->url([$adminPath, $controllerCode,'']) . '";
         ');
 
-        $modulesManager = new \Modules_Manager();
+        if(!in_array($this->getModule(),$this->_configBackend->get('modules_without_menu')))
+            $this->addMenu();
+
         /*
          * Load template
          */
@@ -644,6 +646,15 @@ abstract class Backend_Controller extends Controller
             'theme' => $this->_configBackend->get('theme')
         ));
 
+        Response::put($template->render($templatesPath . 'layout.php'));
+    }
+
+    /**
+     * Add modules menu
+     */
+    protected function addMenu(){
+        $res = Resource::getInstance();
+        $modulesManager = new \Modules_Manager();
         $menuData = [];
         $modules = $modulesManager->getList();
         $userModules = User::factory()->getModuleAcl()->getAvailableModules();
@@ -691,10 +702,9 @@ abstract class Backend_Controller extends Controller
         if(!empty($menuIncludes['js']))
             foreach($menuIncludes['js'] as $path => $options)
                 call_user_func_array([$res, 'addJs'], array_merge([$path],$options));
+
         $res->addInlineJs('
             app.menu = '.$menuAdapter->render().';
         ');
-
-        Response::put($template->render($templatesPath . 'layout.php'));
     }
 }

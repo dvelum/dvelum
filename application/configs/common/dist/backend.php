@@ -57,5 +57,7 @@ return array(
     // Code generator class
     'modules_generator' => '\\Dvelum\\App\\Module\\Generator\\Simple',
     // Menu adapter class
-    'menu_adapter' => '\\Dvelum\\App\\Menu'
+    'menu_adapter' => '\\Dvelum\\App\\Menu',
+    // Modules in that need disable menu rendering
+    'modules_without_menu' => ['Designer']
 );
