@@ -430,7 +430,9 @@ class Controller extends App\Controller
         	app.root = "' . $this->request->url([$adminPath, $controllerCode, '']) . '";
         ');
 
-        $modulesManager = new \Modules_Manager();
+        if(!in_array($this->getModule(),$this->backofficeConfig->get('modules_without_menu')))
+            $this->addMenu();
+
         /*
          * Load template
          */
@@ -450,6 +452,15 @@ class Controller extends App\Controller
             'theme' => $this->backofficeConfig->get('theme')
         ));
 
+        $this->response->put($template->render($templatesPath . 'layout.php'));
+    }
+
+    /**
+     * Add modules menu
+     */
+    protected function addMenu(){
+        $res = Resource::factory();
+        $modulesManager = new \Modules_Manager();
         $menuData = [];
         $modules = $modulesManager->getList();
         $userModules = Session\User::factory()->getModuleAcl()->getAvailableModules();
@@ -506,8 +517,6 @@ class Controller extends App\Controller
         $res->addInlineJs('
             app.menu = '.$menuAdapter->render().';
         ');
-
-        $this->response->put($template->render($templatesPath . 'layout.php'));
     }
 
     /**
