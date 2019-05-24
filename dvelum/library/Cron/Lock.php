@@ -191,7 +191,7 @@ class Cron_Lock
     public function log($message)
     {
         if($this->logsAdapter){
-            $this->logsAdapter->log(get_called_class() .' ['.$this->getTaskName() .' ] ' . $message);
+            $this->logsAdapter->log(\Psr\Log\LogLevel::ERROR,get_called_class() .' ['.$this->getTaskName() .' ] ' . $message);
         }
     }
     /**
