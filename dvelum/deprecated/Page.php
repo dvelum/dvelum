@@ -36,6 +36,8 @@ class Page
     public $text = '';
     public $show_blocks = false;
     public $meta_keywords = '';
+    public $robots = null;
+    public $canonical = null;
     public $theme = 'default';
     protected $ogData = array(
         'image' => '' ,

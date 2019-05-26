@@ -2,6 +2,12 @@
 $page = $this->get('page');
 $resource = \Dvelum\Resource::factory();
 $wwwRoot = \Dvelum\Request::factory()->wwwRoot();
+
+$robots = [];
+if(isset($page->robots) && is_array($page->robots)){
+    $robots = $page->robots;
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -22,6 +28,14 @@ $wwwRoot = \Dvelum\Request::factory()->wwwRoot();
     ?>
     <meta name="viewport" content="width=device-width; initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <?php
+    if(!empty($robots)){
+        echo '<meta name="robots" content="'.implode(',', $robots).'" />';
+    }
+    if(!empty($page->canonical)){
+        echo '<link rel="canonical" href="'.$page->canonical.'"/>';
+    }
+    ?>
     <link rel="shortcut icon" href="<?php echo $wwwRoot;?>i/favicon.png" />
     <?php  echo $this->resource->includeCss(); ?>
     <?php  echo $this->get('resource')->includeJsByTag(true , false, 'head'); ?>
