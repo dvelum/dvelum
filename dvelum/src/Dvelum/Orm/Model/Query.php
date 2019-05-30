@@ -284,6 +284,12 @@ class Query
     {
         $fields = $this->model->getLightConfig()->get('fields');
         foreach ($filters as $field => $val) {
+
+            if ($val === false && isset($fields[$field]) && isset($fields[$field]['db_type']) && $fields[$field]['db_type'] === 'boolean') {
+                $filters[$field] = \Dvelum\Filter::filterValue(\Dvelum\Filter::FILTER_BOOLEAN, $val);
+                continue;
+            }
+
             if (!($val instanceof Db\Select\Filter) && !is_null($val) && (!is_array($val) && !strlen((string)$val))) {
                 unset($filters[$field]);
                 continue;
