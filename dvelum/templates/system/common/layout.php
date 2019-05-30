@@ -35,36 +35,6 @@ if($this->get('useCSRFToken')){
     $token = $csrf->createToken();
 }
 
-$menuData = [];
-$modules = $this->modules;
-foreach($modules as $data)
-{
-    if(!$data['active'] || !$data['in_menu'] || !isset($this->userModules[$data['id']])){
-        continue;
-    }
-    $menuData[] = [
-        'id' => $data['id'],
-        'dev' => $data['dev'],
-        'url' =>  Request::url(array($this->get('adminPath'),$data['id'])),
-        'title'=> $data['title'],
-        'icon'=> Request::wwwRoot().$data['icon']
-    ];
-}
-$menuData[] = [
-    'id' => 'logout',
-    'dev' => false,
-    'url' =>  Request::url([$this->get('adminPath'),'']) . 'login/logout',
-    'title'=>Lang::lang()->get('LOGOUT'),
-    'icon' => Request::wwwRoot() . 'i/system/icons/logout.png'
-];
-
-$res->addInlineJs('
-		app.menuData = '.json_encode($menuData).';
-		app.permissions = Ext.create("app.PermissionsStorage");
-		var rights = '.json_encode(User::getInstance()->getPermissions()).';
-		app.permissions.setData(rights);
-	');
-
 $wwwRoot = Request::wwwRoot();
 ?>
 <!DOCTYPE html>

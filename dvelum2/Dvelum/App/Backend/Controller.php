@@ -430,7 +430,9 @@ class Controller extends App\Controller
         	app.root = "' . $this->request->url([$adminPath, $controllerCode, '']) . '";
         ');
 
-        $modulesManager = new \Modules_Manager();
+        if(!in_array($this->getModule(),$this->backofficeConfig->get('modules_without_menu')))
+            $this->addMenu();
+
         /*
          * Load template
          */
@@ -446,13 +448,75 @@ class Controller extends App\Controller
             'development' => $this->appConfig->get('development'),
             'version' => Config::storage()->get('versions.php')->get('core'),
             'lang' => $this->appConfig->get('language'),
-            'modules' => $modulesManager->getList(),
-            'userModules' => Session\User::factory()->getModuleAcl()->getAvailableModules(),
             'useCSRFToken' => $this->backofficeConfig->get('use_csrf_token'),
             'theme' => $this->backofficeConfig->get('theme')
         ));
 
         $this->response->put($template->render($templatesPath . 'layout.php'));
+    }
+
+    /**
+     * Add modules menu
+     */
+    protected function addMenu(){
+        $res = Resource::factory();
+        $modulesManager = new \Modules_Manager();
+        $menuData = [];
+        $modules = $modulesManager->getList();
+        $userModules = Session\User::factory()->getModuleAcl()->getAvailableModules();
+        foreach($modules as $data)
+        {
+            if(!$data['active'] || !$data['in_menu'] || !isset($userModules[$data['id']])){
+                continue;
+            }
+            $menuData[] = [
+                'id' => $data['id'],
+                'dev' => $data['dev'],
+                'url' =>  $this->request->url(array($this->appConfig->get('adminPath'),$data['id'])),
+                'title'=> $data['title'],
+                'icon'=> $this->request->wwwRoot().$data['icon']
+            ];
+        }
+        $menuData[] = [
+            'id' => 'logout',
+            'dev' => false,
+            'url' =>  $this->request->url([$this->appConfig->get('adminPath'),'']) . 'login/logout',
+            'title'=>Lang::lang()->get('LOGOUT'),
+            'icon' => $this->request->wwwRoot() . 'i/system/icons/logout.png'
+        ];
+
+        $res->addInlineJs('
+            app.permissions = Ext.create("app.PermissionsStorage");
+            var rights = '.json_encode($this->user->getPermissions()).';
+            app.permissions.setData(rights);
+        ');
+
+        $res->addInlineJs('var developmentMode = '.intval($this->appConfig->get('development')).';');
+
+        $menuAdapterClass = $this->backofficeConfig->get('menu_adapter');
+        /**
+         * @var $menuAdapter \Dvelum\App\Menu
+         */
+        $menuAdapter = new $menuAdapterClass();
+        $menuAdapter->setOptions([
+            'development' => $this->appConfig->get('development'),
+            'isVertical' => true,
+            'stateful' => true,
+        ]);
+        $menuAdapter->setData($menuData);
+        $menuIncludes = $menuAdapter->getIncludes();
+
+        if(!empty($menuIncludes['css']))
+            foreach($menuIncludes['css'] as $path => $options)
+                call_user_func_array([$res, 'addCss'], array_merge([$path],$options));
+
+        if(!empty($menuIncludes['js']))
+            foreach($menuIncludes['js'] as $path => $options)
+                call_user_func_array([$res, 'addJs'], array_merge([$path],$options));
+
+        $res->addInlineJs('
+            app.menu = '.$menuAdapter->render().';
+        ');
     }
 
     /**
