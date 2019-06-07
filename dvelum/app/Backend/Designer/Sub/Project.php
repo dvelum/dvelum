@@ -32,7 +32,7 @@ class Backend_Designer_Sub_Project extends Backend_Designer_Sub
         $writeFile = str_replace('//', '/', $writePath . $cfgPath . $relFile);
 
         // In accordance with configs merge priority
-        rsort($paths);
+        krsort($paths);
 
         $file = false;
 
