@@ -111,7 +111,7 @@ $autoloader->setConfig($autoloaderCfg);
  */
 if($config->get('development') === 3){
     if(strpos($_SERVER['REQUEST_URI'],'install')!==false){
-        $controller = new Install_Controller();
+        $controller = new Dvelum\App\Install\Controller();
         $controller->setAutoloader($autoloader);
         $controller->run();
         exit;

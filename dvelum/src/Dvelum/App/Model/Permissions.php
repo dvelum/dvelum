@@ -375,7 +375,7 @@ class Permissions extends Model
         $groupObj->group_id = $group;
         $groupObj->user_id = null;
 
-        return $groupObj->save(true);
+        return (bool)$groupObj->save(true);
     }
 
     /**
