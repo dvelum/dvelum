@@ -182,6 +182,7 @@
               array (
                 'config' => 
                 array (
+                  'isDisabled' => 'function(view,rowIndex,colIndex,item,record){return !(record.get(\'installed\') && !record.get(\'enabled\'));}',
                   'icon' => '[%wroot%]i/system/yes.gif',
                   'text' => 'dataGrid_action_action_enable',
                   'tooltip' => '[js:] appLang.ENABLE',
@@ -200,6 +201,7 @@
               array (
                 'config' => 
                 array (
+                  'isDisabled' => 'function(view,rowIndex,colIndex,item,record){return !(record.get(\'installed\') && record.get(\'enabled\'));}',
                   'icon' => '[%wroot%]i/system/no.png',
                   'text' => 'dataGrid_action_action_disable',
                   'tooltip' => '[js:] appLang.DISABLE',
@@ -218,6 +220,7 @@
               array (
                 'config' => 
                 array (
+                  'isDisabled' => 'function(view,rowIndex,colIndex,item,record){return !record.get(\'installed\');}',
                   'icon' => '[%wroot%]i/system/delete.gif',
                   'text' => 'dataGrid_action_action_uninstall',
                   'tooltip' => '[js:] appLang.UNINSTALL',
