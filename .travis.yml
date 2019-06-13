@@ -16,10 +16,6 @@ script:
 after_script:
   - php vendor/bin/codacycoverage clover coverage.xml
 
-cache:
-  directories:
-    - $COMPOSER_CACHE_DIR
-
 services:
   - mysql
 before_install:
