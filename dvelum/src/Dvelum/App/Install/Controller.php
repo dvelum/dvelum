@@ -1,12 +1,26 @@
 <?php
+
+namespace Dvelum\App\Install;
+
 use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Lang;
+use Dvelum\Response;
+use Dvelum\Security\CryptService;
+use Dvelum\Utils;
 use Dvelum\View;
 use Dvelum\Template;
+use Dvelum\Autoload;
+use Dvelum\Request;
+use Dvelum\Service;
+use Dvelum\Store;
+use Dvelum\App\Session;
+use Dvelum\App\Module;
+use Dvelum\Validator;
+use Dvelum\App\Backend\Localization;
 
-class Install_Controller
+class Controller
 {
     /**
      * Document root
@@ -36,15 +50,23 @@ class Install_Controller
     protected $wwwRoot;
     protected $wwwPath;
     protected $_action;
+    
+    protected $request;
+    protected $response;
 
     /**
-     * @var Dvelum\Autoload $autoloader
+     * @var \Dvelum\Autoload $autoloader
      */
     protected $autoloader;
 
     public function __construct()
     {
-        $this->session = \Dvelum\Store\Factory::get(\Dvelum\Store\Factory::SESSION , 'install');
+        $this->request = Request::factory();
+        $this->response = Response::factory();
+
+        $this->response->setFormat('json');
+        
+        $this->session = Store\Factory::get(Store\Factory::SESSION , 'install');
         $this->appConfig = Config::storage()->get('main.php' , false , false);
         $this->wwwPath = DVELUM_WWW_PATH;
         $this->docRoot = DVELUM_ROOT;
@@ -60,24 +82,20 @@ class Install_Controller
             $this->wwwRoot.=$parts[$i].'/';
         }
         /*
-         * Set localization storage options
-         */
-        //Lang::storage()->setConfig(Config::storage()->get('lang_storage.php')->__toArray());
-        /*
          * Set template storage options
          */
         View::storage()->setConfig(Config::storage()->get('template_storage.php')->__toArray());
 
     }
 
-    public function setAutoloader(Dvelum\Autoload $autoloader)
+    public function setAutoloader(Autoload $autoloader)
     {
         $this->autoloader = $autoloader;
     }
 
     public function run()
     {
-        $action = Request::post('action', 'string', false);
+        $action = $this->request->post('action', 'string', false);
         $lang = $this->session->get('lang');
 
         if(!empty($lang))
@@ -112,13 +130,13 @@ class Install_Controller
 
     public function setlangAction()
     {
-        $lang = Request::post('lang', 'string', false);
+        $lang = $this->request->post('lang', 'string', false);
 
         if(empty($lang))
-            Response::jsonError();
+            $this->response->error('');
 
         $this->session->set('lang', $lang);
-        Response::jsonSuccess();
+        $this->response->success();
     }
 
     public function indexAction()
@@ -286,22 +304,22 @@ class Install_Controller
 
         $data['info'] = $this->localization->get('WARNING_ABOUT_RIGHTS');
 
-        Response::jsonSuccess($data);
+        $this->response->success($data);
     }
     public function dbcheckAction()
     {
-        $host = Request::post('host', 'str', '');
-        $port = Request::post('port', 'int', 0);
-        $prefix = Request::post('prefix', 'str', '');
+        $host = $this->request->post('host', 'str', '');
+        $port = $this->request->post('port', 'int', 0);
+        $prefix = $this->request->post('prefix', 'str', '');
 
-        $installDocs = Request::post('install_docs' , 'boolean' , false);
+        $installDocs = $this->request->post('install_docs' , 'boolean' , false);
         $this->session->set('install_docs' , $installDocs);
 
         $params = array(
             'host'           => $host,
-            'username'       => Request::post('username', 'str', false),
-            'password'       => Request::post('password', 'str', false),
-            'dbname'         => Request::post('dbname', 'str', false),
+            'username'       => $this->request->post('username', 'str', false),
+            'password'       => $this->request->post('password', 'str', false),
+            'dbname'         => $this->request->post('dbname', 'str', false),
             'driver'  => 'Mysqli',
             'adapter'  => 'Mysqli',
             'transactionIsolationLevel' => 'default'
@@ -318,7 +336,7 @@ class Install_Controller
                 $data['success'] = true;
                 $data['msg'] = $this->localization->get('SUCCESS_DB_CHECK');
                 $flag = true;
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $data['success'] = false;
                 $data['msg'] = $this->localization->get('FAILURE_DB_CHECK') . ' ' . $e->getMessage();
             }
@@ -348,24 +366,24 @@ class Install_Controller
                 $params['charset'] = 'UTF8';
                 $storage = Config::storage();
                 foreach($configs as $item) {
-                    $cfg = \Dvelum\Config\Factory::create($params, $item);
+                    $cfg = Config\Factory::create($params, $item);
 
                     $dirName = dirname($item);
                     if(!file_exists($dirName)){
                         if(!mkdir($dirName,0777,true)){
-                            throw new Exception('Cant write '.$dirName);
+                            throw new \Exception('Cant write '.$dirName);
                         }
                     }
                     if (!$storage->save($cfg))
-                        throw new Exception();
+                        throw new \Exception();
                 }
 
-            } catch (Throwable $e) {
+            } catch (\Throwable $e) {
                 $data['success'] = false;
                 $data['msg'] = $this->localization->get('CONNECTION_SAVE_FAIL');
             }
         }
-        Response::jsonSuccess($data);
+        $this->response->success($data);
     }
     /**
      * Create Database tables
@@ -376,11 +394,11 @@ class Install_Controller
 
         $appClass = $mainConfig->get('application');
         if(!class_exists($appClass))
-            throw new Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
+            throw new \Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
 
         $app = new $appClass($mainConfig);
         $app->setAutoloader($this->autoloader);
-        $app->init();
+        $app->runInstallMode();
 
         $dbObjectManager = new Orm\Record\Manager();
         $objects = $dbObjectManager->getRegisteredObjects();
@@ -400,19 +418,19 @@ class Install_Controller
         }
 
         if(!empty($buildErrors))
-            Response::jsonError($this->localization->get('BUILD_ERR') . ' ' . implode(', ', $buildErrors));
+            $this->response->error($this->localization->get('BUILD_ERR') . ' ' . implode(', ', $buildErrors));
         else
-            Response::jsonSuccess('', array('msg'=>$this->localization->get('DB_DONE')));
+            $this->response->success([], array('msg'=>$this->localization->get('DB_DONE')));
     }
 
     public function setuserpassAction()
     {
-        $pass = Request::post('pass', 'str', '');
-        $passConfirm = Request::post('pass_confirm', 'str', '');
-        $lang = Request::post('lang', 'string', 'en');
-        $timezone = Request::post('timezone', 'string', '');
-        $adminpath = strtolower(Request::post('adminpath', 'string', ''));
-        $user = Request::post('user',  'str', '');
+        $pass = $this->request->post('pass', 'str', '');
+        $passConfirm = $this->request->post('pass_confirm', 'str', '');
+        $lang = $this->request->post('lang', 'string', 'en');
+        $timezone = $this->request->post('timezone', 'string', '');
+        $adminpath = strtolower($this->request->post('adminpath', 'string', ''));
+        $user = $this->request->post('user',  'str', '');
 
         $errors = array();
 
@@ -426,11 +444,11 @@ class Install_Controller
         if(empty($timezone) || !in_array($timezone, $timezones, true))
             $errors[] = $this->localization->get('TIMEZOME_REQUIRED');
 
-        if(!\Dvelum\Validator\Alphanum::validate($adminpath)  || is_dir('./dvelum/app/Backend/'.ucfirst($adminpath)))
+        if(!Validator\Alphanum::validate($adminpath)  || is_dir('./dvelum/app/Backend/'.ucfirst($adminpath)))
             $errors[] = $this->localization->get('INVALID_ADMINPATH');
 
         if(!empty($errors))
-            Response::jsonError(implode(', ', $errors));
+            $this->response->error(implode(', ', $errors));
 
         $mainConfig = array(
             'development' => 1,
@@ -446,15 +464,15 @@ class Install_Controller
         $writePath = $mainCfgStorage->getWrite();
 
         if(!is_dir(dirname($writePath)) && !@mkdir($writePath , 0755, true)){
-            Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.dirname($writePath));
+            $this->response->error($this->localization->get('CANT_WRITE_FS').' '.dirname($writePath));
         }
 
-        if(!\Dvelum\Utils::exportArray($writePath . 'main.php' , $mainConfig))
-            Response::jsonError($this->localization->get('CANT_WRITE_FS').' '.$writePath);
+        if(!Utils::exportArray($writePath . 'main.php' , $mainConfig))
+            $this->response->error($this->localization->get('CANT_WRITE_FS').' '.$writePath);
 
         $key = '';
         if(extension_loaded('openssl')){
-            $service = new \Dvelum\Security\CryptService($mainCfgStorage->get('crypt.php'));
+            $service = new CryptService($mainCfgStorage->get('crypt.php'));
             if($service->canCrypt()){
                 try{
                     $key = $service->createPrivateKey();
@@ -469,7 +487,7 @@ class Install_Controller
         $cryptConfig = $mainCfgStorage->get('crypt.php');
 
         if(!file_put_contents($cryptConfig->get('key'), $key)){
-            Response::jsonError($this->localization->get('CANT_WRITE_FS') . ' ' . $cryptConfig->get('key'));
+            $this->response->error($this->localization->get('CANT_WRITE_FS') . ' ' . $cryptConfig->get('key'));
         }
 
         $mainConfig = Config::storage()->get('main.php', false ,true);
@@ -479,26 +497,26 @@ class Install_Controller
          */
         $appClass = $mainConfig->get('application');
         if(!class_exists($appClass))
-            throw new Exception('Core class '.$appClass.' does not exist! Check config "application" option!');
+            throw new \Exception('Core class '.$appClass.' does not exist! Check config "application" option!');
 
         $app = new $appClass($mainConfig);
         $app->setAutoloader($this->autoloader);
-        $app->init();
+        $app->runInstallMode();
 
         $this->_compileLangs($mainConfig);
 
         if(!$this->_prepareRecords($pass, $user))
-            Response::jsonError($this->localization->get('CANT_WRITE_TO_DB'));
+            $this->response->error($this->localization->get('CANT_WRITE_TO_DB'));
 
-        Response::jsonSuccess(array('link'=>$adminpath));
+        $this->response->success(array('link'=>$adminpath));
     }
 
     protected function _compileLangs($mainConfig){
-        $langManager = new \Dvelum\App\Backend\Localization\Manager($mainConfig);
+        $langManager = new Localization\Manager($mainConfig);
         try{
             $langManager->compileLangFiles();
-        }catch (Exception $e){
-            Response::jsonError($e->getMessage());
+        }catch (\Exception $e){
+            $this->response->error($e->getMessage());
         }
     }
 
@@ -508,10 +526,6 @@ class Install_Controller
             'User',
             'Group',
             'Permissions',
-            'Page',
-            'Blocks',
-            'Menu',
-            'Menu_Item'
         ];
 
         try
@@ -543,7 +557,7 @@ class Install_Controller
                 ]);
                 $userId = $db->lastInsertId($userModel->table());
                 $db->commit();
-            }catch (Exception $e){
+            }catch (\Exception $e){
                 return false;
             }
 
@@ -559,216 +573,27 @@ class Install_Controller
             // Set user group
             try{
                 $db->update($userModel->table(),['group_id'=>$groupId],'id = '.$userId);
-            }catch (Exception $e){
+            }catch (\Exception $e){
                 return false;
             }
 
             // Add permissions
             $permissionsModel = Model::factory('Permissions');
-            $modulesManager = new \Dvelum\App\Module\Manager();
+            $modulesManager = new Module\Manager();
             $modules = $modulesManager->getList();
 
             foreach ($modules as $name=>$config)
                 if(!$permissionsModel->setGroupPermissions($groupId , $name , true, true , true , true))
                     return false;
 
-            $u = Dvelum\App\Session\User::getInstance();
+            $u = Session\User::getInstance();
             $u->setId($userId);
             $u->setAuthorized();
 
-            // Add index Page
-            $page = Orm\Record::factory('Page');
-            $page->setValues(array(
-                'code'=>'index',
-                'is_fixed'=>1,
-                'html_title'=>'Index',
-                'menu_title'=>'Index',
-                'page_title'=>'Index',
-                'meta_keywords'=>'',
-                'meta_description'=>'',
-                'parent_id'=>null,
-                'text' =>'[Index page content]',
-                'func_code'=>'',
-                'order_no' => 1,
-                'show_blocks'=>true,
-                'published'=>true,
-                'published_version'=>0,
-                'date_created'=>date('Y-m-d H:i:s'),
-                'date_updated'=>date('Y-m-d H:i:s'),
-                'blocks'=>'',
-                'theme'=>'default',
-                'date_published'=>date('Y-m-d H:i:s'),
-                'in_site_map'=>false,
-                'default_blocks'=>true
-            ));
-
-            if(!$page->saveVersion() || !$page->publish())
-                return false;
-
-            // add menu
-            $topMenu = Orm\Record::factory('Menu');
-            $topMenu->setValues([
-                'code' =>'headerMenu',
-                'title' => 'Header Menu'
-            ]);
-
-            if(!$topMenu->save())
-                return false;
-
-            $topMenuItem = Orm\Record::factory('Menu_Item');
-            $topMenuItem->setValues([
-                'page_id'=>$page->getId(),
-                'title'=>'Index',
-                'menu_id'=>$topMenu->getId(),
-                'order'=>0,
-                'parent_id'=>null,
-                'tree_id'=>1,
-                'link_type'=>'page',
-                'published'=>1
-            ]);
-
-            if(!$topMenuItem->save())
-                return false;
-
-
-            $bottomMenu = Orm\Record::factory('Menu');
-            $bottomMenu->setValues([
-                'code' =>'footerMenu',
-                'title' => 'Footer Menu'
-            ]);
-            if(!$bottomMenu->save())
-                return false;
-
-            $bottomMenuItem = Orm\Record::factory('Menu_Item');
-            $bottomMenuItem->setValues([
-                'page_id'=>$page->getId(),
-                'title'=>'Index',
-                'menu_id'=>$bottomMenu->getId(),
-                'order'=>0,
-                'parent_id'=>null,
-                'tree_id'=>1,
-                'link_type'=>'page',
-                'published'=>1
-            ]);
-            if(!$bottomMenuItem->save())
-                return false;
-
-
-            $leftMenu = Orm\Record::factory('Menu');
-            $leftMenu->setValues([
-                'code' =>'menu',
-                'title' => 'Menu'
-            ]);
-            if(!$leftMenu->save())
-                return false;
-
-            $leftMenuItem = Orm\Record::factory('Menu_Item');
-            $leftMenuItem->setValues([
-                'page_id'=>$page->getId(),
-                'title'=>'Index',
-                'menu_id'=>$leftMenu->getId(),
-                'order'=>0,
-                'parent_id'=>null,
-                'tree_id'=>1,
-                'link_type'=>'page',
-                'published'=>1
-            ]);
-            if(!$leftMenuItem->save())
-                return false;
-
-
-            // add blocks
-            $topMenuBlock = Orm\Record::factory('Blocks');
-            $topMenuBlock->setValues([
-                'title' => 'Header Menu',
-                'published' =>1,
-                'show_title'=>false,
-                'published_version'=>0,
-                'is_system'=>1,
-                'sys_name'=>'Block_Menu_Top',
-                'is_menu' =>1,
-                'menu_id'=>$topMenu->getId(),
-                'last_version'=>0
-            ]);
-            if(!$topMenuBlock->saveVersion() || !$topMenuBlock->publish())
-                return false;
-
-
-            $bottomMenuBlock = Orm\Record::factory('Blocks');
-            $bottomMenuBlock->setValues([
-                'title' => 'Footer Menu',
-                'published' =>1,
-                'show_title'=>false,
-                'published_version'=>0,
-                'is_system'=>1,
-                'sys_name'=>'Block_Menu_Footer',
-                'is_menu' =>1,
-                'menu_id'=>$bottomMenu->getId(),
-                'last_version'=>0
-            ]);
-            if(!$bottomMenuBlock->saveVersion() || !$bottomMenuBlock->publish())
-                return false;
-
-            $menuBlock = Orm\Record::factory('Blocks');
-            $menuBlock->setValues([
-                'title' => 'Menu',
-                'published' =>1,
-                'show_title'=>true,
-                'published_version'=>0,
-                'is_system'=>1,
-                'sys_name'=>'Block_Menu',
-                'is_menu' =>1,
-                'menu_id'=>$leftMenu->getId(),
-                'last_version'=>0
-            ]);
-            if(!$menuBlock->saveVersion() || !$menuBlock->publish())
-                return false;
-
-            $testBlock = Orm\Record::factory('Blocks');
-            $testBlock->setValues([
-                'title' => 'Test Block',
-                'published' =>1,
-                'show_title'=>true,
-                'published_version'=>0,
-                'text'=>'
-                    <ul>
-                        <li>Articles</li>
-                        <li>Pages</li>
-                        <li>Blocks</li>
-                        <li>Users</li>
-                    </ul>
-                ',
-                'is_system'=>false,
-                'is_menu' =>false,
-                'last_version'=>0
-            ]);
-            if(!$testBlock->saveVersion() || !$testBlock->publish())
-                return false;
-
-            $blockMapping = Model::factory('Blockmapping');
-            $blockMapping->clearMap(0);
-            $blockMap = [
-                'top-blocks' => [
-                    ['id'=>$topMenuBlock->getId()]
-                ],
-                'bottom-blocks' => [
-                    ['id'=>$bottomMenuBlock->getId()]
-                ],
-                'left-blocks' => [
-                    ['id'=>$menuBlock->getId()]
-                ],
-                'right-blocks' => [
-                    ['id'=>$testBlock->getId()]
-                ]
-            ];
-
-            foreach ($blockMap as $place=>$items)
-                $blockMapping->addBlocks(0 , $place , \Dvelum\Utils::fetchCol('id', $items));
-
             return true;
 
-        } catch (Exception $e){
-            Response::jsonError($e->getMessage());
+        } catch (\Exception $e){
+            $this->response->error($e->getMessage());
             return false;
         }
     }

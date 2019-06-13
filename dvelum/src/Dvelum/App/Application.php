@@ -269,6 +269,13 @@ class Application
     }
 
     /**
+     * Start application in install mode
+     */
+    public function runInstallMode(){
+        $this->init();
+    }
+
+    /**
      * Start console application
      */
     public function runConsole()

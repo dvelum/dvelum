@@ -436,7 +436,7 @@ class Manager
             }
         }
 
-        if (isset($modConf['post-install'])) {
+        if (!empty($modConf['post-install'])) {
             $class = $modConf['post-install'];
 
             if (!class_exists($class)) {
@@ -516,7 +516,7 @@ class Manager
             }
         }
 
-        if (isset($modConf['post-install']) && $modConf['enabled']) {
+        if (!empty($modConf['post-install']) && $modConf['enabled']) {
             $class = $modConf['post-install'];
 
             if (!class_exists($class)) {
