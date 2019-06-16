@@ -1,7 +1,8 @@
 [![PHP Version](https://img.shields.io/badge/php-7.2%2B-blue.svg)](https://packagist.org/packages/dvelum/dvelum)
 [![Total Downloads](https://img.shields.io/packagist/dt/dvelum/dvelum.svg?style=flat-square)](https://packagist.org/packages/dvelum/dvelum)
 [![Build Status](https://travis-ci.org/dvelum/dvelum.svg?branch=dev-3.x)](https://travis-ci.org/dvelum/dvelum)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/093ba1f71f33433ca1b8cb2b9936935a)](https://www.codacy.com/app/DVelumTeam/dvelum?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dvelum/dvelum&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/da4a46fc1a1f4f29a758a5eb82344977)](https://www.codacy.com/app/dvelum/dvelum?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dvelum/dvelum&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/da4a46fc1a1f4f29a758a5eb82344977)](https://www.codacy.com/app/dvelum/dvelum?utm_source=github.com&utm_medium=referral&utm_content=dvelum/dvelum&utm_campaign=Badge_Coverage)
 
 DVelum
 ======
