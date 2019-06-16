@@ -45,7 +45,6 @@ class Controller
      * @var \Dvelum\Resource $resource
      */
     protected $resource;
-
     /**
      * @var RouterInterface
      */

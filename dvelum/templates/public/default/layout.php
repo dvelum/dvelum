@@ -1,47 +1,55 @@
 <?php
+/**
+ * @var \Dvelum\Page\Page $page
+ */
 $page = $this->get('page');
 $resource = \Dvelum\Resource::factory();
 $wwwRoot = \Dvelum\Request::factory()->wwwRoot();
 
-$robots = [];
-if(isset($page->robots) && is_array($page->robots)){
-    $robots = $page->robots;
-}
+$robots = $page->getRobots();
+$htmlTitle = $page->getHtmlTitle();
+$metaDescription = $page->getMetaDescription();
+$metaKeywords = $page->getMetaKeywords();
+$canonical = $page->getCanonical();
+$securityToken = $page->getCsrfToken();
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?php echo $page->html_title;?></title>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <?php
-    /*<BASE href="<?php echo Request::baseUrl();?>">*/
-    echo $page->getOgMeta();
 
-    if(isset($page->csrfToken) && !empty($page->csrfToken))
-        echo '<meta name="csrf-token" content="'.$page->csrfToken.'"/>';
+    echo $page->openGraph()->__toString();
 
-    if(strlen($page->meta_description))
-        echo '	<meta name="DESCRIPTION" content="'.$page->meta_description.'" />'."\n";
-
-    if(strlen($page->meta_keywords))
-        echo '	<meta name="KEYWORDS" content="'.$page->meta_keywords.'" />';
-    ?>
-    <meta name="viewport" content="width=device-width; initial-scale=1.0" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <?php
-    if(!empty($robots)){
-        echo '<meta name="robots" content="'.implode(',', $robots).'" />';
+    if (!empty($securityToken)) {
+        echo '<meta name="csrf-token" content="' . $securityToken . '"/>' . PHP_EOL;
     }
-    if(!empty($page->canonical)){
-        echo '<link rel="canonical" href="'.$page->canonical.'"/>';
+
+    if (!empty($metaDescription)) {
+        echo '<meta name="description" content="' . $metaDescription . '"/>' . PHP_EOL;
+    }
+
+    if (!empty($metaKeywords)) {
+        echo '<meta name="keywords" content="' . $metaKeywords . '"/>' . PHP_EOL;
+    }
+
+    if (!empty($robots)) {
+        echo '<meta name="robots" content="' . $robots . '" />';
+    }
+    if (!empty($canonical)) {
+        echo '<link rel="canonical" href="' . $canonical . '"/>';
     }
     ?>
-    <link rel="shortcut icon" href="<?php echo $wwwRoot;?>i/favicon.png" />
-    <?php  echo $this->resource->includeCss(); ?>
-    <?php  echo $this->get('resource')->includeJsByTag(true , false, 'head'); ?>
-    <?php echo $this->get('resource')->includeJs(true , false); ?>
+    <title><?php echo $page->getHtmlTitle(); ?></title>
+    <link rel="shortcut icon" href="<?php echo $wwwRoot; ?>i/favicon.png"/>
+    <?php echo $this->resource->includeCss(); ?>
+    <?php echo $this->get('resource')->includeJsByTag(true, false, 'head'); ?>
+    <?php echo $this->get('resource')->includeJs(true, false); ?>
 </head>
 <body id="content">
-<?=$page->text;?>
+    <h1><?php echo $page->getTitle(); ?></h1>
+    <?php echo $page->getText(); ?>
 </body>
 </html>

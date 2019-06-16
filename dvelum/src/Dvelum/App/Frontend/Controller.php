@@ -21,9 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Frontend;
 
-use Dvelum\{
-    App, Config, Config\ConfigInterface, Lang, Request, Response, Service, Orm\Model, Resource
-};
+use Dvelum\{App, Config, Config\ConfigInterface, Lang, Page\Page, Request, Response, Service, Orm\Model, Resource};
 
 class Controller extends App\Controller
 {
@@ -35,9 +33,14 @@ class Controller extends App\Controller
      * @var Lang
      */
     protected $lang;
+    /**
+     * @var Page
+     */
+    protected $page;
 
     public function __construct(Request $request, Response $response)
     {
+        $this->page = Page::factory();
         $this->frontendConfig = Config::storage()->get('frontend.php');
         $this->lang = Lang::lang();
         parent::__construct($request, $response);
@@ -45,22 +48,19 @@ class Controller extends App\Controller
 
     /**
      * Show Page.
-     * Running this method initiates rendering of templates and sending of HTML
-     * data.
+     * Running this method initiates rendering of templates and sending of HTML data.
      * @return void
      */
     public function showPage(): void
     {
         header('Content-Type: text/html; charset=utf-8');
+        $this->page->setTemplatesPath('public/');
 
-        $page = \Page::getInstance();
-        $page->setTemplatesPath('public/');
-
-        $layoutPath = $page->getThemePath() . 'layout.php';
+        $layoutPath = $this->page->getThemePath() . 'layout.php';
         $this->render($layoutPath, [
             'development' => $this->appConfig->get('development'),
-            'page' => $page,
-            'path' => $page->getThemePath(),
+            'page' => $this->page,
+            'path' => $this->page->getThemePath(),
             'resource' => Resource::factory()
         ], false);
     }
