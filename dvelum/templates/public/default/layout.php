@@ -21,7 +21,7 @@ $securityToken = $page->getCsrfToken();
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <?php
 
-    echo $page->openGraph()->__toString();
+    echo $page->openGraph();
 
     if (!empty($securityToken)) {
         echo '<meta name="csrf-token" content="' . $securityToken . '"/>' . PHP_EOL;
