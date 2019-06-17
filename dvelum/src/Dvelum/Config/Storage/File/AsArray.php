@@ -184,7 +184,7 @@ class AsArray implements StorageInterface
                 continue;
             }
 
-            $list = \Dvelum\File::scanFiles($item, ['.php'], $recursive, \Dvelum\File::Files_Only);
+            $list = \Dvelum\File::scanFiles($item, ['.php'], $recursive, \Dvelum\File::FILES_ONLY);
 
             if (!empty($list)) {
                 $files = array_merge($files, $list);

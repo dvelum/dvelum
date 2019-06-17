@@ -30,9 +30,9 @@ namespace Dvelum;
  */
 class File
 {
-    const Files_Dirs = 0;
-    const Files_Only = 1;
-    const Dirs_Only = 2;
+    const FILES_DIRS = 0;
+    const FILES_ONLY = 1;
+    const DIRS_ONLY = 2;
 
     /**
      * Default Separator in file paths
@@ -88,7 +88,7 @@ class File
      * @throws \Exception
      * @return array
      */
-    static public function scanFiles($path , $filter = array() , $recursive = true , $type = File::Files_Dirs , $mode = \RecursiveIteratorIterator::SELF_FIRST)
+    static public function scanFiles($path , $filter = array() , $recursive = true , $type = File::FILES_DIRS , $mode = \RecursiveIteratorIterator::SELF_FIRST)
     {
         $path = self::fillEndSep($path);
         $files = array();
@@ -97,14 +97,14 @@ class File
 
         switch($type)
         {
-            case self::Files_Only :
+            case self::FILES_ONLY :
                 $mode = \RecursiveIteratorIterator::LEAVES_ONLY;
                 $collectFiles = true;
                 break;
-            case self::Dirs_Only :
+            case self::DIRS_ONLY :
                 $collectDirs = true;
                 break;
-            case self::Files_Dirs :
+            case self::FILES_DIRS :
                 $collectDirs = true;
                 $collectFiles = true;
                 break;
@@ -261,7 +261,7 @@ class File
      */
     static public function rmdirRecursive(string $pathname ,bool $removeParentDir = false) : bool
     {
-        $filesDirs = self::scanFiles($pathname , false , true , File::Files_Dirs , \RecursiveIteratorIterator::CHILD_FIRST);
+        $filesDirs = self::scanFiles($pathname , false , true , File::FILES_DIRS , \RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach($filesDirs as $v)
         {

@@ -56,7 +56,7 @@ class Connections
 
         $dir = dirname($this->config[$devType]['dir'] .'/'. $dbPath);
 
-        $files = \Dvelum\File::scanFiles($dir , array('.php'), false ,  \Dvelum\File::Files_Only);
+        $files = \Dvelum\File::scanFiles($dir , array('.php'), false ,  \Dvelum\File::FILES_ONLY);
         $result = [];
         if(!empty($files)){
             foreach($files as $path){

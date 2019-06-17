@@ -45,7 +45,7 @@ class Frontend extends Manager
         {
             if(basename($path) === 'modules')
             {
-                $folders = File::scanFiles($path, false, true, File::Dirs_Only);
+                $folders = File::scanFiles($path, false, true, File::DIRS_ONLY);
 
                 if(empty($folders))
                     continue;

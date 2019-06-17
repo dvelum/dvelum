@@ -104,12 +104,12 @@ class Manager
             return true;
         }
 
-        $vendors = File::scanFiles($path, false, false, File::Dirs_Only);
+        $vendors = File::scanFiles($path, false, false, File::DIRS_ONLY);
 
         $hasNew = false;
         if (!empty($vendors)) {
             foreach ($vendors as $vendorPath) {
-                $modules = File::scanFiles($vendorPath, false, false, File::Dirs_Only);
+                $modules = File::scanFiles($vendorPath, false, false, File::DIRS_ONLY);
                 if (empty($modules)) {
                     continue;
                 }

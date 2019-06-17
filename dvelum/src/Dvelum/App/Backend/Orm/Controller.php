@@ -281,7 +281,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     public function listAclAction()
     {
         $list = [['id' => '', 'title' => '---']];
-        $files = File::scanFiles('./dvelum/src/Dvelum/App/Acl', ['.php'], true, File::Files_Only);
+        $files = File::scanFiles('./dvelum/src/Dvelum/App/Acl', ['.php'], true, File::FILES_ONLY);
         foreach ($files as $v) {
             $path = str_replace(['./dvelum/src/'], [''], $v);
             $name = Utils::classFromPath($path);
@@ -309,7 +309,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     public function listValidatorsAction()
     {
         $validators = [];
-        $files = File::scanFiles('./dvelum/src/Dvelum/Validator', array('.php'), false, File::Files_Only);
+        $files = File::scanFiles('./dvelum/src/Dvelum/Validator', ['.php'], false, File::FILES_ONLY);
 
         foreach ($files as $v) {
             $name = substr(basename($v), 0, -4);

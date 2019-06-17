@@ -60,7 +60,7 @@ class Manager
                     continue;
                 }
 
-                $items = File::scanFiles($path . $cfgPath, array('.php'), false, File::Files_Only);
+                $items = File::scanFiles($path . $cfgPath, array('.php'), false, File::FILES_ONLY);
 
                 if (!empty($items)) {
                     foreach ($items as $o) {

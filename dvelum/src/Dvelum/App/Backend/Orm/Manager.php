@@ -138,7 +138,7 @@ class Manager
             if (!is_dir($path)) {
                 continue;
             }
-            $data = File::scanFiles($path, false, false, File::Dirs_Only);
+            $data = File::scanFiles($path, false, false, File::DIRS_ONLY);
             foreach ($data as $k => &$v) {
                 if (!file_exists($v . '/objects.php')) {
                     unset($data[$k]);

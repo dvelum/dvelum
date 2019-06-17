@@ -101,7 +101,7 @@ class Manager
                 continue;
             }
 
-            $files = File::scanFiles($path . $this->baseDir . 'index/', array('.php'), false, File::Files_Only);
+            $files = File::scanFiles($path . $this->baseDir . 'index/', ['.php'], false, File::FILES_ONLY);
 
             if (!empty($files)) {
                 foreach ($files as $itemPath) {
@@ -162,7 +162,7 @@ class Manager
      */
     public function rename(string $oldName, string $newName) : bool
     {
-        $dirs = File::scanFiles($this->path . $this->baseDir, false, false, File::Dirs_Only);
+        $dirs = File::scanFiles($this->path . $this->baseDir, false, false, File::DIRS_ONLY);
 
         foreach ($dirs as $path) {
             if (file_exists($path . '/' . $oldName . '.php')) {
@@ -211,7 +211,7 @@ class Manager
      */
     public function remove(string $name) : bool
     {
-        $dirs = File::scanFiles($this->path . $this->baseDir, false, false, File::Dirs_Only);
+        $dirs = File::scanFiles($this->path . $this->baseDir, false, false, File::DIRS_ONLY);
 
         foreach ($dirs as $path) {
             $file = $path . '/' . $name . '.php';

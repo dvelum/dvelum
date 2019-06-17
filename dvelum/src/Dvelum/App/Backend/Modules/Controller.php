@@ -673,7 +673,7 @@ class Controller extends Backend\Controller
             return;
         }
 
-        $files = File::scanFiles($dirPath . $path, false, false, File::Dirs_Only);
+        $files = File::scanFiles($dirPath . $path, false, false, File::DIRS_ONLY);
 
         if (empty($files)) {
             $this->response->json([]);
@@ -718,7 +718,7 @@ class Controller extends Backend\Controller
         // windows & linux paths fix
         $scanPath = str_replace('//', '/', $dirPath . $dir);
 
-        $files = File::scanFiles($scanPath, array('.jpg', '.png', '.gif', '.jpeg'), false, File::Files_Only);
+        $files = File::scanFiles($scanPath, array('.jpg', '.png', '.gif', '.jpeg'), false, File::FILES_ONLY);
 
         if (empty($files)) {
             $this->response->json([]);
