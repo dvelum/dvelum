@@ -1,6 +1,4 @@
-<?php 
-if(!defined('DVELUM'))exit;
-
+<?php
 $wwwRoot = $this->get('wwwRoot');
 $lang = \Dvelum\Lang::lang();
 $curLang = $lang->getName();
