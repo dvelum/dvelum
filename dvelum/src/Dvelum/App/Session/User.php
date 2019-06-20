@@ -267,9 +267,8 @@ class User
      */
     public function logout()
     {
-        $ses = Dvelum\Store\Factory::get(Dvelum\Store\Factory::SESSION);
-        $ses->set('auth' , false);
-        $ses->set('auth_id' , false);
+        $this->session->set('auth' , false);
+        $this->session->set('auth_id' , false);
         $this->authChecked = false;
         $this->info = [];
         $this->permissions = null;

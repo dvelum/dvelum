@@ -86,12 +86,13 @@ class Adapter implements ConfigInterface
      * @throws \Exception
      * @return mixed
      */
-    public function get($key)
+    public function get(string $key)
     {
-        if(isset($this->data[$key]))
-            return $this->data[$key];
-        else
+        if(!isset($this->data[$key])){
             throw new \Exception('Config::get Invalid key '.$key);
+        }
+
+        return $this->data[$key];
     }
 
     /**
@@ -198,7 +199,7 @@ class Adapter implements ConfigInterface
      */
     public function removeAll() : void
     {
-        $this->data = array();
+        $this->data = [];
     }
     /**
      * Get config name
