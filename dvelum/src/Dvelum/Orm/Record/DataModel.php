@@ -180,7 +180,9 @@ class DataModel
                 }
                 $record->setId($id);
             }else{
-                $store->update($record , $useTransaction);
+                if(!$store->update($record , $useTransaction)){
+                    return false;
+                }
             }
             $record->commitChanges();
         }catch (\Exception $e){
