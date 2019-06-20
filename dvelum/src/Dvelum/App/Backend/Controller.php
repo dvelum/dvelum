@@ -412,7 +412,7 @@ class Controller extends App\Controller
         $controllerCode = $this->request->getPart(1);
         $templatesPath = 'system/' . $this->backofficeConfig->get('theme') . '/';
 
-        $page = \Page::getInstance();
+        $page = \Dvelum\Page\Page::factory();
         $page->setTemplatesPath($templatesPath);
 
         $wwwRoot = $this->appConfig->get('wwwRoot');
@@ -442,6 +442,7 @@ class Controller extends App\Controller
             'urlPath' => $controllerCode,
             'resource' => $res,
             'path' => $templatesPath,
+            'user' => $this->user,
             'adminPath' => $this->appConfig->get('adminPath'),
             'development' => $this->appConfig->get('development'),
             'version' => Config::storage()->get('versions.php')->get('core'),
