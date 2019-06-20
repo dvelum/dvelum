@@ -51,7 +51,8 @@ class Response
      */
     public function redirect($location) : void
     {
-        \Response::redirect($location);
+        header("Location: $location");
+        exit();
     }
 
     /**
