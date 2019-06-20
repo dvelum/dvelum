@@ -950,7 +950,7 @@ class Store
          * @var Historylog $history
          */
         $history = Model::factory($this->config['historyObject']);
-        $userId = \Dvelum\App\Session\User::getInstance()->getId();
+        $userId = \Dvelum\App\Session\User::factory()->getId();
 
         /*
          * Save history if required

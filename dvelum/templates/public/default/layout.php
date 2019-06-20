@@ -44,9 +44,9 @@ $securityToken = $page->getCsrfToken();
     ?>
     <title><?php echo $page->getHtmlTitle(); ?></title>
     <link rel="shortcut icon" href="<?php echo $wwwRoot; ?>i/favicon.png"/>
-    <?php echo $this->resource->includeCss(); ?>
-    <?php echo $this->get('resource')->includeJsByTag(true, false, 'head'); ?>
-    <?php echo $this->get('resource')->includeJs(true, false); ?>
+    <?php echo $resource->includeCss(); ?>
+    <?php echo $resource->includeJsByTag(true, false, 'head'); ?>
+    <?php echo $resource->includeJs(true, false); ?>
 </head>
 <body id="content">
     <h1><?php echo $page->getTitle(); ?></h1>

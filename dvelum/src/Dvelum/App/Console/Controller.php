@@ -103,7 +103,7 @@ class Controller extends App\Controller implements Router\RouterInterface
     {
         $userId = $this->consoleConfig->get('user_id');
         if ($userId && Model::factory('User')->query()->filters(['id' => $userId])->getCount()) {
-            $curUser = \User::getInstance();
+            $curUser = App\Session\User::factory();
             $curUser->setId($userId);
             $curUser->setAuthorized();
             $this->user = $curUser;

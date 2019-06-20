@@ -586,7 +586,7 @@ class Controller
                 if(!$permissionsModel->setGroupPermissions($groupId , $name , true, true , true , true))
                     return false;
 
-            $u = Session\User::getInstance();
+            $u = Session\User::factory();
             $u->setId($userId);
             $u->setAuthorized();
 
