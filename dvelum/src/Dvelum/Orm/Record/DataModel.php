@@ -139,10 +139,10 @@ class DataModel
                 $record->set('date_created', date('Y-m-d H:i:s'));
                 $record->set('date_updated', date('Y-m-d H:i:s'));
                 $record->set('published' , false);
-                $record->set('author_id',  User::getInstance()->getId());
+                $record->set('author_id',  User::factory()->getId());
             }else{
                 $record->set('date_updated', date('Y-m-d H:i:s'));
-                $record->set('editor_id',  User::getInstance()->getId());
+                $record->set('editor_id',  User::factory()->getId());
             }
         }
 
@@ -266,7 +266,7 @@ class DataModel
         }
 
         $record->set('date_updated', date('Y-m-d H:i:s'));
-        $record->set('editor_id', User::getInstance()->getId());
+        $record->set('editor_id', User::factory()->getId());
 
         if($log){
             $store->setLog($log);

@@ -37,7 +37,7 @@ class ModelTest extends TestCase
 		$saved = $user->save();
 		$this->assertTrue(!empty($saved));
 
-		$u = User::getInstance();
+		$u = User::factory();
 		$u->setId($user->getId());
 		$u->setAuthorized();
 

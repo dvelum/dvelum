@@ -37,7 +37,7 @@ class Simple extends Orm\Record\Acl
     public function __construct()
     {
         parent::__construct();
-        $this->user = User::getInstance();
+        $this->user = User::factory();
     }
     /**
      * Default permissions Model name

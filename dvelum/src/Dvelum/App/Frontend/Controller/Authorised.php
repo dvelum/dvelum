@@ -60,7 +60,7 @@ abstract class Authorised extends Controller
      */
     public function checkAuth()
     {
-        $user = User::getInstance();
+        $user = User::factory();
         $uid = false;
 
         if ($user->isAuthorized()) {

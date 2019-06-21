@@ -73,7 +73,7 @@ class User
         if(!$data)
             return false;
 
-        $user = User::getInstance();
+        $user = User::factory();
         $user->logout();
         $user->setId($data['id']);
         $user->setInfo($data);

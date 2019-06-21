@@ -69,11 +69,11 @@
 	$res->addInlineJs('
 		app.menuData = '.json_encode($menuData).';
 		app.permissions = Ext.create("app.PermissionsStorage");
-		var rights = '.json_encode(User::getInstance()->getModuleAcl()->getPermissions()).';
+		var rights = '.json_encode(User::factory()->getModuleAcl()->getPermissions()).';
 		app.permissions.setData(rights);
 		app.version = "'.$this->get('version').'"
 		app.user = {
-			name: "'.User::getInstance()->getInfo()['name'].'"
+			name: "'.User::factory()->getInfo()['name'].'"
 		}
 	');
 
