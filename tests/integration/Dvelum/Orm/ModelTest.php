@@ -37,7 +37,7 @@ class ModelTest extends TestCase
 		$saved = $user->save();
 		$this->assertTrue(!empty($saved));
 
-		$u = User::factory();
+		$u = \Dvelum\App\Session\User::factory();
 		$u->setId($user->getId());
 		$u->setAuthorized();
 

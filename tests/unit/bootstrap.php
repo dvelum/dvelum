@@ -37,21 +37,11 @@ $configStorage->setConfig($bootCfg['config_storage']);
  */
 $configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->__toArray());
 
-
-$storage = \Dvelum\Config::storage();
-$storage->addPath('./tests/data/configs/');
-
 /*
  * Connecting main configuration file
  */
 $config = ConfigFactory::storage()->get('main.php');
 $config->set('development', 2);
-$config->set('db_configs', [
-    2 => [
-        'title' => 'TEST',
-        'dir' =>  './tests/data/configs/test/db/'
-    ]
-]);
 $configStorage->addPath('./application/configs/test/');
 
 /*

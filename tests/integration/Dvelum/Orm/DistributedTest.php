@@ -27,7 +27,8 @@ class DistributedTest extends TestCase
             'test_sharding' => $object->getId(),
             'value' => time()
         ]);
-        $this->assertTrue((bool)$objectItem->save());
+        $saved = $objectItem->save();
+        $this->assertTrue((bool)$saved );
         $this->assertEquals($object->get('shard'), $objectItem->get('shard'));
 
         $record2 = Record::factory('test_sharding_item', $objectItem->getId(), $objectItem->get('shard'));

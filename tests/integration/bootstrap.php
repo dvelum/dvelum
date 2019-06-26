@@ -36,17 +36,11 @@ $configStorage->setConfig($bootCfg['config_storage']);
  * Reload storage options from local system
  */
 $configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->__toArray());
-
-
-$storage = \Dvelum\Config::storage();
-$storage->addPath('./tests/data/configs/');
-
 /*
  * Connecting main configuration file
  */
 $config = ConfigFactory::storage()->get('main.php');
 $config->set('development', 2);
-
 $configStorage->addPath('./application/configs/test/');
 
 /*
