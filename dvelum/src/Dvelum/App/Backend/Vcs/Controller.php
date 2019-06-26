@@ -28,7 +28,7 @@ class Controller extends App\Backend\Api\Controller
 {
     public function getModule(): string
     {
-        return get_called_class();
+        return '\\Dvelum\\App\\Backend\\Vcs\\Controller';
     }
 
     public function getObjectName(): string
