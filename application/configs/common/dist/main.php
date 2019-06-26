@@ -194,9 +194,4 @@ return array(
             ]
         ]
     ],
-    /*
-     * Composer autoloader breaks autoloaders queue with prepend option by default
-     * it makes impossible to override vendor classes. It also slow. Using autoloader config is preferable
-     */
-    'use_composer_autoload' => false
 );

@@ -161,8 +161,8 @@ class DataModel
 
         if(!empty($values))
         {
-            foreach($values as $k => $v) {
-                $message = ErrorMessage::factory()->uniqueValue($k, $v);
+            foreach($values as $field) {
+                $message = ErrorMessage::factory()->uniqueValue($field, $record->get($field));
                 $record->addErrorMessage($message);
             }
 
@@ -180,7 +180,9 @@ class DataModel
                 }
                 $record->setId($id);
             }else{
-                $store->update($record , $useTransaction);
+                if(!$store->update($record , $useTransaction)){
+                    return false;
+                }
             }
             $record->commitChanges();
         }catch (\Exception $e){

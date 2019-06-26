@@ -17,6 +17,10 @@ chdir(DVELUM_ROOT);
  */
 $bootCfg = include DVELUM_ROOT . '/application/configs/common/dist/init.php';
 /*
+ * Register composer autoload
+ */
+require DVELUM_ROOT . '/vendor/autoload.php';
+/*
  * Including Autoloader class
  */
 require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
@@ -61,12 +65,6 @@ else
 
 $autoloader->setConfig($autoloaderCfg);
 
-/*
- * Register composer autoload
- */
-if($config->get('use_composer_autoload') && file_exists(__DIR__ . '/vendor/autoload.php')){
-    require __DIR__ . '/vendor/autoload.php';
-}
 
 /*
  * Starting the application

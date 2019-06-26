@@ -46,6 +46,10 @@ ob_start();
  */
 $bootCfg = include DVELUM_ROOT . '/application/configs/common/dist/init.php';
 /*
+ * Register composer autoload
+ */
+require __DIR__ . '/vendor/autoload.php';
+/*
  * Including Autoloader class
  */
 require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
@@ -114,13 +118,6 @@ if($config->get('development') === 3){
         echo 'DVelum software is not installed';
         exit;
     }
-}
-
-/*
- * Register composer autoload
- */
-if($config->get('use_composer_autoload') && file_exists(__DIR__ . '/vendor/autoload.php')){
-    require __DIR__ . '/vendor/autoload.php';
 }
 
 /*

@@ -92,7 +92,7 @@ class Record extends Form\Adapter
             $field = $objectConfig->getField($name);
 
 
-            if($field->isRequired() && !$objectConfig->isSystemField($name) &&  (!isset($posted[$name]) || !strlen($posted[$name]))) {
+            if($field->isRequired() && !$objectConfig->isSystemField($name) &&  (!isset($posted[$name]) || !strlen((string)$posted[$name]))) {
                 $this->errors[] = new Form\Error($this->lang->get('CANT_BE_EMPTY'), $name);
                 continue;
             }
@@ -125,7 +125,7 @@ class Record extends Form\Adapter
         {
             $errorList = $obj->validateUniqueValues();
             if(!empty($errorList)){
-                foreach ($errorList as $field){
+                foreach ($errorList as $field => $value){
                     $this->errors[] = new Form\Error($this->lang->get('SB_UNIQUE'), $field);
                 }
                 return false;

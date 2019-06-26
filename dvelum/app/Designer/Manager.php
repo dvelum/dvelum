@@ -75,7 +75,7 @@ class Designer_Manager
         $ret = array();
 
         // In accordance with configs merge priority
-        rsort($paths);
+        krsort($paths);
 
         foreach($paths as $path)
         {
@@ -130,7 +130,7 @@ class Designer_Manager
         $configPath = $this->_designerConfig->get('configs');
         $paths = Config::storage()->getPaths();
         // In accordance with configs merge priority
-        rsort($paths);
+        krsort($paths);
 
         foreach($paths as $path)
         {

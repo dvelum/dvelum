@@ -45,9 +45,14 @@ class Api
             $model = Model::factory($ormObjectConfig->getDistributedIndexObject());
         }
 
+        $filters = $this->apiRequest->getFilters();
+        $permissions = $user->getModuleAcl()->getModulePermissions($request->getObjectName());
+        if($permissions->only_own)
+            $filters = array_merge($filters, ['author_id'=>$user->getId()]);
+
         $this->dataQuery = $model->query()
             ->params($this->apiRequest->getPagination())
-            ->filters($this->apiRequest->getFilters())
+            ->filters($filters)
             ->search($this->apiRequest->getQuery());
 
         if($ormObjectConfig->isDistributed() && !empty($this->apiRequest->getShard())){
