@@ -39,7 +39,7 @@ class Controller extends App\Controller implements Router\RouterInterface
     protected $log = false;
     /**
      * Cron User
-     * @var \User
+     * @var App\Session\User
      */
     protected $user;
 

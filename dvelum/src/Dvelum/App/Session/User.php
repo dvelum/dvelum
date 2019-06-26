@@ -64,7 +64,7 @@ class User
      * the link to the object, while failure to authorize returns false
      * @param string $user
      * @param string $password
-     * @return \User|boolean
+     * @return self|boolean
      */
     static public function login($user , $password)
     {
