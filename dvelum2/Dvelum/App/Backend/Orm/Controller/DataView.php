@@ -277,7 +277,7 @@ class DataView extends ApiController
         $tab->bodyCls = 'formBody';
         $tab->anchor = '100%';
         $tab->title = $this->lang->get('GENERAL');
-        $tab->fieldDefaults = "{labelAlign: \"right\",labelWidth: 160,anchor: \"100%\"}";
+        $tab->fieldDefaults = "{\"labelAlign\": \"right\",\"labelWidth\": 160,\"anchor\": \"100%\"}";
 
         $tabs[] = $tab;
         $related = [];
@@ -316,24 +316,24 @@ class DataView extends ApiController
             } elseif ($fieldObj->isObjectLink()) {
                 if ($fieldObj->getLinkedObject() === 'medialib') {
                     $data[] = '{
-									xtype:"medialibitemfield",
-									resourceType:"all",
-									name:"' . $field . '",
-									readOnly:' . intval($readOnly) . ',
-									fieldLabel:"' . $fieldCfg['title'] . '"
+									"xtype":"medialibitemfield",
+									"resourceType":"all",
+									"name":"' . $field . '",
+									"readOnly":' . intval($readOnly) . ',
+									"fieldLabel":"' . $fieldCfg['title'] . '"
 								}';
                 } else {
 
                     $data[] = '
 						{
-							xtype:"objectfield",
-							objectName:"' . $fieldObj->getLinkedObject() . '",
-							controllerUrl:"' . $this->request->url([$this->appConfig->get('adminPath'), 'orm', 'dataview', '']) . '",
-							fieldLabel:"' . $fieldCfg['title'] . '",
-							name:"' . $field . '",
-							anchor:"100%",
-							readOnly:' . intval($readOnly) . ',
-							isVc:' . intval($objectConfig->isRevControl()) . '
+							"xtype":"objectfield",
+							"objectName":"' . $fieldObj->getLinkedObject() . '",
+							"controllerUrl":"' . $this->request->url([$this->appConfig->get('adminPath'), 'orm', 'dataview', '']) . '",
+							"fieldLabel":"' . $fieldCfg['title'] . '",
+							"name":"' . $field . '",
+							"anchor":"100%",
+							"readOnly":' . intval($readOnly) . ',
+							"isVc":' . intval($objectConfig->isRevControl()) . '
 						}
 					';
                 }
