@@ -115,7 +115,6 @@ Ext.define('SearchPanel', {
      * Clear filter
      */
     clearFilter: function () {
-        this.store.clearFilter();
         this.lastQuery = '';
         if (!this.local) {
             this.store.proxy.setExtraParam(this.searchParam, '');
