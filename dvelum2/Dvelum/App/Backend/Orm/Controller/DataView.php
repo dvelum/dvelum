@@ -57,7 +57,7 @@ class DataView extends ApiController
         if (!$dataObject || !$this->ormService->configExists($dataObject)) {
             return 'Orm';
         }
-        return ucfirst($dataObject);
+        return implode('_', array_map('ucfirst', explode('_', $dataObject)));
     }
 
     public function initListeners()
