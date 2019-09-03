@@ -154,6 +154,9 @@ abstract class Backend_Controller_Crud extends Backend_Controller
             return ['data'=>[],'count'=>0];
         }
 
+        if(is_array($this->_listFields))
+            $api->setFields($this->_listFields);
+
         $data = $api->getList();
 
         if(!empty($this->_listLinks)){
