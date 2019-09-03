@@ -139,4 +139,12 @@ class Api
     {
         $this->useApproximateCount = $useApproximateCount;
     }
+
+    /**
+     * @return Model\Query
+     */
+    public function getDataQuery(): Model\Query
+    {
+        return $this->dataQuery;
+    }
 }
