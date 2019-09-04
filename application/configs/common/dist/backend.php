@@ -56,8 +56,10 @@ return array(
     'use_csrf_token_garbage_limit' => 500,
     // Code generator class
     'modules_generator' => '\\Dvelum\\App\\Module\\Generator\\Simple',
-    // Menu adapter class
+    // Menu adapter class for classic theme
     'menu_adapter' => '\\Dvelum\\App\\Menu',
+    // Menu adapter class for desktop theme
+    'desktop_menu_adapter' => '\\Dvelum\\App\\Menu\\Desktop',
     // Modules in that need disable menu rendering
     'modules_without_menu' => ['Designer']
 );
