@@ -18,14 +18,13 @@ class Build extends Console\Action
         echo "BUILD OBJECTS " . PHP_EOL;
 
         // build object
-        foreach ($dbObjectManager->getRegisteredObjects() as $object)
-        {
+        foreach ($dbObjectManager->getRegisteredObjects() as $object) {
             $cfg = Orm\Record\Config::factory($object);
             if ($cfg->isDistributed()) {
                 echo "\t " . $object . ' :  is distributed, skip' . PHP_EOL;
                 continue;
             }
-            if($cfg->isLocked() || $cfg->isReadOnly()){
+            if ($cfg->isLocked() || $cfg->isReadOnly()) {
                 echo "\t " . $object . ' :  is locked or readonly, skip' . PHP_EOL;
                 continue;
             }
@@ -41,20 +40,18 @@ class Build extends Console\Action
         }
 
         //build foreign keys
-        if ($ormConfig->get('foreign_keys'))
-        {
+        if ($ormConfig->get('foreign_keys')) {
             echo PHP_EOL . "\t BUILD FOREIGN KEYS" . PHP_EOL . PHP_EOL;
 
-            foreach ($dbObjectManager->getRegisteredObjects() as $object)
-            {
+            foreach ($dbObjectManager->getRegisteredObjects() as $object) {
                 $cfg = Orm\Record\Config::factory($object);
 
-                if (Orm\Record\Config::factory($object)->isDistributed()) {
+                if ($cfg->isDistributed()) {
                     echo "\t " . $object . ' :  is distributed, skip' . PHP_EOL;
                     continue;
                 }
 
-                if($cfg->isLocked() || $cfg->isReadOnly()){
+                if ($cfg->isLocked() || $cfg->isReadOnly()) {
                     echo "\t " . $object . ' :  is locked or readonly, skip' . PHP_EOL;
                     continue;
                 }
