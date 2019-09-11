@@ -20,9 +20,13 @@ class Build extends Console\Action
         // build object
         foreach ($dbObjectManager->getRegisteredObjects() as $object)
         {
-            if (Orm\Record\Config::factory($object)->isDistributed())
-            {
+            $cfg = Orm\Record\Config::factory($object);
+            if ($cfg->isDistributed()) {
                 echo "\t " . $object . ' :  is distributed, skip' . PHP_EOL;
+                continue;
+            }
+            if($cfg->isLocked() || $cfg->isReadOnly()){
+                echo "\t " . $object . ' :  is locked or readonly, skip' . PHP_EOL;
                 continue;
             }
 
@@ -43,8 +47,15 @@ class Build extends Console\Action
 
             foreach ($dbObjectManager->getRegisteredObjects() as $object)
             {
+                $cfg = Orm\Record\Config::factory($object);
+
                 if (Orm\Record\Config::factory($object)->isDistributed()) {
                     echo "\t " . $object . ' :  is distributed, skip' . PHP_EOL;
+                    continue;
+                }
+
+                if($cfg->isLocked() || $cfg->isReadOnly()){
+                    echo "\t " . $object . ' :  is locked or readonly, skip' . PHP_EOL;
                     continue;
                 }
 
