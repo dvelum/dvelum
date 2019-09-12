@@ -5,13 +5,13 @@
  */
 
 Ext.define('app.relatedGridModel', {
-	extend: 'Ext.data.Model',
-	fields: [
-		{name:'id' , type:'integer'},
-		{name:'published' , type:'boolean'},
-		{name:'deleted' , type:'boolean'},
-		{name:'title' , type:'string'}
-	]
+    extend: 'Ext.data.Model',
+    fields: [
+        {name:'id' , type:'integer'},
+        {name:'published' , type:'boolean'},
+        {name:'deleted' , type:'boolean'},
+        {name:'title' , type:'string'}
+    ]
 });
 /**
  *
@@ -22,47 +22,54 @@ Ext.define('app.relatedGridModel', {
  *
  */
 Ext.define('app.relatedGridPanel',{
-	/*
-	 * 'Ext.grid.Panel' has bad renderer in tabs
-	 */
-	extend:'Ext.Panel',
-	alias:'widget.relatedgridpanel',
+    /*
+     * 'Ext.grid.Panel' has bad renderer in tabs
+     */
+    extend:'Ext.Panel',
+    alias:'widget.relatedgridpanel',
 
-	dataUrl:false,
-	dataGrid:null,
-	dataStore:null,
-	fieldName:null,
+    dataUrl:false,
+    dataGrid:null,
+    dataStore:null,
+    fieldName:null,
 
-	layout:'fit',
-	gridRendered:false,
-	gridReadOnly:false,
-	readOnly:false,
-	/**
-	 * @property Ext.Button addButton
-	 */
-	addButton:null,
-
-	/**
-	 * Extra params for requests
-	 * @property {Object}
-	 */
-	extraParams:null,
+    layout:'fit',
+    gridRendered:false,
+    gridReadOnly:false,
+    readOnly:false,
+    /**
+     * @property Ext.Button addButton
+     */
+    addButton:null,
+    /**
+     * @property Ext.Button addButton
+     */
+    addAllButton:null,
+    /**
+     * Extra params for requests
+     * @property {Object}
+     */
+    extraParams:null,
     /**
      * Show status column
      */
-	statusColumn:true,
+    statusColumn:true,
     /**
      * Show sort column
      */
-	sortColumn:true,
+    sortColumn:true,
     /**
      * Show delete column
      */
-	deleteColumn:false,
+    deleteColumn:false,
     /**
-     * Add nutton label
+     * Add button label
      */
     addButtonText:appLang.ADD_ITEM,
+    /**
+     * add all elements button text
+     */
+    addAllButtonText:appLang.ADD_ALL,
     /**
      * Data column header
      */
@@ -79,128 +86,153 @@ Ext.define('app.relatedGridPanel',{
      * Store rootProperty
      */
     rootProperty:null,
+    /**
+     * Show add all button
+     */
+    showAddAllButton:false,
 
-	constructor: function(config) {
-		config = Ext.apply({
-			extraParams:{}
-		}, config || {});
-		this.callParent(arguments);
-	},
+    constructor: function(config) {
+        config = Ext.apply({
+            extraParams:{}
+        }, config || {});
+        this.callParent(arguments);
+    },
 
-	initComponent:function(){
+    initComponent:function(){
 
-		this.addButton = Ext.create('Ext.Button',{
-			text:this.addButtonText,
-			disabled:this.readOnly,
-			listeners:{
-				'click':{
-					fn:function(){
-						this.fireEvent('addItemCall');
-					},
-					scope:this
-				}
-			}
-		});
+        this.addButton = Ext.create('Ext.Button',{
+            text:this.addButtonText,
+            disabled:this.readOnly,
+            listeners:{
+                'click':{
+                    fn:function(){
+                        this.fireEvent('addItemCall');
+                    },
+                    scope:this
+                }
+            }
+        });
 
-		this.dataStore = Ext.create('Ext.data.Store',{
-			model:'app.relatedGridModel',
-			proxy: {
-				type: 'ajax',
-				reader: {
-					type: 'json',
-					idProperty: 'id',
-					rootProperty: this.rootProperty
-				},
-				url: this.controllerUrl,
-				extraParams:this.extraParams
-			},
-			autoLoad:false
-		});
+        this.addAllButton = Ext.create('Ext.Button',{
+            text:this.addAllButtonText,
+            disabled:this.readOnly,
+            listeners:{
+                'click':{
+                    fn:function(){
+                        this.fireEvent('addAllItemCall');
+                    },
+                    scope:this
+                }
+            }
+        });
+
+        this.dataStore = Ext.create('Ext.data.Store',{
+            model:'app.relatedGridModel',
+            proxy: {
+                type: 'ajax',
+                reader: {
+                    type: 'json',
+                    idProperty: 'id',
+                    rootProperty: this.rootProperty
+                },
+                url: this.controllerUrl,
+                extraParams:this.extraParams
+            },
+            autoLoad:false
+        });
 
         this.dataStore.on('datachanged' , function(){
             this.fireEvent('change' , this);
         },this);
 
-		this.tbar = [this.addButton];
+        this.tbar = [this.addButton];
+        if(this.showAddAllButton){
+            this.tbar.push('-');
+            this.tbar.push(this.addAllButton);
+        }
 
-		this.callParent();
-		this.updateViewState();
-	},
-	/**
-	 * Load grid data
-	 * @param {Array} data
-	 */
-	setData: function(data){
-		this.dataStore.removeAll();
-		if(!Ext.isEmpty(data)){
-			this.dataStore.loadData(data);
-		}
-	},
-	addRecord:function(record){
+        this.callParent();
+        this.updateViewState();
+    },
+    /**
+     * Load grid data
+     * @param {Array} data
+     */
+    setData: function(data){
+        this.dataStore.removeAll();
+        if(!Ext.isEmpty(data)){
+            this.dataStore.loadData(data);
+        }
+    },
+    addRecord:function(record){
 
-		if(this.dataStore.findExact('id',record.get('id'))!=-1){
-			return;
-		}
+        if(this.dataStore.findExact('id',record.get('id'))!=-1){
+            return;
+        }
 
-		var rPubblished = true;
+        var rPubblished = true;
 
-		if(record.get('published')!=undefined){
+        if(record.get('published')!=undefined){
 
-			rPubblished = record.get('published');
-		}
+            rPubblished = record.get('published');
+        }
 
-		var r = Ext.create('app.relatedGridModel', {
-			id: record.get('id'),
-			title:record.get('title'),
-			deleted:0,
-			published:rPubblished
-		});
+        var r = Ext.create('app.relatedGridModel', {
+            id: record.get('id'),
+            title:record.get('title'),
+            deleted:0,
+            published:rPubblished
+        });
 
-		this.dataStore.insert(this.dataStore.getCount(), r);
+        this.dataStore.insert(this.dataStore.getCount(), r);
+    },
+    addRecords:function(records){
+        Ext.Array.each(records, function(val){
+            this.addRecord(val);
+        },this);
+    },
+    getStore:function(){
+        return this.dataGrid.getStore();
+    },
+    getGrid: function(){
+        return this.dataGrid;
+    },
+    collectData: function(){
+        var recordList = [];
+        this.dataStore.each(function(record){
+            if(!record.get('deleted'))
+                recordList[recordList.length] = record.get('id');
+        });
+        var result = {};
+        if(recordList.length){
+            result[this.fieldName+'[]'] = recordList;
+        }else{
+            result[this.fieldName]= '';
+        }
+        return result;
+    },
+    /**
+     * Sets the read only state of this field.
+     * @param Boolean readOnly
+     * @return void
+     */
+    setReadOnly:function(readOnly){
+        this.readOnly = readOnly;
+        this.updateViewState();
+    },
+    updateViewState:function(){
+        if(this.readOnly){
+            this.addButton.disable();
+        }else{
+            this.addButton.enable();
+        }
+        this.showGrid();
+    },
+    showGrid:function(){
 
-	},
-	getStore:function(){
-		return this.dataGrid.getStore();
-	},
-	getGrid: function(){
-		return this.dataGrid;
-	},
-	collectData: function(){
-		var recordList = [];
-		this.dataStore.each(function(record){
-			if(!record.get('deleted'))
-				recordList[recordList.length] = record.get('id');
-		});
-		var result = {};
-		if(recordList.length){
-			result[this.fieldName+'[]'] = recordList;
-		}else{
-			result[this.fieldName]= '';
-		}
-		return result;
-	},
-	/**
-	 * Sets the read only state of this field.
-	 * @param Boolean readOnly
-	 * @return void
-	 */
-	setReadOnly:function(readOnly){
-		this.readOnly = readOnly;
-		this.updateViewState();
-	},
-	updateViewState:function(){
-		if(this.readOnly){
-			this.addButton.disable();
-		}else{
-			this.addButton.enable();
-		}
-		this.showGrid();
-	},
-	showGrid:function(){
-
-		if(this.gridRendered && this.readOnly == this.gridReadOnly){
-			return;
-		}
+        if(this.gridRendered && this.readOnly == this.gridReadOnly){
+            return;
+        }
 
         var columns = [];
 
@@ -229,32 +261,33 @@ Ext.define('app.relatedGridPanel',{
             dataIndex: this.dataColumnIndex
         });
 
-		if(!this.readOnly && this.sortColumn){
-			columns.push(app.sortColumn());
-		}
+        if(!this.readOnly && this.sortColumn){
+            columns.push(app.sortColumn());
+        }
 
         if(this.deleteColumn){
             columns.push(app.deleteColumn());
         }
 
-		this.dataGrid = Ext.create('Ext.grid.Panel',{
-			store:this.dataStore,
-			frame: false,
-			loadMask:true,
-			columnLines: true,
-			scrollable:true,
-			enableHdMenu:false,
-			columns:columns
-		});
+        this.dataGrid = Ext.create('Ext.grid.Panel',{
+            store:this.dataStore,
+            frame: false,
+            loadMask:true,
+            columnLines: true,
+            scrollable:true,
+            enableHdMenu:false,
+            columns:columns
+        });
 
-		this.removeAll();
-		this.add(this.dataGrid);
-		this.gridRendered = true;
-		this.gridReadOnly = this.readOnly;
-	},
+        this.removeAll();
+        this.add(this.dataGrid);
+        this.gridRendered = true;
+        this.gridReadOnly = this.readOnly;
+    },
     destroy: function () {
         this.dataStore.destroy();
         this.addButton.destroy();
+        this.addAllButton.destroy();
         this.callParent(arguments);
     }
 });
