@@ -776,7 +776,7 @@ class Store
 
         /**
          * Create new revision
-         * @var \Model_Vc $versionModel
+         * @var \Dvelum\App\Model\Vc $versionModel
          */
          $versionModel = Model::factory($this->config['versionObject']);
          $versNum = $versionModel->newVersion($object);
