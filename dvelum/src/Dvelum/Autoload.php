@@ -34,7 +34,7 @@ class Autoload
     protected $paths = [];
     protected $psr4Paths = [];
 
-    protected $loaders = ['psr0','psr4'];
+    protected $loaders = ['psr0', 'psr4'];
 
     /**
      * Set autoload config
@@ -54,39 +54,44 @@ class Autoload
     public function __construct(array $config)
     {
         $this->setConfig($config);
-        spl_autoload_register([$this , 'load'], true, true);
+        spl_autoload_register([$this, 'load'], true, true);
     }
 
     /**
      * Reload configuration options
      * @param array $config
+     * @return void
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
-        if(isset($config['paths']))
+        if (isset($config['paths'])) {
             $this->paths = array_values($config['paths']);
+        }
 
-        if(isset($config['map']) && ! empty($config['map']))
+        if (isset($config['map']) && !empty($config['map'])) {
             $this->classMap = $config['map'];
+        }
 
-        if(isset($config['debug']) && $config['debug'])
+        if (isset($config['debug']) && $config['debug']) {
             $this->debug = true;
+        }
 
-        if(isset($config['psr-4']) && !empty($config['psr-4']))
+        if (isset($config['psr-4']) && !empty($config['psr-4'])) {
             $this->psr4Paths = $config['psr-4'];
+        }
     }
 
     /**
      * Register library path
      * @param string $path
-     * @param boolean $prepend, optional false  - priority
+     * @param boolean $prepend , optional false  - priority
      * @return void
      */
     public function registerPath($path, $prepend = false)
     {
-        if($prepend){
+        if ($prepend) {
             array_unshift($this->paths, $path);
-        }else{
+        } else {
             $this->paths[] = $path;
         }
     }
@@ -94,45 +99,45 @@ class Autoload
     /**
      * Register library paths
      * @param array $paths
+     * @return void
      */
-    public function registerPaths(array $paths)
+    public function registerPaths(array $paths): void
     {
-        if(empty($paths))
+        if (empty($paths)) {
             return;
+        }
 
-        foreach($paths as $path)
+        foreach ($paths as $path) {
             $this->registerPath($path);
+        }
     }
 
     /**
      * Load class
      * @param string $class
-     * @return boolean
+     * @return bool
      */
-    public function load(string $class) : bool
+    public function load(string $class): bool
     {
         /*
          * Try to load from map
          */
-        if(!empty($this->classMap) && isset($this->classMap[$class]))
-        {
-            try{
+        if (!empty($this->classMap) && isset($this->classMap[$class])) {
+            try {
                 require_once $this->classMap[$class];
-            }catch (\Throwable $e){
+            } catch (\Throwable $e) {
                 return false;
             }
 
-            if($this->debug){
+            if ($this->debug) {
                 $this->debugData[] = $class;
             }
             return true;
         }
 
-        foreach ($this->loaders as $loader)
-        {
-            if($this->{$loader}($class))
-            {
-                if($this->debug){
+        foreach ($this->loaders as $loader) {
+            if ($this->{$loader}($class)) {
+                if ($this->debug) {
                     $this->debugData[] = $class . ' -no map';
                 }
                 return true;
@@ -146,17 +151,16 @@ class Autoload
      * @param string $class
      * @return bool
      */
-    public function psr0(string $class) : bool
+    public function psr0(string $class): bool
     {
-        $file = str_replace(['_','\\'] , DIRECTORY_SEPARATOR , $class). '.php';
+        $file = str_replace(['_', '\\'], DIRECTORY_SEPARATOR, $class) . '.php';
 
-        foreach($this->paths as $path)
-        {
-            if(file_exists($path . DIRECTORY_SEPARATOR . $file)) {
-                try{
+        foreach ($this->paths as $path) {
+            if (file_exists($path . DIRECTORY_SEPARATOR . $file)) {
+                try {
                     require_once $path . DIRECTORY_SEPARATOR . $file;
                     return true;
-                }catch (\Throwable $e){
+                } catch (\Throwable $e) {
                     return false;
                 }
             }
@@ -169,19 +173,16 @@ class Autoload
      * @param string $class
      * @return bool
      */
-    public function psr4(string $class) : bool
+    public function psr4(string $class): bool
     {
-        foreach ($this->psr4Paths as $prefix => $path)
-        {
-            if(strpos($class , $prefix) ===0)
-            {
-                $filePath = str_replace([$prefix,'\\'], [$path,'/'], $class).'.php';
-                if(file_exists($filePath))
-                {
-                    try{
+        foreach ($this->psr4Paths as $prefix => $path) {
+            if (strpos($class, $prefix) === 0) {
+                $filePath = str_replace([$prefix, '\\'], [$path, '/'], $class) . '.php';
+                if (file_exists($filePath)) {
+                    try {
                         require_once $filePath;
                         return true;
-                    }catch (\Throwable $e){
+                    } catch (\Throwable $e) {
                         return false;
                     }
                 }
@@ -192,10 +193,10 @@ class Autoload
 
     /**
      * Load class map
-     * @param  array $data
+     * @param array $data
      * @return void
      */
-    public function setMap(array $data) : void
+    public function setMap(array $data): void
     {
         $this->classMap = $data;
     }
@@ -205,10 +206,11 @@ class Autoload
      * @param array $data
      * @return void
      */
-    public function addMap(array $data) : void
+    public function addMap(array $data): void
     {
-        foreach($data as $k => $v)
+        foreach ($data as $k => $v) {
             $this->classMap[$k] = $v;
+        }
     }
 
     /**
@@ -216,7 +218,7 @@ class Autoload
      * Shows loaded class files
      * @return array
      */
-    public function getLoadedClasses() : array
+    public function getLoadedClasses(): array
     {
         return $this->debugData;
     }
@@ -225,7 +227,7 @@ class Autoload
      * Get list of registered autoload paths
      * @return array
      */
-    public function getRegisteredPaths() : array
+    public function getRegisteredPaths(): array
     {
         return $this->paths;
     }
