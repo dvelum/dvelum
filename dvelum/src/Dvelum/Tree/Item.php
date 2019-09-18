@@ -41,8 +41,8 @@ class Item implements \ArrayAccess
 
     /**
      * Item constructor.
-     * @param string|int $id
-     * @param string|int $parent
+     * @param mixed $id
+     * @param mixed $parent
      * @param mixed $data
      * @param int|null $order
      */

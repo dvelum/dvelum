@@ -73,9 +73,9 @@ class Model
     private $objectConfig = null;
 
     /**
-     * @var Config\ConfigInterface | null
+     * @var Config\ConfigInterface
      */
-    private $lightConfig = null;
+    private $lightConfig;
 
     /**
      * Object / model name
@@ -91,7 +91,7 @@ class Model
 
     /**
      * Current Cache_Interface
-     * @var CacheInterface | bool
+     * @var CacheInterface | false
      */
     protected $cache;
 
@@ -411,7 +411,7 @@ class Model
      * @throws \Exception
      * @return array
      */
-    public function getCachedItemByField(string $field, $value)
+    public function getCachedItemByField(string $field, $value) : array
     {
         $cacheKey = $this->getCacheKey(array('item', $field, $value));
         $data = false;
@@ -425,6 +425,10 @@ class Model
         }
 
         $data = $this->getItemByField($field, $value);
+
+        if(empty($data)){
+            $data = [];
+        }
 
         if ($this->cache && $data) {
             $this->cache->save($data, $cacheKey);
@@ -475,8 +479,11 @@ class Model
         }
 
         if ($data === false) {
-            $sql = $this->dbSlave->select()->from($this->table(),
-                $fields)->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . Utils::listIntegers($ids) . ')');
+
+            $sql = $this->dbSlave->select()
+                ->from($this->table(), $fields)
+                ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . Utils::listIntegers($ids) . ')');
+
             $data = $this->dbSlave->fetchAll($sql);
 
             if (!$data) {
@@ -535,6 +542,9 @@ class Model
     public function remove($recordId): bool
     {
         try {
+            /**
+             * @var \Dvelum\Orm\RecordInterface $object
+             */
             $object = Orm\Record::factory($this->name, $recordId);
         } catch (\Exception $e) {
             $this->logError('Remove record ' . $recordId . ' : ' . $e->getMessage());

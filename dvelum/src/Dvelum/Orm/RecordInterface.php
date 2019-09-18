@@ -115,9 +115,9 @@ interface RecordInterface
      * Get the related object name for the field
      * (available if the object field is a link to another object)
      * @param string $field - field name
-     * @return string
+     * @return string|null
      */
-    public function getLinkedObject(string $field): string;
+    public function getLinkedObject(string $field): ?string;
 
     /**
      * Set the object properties using the associative array of fields and values

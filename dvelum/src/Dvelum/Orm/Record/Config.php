@@ -1153,7 +1153,7 @@ class Config
 
     /**
      * Get Access Control Adapter
-     * @return Orm\Record\Acl | bool false
+     * @return Orm\Record\Acl | false
      */
     public function getAcl()
     {

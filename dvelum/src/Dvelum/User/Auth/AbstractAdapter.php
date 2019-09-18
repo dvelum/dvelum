@@ -30,7 +30,10 @@ use Dvelum\Config\ConfigInterface;
 abstract class AbstractAdapter implements AdapterInterface
 {
 	protected $userData = null;
-	protected $config = false;
+    /**
+     * @var ConfigInterface
+     */
+	protected $config;
 
 	/**
 	 * @param ConfigInterface $config - auth provider config

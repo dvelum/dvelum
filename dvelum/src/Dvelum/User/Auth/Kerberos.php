@@ -75,10 +75,7 @@ class Kerberos extends AbstractAdapter
             return false;
         }
 
-        $authCfg = Model::factory('User_Auth')->getList(
-            false,
-            array('type' => 'kerberos', 'user' => $userData['id'])
-        );
+        $authCfg = Model::factory('User_Auth')->query()->filters(['type' => 'kerberos', 'user' => $userData['id']]);
 
         if (empty($authCfg)) {
             return false;

@@ -87,10 +87,7 @@ class Ldap extends AbstractAdapter
             return false;
         }
 
-        $authCfg = Model::factory('User_Auth')->getList(
-            false,
-            array('type' => 'ldap', 'user' => $userData['id'])
-        );
+        $authCfg = Model::factory('User_Auth')->query()->filters(['type' => 'ldap', 'user' => $userData['id']])->fetchAll();
 
         if (empty($authCfg)) {
             return false;

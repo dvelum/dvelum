@@ -56,7 +56,7 @@ class Record implements RecordInterface
 
     /**
      * Access Control List Adapter
-     * @var Record\Acl | bool
+     * @var Record\Acl | false
      */
     protected $acl = false;
     /**
@@ -163,7 +163,7 @@ class Record implements RecordInterface
         }
 
         foreach ($data as $field => &$value) {
-            $fieldObject = $this->getConfig()->getField($field);
+            $fieldObject = $this->getConfig()->getField((string) $field);
 
             if ($fieldObject->isBoolean()) {
                 if ($value) {
@@ -323,11 +323,15 @@ class Record implements RecordInterface
      * Get the related object name for the field
      * (available if the object field is a link to another object)
      * @param string $field - field name
-     * @return string
+     * @return string|null
      */
-    public function getLinkedObject(string $field): string
+    public function getLinkedObject(string $field): ?string
     {
-        return $this->config->getField($field)->getLinkedObject();
+        $link = $this->config->getField($field)->getLinkedObject();
+        if(empty($link)){
+            return null;
+        }
+        return $link;
     }
 
     /**
@@ -350,7 +354,7 @@ class Record implements RecordInterface
         }
 
         if (!is_array($ids)) {
-            $ids = array($ids);
+            $ids = [$ids];
         }
 
         $model = Model::factory($name);
@@ -728,7 +732,6 @@ class Record implements RecordInterface
 
     /**
      * Unpublish VC object
-     * @param bool $log - log changes
      * @param bool $useTransaction — using a transaction when changing data is optional.
      * @return bool
      */
@@ -740,12 +743,12 @@ class Record implements RecordInterface
 
     /**
      * Publish VC object
-     * @param bool|int $version - optional, default current version
+     * @param int|null $version - optional, default current version
      * @param bool $useTransaction — using a transaction when changing data is optional.
      * @return bool
      * @throws \Exception
      */
-    public function publish($version = false, $useTransaction = true): bool
+    public function publish($version = null, $useTransaction = true): bool
     {
         $dataModel = $this->getDataModel();
         if(empty($version)){
@@ -792,7 +795,7 @@ class Record implements RecordInterface
     public function saveVersion(bool $useTransaction = true): bool
     {
         if (!$this->config->isRevControl()) {
-            return $this->save($useTransaction);
+            return (bool) $this->save($useTransaction);
         }
         $dataModel = $this->getDataModel();
         return $dataModel->saveVersion($this, $useTransaction);
@@ -818,7 +821,7 @@ class Record implements RecordInterface
 
     /**
      * Get insert ID
-     * @return integer
+     * @return int|bool
      */
     public function getInsertId()
     {

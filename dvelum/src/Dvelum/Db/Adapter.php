@@ -109,7 +109,7 @@ class Adapter
 
     /**
      * Fetch results
-     * @param string $sql
+     * @param string|\Dvelum\Db\Select $sql
      * @return array
      */
     public function fetchAll($sql) : array
