@@ -94,7 +94,7 @@ class Model extends Orm\Model
      * @throws Exception
      * @return array
      */
-    public function getCachedItemByField(string $field, $value)
+    public function getCachedItemByField(string $field, $value) : array
     {
         $cacheKey = $this->getCacheKey(array('item', $field, $value));
         $data = false;
