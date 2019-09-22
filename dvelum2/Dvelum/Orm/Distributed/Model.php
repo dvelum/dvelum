@@ -240,7 +240,7 @@ class Model extends Orm\Model
         $model = Model::factory($this->getObjectConfig()->getDistributedIndexObject());
 
         $filters = [
-             new Filter($this->getPrimaryKey(), Filter::NOT, $recordId),
+             new Filter($this->getPrimaryKey(), $recordId, Filter::NOT),
              $fieldName => $fieldValue
         ];
 
