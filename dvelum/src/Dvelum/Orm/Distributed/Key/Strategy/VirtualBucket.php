@@ -90,6 +90,10 @@ class VirtualBucket extends UserKeyNoID
         $config = $object->getConfig();
         $keyField = $config->getBucketMapperKey();
 
+        if(empty($keyField)){
+            return null;
+        }
+
         $fieldObject = $config->getField($keyField);
 
         $bucket = null;
@@ -132,6 +136,10 @@ class VirtualBucket extends UserKeyNoID
     {
         $config = Config::factory($objectName);
         $keyField = $config->getBucketMapperKey();
+
+        if(empty($keyField)){
+            throw new \Exception('Undefined key field for '.$objectName.'.'.$keyField);
+        }
 
         $fieldObject = $config->getField($keyField);
 

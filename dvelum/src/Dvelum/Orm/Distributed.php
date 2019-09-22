@@ -29,7 +29,7 @@ use Dvelum\Config;
 class Distributed
 {
     /**
-     * @var Distributed|bool $instance
+     * @var Distributed|false $instance
      */
     static protected $instance = false;
 

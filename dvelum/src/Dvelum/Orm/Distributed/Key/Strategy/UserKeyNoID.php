@@ -184,7 +184,7 @@ class UserKeyNoID implements GeneratorInterface
 
         $distributedKey = $objectConfig->getShardingKey();
 
-        if(empty($record->get($distributedKey))){
+        if(empty($distributedKey) || empty($record->get($distributedKey))){
             return null;
         }
 

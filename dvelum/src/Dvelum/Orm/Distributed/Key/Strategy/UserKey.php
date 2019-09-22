@@ -40,6 +40,11 @@ class UserKey extends UniqueID
         $model = Model::factory($indexObject);
 
         $shardingKey = $objectConfig->getShardingKey();
+
+        if(empty($shardingKey)){
+            return null;
+        }
+
         $value = $record->get($shardingKey);
 
         $shard = null;

@@ -109,6 +109,10 @@ class Model extends Orm\Model
 
         $data = $this->getItemByField($field, $value);
 
+        if(empty($data)){
+            $data = [];
+        }
+
         if ($this->cache && $data) {
             $this->cache->save($data, $cacheKey);
         }
@@ -147,7 +151,7 @@ class Model extends Orm\Model
     final public function getItems(array $ids, $fields = '*', $useCache = false)
     {
         $data = false;
-        $cacheKey = null;
+        $cacheKey = '';
 
         if (empty($ids)) {
             return [];
@@ -210,6 +214,9 @@ class Model extends Orm\Model
     public function remove($recordId): bool
     {
         try {
+            /**
+             * @var Orm\RecordInterface $object
+             */
             $object = Orm\Record::factory($this->getObjectName(), $recordId);
         } catch (\Exception $e) {
             $this->logError('Remove record ' . $recordId . ' : ' . $e->getMessage());
@@ -240,7 +247,7 @@ class Model extends Orm\Model
         $model = Model::factory($this->getObjectConfig()->getDistributedIndexObject());
 
         $filters = [
-             new Filter($this->getPrimaryKey(), Filter::NOT, $recordId),
+             new Filter($this->getPrimaryKey(), $recordId,Filter::NOT),
              $fieldName => $fieldValue
         ];
 
