@@ -67,9 +67,9 @@ class Service
      */
     protected $config;
     /**
-     * @var LoggerInterface|bool $log
+     * @var LoggerInterface|null $log
      */
-    protected $log = false;
+    protected $log = null;
 
     protected $translator = false;
 
@@ -284,7 +284,10 @@ class Service
                     $fieldObject = $config->getField($field);
                     if ($fieldObject->isManyToManyLink()) {
                         $relationsObject = $config->getRelationsObject($field);
-                        $relationsData = $this->model($relationsObject)->query()
+                        if(empty($relationsObject)){
+                            throw new \Exception('Undefined relations object for field ' . $field);
+                        }
+                        $relationsData = $this->model((string)$relationsObject)->query()
                             ->params([
                                 'sort' => 'order_no',
                                 'dir' => 'ASC'
@@ -294,7 +297,10 @@ class Service
                             ->fetchAll();
                     } else {
                         $linkedObject = $fieldObject->getLinkedObject();
-                        $linksObject = $this->model($linkedObject)->getStore()->getLinksObjectName();
+                        if(empty($relationsObject)){
+                            throw new \Exception('Undefined linked object object for field ' . $field);
+                        }
+                        $linksObject = $this->model((string)$linkedObject)->getStore()->getLinksObjectName();
                         $linksModel = $this->model($linksObject);
                         $relationsData = $linksModel->query()
                             ->params(['sort' => 'order', 'dir' => 'ASC'])

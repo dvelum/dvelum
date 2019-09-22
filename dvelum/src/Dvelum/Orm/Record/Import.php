@@ -58,7 +58,11 @@ class Import
         }
 
         $column = $meta->getAdapter()->getColumn($primary, $table);
-        $dataType = strtolower($column->getDataType());
+        $dataType = $column->getDataType();
+        if(empty($dataType)){
+            return false;
+        }
+        $dataType = strtolower($dataType);
 
         if (!in_array($dataType, Builder::$numTypes, true)) {
             $this->errors[] = 'PRIMARY KEY is not numeric';
@@ -185,7 +189,7 @@ class Import
 
             $objectFields[$name] = array(
                 'title' => $name,
-                'db_type' => strtolower($v->getDataType())
+                'db_type' => strtolower((string)$v->getDataType())
             );
 
             $fieldLink = &$objectFields[$name];

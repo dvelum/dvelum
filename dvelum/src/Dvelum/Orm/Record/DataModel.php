@@ -42,6 +42,10 @@ class DataModel
         $model = Model::factory($recordName);
 
         $store = $model->getStore();
+        if(empty($recordId)){
+            throw new Exception('Undefined object id for ' . $recordName);
+        }
+
         $data = $store->load($recordName, $recordId);
 
         if (empty($data)) {
@@ -55,13 +59,13 @@ class DataModel
                 foreach ($fields as $field => $linkType) {
                     if ($recordConfig->getField($field)->isManyToManyLink()) {
                         $relationsObject = $recordConfig->getRelationsObject($field);
-                        $relationsData = Model::factory($relationsObject)->query()
+                        $relationsData = Model::factory((string)$relationsObject)->query()
                             ->params(['sort' => 'order_no', 'dir' => 'ASC'])
                             ->filters(['source_id' => $recordId])
                             ->fields(['target_id'])->fetchAll();
                     } else {
                         $linkedObject = $recordConfig->getField($field)->getLinkedObject();
-                        $linksObject = Model::factory($linkedObject)->getStore()->getLinksObjectName();
+                        $linksObject = Model::factory((string)$linkedObject)->getStore()->getLinksObjectName();
                         $linksModel = Model::factory($linksObject);
                         $relationsData = $linksModel->query()
                             ->params(['sort' => 'order', 'dir' => 'ASC'])
@@ -328,11 +332,19 @@ class DataModel
         $record->rejectChanges();
         $versionObject = $model->getStore()->getVersionObjectName();
 
+        $recordId = $record->getId();
+        if(!$recordId){
+            return false;
+        }
         /**
-         * @var \Model_Vc $vc
+         * @var int $recordId
+         */
+
+        /**
+         * @var \Dvelum\App\Model\Vc $vc
          */
         $vc = Model::factory($versionObject);
-        $data = $vc->getData($record->getName(), $record->getId(), $vers);
+        $data = $vc->getData($record->getName(), $recordId, $vers);
         $pKey = $recordConfig->getPrimaryKey();
 
         if (isset($data[$pKey])) {
@@ -357,18 +369,18 @@ class DataModel
         }
 
         foreach ($data as $k => $v) {
-            if ($record->fieldExists($k)) {
+            if ($record->fieldExists((string)$k)) {
                 try {
 
-                    if ($recordConfig->getField($k)->isEncrypted()) {
+                    if ($recordConfig->getField((string)$k)->isEncrypted()) {
                         $v = (string)$v;
                         if (is_string($iv) && strlen($v) && strlen($iv)) {
                             $v = $recordConfig->getCryptService()->decrypt($v, $iv);
                         }
                     }
 
-                    if ($k !== $recordConfig->getPrimaryKey() && !$recordConfig->isVcField($k)) {
-                        $record->set($k, $v);
+                    if ($k !== $recordConfig->getPrimaryKey() && !$recordConfig->isVcField((string)$k)) {
+                        $record->set((string)$k, $v);
                     }
 
                 } catch (Exception $e) {
@@ -471,11 +483,11 @@ class DataModel
 
     /**
      * @param RecordInterface $record
-     * @param $uniqGroups
+     * @param array $uniqGroups
      * @return array|null
      * @throws Exception
      */
-    public function validateUniqueValues(RecordInterface $record, $uniqGroups): ?array
+    public function validateUniqueValues(RecordInterface $record, array $uniqGroups): ?array
     {
         $recordName = $record->getName();
         $model = Model::factory($recordName);

@@ -27,7 +27,7 @@ class Query extends Orm\Model\Query
     public function __construct(Model $model)
     {
         parent::__construct($model);
-        $this->db = null;
+        unset($this->db);
     }
     /**
      * Set Shard

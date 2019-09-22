@@ -29,7 +29,7 @@ class Insert extends Orm\Model\Insert
     public function __construct(Model $model)
     {
         parent::__construct($model);
-        $this->db = null;
+        unset($this->db);
     }
 
     /**

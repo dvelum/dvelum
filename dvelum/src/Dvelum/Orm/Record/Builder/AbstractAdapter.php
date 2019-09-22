@@ -62,7 +62,7 @@ abstract class AbstractAdapter implements BuilderInterface
     protected $dbPrefix;
 
     /**
-     * @var Log\File | bool
+     * @var Log\File | false
      */
     protected $log = false;
 
@@ -273,7 +273,7 @@ abstract class AbstractAdapter implements BuilderInterface
             foreach($fields as $fieldName=>$linkType)
             {
                 $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
-                if(!Config::configExists($relationObjectName)) {
+                if(!is_string($relationObjectName) || !Config::configExists($relationObjectName)) {
                     return false;
                 }
             }
@@ -288,8 +288,9 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     protected function logSql(string $sql) : bool
     {
-        if(!$this->log)
+        if(!$this->log){
             return true;
+        }
 
         try{
             $this->log->info('--');
@@ -373,7 +374,7 @@ abstract class AbstractAdapter implements BuilderInterface
             if(!empty($fields)){
                 foreach($fields as $fieldName=>$linkType){
                     $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
-                    if(!Config::configExists($relationObjectName)){
+                    if(!is_string($relationObjectName) || !Config::configExists($relationObjectName)){
                         $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
                     }
                 }
@@ -773,7 +774,7 @@ abstract class AbstractAdapter implements BuilderInterface
             if(!empty($fields)){
                 foreach($fields as $fieldName=>$linkType){
                     $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
-                    if(!Orm\Record\Config::configExists($relationObjectName)){
+                    if(!is_string($relationObjectName) || !Orm\Record\Config::configExists($relationObjectName)){
                         $updates[$fieldName] = ['name' => $relationObjectName, 'action'=>'add'];
                     }
                 }

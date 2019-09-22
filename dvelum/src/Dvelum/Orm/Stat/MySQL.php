@@ -24,6 +24,9 @@ class MySQL
             if(!empty($tableName)){
                 $sql = 'SHOW TABLE STATUS  where `Name` = '.$dbAdapter->quote($tableName);
                 $result =  $dbAdapter->fetchRow($sql);
+                if(empty($result)){
+                    return [];
+                }
                 return $result;
             }else{
                 return $dbAdapter->fetchAll("SHOW TABLE STATUS");

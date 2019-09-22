@@ -49,7 +49,7 @@ class Store
     protected $eventManager = null;
 
     /**
-     * @var LoggerInterface | bool
+     * @var LoggerInterface | false
      */
     protected $log = false;
 
@@ -134,7 +134,7 @@ class Store
      * Update Db object
      * @param Orm\RecordInterface $object
      * @param boolean $transaction - optional, use transaction if available
-     * @return boolean
+     * @return bool
      */
     public function update(Orm\RecordInterface $object , $transaction = true)
     {
@@ -156,7 +156,7 @@ class Store
          * Check for updates
          */
         if(!$object->hasUpdates())
-            return $object->getId();
+            return true;
 
         /*
          * Fire "BEFORE_UPDATE" Event if event manager exists
@@ -217,7 +217,7 @@ class Store
         if($this->eventManager)
             $this->eventManager->fireEvent(Event\Manager::AFTER_UPDATE, $object);
 
-        return $object->getId();
+        return true;
     }
 
     protected function updateOperation(Orm\RecordInterface $object)
@@ -422,7 +422,11 @@ class Store
 
         if($object->getConfig()->getField($objectField)->isManyToManyLink())
         {
-            $linksObjModel = Model::factory($object->getConfig()->getRelationsObject($objectField));
+            $relationsObject = $object->getConfig()->getRelationsObject($objectField);
+            if(empty($relationsObject)){
+                return false;
+            }
+            $linksObjModel = Model::factory((string) $relationsObject);
             $where = ' `source_id` = '.intval($object->getId());
         }
         else
@@ -465,7 +469,12 @@ class Store
 
         if($object->getConfig()->getField($objectField)->isManyToManyLink())
         {
-            $linksObjModel = Model::factory($object->getConfig()->getRelationsObject($objectField));
+            $relationsObject = $object->getConfig()->getRelationsObject($objectField);
+            if(empty($relationsObject)){
+                return false;
+            }
+
+            $linksObjModel = Model::factory((string) $relationsObject);
 
             foreach ($links as $k=>$v)
             {
@@ -505,7 +514,7 @@ class Store
      * Insert Db object
      * @param Orm\RecordInterface $object
      * @param boolean $transaction - optional , use transaction if available
-     * @return int | bool -  inserted id
+     * @return int | false -  inserted id
      */
     public function insert(Orm\RecordInterface $object , $transaction = true)
     {
@@ -592,7 +601,7 @@ class Store
         return $data;
     }
 
-    protected function insertOperation(Orm\Record $object) : bool
+    protected function insertOperation(Orm\RecordInterface $object) : bool
     {
         $insertId = $object->getInsertId();
 
@@ -672,7 +681,9 @@ class Store
         try {
             $db->insert($objectTable, $object->serializeLinks($data));
         }catch (Exception $e) {
-            $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
+            if($this->log){
+                $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
+            }
             return false;
         }
         return $db->lastInsertId($objectTable , $object->getConfig()->getPrimaryKey());
@@ -737,11 +748,11 @@ class Store
 
     /**
      * Add new object version
-     * @param Orm\Record $object
-     * @param boolean $useTransaction - optional , use transaction if available
-     * @return boolean|integer - version number
+     * @param Orm\RecordInterface $object
+     * @param bool $useTransaction - optional , use transaction if available
+     * @return int|false - version number
      */
-    public function addVersion(Orm\Record $object , $useTransaction = true)
+    public function addVersion(Orm\RecordInterface $object , bool $useTransaction = true)
     {
         if($object->getConfig()->isReadOnly())
         {
@@ -785,6 +796,9 @@ class Store
             return false;
 
         try{
+            /**
+             * @var Orm\RecordInterface $oldObject
+             */
             $oldObject = Orm\Record::factory($object->getName() , $object->getId());
             /**
              * Update object if not published
@@ -817,7 +831,7 @@ class Store
         if($this->eventManager)
             $this->eventManager->fireEvent(Event\Manager::AFTER_ADD_VERSION, $object);
 
-        return  $versNum;
+        return $versNum;
     }
 
     /**
@@ -854,7 +868,11 @@ class Store
 
         foreach ($fields as $field=>$conf) {
             if($objectConfig->getField($field)->isMultiLink()){
-                if(!$this->clearLinks($object, $field, $objectConfig->getField($field)->getLinkedObject())){
+                $linkedObject = $objectConfig->getField($field)->getLinkedObject();
+                if(empty($linkedObject)){
+                    return false;
+                }
+                if(!$this->clearLinks($object, $field, $linkedObject)){
                     return false;
                 }
             }
@@ -915,6 +933,9 @@ class Store
         if(empty($ids))
             return true;
 
+        /**
+         * @var  Orm\RecordInterface $specialCase
+         */
         $specialCase = Orm\Record::factory($objectName);
 
         $db = $this->getDbConnection($specialCase);

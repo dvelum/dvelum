@@ -30,7 +30,7 @@ class Insert implements InsertInterface
      */
     protected $model;
     /**
-     * @var Adapter|null $db
+     * @var Adapter $db
      */
     protected $db;
 

@@ -29,7 +29,8 @@ class Vc extends Model
     /**
      * Create new  version
      * @property Orm\Record $object
-     * @return boolean
+     * @return int|false
+     * @throws \Exception
      */
     public function newVersion(Orm\RecordInterface $object)
     {

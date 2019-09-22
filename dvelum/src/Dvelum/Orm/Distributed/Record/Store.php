@@ -84,7 +84,9 @@ class Store extends \Dvelum\Orm\Record\Store
         $insert = $this->sharding->reserveIndex($object);
 
         if(empty($insert)){
-            $this->log->log(LogLevel::ERROR,$object->getName() . '::insert Cannot reserve index for object');
+            if($this->log){
+                $this->log->log(LogLevel::ERROR,$object->getName() . '::insert Cannot reserve index for object');
+            }
             return false;
         }
 
@@ -125,7 +127,10 @@ class Store extends \Dvelum\Orm\Record\Store
             if($insertId && $sType == Orm\Record\Config::SHARDING_TYPE_GLOABAL_ID || $sType == Orm\Record\Config::SHARDING_TYPE_KEY){
                 $this->sharding->deleteIndex($object, $insertId);
             }
-            $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
+
+            if($this->log){
+                $this->log->log(LogLevel::ERROR,$object->getName() . '::insert ' . $e->getMessage());
+            }
             return false;
         }
         return $insertId;
@@ -146,8 +151,11 @@ class Store extends \Dvelum\Orm\Record\Store
 
         if($objectConfig->hasDistributedIndexRecord()){
             try{
-                $o = Orm\Record::factory($indexObject, $object->getId());
-                $o->delete(false);
+                /**
+                 * @var Orm\RecordInterface $obj
+                 */
+                $obj = Orm\Record::factory($indexObject, $object->getId());
+                $obj->delete(false);
             }catch (Exception $e){
                 if ($this->log) {
                     $this->log->log(LogLevel::ERROR, $object->getName() . ' cant delete index' . $object->getId());

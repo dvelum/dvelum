@@ -61,7 +61,7 @@ interface RecordInterface
 
     /**
      * Get object identifier
-     * @return int|bool
+     * @return int|false
      */
     public function getId();
 

@@ -37,7 +37,7 @@ class ObjectItem extends \Dvelum\Orm\Record\Config\Field
         {
             if($value instanceof Orm\Record)
             {
-                if(!$value->isInstanceOf($this->getLinkedObject())){
+                if(!$value->isInstanceOf((string)$this->getLinkedObject())){
                     throw new \Exception('Invalid value type for field '. $this->getName().' expects ' . $this->getLinkedObject() . ', ' . $value->getName() . ' passed');
                 }
                 $value = $value->getId();

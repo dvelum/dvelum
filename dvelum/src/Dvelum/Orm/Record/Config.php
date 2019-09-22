@@ -104,7 +104,7 @@ class Config
 
     /**
      * Access Control List
-     * @var Acl | bool
+     * @var Acl | false
      */
     protected $acl = false;
 
@@ -1388,6 +1388,9 @@ class Config
     public function getCryptService() : CryptServiceInterface
     {
         if(empty($this->cryptService)){
+            /**
+             * @var callable $service
+             */
             $service = $this->cryptServiceLoader;
             $this->cryptService = $service();
         }

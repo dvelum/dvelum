@@ -90,7 +90,7 @@ class Model
     protected $cacheTime;
 
     /**
-     * Current Cache_Interface
+     * Current Cache Interface
      * @var CacheInterface | false
      */
     protected $cache;
@@ -157,8 +157,7 @@ class Model
 
         $this->dbManager = $settings->get('defaultDbManager');
 
-        $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php',
-            true, false);
+        $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php', true, false);
 
         $conName = $this->lightConfig->get('connection');
         $this->db = $this->dbManager->getDbConnection($conName);
@@ -713,23 +712,6 @@ class Model
     public function getCacheTime()
     {
         return $this->cacheTime;
-    }
-
-    public function __call($name, $arguments)
-    {
-        static $deprecatedFunctions = [];
-
-        $objectName = $this->getObjectName();
-        if(!isset($deprecatedFunctions[$objectName])){
-            $deprecatedFunctions[$objectName] = new Model\Deprecated($this);
-        }
-
-        if(method_exists($deprecatedFunctions[$objectName], $name)){
-            // trigger_error('Deprecated method call'. get_called_class().'::'.$name,E_USER_NOTICE);
-            return call_user_func_array([$deprecatedFunctions[$objectName],$name], $arguments);
-        }
-
-        throw new \Exception('Undefined method '.$name);
     }
 
     /**

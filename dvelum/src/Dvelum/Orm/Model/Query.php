@@ -36,7 +36,7 @@ class Query
      */
     protected $model;
     /**
-     * @var Adapter | null  $db
+     * @var Adapter $db
      */
     protected $db;
 
@@ -376,11 +376,16 @@ class Query
 
     /**
      * Fetch first result row
+     * @return array
      */
     public function fetchRow(): array
     {
         try {
-            return $this->db->fetchRow($this->__toString());
+            $result = $this->db->fetchRow($this->__toString());
+            if (empty($result)) {
+                $result = [];
+            }
+            return $result;
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
             return [];

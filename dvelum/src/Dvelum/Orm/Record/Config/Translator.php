@@ -31,7 +31,7 @@ class Translator
 
     protected $translation = false;
     /**
-     * @var \Dvelum\Lang\Dictionary | bool
+     * @var \Dvelum\Lang\Dictionary | false
      */
     protected $lang = false;
 

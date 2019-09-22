@@ -124,6 +124,7 @@ class Stat
         $size = 0;
 
         $tableInfo = [];
+        $data = [];
 
         if($db->getAdapter()->getPlatform()->getName() === 'MySQL')
         {
@@ -143,25 +144,26 @@ class Stat
                 ];
             }
             unset($tableData);
+
+            if(!empty($tableInfo))
+            {
+                $records = $tableInfo['rows'];
+                $dataLength = Utils::formatFileSize($tableInfo['data_length']);
+                $indexLength = Utils::formatFileSize($tableInfo['index_length']);
+                $size = Utils::formatFileSize($tableInfo['data_length'] + $tableInfo['index_length']);
+            }
+
+            $data = [
+                'name' => $objectTable,
+                'records'=>number_format($records,0,'.',' '),
+                'data_size'=>$dataLength,
+                'index_size'=>$indexLength,
+                'size'=>$size,
+                'engine'=>$objectModel->getObjectConfig()->get('engine'),
+                'external' => '' /* @todo check external */
+            ];
         }
 
-        if(!empty($tableInfo))
-        {
-            $records = $tableInfo['rows'];
-            $dataLength = Utils::formatFileSize($tableInfo['data_length']);
-            $indexLength = Utils::formatFileSize($tableInfo['index_length']);
-            $size = Utils::formatFileSize($tableInfo['data_length'] + $tableInfo['index_length']);
-        }
-
-        $data = [
-            'name' => $objectTable,
-            'records'=>number_format($records,0,'.',' '),
-            'data_size'=>$dataLength,
-            'index_size'=>$indexLength,
-            'size'=>$size,
-            'engine'=>$objectModel->getObjectConfig()->get('engine'),
-            'external' => '' /* @todo check external */
-        ];
         return $data;
     }
 
