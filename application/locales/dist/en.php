@@ -5,6 +5,7 @@
   'ACCESS_DENIED' => 'Access Denied',
   'ACCEPTED_FORMATS' => 'Accepted formats',
   'ADD' => 'Add',
+  'ADD_ALL' => 'Add all items',
   'ADD_FILES' => 'Add files',
   'ADD_INDEX' => 'Add index',
   'ADD_ITEM' => 'Add item',
