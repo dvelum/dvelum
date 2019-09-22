@@ -61,7 +61,7 @@ class Csrf
 
     /**
      * Token storage
-     * @var AdapterInterface
+     * @var AdapterInterface|false
      */
     static protected $storage = false;
 

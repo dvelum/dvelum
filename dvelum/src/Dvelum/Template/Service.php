@@ -39,9 +39,9 @@ class Service
     protected $engineConfig;
 
     /**
-     * @var CacheInterface|bool
+     * @var CacheInterface|null
      */
-    protected $cache = false;
+    protected $cache = null;
 
     /**
      * Service constructor.

@@ -31,10 +31,25 @@ use Dvelum\Config\ConfigInterface;
  */
 class CryptService implements CryptServiceInterface
 {
+    /**
+     * @var string
+     */
     private $chipper = 'aes-256-ctr';
+    /**
+     * @var string
+     */
     private $hash = 'sha256';
+    /**
+     * @var string|null
+     */
     private $privateKey = null;
+    /**
+     * @var string|null
+     */
     private $privateKeyData = null;
+    /**
+     * @var string
+     */
     private $error ='';
 
     public function __construct(ConfigInterface $config)

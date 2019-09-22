@@ -92,9 +92,10 @@ class Response
      * Send error message
      * @param string $message
      * @param array $errors
+     * @throws \Exception
      * @return void
      */
-    public function error($message , array $errors = []) : void
+    public function error(string $message , array $errors = []) : void
     {
         @ob_clean();
         switch ($this->format){
@@ -104,7 +105,7 @@ class Response
             case self::FORMAT_HTML :
                 $this->notFound();
         }
-        $this->put($message);
+        $this->put((string)$message);
         $this->send();
     }
 
@@ -134,7 +135,7 @@ class Response
                 $message = json_encode($message);
                 break;
         }
-        $this->put($message);
+        $this->put((string)$message);
         $this->send();
     }
 
@@ -155,7 +156,7 @@ class Response
      */
     public function json(array $data = []) : void
     {
-        $this->put(json_encode($data));
+        $this->put((string)json_encode($data));
         $this->send();
     }
 

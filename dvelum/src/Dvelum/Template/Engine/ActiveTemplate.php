@@ -103,7 +103,7 @@ class ActiveTemplate implements EngineInterface
         if($this->cache && $this->useCache){
             $this->cache->save($result , $hash, $this->cacheLifetime);
         }
-        return $result;
+        return (string) $result;
     }
 
     /**
