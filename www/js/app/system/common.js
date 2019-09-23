@@ -642,7 +642,7 @@ app.getCSRFToken = function () {
     }
     var meta = Ext.select("meta[name='csrf-token']");
     if (Ext.isEmpty(meta.elements)) {
-        app.csrfToken = '';
+        app.csrfToken = null;
     } else {
         app.csrfToken = meta.elements[0].content;
     }
