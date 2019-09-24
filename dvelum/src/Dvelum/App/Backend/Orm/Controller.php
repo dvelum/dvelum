@@ -16,21 +16,15 @@ use Dvelum\Utils;
 
 class Controller extends \Dvelum\App\Backend\Controller implements RouterInterface
 {
-    protected $routes = [
-        'dictionary' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Dictionary',
-        'dataview' => 'Dvelum\\App\\Backend\\Orm\\Controller\\DataView',
-        'connections' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Connections',
-        'log' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Log',
-        'object' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Record',
-        'field' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Field',
-        'index' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Index',
-        'uml' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Uml',
-        'crypt' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Crypt',
-        'distributed' => 'Dvelum\\App\\Backend\\Orm\\Controller\\Distributed',
-    ];
+    /**
+     * @var array
+     */
+    protected $routes;
 
     public function route(Request $request, Response $response): void
     {
+        $this->routes = Config::storage()->get('orm/routes.php');
+
         $action = $request->getPart(2);
         if (isset($this->routes[$action])) {
             $router = new \Dvelum\App\Router\Backend();
@@ -96,6 +90,8 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
           var dbConfigsList = ' . json_encode($dbConfigs) . ';
           var ormTooltips = ' . Lang::lang('orm_tooltips')->getJson() . ';
           var shardingEnabled = ' . intval(Config::storage()->get('orm.php')->get('sharding')) . ';
+          var ormActionsList = '.json_encode($this->getActions()).';
+          var ormAddObjectFields = ['.$this->getAdditionalObjectFields().'];
         ');
 
         $this->resource->addJs('/js/app/system/SearchPanel.js', 0);
@@ -120,6 +116,32 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $this->resource->addJs('/js/lib/uml/backbone-min.js', 3, true, 'external');
         $this->resource->addJs('/js/lib/uml/joint.min.js', 4, true, 'external');
         $this->resource->addJs('/js/app/system/crud/orm.js', 7);
+    }
+
+    /**
+     * Get list of ORM actions
+     */
+    protected function getActions() : array
+    {
+        $controllerCode = $this->request->getPart(1);
+        $adminPath = $this->appConfig->get('adminPath');
+        $appRoot = $this->request->url([$adminPath, $controllerCode, '']);
+
+        $config = Config::storage()->get('orm/actions.php');
+        $list = $config->__toArray();
+        foreach ($list as &$v){
+            $v = $appRoot . $v;
+        }
+        return $list;
+    }
+
+    protected function getAdditionalObjectFields():string
+    {
+        $config = Config::storage()->get('orm/fields.php')->__toArray();
+        if(empty($config)){
+            return '';
+        }
+        return implode(',', array_values($config));
     }
 
 
@@ -274,22 +296,6 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         }
         $this->response->success($data);
     }
-
-    /**
-     * Get list of ACL adapters
-     */
-    public function listAclAction()
-    {
-        $list = [['id' => '', 'title' => '---']];
-        $files = File::scanFiles('./dvelum/src/Dvelum/App/Acl', ['.php'], true, File::FILES_ONLY);
-        foreach ($files as $v) {
-            $path = str_replace(['./dvelum/src/'], [''], $v);
-            $name = Utils::classFromPath($path);
-            $list[] = ['id' => $name, 'title' => $name];
-        }
-        $this->response->success($list);
-    }
-
 
     /*
      * Get connection types (prod , dev , test ... etc)

@@ -26,14 +26,6 @@ interface RecordInterface
     public function __construct(string $name, $id = false);
 
     /**
-     * Disable ACL create permissions check
-     * @param bool $bool
-     * @return void
-     */
-    public function disableAcl(bool $bool): void;
-
-
-    /**
      * Set raw data from storage
      * @param array $data
      * @return void
@@ -248,12 +240,6 @@ interface RecordInterface
      * @return bool
      */
     public function saveVersion(bool $useTransaction = true): bool;
-
-    /**
-     * Get Access control List
-     * @return Record\Acl | false
-     */
-    public function getAcl();
 
     /**
      * Set insert id for object (Should not exist in the database)

@@ -73,8 +73,6 @@ Ext.define('app.crud.orm.ditributedIndex', {
     ]
 });
 
-
-
 Ext.define('app.crud.orm.Main',{
 	extend:'Ext.panel.Panel',
 	dataStore:null,
@@ -84,63 +82,8 @@ Ext.define('app.crud.orm.Main',{
 	controllerUrl:'',
 	layout:'fit',
 	isSystemField:null,
-
 	initComponent:function(){
 		var me = this;
-
-        app.crud.orm.Actions = {
-            addDictionary:		this.controllerUrl  + 'adddictionary',
-            listDictionaries:	this.controllerUrl  + 'listdictionaries',
-            updateDictionary:	this.controllerUrl  + 'updatedictionary',
-            removeDictionary:	this.controllerUrl  + 'removedictionary',
-            listObj: 			this.controllerUrl  + 'list',
-            listObjDetails:		this.controllerUrl  + 'listDetails',
-            listAcl:			this.controllerUrl  + 'listacl',
-
-			// object
-            listObjFields: 		app.createUrl([this.controllerUrl + 'object','fields']),
-            listObjIndexes: 	app.createUrl([this.controllerUrl + 'object','indexes']),
-            validateObject: 	app.createUrl([this.controllerUrl + 'object','validate']),
-            validateRecord: 	app.createUrl([this.controllerUrl + 'object','validateRecord']),
-            loadObjCfg:			app.createUrl([this.controllerUrl + 'object','load']),
-            buildObject:		app.createUrl([this.controllerUrl + 'object','build']),
-            saveObjCfg: 		app.createUrl([this.controllerUrl + 'object','save']),
-            removeObject:		app.createUrl([this.controllerUrl + 'object','remove']),
-			//field
-            loadObjField: 		app.createUrl([this.controllerUrl + 'field','load']),
-            saveObjField: 		app.createUrl([this.controllerUrl + 'field','save']),
-            deleteField:	 	app.createUrl([this.controllerUrl + 'field','delete']),
-			// index
-            loadObjIndex: 		app.createUrl([this.controllerUrl + 'index','load']),
-            saveObjIndex:	 	app.createUrl([this.controllerUrl + 'index','save']),
-            deleteIndex: 		app.createUrl([this.controllerUrl + 'index','delete']),
-
-
-            buildAllObjects:	this.controllerUrl  + 'buildall',
-
-            builderLog:			app.createUrl([this.controllerUrl + 'log','']),
-            dictionary:			app.createUrl([this.controllerUrl + 'dictionary','']),
-            listValidators:		app.createUrl([this.controllerUrl + 'listvalidators','']),
-            dataViewController: app.createUrl([this.controllerUrl + 'dataview','']),
-            connectionsUrl:		app.createUrl([this.controllerUrl + 'connections','']),
-            listConnections:	app.createUrl([this.controllerUrl + 'connectionslist','']),
-            importUrl:			app.createUrl([this.controllerUrl + 'import','']),
-
-			// crypt
-            encryptData:		app.createUrl([this.controllerUrl + 'crypt','encrypt']),
-            decryptData:		app.createUrl([this.controllerUrl + 'crypt','decrypt']),
-			// crypt task
-            encTaskStat:		app.createUrl([this.controllerUrl + 'crypt','taskstat']),
-
-            // distributed
-            addDistributedIndex:app.createUrl([this.controllerUrl  + 'distributed','adddistributedindex']),
-            listObjDistIndexes: app.createUrl([this.controllerUrl  + 'distributed','distindexes']),
-            deleteDistIndex: 	app.createUrl([this.controllerUrl  + 'distributed','deletedistributedindex']),
-            acceptedDistFields: app.createUrl([this.controllerUrl  + 'distributed','acceptedDistributedFields']),
-            listShardingTypes:  app.createUrl([this.controllerUrl  + 'distributed','listShardingTypes']),
-            listShardingFields: app.createUrl([this.controllerUrl  + 'distributed','listShardingFields'])
-        };
-
 		this.tbar = [];
 		this.dataStore = Ext.create('Ext.data.Store', {
 			model: 'app.crud.orm.ObjectsModel',

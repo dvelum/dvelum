@@ -1,14 +1,4 @@
 <?php return array (
-    'Acl' =>
-        array (
-            'id' => 'Acl',
-            'dev' => false,
-            'active' => true,
-            'class' => '\\Dvelum\\App\\Backend\\Acl\\Controller',
-            'designer' => '',
-            'in_menu' => true,
-            'icon' => 'i/system/icons/acl.png',
-        ),
     'Tasks' =>
         array (
             'id' => 'Tasks',

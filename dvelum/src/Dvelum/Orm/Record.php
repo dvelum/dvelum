@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Dvelum\Orm;
 
 use Dvelum\Orm\Record\DataModel;
-use Dvelum\Orm\Record\ErrorMessage;
 use Dvelum\Service;
 use Dvelum\Utils;
 
@@ -53,17 +52,6 @@ class Record implements RecordInterface
      * @var integer|bool
      */
     protected $insertId = false;
-
-    /**
-     * Access Control List Adapter
-     * @var Record\Acl | false
-     */
-    protected $acl = false;
-    /**
-     * System flag. Disable ACL create permissions check
-     * @var bool
-     */
-    protected $disableAclCheck = false;
 
     /**
      * @var Model|\Dvelum\Orm\Distributed\Model
@@ -99,27 +87,13 @@ class Record implements RecordInterface
 
         $this->config = Record\Config::factory($name);
         $this->primaryKey = $this->config->getPrimaryKey();
-        $this->acl = $this->config->getAcl();
 
         if ($this->id) {
             $this->loadData();
-            $this->checkCanRead();
-        } else {
-            if ($this->acl && !$this->disableAclCheck) {
-                $this->checkCanCreate();
-            }
         }
     }
 
-    /**
-     * Disable ACL create permissions check
-     * @param bool $bool
-     * @return void
-     */
-    public function disableAcl(bool $bool): void
-    {
-        $this->disableAclCheck = $bool;
-    }
+
 
     /**
      * @return DataModel
@@ -200,10 +174,6 @@ class Record implements RecordInterface
      */
     public function getData($withUpdates = true): array
     {
-        if ($this->acl && !$this->disableAclCheck) {
-            $this->checkCanRead();
-        }
-
         $data = $this->data;
         $data[$this->primaryKey] = $this->id;
 
@@ -270,10 +240,6 @@ class Record implements RecordInterface
      */
     public function getUpdates(): array
     {
-        if ($this->acl) {
-            $this->checkCanRead();
-        }
-
         return $this->updates;
     }
 
@@ -285,10 +251,6 @@ class Record implements RecordInterface
      */
     public function setId($id): void
     {
-        if ($this->acl && !$this->disableAclCheck) {
-            $this->checkCanEdit();
-        }
-
         $this->id = (int)$id;
     }
 
@@ -398,10 +360,6 @@ class Record implements RecordInterface
      */
     public function set(string $name, $value): bool
     {
-        if ($this->acl) {
-            $this->checkCanEdit();
-        }
-
         $propConf = $this->config->getFieldConfig($name);
         $validator = $this->getConfig()->getValidator($name);
 
@@ -414,8 +372,7 @@ class Record implements RecordInterface
 
         // Validate value using special validator
         // Skip validation if value is null and object field can be null
-        if ($validator && (!$field->isNull() || !is_null($value)) && !call_user_func_array([$validator, 'validate'],
-                [$value])) {
+        if ($validator && (!$field->isNull() || !is_null($value)) && !call_user_func_array([$validator, 'validate'], [$value])) {
             throw new Exception('Invalid value for field ' . $name . ' (' . $this->getName() . ')');
         }
 
@@ -498,10 +455,6 @@ class Record implements RecordInterface
      */
     public function get(string $name)
     {
-        if ($this->acl && !$this->disableAclCheck) {
-            $this->checkCanRead();
-        }
-
         if ($name === $this->primaryKey) {
             return $this->getId();
         }
@@ -532,18 +485,14 @@ class Record implements RecordInterface
      */
     public function getOld(string $name)
     {
-        if ($this->acl) {
-            $this->checkCanRead();
-        }
-
         if (!$this->fieldExists($name)) {
             throw new Exception('Invalid property requested [' . $name . ']');
         }
-
         return $this->data[$name];
     }
 
     /**
+     * Add object error message
      * @param string $message
      */
     public function addErrorMessage(string $message): void
@@ -695,40 +644,6 @@ class Record implements RecordInterface
         return $this->errors;
     }
 
-    protected function checkCanRead()
-    {
-        if ($this->acl && !$this->acl->canRead($this)) {
-            throw new Exception(ErrorMessage::factory()->cantRead($this));
-        }
-    }
-
-    protected function checkCanEdit()
-    {
-        if ($this->acl && !$this->acl->canEdit($this)) {
-            throw new Exception(ErrorMessage::factory()->cantEdit($this));
-        }
-    }
-
-    protected function checkCanDelete()
-    {
-        if ($this->acl && !$this->acl->canDelete($this)) {
-            throw new Exception(ErrorMessage::factory()->cantDelete($this));
-        }
-    }
-
-    protected function checkCanCreate()
-    {
-        if ($this->acl && !$this->acl->canCreate($this)) {
-            throw new Exception(ErrorMessage::factory()->cantCreate($this));
-        }
-    }
-
-    protected function checkCanPublish()
-    {
-        if ($this->acl && !$this->acl->canPublish($this)) {
-            throw new Exception(ErrorMessage::factory()->cantPublish($this));
-        }
-    }
 
     /**
      * Unpublish VC object
@@ -799,15 +714,6 @@ class Record implements RecordInterface
         }
         $dataModel = $this->getDataModel();
         return $dataModel->saveVersion($this, $useTransaction);
-    }
-
-    /**
-     * Get Access control List
-     * @return Record\Acl | false
-     */
-    public function getAcl()
-    {
-        return $this->acl;
     }
 
     /**

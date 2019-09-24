@@ -76,5 +76,9 @@ return [
     /*
      * Object translations dir
      */
-    'translations_dir' => 'objects/'
+    'translations_dir' => 'objects/',
+    /*
+     * Record class
+     */
+    'record' => '\\Dvelum\\Orm\\Record'
 ];

@@ -1,5 +1,4 @@
 <?php return array (
-  'Acl' => 'ACL',
   'Orm' =>  'ORM',
   'Blocks' => 'Блоки',
   'Designer' =>  'Дизайнер интерфейсов',

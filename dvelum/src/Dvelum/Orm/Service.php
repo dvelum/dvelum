@@ -255,11 +255,12 @@ class Service
      */
     public function record(string $name, $id = false, $shard = false)
     {
+        $recordClass = $this->config->get('record');
         $config = $this->config($name);
 
         if (!is_array($id)) {
             if (!$config->isDistributed()) {
-                return new Record($name, $id);
+                return new $recordClass($name, $id);
             } else {
                 if ($config->isShardRequired() && !empty($id) && empty($shard)) {
                     throw new \Exception('Shard is required for Object ' . $name);
@@ -322,8 +323,10 @@ class Service
 
         $primaryKey = $config->getPrimaryKey();
         foreach ($data as $item) {
-            $o = new Record($name);
-            $o->disableAcl(true);
+            /**
+             * @var RecordInterface $o
+             */
+            $o = new $recordClass($name);
             /*
              * Apply links info
              */
@@ -334,11 +337,9 @@ class Service
                     }
                 }
             }
-
             $o->setId($item[$primaryKey]);
             $o->setRawData($item);
             $list[$item[$primaryKey]] = $o;
-            $o->disableAcl(false);
         }
         return $list;
     }
