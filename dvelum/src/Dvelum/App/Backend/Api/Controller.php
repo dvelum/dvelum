@@ -194,15 +194,6 @@ class Controller extends App\Backend\Controller
 
         $objectConfig = Orm\Record\Config::factory($object);
 
-        // Check ACL permissions
-        $acl = $objectConfig->getAcl();
-
-        if ($acl) {
-            if (!$acl->can(Orm\Record\Acl::ACCESS_VIEW, $object)) {
-                throw new LoadException($this->lang->get('ACL_ACCESS_DENIED'));
-            }
-        }
-
         /**
          * @var Model
          */
@@ -292,18 +283,10 @@ class Controller extends App\Backend\Controller
         }
 
         $objectConfig = Orm\Record\Config::factory($object);
-        // Check ACL permissions
-        $acl = $objectConfig->getAcl();
-        if ($acl) {
-            if (!$acl->can(Orm\Record\Acl::ACCESS_VIEW, $object)) {
-                $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
-                return;
-            }
-        }
 
         try {
             $o = Orm\Record::factory($object, $id);
-            $this->response->success(array('title' => $o->getTitle()));
+            $this->response->success(['title' => $o->getTitle()]);
         } catch (\Exception $e) {
             Model::factory($object)->logError('Cannot get title for ' . $object . ':' . $id);
             $this->response->error($this->lang->get('CANT_EXEC'));
@@ -449,12 +432,6 @@ class Controller extends App\Backend\Controller
             $object = Orm\Record::factory($this->objectName, $id, $shard);
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
-            return;
-        }
-
-        $acl = $object->getAcl();
-        if ($acl && !$acl->canDelete($object)) {
-            $this->response->error($this->lang->get('CANT_DELETE'));
             return;
         }
 
@@ -1036,13 +1013,6 @@ class Controller extends App\Backend\Controller
             return;
         }
 
-        $acl = $object->getAcl();
-
-        if ($acl && !$acl->canPublish($object)) {
-            $this->response->error($this->lang->get('CANT_PUBLISH'));
-            return;
-        }
-
         try {
             $object->loadVersion($vers);
         } catch (\Exception $e) {
@@ -1094,12 +1064,6 @@ class Controller extends App\Backend\Controller
         }
 
         if(!$this->checkOwner($object)){
-            return;
-        }
-
-        $acl = $object->getAcl();
-        if($acl && !$acl->canPublish($object)){
-            $this->response->error($this->lang->get('CANT_PUBLISH'));
             return;
         }
 

@@ -137,11 +137,13 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
     protected function getAdditionalObjectFields():string
     {
-        $config = Config::storage()->get('orm/fields.php')->__toArray();
+        $config = Config::storage()->get('orm/properties.php')->__toArray();
+
         if(empty($config)){
             return '';
         }
-        return implode(',', array_values($config));
+        $fieldsJs = Utils::fetchCol('js_field', $config);
+        return implode(',', array_values($fieldsJs));
     }
 
 

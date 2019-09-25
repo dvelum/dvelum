@@ -413,8 +413,7 @@ class Record extends Controller
         $locked = $this->request->post('locked', 'boolean', false);
 
         $usePrefix = $this->request->post('use_db_prefix', 'boolean', false);
-        $useAcl = $this->request->post('use_acl', 'boolean', false);
-        $acl = $this->request->post('acl', 'string', false);
+
 
         $detalization = $this->request->post('log_detalization', 'string', 'default');
 
@@ -448,24 +447,12 @@ class Record extends Controller
             }
         }
 
-        // check ACL Adapter
-        if ($useAcl && (empty($acl) || !class_exists($acl))) {
-            $errors[] = array('id' => 'acl', 'msg' => $this->lang->get('INVALID_VALUE'));
-        }
-
-
         if (!empty($errors)) {
             $this->response->error($this->lang->get('FILL_FORM'), $errors);
         }
 
         if(!$distributed){
             $shardingType = $shardingKey = null;
-        }
-
-        if ($useAcl) {
-            $data['acl'] = $acl;
-        } else {
-            $data['acl'] = false;
         }
 
         $data['data_object'] = $dataObject;
@@ -485,12 +472,47 @@ class Record extends Controller
         $data['sharding_type'] = $shardingType;
         $data['sharding_key'] = $shardingKey;
 
+
+        $this->checkExternalProperties($data, $errors);
+        if (!empty($errors)) {
+            $this->response->error($this->lang->get('FILL_FORM'), $errors);
+        }
+
+
         $name = strtolower($name);
 
         if ($recordId === '') {
             $this->createObject($name, $data);
         } else {
             $this->updateObject($recordId, $name, $data);
+        }
+    }
+
+    /**
+     * Check properties from external modules (plugins)
+     */
+    protected function checkExternalProperties( array & $data, array & $errors)
+    {
+        $properties = Config::storage()->get('orm/properties.php')->__toArray();
+        if(empty($properties)){
+            return;
+        }
+
+        foreach ($properties as $name => $item)
+        {
+            if(!empty($item['validator']))
+            {
+                $validationClass = $item['validator'];
+                /**
+                 * @var Orm\Property\ValidatorInterface $validationObject
+                 */
+                $validationObject = new $validationClass($this->request, $this->lang);
+                if($validationObject->isValid()){
+                    $data[$name] = $validationObject->getValue();
+                }else{
+                    $errors[$name] = $validationObject->getError();
+                }
+            }
         }
     }
 

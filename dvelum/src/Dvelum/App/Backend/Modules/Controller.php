@@ -392,16 +392,6 @@ class Controller extends Backend\Controller
 
         $objectConfig = Orm\Record\Config::factory($object);
 
-        // Check ACL permissions
-        $acl = $objectConfig->getAcl();
-        if ($acl) {
-            if (!$acl->can(Orm\Record\Acl::ACCESS_CREATE, $object) || !$acl->can(Orm\Record\Acl::ACCESS_VIEW,
-                    $object)) {
-                $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
-                return;
-            }
-        }
-
         $manager = new Orm\Record\Manager();
 
         if (!$manager->objectExists($object)) {

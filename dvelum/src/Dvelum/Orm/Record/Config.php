@@ -103,12 +103,6 @@ class Config
     protected $localCache = [];
 
     /**
-     * Access Control List
-     * @var Acl | false
-     */
-    protected $acl = false;
-
-    /**
      * @var CryptServiceInterface
      */
     private $cryptService = null;
@@ -315,13 +309,6 @@ class Config
         if($this->isIndexObject()){
             $dataLink['indexes'] = $this->initIndexIndexes();
         }
-
-        /*
-         * Init ACL adapter
-         */
-        if(!empty($dataLink['acl']))
-            $this->acl = Orm\Record\Acl::factory($dataLink['acl']);
-
     }
 
     /**
@@ -1149,15 +1136,6 @@ class Config
         }
 
         return $this->translator;
-    }
-
-    /**
-     * Get Access Control Adapter
-     * @return Orm\Record\Acl | false
-     */
-    public function getAcl()
-    {
-        return $this->acl;
     }
 
     /**
