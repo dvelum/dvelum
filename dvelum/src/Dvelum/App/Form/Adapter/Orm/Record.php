@@ -68,8 +68,13 @@ class Record extends Form\Adapter
 
         $acl = $obj->getAcl();
 
-        if($acl && !$acl->canEdit($obj)){
+        if($acl && $obj->getId() && !$acl->canEdit($obj)){
             $this->errors[] = new Form\Error($this->lang->get('CANT_MODIFY'), null, 'acl_cant_edit');
+            return false;
+        }
+
+        if($acl && !$obj->getId() && !$acl->canCreate($obj)){
+            $this->errors[] = new Form\Error($this->lang->get('CANT_CREATE'), null, 'acl_cant_create');
             return false;
         }
 
