@@ -26,6 +26,7 @@ use Dvelum\Orm;
 use Dvelum\Request;
 use Dvelum\Utils;
 use Dvelum\View;
+use Dvelum\Designer;
 
 class Simple extends AbstractAdapter
 {
@@ -168,7 +169,7 @@ class Simple extends AbstractAdapter
         /*
          * Designer project
         */
-        $project = new \Designer_Project();
+        $project = new Designer\Project();
         $project->namespace = $classNamespace;
         $project->runnamespace = $runNamespace;
 
@@ -215,7 +216,7 @@ class Simple extends AbstractAdapter
         $model->idProperty = $primaryKey;
         $model->addFields($storeFields);
 
-        $project->addObject(\Designer_Project::COMPONENT_ROOT, $model);
+        $project->addObject(Designer\Project::COMPONENT_ROOT, $model);
 
 
         $dataStore = \Ext_Factory::object('Data_Store');
@@ -243,7 +244,7 @@ class Simple extends AbstractAdapter
         $dataStore->proxy = $dataProxy;
         $dataStore->remoteSort = true;
 
-        $project->addObject(\Designer_Project::LAYOUT_ROOT, $dataStore);
+        $project->addObject(Designer\Project::LAYOUT_ROOT, $dataStore);
 
         /**
          * Data grid
@@ -391,7 +392,7 @@ class Simple extends AbstractAdapter
             $column->addAction($deleteButton->getName(), $deleteButton);
             $dataGrid->addColumn($column->getName(), $column, $parent = 0);
         }
-        $project->addObject(\Designer_Project::COMPONENT_ROOT, $dataGrid);
+        $project->addObject(Designer\Project::COMPONENT_ROOT, $dataGrid);
 
 
         /**
@@ -403,7 +404,7 @@ class Simple extends AbstractAdapter
         $gridInstance->setName($dataGrid->getName());
         $project->getTree()->addItem(
             $gridInstance->getName() . '_instance', 
-            \Designer_Project::LAYOUT_ROOT,
+            Designer\Project::LAYOUT_ROOT,
             $gridInstance
         );
 
@@ -467,7 +468,7 @@ class Simple extends AbstractAdapter
             $editWindow->hideEastPanel = true;
         }
 
-        $project->addObject(\Designer_Project::COMPONENT_ROOT, $editWindow);
+        $project->addObject(Designer\Project::COMPONENT_ROOT, $editWindow);
 
         $tab = \Ext_Factory::object('Panel',[
             'frame' => false,
@@ -526,7 +527,7 @@ class Simple extends AbstractAdapter
         /*
          * Save designer project
         */
-        $designerStorage = \Designer_Factory::getStorage($this->designerConfig);
+        $designerStorage = Designer\Factory::getStorage($this->designerConfig);
 
         /*
          * Create ActionJS code
@@ -632,7 +633,7 @@ class Simple extends AbstractAdapter
         /*
          * Designer project
         */
-        $project = new \Designer_Project();
+        $project = new Designer\Project();
         $project->namespace = $classNamespace;
         $project->runnamespace = $runNamespace;
 
@@ -670,7 +671,7 @@ class Simple extends AbstractAdapter
         $model->idProperty = $primaryKey;
         $model->addFields($storeFields);
 
-        $project->addObject(\Designer_Project::COMPONENT_ROOT , $model);
+        $project->addObject(Designer\Project::COMPONENT_ROOT , $model);
 
         $dataStore = \Ext_Factory::object('Data_Store');
         $dataStore->setName('dataStore');
@@ -697,7 +698,7 @@ class Simple extends AbstractAdapter
         $dataStore->proxy = $dataProxy;
         $dataStore->remoteSort = true;
 
-        $project->addObject(\Designer_Project::LAYOUT_ROOT  , $dataStore);
+        $project->addObject(Designer\Project::LAYOUT_ROOT  , $dataStore);
 
         /*
          * Data grid
@@ -829,7 +830,7 @@ class Simple extends AbstractAdapter
         $column->addAction($deleteButton->getName() ,$deleteButton);
         $dataGrid->addColumn($column->getName() , $column , $parent = 0);
 
-        $project->addObject(\Designer_Project::COMPONENT_ROOT, $dataGrid);
+        $project->addObject(Designer\Project::COMPONENT_ROOT, $dataGrid);
 
         /**
          * Instance of data grid to layout
@@ -837,7 +838,7 @@ class Simple extends AbstractAdapter
         $gridInstance = \Ext_Factory::object('Object_Instance');
         $gridInstance->setObject($dataGrid);
         $gridInstance->setName($dataGrid->getName());
-        $project->getTree()->addItem($gridInstance->getName() . '_instance', \Designer_Project::LAYOUT_ROOT, $gridInstance);
+        $project->getTree()->addItem($gridInstance->getName() . '_instance', Designer\Project::LAYOUT_ROOT, $gridInstance);
 
         /*
          * Top toolbar
@@ -900,7 +901,7 @@ class Simple extends AbstractAdapter
          $editWindow->hideEastPanel = true;
         */
 
-        $project->addObject(\Designer_Project::COMPONENT_ROOT, $editWindow);
+        $project->addObject(Designer\Project::COMPONENT_ROOT, $editWindow);
 
         $tab = \Ext_Factory::object('Panel');
         $tab->setName($editWindow->getName() . '_generalTab');
