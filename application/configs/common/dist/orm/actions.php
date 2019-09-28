@@ -28,13 +28,13 @@ return [
     // builder
     'buildAllObjects' => 'buildall',
 
-    'builderLog' => 'log',
-    'dictionary' => 'dictionary',
+    'builderLog' => 'log/',
+    'dictionary' => 'dictionary/',
     'listValidators' => 'listvalidators',
-    'dataViewController' => 'dataview',
-    'connectionsUrl' => 'connections',
+    'dataViewController' => 'dataview/',
+    'connectionsUrl' => 'connections/',
     'listConnections' => 'connectionslist',
-    'importUrl' => 'import',
+    'importUrl' => 'import/',
 
     // crypt
     'encryptData' => 'crypt/encrypt',

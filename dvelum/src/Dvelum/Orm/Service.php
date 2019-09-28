@@ -298,7 +298,7 @@ class Service
                             ->fetchAll();
                     } else {
                         $linkedObject = $fieldObject->getLinkedObject();
-                        if(empty($relationsObject)){
+                        if(empty($linkedObject)){
                             throw new \Exception('Undefined linked object object for field ' . $field);
                         }
                         $linksObject = $this->model((string)$linkedObject)->getStore()->getLinksObjectName();
