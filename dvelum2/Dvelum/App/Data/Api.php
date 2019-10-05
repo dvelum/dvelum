@@ -47,7 +47,7 @@ class Api
 
         $filters = $this->apiRequest->getFilters();
         $permissions = $user->getModuleAcl()->getModulePermissions($request->getObjectName());
-        if($permissions->only_own)
+        if($permissions && $permissions->only_own)
             $filters = array_merge($filters, ['author_id'=>$user->getId()]);
 
         $this->dataQuery = $model->query()
@@ -138,5 +138,13 @@ class Api
     public function setUseApproximateCount(bool $useApproximateCount): void
     {
         $this->useApproximateCount = $useApproximateCount;
+    }
+
+    /**
+     * @return Model\Query
+     */
+    public function getDataQuery(): Model\Query
+    {
+        return $this->dataQuery;
     }
 }

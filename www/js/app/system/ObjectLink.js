@@ -340,6 +340,13 @@ Ext.define('app.objectLink.SelectWindow', {
      */
     setExtraParam: function (name, value) {
         this.extraParams[name] = value;
+    },
+    /**
+     * Get data storage
+     * @return {Ext.data.Store}
+     */
+    getDataStore: function(){
+        return this.dataStore;
     }
 });
 
@@ -355,6 +362,7 @@ Ext.define('app.objectLink.Panel', {
         this.fieldName = this.name;
         this.callParent(arguments);
         this.on('addItemCall', this.showSelectWindow, this);
+        this.on('addAllItemCall', this.selectAllItems, this);
     },
     showSelectWindow: function () {
         var win = Ext.create('app.objectLink.SelectWindow', {
@@ -374,10 +382,31 @@ Ext.define('app.objectLink.Panel', {
         win.show();
         app.checkSize(win);
     },
+    selectAllItems: function(){
+        var win = Ext.create('app.objectLink.SelectWindow', {
+            width: 600,
+            height: 500,
+            selectMode: true,
+            objectName: this.objectName,
+            valueType:this.valueType,
+            controllerUrl: this.controllerUrl + 'linkedlist',
+            title: this.fieldLabel,
+            extraParams: this.extraParams
+        });
+        var store = win.getDataStore();
+        store.setPageSize(0);
+        store.load({
+            scope:this,
+            callback:function(records, operation, success) {
+                this.addRecords(records);
+                this.fireEvent('completeEdit');
+            }
+        });
+    },
     /**
      * Set request param
-     * @param string name
-     * @param string value
+     * @param {string} name
+     * @param {string} value
      * @return void
      */
     setExtraParam: function (name, value) {

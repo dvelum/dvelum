@@ -38,6 +38,7 @@ class Filter
     const NOT_LIKE = 'NOT LIKE';
     const BETWEEN = 'BETWEEN';
     const NOT_BETWEEN = 'NOT BETWEEN';
+    const RAW = 'RAW';
 
     public $type = null;
     public $value = null;
@@ -104,6 +105,9 @@ class Filter
             case self::BETWEEN:
             case self::NOT_BETWEEN:
                 $sql->where($quotedField . ' ' . $this->type . ' ' . $db->quote($this->value[0]) . ' AND ' . $db->quote($this->value[1]));
+                break;
+            case self::RAW:
+                $sql->where($this->value);
                 break;
         }
     }

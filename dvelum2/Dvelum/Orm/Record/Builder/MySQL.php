@@ -509,12 +509,11 @@ class MySQL extends AbstractAdapter
     public function getForeignKeys(string $dbTable)
     {
         $dbConfig = $this->db->getConfig();
-        $sql = $this->db->select()
-            ->from($this->db->quoteIdentifier('information_schema.TABLE_CONSTRAINTS'))
-            ->where('`CONSTRAINT_SCHEMA` =?' , $dbConfig['dbname'])
-            ->where('`TABLE_SCHEMA` =?' , $dbConfig['dbname'])
-            ->where('`TABLE_NAME` =?' , $dbTable)
-            ->where('`CONSTRAINT_TYPE` = "FOREIGN KEY"');
+        $sql = 'SELECT * FROM `information_schema`.`TABLE_CONSTRAINTS`
+            WHERE `CONSTRAINT_SCHEMA` = '.$this->db->quote($dbConfig['dbname']).'
+            AND `TABLE_SCHEMA` =  '.$this->db->quote($dbConfig['dbname']).'
+            AND `TABLE_NAME` =  '.$this->db->quote($dbTable).'
+            AND `CONSTRAINT_TYPE` =  "FOREIGN KEY"';
 
         return $this->db->fetchAll($sql);
     }

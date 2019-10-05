@@ -164,16 +164,41 @@ class Adapter
         $result = $statement->execute();
 
         if ($result instanceof ResultInterface && $result->isQueryResult()) {
-            $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
-            $resultSet->initialize($result);
-            $result = [];
-            foreach ($resultSet as $item){
-                foreach ($item as $v){
-                    $result[] = $v;
-                    break;
+            /*
+             *  Mysqli performance patch
+             */
+            if($this->params['adapter'] === 'Mysqli') {
+                /**
+                 * @var \mysqli_stmt $resource
+                 */
+                $resource = $result->getResource();
+                /**
+                 * @var \mysqli_result $result
+                 */
+                $result = $resource->get_result();
+                if($result){
+                    $result = $result->fetch_all(MYSQLI_NUM);
+                    if(!empty($result)){
+                        $data = [];
+                        foreach ($result as $item){
+                            $data[] = $item[0];
+                        }
+                        return $data;
+                    }
                 }
+                return [];
+            }else {
+                $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
+                $resultSet->initialize($result);
+                $result = [];
+                foreach ($resultSet as $item) {
+                    foreach ($item as $v) {
+                        $result[] = $v;
+                        break;
+                    }
+                }
+                return $result;
             }
-            return $result;
         }
         return [];
     }

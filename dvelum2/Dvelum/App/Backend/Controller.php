@@ -493,7 +493,10 @@ class Controller extends App\Controller
 
         $res->addInlineJs('var developmentMode = '.intval($this->appConfig->get('development')).';');
 
-        $menuAdapterClass = $this->backofficeConfig->get('menu_adapter');
+        if(in_array($this->backofficeConfig->get('theme'),$this->backofficeConfig->get('desktop_themes')))
+            $menuAdapterClass = $this->backofficeConfig->get('desktop_menu_adapter');
+        else
+            $menuAdapterClass = $this->backofficeConfig->get('menu_adapter');
         /**
          * @var $menuAdapter \Dvelum\App\Menu
          */

@@ -254,11 +254,11 @@ class Ext_Config
 		$ftype = $this->_properties->getFtype();
 
         if(strlen($xtype))
-            $result[] = 'xtype:"'.$this->_properties->getXtype().'"';
+            $result[] = '"xtype":"'.$this->_properties->getXtype().'"';
 
 
 		if(strlen($ftype))
-			$result[] = 'ftype:"'.$this->_properties->getFtype().'"'; 
+			$result[] = '"ftype":"'.$this->_properties->getFtype().'"';
 
 		if(empty($properties))
 			return array();
@@ -333,7 +333,7 @@ class Ext_Config
 						break;
 				}
 			}
-			$result[] = $name.":".$val;
+			$result[] = '"'.$name.'"'.":".$val;
 		}
 		return $result;
 	}
