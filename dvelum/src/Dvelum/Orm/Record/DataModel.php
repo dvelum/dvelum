@@ -107,8 +107,16 @@ class DataModel
         $acl = $record->getAcl();
 
         if($acl){
-            if(!$acl->canEdit($record)){
+            if($record->getId() && !$acl->canEdit($record)){
                 $message = ErrorMessage::factory()->cantEdit($record);
+                $record->addErrorMessage($message);
+                if($log){
+                    $log->log(LogLevel::ERROR, $message);
+                }
+                return false;
+            }
+            if(!$record->getId() && !$acl->canCreate($record)){
+                $message = ErrorMessage::factory()->cantCreate($record);
                 $record->addErrorMessage($message);
                 if($log){
                     $log->log(LogLevel::ERROR, $message);

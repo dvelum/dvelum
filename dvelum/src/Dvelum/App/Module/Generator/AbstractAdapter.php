@@ -24,6 +24,7 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\Request;
 use Dvelum\Lang;
 use Dvelum\View;
+use Dvelum\Designer;
 
 abstract class AbstractAdapter implements GeneratorInterface
 {
@@ -84,7 +85,7 @@ abstract class AbstractAdapter implements GeneratorInterface
         return $dir . '/' . 'Controller.php';
     }
 
-    public function addGridMethods(\Designer_Project $project ,  \Ext_Object $grid , $object, $vc = false)
+    public function addGridMethods(Designer\Project $project ,  \Ext_Object $grid , $object, $vc = false)
     {
         $methodsManager =  $project->getMethodManager();
 

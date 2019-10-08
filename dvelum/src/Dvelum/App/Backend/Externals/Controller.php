@@ -320,7 +320,7 @@ class Controller extends App\Backend\Controller
 
         try{
            if($client->download($app, $version)){
-               $this->response->success();
+               $this->response->json(['success'=>true,'msg'=>Lang::lang('externals')->get('package_downloaded')]);
            }else{
                $this->response->error($this->lang->get('CANT_EXEC'));
            }

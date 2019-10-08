@@ -215,51 +215,6 @@ class Model
     }
 
     /**
-     * Get Object Storage
-     * @return Orm\Record\Store
-     * @deprecated
-     */
-    protected function getObjectsStore(): Orm\Record\Store
-    {
-        return $this->getStore();
-    }
-
-    /**
-     * Set Database connector for concrete model
-     * @param Db\Adapter $db
-     */
-    public function setDbConnection(Db\Adapter $db)
-    {
-        $this->db = $db;
-    }
-    /**
-     * Set the adapter of the object store
-     * @param Orm\Record\Store $store
-     */
-    public function setStore(Orm\Record\Store $store)
-    {
-        $this->store = $store;
-    }
-    /**
-     * Set the adapter of the object store
-     * @param Orm\Record\Store $store
-     * @deprecated
-     */
-    public function setObjectsStore(Orm\Record\Store $store)
-    {
-        $this->setStore($store);
-    }
-
-    /**
-     * Set hardcaching time for concrete model
-     * @param integer $time
-     */
-    public function setHardCacheTitme($time)
-    {
-        $this->cacheTime = $time;
-    }
-
-    /**
      * Get Master Db connector
      * return Db\Adapter
      */
@@ -270,10 +225,11 @@ class Model
 
     /**
      * Get connection name
+     * @return string
      */
     public function getDbConnectionName() : string
     {
-        return $this->getObjectConfig()->get('connection');
+        return (string) $this->getObjectConfig()->get('connection');
     }
 
     /**
@@ -569,9 +525,12 @@ class Model
      */
     public function checkUnique(int $recordId, string $fieldName, $fieldValue): bool
     {
-        return !(boolean)$this->dbSlave->fetchOne($this->dbSlave->select()->from($this->table(),
-            array('count' => 'COUNT(*)'))->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' != ?',
-            $recordId)->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?', $fieldValue));
+        return !(boolean)$this->dbSlave->fetchOne(
+            $this->dbSlave->select()
+            ->from($this->table(), ['count' => 'COUNT(*)'])
+            ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' != ?', $recordId)
+            ->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?', $fieldValue)
+        );
     }
 
     /**
@@ -591,20 +550,6 @@ class Model
         } else {
             return $key;
         }
-    }
-
-    /**
-     * Set DB connections manager (since 0.9.1)
-     * @param Db\ManagerInterface $manager
-     * @return void
-     */
-    public function setDbManager(Db\ManagerInterface $manager): void
-    {
-        $conName = $this->lightConfig->get('connection');
-        $this->dbManager = $manager;
-        $this->db = $this->dbManager->getDbConnection($conName);
-        $this->dbSlave = $this->dbManager->getDbConnection($this->lightConfig->get('slave_connection'));
-        $this->refreshTableInfo();
     }
 
     public function refreshTableInfo()
@@ -702,16 +647,11 @@ class Model
     }
 
     /**
-     * @return bool|CacheInterface
+     * @return false|CacheInterface
      */
     public function getCacheAdapter()
     {
         return $this->cache;
-    }
-
-    public function getCacheTime()
-    {
-        return $this->cacheTime;
     }
 
     /**
