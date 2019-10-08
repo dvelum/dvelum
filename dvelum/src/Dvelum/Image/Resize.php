@@ -17,8 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-declare(strict_types=1);
-
 namespace Dvelum\Image;
 
 use Dvelum\File;
@@ -226,7 +224,7 @@ class Resize
         $posX = ($width - $nWidth) / 2;
         $posY = ($height - $nHeight) / 2;
 
-        imagecopyresampled($newImg , $im , $posX, $posY, 0 , 0 , $nWidth , $nHeight , $imgInfo[0] , $imgInfo[1]);
+        imagecopyresampled($newImg , $im , (int) $posX, (int) $posY, 0 , 0 , (int)$nWidth , (int)$nHeight , $imgInfo[0] , $imgInfo[1]);
         imagedestroy($im);
 
         return self::saveImage($newImg , $newImgPath , $imgInfo[2]);

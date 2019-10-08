@@ -1,27 +1,54 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2019  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+declare(strict_types=1);
+
+namespace Dvelum\App\Upload;
+
+use Dvelum\App\Upload\Adapter\AbstractAdapter;
+use Dvelum\App\Upload\Adapter\File;
+use Dvelum\App\Upload\Adapter\Image;
 
 /**
  * File Uploader
  * @author Kirill Egorov 2010
  */
-class Upload
+class Uploader
 {
-    protected $_config;
-    protected $_uploaders;
-    protected $_errors = [];
+    protected $config;
+    protected $uploaders;
+    protected $errors = [];
 
     public function __construct(array $config)
     {
-        $this->_config = $config;
-        $this->_uploaders = [];
+        $this->config = $config;
+        $this->uploaders = [];
     }
 
     /**
      * Auto create dirs for upload
+     * @param string $root
      * @param string $path
-     * @return boolean
+     * @return bool
      */
-    static public function createDirs($root, $path)
+    public function createDirs(string $root, string $path) : bool
     {
         $path = str_replace('//', '/', $root . '/' . $path);
 
@@ -39,11 +66,11 @@ class Upload
     /**
      * Identify file type
      * @param string $extension
-     * @return mixed string / false
+     * @return mixed string | false
      */
-    protected function _identifyType($extension)
+    protected function identifyType($extension)
     {
-        foreach ($this->_config as $k => $v)
+        foreach ($this->config as $k => $v)
             if (in_array($extension, $v['extensions'], true))
                 return $k;
 
@@ -55,17 +82,17 @@ class Upload
      *
      * @property array $data - array of Request::files() items
      * @param string $path
-     * @param boolean $formUpload - optional, default true
-     * @return mixed - uploaded files Info / false on error
+     * @param bool $formUpload - optional, default true
+     * @return array|false - uploaded files Info on error
      */
-    public function start(array $files, $path, $formUpload = true)
+    public function start(array $files, string $path, $formUpload = true)
     {
-        $this->_errors = [];
+        $this->errors = [];
 
         $uploadedFiles = [];
         foreach ($files as $item) {
             if (isset($item['error']) && $item['error']) {
-                $this->_errors[] = 'Server upload error';
+                $this->errors[] = 'Server upload error';
                 continue;
             }
 
@@ -74,20 +101,20 @@ class Upload
 
             $item['ext'] = \Dvelum\File::getExt($item['name']);
             $item['title'] = str_replace($item['ext'], '', $item['name']);
-            $type = $this->_identifyType($item['ext']);
+            $type = $this->identifyType($item['ext']);
 
             if (!$type)
                 continue;
 
             switch ($type) {
                 case 'image' :
-                    if (!isset($this->_uploaders['image'])) {
-                        $this->_uploaders['image'] = new Upload_Image($this->_config['image']);
+                    if (!isset($this->uploaders['image'])) {
+                        $this->uploaders['image'] = new Image($this->config['image']);
                     }
                     /**
-                     * @var Upload_AbstractAdapter $uploader
+                     * @var AbstractAdapter $uploader
                      */
-                    $uploader = $this->_uploaders['image'];
+                    $uploader = $this->uploaders['image'];
 
                     $file = $uploader->upload($item, $path, $formUpload);
 
@@ -102,7 +129,7 @@ class Upload
                         $uploadedFiles[] = $file;
                     } else {
                         if (!empty($uploader->getError())) {
-                            $this->_errors[] = $uploader->getError();
+                            $this->errors[] = $uploader->getError();
                         }
                     }
                     break;
@@ -110,13 +137,13 @@ class Upload
                 case 'audio' :
                 case 'video' :
                 case 'file' :
-                    if (!isset($this->_uploaders['file'])) {
-                        $this->_uploaders['file'] = new Upload_File($this->_config[$type]);
+                    if (!isset($this->uploaders['file'])) {
+                        $this->uploaders['file'] = new File($this->config[$type]);
                     }
                     /**
-                     * @var Upload_AbstractAdapter $uploader
+                     * @var AbstractAdapter $uploader
                      */
-                    $uploader = $this->_uploaders['file'];
+                    $uploader = $this->uploaders['file'];
                     $file = $uploader->upload($item, $path, $formUpload);
 
                     if (!empty($file)) {
@@ -131,7 +158,7 @@ class Upload
                         $uploadedFiles[] = $file;
                     } else {
                         if (!empty($uploader->getError())) {
-                            $this->_errors[] = $uploader->getError();
+                            $this->errors[] = $uploader->getError();
                         }
                     }
                     break;
@@ -145,8 +172,8 @@ class Upload
      * Get upload errors
      * @return array
      */
-    public function getErrors()
+    public function getErrors() : array
     {
-        return $this->_errors;
+        return $this->errors;
     }
 }
