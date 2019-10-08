@@ -93,8 +93,6 @@ class Record implements RecordInterface
         }
     }
 
-
-
     /**
      * @return DataModel
      */

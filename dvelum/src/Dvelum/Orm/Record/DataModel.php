@@ -104,27 +104,6 @@ class DataModel
         if($log)
             $store->setLog($log);
 
-        $acl = $record->getAcl();
-
-        if($acl){
-            if($record->getId() && !$acl->canEdit($record)){
-                $message = ErrorMessage::factory()->cantEdit($record);
-                $record->addErrorMessage($message);
-                if($log){
-                    $log->log(LogLevel::ERROR, $message);
-                }
-                return false;
-            }
-            if(!$record->getId() && !$acl->canCreate($record)){
-                $message = ErrorMessage::factory()->cantCreate($record);
-                $record->addErrorMessage($message);
-                if($log){
-                    $log->log(LogLevel::ERROR, $message);
-                }
-                return false;
-            }
-        }
-
         if($recordConfig->isReadOnly()) {
             $message = ErrorMessage::factory()->readOnly($record);
             $record->addErrorMessage($message);
@@ -250,24 +229,13 @@ class DataModel
         $model = Model::factory($recordName);
         $log = $model->getLogsAdapter();
         $store = $model->getStore();
-        $acl = $record->getAcl();
+
 
         if($recordConfig->hasEncrypted()){
             $ivField = $recordConfig->getIvField();
             $ivData = $record->get($ivField);
             if(empty($ivData)){
                 $record->set($ivField , $recordConfig->getCryptService()->createVector());
-            }
-        }
-
-        if($acl) {
-            if(!$acl->canEdit($record)){
-                $message = ErrorMessage::factory()->cantEdit($record);
-                $record->addErrorMessage($message);
-                if($log){
-                    $log->log(LogLevel::ERROR, $message);
-                }
-                return false;
             }
         }
 
@@ -300,18 +268,6 @@ class DataModel
         $model = Model::factory($recordName);
         $log = $model->getLogsAdapter();
         $store = $model->getStore();
-        $acl = $record->getAcl();
-
-        if($acl) {
-            if(!$acl->canPublish($record)){
-                $message = ErrorMessage::factory()->cantPublish($record);
-                $record->addErrorMessage($message);
-                if($log){
-                    $log->log(LogLevel::ERROR, $message);
-                }
-                return false;
-            }
-        }
 
         if ($log) {
             $store->setLog($log);
@@ -330,6 +286,13 @@ class DataModel
         return $store->unpublish($record, $useTransaction);
     }
 
+    /**
+     * Load record version
+     * @param RecordInterface $record
+     * @param int $vers
+     * @return bool
+     * @throws \Exception
+     */
     public function loadVersion(RecordInterface $record, int $vers) : bool
     {
         $recordName = $record->getName();
@@ -406,6 +369,7 @@ class DataModel
     }
 
     /**
+     * Publish record version
      * @param RecordInterface $record
      * @param int|null $version
      * @param bool $useTransaction
@@ -418,18 +382,7 @@ class DataModel
         $model = Model::factory($recordName);
         $log = $model->getLogsAdapter();
         $store = $model->getStore();
-        $acl = $record->getAcl();
 
-        if($acl) {
-            if(!$acl->canPublish($record)){
-                $message = ErrorMessage::factory()->cantPublish($record);
-                $record->addErrorMessage($message);
-                if($log){
-                    $log->log(LogLevel::ERROR, $message);
-                }
-                return false;
-            }
-        }
 
         if ($log) {
             $store->setLog($log);
@@ -458,6 +411,7 @@ class DataModel
     }
 
     /**
+     * Delete record
      * @param RecordInterface $record
      * @param bool $useTransaction
      * @return bool
@@ -469,18 +423,6 @@ class DataModel
         $model = Model::factory($recordName);
         $log = $model->getLogsAdapter();
         $store = $model->getStore();
-        $acl = $record->getAcl();
-
-        if($acl) {
-            if(!$acl->canDelete($record)){
-                $message = ErrorMessage::factory()->cantDelete($record);
-                $record->addErrorMessage($message);
-                if($log){
-                    $log->log(LogLevel::ERROR, $message);
-                }
-                return false;
-            }
-        }
 
         if ($log) {
             $store->setLog($log);
