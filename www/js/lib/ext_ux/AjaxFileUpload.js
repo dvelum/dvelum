@@ -21,6 +21,8 @@ Ext.define('Ext.ux.form.AjaxFileUploadField', {
     fileQueue:false,
     defaultIcon:'',
     url:'',
+    uploadedIndices: null,
+    uploadChunk: 5,
 
     initComponent:function(){
         this.callParent(arguments);
@@ -111,17 +113,32 @@ Ext.define('Ext.ux.form.AjaxFileUploadField', {
             return;
         }
 
-        Ext.each(me.fileQueue, function(item , index) {
-            me.uploadFile(index);
-        },me);
+        var start = 0, end = this.uploadChunk;
+
+        if (this.uploadedIndices == null) {
+            this.uploadedIndices = [];
+        }
+        if (this.uploadedIndices.length > 0) {
+            start = this.uploadedIndices.length;
+            end = start + this.uploadChunk;
+            if (end > this.fileQueue.length) {
+                end = this.fileQueue.length + 1;
+            }
+        }
+
+        for (var i = start; i < end; i++) {
+            me.uploadFile(i);
+        }
     },
 
     reset:function(){
         this.fileQueue = [];
+        this.uploadedIndices = [];
     },
 
     onFileUploaded:function(fileIndex){
 
+        this.uploadedIndices.push(fileIndex);
         var allDone = true;
 
         Ext.each(this.fileQueue , function(item , index){
@@ -131,7 +148,13 @@ Ext.define('Ext.ux.form.AjaxFileUploadField', {
         },this);
 
         if(allDone){
+            this.uploadedIndices = null;
             this.fireEvent('filesUploaded');
+        } else {
+            if (this.uploadedIndices.length % this.uploadChunk == 0) {
+                this.upload();
+            }
+
         }
     },
     supportFormData:function() {

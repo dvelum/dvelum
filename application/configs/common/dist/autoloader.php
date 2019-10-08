@@ -3,6 +3,7 @@
 return [
     // PSR-0 autoload paths
     'paths' => [
+        './application/controllers',
         './application/classes',
         './dvelum2',
         './dvelum/app',
