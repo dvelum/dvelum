@@ -372,7 +372,7 @@ class Manager
         $this->config->set($id, $modConf);
 
         if (!Config::storage()->save($this->config)) {
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->config->getWrite();
+            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . Config::storage()->getWrite();
             return false;
         }
 
