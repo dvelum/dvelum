@@ -284,12 +284,6 @@ class Config
         );
 
         /*
-         * Set readonly connection
-         */
-        if(!isset($dataLink['slave_connection']) || empty($dataLink['slave_connection']))
-            $dataLink['slave_connection'] = $dataLink['connection'];
-
-        /*
          * Load additional fields for object under revision control
          */
         if(isset($dataLink['rev_control']) && $dataLink['rev_control'])

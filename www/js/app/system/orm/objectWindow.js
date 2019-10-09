@@ -763,37 +763,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 						render:{fn:this.initTooltip,scope:this}
 					}
 				},{
-					xtype:'combobox',
-					name:'slave_connection',
-					fieldLabel:appLang.DB_SLAVE_CONNECTION,
-					queryMode:'local',
-					displayField:'id',
-					forceSelection:true,
-					allowBlank:true,
-					valueField:'id',
-					value:'',
-					store:Ext.create('Ext.data.Store',{
-						fields:[{name:'id' , type:'string'}],
-						autoLoad:true,
-						proxy: {
-							type: 'ajax',
-							url:app.crud.orm.Actions.listConnections,
-							reader: {
-								type: 'json',
-								rootProperty: 'data',
-								idProperty: 'id'
-							}
-						},
-						remoteSort:false,
-						sorters: [{
-							property : 'id',
-							direction: 'ASC'
-						}]
-					}),
-					listeners:{
-						render:{fn:this.initTooltip,scope:this}
-					}
-				},{
 					xtype:'textfield',
 					allowBlank:false,
 					vtype:'alpha',

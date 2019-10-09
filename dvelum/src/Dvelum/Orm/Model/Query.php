@@ -53,7 +53,7 @@ class Query
     {
         $this->table = $model->table();
         $this->model = $model;
-        $this->db = $model->getSlaveDbConnection();
+        $this->db = $model->getDbConnection();
     }
 
     /**

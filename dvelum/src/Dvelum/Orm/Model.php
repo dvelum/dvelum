@@ -63,6 +63,7 @@ class Model
     /**
      * Slave DB connection
      * @var Db\Adapter
+     * @deprecated
      */
     protected $dbSlave;
 
@@ -160,12 +161,9 @@ class Model
         $this->lightConfig = Config\Factory::storage()->get($ormConfig->get('object_configs') . $this->name . '.php', true, false);
 
         $conName = $this->lightConfig->get('connection');
+
         $this->db = $this->dbManager->getDbConnection($conName);
-        if ($this->lightConfig->offsetExists('slave_connection') && !empty($this->lightConfig->get('slave_connection'))) {
-            $this->dbSlave = $this->dbSlave = $this->dbManager->getDbConnection($this->lightConfig->get('slave_connection'));
-        } else {
-            $this->dbSlave = $this->db;
-        }
+        $this->dbSlave = $this->db;
 
         if ($this->lightConfig->get('use_db_prefix')) {
             $this->dbPrefix = $this->dbManager->getDbConfig($conName)->get('prefix');
@@ -230,15 +228,6 @@ class Model
     public function getDbConnectionName() : string
     {
         return (string) $this->getObjectConfig()->get('connection');
-    }
-
-    /**
-     * Get Slave Db Connection
-     * @return Db\Adapter
-     */
-    public function getSlaveDbConnection(): Db\Adapter
-    {
-        return $this->dbSlave;
     }
 
     /**
@@ -403,9 +392,9 @@ class Model
     public function getItemByField(string $fieldName, $value, $fields = '*')
     {
         try{
-            $sql = $this->dbSlave->select()->from($this->table(), $fields);
-            $sql->where($this->dbSlave->quoteIdentifier($fieldName) . ' = ?', $value)->limit(1);
-            return $this->dbSlave->fetchRow($sql);
+            $sql = $this->db->select()->from($this->table(), $fields);
+            $sql->where($this->db->quoteIdentifier($fieldName) . ' = ?', $value)->limit(1);
+            return $this->db->fetchRow($sql);
         }catch (\Exception $e){
             $this->logError($e->getMessage());
             return [];
@@ -435,11 +424,11 @@ class Model
 
         if ($data === false) {
 
-            $sql = $this->dbSlave->select()
+            $sql = $this->db->select()
                 ->from($this->table(), $fields)
-                ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . Utils::listIntegers($ids) . ')');
+                ->where($this->db->quoteIdentifier($this->getPrimaryKey()) . ' IN(' . Utils::listIntegers($ids) . ')');
 
-            $data = $this->dbSlave->fetchAll($sql);
+            $data = $this->db->fetchAll($sql);
 
             if (!$data) {
                 $data = [];
@@ -525,11 +514,11 @@ class Model
      */
     public function checkUnique(int $recordId, string $fieldName, $fieldValue): bool
     {
-        return !(boolean)$this->dbSlave->fetchOne(
-            $this->dbSlave->select()
+        return !(boolean)$this->db->fetchOne(
+            $this->db->select()
             ->from($this->table(), ['count' => 'COUNT(*)'])
-            ->where($this->dbSlave->quoteIdentifier($this->getPrimaryKey()) . ' != ?', $recordId)
-            ->where($this->dbSlave->quoteIdentifier($fieldName) . ' =?', $fieldValue)
+            ->where($this->db->quoteIdentifier($this->getPrimaryKey()) . ' != ?', $recordId)
+            ->where($this->db->quoteIdentifier($fieldName) . ' =?', $fieldValue)
         );
     }
 

@@ -187,6 +187,5 @@
   'primary_key' => 'id',
   'use_db_prefix' => true,
   'acl' => false,
-  'slave_connection' => 'default',
   'distributed' => false,
 ); 

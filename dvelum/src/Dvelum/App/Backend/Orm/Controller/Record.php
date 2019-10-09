@@ -408,7 +408,7 @@ class Record extends Controller
         $pimaryKey = $this->request->post('primary_key', 'string', 'id');
 
         $connection = $this->request->post('connection', 'string', '');
-        $slaveConnection = $this->request->post('slave_connection', 'string', '');
+
         $readonly = $this->request->post('readonly', 'boolean', false);
         $locked = $this->request->post('locked', 'boolean', false);
 
@@ -430,9 +430,9 @@ class Record extends Controller
         $dataObject = $this->request->post('parent_object', 'string', '');
         $parentObject = $this->request->post('data_object', 'string', '');
 
-        $reqStrings = array('name', 'title', 'table', 'engine', 'connection');
-        $errors = array();
-        $data = array();
+        $reqStrings = ['name', 'title', 'table', 'engine', 'connection'];
+        $errors = [];
+        $data = [];
 
 
         foreach ($reqStrings as $v) {
@@ -465,7 +465,6 @@ class Record extends Controller
         $data['locked'] = $locked;
         $data['primary_key'] = $pimaryKey;
         $data['use_db_prefix'] = $usePrefix;
-        $data['slave_connection'] = $slaveConnection;
         $data['connection'] = $connection;
         $data['log_detalization'] = $detalization;
         $data['distributed'] = $distributed;

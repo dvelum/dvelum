@@ -65,12 +65,12 @@ class Kerberos extends AbstractAdapter
 
         $principal = $login . '@' . $realm;
 
-        $sql = Model::factory('User')->getSlaveDbConnection()->select()
+        $sql = Model::factory('User')->getDbConnection()->select()
             ->from(Model::factory('User')->table())
             ->where('`login` =?', $login)
             ->where('`enabled` = 1');
 
-        $userData = Model::factory('User')->getSlaveDbConnection()->fetchRow($sql);
+        $userData = Model::factory('User')->getDbConnection()->fetchRow($sql);
         if (!$userData) {
             return false;
         }
