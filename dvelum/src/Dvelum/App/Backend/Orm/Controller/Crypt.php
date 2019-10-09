@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Controller;
+use Dvelum\BackgroundTask\Manager;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Store\Factory;
@@ -68,21 +69,20 @@ class Crypt extends Controller
             //$objectModel->getDbConnection()->getProfiler()->setEnabled(false);
        // }
 
-        $logger =  new \Bgtask_Log_File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
-
-        $bgStorage = new \Bgtask_Storage_Orm($taskModel , $signalModel);
-        $tm = \Bgtask_Manager::getInstance();
+        $logger =  new \Dvelum\BackgroundTask\Log\File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
+        $bgStorage = new  \Dvelum\BackgroundTask\Storage\Orm($taskModel , $signalModel);
+        $tm = Manager::factory();
         $tm->setStorage($bgStorage);
         $tm->setLogger($logger);
 
         // Start encryption task
         $tm->launch(
-            \Bgtask_Manager::LAUNCHER_SIMPLE,
-            'Task_Orm_Decrypt' ,
-            array(
+            Manager::LAUNCHER_SIMPLE,
+            '\\Dvelum\\App\\Task\\Orm\\Decrypt' ,
+            [
                 'object'=>$object,
                 'session_container'=>$container
-            )
+            ]
         );
     }
 
@@ -115,21 +115,20 @@ class Crypt extends Controller
 //            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
       //  }
 
-        $logger =  new \Bgtask_Log_File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
-
-        $bgStorage = new \Bgtask_Storage_Orm($taskModel , $signalModel);
-        $tm = \Bgtask_Manager::getInstance();
+        $logger =  new \Dvelum\BackgroundTask\Log\File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
+        $bgStorage = new \Dvelum\BackgroundTask\Storage\Orm($taskModel , $signalModel);
+        $tm = Manager::factory();
         $tm->setStorage($bgStorage);
         $tm->setLogger($logger);
 
         // Start encryption task
         $tm->launch(
-            \Bgtask_Manager::LAUNCHER_SIMPLE,
-            'Task_Orm_Encrypt' ,
-            array(
+            Manager::LAUNCHER_SIMPLE,
+            '\\Dvelum\\App\\Task\\Orm\\Encrypt' ,
+             [
                 'object'=>$object,
                 'session_container'=>$container
-            )
+             ]
         );
     }
 

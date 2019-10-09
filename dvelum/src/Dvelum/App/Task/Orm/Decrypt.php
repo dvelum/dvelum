@@ -1,11 +1,17 @@
 <?php
+namespace Dvelum\App\Task\Orm;
+
+use Dvelum\BackgroundTask\AbstractTask;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
-use Dvelum\Config;
 use Dvelum\Store\Factory;
 use Dvelum\Lang;
 
-class Task_Orm_Decrypt extends Bgtask_Abstract
+/**
+ * Class Decrypt
+ * @package Dvelum\App\Task\Orm
+ */
+class Decrypt extends AbstractTask
 {
     protected $buckedSize = 20;
 
@@ -16,7 +22,7 @@ class Task_Orm_Decrypt extends Bgtask_Abstract
     public function getDescription()
     {
         $lang = Lang::lang();
-        return $lang->get('DECRYPT_DATA') . ': ' . $this->_config['object'];
+        return $lang->get('DECRYPT_DATA') . ': ' . $this->config['object'];
     }
 
     public function goBackground()
@@ -25,7 +31,7 @@ class Task_Orm_Decrypt extends Bgtask_Abstract
         ini_set('ignore_user_abort', 'On');
         session_write_close();
 
-        echo json_encode(array('success' => true));
+        echo json_encode(['success' => true]);
         echo ob_get_clean();
         flush();
         if (function_exists('fastcgi_finish_request')) {
@@ -40,14 +46,14 @@ class Task_Orm_Decrypt extends Bgtask_Abstract
      */
     public function run()
     {
-        $object = $this->_config['object'];
-        $container = $this->_config['session_container'];
+        $object = $this->config['object'];
+        $container = $this->config['session_container'];
 
         /*
          * Save task ID into session for UI
          */
         $session = Factory::get(Factory::SESSION);
-        $session->set($container , $this->_pid);
+        $session->set($container , $this->pid);
         $this->goBackground();
 
         $objectConfig = Orm\Record\Config::factory($object);
@@ -57,9 +63,9 @@ class Task_Orm_Decrypt extends Bgtask_Abstract
         if(!$objectConfig->hasEncrypted())
             $this->finish();
 
-        $filter = array(
+        $filter = [
             $ivField=> new \Dvelum\Db\Select\Filter($ivField , false , \Dvelum\Db\Select\Filter::NOT_NULL)
-        );
+        ];
 
         $model = Model::factory($object);
         $count = Model::factory($object)->query()->filters($filter)->getCount();
@@ -69,7 +75,7 @@ class Task_Orm_Decrypt extends Bgtask_Abstract
         if(!$count)
             $this->finish();
 
-        $data = $model->getList(array('limit'=>$this->buckedSize) , $filter, array($primaryKey));
+        $data = $model->query()->params(['limit'=>$this->buckedSize])->filters($filter)->fields([$primaryKey])->fetchAll();
 
         $encryptedFields = $objectConfig->getEncryptedFields();
 
@@ -102,8 +108,7 @@ class Task_Orm_Decrypt extends Bgtask_Abstract
             $this->incrementCompleted($count);
             $this->updateState();
             $this->processSignals();
-
-            $data = $model->getList(array('limit'=>$this->buckedSize) , $filter , array($primaryKey));
+            $data = $model->query()->params(['limit'=>$this->buckedSize])->filters($filter)->fields([$primaryKey])->fetchAll();
         }
         $this->finish();
     }

@@ -93,15 +93,6 @@ class Record extends Controller
 
         $objectConfig = Orm\Record\Config::factory($name);
 
-        // Check ACL permissions
-        $acl = $objectConfig->getAcl();
-        if ($acl) {
-            if (!$acl->can(Orm\Record\Acl::ACCESS_CREATE, $name) || !$acl->can(Orm\Record\Acl::ACCESS_VIEW, $name)) {
-                $this->response->error($this->lang->get('ACL_ACCESS_DENIED'));
-                return;
-            }
-        }
-
         try {
             /**
              * @var Orm\Record\Config $obj

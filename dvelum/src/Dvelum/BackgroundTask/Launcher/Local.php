@@ -16,12 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+namespace Dvelum\BackgroundTask\Launcher;
+use Dvelum\BackgroundTask\Launcher;
 /**
  * Task launcher
  * @package Bgtask
  */
-abstract class Bgtask_Launcher_Local extends Bgtask_Launcher
+abstract class Local extends Launcher
 {
 	public function __construct()
 	{

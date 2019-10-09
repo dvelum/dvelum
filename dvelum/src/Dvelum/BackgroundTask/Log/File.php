@@ -1,14 +1,17 @@
 <?php
-class Bgtask_Log_File extends Bgtask_Log
+namespace Dvelum\BackgroundTask\Log;
+use Dvelum\BackgroundTask\Log;
+
+class File extends Log
 {
-	protected $_file;
+	protected $file;
 	
 	/**
 	 * @param string $file - logfile path
 	 */
 	public function __construct($file)
 	{
-		$this->_file = $file;
+		$this->file = $file;
 	}
 	
 	/**
@@ -17,6 +20,6 @@ class Bgtask_Log_File extends Bgtask_Log
 	 */
 	public function log($message){
 		$message = '['.date('d.m.Y H:i:s') . '] '. $message . "\n";
-		file_put_contents($this->_file, $message , FILE_APPEND);
+		file_put_contents($this->file, $message , FILE_APPEND);
 	}
 }

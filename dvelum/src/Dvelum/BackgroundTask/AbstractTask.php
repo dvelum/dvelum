@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+namespace Dvelum\BackgroundTask;
 /**
  * An abstract class for implementing background tasks.
  * @package Bgtask
  */
-abstract class Bgtask_Abstract
+abstract class AbstractTask
 {
 	const SIGNAL_SLEEP = 1;
 	const SIGNAL_CONTINUE = 2;
@@ -34,46 +34,49 @@ abstract class Bgtask_Abstract
 	const STATUS_FINISHED = 4;
 	const STATUS_ERROR = 5;
 
-	protected $_logger = null;
+    /**
+     * @var Log|null
+     */
+	protected $logger = null;
 	/**
 	 * Task PID
 	 * @var integer
 	 */
-	protected $_pid;
+	protected $pid;
 	/**
 	 * Sleep state
 	 * @var boolean
 	 */
-	protected $_sleepFlag = false;
+	protected $sleepFlag = false;
 	/**
 	 * Sleep interval in seconds
 	 * @var integer
 	 */
-	protected $_sleepInterval = 3;
+	protected $sleepInterval = 3;
 	/**
 	 * Operation count
 	 * @var integer
 	 */
-	protected $_opTotal = 0;
+	protected $opTotal = 0;
 	/**
 	 * Finished operations
 	 * @var integer
 	 */
-	protected $_opFinished = 0;
+	protected $opFinished = 0;
 	/**
 	 * Status
 	 * @var integer
 	 */
-	protected $_status = 0;
+	protected $status = 0;
 	/**
 	 * Task config
 	 * @var array
 	 */
-	protected $_config;
+	protected $config;
 	/**
-	 * @var Bgtask_Manager
+	 * @var Manager
 	 */
-	protected $_tm;
+	protected $tm;
 
 	/**
 	 * Constructor, receives task settings
@@ -81,10 +84,10 @@ abstract class Bgtask_Abstract
 	 */
 	public function __construct(array $config)
 	{
-		$this->_config = $config;
-		$this->_tm = Bgtask_Manager::getInstance();
-		$this->_logger = $this->_tm->getLogger();
-		$this->_init();
+		$this->config = $config;
+		$this->tm = Manager::factory();
+		$this->logger = $this->tm->getLogger();
+		$this->init();
 		$this->run();
 	}
 
@@ -96,46 +99,46 @@ abstract class Bgtask_Abstract
 	 */
 	abstract public function getDescription();
 
-	protected function _init()
+	protected function init()
 	{
-		$this->_pid = $this->_tm->addTaskRecord($this->getDescription());
-		$this->_status = self::STATUS_RUN;
-		$this->_tm->setStarted($this->_pid);
-		if(!is_null($this->_logger))
-			$this->_logger->log('start');
+		$this->pid = $this->tm->addTaskRecord($this->getDescription());
+		$this->status = self::STATUS_RUN;
+		$this->tm->setStarted($this->pid);
+		if(!is_null($this->logger))
+			$this->logger->log('start');
 	}
 
 	/**
 	 * Check if task was killed by task manager
 	 */
-	protected function _isLive()
+	protected function isLive()
 	{
-		if(!$this->_tm->isLive($this->_pid))
+		if(!$this->tm->isLive($this->pid))
 			$this->terminate();
 	}
 
 	/**
 	 * Sleep
 	 */
-	protected function _sleep()
+	protected function sleep()
 	{
-		$this->_status = self::STATUS_SLEEP;
-		$this->_sleepFlag = true;
+		$this->status = self::STATUS_SLEEP;
+		$this->sleepFlag = true;
 		$this->updateState();
-		if(!is_null($this->_logger))
-			$this->_logger->log('sleep');
+		if(!is_null($this->logger))
+			$this->logger->log('sleep');
 	}
 
 	/**
 	 * Continue
 	 */
-	protected function _continue()
+	protected function continue()
 	{
-		$this->_sleepFlag = false;
-		$this->_status = self::STATUS_RUN;
+		$this->sleepFlag = false;
+		$this->status = self::STATUS_RUN;
 		$this->updateState();
-		if(!is_null($this->_logger))
-			$this->_logger->log('continue');
+		if(!is_null($this->logger))
+			$this->logger->log('continue');
 	}
 
 	/**
@@ -143,8 +146,8 @@ abstract class Bgtask_Abstract
 	 */
 	public function terminate()
 	{
-		if(!is_null($this->_logger))
-			$this->_logger->log('terminated');
+		if(!is_null($this->logger))
+			$this->logger->log('terminated');
 		exit();
 	}
 
@@ -156,12 +159,12 @@ abstract class Bgtask_Abstract
 	{
 		$this->updateState();
 
-		$manager = $this->_tm;
-		$manager->setFinished($this->_pid);
-		$manager->clearSignals($this->_pid);
+		$manager = $this->tm;
+		$manager->setFinished($this->pid);
+		$manager->clearSignals($this->pid);
 
-		if(!is_null($this->_logger))
-			$this->_logger->log('finish');
+		if(!is_null($this->logger))
+			$this->logger->log('finish');
 
 		exit();
 	}
@@ -174,12 +177,12 @@ abstract class Bgtask_Abstract
 	{
         $this->updateState();
 
-		$manager = $this->_tm;
-		$manager->setError($this->_pid);
-		$manager->clearSignals($this->_pid);
+		$manager = $this->tm;
+		$manager->setError($this->pid);
+		$manager->clearSignals($this->pid);
 
-		if(!is_null($this->_logger))
-			$this->_logger->log('error '. $message);
+		if(!is_null($this->logger))
+			$this->logger->log('error '. $message);
 
 		exit();
 	}
@@ -190,8 +193,8 @@ abstract class Bgtask_Abstract
 	 */
 	public function log($message)
 	{
-		if(!is_null($this->_logger))
-			$this->_logger->log($message);
+		if(!is_null($this->logger))
+			$this->logger->log($message);
 	}
 
 	/**
@@ -199,13 +202,13 @@ abstract class Bgtask_Abstract
 	 */
 	public function stop()
 	{
-		$this->_sleepFlag = false;
+		$this->sleepFlag = false;
 		$this->updateState();
-		$this->_tm->setStoped($this->_pid);
-		$this->_tm->clearSignals($this->_pid);
+		$this->tm->setStoped($this->pid);
+		$this->tm->clearSignals($this->pid);
 
-		if(!is_null($this->_logger))
-			$this->_logger->log('stop');
+		if(!is_null($this->logger))
+			$this->logger->log('stop');
 
 		exit();
 	}
@@ -216,7 +219,7 @@ abstract class Bgtask_Abstract
 	 */
 	public function updateState()
 	{
-		$this->_tm->updateState($this->_pid , $this->_opTotal , $this->_opFinished , $this->_status);
+		$this->tm->updateState($this->pid , $this->opTotal , $this->opFinished , $this->status);
 	}
 
    /**
@@ -225,9 +228,9 @@ abstract class Bgtask_Abstract
     */
 	public function processSignals()
 	{
-		$this->_isLive();
+		$this->isLive();
 
-		$sig = $this->_tm->getSignals($this->_pid , true);
+		$sig = $this->tm->getSignals($this->pid , true);
 
 		if(empty($sig))
 			return;
@@ -237,27 +240,28 @@ abstract class Bgtask_Abstract
 			switch($signal)
 			{
 				case self::SIGNAL_SLEEP :
-					$this->_sleep();
+					$this->sleep();
 					break;
 				case self::SIGNAL_CONTINUE :
-					$this->_continue();
+					$this->continue();
 					break;
 				case self::SIGNAL_STOP :
 					$this->stop();
 			}
 		}
-		if($this->_sleepFlag)
-			$this->_wait();
+		if($this->sleepFlag){
+            $this->wait();
+        }
 	}
 
    /**
 	* Wait for signals
 	*/
-	protected function _wait()
+	protected function wait()
 	{
-		while($this->_sleepFlag)
+		while($this->sleepFlag)
 		{
-			sleep($this->_sleepInterval);
+			sleep($this->sleepInterval);
 			$this->processSignals();
 		}
 	}
@@ -270,12 +274,12 @@ abstract class Bgtask_Abstract
 
 	/**
 	 * Set up an adapter for logger interface
-	 * @param Bgtask_Log $logger
+	 * @param Log $logger
 	 * @return void
 	 */
-	public function setLogger(Bgtask_Log $logger)
+	public function setLogger(Log $logger)
 	{
-		$this->_logger = $logger;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -284,7 +288,7 @@ abstract class Bgtask_Abstract
 	 */
 	public function setTotalCount($count)
 	{
-		$this->_opTotal = $count;
+		$this->opTotal = $count;
 	}
 
 	/**
@@ -293,7 +297,7 @@ abstract class Bgtask_Abstract
 	 */
 	public function setCompletedCount($count)
 	{
-		$this->_opFinished = $count;
+		$this->opFinished = $count;
 	}
 
 	/**
@@ -302,6 +306,6 @@ abstract class Bgtask_Abstract
 	 */
 	public function incrementCompleted($count = 1)
 	{
-		$this->_opFinished+= $count;
+		$this->opFinished+= $count;
 	}
 }

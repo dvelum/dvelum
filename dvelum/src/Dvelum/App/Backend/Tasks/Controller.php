@@ -22,6 +22,9 @@ namespace Dvelum\App\Backend\Tasks;
 
 use Dvelum\App\Backend;
 
+use Dvelum\BackgroundTask\AbstractTask;
+use Dvelum\BackgroundTask\Log\File;
+use Dvelum\BackgroundTask\Manager;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
@@ -35,7 +38,7 @@ use Dvelum\Service;
 class Controller extends Backend\Controller
 {
     /**
-     * @var \Bgtask_Manager
+     * @var Manager
      */
     protected $tManager;
 
@@ -43,9 +46,9 @@ class Controller extends Backend\Controller
     {
         parent::__construct($request, $response);
 
-        $bgStorage = new \Bgtask_Storage_Orm(Model::factory('bgtask') , Model::factory('Bgtask_Signal'));
-        $logger = new \Bgtask_Log_File('./.log/test'.date('YmdHis').'.txt');
-        $this->tManager = \Bgtask_Manager::getInstance();
+        $bgStorage = new  \Dvelum\BackgroundTask\Storage\Orm(Model::factory('bgtask') , Model::factory('Bgtask_Signal'));
+        $logger = new File('./.log/test'.date('YmdHis').'.txt');
+        $this->tManager = Manager::factory();
         $this->tManager->setStorage($bgStorage);
         $this->tManager->setLogger($logger);
     }
@@ -94,7 +97,7 @@ class Controller extends Backend\Controller
                 if($dict->isValidKey($v['status']))
                     $v['status'] = $dict->getValue($v['status']);
 
-                $finish = strtotime($v['time_finished']);
+                $finish = strtotime((string)$v['time_finished']);
                 if($finish<=0){
                     $finish = time();
                 }
@@ -120,7 +123,7 @@ class Controller extends Backend\Controller
         /**
          * @var \Dvelum\Orm\Service $service
          */
-        $this->tManager->launch(\Bgtask_Manager::LAUNCHER_JSON, 'Task_Test' , []);
+        $this->tManager->launch(Manager::LAUNCHER_JSON, '\\Dvelum\\App\\Task\\Test' , []);
     }
 
     /**
@@ -163,7 +166,7 @@ class Controller extends Backend\Controller
             return;
         }
 
-        if($this->tManager->signal($pid, \Bgtask_Abstract::SIGNAL_SLEEP))
+        if($this->tManager->signal($pid, AbstractTask::SIGNAL_SLEEP))
             $this->response->success();
         else
            $this->response->error($this->lang->get('CANT_EXEC'));
@@ -184,7 +187,7 @@ class Controller extends Backend\Controller
             return;
         }
 
-        if($this->tManager->signal($pid, \Bgtask_Abstract::SIGNAL_CONTINUE))
+        if($this->tManager->signal($pid, AbstractTask::SIGNAL_CONTINUE))
             $this->response->success();
         else
            $this->response->error($this->lang->get('CANT_EXEC'));
@@ -205,7 +208,7 @@ class Controller extends Backend\Controller
             return;
         }
 
-        if($this->tManager->signal($pid, \Bgtask_Abstract::SIGNAL_STOP))
+        if($this->tManager->signal($pid, AbstractTask::SIGNAL_STOP))
             $this->response->success();
         else
            $this->response->error($this->lang->get('CANT_EXEC'));

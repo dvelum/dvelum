@@ -2,7 +2,7 @@
 /*
  * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
  * Copyright (C) 2011-2012  Kirill A Egorov
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-abstract class Bgtask_Launcher
+namespace Dvelum\BackgroundTask\Launcher\Local;
+use Dvelum\BackgroundTask\Launcher\Local;
+class Silent extends Local
 {
-	/**
-	 * Launch task
-	 * @param string $task  - task class name
-	 * @param array $config - task config
-	 * @return boolean
-	 */
-	abstract public function launch($task , array $config);
+	public function launch($task , array $config)
+	{
+		$task = new $task($config);
+		exit();
+	}
 }

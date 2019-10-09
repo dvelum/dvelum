@@ -16,12 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+namespace Dvelum\BackgroundTask\Launcher\Local;
+use Dvelum\BackgroundTask\Launcher\Local;
 
-class Bgtask_Launcher_Local_Json extends Bgtask_Launcher_Local
+class Json extends Local
 {
 	public function launch($task , array $config)
 	{		
-		echo json_encode(array('success'=>true));	
+		echo json_encode(['success'=>true]);
 		echo ob_get_clean();
 		flush();	
 		ob_start();

@@ -1,11 +1,18 @@
 <?php
+namespace Dvelum\App\Task\Orm;
+
+use Dvelum\BackgroundTask\AbstractTask;
 
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Store\Factory;
 use Dvelum\Lang;
 
-class Task_Orm_Encrypt extends Bgtask_Abstract
+/**
+ * Class Encrypt
+ * @package Dvelum\App\Task\Orm
+ */
+class Encrypt extends AbstractTask
 {
     protected $buckedSize = 20;
     /**
@@ -15,7 +22,7 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
     public function getDescription()
     {
         $lang = Lang::lang();
-        return $lang->get('ENCRYPT_DATA') . ': ' .  $this->_config['object'];
+        return $lang->get('ENCRYPT_DATA') . ': ' .  $this->config['object'];
     }
 
     public function goBackground()
@@ -24,7 +31,7 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
         ini_set('ignore_user_abort' ,'On');
         session_write_close();
 
-        echo json_encode(array('success'=>true));
+        echo json_encode(['success'=>true]);
         echo ob_get_clean();
         flush();
         if(function_exists('fastcgi_finish_request')){
@@ -38,14 +45,14 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
      */
     public function run()
     {
-        $object = $this->_config['object'];
-        $container = $this->_config['session_container'];
+        $object = $this->config['object'];
+        $container = $this->config['session_container'];
 
         /*
          * Save task ID into session for UI
          */
         $session = Factory::get(Factory::SESSION);
-        $session->set($container , $this->_pid);
+        $session->set($container , $this->pid);
         $this->goBackground();
 
         $objectConfig = Orm\Record\Config::factory($object);
@@ -59,8 +66,8 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
         if(!$count)
             $this->finish();
 
-        $ignore = array();
-        $data = $model->getList(array('limit'=>$this->buckedSize) , array($ivField=>null) , array($primaryKey));
+        $ignore = [];
+        $data = $model->query()->params(['limit'=>$this->buckedSize])->filters([$ivField=>null])->fields([$primaryKey])->fetchAll();
 
         while(!empty($data))
         {
@@ -94,7 +101,7 @@ class Task_Orm_Encrypt extends Bgtask_Abstract
                     $ivField => null
                 );
             }
-            $data = $model->getList(array('limit'=>$this->buckedSize) , $filters , array($primaryKey));
+            $data = $model->query()->params(['limit'=>$this->buckedSize])->filters($filters)->fields([$primaryKey])->fetchAll();
         }
         $this->finish();
     }

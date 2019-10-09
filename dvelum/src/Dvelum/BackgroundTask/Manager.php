@@ -17,65 +17,73 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace Dvelum\BackgroundTask;
+
 /**
- * Class Bgtask_Manager is used for managing background tasks, sending signals to background processes, collecting statistics.
+ * Class is used for managing background tasks, sending signals to background processes, collecting statistics.
  * @author Kirill A Egorov 2011
  * @package Bgtask
  */
-class Bgtask_Manager
+class Manager
 {
 
-	const LAUNCHER_HTTP = 'Bgtask_Launcher_Local_Http';
-	const LAUNCHER_JSON = 'Bgtask_Launcher_Local_Json';
-	const LAUNCHER_SILENT = 'Bgtask_Launcher_Local_Silent';
-    const LAUNCHER_SIMPLE = 'Bgtask_Launcher_Simple';
+    const LAUNCHER_HTTP = '\\Dvelum\\BackgroundTask\\Launcher\\Local\\Http';
+    const LAUNCHER_JSON = '\\Dvelum\\BackgroundTask\\Launcher\\Local\\Json';
+    const LAUNCHER_SILENT = '\\Dvelum\\BackgroundTask\\Launcher\\Local\\Silent';
+    const LAUNCHER_SIMPLE = '\\Dvelum\\BackgroundTask\\Launcher\\Simple';
 
-	const STORAGE_ORM = 'Bgtask_Storage_Orm';
+    const STORAGE_ORM = '\\Dvelum\\BackgroundTask\\Storage\\Orm';
 
-    static protected $_instance = null;
+    static protected $instance = null;
 
     /**
      * Instantiate an object
-     * @return Bgtask_Manager
+     * @return Manager
      */
-    static public function getInstance()
+    static public function factory(): Manager
     {
-        if(is_null(self::$_instance))
-            self::$_instance = new self;
-        return  self::$_instance;
+        if (is_null(self::$instance)) {
+            self::$instance = new self;
+        }
+        return self::$instance;
     }
 
-    protected function __construct(){}
-    protected function __clone(){}
+    protected function __construct()
+    {
+    }
+
+    protected function __clone()
+    {
+    }
 
     /**
      * Task Storage
-     * @var \Bgtask_Storage
+     * @var Storage
      */
-    protected $_storage = null;
+    protected $storage = null;
 
     /**
      * Task activity logger
-     * @var Bgtask_Log
+     * @var Log
      */
-    protected $_logger = null;
+    protected $logger = null;
 
     /**
      * Set up storage adapter for background tasks
-     * @param Bgtask_Storage $storage
+     * @param Storage $storage
      */
-    public function setStorage(Bgtask_Storage $storage)
+    public function setStorage(Storage $storage)
     {
-        $this->_storage = $storage;
+        $this->storage = $storage;
     }
 
     /**
      * Set up logger adapter
-     * @param Bgtask_Log $logger
+     * @param Log $logger
      */
-    public function setLogger(Bgtask_Log $logger)
+    public function setLogger(Log $logger)
     {
-    	$this->_logger = $logger;
+        $this->logger = $logger;
     }
 
     /**
@@ -83,7 +91,7 @@ class Bgtask_Manager
      */
     public function getLogger()
     {
-    	return $this->_logger;
+        return $this->logger;
     }
 
     /**
@@ -92,13 +100,16 @@ class Bgtask_Manager
      * @param string $task - task object class name
      * @param array $config
      */
-    public function launch($launcher , $task , array $config)
+    public function launch($launcher, $task, array $config)
     {
-        if(!class_exists($launcher))
-            trigger_error('Invalid Task launcher '.$launcher);
-
+        if (!class_exists($launcher)) {
+            trigger_error('Invalid Task launcher ' . $launcher);
+        }
+        /**
+         * @var Launcher $launcher
+         */
         $launcher = new $launcher;
-        $launcher->launch($task , $config);
+        $launcher->launch($task, $config);
     }
 
     /**
@@ -107,7 +118,7 @@ class Bgtask_Manager
      */
     public function getList()
     {
-        return $this->_storage->getList();
+        return $this->storage->getList();
     }
 
     /**
@@ -117,7 +128,7 @@ class Bgtask_Manager
      */
     public function get($pid)
     {
-        return $this->_storage->get($pid);
+        return $this->storage->get($pid);
     }
 
     /**
@@ -126,9 +137,9 @@ class Bgtask_Manager
      * @param integer $signal - const
      * @return bool
      */
-    public function signal($pid , $signal)
+    public function signal($pid, $signal)
     {
-        return $this->_storage->signal($pid, $signal);
+        return $this->storage->signal($pid, $signal);
     }
 
     /**
@@ -137,9 +148,9 @@ class Bgtask_Manager
      * @param array $config
      * @return void
      */
-    public function setConfig($pid , array $config)
+    public function setConfig($pid, array $config)
     {
-        $this->_storage->setConfig($pid, $config);
+        $this->storage->setConfig($pid, $config);
     }
 
     /**
@@ -149,7 +160,7 @@ class Bgtask_Manager
      */
     public function getConfig($pid)
     {
-        return $this->_storage->getConfig($pid);
+        return $this->storage->getConfig($pid);
     }
 
     /**
@@ -157,10 +168,10 @@ class Bgtask_Manager
      * @param integer $pid
      * @return boolean
      */
-     public function kill($pid)
-     {
-         return $this->_storage->kill($pid);
-     }
+    public function kill($pid)
+    {
+        return $this->storage->kill($pid);
+    }
 
     /**
      * et signals for a certain task by its pid
@@ -168,9 +179,9 @@ class Bgtask_Manager
      * @param boolean $clean - remove signals after reading
      * @return array();
      */
-    public function getSignals($pid , $clean = false)
+    public function getSignals($pid, $clean = false)
     {
-        return $this->_storage->getSignals($pid , $clean);
+        return $this->storage->getSignals($pid, $clean);
     }
 
     /**
@@ -179,23 +190,23 @@ class Bgtask_Manager
      * @param array $sigId - optional
      * @return array
      */
-    public function clearSignals($pid , $sigId = false)
+    public function clearSignals($pid, $sigId = false)
     {
-        return $this->_storage->clearSignals($pid , $sigId);
+        return $this->storage->clearSignals($pid, $sigId);
     }
 
     /**
      * Update task status
      * @param integer $pid
-     * @param integer $opTotal  - expected operations count
-     * @param integer $opFinished  - operations finished
+     * @param integer $opTotal - expected operations count
+     * @param integer $opFinished - operations finished
      * @param integer $status - status constant
      */
-    public function updateState($pid , $opTotal , $opFinished , $status)
+    public function updateState($pid, $opTotal, $opFinished, $status)
     {
-    	$memoryPeak = memory_get_peak_usage();
-    	$memoryAllocated = memory_get_usage();
-    	$this->_storage->updateState($pid , $opTotal , $opFinished , $status, $memoryPeak , $memoryAllocated);
+        $memoryPeak = memory_get_peak_usage();
+        $memoryAllocated = memory_get_usage();
+        $this->storage->updateState($pid, $opTotal, $opFinished, $status, $memoryPeak, $memoryAllocated);
     }
 
     /**
@@ -205,7 +216,7 @@ class Bgtask_Manager
      */
     public function isLive($pid)
     {
-    	return $this->_storage->isLive($pid);
+        return $this->storage->isLive($pid);
     }
 
     /**
@@ -214,7 +225,7 @@ class Bgtask_Manager
      */
     public function setFinished($pid)
     {
-    	return $this->_storage->setFinished($pid, date('Y-m-d H:i:s'));
+        return $this->storage->setFinished($pid, date('Y-m-d H:i:s'));
     }
 
     /**
@@ -223,16 +234,16 @@ class Bgtask_Manager
      */
     public function setStoped($pid)
     {
-    	return $this->_storage->setStoped($pid, date('Y-m-d H:i:s'));
+        return $this->storage->setStoped($pid, date('Y-m-d H:i:s'));
     }
 
- 	/**
+    /**
      * Define error when running a task
      * @param integer $pid
      */
     public function setError($pid)
     {
-    	return $this->_storage->setError($pid, date('Y-m-d H:i:s'));
+        return $this->storage->setError($pid, date('Y-m-d H:i:s'));
     }
 
     /**
@@ -241,7 +252,7 @@ class Bgtask_Manager
      */
     public function setStarted($pid)
     {
-    	return $this->_storage->setStarted($pid, date('Y-m-d H:i:s'));
+        return $this->storage->setStarted($pid, date('Y-m-d H:i:s'));
     }
 
     /**
@@ -251,6 +262,6 @@ class Bgtask_Manager
      */
     public function addTaskRecord($description)
     {
-    	return $this->_storage->addTaskRecord($description);
+        return $this->storage->addTaskRecord($description);
     }
 }

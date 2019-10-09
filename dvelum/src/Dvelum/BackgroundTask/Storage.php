@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+namespace Dvelum\BackgroundTask;
 /**
  * Abstract class for Background Storage
  * @author Kirill A Egorov 2011
  * @package Bgtask
  */
-abstract class Bgtask_Storage
+abstract class Storage
 {
 	/**
 	 * Get current task list
@@ -81,7 +81,7 @@ abstract class Bgtask_Storage
 	/**
 	 * Teminate process
 	 */
-	protected function _terminate()
+	protected function terminate()
 	{
 		/**
 		 * @todo log termination
