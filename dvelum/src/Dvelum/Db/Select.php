@@ -480,15 +480,18 @@ class Select
             } else {
                 if (is_array($item['bind'])) {
                     $list = [];
-
-                    foreach ($item['bind'] as $listValue)
-                        $list[] = $this->quote($listValue);
-
+                    foreach ($item['bind'] as $listValue){
+                        if(is_numeric($listValue)){
+                            // disable quoting for numeric values
+                            $list[] = $listValue;
+                        }else{
+                            $list[] = $this->quote($listValue);
+                        }
+                    }
                     $item['bind'] = implode(',', $list);
                 } else {
                     $item['bind'] = $this->quote($item['bind']);
                 }
-
                 $where[] = str_replace('?', $item['bind'], $item['condition']);
             }
         }
