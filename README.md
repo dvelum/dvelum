@@ -17,18 +17,45 @@ DVelum is an indispensable toolkit for development of both complex-structured sy
 GNU General Public License version 3.0
 
 
+Installation
+---
+```
+composer create-project dvelum/dvelum
+```
+Apache VirtualHost configuration example
+```
+<VirtualHost *:80>
+    ServerName dvelum.local
+    DocumentRoot /path/to/dvelum/www
+    <Directory "/path/to/dvelum/www">
+        Require all granted
+        AllowOverride All
+        Options +ExecCGI -Includes -Indexes
+     </Directory>
+</VirtualHost>
+```
+Add local domain to /etc/hosts
+```
+127.0.0.1 dvelum.local
+```
+Open Web Browser at http://dvelum.local/install and follow the instructions
+
+Links
+---
 Issues https://github.com/dvelum/dvelum/issues
-
-Downloads https://sourceforge.net/projects/dvelum/files/
-
-Old Version Downloads https://code.google.com/p/dvelum/downloads/list?can=1
-
-DVelum 0.x/1.x Repo https://github.com/k-samuel/dvelum
-
-Official Site (ENG) http://dvelum.net
 
 Official Site (RU)  http://dvelum.ru
 
+Official Site (ENG) http://dvelum.net
+
 Installation instructions https://dvelum.ru/install_2x.html
+
+Old Version Downloads:
+ - 1.x, 0.9.x https://sourceforge.net/projects/dvelum/files/  
+ - 0.7, 0.8 https://code.google.com/p/dvelum/downloads/list?can=1
+
+DVelum 0.x/1.x Repo https://github.com/k-samuel/dvelum
+
+
 
 
