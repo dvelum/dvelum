@@ -9,7 +9,6 @@ parameters:
 	    -  %currentWorkingDirectory%/dvelum/src/Dvelum/Cache/Memcached.php
 	autoload_directories:
 	    -  %currentWorkingDirectory%/application
-	    -  %currentWorkingDirectory%/dvelum/deprecated
 	    -  %currentWorkingDirectory%/dvelum/src
 	    -  %currentWorkingDirectory%/tests/unit/dvelum/app
 	    -  %currentWorkingDirectory%/tests/unit/dvelum/library

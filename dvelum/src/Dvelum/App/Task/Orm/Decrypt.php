@@ -6,6 +6,7 @@ use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Store\Factory;
 use Dvelum\Lang;
+use \Exception;
 
 /**
  * Class Decrypt
