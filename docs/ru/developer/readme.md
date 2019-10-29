@@ -27,3 +27,5 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 * [Компонент SearchPanel](js_searchPanel.md)
 
 [Дизайнер интерфейсов](https://github.com/dvelum/module-designer/tree/master/docs)
+
+[Работа с ORM и базами данных](db.md)
