@@ -3,7 +3,7 @@
 [<< документация](readme.md)
 
 Тесты запускаются из корня проекта, для запуска тестов необходимо установить dev зависимости, подробнее: устанока и настройка Dvelum 2.x
-##PHPUnit
+## PHPUnit
 
     ./vendor/bin/phpunit -c ./phpunit.xml.dist
 ## Интеграционные тесты на PHPUnit
@@ -14,7 +14,7 @@
 
     ./vendor/bin/phpunit -c ./integration.xml.dist
     
-##Статический анализ
+## Статический анализ
 
     ./vendor/bin/phpstan analyse application dvelum2 tests/unit tests/integration
 
