@@ -53,8 +53,6 @@ class Controller extends App\Controller implements Router\RouterInterface
      * @var array $actions
      */
     protected $actions;
-    protected $managedTasks;
-    protected $jobs;
 
     public function __construct(Request $request, Response $response)
     {
@@ -67,23 +65,10 @@ class Controller extends App\Controller implements Router\RouterInterface
 
         $this->consoleConfig = Config::storage()->get('console.php');
         // Prepare action routes
-        $actions = Config::storage()->get('console_actions.php');
-
-        foreach ($actions as $k => $v) {
-            $k = strtolower($k);
-            switch ($v['type']){
-                case 'action' :
-                    $this->actions[$k] = $v;
-                    break;
-                case 'job' :
-                    $this->jobs[$k] = $v;
-                    break;
-                case 'managed_task' :
-                    $this->managedTasks[$k] = $v;
-                    break;
-            }
+        $data = Config::storage()->get('console_actions.php')->__toArray();
+        foreach ($data as $action => $config){
+            $this->actions[strtolower($action)] = $config;
         }
-
         $log = $this->consoleConfig->get('log');
 
         if ($log['enabled']) {
@@ -121,123 +106,6 @@ class Controller extends App\Controller implements Router\RouterInterface
         if ($this->log) {
             $this->log->log(LogLevel::ERROR, get_called_class() . ' :: '. $text);
         }
-    }
-
-    /**
-     * Launch background task using file lock
-     * @param string $name
-     * @param array $params
-     * @return void
-     */
-    protected function launchManagedTask($name, $params)
-    {
-        $thread = 0;
-
-        if (isset($params[1])) {
-            $thread = $params[1];
-        }
-
-        if ($thread) {
-            $threadName = $name . $thread;
-        } else {
-            $threadName = $name;
-        }
-
-        $appCfg = $this->managedTasks[$name];
-        $appCfg['thread'] = $thread;
-        $appCfg['params'] = $params;
-
-        $adapter = $appCfg['adapter'];
-
-        $lockConfig = $this->consoleConfig->get('lockConfig');
-
-        if (isset($params[0])) {
-            $lockConfig['time_limit'] = intval($params[0]);
-            $lockConfig['intercept_limit'] = intval($params[0]);
-        }
-
-        $lock = new \Cron_Lock($lockConfig);
-
-        if ($this->log) {
-            $lock->setLogsAdapter($this->log);
-        }
-
-        if (!$lock->launch($threadName)) {
-            exit(1);
-        }
-
-        $appCfg['lock'] = $lock;
-
-        $bgStorage = new \Bgtask_Storage_Orm(Model::factory('Bgtask'), Model::factory('Bgtask_Signal'));
-
-        $tManager = \Bgtask_Manager::getInstance();
-        $tManager->setStorage($bgStorage);
-
-        if ($this->log) {
-            $log = new \Bgtask_Log_File($this->log->getFileName());
-            $tManager->setLogger($log);
-        }
-
-        $tManager->launch(\Bgtask_Manager::LAUNCHER_SILENT, $adapter, $appCfg);
-        $lock->finish();
-    }
-
-    /**
-     * Launch job using file lock
-     * @param string $name
-     * @param array $params - job params
-     * @param string $method
-     */
-    protected function launchJob($name, array $params, $method = 'run')
-    {
-        $appCfg = $this->jobs[$name];
-
-        $appCfg['params'] = $params;
-        $appCfg['thread'] = 0;
-
-        $lockConfig = $this->consoleConfig->get('lockConfig');
-
-        if (isset($params[0])) {
-            $lockConfig['time_limit'] = intval($params[0]);
-            $lockConfig['intercept_timeout'] = intval($params[0]);
-        }
-
-        if (isset($params[1])) {
-            $appCfg['thread'] = $params[1];
-        }
-
-        $lock = new \Cron_Lock($lockConfig);
-
-        if ($this->log) {
-            $lock->setLogsAdapter($this->log);
-        }
-
-        $adapter = $appCfg['adapter'];
-
-        $config = Config\Factory::config(Config\Factory::Simple, $name . '_job');
-        $config->setData($appCfg);
-        $config->set('lock', $lock);
-
-        /**
-         * @var \Cronjob_Abstract $o
-         */
-        $o = new $adapter($config);
-
-        if (!$o->$method()) {
-            $resultCode = 1;
-            $msg = '1 ' . $name . '_job' . ': error';
-        } else {
-            $msg = '0 ' . $name . '_job' . ': ' . $o->getStatString();
-            $resultCode = 0;
-        }
-
-        $this->logMessage($msg);
-
-        echo $msg . "\n";
-
-        $lock->finish();
-
-        exit($resultCode);
     }
 
     /**
@@ -291,40 +159,6 @@ class Controller extends App\Controller implements Router\RouterInterface
         } else {
             exit(1);
         }
-    }
-
-    /**
-     * console command ./console.php /managedTask/[task name]/[time limit]/[thread]
-     * @throws \Exception
-     */
-    public function managedTaskAction()
-    {
-        $action = $this->request->getPart(1);
-
-        if ($this->managedTasks->offsetExists($action)) {
-            $params = $this->request->getPathParts(2);
-            $this->launchManagedTask($action, $params);
-        } else {
-            echo 'Undefined Task';
-        }
-        $this->response->send();
-    }
-
-    /**
-     * Launch Cron Job
-     * console command ./console.php /job/[job name]/[time limit]/[thread]
-     */
-    public function jobAction()
-    {
-        $action = $this->request->getPart(1);
-
-        if (isset($this->jobs[$action])) {
-            $params = $this->request->getPathParts(2);
-            $this->launchJob($action, $params, 'run');
-        } else {
-            echo 'Undefined Job';
-        }
-        $this->response->send();
     }
 
     /**

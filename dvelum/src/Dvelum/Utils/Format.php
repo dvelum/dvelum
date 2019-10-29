@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum\Utils;
 
-use \Tree as Tree;
+use \Dvelum\Tree\ArrayTree as Tree;
 
 class Format
 {

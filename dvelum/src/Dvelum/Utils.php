@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum;
 
-use \Tree as Tree;
+use \Dvelum\Tree\ArrayTree as Tree;
 
 /**
  * System Utils class Do not include into packages!
