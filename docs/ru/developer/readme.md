@@ -2,8 +2,7 @@
 ===
 Documentation licensed under GNU Free Documentation License (GFDL)
 
-Руководство разработчика
-
+## Руководство разработчика
 
 * [Что нового в DVelum 3.0](whats_new.md)
 * [Установка и настройка](install.md)
@@ -13,7 +12,8 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 * [Примеры решения частых задач](snippets.md)
 
 
-##JavaScript UI Встроенные компоненты
+## JavaScript UI Встроенные компоненты
+
 
 * [Утилиты Common](js_common.md)
 * [Компонент app.contentWindow](js_appContentWindow.md)
