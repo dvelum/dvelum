@@ -43,8 +43,9 @@ Add local domain to /etc/hosts
 Open Web Browser at http://dvelum.local/install and follow the instructions
 
 ---
-Issues https://github.com/dvelum/dvelum/issues
+[Документация](docs/ru/developer/readme.md)
 
+Issues https://github.com/dvelum/dvelum/issues
 
 Old Version Downloads https://sourceforge.net/projects/dvelum/files/ and https://code.google.com/p/dvelum/downloads/list?can=1
 
@@ -54,6 +55,5 @@ Official Site (ENG) http://dvelum.net
 
 Official Site (RU)  http://dvelum.ru
 
-Installation instructions https://dvelum.ru/install_2x.html
 
 
