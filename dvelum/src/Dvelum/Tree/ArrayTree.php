@@ -96,22 +96,22 @@ class ArrayTree
         if ($this->itemExists($id) || (string)$id === '0') {
             return false;
         }
-    
+
         if ($order === false && isset($this->children[$parent])) {
             $order = sizeof($this->children[$parent]);
         }
-    
+
         $this->items[$id] = [
             'id' => $id,
             'parent' => $parent,
             'data' => $data,
             'order' => $order
         ];
-        
+
         if (!isset($this->children[$parent])) {
             $this->children[$parent] = [];
         }
-    
+
         $this->children[$parent][$id] = &$this->items[$id];
         return true;
     }
@@ -149,7 +149,7 @@ class ArrayTree
 
     /**
      * Get node data by ID
-     * @param string $id
+     * @param mixed $id
      * @return mixed
      */
     public function getItemData($id)
@@ -160,10 +160,10 @@ class ArrayTree
 
     /**
      * Check if the node has child elements
-     * @param string $id — node identifier
-     * @return boolean
+     * @param mixed $id — node identifier
+     * @return bool
      */
-    public function hasChildren($id)
+    public function hasChildren($id): bool
     {
         if (isset($this->children[$id]) && !empty($this->children[$id])) {
             return true;
@@ -177,9 +177,9 @@ class ArrayTree
      * @param mixed id - parent node identifier
      * @return array - an array with keys ('id','parent','order','data')
      */
-    public function getChildrenRecursive($id)
+    public function getChildrenRecursive($id): array
     {
-        $data =[];
+        $data = [];
         if ($this->hasChildren($id)) {
             $children = $this->getChildren($id);
             foreach ($children as $k => $v) {
@@ -194,22 +194,23 @@ class ArrayTree
     }
 
     /**
-     * @param $id
+     * @param mixed $id
+     * @return void
      */
-    protected function sortChildren($id)
+    protected function sortChildren($id): void
     {
         if (!isset($this->children[$id]) || empty($this->children[$id])) {
             return;
         }
 
-        $tmp =[];
+        $tmp = [];
 
         foreach ($this->children[$id] as $key => &$dat) {
             $tmp[$dat['id']] = $dat['order'];
         }
         unset($dat);
 
-        $this->children[$id] =[];
+        $this->children[$id] = [];
         asort($tmp);
 
         $sort = 0;
@@ -225,10 +226,10 @@ class ArrayTree
      * @return array
      * @var mixed id
      */
-    public function getChildren($id)
+    public function getChildren($id): array
     {
         if (!$this->hasChildren($id)) {
-            return[];
+            return [];
         }
 
         return $this->children[$id];
@@ -239,9 +240,9 @@ class ArrayTree
      * @param mixed $id
      * @return void
      */
-    protected function remove($id) : void
+    protected function remove($id): void
     {
-        if(!$this->itemExists($id)){
+        if (!$this->itemExists($id)) {
             return;
         }
 
@@ -268,8 +269,8 @@ class ArrayTree
 
     /**
      * Get the parent node identifier by the child node identifier
-     * @param string $id — child node identifier
-     * @return mixed| false
+     * @param mixed $id — child node identifier
+     * @return mixed |false
      */
     public function getParentId($id)
     {
@@ -285,9 +286,9 @@ class ArrayTree
      * Change the parent node for the node
      * @param mixed $id — node identifier
      * @param mixed $newParent — new parent node identifier
-     * @return boolean
+     * @return bool
      */
-    public function changeParent($id, $newParent)
+    public function changeParent($id, $newParent): bool
     {
         if (!$this->itemExists($id) || (!$this->itemExists($newParent) && (string)$newParent !== '0') || (string)$id == (string)$newParent) {
             return false;
@@ -307,9 +308,9 @@ class ArrayTree
     /**
      * Delete node
      * @param mixed $id
-     * @return boolean
+     * @return bool
      */
-    public function removeItem($id)
+    public function removeItem($id): bool
     {
         if ($this->itemExists($id)) {
             $this->remove($id);
@@ -322,7 +323,7 @@ class ArrayTree
      * Get structures of the tree elements (nodes)
      * @return array - an array with keys ('id','parent','order','data')
      */
-    public function getItems()
+    public function getItems(): array
     {
         return $this->items;
     }
@@ -332,11 +333,11 @@ class ArrayTree
      * @param mixed $id
      * @return array
      */
-    public function getParentsList($id)
+    public function getParentsList($id): array
     {
-        $parents =[];
+        $parents = [];
         if (!$this->itemExists($id)) {
-            return[];
+            return [];
         }
 
         while ($this->getParentId($id)) {

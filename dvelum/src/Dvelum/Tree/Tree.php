@@ -270,7 +270,7 @@ class Tree
 
     /**
      * Get the parent node identifier by the child node identifier
-     * @param string $id — child node identifier
+     * @param mixed $id — child node identifier
      * @return int|string|null
      */
     public function getParentId($id)

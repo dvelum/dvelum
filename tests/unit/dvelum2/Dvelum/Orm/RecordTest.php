@@ -38,13 +38,6 @@ class RecordTest extends TestCase
         $this->assertEquals(2, $object->getVersion());
     }
 
-    public function testDisableAcl()
-    {
-        $object = $this->createObject();
-        $object->disableAcl(true);
-        $this->assertEquals(false, $object->getAcl());
-    }
-
     public function testGetFields()
     {
         $object = $this->createObject();
