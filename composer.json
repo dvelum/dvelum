@@ -57,10 +57,5 @@
         "phpunit/phpunit": "^7",
         "phpstan/phpstan": "^0.10",
         "codacy/coverage": "dev-master"
-    },
-    "scripts": {
-      "post-install-cmd": [
-        "php ./console.php /external-add/dvelum/module-designer"
-      ]
     }
 }
