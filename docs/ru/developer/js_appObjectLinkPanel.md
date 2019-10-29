@@ -1,5 +1,6 @@
-[документация](readme.md)
-#Компонент app.objectLink.Panel
+Компонент app.objectLink.Panel
+===
+[<< документация](readme.md)
 
 Компонент для выбора списка связанных объектов, представляет из себя расширенную панель app.relatedGridPanel
 

@@ -1,5 +1,6 @@
-[документация](readme.md)
-#Компонент app.medialib.ItemField
+Компонент app.medialib.ItemField
+===
+[<< документация](readme.md)
 
 Поле формы, осуществляет выбор файла из медиатеки.
 

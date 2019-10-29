@@ -17,6 +17,8 @@ DVelum is an indispensable toolkit for development of both complex-structured sy
 
 GNU General Public License version 3.0
 
+![](docs/images/1.jpeg) ![](docs/images/2.png) ![](docs/images/3.png) ![](docs/images/4.png) ![](docs/images/5.png)
+
 Local installation
 -----
 
