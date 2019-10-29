@@ -117,7 +117,7 @@ class Packagist implements ClientInterface
             } catch (\Throwable $e) {
                 return [];
             }
-            if (!isset($info['package']) || $info['package']['type'] != 'dvelum-module') {
+            if (!isset($info['package']) || $info['package']['type'] != 'dvelum3-module') {
                 continue;
             }
             $info = $info['package'];
