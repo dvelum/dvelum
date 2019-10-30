@@ -19,4 +19,26 @@ $data = $model->query()
               // извлечение результатов fetchAll, fetchCol, fetchOne, fetchRow
               ->fetchAll();  
 ```
+* Вставка большого числа строк в обход ORM (без валидации и триггеров)
+```php
+<?php
+$model = \Dvelum\Orm\Model::factory('MyObject');
+$insert = new \Dvelum\Orm\Model\Insert($model);
+$data = [
+    ['field1'=>1,'field2'=>2],
+    ['field1'=>1,'field2'=>2]
+];
+// данные для вставки будут разбиты на порции
+$insert->bulkInsert($data);
+
+// можно обернуть в транзакцию
+$db = $model->getDbConnection();
+$db->begin();
+if(!$insert->bulkInsert($data)){
+    $db->rollback();
+}else{
+    $db->commit();
+}
+```
+
 * [Конструктор Select запросов Dvelum\Db\Select](db_select.md)
