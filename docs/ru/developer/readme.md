@@ -10,7 +10,13 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 * [Структура файлов конфигураций](configs.md)
 * [Шардинг в Dvelum 3.x](sharding.md)
 * [Примеры решения частых задач](snippets.md)
+* [Роутинг в DVelum](routing.md)
+* [Работа через консоль, запуск в cron](console.md)
 
+## Работа с ORM и базами данных
+[ORM и модели](orm_and_models.md)
+
+[Ручная работа с запросами](db.md)
 
 ## JavaScript UI Встроенные компоненты
 
@@ -28,4 +34,3 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 
 [Дизайнер интерфейсов](https://github.com/dvelum/module-designer/tree/master/docs)
 
-[Работа с ORM и базами данных](db.md)
