@@ -58,7 +58,7 @@ class Insert implements InsertInterface
         $keys = array_keys($records[key($records)]);
 
         foreach ($keys as &$key) {
-            $key = $this->db->quoteIdentifier($key);
+            $key = $this->db->quoteIdentifier((string)$key);
         }
         unset($key);
 

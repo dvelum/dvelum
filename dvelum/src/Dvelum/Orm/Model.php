@@ -94,7 +94,7 @@ class Model
      * Current Cache Interface
      * @var CacheInterface | false
      */
-    protected $cache;
+    protected $cache = false;
 
 
     /**

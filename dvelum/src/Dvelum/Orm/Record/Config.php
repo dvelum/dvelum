@@ -1,7 +1,7 @@
 <?php
 /**
  *  DVelum project https://github.com/dvelum/dvelum
- *  Copyright (C) 2011-2018  Kirill Yegorov
+ *  Copyright (C) 2011-2019  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,11 +29,9 @@ use Dvelum\Orm\Exception;
 
 
 /**
- * Orm Object structure config
- * @package Db
- * @subpackage Db_Object
- * @author Kirill A Egorov kirill.a.egorov@gmail.com
- * @copyright Copyright (C) 2011-2016  Kirill A Egorov,
+ * Orm Record structure config
+ * @author Kirill A Egorov
+ * @copyright Copyright (C) 2011-2019  Kirill A Egorov,
  * @license General Public License version 3
  */
 class Config
@@ -48,6 +46,7 @@ class Config
     const SHARDING_TYPE_KEY = 'sharding_key';
     const SHARDING_TYPE_KEY_NO_INDEX = 'sharding_key_no_index';
     const SHARDING_TYPE_VIRTUAL_BUCKET = 'virtual_bucket';
+
     /**
      * @var Cfg\ConfigInterface $settings
      */
@@ -177,7 +176,8 @@ class Config
     /**
      * Object config existence check
      * @param string $name
-     * @return boolean
+     * @return bool
+     * @throws \Exception
      */
     static public function configExists(string $name) : bool
     {
@@ -192,6 +192,7 @@ class Config
     /**
      * Get config files path
      * @return string
+     * @throws \Exception
      */
     public function getConfigPath() : string
     {
@@ -205,17 +206,6 @@ class Config
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Get the full name of the database table that stores this object data (with prefix)
-     * @param boolean  $withPrefix
-     * @return string
-     * @deprecated since 0.9.1
-     */
-    public function getTable($withPrefix = true)
-    {
-        return $withPrefix ? Model::factory($this->name)->table() : $this->config->get('table');
     }
 
     /**
@@ -308,6 +298,7 @@ class Config
     /**
      * Get Version control fields
      * @return array
+     * @throws \Exception
      */
     protected function getVcFields() : array
     {
@@ -320,6 +311,7 @@ class Config
     /**
      * Get encryption fields
      * @return array
+     * @throws \Exception
      */
     protected function getEncryptionFields() : array
     {
@@ -332,6 +324,7 @@ class Config
     /**
      * Get a list of fields to be used for search
      * @return array
+     * @throws \Exception
      */
     public function getSearchFields() : array
     {
@@ -348,6 +341,7 @@ class Config
      * Get a configuration element by key (system method)
      * @param string $key
      * @return mixed
+     * @throws \Exception
      */
     public function get(string $key)
     {
@@ -360,6 +354,7 @@ class Config
     /**
      * Check if the object is using revision control
      * @return bool
+     * @throws \Exception
      */
     public function isRevControl() : bool
     {
@@ -370,6 +365,7 @@ class Config
      * Get a list of indices (from the configuration)
      * @param boolean $includeSystem -optional default = true
      * @return array
+     * @throws \Exception
      */
     public function getIndexesConfig($includeSystem = true) : array
     {
@@ -421,6 +417,7 @@ class Config
      * Get the configuration of all fields
      * @param boolean $includeSystem -optional default = true
      * @return array
+     * @throws \Exception
      */
     public function getFieldsConfig($includeSystem = true) : array
     {
@@ -443,6 +440,7 @@ class Config
     /**
      * Get object fields
      * @return Config\Field[]
+     * @throws \Exception
      */
     public function getFields() : array
     {
@@ -457,6 +455,7 @@ class Config
     /**
      * Get the configuration of system fields
      * @return array
+     * @throws \Exception
      */
     public function getSystemFieldsConfig() : array
     {
@@ -480,6 +479,7 @@ class Config
      * @param array $linkTypes  - optional link type filter
      * @param boolean $groupByObject - group field by linked object, default true
      * @return array  [objectName=>[field => link_type]] | [field =>["object"=>objectName,"link_type"=>link_type]]
+     * @throws \Exception
      */
     public function getLinks($linkTypes = [Orm\Record\Config::LINK_OBJECT, Orm\Record\Config::LINK_OBJECT_LIST], $groupByObject = true) : array
     {
@@ -492,8 +492,6 @@ class Config
                 && in_array($cfg['link_config']['link_type'], $linkTypes , true)
                 && isset($cfg['link_config']['object'])
             ){
-
-
                 if($groupByObject)
                     $data[$cfg['link_config']['object']][$name] = $cfg['link_config']['link_type'];
                 else
@@ -507,6 +505,7 @@ class Config
     /**
      * Check if the object uses history log
      * @return bool
+     * @throws \Exception
      */
     public function hasHistory() : bool
     {
@@ -519,10 +518,10 @@ class Config
     /**
      * Check if the object uses extended history log
      * @return bool
+     * @throws \Exception
      */
     public function hasExtendedHistory() : bool
     {
-
         if (
             $this->config->offsetExists('save_history')
             &&
@@ -541,12 +540,12 @@ class Config
     /**
      * Check if object has db prefix
      * @return bool
+     * @throws \Exception
      */
     public function hasDbPrefix() : bool
     {
         return $this->config->get('use_db_prefix');
     }
-
 
     /**
      * Check if the field is present in the description
@@ -619,6 +618,7 @@ class Config
     /**
      * Get the name of the field linking to this object and used as a text representation
      * @return string
+     * @throws \Exception
      */
     public function getLinkTitle() : string
     {
@@ -632,6 +632,7 @@ class Config
     /**
      * Check if object is readonly
      * @return bool
+     * @throws \Exception
      */
     public function isReadOnly() : bool
     {
@@ -641,6 +642,7 @@ class Config
     /**
      * Check if object structure is locked
      * @return bool
+     * @throws \Exception
      */
     public function isLocked() : bool
     {
@@ -650,6 +652,7 @@ class Config
     /**
      * Check if there are transactions available for this type of objects
      * @return bool
+     * @throws \Exception
      */
     public function isTransact() : bool
     {
@@ -730,6 +733,7 @@ class Config
      * @param string $field
      * @param string $linkedObject
      * @return bool
+     * @throws \Exception
      */
     public function setFieldLink(string $field , string $linkedObject) : bool
     {
@@ -746,6 +750,7 @@ class Config
      * @param string $index
      * @param array $config
      * @return void
+     * @throws \Exception
      */
     public function setIndexConfig($index , array $config) : void
     {
@@ -758,6 +763,7 @@ class Config
      * Configure distributed index
      * @param string $index
      * @param array $config
+     * @throws \Exception
      */
     public function setDistributedIndexConfig(string $index, array $config)
     {
@@ -769,6 +775,7 @@ class Config
     /**
      * Init indexes for distributed index object
      * @return array
+     * @throws \Exception
      */
     protected function initIndexIndexes() : array
     {
@@ -818,6 +825,7 @@ class Config
      * Get list of distributed indexes
      * @param bool $includeSystem
      * @return array
+     * @throws \Exception
      */
     public function getDistributedIndexesConfig(bool $includeSystem = true) : array
     {
@@ -859,6 +867,7 @@ class Config
      * @param string $oldName
      * @param string $newName
      * @return bool
+     * @throws \Exception
      */
     public function renameField(string $oldName , string $newName) : bool
     {
@@ -896,6 +905,7 @@ class Config
     /**
      * Remove field
      * @param string $name
+     * @throws \Exception
      */
     public function removeField(string $name) : void
     {
@@ -937,6 +947,7 @@ class Config
      * Delete index
      * @param string $name
      * @return void
+     * @throws \Exception
      */
     public function removeIndex(string $name) : void
     {
@@ -973,6 +984,7 @@ class Config
      * Check system field
      * @param string $field
      * @return bool
+     * @throws \Exception
      */
     public function isSystemField(string $field) : bool
     {
@@ -1014,6 +1026,8 @@ class Config
      *   ),
      *  ...
      *  )
+     * @throws \Exception
+     * @todo Refactor
      */
     public function getForeignKeys() : array
     {
@@ -1074,6 +1088,7 @@ class Config
     /**
      * Check if Foreign keys can be used
      * @return bool
+     * @throws \Exception
      */
     public function canUseForeignKeys() : bool
     {
@@ -1089,6 +1104,7 @@ class Config
     /**
      * service stub
      * @return string
+     * @throws \Exception
      */
     public function getPrimaryKey() : string
     {
@@ -1122,6 +1138,7 @@ class Config
     /**
      * Get Translation adapter
      * @return Config\Translator
+     * @throws \Exception
      */
     public function getTranslator() : Config\Translator
     {
@@ -1144,9 +1161,11 @@ class Config
         }
         return false;
     }
+
     /**
      * Get names of encrypted fields
      * @return array
+     * @throws \Exception
      */
     public function getEncryptedFields() : array
     {
@@ -1164,6 +1183,7 @@ class Config
     /**
      * Get public key field
      * @return string
+     * @throws \Exception
      */
     public function getIvField() : string
     {
@@ -1233,6 +1253,7 @@ class Config
      * Check if field is system field of version control
      * @param string $field - field name
      * @return bool
+     * @throws \Exception
      */
     public function isVcField($field) : bool
     {
@@ -1242,7 +1263,8 @@ class Config
 
     /**
      * Check if object is relations object
-     * @return  bool
+     * @return bool
+     * @throws \Exception
      */
     public function isRelationsObject() : bool
     {
@@ -1293,6 +1315,7 @@ class Config
      * Get object field
      * @param string $name
      * @return Config\Field
+     * @throws \Exception
      */
     public function getField(string $name) : Config\Field
     {
@@ -1340,10 +1363,16 @@ class Config
 
         return $field;
     }
+
+    /**
+     * Set crypt service loader
+     * @param callable $loader
+     */
     public function setCryptServiceLoader(callable $loader)
     {
         $this->cryptServiceLoader = $loader;
     }
+
     /**
      * Set encryption service adapter
      * @param CryptServiceInterface $service
@@ -1387,12 +1416,14 @@ class Config
     /**
      * Chek if object loader requires Shard
      * @return bool
+     * @throws \Exception
      */
     public function isShardRequired() : bool
     {
         if(!$this->isDistributed()){
             return false;
         }
+
         switch ($this->getShardingType()){
             case self::SHARDING_TYPE_VIRTUAL_BUCKET:
             case self::SHARDING_TYPE_KEY_NO_INDEX:
@@ -1405,6 +1436,7 @@ class Config
      * Delete distributed index
      * @param string $name
      * @return bool
+     * @throws \Exception
      */
     public function removeDistributedIndex(string $name) : bool
     {
@@ -1435,7 +1467,7 @@ class Config
     }
 
     /**
-     * CHeck if object has global distributed index
+     * Check if object has global distributed index
      */
     public function hasDistributedIndexRecord()
     {
@@ -1451,6 +1483,7 @@ class Config
     /**
      * Get system sharding fields
      * @return array
+     * @throws \Exception
      */
     public function getDistributedFields() : array
     {
@@ -1459,7 +1492,7 @@ class Config
         }
 
         $type = $this->getShardingType();
-        if($type == self::SHARDING_TYPE_KEY_NO_INDEX || $type===self::SHARDING_TYPE_KEY){
+        if($type == self::SHARDING_TYPE_KEY_NO_INDEX || $type === self::SHARDING_TYPE_KEY){
             $key = $this->getShardingKey();
             if(!empty($key)){
                 $this->distributedFields[$key] = $this->getField($key)->getConfig();
@@ -1481,6 +1514,7 @@ class Config
     /**
      * Get sharding type for distributed object
      * @return null|string
+     * @throws \Exception
      */
     public function getShardingType() : ?string
     {
@@ -1524,8 +1558,9 @@ class Config
      * Get key used for mapping object to virtual bucket.
      * Only for Virtual Bucket sharding
      * @return string|null
+     * @throws \Exception
      */
-    public function getBucketMapperKey() :?string
+    public function getBucketMapperKey() : ?string
     {
         $type = $this->getShardingType();
 

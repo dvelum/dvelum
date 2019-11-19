@@ -32,5 +32,6 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 * [Компонент app.SelectWindow](js_appSelectWindow.md)
 * [Компонент SearchPanel](js_searchPanel.md)
 
-[Дизайнер интерфейсов](https://github.com/dvelum/module-designer/tree/master/docs)
+## [Дизайнер интерфейсов](https://github.com/dvelum/module-designer/tree/master/docs)
 
+## [Официальные модули](modules.md)
