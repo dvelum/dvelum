@@ -112,6 +112,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         $this->resource->addCss('/css/system/joint.min.css', 1);
 
+        $this->resource->addJs('/js/lib/jquery.js', 1, true, 'external');
         $this->resource->addJs('/js/lib/uml/lodash.min.js', 2, true, 'external');
         $this->resource->addJs('/js/lib/uml/backbone-min.js', 3, true, 'external');
         $this->resource->addJs('/js/lib/uml/joint.min.js', 4, true, 'external');
