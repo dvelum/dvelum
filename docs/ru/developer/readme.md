@@ -6,11 +6,11 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 
 * [Что нового в DVelum 3.0](whats_new.md)
 * [Установка и настройка](install.md)
-* [Запуск тестов](tests.md)
 * [Структура файлов конфигураций](configs.md)
 * [Роутинг в DVelum](routing.md)
 * [Шардинг в Dvelum](sharding.md)
 * [Работа через консоль, запуск в cron](console.md)
+* [Запуск тестов](tests.md)
 * [Примеры решения частых задач](snippets.md)
 
 ## Работа с ORM и базами данных
