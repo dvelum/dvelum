@@ -8,10 +8,10 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 * [Установка и настройка](install.md)
 * [Запуск тестов](tests.md)
 * [Структура файлов конфигураций](configs.md)
-* [Шардинг в Dvelum](sharding.md)
-* [Примеры решения частых задач](snippets.md)
 * [Роутинг в DVelum](routing.md)
+* [Шардинг в Dvelum](sharding.md)
 * [Работа через консоль, запуск в cron](console.md)
+* [Примеры решения частых задач](snippets.md)
 
 ## Работа с ORM и базами данных
 [ORM и модели](orm_and_models.md)
