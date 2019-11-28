@@ -55,7 +55,7 @@ class ObjectList extends Field
             $linked = $this->getLinkedObject();
             $linkedObjectConfig = Orm\Record\Config::factory($linked);
             // convert numeric values for primary keys
-            if($linkedObjectConfig->getField($linkedObjectConfig->getPrimaryKey())->isNumeric()){
+            if($linkedObjectConfig->getField($linkedObjectConfig->getPrimaryKey())->isInteger()){
                 $value = array_map('intval', $value);
             }
         }else{
