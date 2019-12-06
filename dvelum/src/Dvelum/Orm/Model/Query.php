@@ -445,6 +445,10 @@ class Query
                 ->filters($filters)->search($query, $searchType)
                 ->joins($joins);
 
+            if(!empty($this->tableAlias)){
+                $sqlQuery->tableAlias((string) $this->tableAlias);
+            }
+
             $count = $sqlQuery->fetchOne();
         }
 
