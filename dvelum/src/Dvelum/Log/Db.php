@@ -71,7 +71,7 @@ class Db extends \Psr\Log\AbstractLogger implements LogInterface
                 $this->table,
                 [
                     $this->logFields['name'] => $this->name,
-                    $this->logFields['message'] => $message,
+                    $this->logFields['message'] => htmlentities($message),
                     $this->logFields['date']=> date('Y-m-d H:i:s'),
                     $this->logFields['level']=> json_encode($context)
                 ]
