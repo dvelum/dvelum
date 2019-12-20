@@ -38,7 +38,7 @@ class Controller
      */
     protected $response;
     /**
-     * @var Config\ConfigInterface |false
+     * @var Config\ConfigInterface
      */
     protected $appConfig;
     /**

@@ -6,12 +6,12 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 
 * [Что нового в DVelum 3.0](whats_new.md)
 * [Установка и настройка](install.md)
-* [Запуск тестов](tests.md)
 * [Структура файлов конфигураций](configs.md)
-* [Шардинг в Dvelum 3.x](sharding.md)
-* [Примеры решения частых задач](snippets.md)
 * [Роутинг в DVelum](routing.md)
+* [Шардинг в Dvelum](sharding.md)
 * [Работа через консоль, запуск в cron](console.md)
+* [Запуск тестов](tests.md)
+* [Примеры решения частых задач](snippets.md)
 
 ## Работа с ORM и базами данных
 [ORM и модели](orm_and_models.md)
@@ -32,5 +32,6 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 * [Компонент app.SelectWindow](js_appSelectWindow.md)
 * [Компонент SearchPanel](js_searchPanel.md)
 
-[Дизайнер интерфейсов](https://github.com/dvelum/module-designer/tree/master/docs)
+## [Дизайнер интерфейсов](https://github.com/dvelum/module-designer/tree/master/docs)
 
+## [Официальные модули](modules.md)

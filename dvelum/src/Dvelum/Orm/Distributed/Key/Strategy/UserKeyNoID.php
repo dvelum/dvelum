@@ -56,7 +56,11 @@ class UserKeyNoID implements GeneratorInterface
             $indexObject = $objectConfig->getDistributedIndexObject();
             $model = Model::factory($indexObject);
             $db = $model->getDbConnection();
-            $db->delete($model->table(), $db->quoteIdentifier($db->quoteIdentifier($objectConfig->getShardingKey()) .' = '.$db->quote($distributedKey)));
+            $shardingKey = $objectConfig->getShardingKey();
+            if(empty($shardingKey)){
+                return false;
+            }
+            $db->delete($model->table(), $db->quoteIdentifier($db->quoteIdentifier($shardingKey) .' = '.$db->quote($distributedKey)));
             return true;
         }catch (Exception $e){
             $model->logError('Sharding::reserveIndex '.$e->getMessage());
@@ -249,6 +253,10 @@ class UserKeyNoID implements GeneratorInterface
         $indexObject = $objectConfig->getDistributedIndexObject();
         $model = Model::factory($indexObject);
         $db = $model->getDbConnection();
+
+        if(empty($shardingKey)){
+            return false;
+        }
 
         try{
             $db->update(

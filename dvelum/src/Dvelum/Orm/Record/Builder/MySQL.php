@@ -58,6 +58,7 @@ class MySQL extends AbstractAdapter
     /**
      * Prepare DB engine update SQL
      * @return string|null
+     * @throws \Exception
      */
     public function prepareEngineUpdate() : ?string
     {
@@ -69,7 +70,12 @@ class MySQL extends AbstractAdapter
         if(strtolower($conf['Engine']) === strtolower($this->objectConfig->get('engine')))
             return null;
 
-        return $this->changeTableEngine($this->objectConfig->get('engine') , true);
+        $result = $this->changeTableEngine($this->objectConfig->get('engine') , true);
+        if(!empty($result)){
+            return (string) $result;
+        }else{
+            return null;
+        }
     }
 
     /**
@@ -132,8 +138,8 @@ class MySQL extends AbstractAdapter
     /**
      * Change Db table engine
      * @param string $engine - new engine name
-     * @param boolean $returnQuery - optional, return update query
-     * @return boolean | string
+     * @param bool $returnQuery - optional, return update query
+     * @return bool | string
      * @throws \Exception
      */
     public function changeTableEngine($engine , $returnQuery = false)

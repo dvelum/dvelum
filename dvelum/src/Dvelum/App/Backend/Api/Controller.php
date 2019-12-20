@@ -285,6 +285,9 @@ class Controller extends App\Backend\Controller
         $objectConfig = Orm\Record\Config::factory($object);
 
         try {
+            /**
+             * @var RecordInterface $o
+             */
             $o = Orm\Record::factory($object, $id);
             $this->response->success(['title' => $o->getTitle()]);
         } catch (\Exception $e) {
@@ -445,7 +448,7 @@ class Controller extends App\Backend\Controller
 
         if ($ormConfig->get('vc_clear_on_delete')) {
             /**
-             * @var \Model_Vc $vcModel
+             * @var App\Model\Vc $vcModel
              */
             $vcModel = Model::factory('Vc');
             $vcModel->removeItemVc($this->objectName, $id);
@@ -719,7 +722,7 @@ class Controller extends App\Backend\Controller
                 throw new OwnerException($this->lang->get('CANT_ACCESS'));
             }
             /**
-             * @var \Model_Vc $vc
+             * @var App\Model\Vc $vc
              */
             $vc = Model::factory('Vc');
             $version = $this->request->post('version', 'int', 0);
@@ -764,7 +767,7 @@ class Controller extends App\Backend\Controller
      * @param Orm\Record\Config $cfg
      * @param array $fieldsToShow list of link fields to process ( key - result field, value - object field)
      * object field will be used as result field for numeric keys
-     * @param array &$data rows from  Model::getList result
+     * @param array & $data rows from  Model::getList result
      * @param string $pKey - name of Primary Key field in $data
      * @throws \Exception
      */

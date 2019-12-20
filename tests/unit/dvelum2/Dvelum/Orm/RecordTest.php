@@ -152,4 +152,5 @@ class RecordTest extends TestCase
         $object = $this->createObject();
         $this->assertTrue($object->getDataModel() instanceof Record\DataModel);
     }
+
 }

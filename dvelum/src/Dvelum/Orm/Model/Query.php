@@ -81,7 +81,7 @@ class Query
      * @param string $alias
      * @return Query
      */
-    public function tableAlias(string $alias): Query
+    public function tableAlias(?string $alias): Query
     {
         $this->tableAlias = $alias;
         return $this;
@@ -417,6 +417,7 @@ class Query
         $filters = $this->filters;
         $query = $this->search;
         $searchType = $this->searchType;
+        $tableAlias = $this->tableAlias;
 
         // disable fields selection
         if (!empty($joins)) {
@@ -441,7 +442,7 @@ class Query
         {
             $sqlQuery = new Model\Query($this->model);
             $sqlQuery->setDbConnection($this->db);
-            $sqlQuery->fields(['count' => 'COUNT(*)'])
+            $sqlQuery->fields(['count' => 'COUNT(*)'])->tableAlias($tableAlias)
                 ->filters($filters)->search($query, $searchType)
                 ->joins($joins);
 

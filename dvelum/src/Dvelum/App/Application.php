@@ -206,8 +206,16 @@ class Application
         if ($this->config->get('development')) {
             Debug::setCacheCores($cacheManager->getRegistered());
         }
+        /**
+         * @var CacheInterface $cache
+         */
+        $cache = $cacheManager->get('data');
 
-        return $cacheManager->get('data');
+        if(empty($cache)){
+            return null;
+        }
+
+        return $cache;
     }
 
     /**

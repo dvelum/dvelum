@@ -203,16 +203,6 @@ class Record implements RecordInterface
     }
 
     /**
-     * Get the full name of the database storing the object data (with prefix)
-     * @return string
-     * @deprecated
-     */
-    public function getTable(): string
-    {
-        return Model::factory($this->getName())->table();
-    }
-
-    /**
      * Check if there are object property changes
      * not saved in the database
      * @return bool

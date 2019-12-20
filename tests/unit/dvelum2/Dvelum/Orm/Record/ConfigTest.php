@@ -7,15 +7,6 @@ use Dvelum\Orm\Model;
 
 class ConfigTest extends TestCase
 {
-    public function testGetTable()
-    {
-        $cfg = Record\Config::factory('User');
-        $prefix = Model::factory('User')->getDbPrefix();
-        $this->assertEquals($cfg->getTable(false), $cfg->get('table'));
-        $this->assertEquals($cfg->getTable(), $prefix . $cfg->get('table'));
-    }
-
-
     public function testGetObjectTtile()
     {
         $cfg = Record\Config::factory('User');

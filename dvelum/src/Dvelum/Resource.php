@@ -32,9 +32,9 @@ use Dvelum\Config\ConfigInterface;
 class Resource
 {
     /**
-     * @var Config\ConfigInterface|false
+     * @var Config\ConfigInterface
      */
-    protected $config = false;
+    protected $config;
 
     /**
      * @var CacheInterface|bool

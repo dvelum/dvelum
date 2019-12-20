@@ -1,17 +1,6 @@
 <?php
 /*
  *  Console actions
- *  types:
- *
- *  action - simple call of  \\Dvelum\\App\\Console\\Action
- *  requires adapter config
- *
- *  task - background task with execution statistics and control, using file locks
- *  requires adapter instance of Task_Cronjob_Abstract
- *
- *  job - cron job, using file locks
- *  requires adapter instance of Cronjob_Abstract
- *
  */
 return [
     // Rebuild database

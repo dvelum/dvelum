@@ -25,7 +25,7 @@ $authorized = $user->isAuthorized();
 ```
 ##### Авторизовать пользователя по логину и паролю
 ```php
-$user = \Dvelum\App\Session\User::factory->login($login , $password);
+$user = \Dvelum\App\Session\User::factory()->login($login , $password);
 ```
 Если пара login-password верная, то $user будет содержать ссылку на объект User, иначе false.
 Извлечь колонку из многомерного массива (актуально для результатов выборок из базы данных)

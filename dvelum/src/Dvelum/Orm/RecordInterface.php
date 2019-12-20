@@ -58,13 +58,6 @@ interface RecordInterface
     public function getId();
 
     /**
-     * Get the full name of the database storing the object data (with prefix)
-     * @return string
-     * @deprecated
-     */
-    public function getTable(): string;
-
-    /**
      * Check if there are object property changes
      * not saved in the database
      * @return bool
