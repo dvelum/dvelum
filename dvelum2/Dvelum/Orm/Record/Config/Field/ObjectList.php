@@ -51,7 +51,14 @@ class ObjectList extends Field
             }
         }
 
-        if(!is_array($value)){
+        if(is_array($value)){
+            $linked = $this->getLinkedObject();
+            $linkedObjectConfig = Orm\Record\Config::factory($linked);
+            // convert integer values for primary keys
+            if($linkedObjectConfig->getField($linkedObjectConfig->getPrimaryKey())->isInteger()){
+                $value = array_map('intval', $value);
+            }
+        }else{
             $value = [];
         }
         return $value;

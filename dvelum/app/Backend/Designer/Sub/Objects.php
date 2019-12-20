@@ -50,8 +50,12 @@ class Backend_Designer_Sub_Objects extends Backend_Designer_Sub
                             $title.= ' (Buffered)';
 
                         // append instance token
-                        if($addInstances && $object->isExtendedComponent()){
-                            $list[] = array('id'=>$name, 'title'=>$name, 'objClass'=>$cfg['namespace'] .'.' . $name);
+                        if($object->isExtendedComponent()){
+                            if($addInstances){
+                                $list[] = array('id'=>$name, 'title'=>$name, 'objClass'=>$cfg['namespace'] .'.' . $name);
+                            }else{
+                                continue;
+                            }
                         }
 
                         if($addStores){

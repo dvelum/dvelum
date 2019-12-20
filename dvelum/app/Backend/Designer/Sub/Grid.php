@@ -195,6 +195,7 @@ class Backend_Designer_Sub_Grid extends Backend_Designer_Sub
 			$name = 'Grid_Column';
 
 		$col = Ext_Factory::object($name);
+        $col->setName($this->_object->getColumn($columnId)->getName());
 
 		Ext_Factory::copyProperties($this->_object->getColumn($columnId), $col);
 

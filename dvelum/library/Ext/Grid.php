@@ -482,6 +482,8 @@ class Ext_Grid extends Ext_Object
 
         if (isset($state['columns']) && !empty($state['columns'])) {
             foreach ($state['columns'] as $v) {
+                if(empty($v['name']))
+                    $v['name'] = $v['id'];
                 $col = Ext_Factory::object($v['extClass']);
                 $col->setName($v['name']);
                 $col->setState($v['state']);
