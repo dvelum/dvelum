@@ -18,7 +18,7 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 * [Ручная работа с запросами](db.md)
 
 ## Контроллеры
-* [UI контроллеры админ панели](`backend_ui_controller.md`)
+* [UI контроллеры админ панели](backend_ui_controller.md`)
 
 ## JavaScript UI Встроенные компоненты
 
