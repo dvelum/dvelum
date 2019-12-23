@@ -14,9 +14,11 @@ Documentation licensed under GNU Free Documentation License (GFDL)
 * [Примеры решения частых задач](snippets.md)
 
 ## Работа с ORM и базами данных
-[ORM и модели](orm_and_models.md)
+* [ORM и модели](orm_and_models.md)
+* [Ручная работа с запросами](db.md)
 
-[Ручная работа с запросами](db.md)
+## Контроллеры
+* [UI контроллеры админ панели](`backend_ui_controller.md`)
 
 ## JavaScript UI Встроенные компоненты
 

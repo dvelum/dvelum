@@ -8,17 +8,9 @@
 ```php
 \Dvelum\Request::factory()->url(['controller' , 'action' , 'subaction']);
 ```
-
 Стандартная конфигурация использует «/» как разделитель и «.html» как расширение. Будет сформирован путь: /controller/action/subaction.html
-Сформировать путь к странице публичной части, использующей определенную функциональность (модуль)
 
-Допустим, к странице с кодом newspage прикреплена функциональность news, необходимо сформировать ссылку на вторую новостную страницу:
-```php
-$frontendRouter = new \Dvelum\App\Router\Module(); 
-$url = \Dvelum\Request::factory()->url([$frontendRouter->findUrl('news') , 2 ]);
-```
-Будет сформирован путь: /news/2.html
-Определить, авторизован ли пользователь
+##### Определить, авторизован ли пользователь
 ```php
 $user = \Dvelum\App\Session\User::factory(); 
 $authorized = $user->isAuthorized();
@@ -68,9 +60,9 @@ Array
     [10] => Array([id] => 10 [name] => Name1 [group] => admin)
     [22] => Array([id] => 22 [name] => Name2 [group] => admin)
     [34] => Array([id] => 34 [name] => Name3 [group] => dev)
-    [45] => Array([id] => 45[name] => Name4[group] => admin)
-    [52] => Array([id] => 52[name] => Name5[group] => dev)
-    [61] => Array([id] => 61[name] => Name6[group] => user)
+    [45] => Array([id] => 45 [name] => Name4 [group] => admin)
+    [52] => Array([id] => 52 [name] => Name5 [group] => dev)
+    [61] => Array([id] => 61 [name] => Name6 [group] => user)
 )
 ```
 ##### Перегруппировать данные многомерного массива (актуально для результатов выборок из базы данных)
@@ -122,7 +114,7 @@ $cfg = Config::storage()->get('main.php');
 
 Получим количество активных учетных записей пользователей (объект User):
 ```php
-$count = Model::factory('user')->query()->filters(['enabled'=>1); 
+$count = Model::factory('user')->query()->filters(['enabled'=>1])->getCount(); 
 ```
 ##### Выборка данных объекта при помощи модели
 Пример: Выбрать 10 последних новостей
@@ -139,19 +131,24 @@ $params = array(
 /*  
  * Фильтры. Только опубликованные записи  
  */ 
-$filters = array('published'=>true); 
+$filters = ['published'=>true]; 
 /*  
  * Список полей, которые необходимо выбрать  
  */ 
-$fields = array('id','title','news_date'); 
+$fields = ['id','title','news_date']; 
 /*  
  * Инициализируем модель  
  */ 
 $model = Model::factory('News'); 
-$data = $model->query()->params($params)->($filters)->fields($fields)->fetchAll(); 
+$data = $model->query()
+              ->params($params)
+              ->filters($filters)
+              ->fields($fields)
+              ->fetchAll(); 
 ```
 ##### Получить ссылку на инстанцированый адаптер подключения к базе данных
 ```php
+use Dvelum\Orm\Model;
 // Адаптер подключения к базе данных, используемый моделью User
 /**
  * @var \Dvelum\Db\Adapter
@@ -160,45 +157,12 @@ $db = Model::factory('user')->getDbConnection();
 ```
 ##### Получить ссылку на инстанцированый адаптер кэша
 ```php
+use Dvelum\Orm\Model;
 // Получить адаптер кэширования данных
 $cache = Model::factory('user')->getCacheAdapter();
 /**
- * @var \Cache_Interface | false $cache
+ * @var \Dvelum\Cache\CacheInterface | false $cache
  */
-```
-##### Вставить html в центральную часть страницы вне шаблона (публичная часть)
-```php
-$page = \Page::getInstance();
-$page->text.='Some text';
-```
-##### Изменение html-заголовка страницы и мета-содержания
-```php
-namespace App\Frontend\News;
-class Controller extends \Dvelum\App\Frontend\Controller 
-{
-   public function someAction()
-   {
-
-       $this->page = \Page::getInstance();
-       // дополнение текста
-       $this->page->text.=’Some text’;
-       // изменение html-заголовка страницы (тот, что отображается в заголовке окна браузера или его вкладки)
-       $this->page->html_title = 'Page HTML Title';
-       // изменение заголовка страницы (обычно выводится внутри шаблона в теге)
-       $this->page->page_title = 'Page Title';
-       // изменение содержания тега 
-       $this->page->meta_keywords = 'page meta key words';
-       // изменение содержания тега 
-       $this->page->meta_description = 'page meta description';
-    }
- }
-```
-##### Шаблон. Вывести блоки, назначенные на определенную позицию
-
-Блоки выводятся в шаблонах, для этого нам необходима ссылка на менеджер блоков, она автоматически передается в шаблон layout.php. Если менеджер блоков вам нужен на вложенном уровне шаблонов, то перед рендерингом передайте ссылку на менеджер блоков. Конфигурация макета (laout_cfg.php) содержит набор плейсхолдеров, к которым привязываются блоки в административном интерфейсе. Каждый плейсхолдер имеет свой код, зная этот код можно вывести блоки в шаблон:
-```php
-$blockManager = $this->get('blockManager');
-echo $blockManager->getBlocksHtml('placecode');
 ```
 
 ##### Вывести в таблицу заголовок вместо ссылки на объект</a>
