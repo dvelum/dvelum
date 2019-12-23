@@ -188,6 +188,7 @@ class MySQL extends AbstractAdapter
 
         /**
          * @var ColumnObject $column
+         * @var ColumnObject[] $columns
          */
         $columns = [];
         foreach ($fields as $column){
@@ -232,7 +233,10 @@ class MySQL extends AbstractAdapter
 
             $column = $columns[$name];
 
-            $dataType = strtolower($column->getDataType());
+            $dataType = $column->getDataType();
+            if(!empty($dataType)){
+                $dataType = strtolower($dataType);
+            }
             /*
              * Field type compare flag
              */
@@ -255,17 +259,14 @@ class MySQL extends AbstractAdapter
             $unsignedCmp = false;
             /**
              * AUTO_INCREMENT compare flag
-             *
-             * @var bool
              */
             $incrementCmp = false;
 
+            // Compare PRIMARY KEY Sequence
             /**
              * @var \Dvelum\Db\Metadata\ColumnObject $column
              */
-
-            // Compare PRIMARY KEY Sequence
-            if($name == $this->objectConfig->getPrimaryKey() &&  $column->isAutoIncrement() !== (bool) $v['db_auto_increment']){
+            if($name == $this->objectConfig->getPrimaryKey() && $column->isAutoIncrement() !== (bool) $v['db_auto_increment']){
                 $incrementCmp = true;
             }
 

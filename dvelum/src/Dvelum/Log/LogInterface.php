@@ -1,7 +1,7 @@
 <?php
 /*
  * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
- * Copyright (C) 2011-2016  Kirill A Egorov
+ * Copyright (C) 2011-2016  Kirill Yegorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,10 +26,10 @@ namespace Dvelum\Log;
  */
 interface LogInterface{
     /**
-     * @param $level
-     * @param $message
+     * @param mixed $level
+     * @param string $message
      * @param array $context
      * @return mixed
      */
-	public function log($level, $message, array $context = []);
+	public function log($level, string $message, array $context = []);
 }

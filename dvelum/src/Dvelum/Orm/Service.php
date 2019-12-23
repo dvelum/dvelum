@@ -250,7 +250,7 @@ class Service
      * @param string $name
      * @param int|int[]|bool $id , optional default false
      * @param string|bool $shard . optional
-     * @return Orm\Record|Orm\Record[]
+     * @return RecordInterface | RecordInterface[]
      * @throws \Exception
      */
     public function record(string $name, $id = false, $shard = false)
@@ -301,7 +301,7 @@ class Service
                         if(empty($linkedObject)){
                             throw new \Exception('Undefined linked object object for field ' . $field);
                         }
-                        $linksObject = $this->model((string)$linkedObject)->getStore()->getLinksObjectName();
+                        $linksObject = $this->model($linkedObject)->getStore()->getLinksObjectName();
                         $linksModel = $this->model($linksObject);
                         $relationsData = $linksModel->query()
                             ->params(['sort' => 'order', 'dir' => 'ASC'])
@@ -341,6 +341,9 @@ class Service
             $o->setRawData($item);
             $list[$item[$primaryKey]] = $o;
         }
+        /**
+         * @var RecordInterface[] $list
+         */
         return $list;
     }
 

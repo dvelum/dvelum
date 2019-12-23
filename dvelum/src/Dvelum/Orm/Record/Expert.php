@@ -1,5 +1,21 @@
 <?php
-
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2019  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 namespace Dvelum\Orm\Record;
 
 use Dvelum\Orm\Model;
@@ -7,22 +23,16 @@ use Dvelum\Utils;
 use Dvelum\Orm\Record;
 
 /**
- * Db_Object information expert
- * Helps to find  relations between objects
- * @author Kirill A Egorov kirill.a.egorov@gmail.com
- * @copyright Copyright (C) 2011-2018  Kirill A Egorov,
- * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
- * @license General Public License version 3
- *
- * @todo Test (its betta version)
+ * Orm Record information expert
+ * Helps to find relations between objects
  */
 class Expert
 {
-    static protected $_objectAssociations = null;
+    static protected $objectAssociations = null;
 
-    static protected function _buildAssociations()
+    static protected function buildAssociations()
     {
-        if (!is_null(self::$_objectAssociations))
+        if (!is_null(self::$objectAssociations))
             return;
 
         $manager = new Manager();
@@ -31,7 +41,7 @@ class Expert
             foreach ($objects as $name) {
                 $config = Record\Config::factory($name);
                 $links = $config->getLinks();
-                self::$_objectAssociations[$name] = $links;
+                self::$objectAssociations[$name] = $links;
             }
         }
     }
@@ -55,27 +65,27 @@ class Expert
      */
     static public function getAssociatedObjects(Record $object)
     {
-        $linkedObjects = array('single' => array(), 'multi' => array());
+        $linkedObjects = ['single' => [], 'multi' => []];
 
-        self::_buildAssociations();
+        self::buildAssociations();
 
         $objectName = $object->getName();
         $objectId = $object->getId();
 
-        if (!isset(self::$_objectAssociations[$objectName]))
+        if (!isset(self::$objectAssociations[$objectName]))
             return array();
 
-        foreach (self::$_objectAssociations as $testObject => $links) {
+        foreach (self::$objectAssociations as $testObject => $links) {
             if (!isset($links[$objectName]))
                 continue;
 
-            $sLinks = self::_getSingleLinks($objectId, $testObject, $links[$objectName]);
+            $sLinks = self::getSingleLinks($objectId, $testObject, $links[$objectName]);
 
             if (!empty($sLinks))
                 $linkedObjects['single'][$testObject] = $sLinks;
         }
 
-        $linkedObjects['multi'] = self::_getMultiLinks($objectName, $objectId);
+        $linkedObjects['multi'] = self::getMultiLinks($objectName, $objectId);
 
         return $linkedObjects;
     }
@@ -83,7 +93,7 @@ class Expert
     /**
      * Get "single link" associations
      * when object has link as own property
-     * @param integer $objectId
+     * @param mixed $objectId
      * @param string $relatedObject - related object name
      * @param array $links - links config like
      *    array(
@@ -94,7 +104,7 @@ class Expert
      *  )
      * @return array
      */
-    static protected function _getSingleLinks($objectId, $relatedObject, $links)
+    static protected function getSingleLinks($objectId, $relatedObject, $links) : array
     {
         $relatedConfig = Config::factory($relatedObject);
         $relatedObjectModel = Model::factory($relatedObject);
@@ -118,9 +128,9 @@ class Expert
         $first = true;
         foreach ($fields as $field) {
             if ($first) {
-                $sql->where($db->quoteIdentifier($field) . ' =?', $objectId);
+                $sql->where($db->quoteIdentifier((string) $field) . ' =?', $objectId);
             } else {
-                $sql->orWhere($db->quoteIdentifier($field) . ' =?', $objectId);
+                $sql->orWhere($db->quoteIdentifier((string) $field) . ' =?', $objectId);
                 $first = false;
             }
         }
@@ -137,10 +147,10 @@ class Expert
      * Get multi-link associations
      * when links stored  in external objects
      * @param string $objectName
-     * @param integer $objectId
+     * @param mixed $objectId
      * @return array
      */
-    static protected function _getMultiLinks($objectName, $objectId)
+    static protected function getMultiLinks($objectName, $objectId) : array
     {
         $ormConfig = \Dvelum\Config::storage()->get('orm.php');
         $linksModel = Model::factory($ormConfig->get('links_object'));
@@ -171,14 +181,14 @@ class Expert
     {
         $objectName = strtolower($objectName);
 
-        self::_buildAssociations();
+        self::buildAssociations();
 
-        if (empty(self::$_objectAssociations))
+        if (empty(self::$objectAssociations))
             return array();
 
         $associations = array();
 
-        foreach (self::$_objectAssociations as $object => $data) {
+        foreach (self::$objectAssociations as $object => $data) {
             if (empty($data))
                 continue;
 

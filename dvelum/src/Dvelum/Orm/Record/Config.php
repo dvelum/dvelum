@@ -30,9 +30,6 @@ use Dvelum\Orm\Exception;
 
 /**
  * Orm Record structure config
- * @author Kirill A Egorov
- * @copyright Copyright (C) 2011-2019  Kirill A Egorov,
- * @license General Public License version 3
  */
 class Config
 {
@@ -113,25 +110,7 @@ class Config
     /**
      * Instantiate data structure for the objects named $name
      * @param string $name - object name
-     * @param boolean $force - reload config
-     * @return Orm\Record\Config
-     * @deprecated
-     * @throws Exception
-     */
-    static public function getInstance($name , $force = false)
-    {
-        /**
-         * @var \Dvelum\Orm\Service $service
-         */
-        $service = Service::get('orm');
-        return $service->config($name, $force);
-    }
-
-    /**
-     * Instantiate data structure for the objects named $name
-     * Backward compatibility
-     * @param string $name - object name
-     * @param boolean $force - reload config
+     * @param bool $force - reload config
      * @return Orm\Record\Config
      * @throws Exception
      */

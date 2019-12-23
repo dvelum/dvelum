@@ -70,7 +70,7 @@ class Metadata
 
     /**
      * @param string $tableName
-     * @return ColumnObject[]
+     * @return array
      */
     public function getColumns(string $tableName) : array
     {

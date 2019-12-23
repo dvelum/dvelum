@@ -340,10 +340,7 @@ class Model
         }
 
         $data = $this->getItem($id);
-
-        if ($this->cache) {
-            $this->cache->save($data, $cacheKey, $lifetime);
-        }
+        $this->cache->save($data, $cacheKey, $lifetime);
 
         return $data;
     }

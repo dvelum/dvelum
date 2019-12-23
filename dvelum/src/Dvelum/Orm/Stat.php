@@ -123,7 +123,12 @@ class Stat
         $indexLength=0;
         $size = 0;
 
-        $tableInfo = [];
+        $tableInfo = [
+            'rows' => [],
+            'data_length' => null,
+            'index_length' => null
+        ];
+
         $data = [];
 
         if($db->getAdapter()->getPlatform()->getName() === 'MySQL')

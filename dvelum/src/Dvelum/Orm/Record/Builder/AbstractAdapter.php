@@ -28,7 +28,7 @@ use Dvelum\Log;
 use Dvelum\Lang;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Utils;
-use Zend\Db\Metadata\Object\ColumnObject;
+use Dvelum\Db\Metadata\Object\ColumnObject;
 use Zend\Db\Sql\Ddl;
 use Dvelum\Config as Cfg;
 use \Exception;
@@ -221,13 +221,14 @@ abstract class AbstractAdapter implements BuilderInterface
     {
         return $this->validationErrors;
     }
+
     /**
      * Get Existing Columns
-     * @return ColumnObject[]
+     * @return \Dvelum\Db\Metadata\ColumnObject[]
      */
     protected function getExistingColumns() : array
     {
-        return $this->db->getMeta()->getAdapter()->getColumns($this->model->table());
+        return $this->db->getMeta()->getColumns($this->model->table());
     }
 
 
