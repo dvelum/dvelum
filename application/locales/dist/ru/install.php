@@ -60,4 +60,5 @@ return array(
     'WWWROOT'=>'Папка',
     'TOP_MENU' => 'Верхнее меню',
     'BOTTOM_MENU' => 'Нижнее меню',
+    'CANT_INSTALL_MODULE' => 'Невозможно установить требуемый модуль.'
 );

@@ -38,18 +38,10 @@ class Add extends Console\Action
             return false;
         }
 
-        $moduleDir = $this->appConfig->get('externals')['path'] . '/' . $vendor . '/' . $module;
+        $manager = Manager::factory();
+        $moduleInfo = $manager->detectModuleInfo($vendor, $module);
 
-        if(!is_dir($moduleDir)){
-            return false;
-        }
-
-        if(!file_exists($moduleDir.'/config.php')){
-            return false;
-        }
-
-        $moduleInfo = include $moduleDir . '/config.php';
-        if(!is_array($moduleInfo) || empty($moduleInfo)){
+        if(empty($moduleInfo)){
             return false;
         }
 
@@ -61,7 +53,7 @@ class Add extends Console\Action
         return $manager->add($moduleInfo['id'],[
             'enabled' => true,
             'installed' => false,
-            'path' =>$moduleDir
+            'path' => $manager->getModulePath($vendor, $module)
         ]);
     }
 }

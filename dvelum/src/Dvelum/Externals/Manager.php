@@ -54,6 +54,11 @@ class Manager
     protected $autoloader;
 
     protected $errors = [];
+    /**
+     * Loaded modules index
+     * @var array
+     */
+    protected $loadedModules = [];
 
     static protected $defaultConfig = [];
 
@@ -162,15 +167,16 @@ class Manager
     /**
      * Add external module
      * @param string $id
-     * @param array $config
+     * @param array|null $config
      * @throws \Exception
      * @return bool
      */
-    public function add(string $id , array $config) : bool
+    public function add(string $id , ?array $config = null) : bool
     {
         if($this->moduleExists($id)){
             return false;
         }
+
         $this->config->set($id, $config);
         return $this->saveConfig();
     }
@@ -194,7 +200,7 @@ class Manager
         $langPaths = [];
 
         foreach ($modules as $index => $config) {
-            if (!$config['enabled']) {
+            if (!$config['enabled'] || isset($this->loadedModules[$index])) {
                 continue;
             }
 
@@ -225,6 +231,7 @@ class Manager
                 $templatesPaths[] = str_replace(['./', '//'], [$path, ''], $modCfg['templates'] . '/');
             }
 
+            $this->loadedModules[$index] = true;
         }
         // Add autoloader paths
         if (!empty($autoLoadPaths)) {
@@ -592,5 +599,44 @@ class Manager
     public function getRepoList()
     {
         return $this->externalsConfig['repo'];
+    }
+
+    /**
+     * Check if module directory exists and extract module info
+     * from module config file
+     * @param string $vendor
+     * @param string $module
+     * @return array|null
+     * @throws \Exception
+     */
+    public function detectModuleInfo(string $vendor, string $module): ?array
+    {
+        $moduleDir = $this->getModulePath($vendor, $module);
+        if(!is_dir($moduleDir)){
+            return null;
+        }
+
+        if(!file_exists($moduleDir.'/config.php')){
+            return null;
+        }
+
+        $moduleInfo = include $moduleDir . '/config.php';
+        if(!is_array($moduleInfo) || empty($moduleInfo)){
+            return null;
+        }
+        return $moduleInfo;
+    }
+
+    /**
+     * Get module path by vendor and module name
+     * @param string $vendor
+     * @param string $module
+     * @return string
+     * @throws \Exception
+     */
+    public function getModulePath(string $vendor, string $module) : string
+    {
+        $externalsCfg = $this->appConfig->get('externals');
+        return $externalsCfg['path'] . '/' . $vendor . '/' . $module;
     }
 }

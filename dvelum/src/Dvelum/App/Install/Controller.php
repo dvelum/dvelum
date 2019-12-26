@@ -3,6 +3,7 @@
 namespace Dvelum\App\Install;
 
 use Dvelum\Config;
+use Dvelum\Externals\Manager;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Lang;
@@ -262,6 +263,10 @@ class Controller
                 'accessType'=>'required'
             ),
             array(
+                'path'=>'modules',
+                'accessType'=>'required'
+            ),
+            array(
                 'path'=>$this->wwwPath . 'js/lang',
                 'accessType'=>'required'
             ),
@@ -277,7 +282,10 @@ class Controller
                 'path'=>$this->wwwPath . 'media',
                 'accessType'=>'required'
             ),
-
+            array(
+                'path'=>$this->wwwPath . 'resources',
+                'accessType'=>'required'
+            ),
         );
 
         foreach ($extensions as $v){
@@ -311,9 +319,6 @@ class Controller
         $host = $this->request->post('host', 'str', '');
         $port = $this->request->post('port', 'int', 0);
         $prefix = $this->request->post('prefix', 'str', '');
-
-        $installDocs = $this->request->post('install_docs' , 'boolean' , false);
-        $this->session->set('install_docs' , $installDocs);
 
         $params = array(
             'host'           => $host,
@@ -357,9 +362,12 @@ class Controller
                     './application/configs/dev/db/error.php',
                     './application/configs/dev/db/sharding_index.php',
 
+                    /*
+                     Not rewrite test configs
                     './application/configs/test/db/default.php',
                     './application/configs/test/db/error.php',
                     './application/configs/test/db/sharding_index.php',
+                    */
                 );
 
                 $params['prefix'] = $prefix;
@@ -370,7 +378,7 @@ class Controller
 
                     $dirName = dirname($item);
                     if(!file_exists($dirName)){
-                        if(!mkdir($dirName,0777,true)){
+                        if(!mkdir($dirName,0775,true)){
                             throw new \Exception('Cant write '.$dirName);
                         }
                     }
@@ -503,15 +511,56 @@ class Controller
         $app->setAutoloader($this->autoloader);
         $app->runInstallMode();
 
-        $this->_compileLangs($mainConfig);
-
-        if(!$this->_prepareRecords($pass, $user))
+        if(!$this->prepareRecords($pass, $user)){
             $this->response->error($this->localization->get('CANT_WRITE_TO_DB'));
+        }
+        // compile javascript language files
+        $this->compileLangs($mainConfig);
+        // install required external modules
+        $this->addExternals();
 
-        $this->response->success(array('link'=>$adminpath));
+        $this->response->success(['link'=>$adminpath]);
     }
+    protected function addExternals()
+    {
+        $externals = [
+            ['dvelum','module-designer']
+        ];
 
-    protected function _compileLangs($mainConfig){
+        $manager = Manager::factory();
+        foreach ($externals as $data){
+            $vendor = $data[0];
+            $module = $data[1];
+            $moduleInfo = $manager->detectModuleInfo($vendor, $module);
+
+            if(empty($moduleInfo)){
+                $this->response->error($this->lang->get('CANT_INSTALL_MODULE').' '.$vendor.'/'.$module .' [info]');
+            }
+
+            $added = $manager->add($moduleInfo['id'],[
+                'enabled' => true,
+                'installed' => false,
+                'path' => $manager->getModulePath($vendor, $module)
+            ]);
+
+            if(!$added){
+                $this->response->error($this->lang->get('CANT_INSTALL_MODULE').' '.$vendor.'/'.$module.' [add]');
+            }
+
+            if(!$manager->install($moduleInfo['id'])){
+                $this->response->error($this->lang->get('CANT_INSTALL_MODULE').' '.$vendor.'/'.$module.' [install]');
+            }
+            // reload external modules configuration
+            $manager->reloadConfig();
+            // load new module
+            $manager->loadModules();
+
+            if(!$manager->postInstall($moduleInfo['id'])){
+                $this->response->error($this->lang->get('CANT_INSTALL_MODULE').' '.$vendor.'/'.$module.' [post-install]');
+            }
+        }
+    }
+    protected function compileLangs($mainConfig){
         $langManager = new Localization\Manager($mainConfig);
         try{
             $langManager->compileLangFiles();
@@ -520,7 +569,7 @@ class Controller
         }
     }
 
-    protected function _prepareRecords($adminPass, $adminName)
+    protected function prepareRecords($adminPass, $adminName)
     {
         $objectToClean = [
             'User',
