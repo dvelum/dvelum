@@ -86,7 +86,7 @@ try{
     ]);
     // сохраняем запись, может вернуть  false  при ошибке
     if(!$myObject->save()){
-        throw new Exception('Cannot save my_object '.$myObject->getErrors());
+        throw new \Exception('Cannot save my_object '.$myObject->getErrors());
     }   
 }catch (\Exception $e){
     // логируем ошибку (системная таблица ошибок)
@@ -118,7 +118,7 @@ $query = $myObjectModel->query()
                            'start'=>0,
                            'limit'=>10
                        ]);
-// узнать кол-во строк подходящих под условия фильтрации в запросе
+// узнать кол-во строк, подходящих под условия фильтрации в запросе
 $rowsCount = $query->getCount();
 // получить данные
 $rows = $query->fetchAll();
