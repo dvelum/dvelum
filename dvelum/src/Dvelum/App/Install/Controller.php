@@ -550,8 +550,6 @@ class Controller
             if(!$manager->install($moduleInfo['id'])){
                 $this->response->error($this->lang->get('CANT_INSTALL_MODULE').' '.$vendor.'/'.$module.' [install]');
             }
-            // reload external modules configuration
-            $manager->reloadConfig();
             // load new module
             $manager->loadModules();
 
