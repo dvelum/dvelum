@@ -1039,23 +1039,23 @@ class Config
             if($curDb !== $oModel->getDbConnection())
                 continue;
 
-            foreach ($fields as $name=>$linkType)
-            {
-                $field  = $this->getField($name);
+            foreach ($fields as $name => $linkType) {
+                $field = $this->getField($name);
 
-                if($field->isRequired())
+                if ($field->isRequired()) {
                     $onDelete = 'RESTRICT';
-                else
+                } else {
                     $onDelete = 'SET NULL';
+                }
 
                 $keys[] = array(
                     'curDb' => $curDbCfg['dbname'],
                     'curObject' => $this->getName(),
                     'curTable' => $curModel->table(),
-                    'curField'=>$name,
-                    'toObject'=>$object,
-                    'toTable'=>$oModel->table(),
-                    'toField'=>$oConfig->getPrimaryKey(),
+                    'curField' => $name,
+                    'toObject' => $object,
+                    'toTable' => $oModel->table(),
+                    'toField' => $oConfig->getPrimaryKey(),
                     'toDb' => $curDbCfg['dbname'],
                     'onUpdate' => 'CASCADE',
                     'onDelete' => $onDelete

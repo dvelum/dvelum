@@ -68,9 +68,6 @@ class Store
      */
     public function __construct(array $config = [])
     {
-        if(empty($options))
-            return;
-
         $this->config =  array_merge($this->config , $config);
     }
 

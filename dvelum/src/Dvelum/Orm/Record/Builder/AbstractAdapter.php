@@ -161,7 +161,7 @@ abstract class AbstractAdapter implements BuilderInterface
         $shardUpdates = $this->getDistributedObjectsUpdatesInfo();
         $linksUpdates = $this->getObjectsUpdatesInfo();
 
-        if(!empty($updateKeys) || !empty($shardUpdates) || !empty($linksUpdates))
+        if(!empty($shardUpdates) || !empty($linksUpdates))
             return false;
         else
             return true;
@@ -261,20 +261,18 @@ abstract class AbstractAdapter implements BuilderInterface
     {
         $list = $this->objectConfig->getManyToMany();
 
-        if(empty($list)){
+        if (empty($list)) {
             return true;
         }
 
-        foreach($list as $objectName=>$fields)
-        {
-            if(empty($fields)) {
+        foreach ($list as $objectName => $fields) {
+            if (empty($fields)) {
                 continue;
             }
 
-            foreach($fields as $fieldName=>$linkType)
-            {
+            foreach ($fields as $fieldName => $linkType) {
                 $relationObjectName = $this->objectConfig->getRelationsObject($fieldName);
-                if(!is_string($relationObjectName) || !Config::configExists($relationObjectName)) {
+                if (!is_string($relationObjectName) || !Config::configExists($relationObjectName)) {
                     return false;
                 }
             }
@@ -401,7 +399,6 @@ abstract class AbstractAdapter implements BuilderInterface
                     foreach($fieldList as $field => $cfg)
                         $brokenFields[$field] = $o;
                 }
-
             }
         }
 

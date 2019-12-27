@@ -36,6 +36,9 @@ class Adapter
     public const EVENT_CONNECTION_ERROR =1;
 
     protected $params;
+    /**
+     * @var \Zend\Db\Adapter\Adapter $adapter
+     */
     protected $adapter;
     protected $listeners;
 
