@@ -153,21 +153,20 @@ class Record extends Controller
 
         $template = \Dvelum\View::factory();
         $template->disableCache();
-        $template->engineUpdate = $engineUpdate;
-        $template->columns = $colUpd;
-        $template->indexes = $indUpd;
-        $template->objects = $objects;
-        $template->keys = $keyUpd;
-        $template->tableExists = $tableExists;
-        $template->tableName = Orm\Model::factory($name)->table();
-        $template->lang = $this->lang;
-        $template->shardObjects = $shardObjects;
-
+        $template->setData([
+            'engineUpdate' => $engineUpdate,
+            'columns' => $colUpd,
+            'indexes' => $indUpd,
+            'objects' => $objects,
+            'keys' => $keyUpd,
+            'tableExists' => $tableExists,
+            'tableName' => Orm\Model::factory($name)->table(),
+            'lang' => $this->lang,
+            'shardObjects' => $shardObjects
+        ]);
         $cfgBackend = Config\Factory::storage()->get('backend.php');
         $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';
-
         $msg = $template->render($templatesPath . 'orm_validate_msg.php');
-
         $this->response->success([], array('text' => $msg, 'nothingToDo' => false));
     }
 
@@ -622,6 +621,9 @@ class Record extends Controller
             return;
         }
 
+        /**
+         * @var Orm\Record\Builder\MySQL $builder
+         */
         $builder = Orm\Record\Builder::factory($name);
 
         /*
@@ -652,10 +654,11 @@ class Record extends Controller
 
             if (!$builder->changeTableEngine($data['engine'])) {
                 $errors = $builder->getErrors();
+                $errorsString = '';
                 if (!empty($errors)) {
-                    $errors = implode(' <br>', $errors);
+                    $errorsString = implode(' <br>', $errors);
                 }
-                $this->response->error($this->lang->get('CANT_EXEC') . ' ' . $errors);
+                $this->response->error($this->lang->get('CANT_EXEC') . ' ' . $errorsString);
             }
         }
 
@@ -695,7 +698,7 @@ class Record extends Controller
                 $this->response->error($this->lang->get('CANT_WRITE_FS'));
                 break;
             case Manager::ERROR_FS_LOCALISATION:
-                $this->response->error($this->lang->get('CANT_WRITE_FS') . ' (' . $this->lang->LOCALIZATION_FILE . ')');
+                $this->response->error($this->lang->get('CANT_WRITE_FS') . ' (' . $this->lang->get('LOCALIZATION_FILE') . ')');
                 break;
             default:
                 $this->response->error($this->lang->get('CANT_EXEC') . ' code 5');

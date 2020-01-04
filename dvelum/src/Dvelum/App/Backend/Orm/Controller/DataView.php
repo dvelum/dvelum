@@ -133,8 +133,13 @@ class DataView extends ApiController
             $title .= ' INDEX';
             $fields = Orm\Record\Config::factory($objectConfig->getDistributedIndexObject())->getFields();
             if ($shadrdingType == Orm\Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET) {
+                $fieldName = $objectConfig->getBucketMapperKey();
+                if(empty($fieldName)){
+                    $this->response->error($this->lang->get('CANT_EXEC'));
+                    return;
+                }
                 $findBucket = [
-                    'field' => $objectConfig->getField($objectConfig->getBucketMapperKey())->getTitle(),
+                    'field' => $objectConfig->getField($fieldName)->getTitle(),
                 ];
                 $canEditObject = false;
             }
@@ -270,15 +275,17 @@ class DataView extends ApiController
 
         $tab = \Ext_Factory::object('Panel');
         $tab->setName('_generalTab');
-        $tab->frame = false;
-        $tab->border = false;
-        $tab->layout = 'anchor';
-        $tab->bodyPadding = 3;
-        $tab->scrollable = true;
-        $tab->bodyCls = 'formBody';
-        $tab->anchor = '100%';
-        $tab->title = $this->lang->get('GENERAL');
-        $tab->fieldDefaults = "{labelAlign: \"right\",labelWidth: 160,anchor: \"100%\"}";
+        $tab->setValues([
+            'frame' => false,
+            'border' => false,
+            'layout' => 'anchor',
+            'bodyPadding' => 3,
+            'scrollable' => true,
+            'bodyCls' => 'formBody',
+            'anchor' => '100%',
+            'title' => $this->lang->get('GENERAL'),
+            'fieldDefaults' => "{labelAlign: \"right\",labelWidth: 160,anchor: \"100%\"}"
+        ]);
 
         $tabs[] = $tab;
         $related = [];

@@ -44,14 +44,6 @@ interface EngineInterface
     public function setCacheLifetime(int $sec) : void;
 
     /**
-     * Set multiple properties
-     * @deprecated
-     * @param array $data
-     * @return void
-     */
-    public function setProperties(array $data) : void;
-
-    /**
      * Get property
      * @param string $name
      * @return mixed

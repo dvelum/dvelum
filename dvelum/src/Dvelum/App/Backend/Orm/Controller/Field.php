@@ -146,7 +146,7 @@ class Field extends Controller
                         break;
 
                     case Orm\Record\Config::LINK_OBJECT:
-                        $newConfig['db_isNull'] = (boolean) !$newConfig['required'];
+                        $newConfig['db_isNull'] = !$newConfig['required'];
                         $newConfig['db_type'] ='bigint';
                         $newConfig['db_default'] = false;
                         $newConfig['db_unsigned'] = true;

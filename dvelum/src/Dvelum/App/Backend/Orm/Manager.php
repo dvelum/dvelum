@@ -41,8 +41,8 @@ class Manager
     /**
      * Remove object from ORM
      * @param string $name
-     * @param boolean $deleteTable - optional, default true
-     * @return integer
+     * @param bool $deleteTable - optional, default true
+     * @return int
      */
     public function removeObject($name, $deleteTable = true)
     {
@@ -63,7 +63,13 @@ class Manager
 
             if (!empty($linkedFields)) {
                 foreach ($linkedFields as $field) {
+                    /**
+                     * @var string $relatedObject
+                     */
                     $relatedObject = $objectConfig->getRelationsObject($field);
+                    if(empty($relatedObject)){
+                        return self::ERROR_EXEC;
+                    }
                     $result = $this->removeObject($relatedObject, $deleteTable);
 
                     if ($result !== 0) {
@@ -138,7 +144,7 @@ class Manager
             if (!is_dir($path)) {
                 continue;
             }
-            $data = File::scanFiles($path, false, false, File::DIRS_ONLY);
+            $data = File::scanFiles($path, [], false, File::DIRS_ONLY);
             foreach ($data as $k => &$v) {
                 if (!file_exists($v . '/objects.php')) {
                     unset($data[$k]);
@@ -217,9 +223,9 @@ class Manager
      * Remove object field
      * @param string $objectName
      * @param string $fieldName
-     * @return bool  - 0 - success or error code
+     * @return int  - 0 - success or error code
      */
-    public function removeField($objectName, $fieldName)
+    public function removeField($objectName, $fieldName) : int
     {
         try {
             $objectCfg = Orm\Record\Config::factory($objectName);
@@ -271,9 +277,10 @@ class Manager
      * @param Orm\Record\Config $cfg
      * @param string $oldName
      * @param string $newName
-     * @return integer 0 on success or error code
+     * @throws \Exception
+     * @return int 0 on success or error code
      */
-    public function renameField(Orm\Record\Config $cfg, $oldName, $newName)
+    public function renameField(Orm\Record\Config $cfg, string $oldName, string $newName) : int
     {
         $localisations = $this->getLocalisations();
         $langWritePath = Lang::storage()->getWrite();
@@ -324,13 +331,14 @@ class Manager
     }
 
     /**
-     * Rename Db_Object
+     * Rename Orm\Record
      * @param string $path - configs path
      * @param string $oldName
      * @param string $newName
-     * @return integer 0 on success or error code
+     * @return int 0 on success or error code
+     * @throws \Exception
      */
-    public function renameObject($path, $oldName, $newName)
+    public function renameObject($path, $oldName, $newName) : int
     {
         $objectConfig = Orm\Record\Config::factory($oldName);
         /*
@@ -397,7 +405,6 @@ class Manager
         if (!@rename($oldFileName, $newFileName)) {
             return self::ERROR_FS;
         }
-
 
         if (!empty($assoc)) {
             foreach ($assoc as $config) {

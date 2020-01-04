@@ -16,9 +16,9 @@
     
 ## Статический анализ
 
-    ./vendor/bin/phpstan analyse application dvelum2 tests/unit tests/integration
+    ./vendor/bin/phpstan analyse application dvelum
 
 или
 
-    php -d memory_limit=256M ./vendor/bin/phpstan analyse dvelum2 tests/unit tests/integration
+    php -d memory_limit=256M ./vendor/bin/phpstan analyse dvelum
     

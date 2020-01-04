@@ -66,13 +66,16 @@ class Controller extends App\Backend\Api\Controller
         }
 
         try{
-            $o = Orm\Record::factory($object);
+            /**
+             * @var Orm\RecordInterface
+             */
+            $object = Orm\Record::factory($object);
         }catch (\Exception $e){
             $this->response->success([]);
             return;
         }
 
-        $filter['object'] = $o->getName();
+        $filter['object'] = $object->getName();
 
         $history = Model::factory('Historylog');
 

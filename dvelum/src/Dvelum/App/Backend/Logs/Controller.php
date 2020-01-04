@@ -96,8 +96,10 @@ class Controller extends Backend\Ui\Controller
         $manager = new Orm\Record\Manager();
         $list = $manager->getRegisteredObjects();
         $data = [];
-        foreach ($list as $object) {
-            $data[] = ['id' => $object, 'title' => Record\Config::factory($object)->getTitle()];
+        if(!empty($list)){
+            foreach ($list as $object) {
+                $data[] = ['id' => $object, 'title' => Record\Config::factory($object)->getTitle()];
+            }
         }
         $this->response->success($data);
     }
@@ -117,6 +119,9 @@ class Controller extends Backend\Ui\Controller
         $id = intval($filter['id']);
 
         try {
+            /**
+             * @var Orm\RecordInterface $rec
+             */
             $rec = Orm\Record::factory('Historylog', $id);
         } catch (Exception $e) {
             Model::factory('Historylog')->logError('Invalid id requested: ' . $id);

@@ -48,11 +48,10 @@ class Log extends Controller
         $fileName = $logPath . $file . '.sql';
 
         if (file_exists($fileName)) {
-            $data = nl2br(file_get_contents($fileName));
+            $data = nl2br((string)file_get_contents($fileName));
         } else {
             $data = '';
         }
-
         $this->response->json(['success'=>true, 'data'=>$data]);
     }
 

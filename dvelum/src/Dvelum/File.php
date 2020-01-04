@@ -82,9 +82,9 @@ class File
      * Get file list
      * @param string $path
      * @param array $filter - optional  aray of file extensions to search for
-     * @param boolean $recursive - optional	use recursion (default true)
-     * @param integer $type - optional File::Dirs_Only | File::Files_Dirs | File::Files_Only (default File::Files_Dirs)
-     * @param integer $mode - optional RecursiveIteratorIterator::SELF_FIRST | RecursiveIteratorIterator::CHILD_FIRST (default RecursiveIteratorIterator::SELF_FIRST)
+     * @param bool $recursive - optional	use recursion (default true)
+     * @param int $type - optional File::Dirs_Only | File::Files_Dirs | File::Files_Only (default File::Files_Dirs)
+     * @param int $mode - optional RecursiveIteratorIterator::SELF_FIRST | RecursiveIteratorIterator::CHILD_FIRST (default RecursiveIteratorIterator::SELF_FIRST)
      * @throws \Exception
      * @return array
      */

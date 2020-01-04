@@ -52,6 +52,9 @@ class Controller extends App\Backend\Api\Controller
         }
 
         try {
+            /**
+             * @var Orm\RecordInterface $user
+             */
             $user = Orm\Record::factory('user', $id);
             $userData = $user->getData();
             unset($userData['pass']);
@@ -90,10 +93,12 @@ class Controller extends App\Backend\Api\Controller
         $count = $dataQuery->getCount();
         $data = $dataQuery->fetchAll();
 
-        /*
+        /**
          * Fill in group titles Its faster then using join
+         * @var App\Model\Group $groupsModel
          */
-        $groups = Model::factory('Group')->getGroups();
+        $groupsModel = Model::factory('Group');
+        $groups = $groupsModel->getGroups();
         if (!empty($data) && !empty($groups)) {
             foreach ($data as $k => &$v) {
                 if (array_key_exists($v['group_id'], $groups)) {
@@ -138,7 +143,11 @@ class Controller extends App\Backend\Api\Controller
         }
 
         if ($group) {
-            $data = Model::factory('Permissions')->getGroupPermissions($group);
+            /**
+             * @var App\Model\Permissions $permissionsModel
+             */
+            $permissionsModel = Model::factory('Permissions');
+            $data = $permissionsModel->getGroupPermissions($group);
         }
 
         if (!empty($data)) {
@@ -195,6 +204,9 @@ class Controller extends App\Backend\Api\Controller
             return;
         }
 
+        /**
+         * @var App\Model\Permissions $permissionsModel
+         */
         $permissionsModel = Model::factory('Permissions');
 
         $manager = new ModuleManager();
@@ -259,8 +271,12 @@ class Controller extends App\Backend\Api\Controller
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
+        /**
+         * @var App\Model\Permissions $permissionsModel
+         */
+        $permissionsModel = Model::factory('Permissions');
 
-        if (!Model::factory('Permissions')->updateGroupPermissions($groupId, $data)) {
+        if (!$permissionsModel->updateGroupPermissions($groupId, $data)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -281,7 +297,11 @@ class Controller extends App\Backend\Api\Controller
             return;
         }
 
-        if (!Model::factory('Permissions')->updateUserPermissions($userId, $data)) {
+        /**
+         * @var App\Model\Permissions $permissionsModel
+         */
+        $permissionsModel = Model::factory('Permissions');
+        if (!$permissionsModel->updateUserPermissions($userId, $data)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -304,10 +324,10 @@ class Controller extends App\Backend\Api\Controller
         }
 
         /**
-         * @var \Model_Group $gModel
+         * @var App\Model\Group $groupModel
          */
-        $gModel = Model::factory('Group');
-        if ($gModel->addGroup($title)) {
+        $groupModel = Model::factory('Group');
+        if ($groupModel->addGroup($title)) {
             $this->response->success([]);
         } else {
             $this->response->error($this->lang->get('CANT_EXEC'));
@@ -328,8 +348,13 @@ class Controller extends App\Backend\Api\Controller
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
-
+        /**
+         * @var App\Model\Group $gModel
+         */
         $gModel = Model::factory('Group');
+        /**
+         * @var App\Model\Permissions $pModel
+         */
         $pModel = Model::factory('Permissions');
         if ($gModel->removeGroup($id) && $pModel->removeGroup($id)) {
             $this->response->success([]);
@@ -355,6 +380,9 @@ class Controller extends App\Backend\Api\Controller
 
         $object = $this->getPostedData($this->module);
 
+        if(empty($object)){
+            return;
+        }
         if (!$object->get('admin')) {
             $object->set('group_id', null);
         }
@@ -366,11 +394,13 @@ class Controller extends App\Backend\Api\Controller
             $date = date('Y-m-d H:i:s');
             $ip = '127.0.0.1';
 
-            $object->registration_date = $date;
-            $object->confirmation_date = $date;
-            $object->registration_ip = $ip;
-            $object->confirmed = true;
-            $object->last_ip = $ip;
+            $object->setValues([
+                'registration_date' => $date,
+                'confirmation_date' => $date,
+                'registration_ip' => $ip,
+                'confirmed' => true,
+                'last_ip' => $ip
+            ]);
         }
 
         if (!$object->save()) {

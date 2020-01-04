@@ -48,6 +48,11 @@ class Uml extends Controller
         $manager = new Orm\Record\Manager();
 
         $names = $manager->getRegisteredObjects();
+
+        if(empty($names)){
+            $names = [];
+        }
+
         $showObj = $this->request->post('objects','array',[]);
 
         if(empty($showObj)){
@@ -71,6 +76,7 @@ class Uml extends Controller
             }
 
             $data[$objectName]['links'] = $objectConfig->getLinks();
+            $data[$objectName]['fields'] = [];
 
             $objectConfig = Orm\Record\Config::factory($objectName);
             $fields = $objectConfig->getFieldsConfig();
@@ -149,12 +155,15 @@ class Uml extends Controller
 
         $manager = new Orm\Record\Manager();
         $registered = $manager->getRegisteredObjects();
+        if(empty($registered)){
+            $registered = [];
+        }
 
         /**
          * Check objects map from request and set show property
          */
         foreach($data as $k => $item){
-            if(!in_array($k,$registered,true)){
+            if(!in_array($k, $registered,true)){
                 unset($data[$k]);
                 continue;
             }

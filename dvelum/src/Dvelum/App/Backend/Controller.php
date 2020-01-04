@@ -59,10 +59,10 @@ class Controller extends App\Controller
      * Current Orm\Record name
      * @var string
      */
-    protected $objectName = false;
+    protected $objectName;
 
     /**
-     * @var Config\Adapter
+     * @var ConfigInterface
      */
     protected $backofficeConfig;
 
@@ -374,12 +374,19 @@ class Controller extends App\Controller
      * Run designer project
      * @param string $project - path to project file
      * @param string | boolean $renderTo
+     * @throws \Exception
      */
     protected function runDesignerProject($project, $renderTo = false)
     {
         $manager = new Manager($this->appConfig);
-        $project = $manager->findWorkingCopy($project);
-        $manager->renderProject($project, $renderTo, $this->module);
+        /**
+         * @var string $projectPath
+         */
+        $projectPath = $manager->findWorkingCopy($project);
+        if(empty($projectPath)){
+            throw new \Exception('Undefined working copy for ' . $project);
+        }
+        $manager->renderProject($projectPath, $renderTo, $this->module);
     }
 
 

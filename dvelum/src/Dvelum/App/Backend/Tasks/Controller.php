@@ -109,7 +109,7 @@ class Controller extends Backend\Controller
                 if($v['op_total']==0)
                     $v['progress'] = 0;
                 else
-                    $v['progress'] = number_format(($v['op_finished']) / $v['op_total'] , 2) * 100;
+                    $v['progress'] = round(($v['op_finished']) / $v['op_total'] , 2) * 100 ;
             }unset($v);
         }
         $this->response->success($data);

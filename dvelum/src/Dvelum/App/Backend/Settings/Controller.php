@@ -26,6 +26,7 @@ use Dvelum\Orm\Model;
 use Dvelum\App;
 use Dvelum\Config;
 use Dvelum\Orm\Record;
+use Dvelum\Orm\RecordInterface;
 use \Exception;
 
 
@@ -212,6 +213,9 @@ class Controller extends Backend\Controller
             $settingId = $userSettings[$config->getPrimaryKey()];
         }
         try{
+            /**
+             * @var RecordInterface $object
+             */
             $object = Record::factory('User_Settings', $settingId);
             $object->setValues([
                 'user' => $this->user->getId(),
