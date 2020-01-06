@@ -22,6 +22,7 @@ namespace Dvelum\App\Backend\Modules;
 
 use Dvelum\App\Backend;
 use Dvelum\App\Classmap;
+use Dvelum\App\Model\Permissions;
 use Dvelum\App\Module\Generator\GeneratorInterface;
 use Dvelum\App\Module\Manager;
 use Dvelum\Orm;
@@ -228,6 +229,9 @@ class Controller extends Backend\Controller
                     $item = str_replace('/', '\\', $item);
                 }
                 unset($item);
+                /**
+                 * @var string $moduleName
+                 */
                 $moduleName = str_replace($replace, '', $controller);
                 $moduleName = str_replace('\\', '_', $moduleName);
                 $moduleName = trim($moduleName, '_\\');
@@ -333,21 +337,22 @@ class Controller extends Backend\Controller
         $config = Config::storage()->get('backend.php');
         $systemObjects = $config->get('system_objects');
 
-        foreach ($list as $key) {
-            if (
-                // not system object
-                !in_array(ucfirst($key), $systemObjects, true)
-                &&
-                // no core 1.x backend controller
-                !class_exists('Backend_' . Utils\Strings::formatClassName($key) . '_Controller')
-                &&
-                // no core 2.x backend controller
-                !class_exists('App\\Backend\\' . Utils\Strings::formatClassName($key) . '\\Controller')
-            ) {
-                $data[] = array('id' => $key, 'title' => Orm\Record\Config::factory($key)->getTitle());
+        if(!empty($list)){
+            foreach ($list as $key) {
+                if (
+                    // not system object
+                    !in_array(ucfirst($key), $systemObjects, true)
+                    &&
+                    // no core 1.x backend controller
+                    !class_exists('Backend_' . Utils\Strings::formatClassName($key) . '_Controller')
+                    &&
+                    // no core 2.x backend controller
+                    !class_exists('App\\Backend\\' . Utils\Strings::formatClassName($key) . '\\Controller')
+                ) {
+                    $data[] = array('id' => $key, 'title' => Orm\Record\Config::factory($key)->getTitle());
+                }
             }
         }
-
         $this->response->success($data);
     }
 
@@ -424,11 +429,11 @@ class Controller extends Backend\Controller
 
         $userInfo = $this->user->getInfo();
         /**
-         * @var \Model_Permissions $permissionModel
+         * @var Permissions $permissionModel
          */
         $permissionModel = Model::factory('Permissions');
 
-        if (!$permissionModel->setGroupPermissions($userInfo['group_id'], $object, 1, 1, 1, 1)) {
+        if (!$permissionModel->setGroupPermissions($userInfo['group_id'], $object, true, true, true, true)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -663,7 +668,7 @@ class Controller extends Backend\Controller
             return;
         }
 
-        $files = File::scanFiles($dirPath . $path, false, false, File::DIRS_ONLY);
+        $files = File::scanFiles($dirPath . $path, [], false, File::DIRS_ONLY);
 
         if (empty($files)) {
             $this->response->json([]);

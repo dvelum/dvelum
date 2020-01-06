@@ -314,6 +314,10 @@ class DataView extends ApiController
 
             if ($fieldObj->isMultiLink()) {
                 $linkedObject = $fieldObj->getLinkedObject();
+                if(empty($linkedObject)){
+                    $this->response->error($this->lang->get('CANT_EXEC'));
+                    return;
+                }
                 $linkedCfg = $this->ormService->config($linkedObject);
                 $related[] = array(
                     'field' => $field,
@@ -352,7 +356,7 @@ class DataView extends ApiController
                     $newField->setName($field);
 
                     if ($readOnly && $newField->getConfig()->isValidProperty('readOnly')) {
-                        $newField->readOnly = true;
+                        $newField->set('readOnly', true);
                     }
 
                     if ($fieldObj->isText() && $fieldObj->isHtml()) {
@@ -364,7 +368,7 @@ class DataView extends ApiController
             }
         }
 
-        $tab->items = '[' . implode(',', $data) . ']';
+        $tab->set('items', '[' . implode(',', $data) . ']');
         $shardKey = 'shard';
 
         if ($objectConfig->isShardRequired()) {
@@ -438,6 +442,11 @@ class DataView extends ApiController
 
         $objectConfig = $this->ormService->config($object);
         $mapField = $objectConfig->getBucketMapperKey();
+
+        if(empty($mapField)){
+            $this->response->error($this->lang->get('CANT_EXEC'));
+            return;
+        }
         $field = $objectConfig->getField($mapField);
 
         /**

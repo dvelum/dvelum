@@ -42,7 +42,7 @@ interface StorageInterface
 
     /**
      * Get list of available configs
-     * @param bool $path - optional, default false
+     * @param string|bool $path - optional, default false
      * @param bool $recursive - optional, default false
      * @return array
      */

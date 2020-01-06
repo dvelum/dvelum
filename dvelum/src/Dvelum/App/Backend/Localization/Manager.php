@@ -38,7 +38,7 @@ class Manager
     protected $appConfig;
     /**
      * Message language
-     * @var Lang
+     * @var Lang\Dictionary
      */
     protected $lang;
 
@@ -96,7 +96,7 @@ class Manager
 
     /**
      * Get language subpackages
-     * @param string $language - optional
+     * @param string|bool $lang - optional
      * @return array
      */
     public function getSubPackages($lang = false)
@@ -149,25 +149,24 @@ class Manager
 
     /**
      * Rebuild language index
-     * @param string $subPackage - optional
+     * @param string | bool $subPackage - optional
      * @throws Exception
      */
     public function rebuildIndex($subPackage = false)
     {
-        $index = [];
         $indexFile = '';
-        $indexBase = '';
 
-        if (!$subPackage) {
+        if (empty($subPackage)) {
             $indexName = $this->getIndexName();
             $indexBaseName = $this->indexLanguage . '.php';
         } else {
-            $indexName = $this->getIndexName($subPackage);
+            $indexName = $this->getIndexName((string)$subPackage);
             $indexBaseName = $this->indexLanguage . '/' . $subPackage . '.php';
         }
 
-        $indexBase = Lang::storage()->get($indexBaseName);
-        if ($indexBase === false) {
+        try{
+            $indexBase = Lang::storage()->get($indexBaseName);
+        }catch (\Throwable $e){
             throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $indexBaseName);
         }
 
@@ -175,16 +174,18 @@ class Manager
 
         $indexPath = Lang::storage()->getPath($indexName);
         $writePath = Lang::storage()->getWrite();
-        if (!file_exists($indexPath) && !file_exists($writePath . $indexName)) {
+        if (!file_exists((string)$indexPath) && !file_exists($writePath . $indexName)) {
             if (!\Dvelum\Utils::exportArray($writePath . $indexFile, [])) {
                 throw new Exception($this->lang->get('CANT_WRITE_FS') . ' ' . $writePath . $indexName);
             }
         }
         $storage = Lang::storage();
-        $indexConfig = $storage->get($indexName);
-        if ($indexConfig === false) {
+        try{
+            $indexConfig = $storage->get($indexName);
+        }catch (\Throwable $e){
             throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $indexName);
         }
+
         $indexConfig->removeAll();
         $indexConfig->setData($baseKeys);
         if (!$storage->save($indexConfig)) {
@@ -214,7 +215,7 @@ class Manager
 
         $indexFile = Lang::storage()->getPath($indexName);
 
-        if (!file_exists($indexFile)) {
+        if (!file_exists((string)$indexFile)) {
             return false;
         }
 
@@ -301,10 +302,18 @@ class Manager
      * Add key to localization index
      * @param string $key
      * @param string $dictionary
+     * @throws \Exception
      */
     public function addToIndex($key, $dictionary = '')
     {
+        /**
+         * @var array $index
+         */
         $index = $this->getIndex($dictionary);
+        if(empty($index)){
+            $index = [];
+        }
+
         if (!in_array($key, $index, true)) {
             $index[] = $key;
         }
@@ -316,20 +325,26 @@ class Manager
      * Remove key from localization index
      * @param string $key
      * @param string $dictionary
+     * @throws \Exception
      */
     public function removeFromIndex($key, $dictionary = '')
     {
+        /**
+         * @var array $index
+         */
         $index = $this->getIndex($dictionary);
+        if(empty($index)){
+            $index = [];
+        }
+
         if (!in_array($key, $index, true)) {
             return;
         }
-
         foreach ($index as $k => $v) {
             if ($v === $key) {
                 unset($index[$k]);
             }
         }
-
         $this->updateIndex($index, $dictionary);
     }
 
@@ -357,6 +372,13 @@ class Manager
             $index = $this->getIndex();
         }
 
+        /**
+         * @var array $index
+         */
+        if(empty($index)){
+            $index = [];
+        }
+
         // add index for dictionary key
         if (!in_array($key, $index, true)) {
             if ($isSub) {
@@ -366,15 +388,14 @@ class Manager
             }
         }
 
-        $mainLangs = $this->getLangs(true);
-
         $writePath = Lang::storage()->getWrite();
         $storage = Lang::storage();
         if (!$isSub) {
             foreach ($langs as $langName => $value) {
                 $langFile = $writePath . $langName . '.php';
-                $langConfig = $storage->get($langName . '.php');
-                if ($langConfig === false) {
+                try{
+                    $langConfig = $storage->get($langName . '.php');
+                }catch (\Throwable $e){
                     throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $langName);
                 }
                 $langConfig->set($key, $value);
@@ -386,8 +407,9 @@ class Manager
         } else {
             foreach ($langs as $langName => $value) {
                 $langFile = $writePath . $langName . '/' . $dictionaryName . '.php';
-                $langConfig = Lang::storage()->get($langName . '/' . $dictionaryName . '.php');
-                if ($langConfig === false) {
+                try{
+                    $langConfig = Lang::storage()->get($langName . '/' . $dictionaryName . '.php');
+                }catch (\Throwable $e){
                     throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $langName . '/' . $dictionaryName);
                 }
                 $langConfig->set($key, $value);
@@ -401,9 +423,9 @@ class Manager
     /**
      * Check if file exists and writable
      * @param string $file
-     * @return boolean
+     * @return bool
      */
-    protected function checkCanEdit($file)
+    protected function checkCanEdit($file) : bool
     {
         if (file_exists($file) && is_writable($file)) {
             return true;
@@ -443,10 +465,12 @@ class Manager
         if (!$isSub) {
             foreach ($mainLangs as $langName) {
                 $langFile = $writePath . $langName . '.php';
-                $langConfig = Lang::storage()->get($langName . '.php');
-                if ($langConfig === false) {
+                try{
+                    $langConfig = Lang::storage()->get($langName . '.php');
+                }catch (\Throwable $e){
                     throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $langName);
                 }
+
                 $langConfig->remove($key);
                 if (!$storage->save($langConfig)) {
                     throw new Exception($this->lang->get('CANT_WRITE_FS') . ' ' . $langFile);
@@ -455,10 +479,12 @@ class Manager
         } else {
             foreach ($mainLangs as $langName) {
                 $langFile = $writePath . $langName . '/' . $dictionaryName . '.php';
-                $langConfig = Lang::storage()->get($langName . '/' . $dictionaryName . '.php');
-                if ($langConfig === false) {
+                try{
+                    $langConfig = Lang::storage()->get($langName . '/' . $dictionaryName . '.php');
+                }catch (\Throwable $e){
                     throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $langName . '/' . $dictionaryName);
                 }
+
                 $langConfig->remove($key);
                 if (!$storage->save($langConfig)) {
                     throw new Exception($this->lang->get('CANT_WRITE_FS') . ' ' . $langFile);

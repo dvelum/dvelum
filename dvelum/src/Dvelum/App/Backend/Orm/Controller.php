@@ -17,7 +17,7 @@ use Dvelum\Utils;
 class Controller extends \Dvelum\App\Backend\Controller implements RouterInterface
 {
     /**
-     * @var array
+     * @var Config\ConfigInterface
      */
     protected $routes;
 
@@ -201,6 +201,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         $dbObjectManager = new Orm\Record\Manager();
         $names = $dbObjectManager->getRegisteredObjects();
+        if(empty($names)){
+            $names = [];
+        }
 
         $flag = false;
         $ormConfig = Config::storage()->get('orm.php');
@@ -216,10 +219,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
                     $flag = true;
                 }
             }
-
-            /*
-             * Add foreign keys
-             */
+           /*
+            * Add foreign keys
+            */
             foreach ($names as $name) {
                 try {
                     $builder = Orm\Record\Builder::factory($name);
@@ -230,24 +232,25 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
                     $flag = true;
                 }
             }
-
         } else {
-            foreach ($names as $name) {
-                try {
-                    $builder = Orm\Record\Builder::factory($name);
-                    $builder->build();
-                } catch (\Exception $e) {
-                    $flag = true;
+                foreach ($names as $name) {
+                    try {
+                        $builder = Orm\Record\Builder::factory($name);
+                        $builder->build();
+                    } catch (\Exception $e) {
+                        $flag = true;
+                    }
                 }
-            }
         }
 
         if ($ormConfig->get('sharding')) {
-
             $sharding = Config::storage()->get('sharding.php');
             $shardsFile = $sharding->get('shards');
             $shardsConfig = Config::storage()->get($shardsFile);
             $registeredObjects = $dbObjectManager->getRegisteredObjects();
+            if(empty($registeredObjects)){
+                $registeredObjects = [];
+            }
 
             foreach ($shardsConfig as $item) {
                 $shardId = $item['id'];
@@ -263,6 +266,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
                         $flag = true;
                     }
                 }
+
                 //build foreign keys
                 if ($ormConfig->get('foreign_keys')) {
                     foreach ($registeredObjects as $index => $object) {
@@ -373,7 +377,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             Compilation time: ' . number_format(microtime(true) - $time, 5) . ' sec<br>
             Files compiled: ' . sizeof($sources) . ' <br>
             Total size: ' . Utils::formatFileSize($totalSize) . '<br>
-            Compiled File size: ' . Utils::formatFileSize(filesize($wwwPath . 'js/app/system/ORM.js')) . ' <br>
+            Compiled File size: ' . Utils::formatFileSize((int) filesize($wwwPath . 'js/app/system/ORM.js')) . ' <br>
         ';
         exit;
     }

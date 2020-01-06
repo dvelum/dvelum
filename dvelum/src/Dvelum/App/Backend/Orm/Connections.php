@@ -131,7 +131,7 @@ class Connections
         {
             $path = $this->config[$devType]['dir'] . $id . '.php';
 
-            if(!$c = Config\Factory::create( [
+            $c = Config\Factory::create([
                 'username' => '',
                 'password' => '',
                 'dbname'   => '',
@@ -141,9 +141,7 @@ class Connections
                 'adapter'  => 'Mysqli',
                 'driver'  => 'Mysqli',
                 'transactionIsolationLevel' => 'default'
-            ],$path))
-
-            return false;
+            ],$path);
 
             if(!Config::storage()->save($c))
                 return false;

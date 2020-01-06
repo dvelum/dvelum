@@ -430,10 +430,11 @@ class Connections extends \Dvelum\App\Backend\Controller
 
         $tablesObjects = [];
 
-        foreach ($objects as $object)
-        {
-            $model = Model::factory($object);
-            $tablesObjects[$model->table()][] = $object;
+        if(!empty($objects)){
+            foreach ($objects as $object) {
+                $model = Model::factory($object);
+                $tablesObjects[$model->table()][] = $object;
+            }
         }
 
         if(!empty($tables))
