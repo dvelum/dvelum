@@ -84,7 +84,7 @@ class Record extends Form\Adapter
             $field = $objectConfig->getField($name);
 
 
-            if($field->isRequired() && !$objectConfig->isSystemField($name) &&  (!isset($posted[$name]) || !strlen($posted[$name]))) {
+            if($field->isRequired() && !$objectConfig->getField($name)->isSystem() &&  (!isset($posted[$name]) || !strlen($posted[$name]))) {
                 $this->errors[] = new Form\Error($this->lang->get('CANT_BE_EMPTY'), $name);
                 continue;
             }

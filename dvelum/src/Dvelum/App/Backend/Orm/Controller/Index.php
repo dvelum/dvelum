@@ -81,10 +81,12 @@ class Index extends Controller
             return;
         }
 
-        if($index!=$name)
-            $objectCfg->removeIndex($index);
+        $indexManager = new Orm\Record\Config\IndexManager();
+        if($index!=$name){
+            $indexManager->removeIndex($objectCfg, $index);
+        }
 
-        $objectCfg->setIndexConfig($name, $indexData);
+        $indexManager->setIndexConfig($objectCfg, $name, $indexData);
 
         if($objectCfg->save())
             $this->response->success();
@@ -116,7 +118,8 @@ class Index extends Controller
             return;
         }
 
-        $objectCfg->removeIndex($index);
+        $indexManager = new Orm\Record\Config\IndexManager();
+        $indexManager->removeIndex($objectCfg, $index);
 
         if($objectCfg->save())
             $this->response->success();

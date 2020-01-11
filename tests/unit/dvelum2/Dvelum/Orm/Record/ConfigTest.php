@@ -18,11 +18,12 @@ class ConfigTest extends TestCase
 
     public function testCanUseForeignKeys()
     {
+        $keyManager = new Record\Config\ForeignKey();
         $cfg = Record\Config::factory('User');
-        $this->assertTrue($cfg->canUseForeignKeys());
+        $this->assertTrue($keyManager->canUseForeignKeys($cfg));
 
         $cfg = Record\Config::factory('Historylog');
-        $this->assertFalse($cfg->canUseForeignKeys());
+        $this->assertFalse($keyManager->canUseForeignKeys($cfg));
     }
 
     public function testGetFields()
@@ -100,9 +101,12 @@ class ConfigTest extends TestCase
     {
         $cfg = Record\Config::factory('User');
         $fldCfg = $cfg->getFieldConfig('name');
-        $cfg->removeField('name');
+
+        $fieldManager = new Record\Config\FieldManager();
+        $fieldManager->removeField($cfg, 'name');
+
         $this->assertFalse($cfg->fieldExists('v'));
-        $cfg->setFieldConfig('name', $fldCfg);
+        $fieldManager->setFieldConfig($cfg, 'name', $fldCfg);
         $this->assertTrue($cfg->fieldExists('name'));
     }
 
@@ -116,8 +120,10 @@ class ConfigTest extends TestCase
     public function testIndexExists()
     {
         $cfg = Record\Config::factory('User');
-        $this->assertTrue($cfg->indexExists('PRIMARY'));
-        $this->assertFalse($cfg->indexExists('undefinedindex'));
+        $indexManager = new Record\Config\IndexManager;
+
+        $this->assertTrue($indexManager->indexExists($cfg, 'PRIMARY'));
+        $this->assertFalse($indexManager->indexExists($cfg, 'undefinedindex'));
     }
 
     public function testIsUnique()
@@ -174,12 +180,11 @@ class ConfigTest extends TestCase
         $cfg = Record\Config::factory('test');
         $this->assertFalse($cfg->isSystem());
 
-        $cfg = Record\Config::factory('User');
+        $cfg = Record\Config::factory('Page');
         $this->assertTrue($cfg->isSystem());
 
-
-        $this->assertTrue($cfg->isSystemField('id'));
-        $this->assertFalse($cfg->isSystemField('code'));
+        $this->assertTrue($cfg->getField('id')->isSystem());
+        $this->assertFalse($cfg->getField('code')->isSystem());
     }
 
     public function testgetLinkTitle()
@@ -256,17 +261,18 @@ class ConfigTest extends TestCase
     public function testIsSystemField()
     {
         $cfg = Record\Config::factory('test');
-        $this->assertFalse($cfg->isSystemField('varchar'));
-        $this->assertTrue($cfg->isSystemField('id'));
+        $this->assertFalse($cfg->getField('varchar')->isSystem());
+        $this->assertTrue($cfg->getField('id')->isSystem());
 
         $cfg = Record\Config::factory('User');
-        $this->assertTrue($cfg->isSystemField('id'));
+        $this->assertTrue($cfg->getField('id')->isSystem());
     }
 
     public function testGetForeignKeys()
     {
         $cfg = Record\Config::factory('User_auth');
-        $keys = $cfg->getForeignKeys();
+        $keyManager = new Record\Config\ForeignKey();
+        $keys = $keyManager->getForeignKeys($cfg);
         $keys = \Dvelum\Utils::rekey('curField', $keys);
         $this->assertTrue(isset($keys['user']));
         $this->assertFalse(isset($keys['config']));
@@ -283,6 +289,7 @@ class ConfigTest extends TestCase
     public function testHasManyToMany()
     {
         $cfg = Record\Config::factory('test');
-        $this->assertFalse($cfg->hasManyToMany());
+        $relation = new Record\Config\Relation();
+        $this->assertFalse($relation->hasManyToMany($cfg));
     }
 }

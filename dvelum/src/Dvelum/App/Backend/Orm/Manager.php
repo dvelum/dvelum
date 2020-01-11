@@ -25,6 +25,7 @@ use Dvelum\File;
 use Dvelum\Orm;
 use Dvelum\Lang;
 use Dvelum\Config;
+use Dvelum\Orm\Record\Builder;
 use Dvelum\Orm\Record\Config\Translator;
 use \Exception;
 
@@ -51,7 +52,9 @@ class Manager
         //	return self::ERROR_HAS_LINKS;
 
         $objectConfig = Orm\Record\Config::factory($name);
-        $manyToMany = $objectConfig->getManyToMany();
+
+        $relation = new Orm\Record\Config\Relation();
+        $manyToMany = $relation->getManyToMany($objectConfig);
 
         if (!empty($manyToMany)) {
             $linkedFields = [];
@@ -210,7 +213,9 @@ class Manager
         } catch (\Exception $e) {
             return false;
         }
-        if (!$cfg->indexExists($index)) {
+
+        $indexManager = new Orm\Record\Config\IndexManager();
+        if (!$indexManager->indexExists($cfg,$index)) {
             return false;
         }
 
@@ -239,7 +244,8 @@ class Manager
 
         $localisations = $this->getLocalisations();
 
-        $objectCfg->removeField($fieldName);
+        $fieldManager = new Orm\Record\Config\FieldManager();
+        $fieldManager->removeField($objectCfg, $fieldName);
 
         if (!$objectCfg->save()) {
             return self::ERROR_FS;
@@ -323,7 +329,13 @@ class Manager
             }
         }
 
-        if (!$cfg->renameField($oldName, $newName)) {
+        $fieldManager = new Orm\Record\Config\FieldManager();
+        if (!$fieldManager->renameField($cfg, $oldName, $newName) || !$cfg->save()) {
+            return self::ERROR_EXEC;
+        }
+        // Rebuild database
+        $builder = Builder::factory($cfg->getName() , false);
+        if(!$builder->renameField($oldName , $newName)){
             return self::ERROR_EXEC;
         }
 
@@ -406,6 +418,8 @@ class Manager
             return self::ERROR_FS;
         }
 
+        $fieldManager = new Orm\Record\Config\FieldManager();
+
         if (!empty($assoc)) {
             foreach ($assoc as $config) {
                 $object = $config['object'];
@@ -415,7 +429,7 @@ class Manager
 
                 foreach ($fields as $fName => $fType) {
                     if ($oConfig->getField($fName)->isLink()) {
-                        if (!$oConfig->setFieldLink($fName, $newName)) {
+                        if (!$fieldManager->setFieldLink($oConfig, $fName, $newName)) {
                             return self::ERROR_EXEC;
                         }
                     }
@@ -444,6 +458,9 @@ class Manager
         $idObject = $oConfig->getDistributedIndexObject();
         $idObjectConfig = Orm\Record\Config::factory($idObject);
 
+        $indexManager = new Orm\Record\Config\IndexManager();
+        $fieldManager = new Orm\Record\Config\FieldManager();
+
         foreach ($distIndexes as $name => $info) {
             if ($name == $idObjectConfig->getPrimaryKey()) {
                 continue;
@@ -457,8 +474,8 @@ class Manager
             if (isset($cfg['unique']) && $cfg['unique']) {
                 $unique = true;
             }
-            $idObjectConfig->setFieldConfig($name, $cfg);
-            $idObjectConfig->setIndexConfig($name, [
+            $fieldManager->setFieldConfig($idObjectConfig, $name, $cfg);
+            $indexManager->setIndexConfig($idObjectConfig, $name, [
                 'columns' => [$name],
                 'fulltext' => false,
                 'unique' => $unique,

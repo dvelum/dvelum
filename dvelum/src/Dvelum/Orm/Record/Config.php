@@ -24,7 +24,6 @@ use Dvelum\Orm;
 use Dvelum\Security\CryptServiceInterface;
 use Dvelum\Service;
 use Dvelum\Config as Cfg;
-use Dvelum\Orm\Model;
 use Dvelum\Orm\Exception;
 
 
@@ -462,24 +461,9 @@ class Config
      */
     public function getLinks($linkTypes = [Orm\Record\Config::LINK_OBJECT, Orm\Record\Config::LINK_OBJECT_LIST], $groupByObject = true) : array
     {
-        $data = [];
-        $fields = $this->getFieldsConfig(true);
-        foreach ($fields as $name=>$cfg)
-        {
-            if(isset($cfg['type']) && $cfg['type']==='link'
-                && isset($cfg['link_config']['link_type'])
-                && in_array($cfg['link_config']['link_type'], $linkTypes , true)
-                && isset($cfg['link_config']['object'])
-            ){
-                if($groupByObject)
-                    $data[$cfg['link_config']['object']][$name] = $cfg['link_config']['link_type'];
-                else
-                    $data[$name] = ['object'=>$cfg['link_config']['object'],'link_type'=>$cfg['link_config']['link_type']];
-            }
-        }
-        return $data;
+        $relation = new Orm\Record\Config\Relation();
+        return $relation->getLinks($this, $linkTypes, $groupByObject);
     }
-
 
     /**
      * Check if the object uses history log
@@ -534,16 +518,6 @@ class Config
     public function fieldExists(string $field) : bool
     {
         return isset($this->config['fields'][$field]);
-    }
-
-    /**
-     * Check if Index exists
-     * @param string $index
-     * @return bool
-     */
-    public function indexExists($index) : bool
-    {
-        return isset($this->config['indexes'][$index]);
     }
 
     /**
@@ -655,8 +629,7 @@ class Config
         $translation = $translator->getTranslation($this->getName(), true);
         $translation['title'] = $this->config->get('title');
 
-        foreach ($fields as $field =>& $cfg)
-        {
+        foreach ($fields as $field =>& $cfg) {
             $translation['fields'][$field] = $cfg['title'];
             unset($cfg['title']);
         } unset($cfg);
@@ -694,61 +667,6 @@ class Config
     public function getData() : array
     {
         return $this->config->__toArray();
-    }
-
-    /**
-     * Configure the field
-     * @param string $field
-     * @param array $config
-     */
-    public function setFieldConfig(string $field , array $config) : void
-    {
-        $cfg = & $this->config->dataLink();
-        $cfg['fields'][$field] = $config;
-    }
-
-    /**
-     * Update field link, set linked object name
-     * @param string $field
-     * @param string $linkedObject
-     * @return bool
-     * @throws \Exception
-     */
-    public function setFieldLink(string $field , string $linkedObject) : bool
-    {
-        if(!$this->getField($field)->isLink())
-            return false;
-
-        $cfg = & $this->config->dataLink();
-        $cfg['fields'][$field]['link_config']['object'] = $linkedObject;
-        return true;
-    }
-
-    /**
-     * Configure the index
-     * @param string $index
-     * @param array $config
-     * @return void
-     * @throws \Exception
-     */
-    public function setIndexConfig($index , array $config) : void
-    {
-        $indexes = $this->getIndexesConfig();
-        $indexes[$index] = $config;
-        $this->config->set('indexes', $indexes);
-    }
-
-    /**
-     * Configure distributed index
-     * @param string $index
-     * @param array $config
-     * @throws \Exception
-     */
-    public function setDistributedIndexConfig(string $index, array $config)
-    {
-        $indexes = $this->getDistributedIndexesConfig();
-        $indexes[$index] = $config;
-        $this->config->set('distributed_indexes', $indexes);
     }
 
     /**
@@ -842,102 +760,6 @@ class Config
     }
 
     /**
-     * Rename field and rebuild the database table
-     * @param string $oldName
-     * @param string $newName
-     * @return bool
-     * @throws \Exception
-     */
-    public function renameField(string $oldName , string $newName) : bool
-    {
-        $fields = $this->getFieldsConfig();
-        $fields[$newName] = $fields[$oldName];
-        unset($fields[$oldName]);
-
-        $this->config->set('fields', $fields);
-        $indexes = $this->getIndexesConfig();
-        /**
-         * Check for indexes for field
-         */
-        foreach ($indexes as $index => &$config)
-        {
-            if(isset($config['columns']) && !empty($config['columns']))
-            {
-                /*
-                 * Rename index link
-                 */
-                foreach ($config['columns'] as $id => &$value){
-                    if($value === $oldName){
-                        $value = $newName;
-                    }
-                }unset($value);
-            }
-        }
-        $this->config->set('indexes', $indexes);
-        $builder = Orm\Record\Builder::factory($this->getName() , false);
-        if(!$builder->renameField($oldName , $newName)){
-            return false;
-        }
-        return $this->save();
-    }
-
-    /**
-     * Remove field
-     * @param string $name
-     * @throws \Exception
-     */
-    public function removeField(string $name) : void
-    {
-        $fields = $this->getFieldsConfig();
-
-        if(!isset($fields[$name]))
-            return;
-
-        unset($fields[$name]);
-        $this->config->set('fields' , $fields);
-
-        $indexes = $this->getIndexesConfig();
-        /**
-         * Check for indexes for field
-         */
-        foreach ($indexes as $index => &$config)
-        {
-            if(isset($config['columns']) && !empty($config['columns']))
-            {
-                /*
-                 * Remove field from index
-                 */
-                foreach ($config['columns'] as $id=>$value){
-                    if($value === $name)
-                        unset($config['columns'][$id]);
-                }
-                /*
-                 * Remove empty index
-                 */
-                if(empty($config['columns']))
-                    unset($indexes[$index]);
-
-            }
-        }
-        $this->config->set('indexes', $indexes);
-    }
-
-    /**
-     * Delete index
-     * @param string $name
-     * @return void
-     * @throws \Exception
-     */
-    public function removeIndex(string $name) : void
-    {
-        $indexes = $this->getIndexesConfig();
-        if(!isset($indexes[$name]))
-            return;
-        unset($indexes[$name]);
-        $this->config->set('indexes' , $indexes);
-    }
-
-    /**
      * Get Config object
      * @return Cfg\ConfigInterface
      */
@@ -957,127 +779,6 @@ class Config
             return true;
         else
             return false;
-    }
-
-    /**
-     * Check system field
-     * @param string $field
-     * @return bool
-     * @throws \Exception
-     */
-    public function isSystemField(string $field) : bool
-    {
-        if($field === $this->getPrimaryKey())
-            return true;
-
-        $sFields = $this->getVcFields();
-
-        if(isset($sFields[$field]))
-            return true;
-
-        $encFields = $this->getEncryptionFields();
-        if(isset($encFields[$field]))
-            return true;
-
-        $distributed = $this->getDistributedFields();
-        if(isset($distributed[$field]))
-            return true;
-
-        return false;
-    }
-
-    /**
-     * Get list of foreign keys
-     * @return array
-     * array(
-     * 	array(
-     *      'curDb' => string,
-     * 		'curObject' => string,
-     * 		'curTable' => string,
-     *		'curField'=> string,
-     *		'isNull'=> boolean,
-     *		'toDb'=> string,
-     *		'toObject'=> string,
-     *		'toTable'=> string,
-     *		'toField'=> string,
-     *      'onUpdate'=> string
-     *      'onDelete'=> string
-     *   ),
-     *  ...
-     *  )
-     * @throws \Exception
-     * @todo Refactor
-     */
-    public function getForeignKeys() : array
-    {
-        if(!$this->canUseForeignKeys())
-            return [];
-
-        $curModel = Model::factory($this->getName());
-        $curDb = $curModel->getDbConnection();
-        $curDbCfg = $curDb->getConfig();
-
-        $links = $this->getLinks([Orm\Record\Config::LINK_OBJECT]);
-
-        if(empty($links))
-            return [];
-
-        $keys = [];
-        foreach ($links as $object=>$fields)
-        {
-            $oConfig = static::factory($object);
-            /*
-             *  Only InnoDb implements Foreign Keys
-             */
-            if(!$oConfig->isTransact())
-                continue;
-
-            $oModel = Model::factory($object);
-            /*
-             * Foreign keys are only available for objects with the same database connection
-             */
-            if($curDb !== $oModel->getDbConnection())
-                continue;
-
-            foreach ($fields as $name => $linkType) {
-                $field = $this->getField($name);
-
-                if ($field->isRequired()) {
-                    $onDelete = 'RESTRICT';
-                } else {
-                    $onDelete = 'SET NULL';
-                }
-
-                $keys[] = array(
-                    'curDb' => $curDbCfg['dbname'],
-                    'curObject' => $this->getName(),
-                    'curTable' => $curModel->table(),
-                    'curField' => $name,
-                    'toObject' => $object,
-                    'toTable' => $oModel->table(),
-                    'toField' => $oConfig->getPrimaryKey(),
-                    'toDb' => $curDbCfg['dbname'],
-                    'onUpdate' => 'CASCADE',
-                    'onDelete' => $onDelete
-                );
-            }
-        }
-        return $keys;
-    }
-    /**
-     * Check if Foreign keys can be used
-     * @return bool
-     * @throws \Exception
-     */
-    public function canUseForeignKeys() : bool
-    {
-        if($this->config->offsetExists('disable_keys') && $this->config->get('disable_keys'))
-            return false;
-
-        if(!$this->isTransact())
-            return false;
-
-        return true;
     }
 
     /**
@@ -1170,43 +871,6 @@ class Config
     }
 
     /**
-     * Check if object has ManyToMany relations
-     * @return bool
-     */
-    public function hasManyToMany() : bool
-    {
-        $relations = $this->getManyToMany();
-        if(!empty($relations)){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    /**
-     * Get manyToMany relations
-     * @return array
-     */
-    public function getManyToMany() : array
-    {
-        $result = [];
-        $fieldConfigs = $this->getFieldsConfig();
-        foreach($fieldConfigs as $field=>$cfg)
-        {
-            if(isset($cfg['type']) && $cfg['type']==='link'
-                && isset($cfg['link_config']['link_type'])
-                && $cfg['link_config']['link_type'] == self::LINK_OBJECT_LIST
-                && isset($cfg['link_config']['object'])
-                && isset($cfg['link_config']['relations_type'])
-                && $cfg['link_config']['relations_type'] == self::RELATION_MANY_TO_MANY
-            ){
-                $result[$cfg['link_config']['object']][$field] = self::RELATION_MANY_TO_MANY;
-            }
-        }
-        return $result;
-    }
-
-    /**
      * Get name of relations Db_Object
      * @param string $field
      * @return bool|string
@@ -1214,18 +878,8 @@ class Config
      */
     public function getRelationsObject(string $field)
     {
-        $cfg = $this->getFieldConfig($field);
-
-        if(isset($cfg['type']) && $cfg['type']==='link'
-            && isset($cfg['link_config']['link_type'])
-            && $cfg['link_config']['link_type'] == self::LINK_OBJECT_LIST
-            && isset($cfg['link_config']['object'])
-            && isset($cfg['link_config']['relations_type'])
-            && $cfg['link_config']['relations_type'] == self::RELATION_MANY_TO_MANY
-        ){
-            return $this->getName().'_'.$field.'_to_'.$cfg['link_config']['object'];
-        }
-        return false;
+        $relation = new Orm\Record\Config\Relation();
+        return $relation->getRelationsObject($this, $field);
     }
 
     /**
@@ -1298,49 +952,7 @@ class Config
      */
     public function getField(string $name) : Config\Field
     {
-        $fields = $this->config->get('fields');
-        $config = $fields[$name];
-
-        $config['name'] = $name;
-        $fieldClass = 'Field';
-
-        //detect field type
-        $dbType = $config['db_type'];
-
-        if(isset($config['type']) && $config['type']==='link'  && isset($config['link_config']) && isset($config['link_config']['link_type'])){
-            switch ($config['link_config']['link_type']){
-                case Orm\Record\Config::LINK_OBJECT;
-                    $fieldClass = 'ObjectItem';
-                    break;
-                case Orm\Record\Config::LINK_OBJECT_LIST;
-                    $fieldClass = 'ObjectList';
-                    break;
-                case 'dictionary';
-                    $fieldClass = 'Dictionary';
-                    break;
-            }
-        }else{
-            if(in_array($dbType,Orm\Record\Builder::$intTypes,true)){
-                $fieldClass = 'Integer';
-            }elseif(in_array($dbType,Orm\Record\Builder::$charTypes,true)){
-                $fieldClass = 'Varchar';
-            }elseif (in_array($dbType,Orm\Record\Builder::$textTypes,true)){
-                $fieldClass = 'Text';
-            }elseif (in_array($dbType,Orm\Record\Builder::$floatTypes,true)){
-                $fieldClass = 'Floating';
-            }else{
-                $fieldClass = $dbType;
-            }
-        }
-        $fieldClass = 'Dvelum\\Orm\\Record\\Config\\Field\\' . ucfirst((string)$fieldClass);
-
-        if(class_exists($fieldClass)){
-            $field = new $fieldClass($config);
-        }else{
-            $field = new Config\Field($config);
-        }
-
-        return $field;
+       return \Dvelum\Orm\Record\Config\FieldFactory::getField($this, $name);
     }
 
     /**
@@ -1411,25 +1023,6 @@ class Config
                 return false;
         }
     }
-    /**
-     * Delete distributed index
-     * @param string $name
-     * @return bool
-     * @throws \Exception
-     */
-    public function removeDistributedIndex(string $name) : bool
-    {
-        $indexes = $this->getDistributedIndexesConfig();
-
-        if(!isset($indexes[$name]) || $indexes[$name]['is_system'])
-            return false;
-
-        unset($indexes[$name]);
-
-        $this->config->set('distributed_indexes' , $indexes);
-
-        return true;
-    }
 
     /**
      * Get object for storing distributed id for current object
@@ -1452,7 +1045,7 @@ class Config
     {
         if($this->isDistributed()){
             $sharding = $this->getShardingType();
-            if(in_array($sharding,[self::SHARDING_TYPE_GLOABAL_ID,self::SHARDING_TYPE_KEY])){
+            if(in_array($sharding,[self::SHARDING_TYPE_GLOABAL_ID, self::SHARDING_TYPE_KEY])){
                 return true;
             }
         }

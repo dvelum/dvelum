@@ -259,7 +259,8 @@ abstract class AbstractAdapter implements BuilderInterface
      */
     protected function checkRelations()
     {
-        $list = $this->objectConfig->getManyToMany();
+        $relation = new Orm\Record\Config\Relation();
+        $list = $relation->getManyToMany($this->objectConfig);
 
         if (empty($list)) {
             return true;
@@ -313,7 +314,8 @@ abstract class AbstractAdapter implements BuilderInterface
         if(!$this->useForeignKeys)
             return [];
 
-        $data = $this->objectConfig->getForeignKeys();
+        $keyManager = new Config\ForeignKey();
+        $data = $keyManager->getForeignKeys($this->objectConfig);
         $keys = [];
 
         if(!empty($data))
@@ -367,7 +369,9 @@ abstract class AbstractAdapter implements BuilderInterface
     public function getRelationUpdates() : array
     {
         $updates = [];
-        $list = $this->objectConfig->getManyToMany();
+        $relation = new Orm\Record\Config\Relation();
+        $list = $relation->getManyToMany($this->objectConfig);
+
         foreach($list as $fields)
         {
             if(!empty($fields)){
@@ -752,7 +756,7 @@ abstract class AbstractAdapter implements BuilderInterface
         }
         // delete field from index
         foreach ($objectConfig->getFields() as $field){
-            if(!$objectConfig->isSystemField($field->getName()) && !isset($fields[$field->getName()])){
+            if(!$field->isSystem() && !isset($fields[$field->getName()])){
                 $updates[] = ['name' => $idObject, 'action'=>'update'];
                 return $updates;
             }
@@ -766,7 +770,8 @@ abstract class AbstractAdapter implements BuilderInterface
     public function getObjectsUpdatesInfo()
     {
         $updates = [];
-        $list = $this->objectConfig->getManyToMany();
+        $relation = new Config\Relation();
+        $list = $relation->getManyToMany($this->objectConfig);
         foreach($list as $fields)
         {
             if(!empty($fields)){

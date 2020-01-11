@@ -235,13 +235,15 @@ class Field extends Controller
                 $newConfig['db_default'] = false;
             }
         }
-
+        $fieldManager = new Orm\Record\Config\FieldManager();
         /**
          * @todo Rename
          */
         if($objectField!=$name && !empty($objectField))
         {
-            $objectCfg->setFieldConfig($objectField, $newConfig);
+            $fieldManager = new Orm\Record\Config\FieldManager();
+            $fieldManager->setFieldConfig($objectCfg, $objectField, $newConfig);
+
             $renameResult = $manager->renameField($objectCfg , $objectField , $name);
 
             switch ($renameResult)
@@ -257,7 +259,7 @@ class Field extends Controller
             }
 
         } else{
-            $objectCfg->setFieldConfig($name, $newConfig);
+            $fieldManager->setFieldConfig($objectCfg, $name, $newConfig);
         }
 
         if($objectCfg->save()){

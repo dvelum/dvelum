@@ -138,7 +138,7 @@ class Simple extends AbstractAdapter
         $additionalModelFields = [];
 
         foreach ($links as $k => $v) {
-            if (!$objectConfig->isSystemField($v)) {
+            if (!$objectConfig->getField($v)->isSystem()) {
                 $linksToShow[$v . $this->linkedFieldPostfix] = $v;
                 $objectField = $objectConfig->getField($v);
                 if ($objectField->isObjectLink() || $objectField->isMultiLink()) {

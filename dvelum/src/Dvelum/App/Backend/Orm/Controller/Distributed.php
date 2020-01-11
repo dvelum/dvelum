@@ -62,7 +62,8 @@ class Distributed extends Controller
             return;
         }
 
-        $objectConfig->setDistributedIndexConfig($field, ['field'=>$field,'is_system'=>false]);
+        $indexManager = new Record\Config\IndexManager();
+        $indexManager->setDistributedIndexConfig($objectConfig, $field, ['field'=>$field,'is_system'=>false]);
 
         $manager = new Manager();
 
@@ -135,9 +136,10 @@ class Distributed extends Controller
             return;
         }
 
-        $objectCfg->removeDistributedIndex($index);
-        $manager = new Manager();
+        $indexManager = new Record\Config\IndexManager();
+        $indexManager->removeDistributedIndex($objectCfg, $index);
 
+        $manager = new Manager();
         if($objectCfg->save() && $manager->syncDistributedIndex($object))
             $this->response->success();
         else
