@@ -42,9 +42,8 @@ class Relation
         $relations = $this->getManyToMany($config);
         if(!empty($relations)){
             return true;
-        }else{
-            return false;
         }
+        return false;
     }
 
     /**
