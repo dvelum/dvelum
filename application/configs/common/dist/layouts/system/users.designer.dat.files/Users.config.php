@@ -42,7 +42,7 @@
         'id' => 'preaction',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Action',
-        'name' => NULL,
+        'name' => 'preaction',
         'extClass' => 'Grid_Column_Action',
         'order' => 0,
         'state' => 
@@ -197,7 +197,7 @@
         'id' => 'postaction',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Action',
-        'name' => NULL,
+        'name' => 'postaction',
         'extClass' => 'Grid_Column_Action',
         'order' => 7,
         'state' => 

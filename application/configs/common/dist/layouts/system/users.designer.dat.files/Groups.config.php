@@ -75,7 +75,7 @@
         'id' => 'delete',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Action',
-        'name' => NULL,
+        'name' => 'delete',
         'extClass' => 'Grid_Column_Action',
         'order' => 2,
         'state' => 
