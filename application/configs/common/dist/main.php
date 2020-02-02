@@ -100,10 +100,6 @@ return array(
      */
     'frontend_modules' => 'modules_frontend.php',
     /*
-     * Blocks path
-     */
-    'blocks' => ['Block/','App/Block','Dvelum/App/Block'],
-    /*
      * Dictionary directory
      */
     'dictionary_folder' => 'dictionary/',
