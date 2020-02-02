@@ -1,10 +1,12 @@
 [![PHP Version](https://img.shields.io/badge/php-7.2%2B-blue.svg)](https://packagist.org/packages/dvelum/dvelum)
 [![Total Downloads](https://img.shields.io/packagist/dt/dvelum/dvelum.svg?style=flat-square)](https://packagist.org/packages/dvelum/dvelum)
-[![Build Status](https://travis-ci.org/dvelum/dvelum.svg?branch=dev-3.x)](https://travis-ci.org/dvelum/dvelum)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/da4a46fc1a1f4f29a758a5eb82344977)](https://www.codacy.com/app/dvelum/dvelum?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dvelum/dvelum&amp;utm_campaign=Badge_Grade)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/da4a46fc1a1f4f29a758a5eb82344977)](https://www.codacy.com/app/dvelum/dvelum?utm_source=github.com&utm_medium=referral&utm_content=dvelum/dvelum&utm_campaign=Badge_Coverage)
+[![Build Status](https://travis-ci.org/dvelum/dvelum.svg?branch=master)](https://travis-ci.org/dvelum/dvelum)
 
-DVelum
+
+[Внимание, стабильная ветка 2.x](https://github.com/dvelum/dvelum/tree/2.x)
+===
+
+DVelum 3.x
 ======
 
 PHP/ExtJS-based web development platform
@@ -47,11 +49,15 @@ Open Web Browser at http://dvelum.local/install and follow the instructions
 ---
 [Документация](docs/ru/developer/readme.md)
 
+---
+
 Issues https://github.com/dvelum/dvelum/issues
 
-Old Version Downloads https://sourceforge.net/projects/dvelum/files/ and https://code.google.com/p/dvelum/downloads/list?can=1
+DVelum 2.x Repo https://github.com/dvelum/dvelum/tree/2.x
 
 DVelum 0.x/1.x Repo https://github.com/k-samuel/dvelum
+
+Old Version Downloads https://sourceforge.net/projects/dvelum/files/ and https://code.google.com/p/dvelum/downloads/list?can=1
 
 Official Site (ENG) http://dvelum.net
 
