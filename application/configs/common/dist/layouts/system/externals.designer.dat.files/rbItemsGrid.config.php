@@ -35,6 +35,25 @@
     ),
     'columns' => 
     array (
+      'package' => 
+      array (
+        'id' => 'package',
+        'parent' => 0,
+        'class' => 'Ext_Grid_Column',
+        'name' => 'package',
+        'extClass' => 'Grid_Column',
+        'order' => 0,
+        'state' => 
+        array (
+          'config' => 
+          array (
+            'dataIndex' => 'code',
+            'text' => '[js:] appLang.NAME',
+            'itemId' => 'package',
+            'width' => 258.0,
+          ),
+        ),
+      ),
       'title' => 
       array (
         'id' => 'title',
@@ -42,40 +61,15 @@
         'class' => 'Ext_Grid_Column',
         'name' => 'title',
         'extClass' => 'Grid_Column',
-        'order' => 0,
+        'order' => 1,
         'state' => 
         array (
           'config' => 
           array (
             'dataIndex' => 'title',
             'text' => '[js:] appLang.TITLE',
-            'flex' => 0.0,
-            'width' => 200.0,
-          ),
-        ),
-      ),
-      'url' => 
-      array (
-        'id' => 'url',
-        'parent' => 0,
-        'class' => 'Ext_Grid_Column',
-        'name' => 'url',
-        'extClass' => 'Grid_Column',
-        'order' => 1,
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'dataIndex' => 'page',
-            'renderer' => '',
-            'text' => '[js:] externalsLang.app_page',
             'flex' => 1.0,
-            'itemId' => 'url',
-          ),
-          'renderer' => 
-          array (
-            'type' => 'adapter',
-            'value' => 'Ext_Component_Renderer_System_Url',
+            'width' => 200.0,
           ),
         ),
       ),
@@ -119,26 +113,6 @@
           ),
         ),
       ),
-      'size' => 
-      array (
-        'id' => 'size',
-        'parent' => 0,
-        'class' => 'Ext_Grid_Column',
-        'name' => 'size',
-        'extClass' => 'Grid_Column',
-        'order' => 4,
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'align' => 'right',
-            'dataIndex' => 'size',
-            'text' => '[js:] appLang.SIZE',
-            'itemId' => 'size',
-            'width' => 120.0,
-          ),
-        ),
-      ),
       'date' => 
       array (
         'id' => 'date',
@@ -146,7 +120,7 @@
         'class' => 'Ext_Grid_Column_Date',
         'name' => NULL,
         'extClass' => 'Grid_Column_Date',
-        'order' => 5,
+        'order' => 4,
         'state' => 
         array (
           'config' => 
@@ -167,7 +141,7 @@
         'class' => 'Ext_Grid_Column_Action',
         'name' => NULL,
         'extClass' => 'Grid_Column_Action',
-        'order' => 6,
+        'order' => 5,
         'state' => 
         array (
           'config' => 

@@ -134,7 +134,6 @@
     'primary_key' => 'id',
     'use_db_prefix' => true,
     'acl' => false,
-    'slave_connection' => 'default',
     'parent_object' => '',
     'log_detalization' => 'default',
 ); 

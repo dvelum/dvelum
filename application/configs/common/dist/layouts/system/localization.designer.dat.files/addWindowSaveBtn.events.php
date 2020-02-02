@@ -6,5 +6,6 @@
     'code' => 'addWindowSaveBtn.events.click.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

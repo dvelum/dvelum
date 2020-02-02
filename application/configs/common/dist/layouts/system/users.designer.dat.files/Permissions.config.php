@@ -17,7 +17,6 @@
       'frame' => false,
       'hidden' => false,
       'isExtended' => true,
-      'defineOnly' => true,
     ),
     'state' => 
     array (
@@ -88,7 +87,7 @@
         'id' => 'view',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Check',
-        'name' => NULL,
+        'name' => 'view',
         'extClass' => 'Grid_Column_Check',
         'order' => 2,
         'state' => 
@@ -107,7 +106,7 @@
         'id' => 'edit',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Check',
-        'name' => NULL,
+        'name' => 'edit',
         'extClass' => 'Grid_Column_Check',
         'order' => 3,
         'state' => 
@@ -126,7 +125,7 @@
         'id' => 'delete',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Check',
-        'name' => NULL,
+        'name' => 'delete',
         'extClass' => 'Grid_Column_Check',
         'order' => 4,
         'state' => 
@@ -145,7 +144,7 @@
         'id' => 'publish',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Check',
-        'name' => NULL,
+        'name' => 'publish',
         'extClass' => 'Grid_Column_Check',
         'order' => 5,
         'state' => 
@@ -170,7 +169,7 @@
         'id' => 'only_own',
         'parent' => 0,
         'class' => 'Ext_Grid_Column_Check',
-        'name' => NULL,
+        'name' => 'only_own',
         'extClass' => 'Grid_Column_Check',
         'order' => 6,
         'state' => 

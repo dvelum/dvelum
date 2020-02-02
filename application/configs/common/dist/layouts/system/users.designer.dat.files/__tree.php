@@ -1,17 +1,17 @@
 <?php return array (
-  '_Layout_' => 
-  array (
-    'id' => '_Layout_',
-    'parent' => false,
-    'data' => '_Layout_.config.php',
-    'order' => 1,
-  ),
   '_Component_' => 
   array (
     'id' => '_Component_',
     'parent' => false,
     'data' => '_Component_.config.php',
     'order' => 0,
+  ),
+  '_Layout_' => 
+  array (
+    'id' => '_Layout_',
+    'parent' => false,
+    'data' => '_Layout_.config.php',
+    'order' => 1,
   ),
   'Groups__docked' => 
   array (
@@ -118,12 +118,12 @@
     'data' => 'statusStoreModel.config.php',
     'order' => 12,
   ),
-  'usersStoreModel' => 
+  'individualPermissionsStore' => 
   array (
-    'id' => 'usersStoreModel',
+    'id' => 'individualPermissionsStore',
     'parent' => '_Component_',
-    'data' => 'usersStoreModel.config.php',
-    'order' => 13,
+    'data' => 'individualPermissionsStore.config.php',
+    'order' => 6,
   ),
   'groupsStore' => 
   array (
@@ -139,19 +139,19 @@
     'data' => 'mainPanel.config.php',
     'order' => 16,
   ),
+  'usersStoreModel' => 
+  array (
+    'id' => 'usersStoreModel',
+    'parent' => '_Component_',
+    'data' => 'usersStoreModel.config.php',
+    'order' => 13,
+  ),
   'statusStore' => 
   array (
     'id' => 'statusStore',
     'parent' => '_Component_',
     'data' => 'statusStore.config.php',
     'order' => 9,
-  ),
-  'individualPermissionsStore' => 
-  array (
-    'id' => 'individualPermissionsStore',
-    'parent' => '_Component_',
-    'data' => 'individualPermissionsStore.config.php',
-    'order' => 6,
   ),
   'accountTypesStore' => 
   array (

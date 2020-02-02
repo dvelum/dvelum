@@ -8,7 +8,7 @@
     'config' => 
     array (
       'bodyCls' => 'formBody',
-      'bodyPadding' => '5',
+      'bodyPadding' => 5.0,
       'fieldDefaults' => '{"labelAlign":"right","labelWidth":50,"anchor":"100%"}',
     ),
   ),

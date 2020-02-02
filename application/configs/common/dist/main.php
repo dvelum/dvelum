@@ -100,10 +100,6 @@ return array(
      */
     'frontend_modules' => 'modules_frontend.php',
     /*
-     * Blocks path
-     */
-    'blocks' => ['Block/','App/Block','Dvelum/App/Block'],
-    /*
      * Dictionary directory
      */
     'dictionary_folder' => 'dictionary/',
@@ -182,15 +178,20 @@ return array(
      * External modules configuration
      */
     'externals' =>[
-        'enabled' => true,
         'path' => './modules',
         'resources_path' => $wwwPath . 'resources/',
         'resources_root' => $wwwRoot . 'resources/',
         'repo' => [
-            [
-                'id' => 'dvelum_official',
+            'dvelum-packagist'=> [
                 'title' => 'DVelum official',
-                'url' => 'https://addons.dvelum.net/api_v2/modules/'
+                'adapter' => '\\Dvelum\\Externals\\Client\\Packagist',
+                'adapterConfig' => [
+                    'vendor' => 'dvelum',
+                    'type'=>'dvelum-module',
+                    //Path to composer command
+                    'composer_path' => 'composer',
+                    'download_path' => './modules'
+                ],
             ]
         ]
     ],

@@ -6,5 +6,6 @@
     'code' => 'ip_userFilter.events.change.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

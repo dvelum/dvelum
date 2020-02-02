@@ -8,12 +8,13 @@ Ext.Ajax.request({
   params:{
     repo: repo,
     app:app,
-    version:vers
+    vers:vers
   },
   success: function(response, request) {
     response =  Ext.JSON.decode(response.responseText);
     if(response.success){
       me.fireEvent('downloaded');
+     Ext.Msg.alert(appLang.MESSAGE , '<pre>' +response.msg+'</pre>');
     }else{
       Ext.Msg.alert(appLang.MESSAGE , response.msg);
     }

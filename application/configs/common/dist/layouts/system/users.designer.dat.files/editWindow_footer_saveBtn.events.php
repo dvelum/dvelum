@@ -6,5 +6,6 @@
     'code' => 'editWindow_footer_saveBtn.events.click.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

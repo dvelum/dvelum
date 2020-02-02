@@ -1,6 +1,6 @@
 {
     "name": "dvelum/dvelum",
-    "version": "2.0.2",
+    "version": "3.0.0-dev",
     "type": "project",
     "description": "PHP/ExtJS-based web development platform",
     "keywords": ["dvelum","php","extjs", "IDE", "orm"],
@@ -41,15 +41,16 @@
         "zendframework/zend-mail": "^2.8",
         "psr/log": "^1.0",
         "dvelum/extjs": "^6.2.0",
+        "dvelum/module-designer": "^1.5.4",
         "matthiasmullie/minify": "~1.3",
         "ckeditor/ckeditor":"^4.9"
     },
     "extra": {
-        "installer-types": ["js-library","dvelum-module", "library"],
+        "installer-types": ["js-library","dvelum3-module", "library"],
         "installer-paths": {
             "www/js/lib/ckeditor": ["ckeditor/ckeditor"],
             "www/js/lib/{$name}": ["type:js-library"],
-            "modules/{$vendor}/{$name}":["type:dvelum-module"]
+            "modules/{$vendor}/{$name}":["type:dvelum3-module"]
         }
     },
     "require-dev": {

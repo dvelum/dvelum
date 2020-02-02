@@ -1,51 +1,57 @@
 <?php
 use PHPUnit\Framework\TestCase;
+use Dvelum\Request;
 
 class RequestTest extends TestCase
 {
 	public function testSetUri()
 	{
-	    $request = Request::getInstance();
+	    $request = Request::factory();
 	    $request->setUri('/news.html?a=b&d=8345');
 	    $this->assertEquals($request->getUri(),'/news');
 	}
 	
 	public function testGetArray()
 	{
-	    Request::updateGet('key', 'val');
-	    $this->assertEquals(Request::getArray(), array('key'=>'val'));    
+        $request = Request::factory();
+        $request->updateGet('key', 'val');
+	    $this->assertEquals($request->getArray(), array('key'=>'val'));
 	}
 	
 	public function testPostArray()
 	{
-	    Request::updatePost('key', 'val');
-	    $this->assertEquals(Request::postArray(), array('key'=>'val'));
+        $request = Request::factory();
+        $request->updatePost('key', 'val');
+	    $this->assertEquals($request->postArray(), array('key'=>'val'));
 	}
 	
 	public function testUpdatePost()
 	{
-	    Request::updatePost('key', 'val');
-	    $this->assertEquals(Request::post('key', 'string' , false),'val');
-	    $this->assertEquals(Request::post('key3', 'string' , false), false);
+        $request = Request::factory();
+        $request->updatePost('key', 'val');
+	    $this->assertEquals($request->post('key', 'string' , false),'val');
+	    $this->assertEquals($request->post('key3', 'string' , false), false);
 	}
 	
 	public function testUpdateGet()
 	{
-	    Request::updateGet('key', 'val');
-	    $this->assertEquals(Request::get('key', 'string' , false),'val');
-	    $this->assertEquals(Request::get('key3', 'string' , false), false);
+        $request = Request::factory();
+        $request->updateGet('key', 'val');
+	    $this->assertEquals($request->get('key', 'string' , false),'val');
+	    $this->assertEquals($request->get('key3', 'string' , false), false);
 	}	
 	
 	public function testIsAjax()
 	{
-	    $this->assertEquals(Request::isAjax(), false);
+        $request = Request::factory();
+	    $this->assertEquals($request->isAjax(), false);
 	    $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-	    $this->assertEquals(Request::isAjax(), true);
+	    $this->assertEquals($request->isAjax(), true);
 	}
 	
 	public function testHasPost()
 	{
-	    $request = Request::getInstance();
+	    $request = Request::factory();
 	    $post = $request->postArray();
 	    $this->assertEquals(!empty($post), $request->hasPost());
 	    
@@ -58,23 +64,10 @@ class RequestTest extends TestCase
 	
 	public function testGetPart()
 	{
-	    Request::setDelimiter('/');
-	    $r = Request::getInstance();
-	    $r->setUri('/news/item/1');
-	    
-	    $this->assertEquals($r->getPart(0) , 'news');
-	    $this->assertEquals($r->getPart(1) , 'item');
-	    $this->assertEquals($r->getPart(2) , '1');
-	       
-	}
-	
-	public function testGetSpecialPart()
-	{
-	    Request::setDelimiter('-');
-	    $r = Request::getInstance();
-	    $r->setUri('/news-item-1');
-	    $this->assertEquals($r->getPart(0) , 'news');
-	    $this->assertEquals($r->getPart(1) , 'item');
-	    $this->assertEquals($r->getPart(2) , '1');
+        $request = Request::factory();
+        $request->setUri('/news/item/1');
+	    $this->assertEquals($request->getPart(0) , 'news');
+	    $this->assertEquals($request->getPart(1) , 'item');
+	    $this->assertEquals($request->getPart(2) , '1');
 	}
 }

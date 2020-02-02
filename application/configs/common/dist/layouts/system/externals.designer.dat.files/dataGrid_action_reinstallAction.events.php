@@ -6,5 +6,6 @@
     'code' => 'dataGrid_action_reinstallAction.events.handler.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

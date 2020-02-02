@@ -97,6 +97,5 @@
                     'PRIMARY' => false,
                 ),
         ),
-    'acl' => false,
-    'slave_connection' => 'default',
+    'acl' => false
 ); 

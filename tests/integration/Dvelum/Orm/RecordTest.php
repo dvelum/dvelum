@@ -18,7 +18,7 @@ class RecordTest extends TestCase
 
     protected function createPage()
     {
-        $user = User::getInstance();
+        $user = User::factory();
         $page = Record::factory('Page');
         $page->setValues(array(
             'code'=>uniqid().date('YmdHis'),
@@ -219,7 +219,7 @@ class RecordTest extends TestCase
         $iId = time();
         $o = Record::factory('Page');
         $o->setInsertId($iId);
-        $userId = \User::getInstance()->getId();
+        $userId = User::factory()->getId();
 
         $this->assertEquals($iId , $o->getInsertId());
         $o->setValues(array(

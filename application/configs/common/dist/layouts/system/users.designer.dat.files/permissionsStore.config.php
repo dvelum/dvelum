@@ -11,7 +11,6 @@
       'model' => 'permissionsStoreModel',
       'sorters' => '[{"property":"module","direction":"ASC"}]',
       'isExtended' => true,
-      'defineOnly' => true,
     ),
     'state' => 
     array (
@@ -74,7 +73,6 @@
         array (
           'rootProperty' => 'data',
           'totalProperty' => 'count',
-          'idProperty' => 'id',
         ),
       ),
     ),

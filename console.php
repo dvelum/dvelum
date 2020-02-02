@@ -37,7 +37,7 @@ require DVELUM_ROOT . '/vendor/autoload.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
+require DVELUM_ROOT . '/dvelum/src/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 use \Dvelum\Config\Factory as ConfigFactory;
@@ -103,7 +103,6 @@ if(!class_exists($appClass))
 
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);
-$app->init();
 $request = Request::factory();
 $request->setUri($_SERVER['argv'][1]);
 $app->runConsole();

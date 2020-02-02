@@ -13,7 +13,7 @@ class RecordTest extends TestCase
      */
     protected function createObject()
     {
-        $object = Record::factory('Page');
+        $object = Record::factory('User_Auth');
         return $object;
     }
 
@@ -38,13 +38,6 @@ class RecordTest extends TestCase
         $this->assertEquals(2, $object->getVersion());
     }
 
-    public function testDisableAcl()
-    {
-        $object = $this->createObject();
-        $object->disableAcl(true);
-        $this->assertEquals(false, $object->getAcl());
-    }
-
     public function testGetFields()
     {
         $object = $this->createObject();
@@ -60,15 +53,15 @@ class RecordTest extends TestCase
     {
         $object = $this->createObject();
         $this->assertFalse($object->hasUpdates());
-        $object->set('code' ,'123');
+        $object->set('config' ,'123');
         $this->assertTrue($object->hasUpdates());
     }
 
     public function testGetUpdates()
     {
         $object = $this->createObject();
-        $object->set('code' ,'123');
-        $this->assertEquals(['code'=>'123'],$object->getUpdates());
+        $object->set('config' ,'123');
+        $this->assertEquals(['config'=>'123'],$object->getUpdates());
     }
 
     public function testCommitChanges()
@@ -76,7 +69,7 @@ class RecordTest extends TestCase
         $object = $this->createObject();
         $object->commitChanges();
         $this->assertFalse($object->hasUpdates());
-        $object->set('code' ,'123');
+        $object->set('config' ,'123');
         $object->commitChanges();
         $this->assertFalse($object->hasUpdates());
     }
@@ -84,35 +77,34 @@ class RecordTest extends TestCase
     public function testFieldExist()
     {
         $object = $this->createObject();
-        $this->assertFalse($object->fieldExists('code_code'));
+        $this->assertFalse($object->fieldExists('name_name'));
         $this->assertTrue($object->fieldExists('id'));
     }
 
     public function testGetLinkedObject()
     {
         $object = $this->createObject();
-        $this->assertEquals('user', $object->getLinkedObject('author_id'));
+        $this->assertEquals('user', $object->getLinkedObject('user'));
     }
 
     public function testSetValues()
     {
         $object = $this->createObject();
         $values = [
-            'code'=>'my_code',
-            'published'=> true
+            'config'=>'my_code',
         ];
         $object->setValues($values);
         $this->assertEquals($values, $object->getUpdates());
-        $this->assertEquals('my_code', $object->get('code'));
+        $this->assertEquals('my_code', $object->get('config'));
     }
 
     public function testGetOld()
     {
         $object = $this->createObject();
-        $object->set('code','1');
+        $object->set('config','1');
         $object->commitChanges();
-        $object->set('code','2');
-        $this->assertEquals('1', $object->getOld('code'));
+        $object->set('config','2');
+        $this->assertEquals('1', $object->getOld('config'));
     }
 
     public function testAddErrorMessage()
@@ -133,8 +125,7 @@ class RecordTest extends TestCase
     {
         $object = $this->createObject();
         $values = [
-            'code'=>'my_code',
-            'published'=> true
+            'config'=>'my_code'
         ];
         $object->setValues($values);
         $object->rejectChanges();
@@ -144,16 +135,14 @@ class RecordTest extends TestCase
     public function testInstanceOf()
     {
         $object = $this->createObject();
-        $this->assertTrue($object->isInstanceOf('Page'));
+        $this->assertTrue($object->isInstanceOf('User_Auth'));
     }
 
     public function testSet()
     {
         $object = $this->createObject();
-        $object->set('code' ,'pageCode');
-        $object->published = true;
-        $this->assertEquals('pageCode', $object->get('code'));
-        $this->assertEquals(true, $object->get('published'));
+        $object->set('config' ,'pageCode');
+        $this->assertEquals('pageCode', $object->get('config'));
         $object->setId(23);
         $this->assertEquals(23, $object->getId());
     }
@@ -163,4 +152,5 @@ class RecordTest extends TestCase
         $object = $this->createObject();
         $this->assertTrue($object->getDataModel() instanceof Record\DataModel);
     }
+
 }

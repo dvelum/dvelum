@@ -1,17 +1,17 @@
 <?php return array (
-  '_Component_' => 
-  array (
-    'id' => '_Component_',
-    'parent' => false,
-    'data' => '_Component_.config.php',
-    'order' => 0,
-  ),
   '_Layout_' => 
   array (
     'id' => '_Layout_',
     'parent' => false,
     'data' => '_Layout_.config.php',
     'order' => 1,
+  ),
+  '_Component_' => 
+  array (
+    'id' => '_Component_',
+    'parent' => false,
+    'data' => '_Component_.config.php',
+    'order' => 0,
   ),
   'mainPanel' => 
   array (
@@ -69,6 +69,13 @@
     'data' => 'tools.config.php',
     'order' => 0,
   ),
+  'dataGrid' => 
+  array (
+    'id' => 'dataGrid',
+    'parent' => 'mainPanel',
+    'data' => 'dataGrid.config.php',
+    'order' => 1,
+  ),
   'changesGrid' => 
   array (
     'id' => 'changesGrid',
@@ -82,13 +89,6 @@
     'parent' => 'mainPanel',
     'data' => 'mainPanel__docked.config.php',
     'order' => 0,
-  ),
-  'dataGrid' => 
-  array (
-    'id' => 'dataGrid',
-    'parent' => 'mainPanel',
-    'data' => 'dataGrid.config.php',
-    'order' => 1,
   ),
   'dateFilterLabel' => 
   array (

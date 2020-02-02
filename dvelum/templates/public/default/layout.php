@@ -1,110 +1,55 @@
 <?php
-$page = $this->get('page');
-
-$resource = $this->get('resource');
-
-$resource->addCss('/css/public/main/reset.css' ,0);
-$resource->addCss('/css/public/main/style.css' ,100);
-$resource->addJs('/js/app/frontend/common.js',10);
-$wwwRoot = $this->get('wwwRoot');
-
 /**
- * @var BlockManager $blockManager
+ * @var \Dvelum\Page\Page $page
  */
-$blockManager = $this->get('blockManager');
+$page = $this->get('page');
+$resource = \Dvelum\Resource::factory();
+$wwwRoot = \Dvelum\Request::factory()->wwwRoot();
 
-$layoutCls = '';
-$hasSideLeft = $blockManager->hasBlocks('left-blocks');
-$hasSideRight = $blockManager->hasBlocks('right-blocks');
-
-if($hasSideLeft && !$hasSideRight){
-    $resource->addCss('/css/public/main/side-left.css' ,101);
-}elseif(!$hasSideLeft && $hasSideRight){
-    $resource->addCss('/css/public/main/side-right.css' ,101);
-}elseif($hasSideLeft && $hasSideRight){
-    $resource->addCss('/css/public/main/side-left-right.css' ,101);
-}
+$robots = $page->getRobots();
+$htmlTitle = $page->getHtmlTitle();
+$metaDescription = $page->getMetaDescription();
+$metaKeywords = $page->getMetaKeywords();
+$canonical = $page->getCanonical();
+$securityToken = $page->getCsrfToken();
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width; initial-scale=1.0" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title><?php echo $page->html_title;?></title>
-    <link rel="shortcut icon" href="<?php echo $wwwRoot;?>i/favicon.png" />
+    <meta name="viewport" content="width=device-width; initial-scale=1.0"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <?php
-    echo $page->getOgMeta();
 
-    if(isset($page->csrfToken) && !empty($page->csrfToken))
-        echo '<meta name="csrf-token" content="'.$page->csrfToken.'"/>';
+    echo $page->openGraph();
 
-    if(strlen($page->meta_description))
-        echo '<meta name="DESCRIPTION" content="'.$page->meta_description.'" />';
+    if (!empty($securityToken)) {
+        echo '<meta name="csrf-token" content="' . $securityToken . '"/>' . PHP_EOL;
+    }
 
-    if(strlen($page->meta_keywords))
-        echo '<meta name="KEYWORDS" content="'.$page->meta_keywords.'" />';
+    if (!empty($metaDescription)) {
+        echo '<meta name="description" content="' . $metaDescription . '"/>' . PHP_EOL;
+    }
+
+    if (!empty($metaKeywords)) {
+        echo '<meta name="keywords" content="' . $metaKeywords . '"/>' . PHP_EOL;
+    }
+
+    if (!empty($robots)) {
+        echo '<meta name="robots" content="' . $robots . '" />';
+    }
+    if (!empty($canonical)) {
+        echo '<link rel="canonical" href="' . $canonical . '"/>';
+    }
     ?>
-    <?php  echo $this->resource->includeCss(); ?>
-    <?php  echo $this->get('resource')->includeJsByTag(true , false, 'head'); ?>
+    <title><?php echo $page->getHtmlTitle(); ?></title>
+    <link rel="shortcut icon" href="<?php echo $wwwRoot; ?>i/favicon.png"/>
+    <?php echo $resource->includeCss(); ?>
+    <?php echo $resource->includeJsByTag(true, false, 'head'); ?>
+    <?php echo $resource->includeJs(true, false); ?>
 </head>
-<body>
-
-    <div class="page">
-<?php
-          $t = \Dvelum\View::factory();
-            echo $this->renderTemplate(
-                'public/default/header.php',
-                [
-                    'blocks' => $blockManager->getBlocksHtml('top-blocks')
-                ]
-            );
-        ?>
-
-            <div class="layout">
-
-                <?php
-                if($hasSideLeft){
-                    echo $this->renderTemplate(
-                        'public/default/side_left.php',
-                        [
-                            'blocks' => $blockManager->getBlocksHtml('left-blocks')
-                        ]
-                    );
-                }
-                ?>
-
-                <div class="content-wrap">
-                    <section id="content" class=" content">
-                        <?php
-                        if(empty($page->func_code)){
-                            echo '<header><h1>'.$page->page_title.'</h1></header>';
-                        }
-                        ?>
-                        <div class="text"><?php echo $page->text;?></div>
-                    </section>
-                </div>
-
-                <?php
-                if($hasSideRight){
-                    echo $this->renderTemplate(
-                        'public/default/side_right.php',
-                        [
-                            'blocks' => $blockManager->getBlocksHtml('right-blocks')
-                        ]
-                    );
-                }
-                ?>
-            </div>
-    </div><!--end:page-->
-    <?php
-    echo $this->renderTemplate(
-        'public/default/footer.php',
-        [
-            'blocks' => $blockManager->getBlocksHtml('bottom-blocks')
-        ]
-    );
-    ?>
-<?php echo $this->get('resource')->includeJs(true , true); ?>
+<body id="content">
+    <h1><?php echo $page->getTitle(); ?></h1>
+    <?php echo $page->getText(); ?>
 </body>
 </html>

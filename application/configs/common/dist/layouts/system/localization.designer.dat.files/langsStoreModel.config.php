@@ -8,7 +8,6 @@
     'config' => 
     array (
       'idProperty' => 'id',
-      'defineOnly' => true,
     ),
     'state' => 
     array (

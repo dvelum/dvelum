@@ -1,6 +1,6 @@
 <?php
 /*
- * DVelum project http://code.google.com/p/dvelum/ , http://dvelum.net
+ * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
  * Copyright (C) 2011-2015  Kirill A Egorov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,14 +45,15 @@ ob_start();
  * Including initial config
  */
 $bootCfg = include DVELUM_ROOT . '/application/configs/common/dist/init.php';
+
 /*
  * Register composer autoload
  */
-require __DIR__ . '/vendor/autoload.php';
+require DVELUM_ROOT . '/vendor/autoload.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
+require DVELUM_ROOT . '/dvelum/src/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 use \Dvelum\Config\Factory as ConfigFactory;
@@ -110,7 +111,7 @@ $autoloader->setConfig($autoloaderCfg);
  */
 if($config->get('development') === 3){
     if(strpos($_SERVER['REQUEST_URI'],'install')!==false){
-        $controller = new Install_Controller();
+        $controller = new Dvelum\App\Install\Controller();
         $controller->setAutoloader($autoloader);
         $controller->run();
         exit;
@@ -119,6 +120,9 @@ if($config->get('development') === 3){
         exit;
     }
 }
+
+
+
 
 /*
  * Starting the application
@@ -129,7 +133,6 @@ if(!class_exists($appClass))
 
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);
-$app->init();
 $app->run();
 /*
  * Clean the buffer and send response
@@ -141,9 +144,9 @@ echo ob_get_clean();
 if($config['development'] && $config->get('debug_panel') && !\Dvelum\Request::factory()->isAjax())
 {
     $debugCfg = \Dvelum\Config::storage()->get('debug_panel.php');
-    Debug::setScriptStartTime($scriptStart);
-    Debug::setLoadedClasses($autoloader->getLoadedClasses());
-    Debug::setLoadedConfigs(\Dvelum\Config::storage()->getDebugInfo());
-    echo Debug::getStats($debugCfg->get('options'));
+    \Dvelum\Debug::setScriptStartTime($scriptStart);
+    \Dvelum\Debug::setLoadedClasses($autoloader->getLoadedClasses());
+    \Dvelum\Debug::setLoadedConfigs(\Dvelum\Config::storage()->getDebugInfo());
+    echo \Dvelum\Debug::getStats($debugCfg->get('options'));
 }
 exit;

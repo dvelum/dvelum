@@ -6,6 +6,7 @@
     'code' => 'repoBrowserWindow.events.show.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
   'downloaded' => 
   array (
@@ -14,5 +15,6 @@
     'code' => false,
     'params' => '',
     'is_local' => true,
+    'buffer' => false,
   ),
 ); 

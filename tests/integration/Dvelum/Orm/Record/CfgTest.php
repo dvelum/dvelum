@@ -9,12 +9,21 @@ class CfgTest extends TestCase
 {
     public function testRenameField()
     {
-        $o = Builder::factory('Page');
-        $cfg = Record\Config::factory('Page');
+        $o = Builder::factory('page_rename');
+        $cfg = Record\Config::factory('page_rename');
 
-        $this->assertTrue($cfg->renameField('page_title', 'untitle'));
+        $fieldManager = new Record\Config\FieldManager();
+        $fieldManager->renameField($cfg,'page_title', 'untitle');
+
+        $this->assertTrue($cfg->fieldExists('untitle'));
+        $this->assertFalse($cfg->fieldExists('page_title'));
+        $o->build();
         $this->assertTrue($o->validate());
-        $this->assertTrue($cfg->renameField('untitle', 'page_title'));
+
+        $fieldManager->renameField($cfg, 'untitle', 'page_title');
+        $o->build();
         $this->assertTrue($o->validate());
+        $this->assertFalse($cfg->fieldExists('untitle'));
+        $this->assertTrue($cfg->fieldExists('page_title'));
     }
 }

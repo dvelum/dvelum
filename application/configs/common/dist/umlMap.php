@@ -3,105 +3,167 @@
   'mapHeight' => 2000,
   'items' => 
   array (
-    'user' => 
+    'user_auth' => 
     array (
-      'x' => 570,
-      'y' => 17,
-    ),
-    'sysdocs_class' => 
-    array (
-      'x' => 1481,
-      'y' => 259,
-    ),
-    'page' => 
-    array (
-      'x' => 62,
-      'y' => 17,
-    ),
-    'group' => 
-    array (
-      'x' => 1010,
-      'y' => 187,
-    ),
-    'menu' => 
-    array (
-      'x' => 241,
-      'y' => 471,
-    ),
-    'mediacategory' => 
-    array (
-      'x' => 584,
-      'y' => 817,
-    ),
-    'bgtask' => 
-    array (
-      'x' => 778,
-      'y' => 548,
-    ),
-    'medialib' => 
-    array (
-      'x' => 591,
-      'y' => 577,
-    ),
-    'blocks' => 
-    array (
-      'x' => 452,
-      'y' => 336,
-    ),
-    'links' => 
-    array (
-      'x' => 371,
-      'y' => 745,
-    ),
-    'error_log' => 
-    array (
-      'x' => 1014,
-      'y' => 484,
+      'x' => 564,
+      'y' => 331,
+      'links' => 
+      array (
+        'user' => 
+        array (
+        ),
+      ),
+      'show' => true,
     ),
     'permissions' => 
     array (
       'x' => 1004,
       'y' => 6,
+      'links' => 
+      array (
+        'user' => 
+        array (
+        ),
+        'group' => 
+        array (
+        ),
+      ),
+      'show' => true,
     ),
     'vc' => 
     array (
       'x' => 823,
       'y' => 319,
+      'links' => 
+      array (
+        'user' => 
+        array (
+        ),
+      ),
+      'show' => true,
     ),
-    'filestorage' => 
+    'error_log' => 
     array (
-      'x' => 697,
-      'y' => 321,
+      'x' => 1014,
+      'y' => 484,
+      'links' => 
+      array (
+      ),
+      'show' => true,
     ),
     'bgtask_signal' => 
     array (
       'x' => 779,
       'y' => 448,
+      'links' => 
+      array (
+        'bgtask' => 
+        array (
+        ),
+      ),
+      'show' => true,
+    ),
+    'user_settings' => 
+    array (
+      'x' => 203,
+      'y' => 183,
+      'links' => 
+      array (
+        'user' => 
+        array (
+        ),
+      ),
+      'show' => true,
     ),
     'historylog' => 
     array (
       'x' => 250,
       'y' => 13,
+      'links' => 
+      array (
+        'user' => 
+        array (
+        ),
+      ),
+      'show' => true,
     ),
-    'user_auth' => 
+    'links' => 
     array (
-      'x' => 329,
-      'y' => 217,
+      'x' => 527,
+      'y' => 573,
+      'links' => 
+      array (
+      ),
+      'show' => true,
     ),
-    'blockmapping' => 
+    'page' => 
     array (
-      'x' => 243,
-      'y' => 340,
+      'x' => 169,
+      'y' => 319,
+      'links' => 
+      array (
+        'page' => 
+        array (
+          'vertices' => 
+          array (
+          ),
+        ),
+        'user' => 
+        array (
+        ),
+      ),
+      'show' => true,
     ),
-    'acl_simple' => 
+    'bgtask' => 
     array (
-      'x' => 1008,
-      'y' => 316,
+      'x' => 778,
+      'y' => 548,
+      'links' => 
+      array (
+        'bgtask' => 
+        array (
+          'vertices' => 
+          array (
+            0 => 
+            array (
+              'x' => 918,
+              'y' => 613,
+            ),
+            1 => 
+            array (
+              'x' => 918,
+              'y' => 698,
+            ),
+            2 => 
+            array (
+              'x' => 838,
+              'y' => 698,
+            ),
+          ),
+        ),
+      ),
+      'show' => true,
     ),
-    'menu_item' => 
+    'group' => 
     array (
-      'x' => 49,
-      'y' => 589,
+      'x' => 1001,
+      'y' => 198,
+      'links' => 
+      array (
+      ),
+      'show' => true,
+    ),
+    'user' => 
+    array (
+      'x' => 570,
+      'y' => 17,
+      'links' => 
+      array (
+        'group' => 
+        array (
+        ),
+      ),
+      'show' => true,
     ),
   ),
 ); 

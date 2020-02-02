@@ -1,15 +1,15 @@
 <?php return array (
   0 => 
   array (
-    'id' => 'mainPanel_instance',
-    'name' => 'mainPanel',
-    'object' => 'mainPanel',
-  ),
-  1 => 
-  array (
     'id' => 'groupsStoreInstance',
     'name' => 'groupsStoreInstance',
     'object' => 'groupsStore',
+  ),
+  1 => 
+  array (
+    'id' => 'statusStoreInstance',
+    'name' => 'statusStoreInstance',
+    'object' => 'statusStore',
   ),
   2 => 
   array (
@@ -19,9 +19,9 @@
   ),
   3 => 
   array (
-    'id' => 'statusStoreInstance',
-    'name' => 'statusStoreInstance',
-    'object' => 'statusStore',
+    'id' => 'mainPanel_instance',
+    'name' => 'mainPanel',
+    'object' => 'mainPanel',
   ),
   4 => 
   array (

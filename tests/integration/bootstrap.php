@@ -23,7 +23,7 @@ require DVELUM_ROOT . '/vendor/autoload.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/dvelum2/Dvelum/Autoload.php';
+require DVELUM_ROOT . '/dvelum/src/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 use \Dvelum\Config\Factory as ConfigFactory;
@@ -36,17 +36,11 @@ $configStorage->setConfig($bootCfg['config_storage']);
  * Reload storage options from local system
  */
 $configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->__toArray());
-
-
-$storage = \Dvelum\Config::storage();
-$storage->addPath('./tests/data/configs/');
-
 /*
  * Connecting main configuration file
  */
 $config = ConfigFactory::storage()->get('main.php');
 $config->set('development', 2);
-
 $configStorage->addPath('./application/configs/test/');
 
 /*
@@ -65,7 +59,6 @@ else
 
 $autoloader->setConfig($autoloaderCfg);
 
-
 /*
  * Starting the application
  */
@@ -75,7 +68,7 @@ if(!class_exists($appClass))
 
 $app = new $appClass($config);
 $app->setAutoloader($autoloader);
-$app->init();
+$app->runTestMode();
 
 $dbObjectManager = new \Dvelum\Orm\Record\Manager();
 foreach($dbObjectManager->getRegisteredObjects() as $object)

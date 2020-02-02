@@ -19,5 +19,4 @@
   array (
   ),
   'distributed' => false,
-  'slave_connection' => 'sharding_index',
 ); 

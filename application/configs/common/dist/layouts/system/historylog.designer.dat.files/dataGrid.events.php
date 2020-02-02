@@ -6,5 +6,6 @@
     'code' => 'dataGrid.events.select.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

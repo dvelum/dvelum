@@ -1,6 +1,3 @@
-<?php 
-if(!defined('DVELUM'))exit;
-?>
 <div>
 	<h3><?php echo $this->lang->ORM_CNHANGES_WB_MADE;?>:</h3>
 	<hr>

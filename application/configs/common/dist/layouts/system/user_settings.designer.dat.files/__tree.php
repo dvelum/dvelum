@@ -69,12 +69,12 @@
     'data' => 'themesStore.config.php',
     'order' => 1,
   ),
-  'saveSettingsButton' => 
+  'settingsForm_theme' => 
   array (
-    'id' => 'saveSettingsButton',
+    'id' => 'settingsForm_theme',
     'parent' => 'settingsData',
-    'data' => 'saveSettingsButton.config.php',
-    'order' => 2,
+    'data' => 'settingsForm_theme.config.php',
+    'order' => 0,
   ),
   'settingsForm_language' => 
   array (
@@ -83,12 +83,12 @@
     'data' => 'settingsForm_language.config.php',
     'order' => 1,
   ),
-  'settingsForm_theme' => 
+  'saveSettingsButton' => 
   array (
-    'id' => 'settingsForm_theme',
+    'id' => 'saveSettingsButton',
     'parent' => 'settingsData',
-    'data' => 'settingsForm_theme.config.php',
-    'order' => 0,
+    'data' => 'saveSettingsButton.config.php',
+    'order' => 2,
   ),
   'settingsData' => 
   array (

@@ -35,6 +35,5 @@
   'indexes' => 
   array (
   ),
-  'distributed' => false,
-  'slave_connection' => 'sharding_index',
+  'distributed' => false
 ); 

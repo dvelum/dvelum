@@ -37,7 +37,7 @@ class ModelTest extends TestCase
 		$saved = $user->save();
 		$this->assertTrue(!empty($saved));
 
-		$u = User::getInstance();
+		$u = \Dvelum\App\Session\User::factory();
 		$u->setId($user->getId());
 		$u->setAuthorized();
 
@@ -78,9 +78,9 @@ class ModelTest extends TestCase
 
 	public function testFactory()
 	{
-		$pageModel =  Model::factory('Page');
-		$this->assertEquals(( $pageModel instanceof Model_Page ) , true);
-		$this->assertEquals($pageModel->getObjectName() , 'page');
+		$pageModel =  Model::factory('User');
+		$this->assertEquals(( $pageModel instanceof \Dvelum\App\Model\User ) , true);
+		$this->assertEquals($pageModel->getObjectName() , 'user');
 		
 		$apiKeys = Model::factory('User');
 		$this->assertEquals(( $apiKeys instanceof Model) , true);

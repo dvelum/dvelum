@@ -1,8 +1,8 @@
-<?php 
-if(!defined('DVELUM'))exit;
-
+<?php
 $wwwRoot = $this->get('wwwRoot');
-$curLang = Lang::lang()->getName();
+$lang = \Dvelum\Lang::lang();
+$curLang = $lang->getName();
+
 $lang = [
     'en' => 'English',
     'ru' => 'Русский'

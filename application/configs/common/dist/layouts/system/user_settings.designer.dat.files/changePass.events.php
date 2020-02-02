@@ -6,5 +6,6 @@
     'code' => 'changePass.events.change.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

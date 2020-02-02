@@ -5,6 +5,6 @@ class UserTest extends TestCase
 {
 	public function testGetInstance()
 	{
-		$this->assertInstanceOf('User' , User::getInstance());
+		$this->assertInstanceOf('\Dvelum\App\Session\User' , \Dvelum\App\Session\User::factory());
 	}
 }

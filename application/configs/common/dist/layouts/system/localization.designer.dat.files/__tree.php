@@ -111,12 +111,12 @@
     'data' => 'bottobBar.config.php',
     'order' => 0,
   ),
-  'addWindowSaveBtn' => 
+  'addWindowCancelBtn' => 
   array (
-    'id' => 'addWindowSaveBtn',
+    'id' => 'addWindowCancelBtn',
     'parent' => 'bottobBar',
-    'data' => 'addWindowSaveBtn.config.php',
-    'order' => 1,
+    'data' => 'addWindowCancelBtn.config.php',
+    'order' => 2,
   ),
   'editWindowFill' => 
   array (
@@ -125,12 +125,12 @@
     'data' => 'editWindowFill.config.php',
     'order' => 0,
   ),
-  'addWindowCancelBtn' => 
+  'addWindowSaveBtn' => 
   array (
-    'id' => 'addWindowCancelBtn',
+    'id' => 'addWindowSaveBtn',
     'parent' => 'bottobBar',
-    'data' => 'addWindowCancelBtn.config.php',
-    'order' => 2,
+    'data' => 'addWindowSaveBtn.config.php',
+    'order' => 1,
   ),
   'key' => 
   array (
@@ -167,48 +167,6 @@
     'data' => 'topTBar.config.php',
     'order' => 0,
   ),
-  'addRecord' => 
-  array (
-    'id' => 'addRecord',
-    'parent' => 'topTBar',
-    'data' => 'addRecord.config.php',
-    'order' => 8,
-  ),
-  'addDictionaryBtn' => 
-  array (
-    'id' => 'addDictionaryBtn',
-    'parent' => 'topTBar',
-    'data' => 'addDictionaryBtn.config.php',
-    'order' => 9,
-  ),
-  'cancelBtn' => 
-  array (
-    'id' => 'cancelBtn',
-    'parent' => 'topTBar',
-    'data' => 'cancelBtn.config.php',
-    'order' => 7,
-  ),
-  'saveBtn' => 
-  array (
-    'id' => 'saveBtn',
-    'parent' => 'topTBar',
-    'data' => 'saveBtn.config.php',
-    'order' => 6,
-  ),
-  'sep1' => 
-  array (
-    'id' => 'sep1',
-    'parent' => 'topTBar',
-    'data' => 'sep1.config.php',
-    'order' => 1,
-  ),
-  'rebuildIndexBtn' => 
-  array (
-    'id' => 'rebuildIndexBtn',
-    'parent' => 'topTBar',
-    'data' => 'rebuildIndexBtn.config.php',
-    'order' => 0,
-  ),
   'searchField' => 
   array (
     'id' => 'searchField',
@@ -216,19 +174,12 @@
     'data' => 'searchField.config.php',
     'order' => 11,
   ),
-  'tbFill' => 
+  'compileLangBtn' => 
   array (
-    'id' => 'tbFill',
+    'id' => 'compileLangBtn',
     'parent' => 'topTBar',
-    'data' => 'tbFill.config.php',
-    'order' => 10,
-  ),
-  'langSelectorCombo' => 
-  array (
-    'id' => 'langSelectorCombo',
-    'parent' => 'topTBar',
-    'data' => 'langSelectorCombo.config.php',
-    'order' => 5,
+    'data' => 'compileLangBtn.config.php',
+    'order' => 2,
   ),
   'langSelectorLabel' => 
   array (
@@ -237,12 +188,61 @@
     'data' => 'langSelectorLabel.config.php',
     'order' => 4,
   ),
-  'compileLangBtn' => 
+  'langSelectorCombo' => 
   array (
-    'id' => 'compileLangBtn',
+    'id' => 'langSelectorCombo',
     'parent' => 'topTBar',
-    'data' => 'compileLangBtn.config.php',
-    'order' => 2,
+    'data' => 'langSelectorCombo.config.php',
+    'order' => 5,
+  ),
+  'tbFill' => 
+  array (
+    'id' => 'tbFill',
+    'parent' => 'topTBar',
+    'data' => 'tbFill.config.php',
+    'order' => 10,
+  ),
+  'cancelBtn' => 
+  array (
+    'id' => 'cancelBtn',
+    'parent' => 'topTBar',
+    'data' => 'cancelBtn.config.php',
+    'order' => 7,
+  ),
+  'rebuildIndexBtn' => 
+  array (
+    'id' => 'rebuildIndexBtn',
+    'parent' => 'topTBar',
+    'data' => 'rebuildIndexBtn.config.php',
+    'order' => 0,
+  ),
+  'sep1' => 
+  array (
+    'id' => 'sep1',
+    'parent' => 'topTBar',
+    'data' => 'sep1.config.php',
+    'order' => 1,
+  ),
+  'saveBtn' => 
+  array (
+    'id' => 'saveBtn',
+    'parent' => 'topTBar',
+    'data' => 'saveBtn.config.php',
+    'order' => 6,
+  ),
+  'addDictionaryBtn' => 
+  array (
+    'id' => 'addDictionaryBtn',
+    'parent' => 'topTBar',
+    'data' => 'addDictionaryBtn.config.php',
+    'order' => 9,
+  ),
+  'addRecord' => 
+  array (
+    'id' => 'addRecord',
+    'parent' => 'topTBar',
+    'data' => 'addRecord.config.php',
+    'order' => 8,
   ),
   'sep2' => 
   array (

@@ -132,6 +132,5 @@
   'primary_key' => 'id',
   'use_db_prefix' => true,
   'disable_keys' => false,
-  'acl' => false,
-  'slave_connection' => 'default',
+  'acl' => false
 ); 

@@ -42,7 +42,7 @@
       2 => 
       array (
         'name' => 'vers',
-        'type' => 'integer',
+        'type' => 'string',
       ),
     ),
   ),

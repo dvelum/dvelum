@@ -763,37 +763,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 						render:{fn:this.initTooltip,scope:this}
 					}
 				},{
-					xtype:'combobox',
-					name:'slave_connection',
-					fieldLabel:appLang.DB_SLAVE_CONNECTION,
-					queryMode:'local',
-					displayField:'id',
-					forceSelection:true,
-					allowBlank:true,
-					valueField:'id',
-					value:'',
-					store:Ext.create('Ext.data.Store',{
-						fields:[{name:'id' , type:'string'}],
-						autoLoad:true,
-						proxy: {
-							type: 'ajax',
-							url:app.crud.orm.Actions.listConnections,
-							reader: {
-								type: 'json',
-								rootProperty: 'data',
-								idProperty: 'id'
-							}
-						},
-						remoteSort:false,
-						sorters: [{
-							property : 'id',
-							direction: 'ASC'
-						}]
-					}),
-					listeners:{
-						render:{fn:this.initTooltip,scope:this}
-					}
-				},{
 					xtype:'textfield',
 					allowBlank:false,
 					vtype:'alpha',
@@ -837,57 +806,6 @@ Ext.define('app.crud.orm.ObjectWindow', {
 					name:'use_db_prefix',
 					fieldLabel:appLang.DB_USE_PREFIX,
 					checked:true,
-					listeners:{
-						render:{fn:this.initTooltip,scope:this}
-					}
-				},{
-					xtype:'checkbox',
-					name:'use_acl',
-					fieldLabel:appLang.DB_USE_ACL,
-					checked:false,
-					listeners:{
-						render:{fn:this.initTooltip,scope:this},
-						'change':{
-							fn:function(field, newValue, oldValue, options ){
-								var form = this.configForm.getForm();
-								if(newValue){
-									form.findField('acl').show();
-								}else{
-									form.findField('acl').hide();
-								}
-
-							},
-							scope:this
-						}
-					}
-				},{
-					xtype:'combobox',
-					name:'acl',
-					fieldLabel:appLang.DB_ACL_ADAPTER,
-					queryMode:'local',
-					displayField:'title',
-					forceSelection:true,
-					allowBlank:true,
-					valueField:'id',
-					hidden:true,
-					store:Ext.create('Ext.data.Store',{
-                        model:'app.comboStringModel',
-						autoLoad:true,
-						proxy: {
-							type: 'ajax',
-							url: app.crud.orm.Actions.listAcl,
-							reader: {
-								type: 'json',
-								rootProperty: 'data',
-								idProperty: 'id'
-							}
-						},
-						remoteSort:false,
-						sorters: [{
-							property : 'id',
-							direction: 'ASC'
-						}]
-					}),
 					listeners:{
 						render:{fn:this.initTooltip,scope:this}
 					}
@@ -1002,14 +920,20 @@ Ext.define('app.crud.orm.ObjectWindow', {
                             direction: 'ASC'
                         }]
                     }),
-                },{
-					xtype:'fieldcontainer',
-					fieldLabel:' ',
-					labelSeparator:'',
-					items:mainConfButtons
-				}
+                }
 			]
 		});
+
+		if(!Ext.isEmpty(app.crud.orm.objectFields)){
+			this.configForm.add(app.crud.orm.objectFields);
+		}
+
+		this.configForm.add({
+            xtype:'fieldcontainer',
+            fieldLabel:' ',
+            labelSeparator:'',
+            items:mainConfButtons
+        });
 
 		this.tabPanel = Ext.create('Ext.tab.Panel',{
 			deferredRender:true,

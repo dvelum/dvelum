@@ -6,5 +6,6 @@
     'code' => 'dataGrid.events.itemdblclick.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 

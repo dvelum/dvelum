@@ -54,19 +54,6 @@
           ),
         ),
       ),
-      'page' => 
-      array (
-        'class' => 'Ext_Virtual',
-        'extClass' => 'Data_Field',
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'name' => 'page',
-            'type' => 'string',
-          ),
-        ),
-      ),
       'date' => 
       array (
         'class' => 'Ext_Virtual',
@@ -78,19 +65,6 @@
             'name' => 'date',
             'type' => 'date',
             'dateFormat' => 'Y-m-d H:i:s',
-          ),
-        ),
-      ),
-      'size' => 
-      array (
-        'class' => 'Ext_Virtual',
-        'extClass' => 'Data_Field',
-        'state' => 
-        array (
-          'config' => 
-          array (
-            'name' => 'size',
-            'type' => 'string',
           ),
         ),
       ),

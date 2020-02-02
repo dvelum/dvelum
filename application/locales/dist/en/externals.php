@@ -11,4 +11,6 @@
   'installed' => 'Installed',
   'downloads' => 'Downloads',
   'app_page' => 'Add-on page',
+  'cant_find_url' => 'Cannot find download url',
+  'package_downloaded' => 'Package downloaded'
 ); 

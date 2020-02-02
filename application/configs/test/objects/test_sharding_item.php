@@ -13,7 +13,6 @@
   'locked' => false,
   'primary_key' => 'id',
   'use_db_prefix' => true,
-  'slave_connection' => '',
   'log_detalization' => 'default',
   'distributed' => true,
   'sharding_type' => 'sharding_key_no_index',

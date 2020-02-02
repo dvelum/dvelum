@@ -60,4 +60,5 @@ return array(
     'WWWROOT'=>'Directory',
     'TOP_MENU' => 'Top Menu',
     'BOTTOM_MENU' => 'Bottom menu',
+    'CANT_INSTALL_MODULE' => 'Cannot install required module.'
 ); 

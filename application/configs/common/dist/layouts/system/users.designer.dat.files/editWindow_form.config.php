@@ -10,7 +10,6 @@
       'bodyCls' => 'formBody',
       'bodyPadding' => 5.0,
       'fieldDefaults' => '{"labelAlign":"right","anchor":"100%","labelWidth":160}',
-      'autoScroll' => true,
     ),
   ),
 ); 

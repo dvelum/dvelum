@@ -6,5 +6,6 @@
     'code' => 'individualPermissions.events.cellclick.js',
     'params' => false,
     'is_local' => false,
+    'buffer' => false,
   ),
 ); 
