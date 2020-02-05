@@ -26,9 +26,7 @@ if(!defined('DVELUM_ROOT')){
     if ($dvelumRoot[strlen($dvelumRoot) - 1] == '/')
         $dvelumRoot = substr($dvelumRoot, 0, -1);
 
-    define('DVELUM', true);
-    define('DVELUM_ROOT' ,$dvelumRoot);
-
+    define('DVELUM_ROOT', $dvelumRoot);
     chdir(DVELUM_ROOT);
 }
 
@@ -46,7 +44,7 @@ ob_start();
 /*
  * Including initial config
  */
-$bootCfg = include DVELUM_ROOT . '/application/configs/common/dist/init.php';
+$bootCfg = include  './configs/common/init.php';
 
 /*
  * Register composer autoload
@@ -55,7 +53,8 @@ require DVELUM_ROOT . '/vendor/autoload.php';
 /*
  * Including Autoloader class
  */
-require DVELUM_ROOT . '/dvelum/src/Dvelum/Autoload.php';
+require './src/Dvelum/Autoload.php';
+
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 use \Dvelum\Config\Factory as ConfigFactory;

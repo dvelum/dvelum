@@ -189,4 +189,13 @@ class Response
     {
         return $this->sent;
     }
+
+    /**
+     * Set response code
+     * @param int $code
+     */
+    public function setResponseCode(int $code) : void
+    {
+        \header('X-PHP-Response-Code: '.$code, true, $code);
+    }
 }

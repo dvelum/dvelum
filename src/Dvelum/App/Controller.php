@@ -42,10 +42,6 @@ class Controller
      */
     protected $appConfig;
     /**
-     * @var \Dvelum\Resource $resource
-     */
-    protected $resource;
-    /**
      * @var RouterInterface
      */
     protected $router;
@@ -59,7 +55,6 @@ class Controller
     {
         $this->request = $request;
         $this->response = $response;
-        $this->resource = Resource::factory();
         $this->appConfig = Config::storage()->get('main.php');
     }
 

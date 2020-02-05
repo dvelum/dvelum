@@ -6,18 +6,19 @@ return array(
     'config_storage' => array(
         'file_array'=>array(
             'paths' => array(
+                './configs/common/',
                 './application/configs/common/dist/',
                 './application/configs/common/local/',
             ),
             'write' =>  './application/configs/common/local/',
-            'apply_to' => './application/configs/common/dist/',
+            'apply_to' => './configs/common/',
         ),
         'debug' => false
     ),
     // Autoloader config
     'autoloader' => array(
         'paths' => array(
-            './dvelum/src'
+            './src'
         )
     ),
 );

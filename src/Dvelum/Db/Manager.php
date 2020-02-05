@@ -144,8 +144,8 @@ class Manager implements ManagerInterface
             $workMode = $this->appConfig->get('development');
         }
 
-        if($workMode == \Dvelum\App\Application::MODE_INSTALL)
-            $workMode = \Dvelum\App\Application::MODE_DEVELOPMENT;
+        if($workMode == \Dvelum\App\Platform::MODE_INSTALL)
+            $workMode = \Dvelum\App\Platform::MODE_DEVELOPMENT;
 
         if(!isset($this->dbConfigs[$workMode][$name]))
         {

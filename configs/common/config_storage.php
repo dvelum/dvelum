@@ -5,6 +5,7 @@
 return array(
     'file_array'=>array(
         'paths' => array(
+            './configs/common/',
             './application/configs/common/dist/',
             './application/configs/common/local/',
         ),

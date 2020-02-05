@@ -12,15 +12,11 @@
             "email": "kirill@dvelum.com",
             "role": "Founder, Developer"
         },{
-            "name": "Andrew Zamotaev",
-            "role": "Developer"
-        },{
             "name": "Sergey Leschenko",
             "role": "Developer"
         }
     ],
     "support": {
-        "email": "support@dvelum.com",
         "issues": "https://github.com/dvelum/dvelum/issues",
         "source": "https://github.com/dvelum/dvelum"
     },

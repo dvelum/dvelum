@@ -1,7 +1,7 @@
 <?php
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
- *  Copyright (C) 2011-2017  Kirill Yegorov
+ *  Copyright (C) 2011-2019  Kirill Yegorov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,27 +17,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 declare(strict_types=1);
 
-namespace Dvelum\App\Frontend;
+namespace Dvelum\App\Application;
 
-use Dvelum\{App, Config, Config\ConfigInterface, Lang, Page\Page, Request, Response, Service, Orm\Model, Resource};
+use Dvelum\Application;
 
-class Controller extends App\Controller
+class WebService extends Application
 {
     /**
-     * @var ConfigInterface
+     * Start application
      */
-    protected $frontendConfig;
-    /**
-     * @var Page
-     */
-    protected $page;
-
-    public function __construct(Request $request, Response $response)
+    public function run()
     {
-        $this->page = Page::factory();
-        $this->frontendConfig = Config::storage()->get('frontend.php');
-        parent::__construct($request, $response);
+        $this->init();
+        $this->routeFrontend();
     }
 }
