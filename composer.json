@@ -1,10 +1,10 @@
 {
-    "name": "dvelum/dvelum-core",
+    "name": "dvelum/dvelum",
     "version": "3.0.0-dev",
-    "type": "dvelum3-extension",
-    "description": "DVelum core classes",
-    "keywords": ["dvelum"],
-    "homepage": "https://github.com/dvelum/dvelum-core",
+    "type": "project",
+    "description": "PHP/ExtJS-based web development platform",
+    "keywords": ["dvelum","php","extjs", "IDE", "orm"],
+    "homepage": "https://github.com/dvelum/dvelum",
     "license": "GPL-3.0-only",
     "authors": [
         {
@@ -22,7 +22,8 @@
     "support": {
         "email": "support@dvelum.com",
         "issues": "https://github.com/dvelum/dvelum/issues",
-        "source": "https://github.com/dvelum/dvelum"
+        "source": "https://github.com/dvelum/dvelum",
+        "docs": "https://docs.dvelum.net"
     },
     "config": {
         "preferred-install": "dist",
@@ -31,12 +32,26 @@
     "require": {
         "php":">=7.3.0",
         "ext-mysqli" : "*",
+        "ext-gd" : "*",
         "ext-mbstring" : "*",
         "ext-json": "*",
         "composer/installers": "~1.0",
         "oomphinc/composer-installers-extender": "^1.1",
         "zendframework/zend-db": "^2.9.1",
-        "psr/log": "^1.0"
+        "zendframework/zend-mail": "^2.8",
+        "psr/log": "^1.0",
+        "dvelum/extjs": "^6.2.0",
+        "dvelum/module-designer": "^1.5.4",
+        "matthiasmullie/minify": "~1.3",
+        "ckeditor/ckeditor":"^4.9"
+    },
+    "extra": {
+        "installer-types": ["js-library","dvelum3-module", "library"],
+        "installer-paths": {
+            "www/js/lib/ckeditor": ["ckeditor/ckeditor"],
+            "www/js/lib/{$name}": ["type:js-library"],
+            "modules/{$vendor}/{$name}":["type:dvelum3-module"]
+        }
     },
     "require-dev": {
         "phpunit/phpunit": "^7",

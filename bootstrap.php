@@ -20,18 +20,16 @@
  * Startup time
  */
 $scriptStart = microtime(true);
-if(!defined('DVELUM_ROOT')){
-    $dvelumRoot =  str_replace('\\', '/' , __DIR__);
-    // should be without last slash
-    if ($dvelumRoot[strlen($dvelumRoot) - 1] == '/')
-        $dvelumRoot = substr($dvelumRoot, 0, -1);
 
-    define('DVELUM', true);
-    define('DVELUM_ROOT' ,$dvelumRoot);
+$dvelumRoot =  str_replace('\\', '/' , __DIR__);
+// should be without last slash
+if ($dvelumRoot[strlen($dvelumRoot) - 1] == '/')
+    $dvelumRoot = substr($dvelumRoot, 0, -1);
 
-    chdir(DVELUM_ROOT);
-}
+define('DVELUM', true);
+define('DVELUM_ROOT' ,$dvelumRoot);
 
+chdir(DVELUM_ROOT);
 
 /*
  * Httponly cookies
