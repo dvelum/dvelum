@@ -1,1 +1,0 @@
-this.selectRepo(records.get('id'));

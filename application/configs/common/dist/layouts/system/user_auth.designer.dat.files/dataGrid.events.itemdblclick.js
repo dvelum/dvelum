@@ -1,1 +1,0 @@
-this.showEditWindow(record.get("id"));

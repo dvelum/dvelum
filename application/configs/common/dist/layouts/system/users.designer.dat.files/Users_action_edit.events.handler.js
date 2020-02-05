@@ -1,1 +1,0 @@
-this.editUser(grid.getStore().getAt(rowIndex));

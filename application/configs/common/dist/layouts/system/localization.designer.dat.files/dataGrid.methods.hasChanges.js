@@ -1,9 +1,0 @@
-if(hasChanges){
-  this.childObjects.saveBtn.enable();
-  this.childObjects.cancelBtn.enable();
-  this.childObjects.langSelectorCombo.disable();
-}else{
-  this.childObjects.saveBtn.disable();
-  this.childObjects.cancelBtn.disable();
-  this.childObjects.langSelectorCombo.enable();
-}
