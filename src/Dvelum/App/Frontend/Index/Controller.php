@@ -26,6 +26,6 @@ class Controller extends App\Frontend\Controller
 {
     public function indexAction()
     {
-        $this->response->put('<h1>Index Controller</h1>');
+        $this->page->addText('<h2>Index</h2>');
     }
 }

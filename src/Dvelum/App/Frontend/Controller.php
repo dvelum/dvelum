@@ -30,6 +30,10 @@ class Controller extends App\Controller
      */
     protected $frontendConfig;
     /**
+     * @var Lang
+     */
+    protected $lang;
+    /**
      * @var Page
      */
     protected $page;
@@ -38,6 +42,26 @@ class Controller extends App\Controller
     {
         $this->page = Page::factory();
         $this->frontendConfig = Config::storage()->get('frontend.php');
+        $this->lang = Lang::lang();
         parent::__construct($request, $response);
+    }
+
+    /**
+     * Show Page.
+     * Running this method initiates rendering of templates and sending of HTML data.
+     * @return void
+     */
+    public function showPage(): void
+    {
+        header('Content-Type: text/html; charset=utf-8');
+        $this->page->setTemplatesPath('public/');
+
+        $layoutPath = $this->page->getThemePath() . 'layout.php';
+        $this->render($layoutPath, [
+            'development' => $this->appConfig->get('development'),
+            'page' => $this->page,
+            'path' => $this->page->getThemePath(),
+            'resource' => Resource::factory()
+        ], false);
     }
 }

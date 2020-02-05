@@ -5,7 +5,8 @@ return [
     'paths' => [
         './application/controllers',
         './application/classes',
-        './src',
+        './dvelum/src',
+        './dvelum/deprecated',
     ],
     // paths priority (cannot be overridden by external modules)
     'priority'=>[
