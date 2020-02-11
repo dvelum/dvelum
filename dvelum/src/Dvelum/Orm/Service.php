@@ -173,7 +173,7 @@ class Service
      */
     public function getLog(): ?LoggerInterface
     {
-        if ($this->log !== false) {
+        if (!empty($this->log)) {
             return $this->log;
         }
 
