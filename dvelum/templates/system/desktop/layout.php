@@ -65,15 +65,15 @@
 		'title'=>$lang->get('LOGOUT'),
 		'icon' => $request->wwwRoot() . 'i/system/icons/logout.png'
 	];
-
+    $user = \Dvelum\App\Session\User::factory();
 	$res->addInlineJs('
 		app.menuData = '.json_encode($menuData).';
 		app.permissions = Ext.create("app.PermissionsStorage");
-		var rights = '.json_encode(User::factory()->getModuleAcl()->getPermissions()).';
+		var rights = '.json_encode($user->getModuleAcl()->getPermissions()).';
 		app.permissions.setData(rights);
 		app.version = "'.$this->get('version').'"
 		app.user = {
-			name: "'.User::factory()->getInfo()['name'].'"
+			name: "'.$user->getInfo()['name'].'"
 		}
 	');
 
@@ -89,7 +89,7 @@
 	if($this->get('useCSRFToken'))
 		echo '<meta name="csrf-token" content="'.$token.'"/>';
 ?>
-<title><?php echo $this->get('page')->title;?>  .:: BACK OFFICE PANEL ::.  </title>
+<title><?php echo $this->get('page')->getHtmlTitle();?>  .:: BACK OFFICE PANEL ::.  </title>
 <link rel="shortcut icon" href="<?php echo $wwwRoot;?>i/favicon.png" />
 <?php
  echo $res->includeCss();
