@@ -22,6 +22,8 @@ use Dvelum\Lang;
 use Dvelum\App;
 use Dvelum\Orm;
 use Dvelum\Orm\RecordInterface;
+use Dvelum\Service;
+
 /**
  * This is the base class for implementing administrative controllers
  */
@@ -143,6 +145,33 @@ abstract class Backend_Controller extends Controller
             $this->validateCsrfToken();
         }
         $this->checkCanView();
+
+
+        // switch theme
+        $userTheme = $this->_user->getSettings()->get('theme');
+        $acceptedThemes = $this->_configBackend->get('themes');
+        if (!empty($userTheme)
+            && $userTheme != $this->_configBackend->get('theme')
+            && in_array($userTheme, $acceptedThemes, true)
+        ) {
+            $this->_configBackend->set('theme', $userTheme);
+        }
+
+        // switch language
+        $userLang = $this->_user->getSettings()->get('language');
+        $acceptedLanguages = $this->_configBackend->get('languages');
+
+        if (!empty($userLang)
+            && $userLang != $this->_configMain->get('language')
+            && in_array($userLang, $acceptedLanguages, true)
+        ) {
+            $this->_configMain->set('language', $userLang);
+            Lang::addDictionaryLoader((string)$userLang, $userLang . '.php', Config\Factory::File_Array);
+            Service::get('Lang')->setDefaultDictionary((string)$userLang);
+            Service::get('Dictionary')->setConfig(Config\Factory::create([
+                'configPath' => $this->_configMain->get('dictionary_folder') . $this->_configMain->get('language') . '/'
+            ]));
+        }
     }
 
     protected function validateModule()
