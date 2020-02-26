@@ -1322,8 +1322,9 @@ class Config
      * @param string $name
      * @return Config\Field
      */
-    public function getField(string $name) : Config\Field
+    public function getField($name) : Config\Field
     {
+        $name = (string) $name;
         $fields = $this->config->get('fields');
         $config = $fields[$name];
 
