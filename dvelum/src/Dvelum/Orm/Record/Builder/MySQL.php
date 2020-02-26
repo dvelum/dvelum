@@ -605,9 +605,9 @@ class MySQL extends AbstractAdapter
      * @param Orm\Record\Config\Field $field
      * @return string
      */
-    protected function getPropertySql(string $name , Orm\Record\Config\Field $field) : string
+    protected function getPropertySql($name , Orm\Record\Config\Field $field) : string
     {
-        $property = new Orm\Record\Field\Property($name);
+        $property = new Orm\Record\Field\Property((string)$name);
         $property->setData($field->__toArray());
         return $property->__toSql();
     }

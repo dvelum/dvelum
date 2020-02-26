@@ -950,8 +950,9 @@ class Config
      * @return Config\Field
      * @throws \Exception
      */
-    public function getField(string $name) : Config\Field
+    public function getField($name) : Config\Field
     {
+       $name = (string) $name;
        return \Dvelum\Orm\Record\Config\FieldFactory::getField($this, $name);
     }
 
