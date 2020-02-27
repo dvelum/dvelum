@@ -12,11 +12,13 @@
     stopOnSkipped="false">
     <testsuite name="Main Test Suite">
         <directory>./tests/unit/</directory>
+        <directory>./extensions/dvelum-core/tests/unit/</directory>
     </testsuite>
     <filter>
         <whitelist>
             <directory suffix=".php">./application/classes</directory>
             <directory suffix=".php">./dvelum/src</directory>
+            <directory suffix=".php">./extensions/dvelum-core/src</directory>
             <exclude>
                 <directory suffix=".phtml">./</directory>
                 <file>./bootstrap.php</file>

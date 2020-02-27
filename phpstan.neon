@@ -1,12 +1,12 @@
 includes:
-	- vendor/phpstan/phpstan/conf/config.level1.neon
+	- phar://phpstan.phar/conf/config.level1.neon
 parameters:
 	bootstrap: %currentWorkingDirectory%/tests/phpstan/bootstrap.php
 	excludes_analyse:
 	    -  %currentWorkingDirectory%/application/templates
 	    -  %currentWorkingDirectory%/dvelum/templates
 	    -  %currentWorkingDirectory%/vendor
-	    -  %currentWorkingDirectory%/dvelum/src/Dvelum/Cache/Memcached.php
+	    -  %currentWorkingDirectory%/extensions/dvelum-core/src/Dvelum/Cache/Memcached.php
 	autoload_directories:
 	    -  %currentWorkingDirectory%/application
 	    -  %currentWorkingDirectory%/dvelum/src
@@ -17,6 +17,8 @@ parameters:
 	autoload_files: []
 	polluteCatchScopeWithTryAssignments: true
 	reportUnmatchedIgnoredErrors: false
+	checkGenericClassInNonGenericObjectType: false
+	checkMissingIterableValueType: false
 	ignoreErrors:
 		- '#Function pinba_[a-zA-Z0-9\\_]#'
 		- '#Function finfo_[a-zA-Z0-9\\_]#'
@@ -24,3 +26,5 @@ parameters:
 		- '#Constant LDAP_OPT_PROTOCOL_VERSION [a-zA-Z0-9\\_]#'
 		- '#class KRB5CCache [a-zA-Z0-9\\_]#'
 		- '#call_user_func_array expects callable#'
+		- '#Unsafe usage of new static#'
+		- '#spl_autoload_register expects callable#'

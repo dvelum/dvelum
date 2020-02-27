@@ -19,32 +19,40 @@
  */
 declare(strict_types=1);
 
-namespace Dvelum\App\Router;
+namespace Dvelum\App\Console;
 
-use Dvelum\App\Router;
+use Dvelum\App;
+use Dvelum\Orm\Model;
 use Dvelum\Request;
 use Dvelum\Response;
 
-class Console extends Router
+class PlatformController extends Controller
 {
     /**
-     * Route request
-     * @param Request $request
-     * @param Response $response
-     * @return void
+     * Cron User
+     * @var App\Session\User
      */
-    public function route(Request $request , Response $response) : void
+    protected $user;
+
+    public function __construct(Request $request, Response $response)
     {
-        $controllerClass = '\\Dvelum\\App\\Console\\Controller';
-        $this->runController($controllerClass , $request->getPart(0), $request, $response);
+        parent::__construct($request, $response);
+        $this->authorize();
     }
 
     /**
-     * Calc url for module
-     * @param string $module — module name
-     * @return string
+     * Authorize as system user
      */
-    public function findUrl(string $module) : string{
-        return '';
+    protected function authorize()
+    {
+        $userId = $this->consoleConfig->get('user_id');
+        if ($userId && Model::factory('User')->query()->filters(['id' => $userId])->getCount()) {
+            $curUser = App\Session\User::factory();
+            $curUser->setId($userId);
+            $curUser->setAuthorized();
+            $this->user = $curUser;
+        } else {
+            $this->logMessage('Cron  cant\'t authorize');
+        }
     }
 }

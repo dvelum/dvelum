@@ -6,6 +6,7 @@ return array(
     'config_storage' => array(
         'file_array'=>array(
             'paths' => array(
+                './extensions/dvelum-core/application/configs/common/dist/',
                 './application/configs/common/dist/',
                 './application/configs/common/local/',
             ),
@@ -17,7 +18,8 @@ return array(
     // Autoloader config
     'autoloader' => array(
         'paths' => array(
-            './dvelum/src'
+            './dvelum/src',
+            './extensions/dvelum-core/src'
         )
     ),
 );

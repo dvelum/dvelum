@@ -161,7 +161,11 @@ return array(
     /*
      * Application class
      */
-    'application' => '\\Dvelum\\App\\Application',
+    'application' => '\\Dvelum\\App\\Application\\Platform',
+    /*
+     * DB Manager
+     */
+    'db_manager' => '\\Dvelum\\Db\\OrmManager',
     /*
      * Vendor library path
      */
@@ -187,7 +191,7 @@ return array(
                 'adapter' => '\\Dvelum\\Externals\\Client\\Packagist',
                 'adapterConfig' => [
                     'vendor' => 'dvelum',
-                    'type'=>'dvelum-module',
+                    'type'=>'dvelum3-module',
                     //Path to composer command
                     'composer_path' => 'composer',
                     'download_path' => './modules'

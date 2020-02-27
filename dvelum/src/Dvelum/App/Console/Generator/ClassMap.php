@@ -31,6 +31,7 @@ class ClassMap extends Console\Action
 {
     public function action(): bool
     {
+        throw new \Exception('not implemented yet');
         $mapBuilder = new \Dvelum\App\Classmap($this->appConfig);
         $mapBuilder->update();
         return $mapBuilder->save();

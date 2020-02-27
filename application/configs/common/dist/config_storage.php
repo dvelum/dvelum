@@ -5,6 +5,7 @@
 return array(
     'file_array'=>array(
         'paths' => array(
+            './extensions/dvelum-core/application/configs/common/dist/',
             './application/configs/common/dist/',
             './application/configs/common/local/',
         ),
