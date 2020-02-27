@@ -28,6 +28,7 @@ use Dvelum\Orm\Model;
 use Dvelum\App\Router;
 use Dvelum\Request;
 use Dvelum\Response;
+use PHPUnit\Framework\Exception;
 use Psr\Log\LogLevel;
 
 class Controller extends App\Controller implements Router\RouterInterface
@@ -56,6 +57,7 @@ class Controller extends App\Controller implements Router\RouterInterface
 
     public function __construct(Request $request, Response $response)
     {
+        throw new Exception('not implemented yet');
         if (!defined('DVELUM_CONSOLE')) {
             $this->response->redirect('/');
             exit;
