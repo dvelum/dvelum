@@ -30,7 +30,10 @@ use Dvelum\Config;
  */
 class Desktop extends Menu
 {
-    public function getIncludes()
+    /**
+     * @return array
+     */
+    public function getIncludes() : array
     {
         return [
             'css' => [],
