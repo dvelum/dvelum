@@ -25,6 +25,7 @@ parameters:
 		- '#Function ldap_[a-zA-Z0-9\\_]#'
 		- '#Constant LDAP_OPT_PROTOCOL_VERSION [a-zA-Z0-9\\_]#'
 		- '#class KRB5CCache [a-zA-Z0-9\\_]#'
+		- '#class Memcached [a-zA-Z0-9\\_]#'
 		- '#call_user_func_array expects callable#'
 		- '#Unsafe usage of new static#'
 		- '#spl_autoload_register expects callable#'
