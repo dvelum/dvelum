@@ -41,9 +41,9 @@ return array(
     // Code generator class
     'modules_generator' => '\\Dvelum\\App\\Module\\Generator\\Simple',
     // Menu adapter class for classic theme
-    'menu_adapter' => '\\Dvelum\\App\\Menu',
+    'menu_adapter' => '\\Dvelum\\App\\Backend\\Menu\\Menu',
     // Menu adapter class for desktop theme
-    'desktop_menu_adapter' => '\\Dvelum\\App\\Menu\\Desktop',
+    'desktop_menu_adapter' => '\\Dvelum\\App\\Backend\\Menu\\Desktop',
     // Modules in that need disable menu rendering
     'modules_without_menu' => ['Designer']
 );

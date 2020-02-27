@@ -460,6 +460,52 @@ class Controller extends App\Controller
             'theme' => $this->backofficeConfig->get('theme')
         ));
 
+        $res->addInlineJs('
+            app.permissions = Ext.create("app.PermissionsStorage");
+            var rights = '.json_encode($this->user->getModuleAcl()->getPermissions()).';
+            app.permissions.setData(rights);
+        ');
+
+        $res->addInlineJs('var developmentMode = '.intval($this->appConfig->get('development')).';');
+
+        $menuAdapterClass = $this->backofficeConfig->get('menu_adapter');
+        /**
+         * @var App\Backend\Menu\Menu $menuAdapter
+         */
+        $menuAdapter = new $menuAdapterClass($this->user, $modulesManager, $this->appConfig, $this->request);
+        $menuAdapter->setOptions([
+            'development' => $this->appConfig->get('development'),
+            'isVertical' => true,
+            'stateful' => true,
+        ]);
+        $menuIncludes = $menuAdapter->getIncludes();
+
+        if(!empty($menuIncludes['css'])){
+            foreach($menuIncludes['css'] as $path => $options){
+                $defaults = [
+                    'minified' => false,
+                ];
+                $options = array_merge($defaults, $options);
+                $this->resource->addCss($path,  $options['minified']);
+            }
+        }
+
+        if(!empty($menuIncludes['js'])){
+            foreach($menuIncludes['js'] as $path => $options){
+                $defaults = [
+                  'order' => 0,
+                  'minified' => false,
+                  'tag' => false
+                ];
+                $options = array_merge($defaults, $options);
+                $this->resource->addJs($path,$options['order'], $options['minified'], $options['tag']);
+            }
+        }
+
+        $res->addInlineJs('
+            app.menu = '.$menuAdapter->render().';
+        ');
+
         $this->response->put($template->render($templatesPath . 'layout.php'));
     }
 
