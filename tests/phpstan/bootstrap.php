@@ -25,7 +25,7 @@ require DVELUM_ROOT . '/vendor/autoload.php';
 /*
  * Including Autoloader class
  */
-require_once DVELUM_ROOT . '/dvelum/src/Dvelum/Autoload.php';
+require_once DVELUM_ROOT . '/extensions/dvelum-core/src/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 use \Dvelum\Config\Factory as ConfigFactory;

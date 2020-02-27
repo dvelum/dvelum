@@ -15,10 +15,6 @@ return [
     'generateModels'=>[
         'adapter' => '\\Dvelum\\App\\Console\\Generator\\Models'
     ],
-    // Create Model classes
-    'generateClassMap'=>[
-        'adapter' => '\\Dvelum\\App\\Console\\Generator\\ClassMap'
-    ],
     // Rebuild JS lang files
     'buildJs'=>[
         'adapter' => '\\Dvelum\\App\\Console\\Js\\Lang'
@@ -26,10 +22,6 @@ return [
     // Clear memory tables used for Background tasks
     'clearMemory'=>[
         'adapter' => '\\Dvelum\\App\\Console\\Clear\\Memory'
-    ],
-    // clear js and css cache
-    'clearStatic'=>[
-        'adapter' => '\\Dvelum\\App\\Console\\Clear\\StaticCache'
     ],
     //  external add
     'external-add' =>[

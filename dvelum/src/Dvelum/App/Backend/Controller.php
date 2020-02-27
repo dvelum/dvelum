@@ -452,7 +452,7 @@ class Controller extends App\Controller
             'user' => $this->user,
             'adminPath' => $this->appConfig->get('adminPath'),
             'development' => $this->appConfig->get('development'),
-            'version' => Config::storage()->get('versions.php')->get('core'),
+            'version' => Config::storage()->get('versions.php')->get('platform'),
             'lang' => $this->appConfig->get('language'),
             'modules' => $modulesManager->getList(),
             'userModules' => Session\User::factory()->getModuleAcl()->getAvailableModules(),
