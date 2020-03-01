@@ -52,7 +52,7 @@ class PlatformController extends Controller
             $curUser->setAuthorized();
             $this->user = $curUser;
         } else {
-            $this->logMessage('Cron  cant\'t authorize');
+            $this->response->error('Cron  cant\'t authorize');
         }
     }
 }
