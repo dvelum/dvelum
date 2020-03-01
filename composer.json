@@ -47,12 +47,13 @@
         "ckeditor/ckeditor":"^4.9"
     },
     "extra": {
-        "installer-types": ["js-library","dvelum3-module", "library", "project"],
+        "installer-types": ["js-library","dvelum3-module","dvelum3-extension", "library", "project"],
         "installer-paths": {
             "www/js/lib/ckeditor": ["ckeditor/ckeditor"],
+            "extensions/dvelum-core":["dvelum/dvelum-core"],
             "www/js/lib/{$name}": ["type:js-library"],
             "modules/{$vendor}/{$name}":["type:dvelum3-module"],
-            "extensions/dvelum-core":["dvelum/dvelum-core"]
+            "extensions/{$vendor}/{$name}":["type:dvelum3-extension"]
         }
     },
     "require-dev": {
