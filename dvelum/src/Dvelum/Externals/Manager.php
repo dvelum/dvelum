@@ -261,23 +261,21 @@ class Manager
         if (!empty($configPaths)) {
             $storage = Config::storage();
 
-            $writePath = $storage->getWrite();
-            $applyPath = $storage->getApplyTo();
+            $resultPaths = $storage->get('config_storage.php')->get('file_array')['locked_paths'];
+            $lockedPathsIndex = array_flip($resultPaths);
 
             $paths = $storage->getPaths();
-            $resultPaths = [];
+
+            foreach ($configPaths as $path) {
+                $resultPaths[] = $path;
+            }
 
             foreach ($paths as $path){
-                if($path!==$writePath && $path!==$applyPath){
+                if(!isset($lockedPathsIndex[$path])){
                     $resultPaths[] = $path;
                 }
             }
-            foreach ($configPaths as $path) {
-                \array_unshift($resultPaths , $path);
-            }
 
-            \array_unshift($resultPaths , $applyPath);
-            $resultPaths[] = $writePath;
             $storage->replacePaths($resultPaths);
         }
         // Add localization paths
