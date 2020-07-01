@@ -90,11 +90,11 @@ class Filter
             case 'str' :
             case 'string' :
             case 'text' :
-                $value = trim(filter_var($value, FILTER_SANITIZE_STRING));
+                $value = trim((string)filter_var($value, FILTER_SANITIZE_STRING));
                 break;
 
             case 'cleaned_string' :
-                $value = trim(filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $value = trim((string)filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
                 break;
 
             case 'email' :
