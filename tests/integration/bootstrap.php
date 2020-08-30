@@ -1,4 +1,5 @@
 <?php
+$skipBuild = false;
 $dvelumRoot =  str_replace('\\', '/' ,  dirname(dirname(dirname(__FILE__))));
 // should be without last slash
 if ($dvelumRoot[strlen($dvelumRoot) - 1] == '/')
@@ -70,91 +71,95 @@ $app = new $appClass($config);
 $app->setAutoloader($autoloader);
 $app->runTestMode();
 
-$dbObjectManager = new \Dvelum\Orm\Record\Manager();
-foreach($dbObjectManager->getRegisteredObjects() as $object)
-{
+if(!$skipBuild) {
+    $dbObjectManager = new \Dvelum\Orm\Record\Manager();
+    foreach ($dbObjectManager->getRegisteredObjects() as $object) {
         echo 'build ' . $object . ' : ';
         $builder = \Dvelum\Orm\Record\Builder::factory($object);
-        if($builder->build(false)){
+        if ($builder->build(false)) {
             echo 'OK';
-        }else{
-           echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
+        } else {
+            echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
+        }
+
+        if (!\Dvelum\Orm\Record\Config::factory($object)->isDistributed()) {
+            echo ' clear';
+            $model = \Dvelum\Orm\Model::factory($object);
+            $db = $model->getDbConnection();
+            $db->query('SET FOREIGN_KEY_CHECKS=0;');
+            $db->delete($model->table());
+            $db->query('SET FOREIGN_KEY_CHECKS=1;');
+        }
+
+        echo "\n";
+    }
+    echo PHP_EOL . 'BUILD FOREIGN KEYS' . PHP_EOL . PHP_EOL;
+    foreach ($dbObjectManager->getRegisteredObjects() as $object) {
+        echo 'build ' . $object . ' : ';
+        $builder = \Dvelum\Orm\Record\Builder::factory($object);
+        if ($builder->build(true)) {
+            echo 'OK';
+        } else {
+            echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
         }
         echo "\n";
-}
-echo  PHP_EOL.'BUILD FOREIGN KEYS' . PHP_EOL. PHP_EOL;
-foreach($dbObjectManager->getRegisteredObjects() as $object)
-{
-    echo 'build ' . $object . ' : ';
-    $builder = \Dvelum\Orm\Record\Builder::factory($object);
-    if($builder->build(true)){
-        echo 'OK';
-    }else{
-        echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors()));
     }
-    echo "\n";
-}
-echo 'BUILD SHARDS ' . PHP_EOL;
+    echo 'BUILD SHARDS ' . PHP_EOL;
 
-$sharding = \Dvelum\Config::storage()->get('sharding.php');
-$shardsFile = $sharding->get('shards');
-$shardsConfig = \Dvelum\Config::storage()->get($shardsFile, true, false);
-$registeredObjects = $dbObjectManager->getRegisteredObjects();
+    $sharding = \Dvelum\Config::storage()->get('sharding.php');
+    $shardsFile = $sharding->get('shards');
+    $shardsConfig = \Dvelum\Config::storage()->get($shardsFile, true, false);
+    $registeredObjects = $dbObjectManager->getRegisteredObjects();
 
-foreach ($shardsConfig as $item)
-{
-    $shardId = $item['id'];
-    echo "\t" . 'BUILD ' . $shardId . ' ' . PHP_EOL;
+    foreach ($shardsConfig as $item) {
+        $shardId = $item['id'];
+        echo "\t" . 'BUILD ' . $shardId . ' ' . PHP_EOL;
 
-    foreach ($registeredObjects as $index => $object)
-    {
-        if (!\Dvelum\Orm\Record\Config::factory($object)->isDistributed()) {
-            unset($registeredObjects[$index]);
-            continue;
+        foreach ($registeredObjects as $index => $object) {
+            if (!\Dvelum\Orm\Record\Config::factory($object)->isDistributed()) {
+                unset($registeredObjects[$index]);
+                continue;
+            }
+
+            echo "\t\t" . $object . ' : ';
+
+            $builder = \Dvelum\Orm\Record\Builder::factory($object);
+            $builder->setConnection(\Dvelum\Orm\Model::factory($object)->getDbShardConnection($shardId));
+
+            if ($builder->build(false, true)) {
+                echo 'OK' . PHP_EOL;
+            } else {
+                $success = false;
+                echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
+            }
+
+            $model = \Dvelum\Orm\Model::factory($object);
+            $db = $model->getDbShardConnection($shardId);
+            $db->query('SET FOREIGN_KEY_CHECKS=0;');
+            $db->delete($model->table());
+            $db->query('SET FOREIGN_KEY_CHECKS=1;');
         }
+    }
 
-        echo "\t\t" . $object . ' : ';
+    foreach ($shardsConfig as $item) {
+        $shardId = $item['id'];
+        echo "\t" . 'BUILD KEYS ' . $shardId . ' ' . PHP_EOL;
 
-        $builder = \Dvelum\Orm\Record\Builder::factory($object);
-        $builder->setConnection(\Dvelum\Orm\Model::factory($object)->getDbShardConnection($shardId));
+        foreach ($registeredObjects as $index => $object) {
+            echo "\t\t" . $object . ' : ';
 
-        if ($builder->build(false, true)) {
-            echo 'OK' . PHP_EOL;
-        } else {
-            $success = false;
-            echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
+            $builder = \Dvelum\Orm\Record\Builder::factory($object);
+            $builder->setConnection(\Dvelum\Orm\Model::factory($object)->getDbShardConnection($shardId));
+
+            if ($builder->build(true, true)) {
+                echo 'OK' . PHP_EOL;
+            } else {
+                $success = false;
+                echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
+            };
         }
-
-        $model = \Dvelum\Orm\Model::factory($object);
-        $db = $model->getDbShardConnection($shardId);
-        $db->query('SET FOREIGN_KEY_CHECKS=0;');
-        $db->delete($model->table());
-        $db->query('SET FOREIGN_KEY_CHECKS=1;');
-
     }
 }
-
-foreach ($shardsConfig as $item)
-{
-    $shardId = $item['id'];
-    echo "\t" . 'BUILD KEYS ' . $shardId . ' ' . PHP_EOL;
-
-    foreach ($registeredObjects as $index => $object)
-    {
-        echo "\t\t" . $object . ' : ';
-
-        $builder = \Dvelum\Orm\Record\Builder::factory($object);
-        $builder->setConnection(\Dvelum\Orm\Model::factory($object)->getDbShardConnection($shardId));
-
-        if ($builder->build(true, true)) {
-            echo 'OK' . PHP_EOL;
-        } else {
-            $success = false;
-            echo 'Error! ' . strip_tags(implode(', ', $builder->getErrors())) . PHP_EOL;
-        };
-    }
-}
-
 
 
 // init default objects
