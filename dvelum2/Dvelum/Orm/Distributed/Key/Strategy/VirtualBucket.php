@@ -24,6 +24,7 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Distributed\Key\Reserved;
 use Dvelum\Orm\Distributed\Key\Strategy\VirtualBucket\MapperInterface;
 use Dvelum\Orm\Distributed\Model;
+use Dvelum\Orm\Exception;
 use Dvelum\Orm\Record\Config;
 use Dvelum\Orm\RecordInterface;
 
@@ -139,6 +140,8 @@ class VirtualBucket extends UserKeyNoID
             $mapper = $this->getNumericMapper();
         } elseif ($fieldObject->isText(true)) {
             $mapper = $this->getStringMapper();
+        }else{
+            throw new Exception('Undefined key mapper for '.$objectName);
         }
 
         $indexObject = $config->getDistributedIndexObject();
