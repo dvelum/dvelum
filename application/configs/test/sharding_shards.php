@@ -16,5 +16,13 @@ return [
         'override' =>[
             'prefix' => 'shard2_',
         ],
+    ], [
+        'id' => 'shard3',
+        'host' => 'localhost',
+        'group' => 'default',
+        'weight'=> 6,
+        'override' =>[
+            'prefix' => 'shard3_',
+        ],
     ],
 ];

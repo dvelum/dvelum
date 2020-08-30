@@ -139,20 +139,44 @@ class VirtualBucket extends UserKeyNoID
             $mapper = $this->getNumericMapper();
         } elseif ($fieldObject->isText(true)) {
             $mapper = $this->getStringMapper();
-        }else{
-            throw new \Exception('Undefined mapper type for '.$objectName.'.'.$keyField);
         }
 
         $indexObject = $config->getDistributedIndexObject();
         $indexModel = Model::factory($indexObject);
 
-        /**
-         * @var Model $objectModel
-         */
-        $objectModel = Model::factory($objectName);
-
         $result = [];
+        $search = [];
 
+        foreach ($distributedKeys as $key)
+        {
+            $bucket = $mapper->keyToBucket($key);
+            $search[$bucket->getId()][] = $key;
+        }
+
+        $shardData = $indexModel->query()
+            ->filters([$this->bucketField=>array_keys($search)])
+            ->fields([$this->shardField,$this->bucketField])
+            ->fetchAll();
+
+        if(empty($shardData)){
+            return [];
+        }
+
+        foreach ($shardData as $row)
+        {
+            $shardId = $row[$this->shardField];
+            $bucketId = $row[$this->bucketField];
+            if(!isset($result[$shardId])){
+                $result[$shardId] = [];
+            }
+            if(isset($search[$bucketId])){
+                $result[$shardId]  = array_merge($result[$shardId],$search[$bucketId]);
+            }
+        }
+
+        /*
+        //  Strict search  requires to many DB queries
+        $objectModel = Model::factory($objectName);
         foreach ($distributedKeys as $key)
         {
             $bucket = $mapper->keyToBucket($key);
@@ -165,6 +189,7 @@ class VirtualBucket extends UserKeyNoID
                 }
             }
         }
+        */
         return $result;
     }
 }
