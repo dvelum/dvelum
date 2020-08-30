@@ -1,0 +1,10 @@
+/.idea/
+/www/js/cache/
+/www/css/cache/
+/www/media/
+/data/integration_report/
+/data/phpunit_report/
+/data/locks/
+/data/logs/
+/temp/
+/vendor/
