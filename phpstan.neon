@@ -1,14 +1,15 @@
 includes:
-	- vendor/phpstan/phpstan/conf/config.level1.neon
+	- phar://phpstan.phar/conf/config.level1.neon
 parameters:
-	bootstrap: %currentWorkingDirectory%/tests/phpstan/bootstrap.php
+	bootstrapFiles:
+	    - %currentWorkingDirectory%/tests/phpstan/bootstrap.php
 	excludes_analyse:
 	    -  %currentWorkingDirectory%/application/templates
 	    -  %currentWorkingDirectory%/dvelum/templates
 	    -  %currentWorkingDirectory%/vendor
 	    -  %currentWorkingDirectory%/dvelum/library/Cache/Memcached.php
 	    -  %currentWorkingDirectory%/dvelum2/Dvelum/Cache/Memcached.php
-	autoload_directories:
+	scanDirectories:
 	    -  %currentWorkingDirectory%/application
 	    -  %currentWorkingDirectory%/dvelum
 	    -  %currentWorkingDirectory%/dvelum2
@@ -23,3 +24,4 @@ parameters:
 		- '#Function pinba_[a-zA-Z0-9\\_]#'
 		- '#Function finfo_[a-zA-Z0-9\\_]#'
 		- '#Function ldap_[a-zA-Z0-9\\_]#'
+		-'#Unsafe usage of new static#'

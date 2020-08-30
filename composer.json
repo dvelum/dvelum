@@ -54,7 +54,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^7",
-        "phpstan/phpstan": "^0.10",
+        "phpstan/phpstan": "^0.12",
         "codacy/coverage": "dev-master"
     }
 }
