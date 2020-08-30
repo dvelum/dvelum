@@ -24,6 +24,7 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm\Distributed\Key\Reserved;
 use Dvelum\Orm\Distributed\Key\Strategy\VirtualBucket\MapperInterface;
 use Dvelum\Orm\Distributed\Model;
+use Dvelum\Orm\Exception;
 use Dvelum\Orm\Record\Config;
 use Dvelum\Orm\RecordInterface;
 
@@ -136,11 +137,6 @@ class VirtualBucket extends UserKeyNoID
     {
         $config = Config::factory($objectName);
         $keyField = $config->getBucketMapperKey();
-
-        if(empty($keyField)){
-            throw new \Exception('Undefined key field for '.$objectName.'.'.$keyField);
-        }
-
         $fieldObject = $config->getField($keyField);
 
         if ($fieldObject->isNumeric()) {
@@ -148,29 +144,39 @@ class VirtualBucket extends UserKeyNoID
         } elseif ($fieldObject->isText(true)) {
             $mapper = $this->getStringMapper();
         }else{
-            throw new \Exception('Undefined mapper type for '.$objectName.'.'.$keyField);
+            throw new Exception('Undefined key mapper for '.$objectName);
         }
 
         $indexObject = $config->getDistributedIndexObject();
         $indexModel = Model::factory($indexObject);
 
-        /**
-         * @var Model $objectModel
-         */
-        $objectModel = Model::factory($objectName);
-
         $result = [];
+        $search = [];
 
         foreach ($distributedKeys as $key)
         {
             $bucket = $mapper->keyToBucket($key);
-            $shard = $indexModel->query()->filters([$this->bucketField=>$bucket->getId()])->fields([$this->shardField])->fetchOne();
-            if(!empty($shard)){
-                $query = $objectModel->query()->setShard($shard)->filters([$keyField=>$key]);
-                $count = $query->getCount();
-                if($count){
-                    $result[$shard][] = $key;
-                }
+            $search[$bucket->getId()][] = $key;
+        }
+
+        $shardData = $indexModel->query()
+            ->filters([$this->bucketField=>array_keys($search)])
+            ->fields([$this->shardField,$this->bucketField])
+            ->fetchAll();
+
+        if(empty($shardData)){
+            return [];
+        }
+
+        foreach ($shardData as $row)
+        {
+            $shardId = $row[$this->shardField];
+            $bucketId = $row[$this->bucketField];
+            if(!isset($result[$shardId])){
+                $result[$shardId] = [];
+            }
+            if(isset($search[$bucketId])){
+                $result[$shardId]  = array_merge($result[$shardId],$search[$bucketId]);
             }
         }
         return $result;

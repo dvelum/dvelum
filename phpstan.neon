@@ -1,13 +1,14 @@
 includes:
 	- phar://phpstan.phar/conf/config.level1.neon
 parameters:
-	bootstrap: %currentWorkingDirectory%/tests/phpstan/bootstrap.php
+	bootstrapFiles:
+	    - %currentWorkingDirectory%/tests/phpstan/bootstrap.php
 	excludes_analyse:
 	    -  %currentWorkingDirectory%/application/templates
 	    -  %currentWorkingDirectory%/dvelum/templates
 	    -  %currentWorkingDirectory%/vendor
 	    -  %currentWorkingDirectory%/extensions/dvelum-core/src/Dvelum/Cache/Memcached.php
-	autoload_directories:
+	scanDirectories:
 	    -  %currentWorkingDirectory%/application
 	    -  %currentWorkingDirectory%/dvelum/src
 	    -  %currentWorkingDirectory%/tests/unit/dvelum/app
