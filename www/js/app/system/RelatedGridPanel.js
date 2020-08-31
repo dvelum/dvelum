@@ -199,7 +199,7 @@ Ext.define('app.relatedGridPanel',{
     },
     collectData: function(){
         var recordList = [];
-        this.dataStore.resetFilters();
+        this.dataStore.clearFilter();
         this.dataStore.each(function(record){
             if(!record.get('deleted'))
                 recordList[recordList.length] = record.get('id');
