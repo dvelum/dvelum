@@ -161,7 +161,7 @@ class DataModel
 
         if(!empty($values))
         {
-            foreach($values as $field) {
+            foreach($values as $field => $value) {
                 $message = ErrorMessage::factory()->uniqueValue($field, $record->get($field));
                 $record->addErrorMessage($message);
             }
