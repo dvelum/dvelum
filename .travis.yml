@@ -6,7 +6,7 @@ php:
   - 7.4
 
 before_script:
-  - composer self-update
+  - composer self-update --rollback
   - composer install --prefer-dist --no-interaction
 
 script:
