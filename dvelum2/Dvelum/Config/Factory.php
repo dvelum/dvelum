@@ -198,9 +198,6 @@ class Factory
              * @var Config\Storage\StorageInterface $store;
              */
             $store = new self::$storageAdapter();
-            if(!empty($config)){
-                $store->setConfig($config->__toArray());
-            }
         }
         return $store;
     }
