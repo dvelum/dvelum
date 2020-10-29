@@ -118,14 +118,14 @@ class Classmap
                 $parts = array_map('ucfirst', $parts);
                 $class = implode('_', $parts);
 
-                if(!isset($map[$class]))
+                if(!isset($this->map[$class]))
                 {
                     try{
-                        if(!isset($map[$class]) && (class_exists($class) || interface_exists($class))){
+                        if(!isset($this->map[$class]) && (class_exists($class) || interface_exists($class))){
                             $this->map[$class] = $item;
                         }else{
                             $class = str_replace('_','\\', $class);
-                            if(!isset($map[$class]) && (class_exists($class) || interface_exists($class))){
+                            if(!isset($this->map[$class]) && (class_exists($class) || interface_exists($class))){
                                 $this->map[$class] = $item;
                             }
                         }
@@ -164,7 +164,7 @@ class Classmap
                 $parts = array_map('ucfirst', $parts);
                 $class = $baseSpace.'\\'.implode('\\', $parts);
 
-                if(!isset($map[$class]))
+                if(!isset($this->map[$class]))
                     $this->map[$class] = $item;
             }
             else
