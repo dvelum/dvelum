@@ -29,9 +29,9 @@ use Dvelum\Config\ConfigInterface;
  */
 class Config
 {
-    static public function storage(ConfigInterface $config = null) : Cfg\Storage\StorageInterface
+    static public function storage() : Cfg\Storage\StorageInterface
     {
-        return Cfg\Factory::storage($config);
+        return Cfg\Factory::storage();
     }
 
     static public function factory($type, $name, $useCache = true) : ConfigInterface

@@ -123,6 +123,40 @@ class VirtualBucket extends UserKeyNoID
     }
 
     /**
+     * Get object shard id
+     * @param string $objectName
+     * @param mixed $distributedKey
+     * @return mixed
+     */
+    public function findObjectShard(string $objectName, $distributedKey)
+    {
+        $config = Config::factory($objectName);
+        $keyField = $config->getBucketMapperKey();
+
+        $fieldObject = $config->getField($keyField);
+
+        if ($fieldObject->isNumeric()) {
+            $mapper = $this->getNumericMapper();
+        } elseif ($fieldObject->isText(true)) {
+            $mapper = $this->getStringMapper();
+        }else{
+            throw new Exception('Undefined key mapper for '.$objectName);
+        }
+
+        $bucket = $mapper->keyToBucket($distributedKey);
+        $indexObject = $config->getDistributedIndexObject();
+        $indexModel = Model::factory($indexObject);
+        $shard = $indexModel->query()
+            ->filters([$this->bucketField=>$bucket->getId()])
+            ->fields([$this->shardField])
+            ->fetchOne();
+
+        if(empty($shard)){
+            return null;
+        }
+        return $shard;
+    }
+    /**
      * Get shards for list of objects
      * @param string $objectName
      * @param array $distributedKeys
