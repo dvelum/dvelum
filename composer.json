@@ -1,6 +1,6 @@
 {
     "name": "dvelum/dvelum",
-    "version": "2.0.5",
+    "version": "2.0.5.1",
     "type": "project",
     "description": "PHP/ExtJS-based web development platform",
     "keywords": ["dvelum","php","extjs", "IDE", "orm"],
@@ -56,5 +56,19 @@
         "phpunit/phpunit": "^7",
         "phpstan/phpstan": "^0.12",
         "codacy/coverage": "dev-master"
+    },
+    "repositories": {
+        "chosen": {
+            "type": "package",
+            "package": {
+                "name": "ckeditor/ckeditor",
+                "version": "4.9.2",
+                "type": "js-library",
+                "dist": {
+                    "url": "https://github.com/ckeditor/ckeditor4-releases/archive/full/4.9.2.zip",
+                    "type": "zip"
+                }
+            }
+        }
     }
 }

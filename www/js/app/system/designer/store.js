@@ -998,6 +998,7 @@ Ext.define('designer.store.PropertyWindow',{
     modal:true,
     storesStore:null,
     instancesStore:null,
+    column: false,
 
     initComponent:function(){
         var me = this;
@@ -1143,7 +1144,8 @@ Ext.define('designer.store.PropertyWindow',{
             url:this.controllerUrl + 'storeload',
             method:'post',
             params: {
-                'object':this.objectName,
+                object:this.objectName,
+                column:this.column
             },
             success: function(form, action)
             {
@@ -1173,6 +1175,7 @@ Ext.define('designer.store.PropertyWindow',{
             url:this.controllerUrl + 'storesave',
             params:{
                 'object':this.objectName,
+                'column':this.column,
                 'call': this.callEditor.getValue()
             },
             waitMsg:appLang.SAVING,
