@@ -60,5 +60,19 @@
         "phpunit/phpunit": "^9",
         "phpstan/phpstan": "^0.12",
         "codacy/coverage": "dev-master"
+    },
+    "repositories": {
+        "chosen": {
+            "type": "package",
+            "package": {
+                "name": "ckeditor/ckeditor",
+                "version": "4.9.2",
+                "type": "js-library",
+                "dist": {
+                    "url": "https://github.com/ckeditor/ckeditor4-releases/archive/full/4.9.2.zip",
+                    "type": "zip"
+                }
+            }
+        }
     }
 }
