@@ -1,4 +1,4 @@
-DVelum 2.0.5 PROFESSIONAL WEB-DEVELOPMENT PLATFORM
+DVelum 2.0.6 PROFESSIONAL WEB-DEVELOPMENT PLATFORM
 Copyright (C) 2011-2020,  Kirill Yegorov, Andrew Zamotaev, Sergey Leschenko
 http://dvelum.net/license.html
 
