@@ -13,14 +13,6 @@ class TreeTest extends TestCase
 		$item = $tree->getItem(1);
 		$this->assertEquals($item['order'] , 2);
 	}
-	/**
-     * @depends test_sortChilds
-     */
-	public function testSortItems()
-	{
-		
-	}
-
 
 	public function testItemExists()
 	{
