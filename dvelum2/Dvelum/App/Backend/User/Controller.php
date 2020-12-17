@@ -354,6 +354,10 @@ class Controller extends App\Backend\Api\Controller
 
         $object = $this->getPostedData($this->module);
 
+        if (is_null($object)) {
+            exit();
+        }
+
         if (!$object->get('admin')) {
             $object->set('group_id', null);
         }
