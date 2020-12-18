@@ -355,7 +355,7 @@ class Controller extends App\Backend\Api\Controller
         $object = $this->getPostedData($this->module);
 
         if (is_null($object)) {
-            exit();
+            return;
         }
 
         if (!$object->get('admin')) {
