@@ -55,6 +55,11 @@ class Controller extends App\Backend\Controller
      * @var array
      */
     protected $listLinks = [];
+
+    /**
+     * @var array
+     */
+    protected $listWith = [];
     /**
      * Controller events manager
      * @var App\Controller\EventManager
@@ -108,6 +113,11 @@ class Controller extends App\Backend\Controller
         if (!empty($this->listFields)) {
             $api->setFields($this->listFields);
         }
+
+        if(!empty($this->listWith)){
+            $api->setWith($this->listWith);
+        }
+
         return $api;
     }
 

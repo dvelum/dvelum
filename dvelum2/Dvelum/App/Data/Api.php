@@ -16,7 +16,10 @@ class Api
      * @var array
      */
     protected $fields = [];
-
+    /**
+     * @var array
+     */
+    protected $with = [];
     /**
      * @var User
      */
@@ -74,7 +77,13 @@ class Api
             $indexConfig = Orm\Record\Config::factory($ormObjectConfig->getDistributedIndexObject());
             $fields = array_keys($indexConfig->getFields());
         }
-        return  $this->dataQuery->fields($fields)->fetchAll();
+        $query = $this->dataQuery->fields($fields);
+        if(!empty($this->with)){
+            $relationQuery = new Orm\RelationQuery($object);
+            $relationQuery->setConfig($this->with);
+            $relationQuery->applyToQuery($query);
+        }
+        return  $query->fetchAll();
     }
 
     public function getCount() : int
@@ -146,5 +155,13 @@ class Api
     public function getDataQuery(): Model\Query
     {
         return $this->dataQuery;
+    }
+
+    /**
+     * @param array $config
+     */
+    public function setWith(array $config) : void
+    {
+        $this->with = $config;
     }
 }

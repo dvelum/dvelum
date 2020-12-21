@@ -88,6 +88,14 @@ class Query
     }
 
     /**
+     * @return string|null
+     */
+    public function getTableAlias():?string
+    {
+        return $this->tableAlias;
+    }
+
+    /**
      * @param array|null $filters
      * @return Query
      */
@@ -145,6 +153,26 @@ class Query
     public function joins(?array $joins): Query
     {
         $this->joins = $joins;
+        return $this;
+    }
+
+    /**
+     * @param array $joinConfig
+     * Config Example:
+     * [
+     *       'joinType'=>   jonLeft/left , jonRight/right , joinInner/inner
+     *      'table' => array / string
+     *      'fields => array / string
+     *      'condition'=> string
+     * ]
+     * @return  Query
+     */
+    public function addJoin(array $joinConfig):Query
+    {
+        if(empty($this->joins)){
+            $this->joins = [];
+        }
+        $this->joins[] =  $joinConfig;
         return $this;
     }
 
