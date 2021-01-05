@@ -29,7 +29,7 @@ use Dvelum\Lang;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Utils;
 use Dvelum\Db\Metadata\Object\ColumnObject;
-use Zend\Db\Sql\Ddl;
+use Laminas\Db\Sql\Ddl;
 use Dvelum\Config as Cfg;
 use \Exception;
 

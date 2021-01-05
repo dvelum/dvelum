@@ -336,7 +336,7 @@ class Controller
         $flag = false;
         if ($params['host'] && $params['username'] && $params['dbname'])
             try {
-                $db = new \Zend\Db\Adapter\Adapter($params);
+                $db = new \Laminas\Db\Adapter\Adapter($params);
                 @$db->getDriver()->getConnection()->getCurrentSchema();
                 $data['success'] = true;
                 $data['msg'] = $this->localization->get('SUCCESS_DB_CHECK');
