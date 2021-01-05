@@ -14,6 +14,12 @@ jobs:
       matrix:
         operating-system: ['ubuntu-latest']
         php-versions: ['7.3']
+    
+    services:
+      mysql: 
+        image: mysql
+        ports: 
+        - 3306:3306
 
     steps:
     - name: Checkout
