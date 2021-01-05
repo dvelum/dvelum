@@ -129,7 +129,7 @@ class Import
         $indexGroups = [];
         foreach ($indexes as $k => $v) {
             /**
-             * @var \Zend\Db\Metadata\Object\ConstraintObject $v
+             * @var \Laminas\Db\Metadata\Object\ConstraintObject $v
              */
             if ($v->isForeignKey()) {
                 continue;
@@ -181,7 +181,7 @@ class Import
         $objectFields = [];
         foreach ($columns as $k => $v) {
             /**
-             * @var \Zend\Db\Metadata\Object\ColumnObject $v
+             * @var \Laminas\Db\Metadata\Object\ColumnObject $v
              */
             $name = $v->getName();
             if (strtolower($name) == $config['primary_key'])
