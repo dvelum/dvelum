@@ -60,7 +60,9 @@ jobs:
     - name: PHPUnit tests
       run: ./vendor/bin/phpunit -c ./integration.xml.dist --coverage-clover coverage.xml
     
+    - name: Codacy token
+      run: export CODACY_PROJECT_TOKEN=${{ secrets.CODACY }}
+      
     - name: Send Coverage report
       run: php vendor/bin/codacycoverage clover coverage.xml 
-      env: 
-         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY }}
+
