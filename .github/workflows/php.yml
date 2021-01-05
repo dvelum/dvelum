@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         operating-system: ['ubuntu-latest']
-        php-versions: ['7.3', '7.4']
+        php-versions: ['7.3']
 
     steps:
     - name: Checkout
@@ -44,6 +44,8 @@ jobs:
         mysql user: 'dvelum_test' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
         mysql password: 'dvelum_test' # Required if "mysql user" exists. The password for the "mysql user"
 
+    - name: Set up MySQL user
+      run: mysql -p 3800 -e 'GRANT ALL PRIVILEGES ON dvelum_test.* TO `dvelum_test`@`localhost` IDENTIFIED BY "dvelum_test";'
     - name: Validate composer.json and composer.lock
       run: composer validate
       
