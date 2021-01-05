@@ -188,7 +188,7 @@ return array(
         'repo' => [
             'dvelum-packagist'=> [
                 'title' => 'DVelum official',
-                'adapter' => '\\Dvelum\\Externals\\Client\\Packagist',
+                'adapter' => '\\Dvelum\\Externals\\Client\\Composer',
                 'adapterConfig' => [
                     'vendor' => 'dvelum',
                     'type'=>'dvelum3-module',

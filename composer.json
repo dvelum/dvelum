@@ -3,7 +3,13 @@
     "version": "3.0.0-dev",
     "type": "project",
     "description": "PHP/ExtJS-based web development platform",
-    "keywords": ["dvelum","php","extjs", "IDE", "orm"],
+    "keywords": [
+        "dvelum",
+        "php",
+        "extjs",
+        "IDE",
+        "orm"
+    ],
     "homepage": "https://github.com/dvelum/dvelum",
     "license": "GPL-3.0-only",
     "authors": [
@@ -11,10 +17,12 @@
             "name": "Kirill Yegorov",
             "email": "kirill@dvelum.com",
             "role": "Founder, Developer"
-        },{
+        },
+        {
             "name": "Andrew Zamotaev",
             "role": "Developer"
-        },{
+        },
+        {
             "name": "Sergey Leschenko",
             "role": "Developer"
         }
@@ -30,10 +38,10 @@
         "classmap-authoritative": true
     },
     "require": {
-        "php":">=7.3.0",
-        "ext-mysqli" : "*",
-        "ext-gd" : "*",
-        "ext-mbstring" : "*",
+        "php": ">=7.3.0",
+        "ext-mysqli": "*",
+        "ext-gd": "*",
+        "ext-mbstring": "*",
         "ext-json": "*",
         "composer/installers": "~1.9",
         "oomphinc/composer-installers-extender": "^2.0",
@@ -42,16 +50,32 @@
         "dvelum/extjs": "^6.2.0",
         "dvelum/module-designer": "^1.5",
         "matthiasmullie/minify": "~1.3",
-        "ckeditor/ckeditor":"^4.9"
+        "ckeditor/ckeditor": "^4.9",
+        "composer/composer": "^2.0"
     },
     "extra": {
-        "installer-types": ["js-library","dvelum3-module","dvelum3-extension", "project"],
+        "installer-types": [
+            "js-library",
+            "dvelum3-module",
+            "dvelum3-extension",
+            "project"
+        ],
         "installer-paths": {
-            "www/js/lib/ckeditor": ["ckeditor/ckeditor"],
-            "extensions/dvelum-core":["dvelum/dvelum-core"],
-            "www/js/lib/{$name}": ["type:js-library"],
-            "modules/{$vendor}/{$name}":["type:dvelum3-module"],
-            "extensions/{$vendor}/{$name}":["type:dvelum3-extension"]
+            "www/js/lib/ckeditor": [
+                "ckeditor/ckeditor"
+            ],
+            "extensions/dvelum-core": [
+                "dvelum/dvelum-core"
+            ],
+            "www/js/lib/{$name}": [
+                "type:js-library"
+            ],
+            "modules/{$vendor}/{$name}": [
+                "type:dvelum3-module"
+            ],
+            "extensions/{$vendor}/{$name}": [
+                "type:dvelum3-extension"
+            ]
         }
     },
     "require-dev": {
