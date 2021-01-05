@@ -27,25 +27,12 @@ jobs:
         ini-values: post_max_size=256M, max_execution_time=180
         coverage: xdebug        
         tools: php-cs-fixer, phpunit:${{ matrix.phpunit-versions }}
-        
-        
-    - name: Stop MySQL (SUDO)
-      run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
 
-    - name: Set up MySQL
-      uses: mirromutth/mysql-action@v1.1
-      with:
-        host port: 3800 # Optional, default value is 3306. The port of host
-        container port: 3306 # Optional, default value is 3306. The port of container
-        character set server: 'utf8' # Optional, default value is 'utf8mb4'. The '--character-set-server' option for mysqld
-        collation server: 'utf8_general_ci' # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
-        mysql version: '8.0' # Optional, default value is "latest". The version of the MySQL
-        mysql database: 'dvelum_test' # Optional, default value is "test". The specified database which will be create
-        mysql user: 'dvelum_test' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-        mysql password: 'dvelum_test' # Required if "mysql user" exists. The password for the "mysql user"
-
-    - name: Set up MySQL user
-      run: mysql -p 3306 -e 'GRANT ALL PRIVILEGES ON dvelum_test.* TO `dvelum_test`@`localhost` IDENTIFIED BY "dvelum_test";'
+    - name: Set up MySQL DB
+      run: mysql -e 'CREATE DATABASE dvelum_test;'
+    
+    - name: Set up MySQL USER
+      run: mysql -e 'GRANT ALL PRIVILEGES ON dvelum_test.* TO `dvelum_test`@`localhost` IDENTIFIED BY "dvelum_test";'
       
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -53,9 +40,6 @@ jobs:
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress --no-suggest
-
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     - name: PHPStan tests
       run: php -d memory_limit=256M ./vendor/bin/phpstan analyse extensions/dvelum-core/src dvelum/src tests/unit tests/integration
