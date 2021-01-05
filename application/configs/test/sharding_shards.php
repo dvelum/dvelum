@@ -2,7 +2,7 @@
 return [
     [
         'id' => 'shard1',
-        'host' => 'localhost',
+        'host' => '127.0.0.1',
         'group' => 'default',
         'weight'=> 6,
         'override' =>[
@@ -10,7 +10,7 @@ return [
         ],
     ], [
         'id' => 'shard2',
-        'host' => 'localhost',
+        'host' => '127.0.0.1',
         'group' => 'default',
         'weight'=> 6,
         'override' =>[
@@ -18,7 +18,7 @@ return [
         ],
     ], [
         'id' => 'shard3',
-        'host' => 'localhost',
+        'host' => '127.0.0.1',
         'group' => 'default',
         'weight'=> 6,
         'override' =>[
