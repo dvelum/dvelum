@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Backend\Externals;
 
-use _HumbugBox221ad6f1b81f\Nette\Neon\Exception;
 use Dvelum\Config;
 use Dvelum\Externals\ClientInterface;
 use Dvelum\Externals\Manager;
