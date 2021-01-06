@@ -50,7 +50,7 @@
         "dvelum/extjs": "^6.2.0",
         "dvelum/module-designer": "^1.5",
         "matthiasmullie/minify": "~1.3",
-        "ckeditor/ckeditor": "^4.9",
+        "ckeditor/ckeditor": "^4.9"
     },
     "extra": {
         "installer-types": [
