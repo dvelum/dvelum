@@ -217,7 +217,7 @@ class Controller extends App\Backend\Controller
             }
             try{
                 if(!$client->remove($composerPackageName)){
-                    throw new Exception('Composer: cant delete '.$composerPackageName);
+                    throw new \Exception('Composer: cant delete '.$composerPackageName);
                 }
             }catch (\Exception $e){
                 $this->response->error($this->lang->get('CANT_EXEC').' '.implode(', ', $e->getMessage()));
