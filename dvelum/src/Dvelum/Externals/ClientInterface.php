@@ -55,15 +55,23 @@ interface ClientInterface
     /**
      * Download add-on
      * @param string $app
-     * @param string $version
      * @return bool
+     * @throws \Exception
      */
-    public function download(string $app, string $version): bool;
+    public function download(string $app): bool;
 
     /**
      * Set tmp dir for downloads
      * @param string $dir
      */
     public function setTmpDir(string $dir): void;
+
+    /**
+     * Remove package
+     * @param string $app
+     * @return bool
+     * @throws \Exception
+     */
+    public function remove(string $app): bool;
 
 }

@@ -205,6 +205,9 @@ class Manager
             }
 
             $path = File::fillEndSep($config['path']);
+            if(!file_exists( $path . '/config.php')){
+                continue;
+            }
             $modCfg = require $path . '/config.php';
 
             if (!empty($modCfg['autoloader'])) {
@@ -320,6 +323,9 @@ class Manager
 
         foreach ($list as $code => $config) {
             $path = $config['path'];
+            if(!file_exists($path . '/config.php')){
+                continue;
+            }
             $mod = require $path . '/config.php';
             $mod['enabled'] = $config['enabled'];
             $mod['installed'] = $config['installed'];
@@ -328,7 +334,20 @@ class Manager
 
         return $result;
     }
+    public function getComposerPackageName(string $id) : ?string
+    {
+        $modInfo = $this->config->get($id);
 
+        $path = $modInfo['path'];
+        $composerFile = $path . '/composer.json';
+
+        if(!file_exists($composerFile)){
+            return null;
+        }
+        $data = json_decode(file_get_contents($composerFile,), true);
+        return  $data['name'];
+
+    }
     public function getModule($id)
     {
         $modInfo = $this->config->get($id);
@@ -481,7 +500,7 @@ class Manager
      * @param $id
      * @return bool
      */
-    public function uninstall($id)
+    public function uninstall($id) : bool
     {
         $modConf = $this->getModule($id);
 
@@ -597,6 +616,15 @@ class Manager
     public function getRepoList()
     {
         return $this->externalsConfig['repo'];
+    }
+
+    /**
+     * Get default repo
+     * @return string
+     */
+    public function getComposerRepo() : string
+    {
+        return $this->externalsConfig['composer_repo'];
     }
 
     /**

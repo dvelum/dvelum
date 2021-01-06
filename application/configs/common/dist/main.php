@@ -185,10 +185,11 @@ return array(
         'path' => './modules',
         'resources_path' => $wwwPath . 'resources/',
         'resources_root' => $wwwRoot . 'resources/',
+        'composer_repo' => 'dvelum-packagist',
         'repo' => [
             'dvelum-packagist'=> [
                 'title' => 'DVelum official',
-                'adapter' => '\\Dvelum\\Externals\\Client\\Packagist',
+                'adapter' => '\\Dvelum\\Externals\\Client\\Composer',
                 'adapterConfig' => [
                     'vendor' => 'dvelum',
                     'type'=>'dvelum3-module',
