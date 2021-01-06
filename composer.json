@@ -51,7 +51,6 @@
         "dvelum/module-designer": "^1.5",
         "matthiasmullie/minify": "~1.3",
         "ckeditor/ckeditor": "^4.9",
-        "composer/composer": "^2.0"
     },
     "extra": {
         "installer-types": [
@@ -81,7 +80,8 @@
     "require-dev": {
         "phpunit/phpunit": "^9",
         "phpstan/phpstan": "^0.12",
-        "codacy/coverage": "dev-master"
+        "codacy/coverage": "dev-master",
+        "composer/composer": "^2.0"
     },
     "repositories": {
         "chosen": {
