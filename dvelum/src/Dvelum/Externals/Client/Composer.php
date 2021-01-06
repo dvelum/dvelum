@@ -20,15 +20,18 @@ declare(strict_types=1);
 
 namespace Dvelum\Externals\Client;
 
+use Composer\Console\Application;
 use Dvelum\Externals\ClientInterface;
 use Dvelum\File;
 use Dvelum\Lang\Dictionary as Lang;
 use Dvelum\Config\ConfigInterface;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\StreamOutput;
 
 /**
  * Add-ons repository client
  */
-class Packagist implements ClientInterface
+class Composer implements ClientInterface
 {
     /**
      * @var ConfigInterface
@@ -168,6 +171,11 @@ class Packagist implements ClientInterface
         return $info['package']['repository'].'/archive/'.$version.'.zip';
     }
 
+    private function initComposer()
+    {
+        set_time_limit(0);
+        putenv('COMPOSER_HOME=./temp/.composer');
+    }
     /**
      * Download add-on
      * @param string $app
@@ -175,104 +183,42 @@ class Packagist implements ClientInterface
      * @return bool
      * @throws \Exception
      */
-    public function download(string $app, string $version): bool
+    public function download(string $app): bool
     {
-        if (!extension_loaded('curl')) {
-            throw new \Exception($this->lang->get('error_need_curl'));
+        $this->initComposer();
+
+        $stream = fopen('php://temp', 'w+');
+        $output = new StreamOutput($stream);
+        $application = new Application();
+        $application->setAutoExit(false);
+        $code = $application->run(new ArrayInput(['command' => 'require', 'packages' => [$app]]), $output);
+        $res =  stream_get_contents($stream);
+
+        if($code !==0){
+            throw new \Exception('Cant download package. '.$app.' '.$res);
         }
-
-        if (!extension_loaded('zip')) {
-            throw new \Exception($this->lang->get('error_need_zip'));
-        }
-
-        $requestUrl = $this->getDownloadUrl($app, $version);
-
-        if (empty($requestUrl)) {
-            throw new \Exception($this->lang->get('cant_find_url'));
-        }
-
-        $tmpDir = $this->tmpDir . $app;
-
-        if (!is_dir($tmpDir)) {
-            if (!mkdir($tmpDir, 0775, true)) {
-                throw new \Exception($this->lang->get('CANT_WRITE_FS') . ' ' . $tmpDir);
-            }
-        }
-
-        $downloadPath = $this->config->get('download_path') . '/' . $app;
-
-        if (!is_dir($downloadPath)) {
-            if (!mkdir($downloadPath, 0775, true)) {
-                throw new \Exception($this->lang->get('CANT_WRITE_FS') . ' ' . $downloadPath);
-            }
-        }
-
-        $tmpFile = $this->tmpDir . uniqid('', true) . '.zip';
-
-        $this->downloadRequest($requestUrl, $tmpFile);
-
-        if (!file_exists($tmpFile)) {
-            throw new \Exception($this->appLang->get('CANT_EXEC'));
-        }
-
-        if (!File::unzipFiles($tmpFile, $tmpDir)) {
-            throw new \Exception($this->lang->get('error_cant_extract') . ' ' . $tmpFile);
-        }
-
-        $files =  scandir($tmpDir);
-        $srcDir = false;
-        foreach ($files as $item){
-            if($item!='.' && $item!='..' && is_dir($tmpDir.'/'.$item)){
-                $srcDir = $item;
-            }
-        }
-
-        if(empty($srcDir)){
-            throw new \Exception('Unknown archive structure');
-        }
-
-        if (!File::copyDir($tmpDir.'/'.$srcDir, $downloadPath)) {
-            throw new \Exception($this->appLang->get('CANT_WRITE_FS') . ' ' . $this->config->get('download_path'));
-        }
-        @unlink($tmpFile);
-
-        File::rmdirRecursive($tmpDir, true);
-
         return true;
     }
 
     /**
-     * Download add-on file
-     * @param string $url
-     * @param string $path
-     * @throws \Exception
+     * @param string $app
+     * @return bool
      */
-    protected function downloadRequest($url, $path)
+    public function remove(string $app): bool
     {
-        set_time_limit(120);
-        $fp = fopen($path, 'w+');
-        $curl = \curl_init();
-        \curl_setopt_array($curl, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_SSL_VERIFYPEER => 1,
-            CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_FOLLOWLOCATION => 1,
-            CURLOPT_HEADER => 0,
-            CURLOPT_CONNECTTIMEOUT => 60,
-            CURLOPT_FILE => $fp
-            // Auth options
-            // CURLOPT_HTTPAUTH, CURLAUTH_ANY,
-            // CURLOPT_USERPWD, 'user:password',
-        ]);
-        $result = \curl_exec($curl);
-        $httpCode = \curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        if ($httpCode !== 200) {
-            throw new \Exception($this->language->get('error_connection') . ' RESPONSE CODE: ' . $httpCode);
+        $this->initComposer();
+
+        $stream = fopen('php://temp', 'w+');
+        $output = new StreamOutput($stream);
+        $application = new Application();
+        $application->setAutoExit(false);
+        $code = $application->run(new ArrayInput(['command' => 'remove', 'packages' => [$app]]), $output);
+        $res =  stream_get_contents($stream);
+
+        if($code !==0){
+            throw new \Exception('Cant remove composer package. '.$app.' '.$res);
         }
-        if (!$result) {
-            throw new \Exception($this->language->get('error_connection') . ': ' . \curl_error($curl));
-        }
-        \curl_close($curl);
+        return true;
+
     }
 }
