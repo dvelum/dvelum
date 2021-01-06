@@ -185,6 +185,7 @@ return array(
         'path' => './modules',
         'resources_path' => $wwwPath . 'resources/',
         'resources_root' => $wwwRoot . 'resources/',
+        'composer_repo' => 'dvelum-packagist',
         'repo' => [
             'dvelum-packagist'=> [
                 'title' => 'DVelum official',

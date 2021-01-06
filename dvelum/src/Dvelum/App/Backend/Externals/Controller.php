@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Backend\Externals;
 
+use _HumbugBox221ad6f1b81f\Nette\Neon\Exception;
 use Dvelum\Config;
 use Dvelum\Externals\ClientInterface;
 use Dvelum\Externals\Manager;
@@ -29,8 +30,6 @@ use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Service;
 use Dvelum\App;
-use Dvelum\Utils;
-use SebastianBergmann\CodeCoverage\Util;
 
 class Controller extends App\Backend\Controller
 {
@@ -195,16 +194,38 @@ class Controller extends App\Backend\Controller
      */
     public function deleteAction()
     {
+        $repo =  $this->externalsManager->getComposerRepo();
+
         if(!$this->checkCanEdit()){
             return;
         }
+
         $id =  $this->request->post('id', Filter::FILTER_STRING, false);
+        $composerPackageName = $this->externalsManager->getComposerPackageName($id);
 
         if(!$this->externalsManager->uninstall($id)){
             $errors = $this->externalsManager->getErrors();
-            $this->response->error($this->lang->get('CANT_EXEC').' '.implode(', ', $errors));
+            $this->response->error($this->lang->get('CANT_EXEC').' '.json_encode($errors));
             return;
         }
+
+        // Composer package
+        if(!empty($composerPackageName)){
+            $client = $this->getClient($repo);
+            if(!$client){
+                $this->response->error($this->lang->get('WRONG_REQUEST'));
+                return;
+            }
+            try{
+                if(!$client->remove($composerPackageName)){
+                    throw new Exception('Composer: cant delete '.$composerPackageName);
+                }
+            }catch (\Exception $e){
+                $this->response->error($this->lang->get('CANT_EXEC').' '.implode(', ', $e->getMessage()));
+                return;
+            }
+        }
+
         $this->response->success();
     }
 
@@ -305,9 +326,8 @@ class Controller extends App\Backend\Controller
     {
         $repo =  $this->request->post('repo', Filter::FILTER_STRING, false);
         $app =  $this->request->post('app', Filter::FILTER_STRING, false);
-        $version =  $this->request->post('vers', Filter::FILTER_STRING, '');
 
-        if(empty($app) || empty($repo) || empty($version)){
+        if(empty($app) || empty($repo)){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -319,7 +339,7 @@ class Controller extends App\Backend\Controller
         }
 
         try{
-           if($client->download($app, $version)){
+           if($client->download($app)){
                $this->response->json(['success'=>true,'msg'=>Lang::lang('externals')->get('package_downloaded')]);
            }else{
                $this->response->error($this->lang->get('CANT_EXEC'));
