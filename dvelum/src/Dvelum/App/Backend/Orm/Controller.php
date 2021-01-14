@@ -322,7 +322,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     public function listValidatorsAction()
     {
         $validators = [];
-        $files = File::scanFiles('./dvelum/src/Dvelum/Validator', ['.php'], false, File::FILES_ONLY);
+        $files = File::scanFiles('./extensions/dvelum-core/src/Dvelum/Validator', ['.php'], false, File::FILES_ONLY);
 
         foreach ($files as $v) {
             $name = substr(basename($v), 0, -4);

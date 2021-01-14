@@ -256,10 +256,10 @@ class Model extends Orm\Model
 
     /**
      * Get insert object
-     * @return Orm\Model\InsertInterface
+     * @return Orm\Distributed\Model\Insert
      */
     public function insert() : Orm\Model\InsertInterface
     {
-        return new Orm\Model\Insert($this);
+        return new Orm\Distributed\Model\Insert($this);
     }
 }
