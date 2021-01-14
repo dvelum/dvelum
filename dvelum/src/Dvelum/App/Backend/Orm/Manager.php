@@ -330,7 +330,13 @@ class Manager
         }
 
         $fieldManager = new Orm\Record\Config\FieldManager();
-        if (!$fieldManager->renameField($cfg, $oldName, $newName) || !$cfg->save()) {
+        try{
+            $fieldManager->renameField($cfg, $oldName, $newName);
+        }catch (\Throwable $e){
+            return self::ERROR_EXEC;
+        }
+
+        if (!$cfg->save()) {
             return self::ERROR_EXEC;
         }
         // Rebuild database
