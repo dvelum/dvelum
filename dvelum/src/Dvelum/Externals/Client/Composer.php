@@ -127,6 +127,7 @@ class Composer implements ClientInterface
 
             $lastVersion = '';
             $date = '';
+            arsort($info['versions']);
             foreach ($info['versions'] as $number => $item) {
                 if (strpos($number, 'dev') === false) {
                     $lastVersion = $number;
