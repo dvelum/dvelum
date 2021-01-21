@@ -4,7 +4,7 @@
 [<< документация](readme.md)
 
 В дистрибутив DVelum включены три роутера для публичной части сайта
- (нужный вариант указан в application/configs/dist/frontend.php), 
+ (нужный вариант указан в extensions/dvelum-core/application/configs/dist/frontend.php), 
  при необходимости можно переопределить в application/configs/local/frontend.php: 
  
 **возможные варианты**
