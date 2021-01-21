@@ -827,3 +827,5 @@ Ext.define('Ext.Fix.EXTJS-22672', {
         return focusPosition;
     }
 });
+
+Ext.USE_NATIVE_JSON=false;

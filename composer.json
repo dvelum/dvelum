@@ -15,7 +15,6 @@
     "authors": [
         {
             "name": "Kirill Yegorov",
-            "email": "kirill@dvelum.com",
             "role": "Founder, Developer"
         },
         {
@@ -28,10 +27,8 @@
         }
     ],
     "support": {
-        "email": "support@dvelum.com",
         "issues": "https://github.com/dvelum/dvelum/issues",
-        "source": "https://github.com/dvelum/dvelum",
-        "docs": "https://docs.dvelum.net"
+        "source": "https://github.com/dvelum/dvelum"
     },
     "config": {
         "preferred-install": "dist",
