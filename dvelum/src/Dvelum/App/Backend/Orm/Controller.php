@@ -108,7 +108,15 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $this->resource->addJs('/js/app/system/SelectWindow.js', 2);
         $this->resource->addJs('/js/app/system/ObjectLink.js', 3);
 
-        //Model::factory('Medialib')->includeScripts();
+        $designerConfig = Config::storage()->get('designer.php');
+        /**
+         * @todo refactor
+         * include Media Library if html editor installed
+         *  moved to dvelum/module-cms
+         */
+        if($designerConfig->get('html_editor')){
+            Model::factory('Medialib')->includeScripts();
+        }
 
         $this->resource->addCss('/css/system/joint.min.css', 1);
 
