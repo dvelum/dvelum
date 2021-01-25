@@ -50,7 +50,7 @@ Official modules
 -----
 Official modules can be installed using composer or "External modules" section of admin panel
 
-* [CMS](https://github.com/dvelum/module-cms/blob/master/docs/ru/Readme.md) - Content Management System
+* [CMS](https://github.com/dvelum/module-cms) - Content Management System
 * [FileStorage](https://github.com/dvelum/module-filestorage) - File storage 
 ---
 [Документация](docs/ru/developer/readme.md)
