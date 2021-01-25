@@ -14,8 +14,8 @@ PHP/ExtJS-based web development platform
 
 
 DVelum is a professional web-development platform based on PHP and ExtJS that aims at automating routine development tasks and facilitates programming by means of a graphical interface.
-It offers highest real-time performance, facilitates and speeds up the development process letting you concentrate on business logic and ignore minor issues.
-DVelum is an indispensable toolkit for development of both complex-structured systems (eCommerce, CRM, WebScada, etc. ) and simple websites.
+It offers the highest real-time performance, facilitates and speeds up the development process letting you concentrate on business logic and ignore minor issues.
+DVelum is an indispensable toolkit for development of both complex-structured systems (eCommerce, CRM, backoffice etc. ) and simple websites.
 
 GNU General Public License version 3.0
 
@@ -46,10 +46,18 @@ Add local domain to /etc/hosts
 
 Open Web Browser at http://dvelum.local/install and follow the instructions
 
+Official modules
+-----
+Official modules can be installed using composer or "External modules" section of admin panel
+
+* [CMS](https://github.com/dvelum/module-cms/blob/master/docs/ru/Readme.md) - Content Management System
+* [FileStorage](https://github.com/dvelum/module-filestorage) - File storage 
 ---
 [Документация](docs/ru/developer/readme.md)
 
 ---
+
+
 
 Issues https://github.com/dvelum/dvelum/issues
 
