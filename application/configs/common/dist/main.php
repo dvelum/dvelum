@@ -121,11 +121,6 @@ return array(
      */
     'debug_panel' => false,
     /*
-     * HTML WYSIWYG Editor
-     * default  - ckeditor
-     */
-    'html_editor' => 'ckeditor',
-    /*
      *  Use hard cache expiration time defined in frontend_hardcache for caching blocks;
      *  allows to reduce the cache time of dynamic blocks;
      *  is used if there are not enough triggers for cache invalidation

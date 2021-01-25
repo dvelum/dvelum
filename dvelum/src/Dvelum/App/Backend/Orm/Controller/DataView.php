@@ -25,6 +25,7 @@ use Dvelum\App\Backend\Designer\Import;
 use Dvelum\App\Controller\Event;
 use Dvelum\App\Controller\EventManager;
 use Dvelum\App\Session\User;
+use Dvelum\Config;
 use Dvelum\Service;
 use Dvelum\Request;
 use Dvelum\Response;
@@ -269,6 +270,7 @@ class DataView extends ApiController
         }
 
         $objectConfig = $this->ormService->config($object);
+        $designerConfig = Config::storage()->get('designer.php');
 
         $data = [];
         $tabs = [];
@@ -359,7 +361,7 @@ class DataView extends ApiController
                         $newField->set('readOnly', true);
                     }
 
-                    if ($fieldObj->isText() && $fieldObj->isHtml()) {
+                    if ($designerConfig->get('html_editor') && $fieldObj->isText() && $fieldObj->isHtml()) {
                         $tabs[] = $newField->__toString();
                     } else {
                         $data[] = $newField->__toString();
