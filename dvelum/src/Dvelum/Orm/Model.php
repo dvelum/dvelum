@@ -302,6 +302,7 @@ class Model
      * @param integer $id
      * @param array|string $fields — optional — the list of fields to retrieve
      * @return array
+     * @throws \Exception
      */
     public function getItem($id, $fields = ['*']) : array
     {
@@ -325,6 +326,7 @@ class Model
      * @param integer $id - object identifier
      * @param mixed $lifetime
      * @return array
+     * @throws \Exception
      */
     public function getCachedItem($id , $lifetime = false)
     {
@@ -394,7 +396,7 @@ class Model
             return $this->db->fetchRow($sql);
         }catch (\Exception $e){
             $this->logError($e->getMessage());
-            return [];
+            throw $e;
         }
     }
 
@@ -404,6 +406,7 @@ class Model
      * @param mixed $fields - optional - the list of fields to retrieve
      * @param bool $useCache - optional, defaul false
      * @return array / false
+     * @throws \Exception
      */
     public function getItems(array $ids, $fields = '*', $useCache = false)
     {

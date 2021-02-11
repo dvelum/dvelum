@@ -147,6 +147,7 @@ class Model extends Orm\Model
      * @param mixed $fields - optional - the list of fields to retrieve
      * @param bool $useCache - optional, default false
      * @return array / false
+     * @throws Exception
      */
     final public function getItems(array $ids, $fields = '*', $useCache = false)
     {
