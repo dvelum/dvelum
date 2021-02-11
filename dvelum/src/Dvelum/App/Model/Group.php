@@ -39,8 +39,8 @@ class Group extends Model
 		if($this->cache && $data = $this->cache->load('groups_list'))
 			return $data;
 
-		$sql = $this->dbSlave->select()->from($this->table() , ['id' , 'title']);
-		$data = $this->dbSlave->fetchAll($sql);
+		$sql = $this->db->select()->from($this->table() , ['id' , 'title']);
+		$data = $this->db->fetchAll($sql);
 
 		if(!empty($data))
 			$data = Utils::collectData('id', 'title', $data);
