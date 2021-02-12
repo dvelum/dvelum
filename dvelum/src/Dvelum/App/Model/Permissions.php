@@ -49,11 +49,11 @@ class Permissions extends Model
          */
         if ($groupId) {
 
-            $sql = $this->dbSlave->select()
+            $sql = $this->db->select()
                 ->from($this->table(), self::$fields)
                 ->where('`group_id` = ' . intval($groupId))
                 ->where('`user_id` IS NULL');
-            $groupRights = $this->dbSlave->fetchAll($sql);
+            $groupRights = $this->db->fetchAll($sql);
 
             if (!empty($groupRights))
                 $data = Utils::rekey('module', $groupRights);
@@ -61,12 +61,12 @@ class Permissions extends Model
         /*
          * Load permissions for user
          */
-        $sql = $this->dbSlave->select()
+        $sql = $this->db->select()
             ->from($this->table(), self::$fields)
             ->where('`user_id` = ' . intval($userId))
             ->where('`group_id` IS NULL');
 
-        $userRights = $this->dbSlave->fetchAll($sql);
+        $userRights = $this->db->fetchAll($sql);
 
         /*
          * Replace group permissions by permissions redefined for concrete user
@@ -105,9 +105,9 @@ class Permissions extends Model
      */
     public function getRecords($userId, $groupId)
     {
-        $sql = $this->dbSlave->select()->from($this->table())->where('user_id =?', $userId)->orWhere('group_id =?', $groupId);
+        $sql = $this->db->select()->from($this->table())->where('user_id =?', $userId)->orWhere('group_id =?', $groupId);
         try {
-            return $this->dbSlave->fetchAll($sql);
+            return $this->db->fetchAll($sql);
         } catch (Exception $e) {
             $this->logError($e->getMessage());
             return [];
@@ -122,11 +122,11 @@ class Permissions extends Model
     {
         $modules = Config::factory(Config\Factory::File_Array, Config::storage()->get('main.php')->get('backend_modules'));
 
-        $sql = $this->dbSlave->select()
+        $sql = $this->db->select()
             ->from($this->table(), array('module'))
             ->distinct();
 
-        $data = $this->dbSlave->fetchCol($sql);
+        $data = $this->db->fetchCol($sql);
 
         if (!empty($data))
             foreach ($data as $name)
@@ -148,12 +148,12 @@ class Permissions extends Model
         if ($this->cache && $data = $this->cache->load('group_permissions' . $groupId))
             return $data;
 
-        $sql = $this->dbSlave->select()
+        $sql = $this->db->select()
             ->from($this->table(), self::$fields)
             ->where('`group_id` = ' . intval($groupId))
             ->where('`user_id` IS NULL');
 
-        $data = $this->dbSlave->fetchAll($sql);
+        $data = $this->db->fetchAll($sql);
 
         if (!empty($data))
             $data = Utils::rekey('module', $data);
@@ -267,12 +267,12 @@ class Permissions extends Model
         $groupPermissions = [];
 
         if ($userInfo['group_id']) {
-            $sql = $this->dbSlave->select()
+            $sql = $this->db->select()
                 ->from($this->table(), self::$fields)
                 ->where('`group_id` = ' . intval($userInfo['group_id']))
                 ->where('`user_id` IS NULL');
 
-            $groupPermissions = $this->dbSlave->fetchAll($sql);
+            $groupPermissions = $this->db->fetchAll($sql);
             if (!empty($groupPermissions)) {
                 $groupPermissions = Utils::rekey('module', $groupPermissions);
             }
@@ -385,12 +385,12 @@ class Permissions extends Model
      */
     public function removeGroup($groupId) : bool
     {
-        $select = $this->dbSlave->select()
+        $select = $this->db->select()
             ->from($this->table(), 'id')
             ->where('`user_id`  IS NULL')
             ->where('`group_id` = ?', $groupId);
 
-        $groupIds = $this->dbSlave->fetchCol($select);
+        $groupIds = $this->db->fetchCol($select);
 
         $store = $this->getStore();
 
