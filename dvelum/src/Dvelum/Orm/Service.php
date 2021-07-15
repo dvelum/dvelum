@@ -189,7 +189,7 @@ class Service
                 $errorDb = $errorModel->getDbConnection();
 
                 $logDb = new Log\Db('error_log', $errorDb, $errorTable);
-                $this->log = new Log\Mixed($this->log, $logDb);
+                $this->log = new Log\MixedLog($this->log, $logDb);
             }
         }
         return $this->log;
