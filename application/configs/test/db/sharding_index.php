@@ -1,5 +1,5 @@
 <?php return array (
-  'host' => 'localhost',
+  'host' => '127.0.0.1',
   'username' => 'dvelum_test',
   'password' => 'dvelum_test',
   'dbname' => 'dvelum_test',
