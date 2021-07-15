@@ -83,24 +83,24 @@ class Vc extends Model
     {
         if (!is_array($record_id)) {
 
-            $sql = $this->dbSlave->select()
+            $sql = $this->db->select()
                 ->from(
                     $this->table(),
                     ['max_version' => 'MAX(version)']
                 )
                 ->where('record_id =?', $record_id)
                 ->where('object_name =?', $objectName);
-            return (integer)$this->dbSlave->fetchOne($sql);
+            return (integer)$this->db->fetchOne($sql);
 
         }
 
-        $sql = $this->dbSlave->select()
+        $sql = $this->db->select()
             ->from($this->table(), array('max_version' => 'MAX(version)', 'rec' => 'record_id'))
             ->where('`record_id` IN(?)', $record_id)
             ->where('`object_name` =?', $objectName)
             ->group('record_id');
 
-        $revs = $this->dbSlave->fetchAll($sql);
+        $revs = $this->db->fetchAll($sql);
 
         if (empty($revs))
             return [];
@@ -135,13 +135,13 @@ class Vc extends Model
      */
     public function getData($objectName, $recordId, $version)
     {
-        $sql = $this->dbSlave->select()
+        $sql = $this->db->select()
             ->from($this->table(), array('data'))
             ->where('object_name = ?', $objectName)
             ->where('record_id =?', $recordId)
             ->where('version = ?', $version);
 
-        $data = $this->dbSlave->fetchOne($sql);
+        $data = $this->db->fetchOne($sql);
 
         if (!empty($data))
             return unserialize(base64_decode($data));
@@ -156,11 +156,11 @@ class Vc extends Model
      */
     public function removeItemVc($object, $recordId)
     {
-        $select = $this->dbSlave->select()
+        $select = $this->db->select()
             ->from($this->table(), 'id')
-            ->where('`object_name` = ?', $this->dbSlave->quote($object))
+            ->where('`object_name` = ?', $this->db->quote($object))
             ->where('`record_id` = ?', $recordId);
-        $vcIds = $this->dbSlave->fetchCol($select);
+        $vcIds = $this->db->fetchCol($select);
         $store = $this->getStore();
         $store->deleteObjects($this->name, $vcIds);
     }

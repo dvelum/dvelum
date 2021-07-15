@@ -64,14 +64,13 @@ abstract class Storage
 	 * Remove signals
 	 * @param integer $pid
 	 * @param array $sigId - optional
-	 * @return array
+	 * @return void
 	 */
 	abstract public function clearSignals($pid , $sigId = false);
 
 	/**
 	 * Update task state
 	 * @param integer $pid
-	 * @param integer $memory - memory allocated
 	 * @param integer $opTotal
 	 * @param integer $opFinished
 	 * @param integer $status

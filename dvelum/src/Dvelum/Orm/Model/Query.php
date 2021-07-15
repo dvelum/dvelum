@@ -349,6 +349,7 @@ class Query
     /**
      * Fetch all records
      * @return array
+     * @throws \Exception
      */
     public function fetchAll(): array
     {
@@ -356,13 +357,14 @@ class Query
             return $this->db->fetchAll($this->__toString());
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
-            return [];
+            throw $e;
         }
     }
 
     /**
      * Fetch one
      * @return mixed
+     * @throws \Exception
      */
     public function fetchOne()
     {
@@ -370,13 +372,14 @@ class Query
             return $this->db->fetchOne($this->__toString());
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
-            return null;
+            throw $e;
         }
     }
 
     /**
      * Fetch first result row
      * @return array
+     * @throws \Exception
      */
     public function fetchRow(): array
     {
@@ -388,13 +391,14 @@ class Query
             return $result;
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
-            return [];
+            throw $e;
         }
     }
 
     /**
      * Fetch column
      * @return array
+     * @throws \Exception
      */
     public function fetchCol(): array
     {
@@ -402,7 +406,7 @@ class Query
             return $this->db->fetchCol($this->__toString());
         } catch (\Exception $e) {
             $this->model->logError($e->getMessage());
-            return [];
+            throw $e;
         }
     }
 
@@ -410,6 +414,7 @@ class Query
      * Count the number of rows that satisfy the filters
      * @param bool $approximateValue - Get approximate count for innodb table (only for queries without filters)
      * @return int
+     * @throws \Exception
      */
     public function getCount(bool $approximateValue = false): int
     {

@@ -35,7 +35,7 @@
         "classmap-authoritative": true
     },
     "require": {
-        "php": ">=7.3.0",
+        "php": ">=7.4.0",
         "ext-mysqli": "*",
         "ext-gd": "*",
         "ext-mbstring": "*",
