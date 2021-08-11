@@ -1,12 +1,12 @@
 [![PHP Version](https://img.shields.io/badge/php-7.4%2B-blue.svg)](https://packagist.org/packages/dvelum/dvelum)
 [![Total Downloads](https://img.shields.io/packagist/dt/dvelum/dvelum.svg?style=flat-square)](https://packagist.org/packages/dvelum/dvelum)
-![Build and Test](https://github.com/dvelum/dvelum/workflows/Build%20and%20Test/badge.svg?branch=dev-3.x&event=push)
+![Build and Test](https://github.com/dvelum/dvelum/workflows/Build%20and%20Test/badge.svg?branch=dev-4.x&event=push)
 
 
 [Внимание, стабильная ветка 2.x](https://github.com/dvelum/dvelum/tree/2.x)
 ===
 
-DVelum 3.x
+DVelum 4.x
 ======
 
 PHP/ExtJS-based web development platform
