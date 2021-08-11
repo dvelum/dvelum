@@ -1,0 +1,34 @@
+@media screen and (max-width:1110px) {
+    .sidebar{
+        flex: 1 auto;
+        -webkit-flex: 1 auto;
+    }
+
+    .layout{
+        flex-flow: row wrap;
+            -webkit-flex-flow: row wrap;
+        display: flex;
+            display: -webkit-flex;
+    }
+
+    .content-wrap {
+        flex: 2 auto;
+            -webkit-flex: 2 auto;
+        order: 1;
+            -webkit-order:1;
+    }
+
+    .sidebar.left {
+        order: 2;
+            -webkit-order:2;
+    }
+
+    .sidebar.right {
+        order: 3;
+            -webkit-order:3;
+    }
+}
+
+@media screen and (max-width:640px) {
+    .content-wrap, .sidebar {flex: 1 100%; -webkit-flex:1 100%;}
+}

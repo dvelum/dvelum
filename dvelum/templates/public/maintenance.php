@@ -1,10 +1,14 @@
 <?php
 if(isset($this->msg))
-    $message = '<p>'.$this->msg.'</p>';
+    $message = '<p>'.$this->get('msg').'</p>';
 else
     $message = '<h1>Something went wrong.</h1>';
 
-$wwwRoot = \Dvelum\Request::factory()->wwwRoot();
+/**
+ * @var \Dvelum\Request $request
+ */
+$request = $this->get('request');
+$wwwRoot = $request->wwwRoot();
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" class="systemPage">
 <head>

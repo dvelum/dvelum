@@ -1,7 +1,7 @@
 <?php
 /*
- * DVelum project https://github.com/dvelum/dvelum , http://dvelum.net
- * Copyright (C) 2011-2015  Kirill A Egorov
+ * DVelum project https://github.com/dvelum/dvelum
+ * Copyright (C) 2011-2021 Kirill Yegorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,10 @@ require DVELUM_ROOT . '/vendor/autoload.php';
 require DVELUM_ROOT . '/extensions/dvelum-core/src/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
+use Dvelum\Autoload;
 use \Dvelum\Config\Factory as ConfigFactory;
+use Dvelum\Config\Storage\StorageInterface;
+use Dvelum\DependencyContainer;
 
 $configStorage = ConfigFactory::storage();
 $configStorage->setConfig($bootCfg['config_storage']);
@@ -93,14 +96,14 @@ switch ($config->get('development')){
 /*
  * Setting autoloader config
  */
-$autoloaderCfg = ConfigFactory::storage()->get('autoloader.php')->__toArray();
+$autoloaderCfg = $configStorage->get('autoloader.php')->__toArray();
 $autoloaderCfg['debug'] = $config->get('development');
 
 if(!isset($autoloaderCfg['useMap']))
     $autoloaderCfg['useMap'] = true;
 
 if($autoloaderCfg['useMap'] && $autoloaderCfg['map'])
-    $autoloaderCfg['map'] = require ConfigFactory::storage()->getPath($autoloaderCfg['map']);
+    $autoloaderCfg['map'] = require $configStorage->getPath($autoloaderCfg['map']);
 else
     $autoloaderCfg['map'] = false;
 
@@ -121,9 +124,6 @@ if($config->get('development') === 3){
     }
 }
 
-
-
-
 /*
  * Starting the application
  */
@@ -131,22 +131,49 @@ $appClass = $config->get('application');
 if(!class_exists($appClass))
     throw new Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
 
-$app = new $appClass($config);
-$app->setAutoloader($autoloader);
-$app->run();
+
+$diContainer= new DependencyContainer();
+$diContainer->bind('config.main', $config);
+$diContainer->bind(StorageInterface::class, $configStorage);
+$diContainer->bind(Autoload::class, $autoloader);
+$diContainer->bindArray($configStorage->get('dependency.php')->__toArray());
+
+
+$app = new $appClass($diContainer);
+
+$psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+$creator = new \Nyholm\Psr7Server\ServerRequestCreator(
+    $psr17Factory, // ServerRequestFactory
+    $psr17Factory, // UriFactory
+    $psr17Factory, // UploadedFileFactory
+    $psr17Factory  // StreamFactory
+);
+$serverRequest = $creator->fromGlobals();
+$response = $psr17Factory->createResponse(200);
+
+/**
+ * @var \Psr\Http\Message\ResponseInterface $resp
+ */
+$resp = $app->run($serverRequest , $response);
+
+
+$p = $serverRequest->getHeader('HTTP_X_REQUESTED_WITH');
+/*
+ * Print debug information (development mode)
+ */
+if($config['development'] && $config->get('debug_panel') && (empty($serverRequest->getHeader('HTTP_X_REQUESTED_WITH')[0]) ||  $serverRequest->getHeader('HTTP_X_REQUESTED_WITH')[0]!== 'XMLHttpRequest'))
+{
+    $debugCfg = $configStorage->get('debug_panel.php');
+    $debug = new \Dvelum\Debug();
+    $debug->setCacheCores($diContainer->get(\Dvelum\App\Cache\Manager::class)->getRegistered());
+    $debug->setScriptStartTime($scriptStart);
+    $debug->setLoadedClasses($autoloader->getLoadedClasses());
+    $debug->setLoadedConfigs($configStorage->getDebugInfo());
+    $resp->getBody()->write($debug->getStats($debugCfg->get('options')));
+}
+
+(new \Laminas\HttpHandlerRunner\Emitter\SapiEmitter())->emit($resp);
 /*
  * Clean the buffer and send response
  */
 echo ob_get_clean();
-/*
- * Print debug information (development mode)
- */
-if($config['development'] && $config->get('debug_panel') && !\Dvelum\Request::factory()->isAjax())
-{
-    $debugCfg = \Dvelum\Config::storage()->get('debug_panel.php');
-    \Dvelum\Debug::setScriptStartTime($scriptStart);
-    \Dvelum\Debug::setLoadedClasses($autoloader->getLoadedClasses());
-    \Dvelum\Debug::setLoadedConfigs(\Dvelum\Config::storage()->getDebugInfo());
-    echo \Dvelum\Debug::getStats($debugCfg->get('options'));
-}
-exit;

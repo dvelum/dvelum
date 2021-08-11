@@ -23,44 +23,29 @@ namespace Dvelum\App\Application;
 
 use Dvelum\Application;
 use Dvelum\Config;
+use Dvelum\Config\Storage\StorageInterface as ConfigStorageInterface;
 use Dvelum\Db\ManagerInterface;
 use Dvelum\Lang;
 use Dvelum\Request;
 use Dvelum\Response;
+use Dvelum\Template\Engine\EngineInterface;
+use Dvelum\Template\Service;
 use Dvelum\View;
 use Dvelum\Externals;
 use \Exception;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Platform extends Application
 {
 
-    /**
-     * Initialize the application, configure the settings, inject dependencies
-     * Adjust the settings necessary for running the system
-     * @return void
-     * @throws Exception
-     */
-    protected function init() : void
+    protected function init(): void
     {
         if ($this->initialized) {
             return;
         }
-
-        parent::init();
-
-        // init external modules
         $this->initExternals();
-
-        $request = Request::factory();
-        $response = Response::factory();
-
-        if ($request->isAjax()) {
-            $response->setFormat(Response::FORMAT_JSON);
-        } else {
-            $response->setFormat(Response::FORMAT_HTML);
-        }
     }
-
     /**
      * Init additional external modules
      * defined in external_modules option
@@ -68,15 +53,15 @@ class Platform extends Application
      */
     protected function initExternals()
     {
-        $externals = Config\Factory::storage()->get('external_modules.php');
-
-        Externals\Manager::setConfig([
-            'appConfig' => $this->config,
-            'autoloader' => $this->autoloader
-        ]);
+        $configStorage = $this->diContainer->get(Config\Storage\StorageInterface::class);
+        $externals = $configStorage->get('external_modules.php');
 
         if ($externals->getCount()) {
-            Externals\Manager::factory()->loadModules();
+            /**
+             * @var Externals\Manager $manager
+             */
+            $manager = $this->diContainer->get(Externals\Manager::class);
+            $manager->loadModules();
         }
     }
 
@@ -111,24 +96,27 @@ class Platform extends Application
     /**
      * Start application
      * @return void
-     * @throws Exception
      */
-    public function run() : void
+    public function run(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        parent::run();
-        $page = Request::factory()->getPart(0);
+        $this->init();
+
+        $dvelumRequest = new Request($request);
+        $page = $dvelumRequest->getPart(0);
 
         if ($page === $this->config->get('adminPath')) {
-            $this->routeBackOffice();
+            $response = $this->routeBackOffice($request, $response);
         }else{
-            $this->routeFrontend();
+            $response = $this->routeFrontend($request, $response);
         }
+
+        return $response;
     }
 
     /**
      * Run backend application
      */
-    protected function routeBackOffice()
+    protected function routeBackOffice(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $request = Request::factory();
         $response = Response::factory();
@@ -148,37 +136,38 @@ class Platform extends Application
      * @return void
      * @throws Exception
      */
-    protected function routeFrontend() : void
+    protected function routeFrontend(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $request = Request::factory();
-        $response = Response::factory();
+        $configStorage = $this->diContainer->get(ConfigStorageInterface::class);
 
         if ($this->config->get('maintenance')) {
-            $tpl = View::factory();
-            $tpl->set('msg', Lang::lang()->get('MAINTENANCE'));
-            $response->put($tpl->render('public/maintenance.php'));
-            $response->send();
-            return;
-        }
+            /**
+             * @var  \Dvelum\Template\Service $tplService
+             */
+            $tplService = $this->diContainer->get(\Dvelum\Template\Service::class);
+            $tpl = $tplService->getTemplate();
+            $tpl->setData([
+                'request' => new Request($request),
+                'msg' => $this->diContainer->get(Lang::class)->getDictionary()->get('MAINTENANCE')
+            ]);
 
+            $response->getBody()->write($tpl->render('public/maintenance.php'));
+            return $response;
+        }
         /*
          * Start routing
         */
-        $frontConfig = Config::storage()->get('frontend.php');
-        $routerClass = '\\Dvelum\\App\\Router\\' . $frontConfig->get('router');
+        $frontConfig = $configStorage->get('frontend.php');
+        $routerClass = $frontConfig->get('router');
 
         if (!class_exists($routerClass)) {
             $routerClass = $frontConfig->get('router');
         }
 
         /**
-         * @var \Dvelum\App\Router $router
+         * @var \Dvelum\App\Router\RouterInterface $router
          */
-        $router = new $routerClass();
-        $router->route($request, $response);
-
-        if (!$response->isSent()) {
-            $response->send();
-        }
+        $router = new $routerClass($this->diContainer);
+        return $router->route($request, $response);
     }
 }

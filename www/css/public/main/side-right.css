@@ -1,0 +1,23 @@
+@media screen and (max-width:640px) {
+    .content-wrap {
+        order: 1;
+        -webkit-order:1;
+    }
+
+    .sidebar.right {
+        order: 2;
+        -webkit-order:2;
+    }
+
+    .content-wrap, .sidebar {
+        flex: 1 100%;
+        -webkit-flex:1 100%;
+    }
+
+    .layout {
+        flex-flow: row wrap;
+        display: flex;
+        display: -webkit-flex;
+        -webkit-flex-flow: row wrap;
+    }
+}

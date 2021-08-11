@@ -26,7 +26,9 @@ use Dvelum\Orm;
 use Dvelum\Autoload;
 use Dvelum\File;
 use Dvelum\Lang;
+use Dvelum\Template\Storage;
 use \Exception;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class Manager
@@ -60,32 +62,20 @@ class Manager
      */
     protected $loadedModules = [];
 
-    static protected $defaultConfig = [];
+    private ContainerInterface $di;
 
-    /**
-     * Set manager configuration
-     * @param array $config
-     */
-    static public function setConfig(array $config)
-    {
-        static::$defaultConfig = $config;
-    }
+    protected Lang\Dictionary $lang;
+    protected Config\Storage\StorageInterface  $configStorage;
 
-    static public function factory()
+    public function __construct(ConfigInterface $config, ContainerInterface $di)
     {
-        static $manager = false;
-        if (!$manager) {
-            $manager = new static(static::$defaultConfig['appConfig'], static::$defaultConfig['autoloader']);
-        }
-        return $manager;
-    }
-
-    private function __construct(ConfigInterface $config, Autoload $autoloader)
-    {
-        $this->config = Config\Factory::storage()->get('external_modules.php');
-        $this->autoloader = $autoloader;
+        $this->configStorage = $di->get(Config\Storage\StorageInterface::class);
+        $this->config = $this->configStorage->get('external_modules.php');
+        $this->autoloader = $di->get(Autoload::class);
         $this->appConfig = $config;
         $this->externalsConfig = $this->appConfig->get('externals');
+        $this->di = $di;
+        $this->lang = $this->di->get(Lang::class)->lang();
     }
 
     /**
@@ -156,9 +146,9 @@ class Manager
      */
     public function saveConfig() : bool
     {
-        if (!Config::storage()->save($this->config)) {
-            $writePath = Config\Factory::storage()->getWrite();
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $writePath . 'external_modules.php';
+        if (!$this->configStorage->save($this->config)) {
+            $writePath = $this->configStorage->getWrite();
+            $this->errors[] = $this->lang->get('CANT_WRITE_FS') . ' ' . $writePath . 'external_modules.php';
             return false;
         }
         return true;
@@ -238,7 +228,7 @@ class Manager
         }
         // Add autoloader paths
         if (!empty($autoLoadPaths)) {
-            $autoloaderConfig = Config::storage()->get('autoloader.php');
+            $autoloaderConfig =  $this->configStorage->get('autoloader.php');
             $autoloaderCfg = $autoloaderConfig->__toArray();
             $newСhain = $autoloaderCfg['priority'];
 
@@ -262,7 +252,7 @@ class Manager
         }
         // Add Config paths
         if (!empty($configPaths)) {
-            $storage = Config::storage();
+            $storage = $this->configStorage;
 
             $resultPaths = $storage->get('config_storage.php')->get('file_array')['locked_paths'];
             $lockedPathsIndex = array_flip($resultPaths);
@@ -283,14 +273,17 @@ class Manager
         }
         // Add localization paths
         if (!empty($langPaths)) {
-            $langStorage = Lang::storage();
+            $langStorage = $this->di->get(Lang::class)->getStorage();
             foreach ($langPaths as $path) {
                 $langStorage->addPath($path);
             }
         }
         // Add Templates paths
         if (!empty($templatesPaths)) {
-            $templateStorage = \Dvelum\View::storage();
+            /**
+             * @var Storage $templateStorage
+             */
+            $templateStorage = $this->di->get(Storage::class);
             $paths = $templateStorage->getPaths();
             $mainPath = array_shift($paths);
             // main path
@@ -307,16 +300,16 @@ class Manager
      * @return bool
      * @throws \Exception
      */
-    public function hasModules()
+    public function hasModules() : bool
     {
-        return boolval($this->config->getCount());
+        return (bool) $this->config->getCount();
     }
 
     /**
      * Get modules info
      * @return array
      */
-    public function getModules()
+    public function getModules() : array
     {
         $list = $this->config->__toArray();
         $result = [];
@@ -383,7 +376,7 @@ class Manager
 
             if (is_dir($resources)) {
                 if (!File::copyDir($resources, $this->externalsConfig['resources_path'] . $id)) {
-                    $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . $this->externalsConfig['resources_path'] . $id;
+                    $this->errors[] = $this->lang->get('CANT_WRITE_FS') . ' ' . $this->externalsConfig['resources_path'] . $id;
                     return false;
                 }
             }
@@ -396,7 +389,7 @@ class Manager
         $this->config->set($id, $modConf);
 
         if (!Config::storage()->save($this->config)) {
-            $this->errors[] = Lang::lang()->get('CANT_WRITE_FS') . ' ' . Config::storage()->getWrite();
+            $this->errors[] = $this->lang->get('CANT_WRITE_FS') . ' ' . $this->configStorage->getWrite();
             return false;
         }
 
