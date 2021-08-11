@@ -50,7 +50,7 @@ class Controller extends App\Backend\Controller
      */
     public function listAction()
     {
-        $modulesManager = new App\Module\Manager();
+        $modulesManager = $this->container->get(\Dvelum\App\Module\Manager::class);
 
         $data = $modulesManager->getList();
 
@@ -94,7 +94,7 @@ class Controller extends App\Backend\Controller
     {
         $module = $this->request->post('id' , \Dvelum\Filter::FILTER_STRING , false);
 
-        $manager = new App\Module\Manager();
+        $manager = $this->container->get(\Dvelum\App\Module\Manager::class);
         $moduleCfg = $manager->getModuleConfig($module);
 
         $info = [];

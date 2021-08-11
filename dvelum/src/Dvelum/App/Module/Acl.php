@@ -3,6 +3,7 @@ namespace Dvelum\App\Module;
 
 use Dvelum\App\Session;
 use Dvelum\Orm\Model;
+use Dvelum\Orm;
 
 class Acl
 {
@@ -75,7 +76,7 @@ class Acl
      */
     protected function loadPermissions()
     {
-        $list = Model::factory('Permissions')->getPermissions($this->user->getId() , (int) $this->user->getGroup());
+        $list = Orm::factory()->model('Permissions')->getPermissions($this->user->getId() , (int) $this->user->getGroup());
         foreach ($list as $item){
             $this->permissions[$item['module']] = new Permissions($item);
         }

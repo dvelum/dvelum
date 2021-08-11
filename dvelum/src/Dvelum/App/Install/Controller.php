@@ -626,7 +626,7 @@ class Controller
 
             // Add permissions
             $permissionsModel = Model::factory('Permissions');
-            $modulesManager = new Module\Manager();
+            $modulesManager = $this->container->get(\Dvelum\App\Module\Manager::class);
             $modules = $modulesManager->getList();
 
             foreach ($modules as $name=>$config)

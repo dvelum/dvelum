@@ -26,7 +26,7 @@ class Info
             $project = $manager->findWorkingCopy($moduleCfg['designer']);
             $projectData =  $manager->compileDesktopProject($project, 'app.__modules.'.$module , $module);
             $projectData['isDesigner'] = true;
-            $modulesManager = new Manager();
+            $modulesManager = $this->container->get(\Dvelum\App\Module\Manager::class);
             $modulesList = $modulesManager->getList();
             $projectData['title'] = (isset($modulesList[$module])) ? $modulesList[$module]['title'] : '';
         }

@@ -1,6 +1,6 @@
 {
     "name": "dvelum/dvelum",
-    "version": "3.0.0-dev",
+    "version": "4.0.0-dev",
     "type": "project",
     "description": "PHP/ExtJS-based web development platform",
     "keywords": [
@@ -59,8 +59,8 @@
     "extra": {
         "installer-types": [
             "js-library",
-            "dvelum3-module",
-            "dvelum3-extension",
+            "dvelum4-module",
+            "dvelum4-extension",
             "project"
         ],
         "installer-paths": {
@@ -69,6 +69,9 @@
             ],
             "extensions/dvelum-core": [
                 "dvelum/dvelum-core"
+            ],
+            "extensions/dvelum-orm": [
+                "dvelum/dvelum-orm"
             ],
             "www/js/lib/{$name}": [
                 "type:js-library"

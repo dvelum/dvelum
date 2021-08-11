@@ -26,6 +26,7 @@ use Dvelum\Config;
 use Dvelum\Config\Storage\StorageInterface as ConfigStorageInterface;
 use Dvelum\Db\ManagerInterface;
 use Dvelum\Lang;
+use Dvelum\Orm\Orm;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Template\Engine\EngineInterface;
@@ -44,7 +45,13 @@ class Platform extends Application
         if ($this->initialized) {
             return;
         }
+
         $this->initExternals();
+        // Init deprecated factories
+
+        \Dvelum\View::setContainer($this->diContainer);
+        \Dvelum\Orm::setContainer($this->diContainer);
+
     }
     /**
      * Init additional external modules
@@ -118,17 +125,11 @@ class Platform extends Application
      */
     protected function routeBackOffice(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $request = Request::factory();
-        $response = Response::factory();
         /*
          * Start routing
          */
-        $router = new \Dvelum\App\Router\Backend();
-        $router->route($request, $response);
-
-        if (!$response->isSent()) {
-            $response->send();
-        }
+        $router = new \Dvelum\App\Router\Backend($this->diContainer);
+        return $router->route($request, $response);
     }
 
     /**

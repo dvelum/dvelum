@@ -25,7 +25,7 @@ use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Request;
 use Dvelum\Response;
-use Dvelum\Service;
+
 use Dvelum\Lang;
 use Dvelum\File;
 use Dvelum\Utils;
@@ -51,9 +51,12 @@ class Manager
 
     static protected $classRoutes = false;
 
-    public function __construct()
+    private Lang $lang;
+
+    public function __construct(ConfigInterface $appConfig, Lang $lang)
     {
-        $this->appConfig = Config::storage()->get('main.php');
+        $this->appConfig = $appConfig;
+        $this->lang = $lang;
         $configPath = $this->appConfig->get($this->mainConfigKey);
         $this->config = Config::storage()->get($configPath, false, true);
 
@@ -63,8 +66,8 @@ class Manager
             $this->curConfig = new Config\File\AsArray(Config::storage()->getWrite() . $configPath);
         }
 
-        $locale = Lang::lang()->getName();
-        $this->localeStorage = Lang::storage();
+        $locale = $lang->getDictionary()->getName();
+        $this->localeStorage = $lang->getStorage();
         $this->modulesLocale = $this->localeStorage->get($locale.'/modules/'.basename($configPath));
     }
 
@@ -77,11 +80,7 @@ class Manager
     public function getLocale($lang) : ConfigInterface
     {
         $configPath = $this->appConfig->get($this->mainConfigKey);
-        /**
-         * @var Lang $langService
-         */
-        $langService = Service::get('lang');
-        return $langService->getStorage()->get($lang.'/modules/'.basename($configPath));
+        return $this->lang->get($lang.'/modules/'.basename($configPath));
     }
 
     /**

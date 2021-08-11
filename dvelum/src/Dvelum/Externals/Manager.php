@@ -22,6 +22,7 @@ namespace Dvelum\Externals;
 
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\DependencyContainer;
 use Dvelum\Orm;
 use Dvelum\Autoload;
 use Dvelum\File;
@@ -62,7 +63,7 @@ class Manager
      */
     protected $loadedModules = [];
 
-    private ContainerInterface $di;
+    private DependencyContainer $di;
 
     protected Lang\Dictionary $lang;
     protected Config\Storage\StorageInterface  $configStorage;
@@ -270,6 +271,19 @@ class Manager
             }
 
             $storage->replacePaths($resultPaths);
+            /*
+             *  Add module dependencies
+             */
+            $dependency = $this->configStorage->get('dependency.php')->__toArray();
+            $newDependency = [];
+            foreach ($dependency as $class => $value){
+                if(!$this->di->has($class)){
+                    $newDependency[$class] = $value;
+                }
+            }
+            if(!empty($newDependency)){
+                $this->di->bindArray($newDependency);
+            }
         }
         // Add localization paths
         if (!empty($langPaths)) {

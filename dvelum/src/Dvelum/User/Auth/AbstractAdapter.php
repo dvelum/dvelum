@@ -26,6 +26,7 @@ namespace Dvelum\User\Auth;
  */
 
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Orm\Orm;
 
 abstract class AbstractAdapter implements AdapterInterface
 {
@@ -34,13 +35,15 @@ abstract class AbstractAdapter implements AdapterInterface
      * @var ConfigInterface
      */
 	protected $config;
+	protected Orm $orm;
 
 	/**
 	 * @param ConfigInterface $config - auth provider config
 	 */
-	public function __construct(ConfigInterface $config)
+	public function __construct(ConfigInterface $config, Orm $orm)
 	{
 		$this->config = $config;
+		$this->orm = $orm;
 	}
 
 	/**

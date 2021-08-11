@@ -250,7 +250,7 @@ class Controller extends Backend\Controller
             $project = $manager->findWorkingCopy($moduleCfg['designer']);
             $projectData =  $manager->compileDesktopProject($project, 'app.__modules.'.$moduleName , $moduleName);
             $projectData['isDesigner'] = true;
-            $modulesManager = new App\Module\Manager();
+            $modulesManager =$this->container->get(\Dvelum\App\Module\Manager::class);
             $modulesList = $modulesManager->getList();
             $projectData['title'] = (isset($modulesList[$this->module])) ? $modulesList[$moduleName]['title'] : '';
         }

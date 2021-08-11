@@ -28,12 +28,14 @@ use Dvelum\Designer\Manager;
 use Dvelum\Orm\Model;
 use Dvelum\App\Session;
 use Dvelum\Lang;
+use Dvelum\Orm\Orm;
 use Dvelum\Security\Csrf;
 use Dvelum\Service;
 use Dvelum\View;
 use Dvelum\Request;
 use Dvelum\Resource;
 use Dvelum\Response;
+use Psr\Container\ContainerInterface;
 
 class Controller extends App\Controller
 {
@@ -82,14 +84,14 @@ class Controller extends App\Controller
      * @param Request $request
      * @param Response $response
      */
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, ContainerInterface $container)
     {
-        parent::__construct($request, $response);
+        parent::__construct($request, $response, $container);
 
         $this->backofficeConfig = Config::storage()->get('backend.php');
         $this->config = $this->getConfig();
         $this->module = $this->getModule();
-        $this->lang = Lang::lang();
+        $this->lang = $container->get(Lang::class)->lang();
         $this->objectName = $this->getObjectName();
 
         $this->initSession();
@@ -107,7 +109,7 @@ class Controller extends App\Controller
             }
         }
 
-        $this->user = $auth->auth();
+        $this->user = $auth->auth($this->container->get(Orm::class));
 
         if (!$this->user->isAuthorized() || !$this->user->isAdmin()) {
             if ($this->request->isAjax()) {
@@ -244,7 +246,7 @@ class Controller extends App\Controller
 
     protected function validateModule(): bool
     {
-        $moduleManager = new App\Module\Manager();
+        $moduleManager = $this->container->get(\Dvelum\App\Module\Manager::class);
 
         if (in_array($this->module, $this->backofficeConfig->get('system_controllers'), true) || $this->module == 'index') {
             return true;
@@ -296,7 +298,7 @@ class Controller extends App\Controller
      */
     public function getModule(): string
     {
-        $manager = new App\Module\Manager();
+        $manager = $this->container->get(\Dvelum\App\Module\Manager::class);
         $module = $manager->getControllerModule(get_called_class());
         if (empty($module)) {
             throw new \Exception('Undefined module');
@@ -437,7 +439,7 @@ class Controller extends App\Controller
         	app.root = "' . $this->request->url([$adminPath, $controllerCode, '']) . '";
         ');
 
-        $modulesManager = new App\Module\Manager();
+        $modulesManager = $this->container->get(\Dvelum\App\Module\Manager::class);
         /*
          * Load template
          */
@@ -448,6 +450,7 @@ class Controller extends App\Controller
             'page' => $page,
             'urlPath' => $controllerCode,
             'resource' => $res,
+            'request' => $this->request,
             'path' => $templatesPath,
             'user' => $this->user,
             'adminPath' => $this->appConfig->get('adminPath'),
@@ -526,7 +529,7 @@ class Controller extends App\Controller
             $project = $manager->findWorkingCopy($moduleCfg['designer']);
             $projectData = $manager->compileDesktopProject($project, 'app.__modules.' . $moduleName, $moduleName);
             $projectData['isDesigner'] = true;
-            $modulesManager = new App\Module\Manager();
+            $modulesManager = $this->container->get(\Dvelum\App\Module\Manager::class);
             $modulesList = $modulesManager->getList();
             $projectData['title'] = (isset($modulesList[$this->module])) ? $modulesList[$moduleName]['title'] : '';
         } else {

@@ -28,15 +28,18 @@ class UserSettings
     protected $userId;
     protected $data = [];
 
-    public function __construct($userId)
+    protected Model $settingsModel;
+
+    public function __construct($userId, Model $settingsModel)
     {
         $this->userId = $userId;
+        $this->settingsModel = $settingsModel;
         $this->load();
     }
 
     public function load()
     {
-        $this->data = Model::factory('user_settings')->getCachedItemByField('user', $this->userId);
+        $this->data = $this->settingsModel->getCachedItemByField('user', $this->userId);
     }
 
     public function get(string $name)

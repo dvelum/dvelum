@@ -43,7 +43,10 @@ if ($this->get('useCSRFToken')) {
 
 $menuData = [];
 $modules = $this->modules;
-$request = \Dvelum\Request::factory();
+/**
+ * @var \Dvelum\Request $request
+ */
+$request = $this->get('request');
 foreach ($modules as $data) {
     if (!$data['active'] || !$data['in_menu'] || !isset($this->userModules[$data['id']])) {
         continue;

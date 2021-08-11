@@ -27,6 +27,8 @@ use Dvelum\Lang;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Filter;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Back office
@@ -35,16 +37,21 @@ class Backend extends \Dvelum\App\Router
 {
     /**
      * Route request to the Controller
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @throws \Exception
-     * @return void
+     * @return ResponseInterface
      */
-    public function route(Request $request, Response $response): void
+    public function route(ServerRequestInterface $request , ResponseInterface $response) : ResponseInterface
     {
+        $requestHelper = new Request($request);
+        $responseHelper = new Response($response);
+
+
         $configBackend = Config::storage()->get('backend.php');
 
-        $controllerCode = $request->getPart(1);
+
+        $controllerCode = $requestHelper->getPart(1);
         $controller = \Dvelum\Utils\Strings::formatClassName(Filter::filterValue('pagecode', $controllerCode));
 
         if (empty($controller)) {
@@ -56,14 +63,14 @@ class Backend extends \Dvelum\App\Router
         if(in_array($coreClass, $configBackend->get('system_controllers'))  && class_exists($coreClass)) {
             $controller = $coreClass;
         } else {
-            $manager = new Manager();
+            $manager = $this->container->get(\Dvelum\App\Module\Manager::class);
             $controller = $manager->getModuleController($controller);
             if (empty($controller)) {
-                $response->error(Lang::lang()->get('WRONG_REQUEST') . ' ' . $request->getUri());
-                return;
+                $responseHelper->error($this->container->get(Lang::class)->lang()->get('WRONG_REQUEST') . ' ' . $requestHelper->getUri());
+                return $responseHelper->getPsrResponse();
             }
         }
-        $this->runController($controller, $request->getPart(2), $request, $response);
+        return $this->runController($controller, $requestHelper->getPart(2), $requestHelper, $responseHelper);
     }
 
     /**

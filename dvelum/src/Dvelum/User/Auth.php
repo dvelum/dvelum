@@ -26,6 +26,7 @@ namespace Dvelum\User;
  */
 
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Orm\Orm;
 use Dvelum\User\Auth\AbstractAdapter;
 use Dvelum\User\Auth\AdapterInterface;
 
@@ -37,13 +38,13 @@ class Auth
      * @throws \Exception
 	 * @return AbstractAdapter
 	 */
-	static public function factory(ConfigInterface $config) : AdapterInterface
+	static public function factory(ConfigInterface $config, Orm $orm) : AdapterInterface
 	{
 		$providerAdapter = $config->get('adapter');
 
 		if (!class_exists($providerAdapter))
 			throw new \Exception('Unknown auth adapter ' . $providerAdapter);
 
-		return new $providerAdapter($config);
+		return new $providerAdapter($config, $orm);
 	}
 }

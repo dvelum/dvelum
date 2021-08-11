@@ -36,7 +36,7 @@ use Dvelum\App\Data\Api;
 class DataView extends ApiController
 {
     /**
-     * @var Orm\Service $ormService
+     * @var Orm\Orm $ormService
      */
     protected $ormService;
 

@@ -121,7 +121,7 @@ class Controller extends Backend\Controller
     public function testAction()
     {
         /**
-         * @var \Dvelum\Orm\Service $service
+         * @var \Dvelum\Orm\Orm $service
          */
         $this->tManager->launch(Manager::LAUNCHER_JSON, '\\Dvelum\\App\\Task\\Test' , []);
     }

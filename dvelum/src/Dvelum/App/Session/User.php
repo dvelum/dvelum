@@ -20,6 +20,7 @@
 namespace Dvelum\App\Session;
 
 use Dvelum\Orm\Model as Model;
+use Dvelum\Orm\Orm;
 use Dvelum\Store\Factory;
 use Exception;
 
@@ -59,6 +60,8 @@ class User
      */
     protected $permissions;
 
+    protected Orm $orm;
+
     /**
      * Authorizing the user: successful authorization returns
      * the link to the object, while failure to authorize returns false
@@ -95,6 +98,7 @@ class User
 
     protected function __construct()
     {
+        $this->orm = \Dvelum\Orm::factory();
         $this->session = Factory::get(Factory::SESSION);
         $this->checkAuthSession();
     }
@@ -109,7 +113,7 @@ class User
         $this->id = $id;
         $this->info = null;
         $this->permissions = null;
-        $this->settings = new UserSettings($id);
+        $this->settings = new UserSettings($id, $this->orm->model('user_settings'));
     }
 
     /**
@@ -121,7 +125,7 @@ class User
         if(!$this->id || !$this->isAuthorized())
             throw new Exception('User is not authorised');
 
-        $data = Model::factory('User')->getInfo($this->id);
+        $data = $this->orm->model('User')->getInfo($this->id);
         if(!$data)
             throw new Exception('Invalid user data');
 

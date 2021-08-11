@@ -27,7 +27,7 @@ use Dvelum;
 
 class Orm extends AbstractAdapter
 {
-    public function loadService() : Dvelum\Orm\Service
+    public function loadService() : Dvelum\Orm\Orm
     {
         $cache = null;
 
@@ -35,7 +35,7 @@ class Orm extends AbstractAdapter
             $cache = $this->config->get('cache');
         }
 
-        $orm = new Dvelum\Orm\Service(
+        $orm = new Dvelum\Orm\Orm(
             Config::storage()->get('orm.php'),
             $this->config->get('dbManager'),
             $this->config->get('appConfig')->get('language'),

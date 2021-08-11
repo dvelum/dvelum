@@ -22,6 +22,7 @@ namespace Dvelum\App;
 use Dvelum\App;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Orm\Orm;
 use Dvelum\Request;
 
 class Auth
@@ -57,7 +58,7 @@ class Auth
      * Check user permissions and authentication
      * @return App\Session\User
      */
-    public function auth() : App\Session\User
+    public function auth(Orm $orm) : App\Session\User
     {
         $user =  App\Session\User::factory();
 
@@ -69,12 +70,12 @@ class Auth
             if(!empty($login) && !empty($pass)){
                 // slow check
                 sleep(1);
-                $user = $this->login($login, $pass , $provider);
+                $user = $this->login($orm, $login, $pass , $provider);
 
                 // Trying fallback provider if it set
                 if(!$user->isAuthorized() && !empty($this->appConfig->get('fallback_auth_provider'))){
                     $provider = $this->appConfig->get('fallback_auth_provider');
-                    $user = $this->login($login , $pass , $provider);
+                    $user = $this->login($orm, $login , $pass , $provider);
                 }
 
                 if($user->isAuthorized()){
@@ -103,7 +104,7 @@ class Auth
      * @throws \Exception
      * @return App\Session\User
      */
-    public function login(string $login, string $password, string $provider = 'dvelum') : App\Session\User
+    public function login(Orm $orm, string $login, string $password, string $provider = 'dvelum') : App\Session\User
     {
         $user = App\Session\User::factory();
 
@@ -112,7 +113,7 @@ class Auth
         if (empty($providerCfg))
             throw new \Exception('Wrong auth provider config: ' . 'auth/' . $provider . '.php');
 
-        $authProvider = \Dvelum\User\Auth::factory($providerCfg);
+        $authProvider = \Dvelum\User\Auth::factory($providerCfg, $orm);
 
         if (!$authProvider->auth($login, $password))
             return $user;

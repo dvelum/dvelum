@@ -154,7 +154,7 @@ class Controller extends App\Backend\Api\Controller
             $data = Utils::rekey('module', $data);
         }
 
-        $manager = new \Dvelum\App\Module\Manager();
+        $manager = $this->container->get(\Dvelum\App\Module\Manager::class);
         $modules = $manager->getRegisteredModules();
         $moduleKeys = array_flip($modules);
 
@@ -209,7 +209,7 @@ class Controller extends App\Backend\Api\Controller
          */
         $permissionsModel = Model::factory('Permissions');
 
-        $manager = new ModuleManager();
+        $manager = $this->container->get(\Dvelum\App\Module\Manager::class);
         $modules = $manager->getRegisteredModules();
         $list = $manager->getList();
         $data = [];

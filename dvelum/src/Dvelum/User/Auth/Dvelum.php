@@ -36,12 +36,12 @@ class Dvelum extends AbstractAdapter
 	 */
 	public function auth($login,$password) : bool
 	{
-		$sql = Model::factory('User')->getDbConnection()->select()
-			->from(Model::factory('User')->table())
+		$sql = $this->orm->model('User')->getDbConnection()->select()
+			->from($this->orm->model('User')->table())
 			->where('`login` =?' , $login)
 			->where('`enabled` = 1');
 
-		$data = Model::factory('User')->getDbConnection()->fetchRow($sql);
+		$data = $this->orm->model('User')->getDbConnection()->fetchRow($sql);
 
 		if(empty($data) || !password_verify($password , $data['pass']))
 			return false;
