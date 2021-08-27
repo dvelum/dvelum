@@ -210,8 +210,8 @@ class DataView extends ApiController
 
             if ($field->isSearch()) {
                 $col->text = '<img data-qtip="' . $this->lang->get('SEARCH') . '" src="' . $this->appConfig->get(
-                        'wwwroot'
-                    ) . 'i/system/search.png" height="10"/> ' . $col->text;
+                    'wwwroot'
+                ) . 'i/system/search.png" height="10"/> ' . $col->text;
             }
 
             if ($field->isMultiLink()) {
@@ -345,8 +345,8 @@ class DataView extends ApiController
 							xtype:"objectfield",
 							objectName:"' . $fieldObj->getLinkedObject() . '",
 							controllerUrl:"' . $this->request->url(
-                            [$this->appConfig->get('adminPath'), 'orm', 'dataview', '']
-                        ) . '",
+                        [$this->appConfig->get('adminPath'), 'orm', 'dataview', '']
+                    ) . '",
 							fieldLabel:"' . $fieldCfg['title'] . '",
 							name:"' . $field . '",
 							anchor:"100%",

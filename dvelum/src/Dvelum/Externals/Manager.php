@@ -29,7 +29,7 @@ use Dvelum\Autoload;
 use Dvelum\File;
 use Dvelum\Lang;
 use Dvelum\Template\Storage;
-use \Exception;
+use Exception;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -353,7 +353,7 @@ class Manager
         if (!file_exists($composerFile)) {
             return null;
         }
-        $data = json_decode(file_get_contents($composerFile,), true);
+        $data = json_decode(file_get_contents($composerFile, ), true);
         return $data['name'];
     }
 
@@ -393,8 +393,8 @@ class Manager
             if (is_dir($resources)) {
                 if (!File::copyDir($resources, $this->externalsConfig['resources_path'] . $id)) {
                     $this->errors[] = $this->lang->get(
-                            'CANT_WRITE_FS'
-                        ) . ' ' . $this->externalsConfig['resources_path'] . $id;
+                        'CANT_WRITE_FS'
+                    ) . ' ' . $this->externalsConfig['resources_path'] . $id;
                     return false;
                 }
             }
@@ -477,7 +477,7 @@ class Manager
                 return false;
             }
 
-            $installer = new $class;
+            $installer = new $class();
 
             if (!$installer instanceof Installer) {
                 $this->errors[] = 'Class ' . $class . ' is not instance of Installer';
@@ -557,7 +557,7 @@ class Manager
                 return false;
             }
 
-            $installer = new $class;
+            $installer = new $class();
 
             if (!$installer instanceof Installer) {
                 $this->errors[] = 'Class ' . $class . ' is not instance of Externals_Installer';

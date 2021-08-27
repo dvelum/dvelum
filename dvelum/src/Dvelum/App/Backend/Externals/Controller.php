@@ -30,6 +30,7 @@ use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Service;
 use Dvelum\App;
+use Psr\Container\ContainerInterface;
 
 class Controller extends App\Backend\Controller
 {
@@ -48,9 +49,9 @@ class Controller extends App\Backend\Controller
         return '';
     }
 
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, ContainerInterface $container)
     {
-        parent::__construct($request, $response);
+        parent::__construct($request, $response, $container);
 
         /**
          * @var Lang $langService

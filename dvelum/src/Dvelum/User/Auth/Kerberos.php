@@ -25,7 +25,7 @@ namespace Dvelum\User\Auth;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config\ConfigInterface;
-use \Exception;
+use Exception;
 
 /**
  * User Auth provider for Kerberos.

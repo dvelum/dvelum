@@ -114,10 +114,10 @@ class Simple extends AbstractAdapter
         $dataFields = array();
         foreach ($objectConfig->getFieldsConfig(true) as $key => $item) {
             if (in_array(
-                    $item['db_type'],
-                    Orm\Record\Builder::$textTypes,
-                    true
-                ) || $objectConfig->getField($key)->isMultiLink()) {
+                $item['db_type'],
+                Orm\Record\Builder::$textTypes,
+                true
+            ) || $objectConfig->getField($key)->isMultiLink()) {
                 continue;
             }
 
@@ -324,9 +324,9 @@ class Simple extends AbstractAdapter
                         $column = \Ext_Factory::object('Grid_Column_Number');
                         if (isset($objectFieldsConfig[$fieldConfig->name]['db_precision'])) {
                             $column->format = '0,000.' . str_repeat(
-                                    '0',
-                                    $objectFieldsConfig[$fieldConfig->name]['db_precision']
-                                );
+                                '0',
+                                $objectFieldsConfig[$fieldConfig->name]['db_precision']
+                            );
                         }
                         break;
                     case 'date':
@@ -579,8 +579,8 @@ class Simple extends AbstractAdapter
             }
 
             if (in_array($item['db_type'], Orm\Record\Builder::$textTypes, true) || $objectConfig->getField(
-                    $key
-                )->isObjectLink() || $objectConfig->getField($key)->isMultiLink()) {
+                $key
+            )->isObjectLink() || $objectConfig->getField($key)->isMultiLink()) {
                 continue;
             }
 
@@ -773,9 +773,9 @@ class Simple extends AbstractAdapter
                     $column = \Ext_Factory::object('Grid_Column_Number');
                     if (isset($objectFieldsConfig[$fieldConfig->name]['db_precision'])) {
                         $column->format = '0,000.' . str_repeat(
-                                '0',
-                                $objectFieldsConfig[$fieldConfig->name]['db_precision']
-                            );
+                            '0',
+                            $objectFieldsConfig[$fieldConfig->name]['db_precision']
+                        );
                     }
                     break;
                 case 'date':

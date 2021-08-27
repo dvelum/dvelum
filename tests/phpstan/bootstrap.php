@@ -28,7 +28,10 @@ require DVELUM_ROOT . '/vendor/autoload.php';
 require_once DVELUM_ROOT . '/extensions/dvelum-core/src/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
-use \Dvelum\Config\Factory as ConfigFactory;
+use Dvelum\Autoload;
+use Dvelum\Config\Factory as ConfigFactory;
+use Dvelum\Config\Storage\StorageInterface;
+use Dvelum\DependencyContainer;
 
 $configStorage = ConfigFactory::storage();
 $configStorage->setConfig($bootCfg['config_storage']);
@@ -37,19 +40,19 @@ $configStorage->setConfig($bootCfg['config_storage']);
 /*
  * Reload storage options from local system
  */
-$configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->__toArray());
+$configStorage->setConfig($configStorage->get('config_storage.php')->__toArray());
 
 /*
  * Connecting main configuration file
  */
-$config = ConfigFactory::storage()->get('main.php');
+$config = $configStorage->get('main.php');
 $config->set('development', 2);
 $configStorage->addPath('./application/configs/test/');
 
 /*
  * Setting autoloader config
  */
-$autoloaderCfg = ConfigFactory::storage()->get('autoloader.php')->__toArray();
+$autoloaderCfg = $configStorage->get('autoloader.php')->__toArray();
 $autoloaderCfg['psr-4']['Dvelum'] = DVELUM_ROOT.'/tests/unit/dvelum2/Dvelum';
 $autoloader->setConfig($autoloaderCfg);
 
@@ -61,6 +64,14 @@ $appClass = $config->get('application');
 if(!class_exists($appClass))
     throw new Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
 
-$app = new $appClass($config);
-$app->setAutoloader($autoloader);
+$diContainer= new DependencyContainer();
+$diContainer->bind('config.main', $config);
+$diContainer->bind(StorageInterface::class, $configStorage);
+$diContainer->bind(Autoload::class, $autoloader);
+$diContainer->bindArray($configStorage->get('dependency.php')->__toArray());
+
+/**
+ * @var \Dvelum\Application $app
+ */
+$app = new $appClass($diContainer);
 $app->runTestMode();

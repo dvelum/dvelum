@@ -29,7 +29,6 @@ use Dvelum\Lang;
  */
 interface ClientInterface
 {
-
     public function __construct(ConfigInterface $repoConfig);
 
     /**
@@ -74,5 +73,4 @@ interface ClientInterface
      * @throws \Exception
      */
     public function remove(string $app): bool;
-
 }

@@ -24,7 +24,7 @@ namespace Dvelum\App\Model;
 
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
-use \Exception;
+use Exception;
 
 /**
  * History logger
@@ -36,7 +36,7 @@ class Historylog extends Model
      * Action types
      * @var array
      */
-    static public $actions = array(
+    public static $actions = array(
         1 => 'Delete',
         2 => 'Create',
         3 => 'Update',
@@ -46,13 +46,13 @@ class Historylog extends Model
         7 => 'New Version'
     );
 
-    const Delete = 1;
-    const Create = 2;
-    const Update = 3;
-    const Publish = 4;
-    const Sort = 5;
-    const Unpublish = 6;
-    const NewVersion = 7;
+    public const Delete = 1;
+    public const Create = 2;
+    public const Update = 3;
+    public const Publish = 4;
+    public const Sort = 5;
+    public const Unpublish = 6;
+    public const NewVersion = 7;
 
     /**
      * Log action. Fill history table
@@ -95,9 +95,10 @@ class Historylog extends Model
             ->from(array('l' => $this->table()), ['type', 'date'])
             ->where('l.table_name = ?', $table_name)
             ->where('l.record_id = ?', $record_id)
-            ->joinLeft(array('u' => Model::factory('User')->table()),
-                       ' l.user_id = u.id',
-                       array('user' => 'u.name)')
+            ->joinLeft(
+                array('u' => Model::factory('User')->table()),
+                ' l.user_id = u.id',
+                array('user' => 'u.name)')
             )
             ->order('l.date DESC')
             ->limit($limit, $start);

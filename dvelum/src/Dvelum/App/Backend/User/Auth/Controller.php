@@ -24,7 +24,7 @@ namespace Dvelum\App\Backend\User\Auth;
 use Dvelum\Orm;
 use Dvelum\App;
 use Dvelum\Orm\Model;
-use \Exception;
+use Exception;
 
 class Controller extends App\Backend\Api\Controller
 {

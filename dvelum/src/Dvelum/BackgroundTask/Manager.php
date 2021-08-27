@@ -26,24 +26,23 @@ namespace Dvelum\BackgroundTask;
  */
 class Manager
 {
+    public const LAUNCHER_HTTP = '\\Dvelum\\BackgroundTask\\Launcher\\Local\\Http';
+    public const LAUNCHER_JSON = '\\Dvelum\\BackgroundTask\\Launcher\\Local\\Json';
+    public const LAUNCHER_SILENT = '\\Dvelum\\BackgroundTask\\Launcher\\Local\\Silent';
+    public const LAUNCHER_SIMPLE = '\\Dvelum\\BackgroundTask\\Launcher\\Simple';
 
-    const LAUNCHER_HTTP = '\\Dvelum\\BackgroundTask\\Launcher\\Local\\Http';
-    const LAUNCHER_JSON = '\\Dvelum\\BackgroundTask\\Launcher\\Local\\Json';
-    const LAUNCHER_SILENT = '\\Dvelum\\BackgroundTask\\Launcher\\Local\\Silent';
-    const LAUNCHER_SIMPLE = '\\Dvelum\\BackgroundTask\\Launcher\\Simple';
+    public const STORAGE_ORM = '\\Dvelum\\BackgroundTask\\Storage\\Orm';
 
-    const STORAGE_ORM = '\\Dvelum\\BackgroundTask\\Storage\\Orm';
-
-    static protected $instance = null;
+    protected static $instance = null;
 
     /**
      * Instantiate an object
      * @return Manager
      */
-    static public function factory(): Manager
+    public static function factory(): Manager
     {
         if (is_null(self::$instance)) {
-            self::$instance = new self;
+            self::$instance = new self();
         }
         return self::$instance;
     }
@@ -108,7 +107,7 @@ class Manager
         /**
          * @var Launcher $launcher
          */
-        $launcher = new $launcher;
+        $launcher = new $launcher();
         $launcher->launch($task, $config);
     }
 

@@ -25,6 +25,7 @@ use Dvelum\App\Backend;
 use Dvelum\Filter;
 use Dvelum\Request;
 use Dvelum\Response;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class Controller
@@ -37,9 +38,9 @@ class Controller extends Backend\Controller
      */
     protected $manager;
 
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, ContainerInterface $container)
     {
-        parent::__construct($request, $response);
+        parent::__construct($request, $response, $container);
         $this->manager = new Manager($this->appConfig);
     }
 

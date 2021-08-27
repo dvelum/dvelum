@@ -25,16 +25,16 @@ namespace Dvelum\BackgroundTask;
  */
 abstract class AbstractTask
 {
-    const SIGNAL_SLEEP = 1;
-    const SIGNAL_CONTINUE = 2;
-    const SIGNAL_STOP = 3;
+    public const SIGNAL_SLEEP = 1;
+    public const SIGNAL_CONTINUE = 2;
+    public const SIGNAL_STOP = 3;
 
-    const STATUS_UNDEFINED = 0;
-    const STATUS_RUN = 1;
-    const STATUS_SLEEP = 2;
-    const STATUS_STOPED = 3;
-    const STATUS_FINISHED = 4;
-    const STATUS_ERROR = 5;
+    public const STATUS_UNDEFINED = 0;
+    public const STATUS_RUN = 1;
+    public const STATUS_SLEEP = 2;
+    public const STATUS_STOPED = 3;
+    public const STATUS_FINISHED = 4;
+    public const STATUS_ERROR = 5;
 
     /**
      * @var Log|null
@@ -249,13 +249,13 @@ abstract class AbstractTask
 
         foreach ($sig as $signal) {
             switch ($signal) {
-                case self::SIGNAL_SLEEP :
+                case self::SIGNAL_SLEEP:
                     $this->sleep();
                     break;
-                case self::SIGNAL_CONTINUE :
+                case self::SIGNAL_CONTINUE:
                     $this->continue();
                     break;
-                case self::SIGNAL_STOP :
+                case self::SIGNAL_STOP:
                     $this->stop();
             }
         }

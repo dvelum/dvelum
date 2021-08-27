@@ -21,5 +21,4 @@ namespace Dvelum\App\Backend\Api;
 
 class LoadException extends \Exception
 {
-
 }

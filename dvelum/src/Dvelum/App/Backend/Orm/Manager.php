@@ -28,17 +28,17 @@ use Dvelum\Lang;
 use Dvelum\Config;
 use Dvelum\Orm\Record\Builder;
 use Dvelum\Orm\Record\Config\Translator;
-use \Exception;
+use Exception;
 
 class Manager
 {
-    const ERROR_EXEC = 1;
-    const ERROR_FS = 2;
-    const ERROR_DB = 3;
-    const ERROR_FS_LOCALISATION = 4;
-    const ERROR_INVALID_OBJECT = 5;
-    const ERROR_INVALID_FIELD = 6;
-    const ERROR_HAS_LINKS = 7;
+    public const ERROR_EXEC = 1;
+    public const ERROR_FS = 2;
+    public const ERROR_DB = 3;
+    public const ERROR_FS_LOCALISATION = 4;
+    public const ERROR_INVALID_OBJECT = 5;
+    public const ERROR_INVALID_FIELD = 6;
+    public const ERROR_HAS_LINKS = 7;
 
     /**
      * Remove object from ORM

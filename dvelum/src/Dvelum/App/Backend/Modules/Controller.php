@@ -35,7 +35,6 @@ use Dvelum\File;
 
 class Controller extends Backend\Controller
 {
-
     public function getModule(): string
     {
         return 'Modules';
@@ -62,8 +61,8 @@ class Controller extends Backend\Controller
         $module = $this->getModule();
         $this->resource->addInlineJs(
             '
-            var canEdit = ' . ((integer)$this->user->getModuleAcl()->canEdit($module)) . ';
-            var canDelete = ' . ((integer)$this->user->getModuleAcl()->canDelete($module)) . ';
+            var canEdit = ' . ((int)$this->user->getModuleAcl()->canEdit($module)) . ';
+            var canDelete = ' . ((int)$this->user->getModuleAcl()->canDelete($module)) . ';
         '
         );
         parent::indexAction();
@@ -392,8 +391,8 @@ class Controller extends Backend\Controller
 
         $projectRelativePath = '/' . strtolower($object) . '.designer.dat';
         $projectFile = Config::storage()->getWrite() . $designerConfig->get('configs') . strtolower(
-                $object
-            ) . '.designer.dat';
+            $object
+        ) . '.designer.dat';
 
         if (file_exists($projectFile)) {
             $this->response->error($this->lang->get('FILE_EXISTS') . '(' . $projectFile . ')');
@@ -557,10 +556,10 @@ class Controller extends Backend\Controller
     {
         $relatedFiles = [];
         $classFile = $this->appConfig->get('local_controllers') . str_replace(
-                '_',
-                '/',
-                $moduleConfig['class']
-            ) . '.php';
+            '_',
+            '/',
+            $moduleConfig['class']
+        ) . '.php';
 
         if (empty($moduleConfig['dist']) && file_exists($classFile)) {
             $relatedFiles[] = $classFile;

@@ -199,5 +199,4 @@ class Uml extends Controller
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
         }
     }
-
 }

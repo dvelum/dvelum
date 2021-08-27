@@ -24,6 +24,7 @@ namespace Dvelum\App\Module;
 use Dvelum\App\Session\User;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\DependencyContainer;
 use Dvelum\Request;
 use Dvelum\Response;
 
@@ -50,7 +51,7 @@ class Manager
      */
     protected $localeStorage;
 
-    static protected $classRoutes = false;
+    protected static $classRoutes = false;
 
     private Lang $lang;
 
@@ -413,13 +414,27 @@ class Manager
             return false;
         }
 
+        $psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+        $creator = new \Nyholm\Psr7Server\ServerRequestCreator(
+            $psr17Factory, // ServerRequestFactory
+            $psr17Factory, // UriFactory
+            $psr17Factory, // UploadedFileFactory
+            $psr17Factory  // StreamFactory
+        );
+        $serverRequest = $creator->fromGlobals();
+
         $reflector = new \ReflectionClass($class);
 
         if ($reflector->isSubclassOf('\\Dvelum\\App\\Backend\\Controller')) {
             /**
              * @var \Dvelum\App\Backend\Controller $controller
              */
-            $controller = new $class(Request::factory(), Response\Stub::factory());
+            $controller = new $class(
+                new Request($serverRequest),
+                Response\Stub::factory($psr17Factory->createResponse(200)),
+                new DependencyContainer()
+            );
+
             $object = $controller->getObjectName();
 
             if (\Dvelum\Orm\Record\Config::configExists($object)) {

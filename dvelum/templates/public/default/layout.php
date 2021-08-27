@@ -3,8 +3,16 @@
  * @var \Dvelum\Page\Page $page
  */
 $page = $this->get('page');
-$resource = \Dvelum\Resource::factory();
-$wwwRoot = \Dvelum\Request::factory()->wwwRoot();
+/**
+ * @var Dvelum\Request $request
+ */
+$request = $this->get('request');
+/**
+ * @var Dvelum\Resource $resource
+ */
+$resource = $this->get('resource');
+
+$wwwRoot = $request->wwwRoot();
 
 $robots = $page->getRobots();
 $htmlTitle = $page->getHtmlTitle();

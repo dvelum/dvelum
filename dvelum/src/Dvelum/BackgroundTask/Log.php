@@ -28,5 +28,4 @@ abstract class Log
     public function log($message)
     {
     }
-
 }

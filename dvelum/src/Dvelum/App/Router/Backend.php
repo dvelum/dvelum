@@ -49,7 +49,7 @@ class Backend extends \Dvelum\App\Router
         $responseHelper = new Response($response);
 
 
-        $configBackend = Config::storage()->get('backend.php');
+        $configBackend = $this->container->get(Config\Storage\StorageInterface::class)->get('backend.php');
 
 
         $controllerCode = $requestHelper->getPart(1);
@@ -83,6 +83,6 @@ class Backend extends \Dvelum\App\Router
     public function findUrl(string $module): string
     {
         $cfg = Config::storage()->get('backend.php');
-        return Request::factory()->url([$cfg['adminPath'], $module]);
+        return (new Request())->url([$cfg['adminPath'], $module]);
     }
 }

@@ -34,13 +34,12 @@ use Dvelum\Template\Engine\EngineInterface;
 use Dvelum\Template\Service;
 use Dvelum\View;
 use Dvelum\Externals;
-use \Exception;
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Platform extends Application
 {
-
     protected function init(): void
     {
         if ($this->initialized) {

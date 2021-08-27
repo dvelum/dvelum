@@ -21,16 +21,24 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Backend\Api;
 
-use Dvelum\{Designer\Manager, Request, Response, Config, App, Orm, Service, Utils};
-use Dvelum\Orm\{
-    RecordInterface, Model, Record
-};
-use Dvelum\App\{
-    Data, Session, Dictionary
-};
+use Dvelum\Designer\Manager;
+use Dvelum\Request;
+use Dvelum\Response;
+use Dvelum\Config;
+use Dvelum\App;
+use Dvelum\Orm;
+use Dvelum\Service;
+use Dvelum\Utils;
+use Psr\Container\ContainerInterface;
+use Dvelum\Orm\RecordInterface;
+use Dvelum\Orm\Model;
+use Dvelum\Orm\Record;
+use Dvelum\App\Data;
+use Dvelum\App\Session;
+use Dvelum\App\Dictionary;
 use Dvelum\App\Controller\EventManager;
 
-use \Exception;
+use Exception;
 
 class Controller extends App\Backend\Controller
 {
@@ -76,9 +84,9 @@ class Controller extends App\Backend\Controller
      * @param Request $request
      * @param Response $response
      */
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, ContainerInterface $container)
     {
-        parent::__construct($request, $response);
+        parent::__construct($request, $response, $container);
 
         $this->apiRequest = $this->getApiRequest($this->request);
         $this->eventManager = new App\Controller\EventManager();
@@ -1127,5 +1135,4 @@ class Controller extends App\Backend\Controller
         }
         return $projectData;
     }
-
 }

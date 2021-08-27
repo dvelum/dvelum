@@ -25,7 +25,7 @@ namespace Dvelum\User\Auth;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
-use \Exception;
+use Exception;
 
 /**
  * User Auth provider for LDAP.
@@ -88,7 +88,8 @@ class Ldap extends AbstractAdapter
             return false;
         }
 
-        $authCfg = Model::factory('User_Auth')->query()->filters(['type' => 'ldap', 'user' => $userData['id']]
+        $authCfg = Model::factory('User_Auth')->query()->filters(
+            ['type' => 'ldap', 'user' => $userData['id']]
         )->fetchAll();
 
         if (empty($authCfg)) {

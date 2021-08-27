@@ -147,7 +147,8 @@ abstract class AbstractAdapter implements GeneratorInterface
                 $grid->getName(),
                 'setCanPublish',
                 [['name' => 'canPublish', 'type' => 'boolean']],
-                'this.canPublish = canPublish;');
+                'this.canPublish = canPublish;'
+            );
             $m->setDescription('Set publish permission');
         }
 

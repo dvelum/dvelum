@@ -332,7 +332,7 @@ class Record extends Controller
         $result = $manager->removeObject($objectName, $deleteTable);
 
         switch ($result) {
-            case 0 :
+            case 0:
                 $this->response->success();
                 break;
             case Manager::ERROR_FS:

@@ -28,8 +28,7 @@ use Dvelum\App;
 use Dvelum\Config;
 use Dvelum\Orm\Record;
 use Dvelum\Orm\RecordInterface;
-use \Exception;
-
+use Exception;
 
 class Controller extends Backend\Controller
 {

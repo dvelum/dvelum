@@ -28,7 +28,6 @@ use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Store\Factory;
 
-
 class Crypt extends Controller
 {
     protected $encryptContainerPrefix = 'encrypt_';

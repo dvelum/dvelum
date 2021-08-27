@@ -26,11 +26,11 @@ use Dvelum\Config;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Utils;
-use \Exception;
+use Exception;
 
 class Permissions extends Model
 {
-    static protected $fields = ['view', 'edit', 'delete', 'publish', 'module', 'only_own'];
+    protected static $fields = ['view', 'edit', 'delete', 'publish', 'module', 'only_own'];
 
     /**
      * Get modules permissions for user
@@ -228,11 +228,11 @@ class Permissions extends Model
             try {
                 $obj = Orm\Record::factory($this->name);
                 $obj->setValues(array(
-                                    'view' => (boolean)$values['view'],
-                                    'edit' => (boolean)$values['edit'],
-                                    'delete' => (boolean)$values['delete'],
-                                    'publish' => (boolean)$values['publish'],
-                                    'only_own' => (boolean)$values['only_own'],
+                                    'view' => (bool)$values['view'],
+                                    'edit' => (bool)$values['edit'],
+                                    'delete' => (bool)$values['delete'],
+                                    'publish' => (bool)$values['publish'],
+                                    'only_own' => (bool)$values['only_own'],
                                     'module' => $values['module'],
                                     'group_id' => $groupId,
                                     'user_id' => null
@@ -321,7 +321,7 @@ class Permissions extends Model
 
                 if (isset($groupPermissions[$values['module']])) {
                     foreach ($fields as $field) {
-                        if ((boolean)$groupPermissions[$values['module']][$field] !== (boolean)$values[$field]) {
+                        if ((bool)$groupPermissions[$values['module']][$field] !== (bool)$values[$field]) {
                             $needUpdate = true;
                         }
                     }
@@ -335,11 +335,11 @@ class Permissions extends Model
 
                 $obj = Orm\Record::factory($this->name);
                 $obj->setValues(array(
-                                    'view' => (boolean)$values['view'],
-                                    'edit' => (boolean)$values['edit'],
-                                    'delete' => (boolean)$values['delete'],
-                                    'publish' => (boolean)$values['publish'],
-                                    'only_own' => (boolean)$values['only_own'],
+                                    'view' => (bool)$values['view'],
+                                    'edit' => (bool)$values['edit'],
+                                    'delete' => (bool)$values['delete'],
+                                    'publish' => (bool)$values['publish'],
+                                    'only_own' => (bool)$values['only_own'],
                                     'module' => $values['module'],
                                     'group_id' => null,
                                     'user_id' => $userId

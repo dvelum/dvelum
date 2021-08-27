@@ -27,7 +27,6 @@ use Dvelum\App\Backend\Orm\Manager;
 use Dvelum\Orm;
 use Dvelum\Orm\Exception;
 
-
 class Field extends Controller
 {
     public function getModule(): string
@@ -154,7 +153,8 @@ class Field extends Controller
                         if (!in_array(
                             $newConfig['link_config']['relations_type'],
                             array('polymorphic', 'many_to_many'),
-                            true)) {
+                            true
+                        )) {
                             $newConfig['link_config']['relations_type'] = 'polymorphic';
                         }
 
@@ -204,7 +204,7 @@ class Field extends Controller
                  * boolean
                  */
                 $newConfig['required'] = false;
-                $newConfig['db_default'] = (integer)$this->request->post('db_default', 'bool', false);
+                $newConfig['db_default'] = (int)$this->request->post('db_default', 'bool', false);
             } elseif (in_array($newConfig['db_type'], Orm\Record\Builder::$intTypes, true)) {
                 /*
                  * integer
@@ -310,7 +310,7 @@ class Field extends Controller
         $result = $manager->removeField($object, $field);
 
         switch ($result) {
-            case 0 :
+            case 0:
                 $this->response->success();
                 break;
             case Manager::ERROR_INVALID_FIELD:

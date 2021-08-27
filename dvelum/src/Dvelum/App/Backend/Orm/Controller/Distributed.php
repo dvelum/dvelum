@@ -27,7 +27,7 @@ use Dvelum\App\Backend\Controller;
 use Dvelum\Config;
 use Dvelum\Lang;
 use Dvelum\Orm;
-use \Exception;
+use Exception;
 use Dvelum\Orm\Record;
 
 class Distributed extends Controller
@@ -255,5 +255,4 @@ class Distributed extends Controller
         }
         $this->response->success($data);
     }
-
 }

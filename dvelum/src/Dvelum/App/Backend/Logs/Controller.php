@@ -28,7 +28,7 @@ use Dvelum\Orm\Record;
 use Dvelum\Filter;
 use Dvelum\Utils;
 use Dvelum\Db\Select;
-use \Exception;
+use Exception;
 
 class Controller extends Backend\Ui\Controller
 {

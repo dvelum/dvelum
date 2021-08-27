@@ -27,9 +27,9 @@ use Dvelum\Request;
 
 class Auth
 {
-    const AUTH_LOGIN = 'ulogin';
-    const AUTH_PASSWORD = 'upassword';
-    const AUTH_PROVIDER = 'uprovider';
+    public const AUTH_LOGIN = 'ulogin';
+    public const AUTH_PASSWORD = 'upassword';
+    public const AUTH_PROVIDER = 'uprovider';
 
     protected $request;
     protected $appConfig;

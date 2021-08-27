@@ -69,7 +69,7 @@ class User
      * @param string $password
      * @return self|boolean
      */
-    static public function login($user, $password)
+    public static function login($user, $password)
     {
         $data = Model::factory('user')->login($user, $password);
 
@@ -90,7 +90,7 @@ class User
      * Instantiate a User
      * @return User
      */
-    static public function factory(): User
+    public static function factory(): User
     {
         if (!isset(static::$instance)) {
             static::$instance = new static();
@@ -249,7 +249,7 @@ class User
             $this->loadData();
         }
 
-        return (boolean)$this->get('admin');
+        return (bool)$this->get('admin');
     }
 
     /**
@@ -295,8 +295,8 @@ class User
     protected function checkAuthSession()
     {
         if ($this->session->keyExists('auth') && $this->session->get('auth') && $this->session->keyExists(
-                'auth_id'
-            ) && $this->session->get('auth_id')) {
+            'auth_id'
+        ) && $this->session->get('auth_id')) {
             $this->setId($this->session->get('auth_id'));
             $this->setAuthorized();
         }

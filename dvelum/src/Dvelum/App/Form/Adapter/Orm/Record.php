@@ -106,8 +106,8 @@ class Record extends Form\Adapter
             }
 
             if (!$id && ((is_string($posted[$name]) && !strlen((string)$posted[$name])) || (is_array(
-                            $posted[$name]
-                        ) && empty($posted[$name]))) && $field->hasDefault()) {
+                $posted[$name]
+            ) && empty($posted[$name]))) && $field->hasDefault()) {
                 continue;
             }
 

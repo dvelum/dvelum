@@ -72,4 +72,26 @@ Official Site (ENG) http://dvelum.net
 Official Site (RU)  http://dvelum.ru
 
 
+### Tests
 
+
+PHPStan
+```
+php ./vendor/bin/phpstan analyse application dvelum tests
+```
+
+PHPUnit
+```
+php ./vendor/bin/phpunit
+```
+
+PHP CS
+```
+php ./vendor/bin/phpcs --standard=PSR12 application dvelum tests
+php ./vendor/bin/phpcs --standard=Squiz --sniffs=Squiz.NamingConventions.ValidVariableName application dvelum tests
+```
+
+PHP CS Fixer
+```
+php ./vendor/bin/php-cs-fixer fix ./src
+```

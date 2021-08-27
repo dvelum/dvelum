@@ -92,7 +92,7 @@ class Vc extends Model
                 )
                 ->where('record_id =?', $record_id)
                 ->where('object_name =?', $objectName);
-            return (integer)$this->db->fetchOne($sql);
+            return (int)$this->db->fetchOne($sql);
         }
 
         $sql = $this->db->select()

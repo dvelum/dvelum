@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpMissingParentCallCommonInspection */
 
 /** @noinspection PhpMissingParentCallCommonInspection */
@@ -23,20 +24,15 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Backend\Orm\Controller;
 
-use Dvelum\{
-    App\Backend\Orm,
-    Config,
-    Db\Adapter,
-    Request,
-    Response
-};
+use Dvelum\App\Backend\Orm;
+use Dvelum\Config;
+use Dvelum\Db\Adapter;
+use Dvelum\Request;
+use Dvelum\Response;
 
-use Dvelum\Orm\{
-    Model,
-    Record\Manager,
-    Record\Import
-};
-
+use Dvelum\Orm\Model;
+use Dvelum\Orm\Record\Manager;
+use Dvelum\Orm\Record\Import;
 
 class Connections extends \Dvelum\App\Backend\Controller
 {

@@ -40,9 +40,14 @@ abstract class Controller extends Backend\Api\Controller
     {
         parent::indexAction();
 
+        /**
+         * @var Orm\Orm $orm
+         */
+        $orm = $this->container->get(Orm\Orm::class);
+
         $objectName = $this->getObjectName();
         $moduleName = $this->getModule();
-        $objectConfig = Orm\Record\Config::factory($objectName);
+        $objectConfig = $orm->config($objectName);
         $moduleAcl = $this->user->getModuleAcl();
         $modulesConfig = Config::factory(Config\Factory::File_Array, $this->appConfig->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($moduleName);
@@ -50,13 +55,13 @@ abstract class Controller extends Backend\Api\Controller
         $this->includeScripts();
 
         $this->resource->addInlineJs(
-            PHP_EOL . ' var canEdit = ' . intval($moduleAcl->canEdit($moduleName)) . ';' .
-            PHP_EOL . ' var canDelete = ' . intval($moduleAcl->canDelete($moduleName)) . ';'
+            PHP_EOL . ' var canEdit = ' . (int)($moduleAcl->canEdit($moduleName)) . ';' .
+            PHP_EOL . ' var canDelete = ' . (int)($moduleAcl->canDelete($moduleName)) . ';'
         );
 
         if ($objectConfig->isRevControl()) {
             $this->resource->addInlineJs(
-                PHP_EOL . ' var canPublish =  ' . intval($moduleAcl->canPublish($moduleName)) . ';'
+                PHP_EOL . ' var canPublish =  ' . (int)($moduleAcl->canPublish($moduleName)) . ';'
             );
             $this->resource->addJs('/js/app/system/ContentWindow.js', 1);
             $this->resource->addJs('/js/app/system/RevisionPanel.js', 2);
@@ -73,7 +78,12 @@ abstract class Controller extends Backend\Api\Controller
 
     public function listAction()
     {
-        $objectConfig = Orm\Record\Config::factory($this->getObjectName());
+        /**
+         * @var Orm\Orm $orm
+         */
+        $orm = $this->container->get(Orm\Orm::class);
+
+        $objectConfig = $orm->config($this->getObjectName());
         // Add additional fields for VC Records UI
         if ($objectConfig->isRevControl()) {
             $this->listLinks = array_merge($this->listLinks, $this->revControlFields);

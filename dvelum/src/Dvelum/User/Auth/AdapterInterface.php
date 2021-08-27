@@ -37,5 +37,4 @@ interface AdapterInterface
      * @return array|null
      */
     public function getUserData(): ?array;
-
 }

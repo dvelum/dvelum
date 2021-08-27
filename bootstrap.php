@@ -57,7 +57,7 @@ require DVELUM_ROOT . '/extensions/dvelum-core/src/Dvelum/Autoload.php';
 $autoloader = new \Dvelum\Autoload($bootCfg['autoloader']);
 
 use Dvelum\Autoload;
-use \Dvelum\Config\Factory as ConfigFactory;
+use Dvelum\Config\Factory as ConfigFactory;
 use Dvelum\Config\Storage\StorageInterface;
 use Dvelum\DependencyContainer;
 
@@ -68,11 +68,11 @@ $configStorage->setConfig($bootCfg['config_storage']);
 /*
  * Reload storage options from local system
  */
-$configStorage->setConfig(ConfigFactory::storage()->get('config_storage.php')->__toArray());
+$configStorage->setConfig($configStorage->get('config_storage.php')->__toArray());
 /*
  * Connecting main configuration file
  */
-$config = ConfigFactory::storage()->get('main.php');
+$config = $configStorage->get('main.php');
 
 switch ($config->get('development')){
     // production

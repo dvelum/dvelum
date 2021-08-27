@@ -135,8 +135,8 @@ class Controller extends App\Controller
             Service::get('Dictionary')->setConfig(
                 Config\Factory::create([
                                            'configPath' => $this->appConfig->get(
-                                                   'dictionary_folder'
-                                               ) . $this->appConfig->get('language') . '/'
+                                               'dictionary_folder'
+                                           ) . $this->appConfig->get('language') . '/'
                                        ])
             );
         }
@@ -237,9 +237,9 @@ class Controller extends App\Controller
     {
         $csrf = new Csrf();
         $csrf->setOptions([
-                              'lifetime' => $this->backofficeConfig->get('use_csrf_token_lifetime'),
-                              'cleanupLimit' => $this->backofficeConfig->get('use_csrf_token_garbage_limit')
-                          ]);
+          'lifetime' => $this->backofficeConfig->get('use_csrf_token_lifetime'),
+          'cleanupLimit' => $this->backofficeConfig->get('use_csrf_token_garbage_limit')
+        ]);
 
         if (!$csrf->checkHeader() && !$csrf->checkPost()) {
             $this->response->error($this->lang->get('MSG_NEED_CSRF_TOKEN'));
@@ -253,10 +253,10 @@ class Controller extends App\Controller
         $moduleManager = $this->container->get(\Dvelum\App\Module\Manager::class);
 
         if (in_array(
-                $this->module,
-                $this->backofficeConfig->get('system_controllers'),
-                true
-            ) || $this->module == 'index') {
+            $this->module,
+            $this->backofficeConfig->get('system_controllers'),
+            true
+        ) || $this->module == 'index') {
             return true;
         }
 
@@ -334,19 +334,23 @@ class Controller extends App\Controller
 
         $this->resource->addInlineJs(
             '
-            var canEdit = ' . intval($this->moduleAcl->canEdit($module)) . ';
-            var canDelete = ' . intval($this->moduleAcl->canDelete($module)) . ';
+            var canEdit = ' . (int)($this->moduleAcl->canEdit($module)) . ';
+            var canDelete = ' . (int)($this->moduleAcl->canDelete($module)) . ';
         '
         );
+        /**
+         * @var Orm $orm
+         */
+        $orm = $this->container->get(Orm::class);
 
         $objectName = $this->getObjectName();
         if (!empty($objectName)) {
-            $objectConfig = \Dvelum\Orm\Record\Config::factory($this->getObjectName());
+            $objectConfig = $orm->config($this->getObjectName());
 
             if ($objectConfig->isRevControl()) {
                 $this->resource->addInlineJs(
                     '
-                    var canPublish = ' . intval($this->moduleAcl->canPublish($this->module)) . ';
+                    var canPublish = ' . (int)($this->moduleAcl->canPublish($this->module)) . ';
                 '
                 );
             }
@@ -535,6 +539,7 @@ class Controller extends App\Controller
         );
 
         $this->response->put($template->render($templatesPath . 'layout.php'));
+        $this->response->send();
     }
 
     /**

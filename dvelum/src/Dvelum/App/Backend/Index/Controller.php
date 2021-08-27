@@ -38,7 +38,7 @@ class Controller extends App\Backend\Controller
 
     public function indexAction()
     {
-        $config = Config::storage()->get('backend.php');
+        $config = $this->container->get(Config\Storage\StorageInterface::class)->get('backend.php');
         $this->includeScripts();
         if (!in_array($config->get('theme'), $config->get('desktop_themes'), true)) {
             $this->resource->addJs('js/app/system/crud/index.js', 4);
@@ -59,7 +59,7 @@ class Controller extends App\Backend\Controller
 
         $data = \Dvelum\Utils::sortByField($data, 'title');
 
-        $isDev = (boolean)$this->appConfig->get('development');
+        $isDev = (bool)$this->appConfig->get('development');
         $wwwRoot = $this->appConfig->get('wwwroot');
         $adminPath = $this->appConfig->get('adminPath');
 

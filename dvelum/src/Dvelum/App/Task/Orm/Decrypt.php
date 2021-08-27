@@ -7,7 +7,7 @@ use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Store\Factory;
 use Dvelum\Lang;
-use \Exception;
+use Exception;
 
 /**
  * Class Decrypt
@@ -79,7 +79,8 @@ class Decrypt extends AbstractTask
             $this->finish();
         }
 
-        $data = $model->query()->params(['limit' => $this->buckedSize])->filters($filter)->fields([$primaryKey]
+        $data = $model->query()->params(['limit' => $this->buckedSize])->filters($filter)->fields(
+            [$primaryKey]
         )->fetchAll();
 
         $encryptedFields = $objectConfig->getEncryptedFields();
@@ -116,10 +117,10 @@ class Decrypt extends AbstractTask
             $this->incrementCompleted($count);
             $this->updateState();
             $this->processSignals();
-            $data = $model->query()->params(['limit' => $this->buckedSize])->filters($filter)->fields([$primaryKey]
+            $data = $model->query()->params(['limit' => $this->buckedSize])->filters($filter)->fields(
+                [$primaryKey]
             )->fetchAll();
         }
         $this->finish();
     }
-
 }

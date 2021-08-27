@@ -40,7 +40,7 @@ class Auth
      * @return AbstractAdapter
      * @throws \Exception
      */
-    static public function factory(ConfigInterface $config, Orm $orm): AdapterInterface
+    public static function factory(ConfigInterface $config, Orm $orm): AdapterInterface
     {
         $providerAdapter = $config->get('adapter');
 

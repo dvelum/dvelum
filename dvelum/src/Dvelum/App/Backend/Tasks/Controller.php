@@ -32,6 +32,7 @@ use Dvelum\Config;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Service;
+use Psr\Container\ContainerInterface;
 
 /**
  * Background tasks module UI Controller
@@ -43,9 +44,9 @@ class Controller extends Backend\Controller
      */
     protected $tManager;
 
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, ContainerInterface $container)
     {
-        parent::__construct($request, $response);
+        parent::__construct($request, $response, $container);
 
         $bgStorage = new  \Dvelum\BackgroundTask\Storage\Orm(Model::factory('bgtask'), Model::factory('Bgtask_Signal'));
         $logger = new File('./.log/test' . date('YmdHis') . '.txt');

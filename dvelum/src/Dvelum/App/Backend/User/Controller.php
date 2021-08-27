@@ -25,9 +25,8 @@ use Dvelum\App;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Validator\Email;
-use \Exception;
+use Exception;
 use Dvelum\Utils;
-use \Dvelum\App\Module\Manager as ModuleManager;
 use Dvelum\Filter;
 
 class Controller extends App\Backend\Api\Controller
@@ -52,12 +51,16 @@ class Controller extends App\Backend\Api\Controller
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }
+        /**
+         * @var Orm\Orm $orm
+         */
+        $orm = $this->container->get(Orm\Orm::class);
 
         try {
             /**
              * @var Orm\RecordInterface $user
              */
-            $user = Orm\Record::factory('user', $id);
+            $user = $orm->record('user', $id);
             $userData = $user->getData();
             unset($userData['pass']);
             $this->response->success($userData);
@@ -75,7 +78,11 @@ class Controller extends App\Backend\Api\Controller
         $filter = $this->request->post('filter', 'array', null);
         $query = $this->request->post('search', 'string', null);
 
-        $model = Model::factory('User');
+        /**
+         * @var Orm\Orm $orm
+         */
+        $orm = $this->container->get(Orm\Orm::class);
+        $model = $orm->model('User');
 
         $dataQuery = $model->query();
 
@@ -99,7 +106,7 @@ class Controller extends App\Backend\Api\Controller
          * Fill in group titles Its faster then using join
          * @var App\Model\Group $groupsModel
          */
-        $groupsModel = Model::factory('Group');
+        $groupsModel = $orm->model('Group');
         $groups = $groupsModel->getGroups();
         if (!empty($data) && !empty($groups)) {
             foreach ($data as $k => &$v) {
@@ -120,11 +127,18 @@ class Controller extends App\Backend\Api\Controller
      */
     public function groupListAction()
     {
-        $data = Model::factory('Group')->query()->fields([
-                                                             'id',
-                                                             'title',
-                                                             'system'
-                                                         ])->fetchAll();
+        /**
+         * @var Orm\Orm $orm
+         */
+        $orm = $this->container->get(Orm\Orm::class);
+        $data = $orm->model('Group')
+            ->query()
+            ->fields([
+                         'id',
+                         'title',
+                         'system'
+                     ])
+            ->fetchAll();
 
         $this->response->success($data);
     }
@@ -144,11 +158,16 @@ class Controller extends App\Backend\Api\Controller
             return;
         }
 
+        /**
+         * @var Orm\Orm $orm
+         */
+        $orm = $this->container->get(Orm\Orm::class);
+
         if ($group) {
             /**
              * @var App\Model\Permissions $permissionsModel
              */
-            $permissionsModel = Model::factory('Permissions');
+            $permissionsModel = $orm->model('Permissions');
             $data = $permissionsModel->getGroupPermissions($group);
         }
 
@@ -199,7 +218,11 @@ class Controller extends App\Backend\Api\Controller
             return;
         }
 
-        $userInfo = Model::factory('User')->getCachedItem($userId);
+        /**
+         * @var Orm\Orm $orm
+         */
+        $orm = $this->container->get(Orm\Orm::class);
+        $userInfo = $orm->model('User')->getCachedItem($userId);
 
         if (!$userInfo) {
             $this->response->success([]);
@@ -243,11 +266,11 @@ class Controller extends App\Backend\Api\Controller
 
             foreach ($permissionFields as $field) {
                 if ($item[$field]) {
-                    $data[$item['module']][$field] = (boolean)$item[$field];
+                    $data[$item['module']][$field] = (bool)$item[$field];
                 }
 
                 if ($item['group_id']) {
-                    $data[$item['module']]['g_' . $field] = (boolean)$item[$field];
+                    $data[$item['module']]['g_' . $field] = (bool)$item[$field];
                     continue;
                 }
             }

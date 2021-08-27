@@ -29,7 +29,7 @@ class Manager
     protected $appConfig;
     protected $externalsConfig;
 
-    static public function factory(ConfigInterface $appConfig)
+    public static function factory(ConfigInterface $appConfig)
     {
         static $instance = null;
         if (empty($instance)) {

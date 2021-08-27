@@ -1,6 +1,6 @@
 {
     "name": "dvelum/dvelum",
-    "version": "4.0.0-dev",
+    "version": "3.0.0-dev",
     "type": "project",
     "description": "PHP/ExtJS-based web development platform",
     "keywords": [
@@ -44,7 +44,7 @@
         "oomphinc/composer-installers-extender": "^2.0",
         "psr/log": "^1.0",
 
-        "dvelum/extjs": "^6.2.0",
+        "dvelum/extjs": "^7.0.0",
         "dvelum/module-designer": "^1.6",
 
         "dvelum/cache": "^4.0",
@@ -81,10 +81,10 @@
                 "type:js-library"
             ],
             "modules/{$vendor}/{$name}": [
-                "type:dvelum3-module"
+                "type:dvelum4-module"
             ],
             "extensions/{$vendor}/{$name}": [
-                "type:dvelum3-extension"
+                "type:dvelum4-extension"
             ]
         }
     },
@@ -92,7 +92,9 @@
         "phpunit/phpunit": "^9",
         "phpstan/phpstan": "^0.12",
         "codacy/coverage": "dev-master",
-        "composer/composer": "^2.0"
+        "composer/composer": "^2.0",
+        "squizlabs/php_codesniffer": "^3.6",
+        "friendsofphp/php-cs-fixer": "^3.0"
     },
     "repositories": {
         "chosen": {

@@ -86,10 +86,10 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         $this->resource->addInlineJs(
             '
-          var canPublish =  ' . ((integer)$this->moduleAcl->canPublish($this->module)) . ';
-          var canEdit = ' . ((integer)$this->moduleAcl->canEdit($this->module)) . ';
-          var canDelete = ' . ((integer)$this->moduleAcl->canDelete($this->module)) . ';
-          var useForeignKeys = ' . ((integer)$this->appConfig['foreign_keys']) . ';
+          var canPublish =  ' . ((int)$this->moduleAcl->canPublish($this->module)) . ';
+          var canEdit = ' . ((int)$this->moduleAcl->canEdit($this->module)) . ';
+          var canDelete = ' . ((int)$this->moduleAcl->canDelete($this->module)) . ';
+          var useForeignKeys = ' . ((int)$this->appConfig['foreign_keys']) . ';
           var canUseBackup = false;
           var dbConfigsList = ' . json_encode($dbConfigs) . ';
           var ormTooltips = ' . Lang::lang('orm_tooltips')->getJson() . ';
@@ -421,7 +421,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         Lang::addDictionaryLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
         $projectData['includes']['js'][] = $this->resource->cacheJs(
             '
-           var useForeignKeys = ' . ((integer)$this->appConfig['foreign_keys']) . ';
+           var useForeignKeys = ' . ((int)$this->appConfig['foreign_keys']) . ';
            var dbConfigsList = ' . json_encode($dbConfigs) . ';
            var ormTooltips = ' . Lang::lang('orm_tooltips')->getJson() . ';
         '

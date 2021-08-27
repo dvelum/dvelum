@@ -105,7 +105,8 @@ class Encrypt extends AbstractTask
                     $ivField => null
                 );
             }
-            $data = $model->query()->params(['limit' => $this->buckedSize])->filters($filters)->fields([$primaryKey]
+            $data = $model->query()->params(['limit' => $this->buckedSize])->filters($filters)->fields(
+                [$primaryKey]
             )->fetchAll();
         }
         $this->finish();

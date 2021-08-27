@@ -25,7 +25,7 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\Config\Factory;
 use Dvelum\Service;
 use Dvelum\Lang;
-use \Exception;
+use Exception;
 
 /**
  * Class Manager
@@ -76,9 +76,9 @@ class Manager
         foreach ($langs as $file) {
             $file = str_replace($paths, '', $file);
             if (strpos($file, 'index') === false && basename($file) !== 'objects.php' && strpos(
-                    $file,
-                    '/objects/'
-                ) == false) {
+                $file,
+                '/objects/'
+            ) == false) {
                 $data[] = substr($file, 0, -4);
             }
         }
@@ -576,7 +576,8 @@ class Manager
      */
     public function compileLangFiles()
     {
-        $jsPath = $this->appConfig->get('js_lang_path');;
+        $jsPath = $this->appConfig->get('js_lang_path');
+        ;
         $langs = $this->getLangs(false);
 
         /**
