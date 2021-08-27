@@ -1,6 +1,6 @@
 {
     "name": "dvelum/dvelum",
-    "version": "3.0.0-dev",
+    "version": "3.0.0-RC1",
     "type": "project",
     "description": "PHP/ExtJS-based web development platform",
     "keywords": [
@@ -46,7 +46,9 @@
         "dvelum/dvelum-core": "^3.1",
         "dvelum/extjs": "^6.2.0",
         "dvelum/module-designer": "^1.6",
-        "matthiasmullie/minify": "~1.3"
+        "matthiasmullie/minify": "~1.3",
+        "dvelum/module-filestorage": "^3.0",
+        "dvelum/module-articles": "^3.0"
     },
     "extra": {
         "installer-types": [

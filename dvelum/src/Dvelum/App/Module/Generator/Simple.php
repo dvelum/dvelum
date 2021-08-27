@@ -954,11 +954,11 @@ class Simple extends AbstractAdapter
         /*
          * Save designer project
          */
-        $designerStorage = \Designer_Factory::getStorage($this->designerConfig);
+        $designerStorage = Designer\Factory::getStorage($this->designerConfig);
 
         if(!$designerStorage->save($projectFile , $project , $this->designerConfig->get('vcs_support'))){
             @unlink($controllerFile);
-            throw new \Exception('Can`t create Designer project');
+            throw new \RuntimeException('Can`t create Designer project');
         }
         return true;
     }
