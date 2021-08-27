@@ -1,6 +1,6 @@
 {
     "name": "dvelum/dvelum",
-    "version": "3.0.0-RC1",
+    "version": "3.0.0.0-RC1",
     "type": "project",
     "description": "PHP/ExtJS-based web development platform",
     "keywords": [
