@@ -1,4 +1,5 @@
 <?php
+
 namespace Dvelum\App\Task\Orm;
 
 use Dvelum\BackgroundTask\AbstractTask;
@@ -54,18 +55,19 @@ class Decrypt extends AbstractTask
          * Save task ID into session for UI
          */
         $session = Factory::get(Factory::SESSION);
-        $session->set($container , $this->pid);
+        $session->set($container, $this->pid);
         $this->goBackground();
 
         $objectConfig = Orm\Record\Config::factory($object);
         $ivField = $objectConfig->getIvField();
         $primaryKey = $objectConfig->getPrimaryKey();
 
-        if(!$objectConfig->hasEncrypted())
+        if (!$objectConfig->hasEncrypted()) {
             $this->finish();
+        }
 
         $filter = [
-            $ivField=> new \Dvelum\Db\Select\Filter($ivField , false , \Dvelum\Db\Select\Filter::NOT_NULL)
+            $ivField => new \Dvelum\Db\Select\Filter($ivField, false, \Dvelum\Db\Select\Filter::NOT_NULL)
         ];
 
         $model = Model::factory($object);
@@ -73,32 +75,37 @@ class Decrypt extends AbstractTask
 
         $this->setTotalCount($count);
 
-        if(!$count)
+        if (!$count) {
             $this->finish();
+        }
 
-        $data = $model->query()->params(['limit'=>$this->buckedSize])->filters($filter)->fields([$primaryKey])->fetchAll();
+        $data = $model->query()->params(['limit' => $this->buckedSize])->filters($filter)->fields([$primaryKey]
+        )->fetchAll();
 
         $encryptedFields = $objectConfig->getEncryptedFields();
 
-        while(!empty($data))
-        {
-            $ids = \Dvelum\Utils::fetchCol($primaryKey , $data);
+        while (!empty($data)) {
+            $ids = \Dvelum\Utils::fetchCol($primaryKey, $data);
 
-            $objectList = Orm\Record::factory($object , $ids);
+            $objectList = Orm\Record::factory($object, $ids);
             $count = 0;
-            foreach($objectList as $dataObject)
-            {
+            foreach ($objectList as $dataObject) {
                 $data = array();
-                foreach($encryptedFields as $name){
+                foreach ($encryptedFields as $name) {
                     $data[$name] = $dataObject->get($name);
-                    $model->logError($dataObject->getId().' '.$name.': '.$data[$name]);
+                    $model->logError($dataObject->getId() . ' ' . $name . ': ' . $data[$name]);
                 }
                 $data[$ivField] = null;
-                try{
-                    $model->getDbConnection()->update($model->table() , $data , $primaryKey.' = '.$dataObject->getId());
-                    $count ++;
-                }catch (Exception $e){
-                    $errorText = 'Cannot decrypt '.$dataObject->getName() .' '.$dataObject->getId().' '.$e->getMessage();
+                try {
+                    $model->getDbConnection()->update(
+                        $model->table(),
+                        $data,
+                        $primaryKey . ' = ' . $dataObject->getId()
+                    );
+                    $count++;
+                } catch (Exception $e) {
+                    $errorText = 'Cannot decrypt ' . $dataObject->getName() . ' ' . $dataObject->getId(
+                        ) . ' ' . $e->getMessage();
                     $model->logError($errorText);
                     $this->error($errorText);
                 }
@@ -109,7 +116,8 @@ class Decrypt extends AbstractTask
             $this->incrementCompleted($count);
             $this->updateState();
             $this->processSignals();
-            $data = $model->query()->params(['limit'=>$this->buckedSize])->filters($filter)->fields([$primaryKey])->fetchAll();
+            $data = $model->query()->params(['limit' => $this->buckedSize])->filters($filter)->fields([$primaryKey]
+            )->fetchAll();
         }
         $this->finish();
     }

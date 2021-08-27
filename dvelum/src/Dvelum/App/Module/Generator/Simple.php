@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  * Copyright (C) 2011-2017  Kirill Yegorov
@@ -112,8 +113,11 @@ class Simple extends AbstractAdapter
 
         $dataFields = array();
         foreach ($objectConfig->getFieldsConfig(true) as $key => $item) {
-            if (in_array($item['db_type'], Orm\Record\Builder::$textTypes,
-                    true) || $objectConfig->getField($key)->isMultiLink()) {
+            if (in_array(
+                    $item['db_type'],
+                    Orm\Record\Builder::$textTypes,
+                    true
+                ) || $objectConfig->getField($key)->isMultiLink()) {
                 continue;
             }
 
@@ -126,14 +130,16 @@ class Simple extends AbstractAdapter
 
         array_unshift($objectFields, $primaryKey);
         $linksToShow = [];
-        $links = array_keys($objectConfig->getLinks(
-            [
-                Orm\Record\Config::LINK_OBJECT,
-                Orm\Record\Config::LINK_OBJECT_LIST,
-                // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
-            ],
-            false
-        ));
+        $links = array_keys(
+            $objectConfig->getLinks(
+                [
+                    Orm\Record\Config::LINK_OBJECT,
+                    Orm\Record\Config::LINK_OBJECT_LIST,
+                    // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
+                ],
+                false
+            )
+        );
 
         $additionalModelFields = [];
 
@@ -149,21 +155,21 @@ class Simple extends AbstractAdapter
         $linkToField = array_flip($linksToShow);
 
         $template = View::factory();
-        $controllerNamespace = substr($controllerClass, 0,  strrpos($controllerClass ,'\\'));
+        $controllerNamespace = substr($controllerClass, 0, strrpos($controllerClass, '\\'));
         $template->setData([
-            'controller_namespace' => $controllerNamespace,
-            'listFields' => $this->exportArrayToString($dataFields),
-            'listLinks' => $this->exportArrayToString($linksToShow),
-            'canViewObjects' => $this->exportArrayToString($linkedObjects),
-            'moduleName' => $objectName,
-            'objectName' => $objectName
-        ]);
+                               'controller_namespace' => $controllerNamespace,
+                               'listFields' => $this->exportArrayToString($dataFields),
+                               'listLinks' => $this->exportArrayToString($linksToShow),
+                               'canViewObjects' => $this->exportArrayToString($linkedObjects),
+                               'moduleName' => $objectName,
+                               'objectName' => $objectName
+                           ]);
 
         $controllerCode = '<?php ' . PHP_EOL . $template->render('generator/simple.php');
         /*
          * Create controller
          */
-        $controllerDir = $this->appConfig->get('local_controllers') . str_replace('\\','/', $controllerNamespace);
+        $controllerDir = $this->appConfig->get('local_controllers') . str_replace('\\', '/', $controllerNamespace);
         $this->createControllerFile($controllerDir, $controllerCode);
 
         /*
@@ -250,17 +256,17 @@ class Simple extends AbstractAdapter
          * Data grid
          * @var \Ext_Grid $dataGrid
          */
-        $dataGrid = \Ext_Factory::object('Grid',[
+        $dataGrid = \Ext_Factory::object('Grid', [
             'store' => 'dataStore',
             'columnLines' => true,
             'title' => $objectConfig->getTitle() . ' :: ' . $lang->get('HOME'),
             'viewConfig' => '{enableTextSelection: true}',
             'minHeight' => 400
         ]);
-        
+
         $dataGrid->setName('dataGrid');
         $dataGrid->setAdvancedProperty('paging', true);
-       
+
         $dataGrid->extendedComponent(true);
 
         $this->addGridMethods($project, $dataGrid, $object, false);
@@ -273,14 +279,14 @@ class Simple extends AbstractAdapter
             /**
              * @var \Ext_Grid_Column_Action $column
              */
-            $column = \Ext_Factory::object('Grid_Column_Action',[
-                'text'=>'',
-                'align'=>'center',
-                'width'=>40
+            $column = \Ext_Factory::object('Grid_Column_Action', [
+                'text' => '',
+                'align' => 'center',
+                'width' => 40
             ]);
             $column->setName($dataGrid->getName() . '_pre_actions');
 
-            $editButton = \Ext_Factory::object('Grid_Column_Action_Button',[
+            $editButton = \Ext_Factory::object('Grid_Column_Action_Button', [
                 'text' => '',
                 'icon' => '[%wroot%]i/system/edit.png',
                 'tooltip' => '[js:] appLang.EDIT_ITEM',
@@ -288,8 +294,11 @@ class Simple extends AbstractAdapter
             ]);
             $editButton->setName($dataGrid->getName() . '_actions_edit');
 
-            $eventManager->setEvent($editButton->getName(), 'handler',
-                'this.showEditWindow(grid.getStore().getAt(rowIndex).get("id"));');
+            $eventManager->setEvent(
+                $editButton->getName(),
+                'handler',
+                'this.showEditWindow(grid.getStore().getAt(rowIndex).get("id"));'
+            );
 
             $column->addAction($editButton->getName(), $editButton);
             $dataGrid->addColumn($column->getName(), $column, $parent = 0);
@@ -314,8 +323,10 @@ class Simple extends AbstractAdapter
                     case 'float':
                         $column = \Ext_Factory::object('Grid_Column_Number');
                         if (isset($objectFieldsConfig[$fieldConfig->name]['db_precision'])) {
-                            $column->format = '0,000.' . str_repeat('0',
-                                    $objectFieldsConfig[$fieldConfig->name]['db_precision']);
+                            $column->format = '0,000.' . str_repeat(
+                                    '0',
+                                    $objectFieldsConfig[$fieldConfig->name]['db_precision']
+                                );
                         }
                         break;
                     case 'date':
@@ -355,8 +366,8 @@ class Simple extends AbstractAdapter
             if (!empty($additionalModelFields)) {
                 foreach ($additionalModelFields as $field => $dataIndex) {
                     $cfg = $objectConfig->getFieldConfig($field);
-                    $column = \Ext_Factory::object('Grid_Column',[
-                        'dataIndex'=> $dataIndex,
+                    $column = \Ext_Factory::object('Grid_Column', [
+                        'dataIndex' => $dataIndex,
                         'sortable' => false,
                         'itemId' => $dataIndex,
                         'text' => $cfg['title']
@@ -368,23 +379,23 @@ class Simple extends AbstractAdapter
             /**
              * @var \Ext_Grid_Column_Action $column
              */
-            $column = \Ext_Factory::object('Grid_Column_Action',[
+            $column = \Ext_Factory::object('Grid_Column_Action', [
                 'text' => '[js:] appLang.ACTIONS',
                 'align' => 'center',
                 'width' => 50
             ]);
             $column->setName($dataGrid->getName() . '_actions');
 
-            $deleteButton = \Ext_Factory::object('Grid_Column_Action_Button',[
-                'text'=> 'dg_action_delete',
-                'icon'=> '[%wroot%]i/system/delete.png',
+            $deleteButton = \Ext_Factory::object('Grid_Column_Action_Button', [
+                'text' => 'dg_action_delete',
+                'icon' => '[%wroot%]i/system/delete.png',
                 'tooltip' => '[js:] appLang.DELETE',
                 'isDisabled' => 'function(){return !this.canDelete;}'
             ]);
             $deleteButton->setName($dataGrid->getName() . '_actions_delete');
 
             $eventManager->setEvent(
-                $deleteButton->getName(), 
+                $deleteButton->getName(),
                 'handler',
                 'this.deleteRecord(grid.getStore().getAt(rowIndex));'
             );
@@ -403,7 +414,7 @@ class Simple extends AbstractAdapter
         $gridInstance->setObject($dataGrid);
         $gridInstance->setName($dataGrid->getName());
         $project->getTree()->addItem(
-            $gridInstance->getName() . '_instance', 
+            $gridInstance->getName() . '_instance',
             Designer\Project::LAYOUT_ROOT,
             $gridInstance
         );
@@ -452,7 +463,7 @@ class Simple extends AbstractAdapter
         /*
          * Editor window
         */
-        $editWindow = \Ext_Factory::object('Component_Window_System_Crud',[
+        $editWindow = \Ext_Factory::object('Component_Window_System_Crud', [
             'objectName' => $object,
             'controllerUrl' => $controllerUrl,
             'width' => 800,
@@ -463,14 +474,14 @@ class Simple extends AbstractAdapter
         ]);
         $editWindow->setName('editWindow');
         $editWindow->extendedComponent(true);
-        
+
         if (!$objectConfig->hasHistory()) {
             $editWindow->hideEastPanel = true;
         }
 
         $project->addObject(Designer\Project::COMPONENT_ROOT, $editWindow);
 
-        $tab = \Ext_Factory::object('Panel',[
+        $tab = \Ext_Factory::object('Panel', [
             'frame' => false,
             'border' => false,
             'layout' => 'anchor',
@@ -486,7 +497,7 @@ class Simple extends AbstractAdapter
                                 }"
         ]);
         $tab->setName($editWindow->getName() . '_generalTab');
-        
+
 
         $project->addObject($editWindow->getName(), $tab);
 
@@ -521,7 +532,6 @@ class Simple extends AbstractAdapter
             } else {
                 $project->addObject($tab->getName(), $newField);
             }
-
         }
 
         /*
@@ -563,71 +573,78 @@ class Simple extends AbstractAdapter
         /*
          * Skip text fields
         */
-        foreach($objectFieldsConfig as $key => $item)
-        {
-            if($objectConfig->getField($key)->isObjectLink() || $objectConfig->getField($key)->isMultiLink()){
+        foreach ($objectFieldsConfig as $key => $item) {
+            if ($objectConfig->getField($key)->isObjectLink() || $objectConfig->getField($key)->isMultiLink()) {
                 $linkedObjects[] = $objectConfig->getField($key)->getLinkedObject();
             }
 
-            if(in_array($item['db_type'] , Orm\Record\Builder::$textTypes , true) || $objectConfig->getField($key)->isObjectLink() || $objectConfig->getField($key)->isMultiLink())
+            if (in_array($item['db_type'], Orm\Record\Builder::$textTypes, true) || $objectConfig->getField(
+                    $key
+                )->isObjectLink() || $objectConfig->getField($key)->isMultiLink()) {
                 continue;
+            }
 
-            if(isset($item['hidden']) && $item['hidden'])
+            if (isset($item['hidden']) && $item['hidden']) {
                 continue;
+            }
 
 
             $objectFields[] = $key;
-            if(isset($item['is_search']) && $item['is_search'])
+            if (isset($item['is_search']) && $item['is_search']) {
                 $searchFields[] = $key;
+            }
         }
 
         $dataFields = array();
-        foreach($objectConfig->getFieldsConfig(true) as $key => $item)
-        {
-            if(in_array($item['db_type'] , Orm\Record\Builder::$textTypes , true))
+        foreach ($objectConfig->getFieldsConfig(true) as $key => $item) {
+            if (in_array($item['db_type'], Orm\Record\Builder::$textTypes, true)) {
                 continue;
+            }
 
-            if(isset($item['hidden']) && $item['hidden'])
+            if (isset($item['hidden']) && $item['hidden']) {
                 continue;
+            }
 
 
             $dataFields[] = $key;
         }
 
-        array_unshift($objectFields , $objectConfig->getPrimaryKey());
+        array_unshift($objectFields, $objectConfig->getPrimaryKey());
 
-        $linksToShow = array_keys($objectConfig->getLinks(
-            [
-                Orm\Record\Config::LINK_OBJECT,
-                Orm\Record\Config::LINK_OBJECT_LIST,
-                // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
-            ],
-            false
-        ));
+        $linksToShow = array_keys(
+            $objectConfig->getLinks(
+                [
+                    Orm\Record\Config::LINK_OBJECT,
+                    Orm\Record\Config::LINK_OBJECT_LIST,
+                    // Db_Object_Config::LINK_DICTIONARY  (dictionary renderer by default)
+                ],
+                false
+            )
+        );
 
-        foreach($linksToShow as $k=>$v){
-            if($objectConfig->getField($v)->isSystem()){
+        foreach ($linksToShow as $k => $v) {
+            if ($objectConfig->getField($v)->isSystem()) {
                 unset($linksToShow[$v]);
             }
         }
 
         $template = View::factory();
-        $controllerNamespace =  $controllerNamespace = substr($controllerClass, 0,  strrpos($controllerClass ,'\\'));
+        $controllerNamespace = $controllerNamespace = substr($controllerClass, 0, strrpos($controllerClass, '\\'));
         $template->setData([
-            'controller_namespace' => $controllerNamespace,
-            'listFields' => $this->exportArrayToString($dataFields),
-            'listLinks' => $this->exportArrayToString($linksToShow),
-            'canViewObjects' => $this->exportArrayToString($linkedObjects),
-            'moduleName' => $objectName,
-            'objectName' => $objectName
-        ]);
+                               'controller_namespace' => $controllerNamespace,
+                               'listFields' => $this->exportArrayToString($dataFields),
+                               'listLinks' => $this->exportArrayToString($linksToShow),
+                               'canViewObjects' => $this->exportArrayToString($linkedObjects),
+                               'moduleName' => $objectName,
+                               'objectName' => $objectName
+                           ]);
 
         $controllerCode = '<?php ' . PHP_EOL . $template->render('generator/simple.php');
         /*
          * Create controller
         */
-       // $acceptedDirs = $this->appConfig->get('backend_controllers_dirs');
-        $controllerDir = $this->appConfig->get('local_controllers') . str_replace('\\','/', $controllerNamespace);
+        // $acceptedDirs = $this->appConfig->get('backend_controllers_dirs');
+        $controllerDir = $this->appConfig->get('local_controllers') . str_replace('\\', '/', $controllerNamespace);
         $controllerFile = $this->createControllerFile($controllerDir, $controllerCode);
 
         /*
@@ -646,23 +663,32 @@ class Simple extends AbstractAdapter
          * Data Storage
         */
         $storeFields = array(
-            \Ext_Factory::object('Data_Field',array('name' => 'published','type' => 'boolean')),
-            \Ext_Factory::object('Data_Field',array('name' => 'date_created','type' => 'date','dateFormat' =>'Y-m-d H:i:s')),
-            \Ext_Factory::object('Data_Field',array('name' => 'date_updated','type' => 'date','dateFormat' =>'Y-m-d H:i:s')),
-            \Ext_Factory::object('Data_Field',array('name' => 'date_published','type' => 'date','dateFormat' =>'Y-m-d H:i:s')),
-            \Ext_Factory::object('Data_Field',array('name' => 'last_version','type' => 'integer')),
-            \Ext_Factory::object('Data_Field',array('name' => 'published_version','type' => 'integer')),
-            \Ext_Factory::object('Data_Field',array('name' => 'user','type' => 'string')),
-            \Ext_Factory::object('Data_Field',array('name' => 'updater','type' => 'string')),
+            \Ext_Factory::object('Data_Field', array('name' => 'published', 'type' => 'boolean')),
+            \Ext_Factory::object(
+                'Data_Field',
+                array('name' => 'date_created', 'type' => 'date', 'dateFormat' => 'Y-m-d H:i:s')
+            ),
+            \Ext_Factory::object(
+                'Data_Field',
+                array('name' => 'date_updated', 'type' => 'date', 'dateFormat' => 'Y-m-d H:i:s')
+            ),
+            \Ext_Factory::object(
+                'Data_Field',
+                array('name' => 'date_published', 'type' => 'date', 'dateFormat' => 'Y-m-d H:i:s')
+            ),
+            \Ext_Factory::object('Data_Field', array('name' => 'last_version', 'type' => 'integer')),
+            \Ext_Factory::object('Data_Field', array('name' => 'published_version', 'type' => 'integer')),
+            \Ext_Factory::object('Data_Field', array('name' => 'user', 'type' => 'string')),
+            \Ext_Factory::object('Data_Field', array('name' => 'updater', 'type' => 'string')),
         );
 
-        $storeFields = array_merge($storeFields , Import::checkImportORMFields($object ,  $dataFields));
+        $storeFields = array_merge($storeFields, Import::checkImportORMFields($object, $dataFields));
 
-        $urlTemplates =  $this->designerConfig->get('templates');
+        $urlTemplates = $this->designerConfig->get('templates');
 
 
-        $controllerUrl = Request::factory()->url(array($urlTemplates['adminpath'] , $object , ''));
-        $storeUrl = Request::factory()->url(array($urlTemplates['adminpath'] ,  $object , 'list'));
+        $controllerUrl = Request::factory()->url(array($urlTemplates['adminpath'], $object, ''));
+        $storeUrl = Request::factory()->url(array($urlTemplates['adminpath'], $object, 'list'));
 
         $modelName = str_replace('_', '', $objectName) . 'Model';
 
@@ -671,7 +697,7 @@ class Simple extends AbstractAdapter
         $model->idProperty = $primaryKey;
         $model->addFields($storeFields);
 
-        $project->addObject(Designer\Project::COMPONENT_ROOT , $model);
+        $project->addObject(Designer\Project::COMPONENT_ROOT, $model);
 
         $dataStore = \Ext_Factory::object('Data_Store');
         $dataStore->setName('dataStore');
@@ -698,7 +724,7 @@ class Simple extends AbstractAdapter
         $dataStore->proxy = $dataProxy;
         $dataStore->remoteSort = true;
 
-        $project->addObject(Designer\Project::LAYOUT_ROOT  , $dataStore);
+        $project->addObject(Designer\Project::LAYOUT_ROOT, $dataStore);
 
         /*
          * Data grid
@@ -709,36 +735,34 @@ class Simple extends AbstractAdapter
         $dataGrid->columnLines = true;
         $dataGrid->minHeight = 400;
         $dataGrid->title = $objectConfig->getTitle() . ' :: ' . $lang->HOME;
-        $dataGrid->setAdvancedProperty('paging' , true);
+        $dataGrid->setAdvancedProperty('paging', true);
         $dataGrid->viewConfig = '{enableTextSelection: true}';
         $dataGrid->extendedComponent(true);
 
-        $this->addGridMethods($project , $dataGrid , $object , true);
+        $this->addGridMethods($project, $dataGrid, $object, true);
 
         $eventManager->setEvent('dataGrid', 'itemdblclick', 'this.showEditWindow(record.get("id"));');
 
-        $objectFieldList = Import::checkImportORMFields($object , $objectFields);
+        $objectFieldList = Import::checkImportORMFields($object, $objectFields);
 
 
         $publishedRec = new \stdClass();
         $publishedRec->name = 'published';
         $publishedRec->type = 'string';
-        array_unshift($objectFieldList , $publishedRec);
+        array_unshift($objectFieldList, $publishedRec);
 
         $createdRec = new \stdClass();
-        $createdRec->name =  'date_created';
-        $createdRec->type='';
+        $createdRec->name = 'date_created';
+        $createdRec->type = '';
         $objectFieldList[] = $createdRec;
 
         $updatedRec = new \stdClass();
-        $updatedRec->name =  'date_updated';
-        $updatedRec->type='';
+        $updatedRec->name = 'date_updated';
+        $updatedRec->type = '';
         $objectFieldList[] = $updatedRec;
 
-        foreach($objectFieldList as $fieldConfig)
-        {
-
-            switch($fieldConfig->type){
+        foreach ($objectFieldList as $fieldConfig) {
+            switch ($fieldConfig->type) {
                 case 'boolean':
                     $column = \Ext_Factory::object('Grid_Column_Boolean');
                     break;
@@ -747,22 +771,27 @@ class Simple extends AbstractAdapter
                     break;
                 case 'float':
                     $column = \Ext_Factory::object('Grid_Column_Number');
-                    if(isset($objectFieldsConfig[$fieldConfig->name]['db_precision']))
-                        $column->format = '0,000.'.str_repeat('0' , $objectFieldsConfig[$fieldConfig->name]['db_precision']);
+                    if (isset($objectFieldsConfig[$fieldConfig->name]['db_precision'])) {
+                        $column->format = '0,000.' . str_repeat(
+                                '0',
+                                $objectFieldsConfig[$fieldConfig->name]['db_precision']
+                            );
+                    }
                     break;
                 case 'date':
                     $column = \Ext_Factory::object('Grid_Column_Date');
-                    if($objectFieldsConfig[$fieldConfig->name]['db_type'] == 'time')
+                    if ($objectFieldsConfig[$fieldConfig->name]['db_type'] == 'time') {
                         $column->format = 'H:i:s';
+                    }
                     break;
                 default:
                     $column = \Ext_Factory::object('Grid_Column');
             }
 
-            if($objectConfig->fieldExists($fieldConfig->name)){
+            if ($objectConfig->fieldExists($fieldConfig->name)) {
                 $cfg = $objectConfig->getFieldConfig($fieldConfig->name);
                 $column->text = $cfg['title'];
-            }else{
+            } else {
                 $column->text = $fieldConfig->name;
             }
 
@@ -770,8 +799,7 @@ class Simple extends AbstractAdapter
             $column->setName($fieldConfig->name);
             $column->itemId = $column->getName();
 
-            switch($fieldConfig->name)
-            {
+            switch ($fieldConfig->name) {
                 case $primaryKey:
                     $column->renderer = 'Ext_Component_Renderer_System_Version';
                     $column->text = '[js:] appLang.VERSIONS_HEADER';
@@ -801,7 +829,7 @@ class Simple extends AbstractAdapter
                     break;
             }
 
-            if($objectConfig->getField($fieldConfig->name)->isDictionaryLink()){
+            if ($objectConfig->getField($fieldConfig->name)->isDictionaryLink()) {
                 $dictionary = $objectConfig->getField($fieldConfig->name)->getLinkedDictionary();
                 $rendererHelper = new \Ext_Helper_Grid_Column_Renderer();
                 $rendererHelper->setType(\Ext_Helper_Grid_Column_Renderer::TYPE_DICTIONARY);
@@ -809,26 +837,30 @@ class Simple extends AbstractAdapter
                 $column->renderer = $rendererHelper;
             }
 
-            $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+            $dataGrid->addColumn($column->getName(), $column, $parent = 0);
         }
 
         $column = \Ext_Factory::object('Grid_Column_Action');
         $column->text = '[js:] appLang.ACTIONS';
-        $column->setName($dataGrid->getName().'_actions');
+        $column->setName($dataGrid->getName() . '_actions');
         $column->align = 'center';
         $column->width = 50;
 
         $deleteButton = \Ext_Factory::object('Grid_Column_Action_Button');
-        $deleteButton->setName($dataGrid->getName().'_actions_delete');
+        $deleteButton->setName($dataGrid->getName() . '_actions_delete');
         $deleteButton->text = 'dg_action_delete';
         $deleteButton->icon = '[%wroot%]i/system/delete.png';
         $deleteButton->tooltip = '[js:] appLang.DELETE';
         $deleteButton->isDisabled = 'function(){return !this.canDelete;}';
 
-        $eventManager->setEvent($deleteButton->getName(), 'handler', 'this.deleteRecord(grid.getStore().getAt(rowIndex));');
+        $eventManager->setEvent(
+            $deleteButton->getName(),
+            'handler',
+            'this.deleteRecord(grid.getStore().getAt(rowIndex));'
+        );
 
-        $column->addAction($deleteButton->getName() ,$deleteButton);
-        $dataGrid->addColumn($column->getName() , $column , $parent = 0);
+        $column->addAction($deleteButton->getName(), $deleteButton);
+        $dataGrid->addColumn($column->getName(), $column, $parent = 0);
 
         $project->addObject(Designer\Project::COMPONENT_ROOT, $dataGrid);
 
@@ -838,18 +870,22 @@ class Simple extends AbstractAdapter
         $gridInstance = \Ext_Factory::object('Object_Instance');
         $gridInstance->setObject($dataGrid);
         $gridInstance->setName($dataGrid->getName());
-        $project->getTree()->addItem($gridInstance->getName() . '_instance', Designer\Project::LAYOUT_ROOT, $gridInstance);
+        $project->getTree()->addItem(
+            $gridInstance->getName() . '_instance',
+            Designer\Project::LAYOUT_ROOT,
+            $gridInstance
+        );
 
         /*
          * Top toolbar
          */
         $dockObject = \Ext_Factory::object('Docked');
         $dockObject->setName($dataGrid->getName() . '__docked');
-        $project->addObject($dataGrid->getName() , $dockObject);
+        $project->addObject($dataGrid->getName(), $dockObject);
 
         $filters = \Ext_Factory::object('Toolbar');
         $filters->setName('filters');
-        $project->addObject($dockObject->getName() , $filters);
+        $project->addObject($dockObject->getName(), $filters);
 
         /*
          * Top toolbar items
@@ -860,13 +896,13 @@ class Simple extends AbstractAdapter
         $addButton->icon = '[%wroot%]i/system/add_icon.png';
         $eventManager->setEvent('addButton', 'click', 'this.showEditWindow(false);');
 
-        $project->addObject($filters->getName() , $addButton);
+        $project->addObject($filters->getName(), $addButton);
 
         $sep1 = \Ext_Factory::object('Toolbar_Separator');
         $sep1->setName('sep1');
-        $project->addObject($filters->getName() , $sep1);
+        $project->addObject($filters->getName(), $sep1);
 
-        if(!empty($searchFields)){
+        if (!empty($searchFields)) {
             $searchField = \Ext_Factory::object('Component_Field_System_Searchfield');
             $searchField->setName('searchField');
             $searchField->width = 200;
@@ -876,8 +912,8 @@ class Simple extends AbstractAdapter
 
             $fill = \Ext_Factory::object('Toolbar_Fill');
             $fill->setName('fill1');
-            $project->addObject($filters->getName() , $fill);
-            $project->addObject($filters->getName() , $searchField);
+            $project->addObject($filters->getName(), $fill);
+            $project->addObject($filters->getName(), $searchField);
         }
 
         /*
@@ -915,48 +951,52 @@ class Simple extends AbstractAdapter
         $tab->scrollable = true;
         $tab->fieldDefaults = "{labelAlign:'right', labelWidth: 160, anchor: '100%'}";
 
-        $project->addObject($editWindow->getName() , $tab);
+        $project->addObject($editWindow->getName(), $tab);
 
         $objectFieldList = array_keys($objectConfig->getFieldsConfig(false));
 
-        foreach($objectFieldList as $field)
-        {
-            if($field == $primaryKey)
+        foreach ($objectFieldList as $field) {
+            if ($field == $primaryKey) {
                 continue;
+            }
 
             $fieldConfig = $objectConfig->getFieldConfig($field);
 
-            if(isset($fieldConfig['hidden']) && $fieldConfig['hidden'])
+            if (isset($fieldConfig['hidden']) && $fieldConfig['hidden']) {
                 continue;
+            }
 
-            $newField = Import::convertOrmFieldToExtField($field , $fieldConfig);
+            $newField = Import::convertOrmFieldToExtField($field, $fieldConfig);
 
-            if($newField === false)
+            if ($newField === false) {
                 continue;
+            }
 
             $newField->setName($editWindow->getName() . '_' . $field);
             $fieldClass = $newField->getClass();
 
-            if($fieldClass == 'Component_Field_System_Objectslist' || $fieldClass == 'Component_Field_System_Objectlink')
+            if ($fieldClass == 'Component_Field_System_Objectslist' || $fieldClass == 'Component_Field_System_Objectlink') {
                 $newField->controllerUrl = $controllerUrl;
+            }
 
-            if(in_array($fieldClass , $this->tabTypes , true))
-                $project->addObject($editWindow->getName() , $newField);
-            else
-                $project->addObject($tab->getName() , $newField);
+            if (in_array($fieldClass, $this->tabTypes, true)) {
+                $project->addObject($editWindow->getName(), $newField);
+            } else {
+                $project->addObject($tab->getName(), $newField);
+            }
         }
 
         /*
          * Create ActionJS code
          */
-        $project->setActionJs($this->createActionJS($object, $runNamespace, $classNamespace , true));
+        $project->setActionJs($this->createActionJS($object, $runNamespace, $classNamespace, true));
 
         /*
          * Save designer project
          */
         $designerStorage = \Designer_Factory::getStorage($this->designerConfig);
 
-        if(!$designerStorage->save($projectFile , $project , $this->designerConfig->get('vcs_support'))){
+        if (!$designerStorage->save($projectFile, $project, $this->designerConfig->get('vcs_support'))) {
             @unlink($controllerFile);
             throw new \Exception('Can`t create Designer project');
         }

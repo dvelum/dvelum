@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -55,7 +56,8 @@ class Controller extends Backend\Ui\Controller
             $filter['date'] = new Select\Filter(
                 'date',
                 [
-                    $date . ' 00:00:00', $date . ' 23:59:59'
+                    $date . ' 00:00:00',
+                    $date . ' 23:59:59'
                 ],
                 Select\Filter::BETWEEN
             );
@@ -96,7 +98,7 @@ class Controller extends Backend\Ui\Controller
         $manager = new Orm\Record\Manager();
         $list = $manager->getRegisteredObjects();
         $data = [];
-        if(!empty($list)){
+        if (!empty($list)) {
             foreach ($list as $object) {
                 $data[] = ['id' => $object, 'title' => Record\Config::factory($object)->getTitle()];
             }

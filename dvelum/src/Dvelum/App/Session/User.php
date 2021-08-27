@@ -69,12 +69,13 @@ class User
      * @param string $password
      * @return self|boolean
      */
-    static public function login($user , $password)
+    static public function login($user, $password)
     {
-        $data = Model::factory('user')->login($user , $password);
+        $data = Model::factory('user')->login($user, $password);
 
-        if(!$data)
+        if (!$data) {
             return false;
+        }
 
         $user = User::factory();
         $user->logout();
@@ -89,10 +90,11 @@ class User
      * Instantiate a User
      * @return User
      */
-    static public function factory() : User
+    static public function factory(): User
     {
-        if(!isset(static::$instance))
+        if (!isset(static::$instance)) {
             static::$instance = new static();
+        }
         return static::$instance;
     }
 
@@ -122,12 +124,14 @@ class User
      */
     protected function loadData()
     {
-        if(!$this->id || !$this->isAuthorized())
+        if (!$this->id || !$this->isAuthorized()) {
             throw new Exception('User is not authorised');
+        }
 
         $data = $this->orm->model('User')->getInfo($this->id);
-        if(!$data)
+        if (!$data) {
             throw new Exception('Invalid user data');
+        }
 
         $this->setInfo($data);
     }
@@ -141,18 +145,20 @@ class User
         $this->info = $data;
     }
 
-    public function getSettings() : UserSettings
+    public function getSettings(): UserSettings
     {
         return $this->settings;
     }
+
     /**
      * Get User data
      * @return array
      */
     public function getInfo()
     {
-        if(empty($this->info))
+        if (empty($this->info)) {
             $this->loadData();
+        }
 
         return $this->info;
     }
@@ -178,8 +184,8 @@ class User
     /**
      * The object has a getter defined, which can be invoked by a key.
      * @param mixed $property
-     * @throws Exception
      * @return mixed:
+     * @throws Exception
      */
     public function __get($property)
     {
@@ -188,22 +194,26 @@ class User
 
     public function get($property)
     {
-        if($property === 'id')
+        if ($property === 'id') {
             return $this->id;
+        }
 
-        if(empty($this->info))
+        if (empty($this->info)) {
             $this->loadData();
+        }
 
-        if(isset($this->info[$property]))
+        if (isset($this->info[$property])) {
             return $this->info[$property];
-        else
+        } else {
             throw new \Exception('User. Invalid property "' . $property . '" ');
+        }
     }
 
     public function __isset($property)
     {
-        if($property === 'id')
+        if ($property === 'id') {
             return true;
+        }
 
         return isset($this->info[$property]);
     }
@@ -218,9 +228,9 @@ class User
      */
     public function isAuthorized()
     {
-        if ($this->authChecked){
+        if ($this->authChecked) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -231,14 +241,15 @@ class User
      */
     public function isAdmin()
     {
-        if(!$this->isAuthorized())
+        if (!$this->isAuthorized()) {
             return false;
+        }
 
-        if(empty($this->info)){
+        if (empty($this->info)) {
             $this->loadData();
         }
 
-        return (boolean) $this->get('admin');
+        return (boolean)$this->get('admin');
     }
 
     /**
@@ -247,14 +258,14 @@ class User
      */
     public function setAuthorized()
     {
-        $this->session->set('auth' , true);
-        $this->session->set('auth_id' , $this->id);
+        $this->session->set('auth', true);
+        $this->session->set('auth_id', $this->id);
         $this->authChecked = true;
     }
 
     public function getId()
     {
-        return  $this->id;
+        return $this->id;
     }
 
     /**
@@ -271,8 +282,8 @@ class User
      */
     public function logout()
     {
-        $this->session->set('auth' , false);
-        $this->session->set('auth_id' , false);
+        $this->session->set('auth', false);
+        $this->session->set('auth_id', false);
         $this->authChecked = false;
         $this->info = [];
         $this->permissions = null;
@@ -283,7 +294,9 @@ class User
      */
     protected function checkAuthSession()
     {
-        if($this->session->keyExists('auth') && $this->session->get('auth') && $this->session->keyExists('auth_id') && $this->session->get('auth_id')){
+        if ($this->session->keyExists('auth') && $this->session->get('auth') && $this->session->keyExists(
+                'auth_id'
+            ) && $this->session->get('auth_id')) {
             $this->setId($this->session->get('auth_id'));
             $this->setAuthorized();
         }
@@ -292,11 +305,11 @@ class User
     /**
      * @return \Dvelum\App\Module\Acl
      */
-    public function getModuleAcl() : \Dvelum\App\Module\Acl
+    public function getModuleAcl(): \Dvelum\App\Module\Acl
     {
-        if(!$this->moduleAcl){
-            $this->moduleAcl  = new \Dvelum\App\Module\Acl($this);
+        if (!$this->moduleAcl) {
+            $this->moduleAcl = new \Dvelum\App\Module\Acl($this);
         }
-        return  $this->moduleAcl;
+        return $this->moduleAcl;
     }
 }

@@ -19,7 +19,8 @@ return array(
     'autoloader' => array(
         'paths' => array(
             './dvelum/src',
-            './extensions/dvelum-core/src'
+            './extensions/dvelum-orm/src',
+            './extensions/dvelum-core/src',
         )
     ),
 );

@@ -1,4 +1,5 @@
 <?php
+
 namespace Dvelum\App\Data\Api;
 
 use Dvelum\Config;
@@ -15,11 +16,14 @@ class Request
     public function __construct(\Dvelum\Request $request)
     {
         $this->config = Config::storage()->get('api/request.php');
-        $this->pagination = $request->post($this->config->get('paginationParam')  , 'array' , []);
-        $this->filters = array_merge($request->post($this->config->get('filterParam')  , 'array' , []), $request->extFilters());
-        $this->query = $request->post($this->config->get('searchParam')  , 'string' , null);
-        $this->object = $request->post($this->config->get('objectParam') , 'string' , '');
-        $this->shard = $request->post($this->config->get('shardParam') , 'string' , '');
+        $this->pagination = $request->post($this->config->get('paginationParam'), 'array', []);
+        $this->filters = array_merge(
+            $request->post($this->config->get('filterParam'), 'array', []),
+            $request->extFilters()
+        );
+        $this->query = $request->post($this->config->get('searchParam'), 'string', null);
+        $this->object = $request->post($this->config->get('objectParam'), 'string', '');
+        $this->shard = $request->post($this->config->get('shardParam'), 'string', '');
     }
 
     public function getFilters()
@@ -29,7 +33,7 @@ class Request
 
     public function getFilter($name)
     {
-        if(isset($this->filters[$name])){
+        if (isset($this->filters[$name])) {
             return $this->filters[$name];
         }
         return null;
@@ -72,7 +76,7 @@ class Request
         $this->object = $name;
     }
 
-    public function getObjectName() : string
+    public function getObjectName(): string
     {
         return $this->object;
     }

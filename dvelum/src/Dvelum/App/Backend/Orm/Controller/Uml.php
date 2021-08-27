@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -39,7 +40,7 @@ class Uml extends Controller
     public function loadMapAction()
     {
         $ormConfig = Config::storage()->get('orm.php');
-        $config = Config::storage()->get($ormConfig->get('uml_map_data'),true,false);
+        $config = Config::storage()->get($ormConfig->get('uml_map_data'), true, false);
 
         $items = $config->get('items');
 
@@ -49,28 +50,32 @@ class Uml extends Controller
 
         $names = $manager->getRegisteredObjects();
 
-        if(empty($names)){
+        if (empty($names)) {
             $names = [];
         }
 
-        $showObj = $this->request->post('objects','array',[]);
+        $showObj = $this->request->post('objects', 'array', []);
 
-        if(empty($showObj)){
-            foreach($names as $name)
-                if(!isset($items[$name]['show']) || $items[$name]['show'])
+        if (empty($showObj)) {
+            foreach ($names as $name) {
+                if (!isset($items[$name]['show']) || $items[$name]['show']) {
                     $showObj[] = $name;
-        }else{
-            foreach ($showObj as $k => $name)
-                if(!in_array($name, $names, true))
+                }
+            }
+        } else {
+            foreach ($showObj as $k => $name) {
+                if (!in_array($name, $names, true)) {
                     unset($showObj[$k]);
+                }
+            }
         }
 
         $defaultX = 10;
         $defaultY = 10;
 
-        foreach($names as $index=>$objectName){
+        foreach ($names as $index => $objectName) {
             $objectConfig = Orm\Record\Config::factory($objectName);
-            if(!empty($objectConfig->isRelationsObject()) || !in_array($objectName,$showObj)){
+            if (!empty($objectConfig->isRelationsObject()) || !in_array($objectName, $showObj)) {
                 unset($names[$index]);
                 continue;
             }
@@ -81,50 +86,56 @@ class Uml extends Controller
             $objectConfig = Orm\Record\Config::factory($objectName);
             $fields = $objectConfig->getFieldsConfig();
 
-            foreach($fields as $fieldName => $fieldData){
+            foreach ($fields as $fieldName => $fieldData) {
                 $data[$objectName]['fields'][] = $fieldName;
                 $data[$objectName]['savedlinks'] = [];
-                if(isset($items[$objectName])){
-                    $data[$objectName]['position'] = array('x'=>$items[$objectName]['x'],'y'=>$items[$objectName]['y']);
+                if (isset($items[$objectName])) {
+                    $data[$objectName]['position'] = array(
+                        'x' => $items[$objectName]['x'],
+                        'y' => $items[$objectName]['y']
+                    );
                     $data[$objectName]['savedlinks'] = [];
-                    if(!empty(isset($items[$objectName]['links'])))
+                    if (!empty(isset($items[$objectName]['links']))) {
                         $data[$objectName]['savedlinks'] = $items[$objectName]['links'];
-                }else{
-                    $data[$objectName]['position'] = array('x'=>$defaultX , 'y'=>$defaultY);
-                    $defaultX+=10;
-                    $defaultY+=10;
+                    }
+                } else {
+                    $data[$objectName]['position'] = array('x' => $defaultX, 'y' => $defaultY);
+                    $defaultX += 10;
+                    $defaultY += 10;
                 }
             }
             sort($data[$objectName]['fields']);
         }
 
-        foreach($names as $objectName){
-            foreach($data[$objectName]['links'] as $link => $link_value){
-                if(!isset($data[$link]))
+        foreach ($names as $objectName) {
+            foreach ($data[$objectName]['links'] as $link => $link_value) {
+                if (!isset($data[$link])) {
                     continue;
-                $data[$link]['weight'] = ( !isset($data[$link]['weight']) ? 1 : $data[$link]['weight'] + 1 );
+                }
+                $data[$link]['weight'] = (!isset($data[$link]['weight']) ? 1 : $data[$link]['weight'] + 1);
             }
-            if(!isset($data[$objectName]['weight']))
+            if (!isset($data[$objectName]['weight'])) {
                 $data[$objectName]['weight'] = 0;
+            }
         }
 
         $fieldName = "weight";
 
-        uasort($data, function($a, $b) use($fieldName) {
-            if($a[$fieldName] > $b[$fieldName]){
+        uasort($data, function ($a, $b) use ($fieldName) {
+            if ($a[$fieldName] > $b[$fieldName]) {
                 return 1;
-            }elseif ($a[$fieldName] < $b[$fieldName]){
+            } elseif ($a[$fieldName] < $b[$fieldName]) {
                 return -1;
-            }else{
+            } else {
                 return 0;
             }
             //return strnatcmp((string)$b[$fieldName], (string) $a[$fieldName]);
         });
 
         $result = [
-            'mapWidth'=>$config->get('mapWidth'),
-            'mapHeight'=>$config->get('mapHeight'),
-            'items'=>$data
+            'mapWidth' => $config->get('mapWidth'),
+            'mapHeight' => $config->get('mapHeight'),
+            'items' => $data
         ];
         $this->response->success($result);
     }
@@ -134,36 +145,36 @@ class Uml extends Controller
      */
     public function saveMapAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $map = $this->request->post('map', 'raw', '');
 
-        if(!strlen($map)){
+        if (!strlen($map)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        $data = json_decode($map , true);
+        $data = json_decode($map, true);
 
         $ormConfig = Config::storage()->get('orm.php');
 
-        $config = Config::storage()->get($ormConfig->get('uml_map_data'),true,false);
+        $config = Config::storage()->get($ormConfig->get('uml_map_data'), true, false);
 
         $saved = $config->get('items');
 
         $manager = new Orm\Record\Manager();
         $registered = $manager->getRegisteredObjects();
-        if(empty($registered)){
+        if (empty($registered)) {
             $registered = [];
         }
 
         /**
          * Check objects map from request and set show property
          */
-        foreach($data as $k => $item){
-            if(!in_array($k, $registered,true)){
+        foreach ($data as $k => $item) {
+            if (!in_array($k, $registered, true)) {
                 unset($data[$k]);
                 continue;
             }
@@ -173,18 +184,20 @@ class Uml extends Controller
         /**
          * Add saved map objects with checking that object is registered
          */
-        foreach($saved as $k => $item){
+        foreach ($saved as $k => $item) {
             $item['show'] = false;
-            if(!array_key_exists($k,$data) && in_array($k,$registered,true))
+            if (!array_key_exists($k, $data) && in_array($k, $registered, true)) {
                 $data[$k] = $item;
+            }
         }
 
-        $config->set('items' , $data);
+        $config->set('items', $data);
 
-        if(Config::storage()->save($config))
+        if (Config::storage()->save($config)) {
             $this->response->success();
-        else
+        } else {
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
+        }
     }
 
 }

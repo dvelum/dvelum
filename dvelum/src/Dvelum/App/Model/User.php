@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -28,11 +29,11 @@ class User extends Model
     /**
      * Get user info
      * @param integer $id
-     * @throws \Exception
      * @return array
+     * @throws \Exception
      */
     public function getInfo($id)
     {
-        return $this->getCachedItem($id);  
+        return $this->getCachedItem($id);
     }
 }

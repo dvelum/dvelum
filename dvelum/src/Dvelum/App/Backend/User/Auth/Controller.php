@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -27,7 +28,7 @@ use \Exception;
 
 class Controller extends App\Backend\Api\Controller
 {
-    protected $listFields = ["user","type","id"];
+    protected $listFields = ["user", "type", "id"];
     protected $listLinks = ["user"];
     protected $canViewObjects = ["user"];
 

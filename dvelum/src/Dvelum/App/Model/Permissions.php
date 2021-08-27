@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -35,28 +36,29 @@ class Permissions extends Model
      * Get modules permissions for user
      * @param integer $userId
      * @param integer $groupId
-     * @throws Exception
      * @return array
+     * @throws Exception
      */
     public function getPermissions($userId, $groupId)
     {
-        if (empty($userId))
+        if (empty($userId)) {
             throw new Exception('Need user id');
+        }
 
         $data = [];
         /*
          * Load permissions for group
          */
         if ($groupId) {
-
             $sql = $this->db->select()
                 ->from($this->table(), self::$fields)
                 ->where('`group_id` = ' . intval($groupId))
                 ->where('`user_id` IS NULL');
             $groupRights = $this->db->fetchAll($sql);
 
-            if (!empty($groupRights))
+            if (!empty($groupRights)) {
                 $data = Utils::rekey('module', $groupRights);
+            }
         }
         /*
          * Load permissions for user
@@ -75,8 +77,9 @@ class Permissions extends Model
         if (!empty($userRights)) {
             foreach ($userRights as $v) {
                 foreach (self::$fields as $field) {
-                    if ($field == 'module')
+                    if ($field == 'module') {
                         continue;
+                    }
                     if (isset($v[$field])) {
                         if ($v[$field]) {
                             $data[$v['module']][$field] = true;
@@ -105,7 +108,10 @@ class Permissions extends Model
      */
     public function getRecords($userId, $groupId)
     {
-        $sql = $this->db->select()->from($this->table())->where('user_id =?', $userId)->orWhere('group_id =?', $groupId);
+        $sql = $this->db->select()->from($this->table())->where('user_id =?', $userId)->orWhere(
+            'group_id =?',
+            $groupId
+        );
         try {
             return $this->db->fetchAll($sql);
         } catch (Exception $e) {
@@ -120,7 +126,10 @@ class Permissions extends Model
      */
     public function cleanUp()
     {
-        $modules = Config::factory(Config\Factory::File_Array, Config::storage()->get('main.php')->get('backend_modules'));
+        $modules = Config::factory(
+            Config\Factory::File_Array,
+            Config::storage()->get('main.php')->get('backend_modules')
+        );
 
         $sql = $this->db->select()
             ->from($this->table(), array('module'))
@@ -128,10 +137,13 @@ class Permissions extends Model
 
         $data = $this->db->fetchCol($sql);
 
-        if (!empty($data))
-            foreach ($data as $name)
-                if (!$modules->offsetExists($name))
+        if (!empty($data)) {
+            foreach ($data as $name) {
+                if (!$modules->offsetExists($name)) {
                     $this->db->delete($this->table(), 'module=' . $this->db->quote($name) . '');
+                }
+            }
+        }
     }
 
     /**
@@ -145,8 +157,9 @@ class Permissions extends Model
         /*
          * Check if cache exists
          */
-        if ($this->cache && $data = $this->cache->load('group_permissions' . $groupId))
+        if ($this->cache && $data = $this->cache->load('group_permissions' . $groupId)) {
             return $data;
+        }
 
         $sql = $this->db->select()
             ->from($this->table(), self::$fields)
@@ -155,14 +168,16 @@ class Permissions extends Model
 
         $data = $this->db->fetchAll($sql);
 
-        if (!empty($data))
+        if (!empty($data)) {
             $data = Utils::rekey('module', $data);
+        }
 
         /*
          * Cache info
          */
-        if ($this->cache)
+        if ($this->cache) {
             $this->cache->save($data, 'group_permissions' . $groupId);
+        }
 
         return $data;
     }
@@ -182,12 +197,17 @@ class Permissions extends Model
      *                                                )
      * @return bool
      */
-    public function updateGroupPermissions($groupId, array $data) : bool
+    public function updateGroupPermissions($groupId, array $data): bool
     {
         $modulesToRemove = Utils::fetchCol('module', $data);
         if (!empty($modulesToRemove)) {
             try {
-                $this->db->delete($this->table(), '`module` IN (\'' . implode("','", $modulesToRemove) . '\') AND `group_id`=' . intval($groupId));
+                $this->db->delete(
+                    $this->table(),
+                    '`module` IN (\'' . implode("','", $modulesToRemove) . '\') AND `group_id`=' . intval(
+                        $groupId
+                    )
+                );
             } catch (Exception $e) {
                 $this->logError($e->getMessage());
                 return false;
@@ -201,36 +221,37 @@ class Permissions extends Model
              */
             $diff = array_diff(self::$fields, array_keys($values));
 
-            if (!empty($diff))
+            if (!empty($diff)) {
                 continue;
+            }
 
             try {
                 $obj = Orm\Record::factory($this->name);
                 $obj->setValues(array(
-                    'view' => (boolean)$values['view'],
-                    'edit' => (boolean)$values['edit'],
-                    'delete' => (boolean)$values['delete'],
-                    'publish' => (boolean)$values['publish'],
-                    'only_own' => (boolean)$values['only_own'],
-                    'module' => $values['module'],
-                    'group_id' => $groupId,
-                    'user_id' => null
-                ));
+                                    'view' => (boolean)$values['view'],
+                                    'edit' => (boolean)$values['edit'],
+                                    'delete' => (boolean)$values['delete'],
+                                    'publish' => (boolean)$values['publish'],
+                                    'only_own' => (boolean)$values['only_own'],
+                                    'module' => $values['module'],
+                                    'group_id' => $groupId,
+                                    'user_id' => null
+                                ));
 
                 if (!$obj->save()) {
                     $errors = true;
                 }
-
             } catch (Exception $e) {
                 $errors = true;
                 $this->logError($e->getMessage());
             }
         }
 
-        if ($errors)
+        if ($errors) {
             return false;
+        }
 
-        if ($this->cache){
+        if ($this->cache) {
             $this->cache->remove('group_permissions' . $groupId);
         }
 
@@ -252,12 +273,17 @@ class Permissions extends Model
      *                                                )
      * @return bool
      */
-    public function updateUserPermissions($userId, $data) : bool
+    public function updateUserPermissions($userId, $data): bool
     {
         $modulesToRemove = Utils::fetchCol('module', $data);
         if (!empty($modulesToRemove)) {
             try {
-                $this->db->delete($this->table(), '`module` IN (\'' . implode("','", $modulesToRemove) . '\') AND `user_id`=' . intval($userId));
+                $this->db->delete(
+                    $this->table(),
+                    '`module` IN (\'' . implode("','", $modulesToRemove) . '\') AND `user_id`=' . intval(
+                        $userId
+                    )
+                );
             } catch (Exception $e) {
                 $this->logError($e->getMessage());
                 return false;
@@ -286,8 +312,9 @@ class Permissions extends Model
              */
             $diff = array_diff(self::$fields, array_keys($values));
 
-            if (!empty($diff))
+            if (!empty($diff)) {
                 continue;
+            }
 
             try {
                 $needUpdate = false;
@@ -308,30 +335,30 @@ class Permissions extends Model
 
                 $obj = Orm\Record::factory($this->name);
                 $obj->setValues(array(
-                    'view' => (boolean)$values['view'],
-                    'edit' => (boolean)$values['edit'],
-                    'delete' => (boolean)$values['delete'],
-                    'publish' => (boolean)$values['publish'],
-                    'only_own' => (boolean)$values['only_own'],
-                    'module' => $values['module'],
-                    'group_id' => null,
-                    'user_id' => $userId
-                ));
+                                    'view' => (boolean)$values['view'],
+                                    'edit' => (boolean)$values['edit'],
+                                    'delete' => (boolean)$values['delete'],
+                                    'publish' => (boolean)$values['publish'],
+                                    'only_own' => (boolean)$values['only_own'],
+                                    'module' => $values['module'],
+                                    'group_id' => null,
+                                    'user_id' => $userId
+                                ));
 
                 if (!$obj->save()) {
                     $errors = true;
                 }
-
             } catch (Exception $e) {
                 $errors = true;
                 $this->logError($e->getMessage());
             }
         }
 
-        if ($errors)
+        if ($errors) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
     /**
@@ -345,21 +372,22 @@ class Permissions extends Model
      * @return bool
      * @throws \Exception
      */
-    public function setGroupPermissions($group, $module, $view, $edit, $delete, $publish) : bool
+    public function setGroupPermissions($group, $module, $view, $edit, $delete, $publish): bool
     {
         $data = $this->query()
             ->filters([
-                'group_id' => $group,
-                'user_id' => null,
-                'module' => $module
-            ])
+                          'group_id' => $group,
+                          'user_id' => null,
+                          'module' => $module
+                      ])
             ->fields(['id'])
             ->fetchAll();
 
         $objectId = false;
 
-        if (!empty($data))
+        if (!empty($data)) {
             $objectId = $data[0]['id'];
+        }
 
         try {
             $groupObj = Orm\Record::factory('permissions', $objectId);
@@ -383,7 +411,7 @@ class Permissions extends Model
      * @param integer $groupId
      * @return bool
      */
-    public function removeGroup($groupId) : bool
+    public function removeGroup($groupId): bool
     {
         $select = $this->db->select()
             ->from($this->table(), 'id')
@@ -394,14 +422,16 @@ class Permissions extends Model
 
         $store = $this->getStore();
 
-        if (!empty($groupIds) && !$store->deleteObjects($this->name, $groupIds))
+        if (!empty($groupIds) && !$store->deleteObjects($this->name, $groupIds)) {
             return false;
+        }
 
         /**
          * Invalidate Cache
          */
-        if ($this->cache)
+        if ($this->cache) {
             $this->cache->remove('group_permissions' . $groupId);
+        }
 
         return true;
     }

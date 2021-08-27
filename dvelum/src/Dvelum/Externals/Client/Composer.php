@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -169,7 +170,7 @@ class Composer implements ClientInterface
 
         //return $info['package']['versions'][$version]['dist']['url'];
         // https://github.com/dvelum/module-articles/archive/2.0.3.zip
-        return $info['package']['repository'].'/archive/'.$version.'.zip';
+        return $info['package']['repository'] . '/archive/' . $version . '.zip';
     }
 
     private function initComposer()
@@ -177,6 +178,7 @@ class Composer implements ClientInterface
         set_time_limit(0);
         putenv('COMPOSER_HOME=./temp/.composer');
     }
+
     /**
      * Download add-on
      * @param string $app
@@ -193,10 +195,10 @@ class Composer implements ClientInterface
         $application = new Application();
         $application->setAutoExit(false);
         $code = $application->run(new ArrayInput(['command' => 'require', 'packages' => [$app]]), $output);
-        $res =  stream_get_contents($stream);
+        $res = stream_get_contents($stream);
 
-        if($code !==0){
-            throw new \Exception('Cant download package. '.$app.' '.$res);
+        if ($code !== 0) {
+            throw new \Exception('Cant download package. ' . $app . ' ' . $res);
         }
         return true;
     }
@@ -214,12 +216,11 @@ class Composer implements ClientInterface
         $application = new Application();
         $application->setAutoExit(false);
         $code = $application->run(new ArrayInput(['command' => 'remove', 'packages' => [$app]]), $output);
-        $res =  stream_get_contents($stream);
+        $res = stream_get_contents($stream);
 
-        if($code !==0){
-            throw new \Exception('Cant remove composer package. '.$app.' '.$res);
+        if ($code !== 0) {
+            throw new \Exception('Cant remove composer package. ' . $app . ' ' . $res);
         }
         return true;
-
     }
 }

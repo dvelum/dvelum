@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -20,6 +21,7 @@
 declare(strict_types=1);
 
 namespace Dvelum\User\Auth;
+
 /**
  * Abstract class of User authentification provider.
  * @author Sergey Leschenko
@@ -30,36 +32,36 @@ use Dvelum\Orm\Orm;
 
 abstract class AbstractAdapter implements AdapterInterface
 {
-	protected $userData = null;
+    protected $userData = null;
     /**
      * @var ConfigInterface
      */
-	protected $config;
-	protected Orm $orm;
+    protected $config;
+    protected Orm $orm;
 
-	/**
-	 * @param ConfigInterface $config - auth provider config
-	 */
-	public function __construct(ConfigInterface $config, Orm $orm)
-	{
-		$this->config = $config;
-		$this->orm = $orm;
-	}
+    /**
+     * @param ConfigInterface $config - auth provider config
+     */
+    public function __construct(ConfigInterface $config, Orm $orm)
+    {
+        $this->config = $config;
+        $this->orm = $orm;
+    }
 
-	/**
-	 * Auth user
-	 * @param string $login
-	 * @param string $password
-	 * @return boolean
-	 */
-	abstract public function auth($login, $password) : bool ;
+    /**
+     * Auth user
+     * @param string $login
+     * @param string $password
+     * @return boolean
+     */
+    abstract public function auth($login, $password): bool;
 
-	/**
-	 * Get Dvelum user data (object User)
-	 * @return array|null
-	 */
-	public function getUserData() :?array
-	{
-		return $this->userData;
-	}
+    /**
+     * Get Dvelum user data (object User)
+     * @return array|null
+     */
+    public function getUserData(): ?array
+    {
+        return $this->userData;
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -40,7 +41,7 @@ class Controller extends App\Backend\Api\Controller
      * Check view permissions
      * @return bool
      */
-    protected function checkCanView() : bool
+    protected function checkCanView(): bool
     {
         return true;
     }
@@ -50,9 +51,9 @@ class Controller extends App\Backend\Api\Controller
      */
     public function listAction()
     {
-        $object = $this->request->post('object', 'string' , false);
+        $object = $this->request->post('object', 'string', false);
 
-        if(!$object){
+        if (!$object) {
             $this->response->success([]);
             return;
         }
@@ -60,17 +61,17 @@ class Controller extends App\Backend\Api\Controller
         $pager = $this->request->post('pager', 'array', []);
         $filter = $this->request->post('filter', 'array', []);
 
-        if(!isset($filter['record_id']) || empty($filter['record_id'])){
+        if (!isset($filter['record_id']) || empty($filter['record_id'])) {
             $this->response->success([]);
             return;
         }
 
-        try{
+        try {
             /**
              * @var Orm\RecordInterface
              */
             $object = Orm\Record::factory($object);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->response->success([]);
             return;
         }
@@ -82,20 +83,21 @@ class Controller extends App\Backend\Api\Controller
         $data = $history->query()
             ->filters($filter)
             ->params($pager)
-            ->fields(['date','type','id'])
+            ->fields(['date', 'type', 'id'])
             ->fetchAll();
 
         $objectConfig = Orm\Record\Config::factory('Historylog');
 
-        $this->addLinkedInfo($objectConfig,['user_name'=>'user_id'], $data, $objectConfig->getPrimaryKey());
+        $this->addLinkedInfo($objectConfig, ['user_name' => 'user_id'], $data, $objectConfig->getPrimaryKey());
 
-        if(!empty($data)) {
+        if (!empty($data)) {
             foreach ($data as &$v) {
-                if(isset(App\Model\Historylog::$actions[$v['type']])){
+                if (isset(App\Model\Historylog::$actions[$v['type']])) {
                     $v['type'] = App\Model\Historylog::$actions[$v['type']];
                 }
-            }unset($v);
+            }
+            unset($v);
         }
-        $this->response->success($data , ['count'=>$history->query()->filters($filter)->getCount()]);
+        $this->response->success($data, ['count' => $history->query()->filters($filter)->getCount()]);
     }
 }

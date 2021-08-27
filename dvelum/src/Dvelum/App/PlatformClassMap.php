@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -30,7 +31,7 @@ use Dvelum\Utils;
 /**
  * Classmap builder
  */
-class Classmap
+class PlatformClassMap
 {
     protected $map = [];
     /**
@@ -42,16 +43,24 @@ class Classmap
      */
     protected $autoloaderCfg = [];
 
-    public function __construct(ConfigInterface $appConfig)
-    {
+    protected Config\Storage\StorageInterface $configStorage;
+    protected Manager $externalsManager;
+
+    public function __construct(
+        ConfigInterface $appConfig,
+        Config\Storage\StorageInterface $configStorage,
+        Manager $externalsManager
+    ) {
         $this->appConfig = $appConfig;
-        $this->autoloaderCfg = Config::storage()->get('autoloader.php')->__toArray();
+        $this->configStorage = $configStorage;
+        $this->externalsManager = $externalsManager;
+        $this->autoloaderCfg = $configStorage->get('autoloader.php')->__toArray();
     }
 
     public function load()
     {
-        $map = Config::storage()->get($this->autoloaderCfg->get('map'));
-        if(!empty($map)){
+        $map = $this->configStorage->get($this->autoloaderCfg->get('map'));
+        if (!empty($map)) {
             $this->map = $map->__toArray();
         }
     }
@@ -59,25 +68,21 @@ class Classmap
     public function update()
     {
         $this->map = [];
-
-        $manager = Manager::factory();
-        $autoloader = $manager->getAutoloader();
+        $autoloader = $this->externalsManager->getAutoloader();
         $paths = $autoloader->getRegisteredPaths();
 
-        foreach($paths as $v)
-        {
+        foreach ($paths as $v) {
             $v = File::fillEndSep($v);
-            if(is_dir($v)){
-                $this->findClasses($v,$v);
+            if (is_dir($v)) {
+                $this->findClasses($v, $v);
             }
         }
 
         $psr4 = $this->autoloaderCfg['psr-4'];
-        foreach ($psr4 as $baseSpace=>$path)
-        {
+        foreach ($psr4 as $baseSpace => $path) {
             $v = File::fillEndSep($path);
-            if(is_dir($v)){
-                $this->findPsr4Classes($v,$v, $baseSpace);
+            if (is_dir($v)) {
+                $this->findPsr4Classes($v, $v, $baseSpace);
             }
         }
         ksort($this->map);
@@ -89,57 +94,54 @@ class Classmap
      * @param $exceptPath
      * @throws \Exception
      */
-    protected function findClasses(string $path , string $exceptPath)
+    protected function findClasses(string $path, string $exceptPath)
     {
         $path = File::fillEndSep($path);
-        $items = File::scanFiles($path , ['.php'], false);
+        $items = File::scanFiles($path, ['.php'], false);
 
-        if(empty($items))
+        if (empty($items)) {
             return;
+        }
 
-        foreach ($items as $item)
-        {
-            if(File::getExt($item) === '.php')
-            {
-                if(!empty($this->autoloaderCfg['noMap'])){
+        foreach ($items as $item) {
+            if (File::getExt($item) === '.php') {
+                if (!empty($this->autoloaderCfg['noMap'])) {
                     $found = false;
-                    foreach($this->autoloaderCfg['noMap'] as $excludePath){
-                        if(strpos($item, $excludePath)!==false){
+                    foreach ($this->autoloaderCfg['noMap'] as $excludePath) {
+                        if (strpos($item, $excludePath) !== false) {
                             $found = true;
                             break;
                         }
                     }
-                    if($found){
+                    if ($found) {
                         continue;
                     }
                 }
 
-                $parts = explode('/', str_replace($exceptPath,'', substr($item,0,-4)));
+                $parts = explode('/', str_replace($exceptPath, '', substr($item, 0, -4)));
                 $parts = array_map('ucfirst', $parts);
                 $class = implode('_', $parts);
 
-                if(!isset($this->map[$class]))
-                {
-                    try{
-                        if(!isset($this->map[$class]) && (class_exists($class) || interface_exists($class))){
+                if (!isset($this->map[$class])) {
+                    try {
+                        if (!isset($this->map[$class]) && (class_exists($class) || interface_exists($class))) {
                             $this->map[$class] = $item;
-                        }else{
-                            $class = str_replace('_','\\', $class);
-                            if(!isset($this->map[$class]) && (class_exists($class) || interface_exists($class))){
+                        } else {
+                            $class = str_replace('_', '\\', $class);
+                            if (!isset($this->map[$class]) && (class_exists($class) || interface_exists($class))) {
                                 $this->map[$class] = $item;
                             }
                         }
-                    }catch (\Error $e){
-                        echo $e->getMessage()."\n";
+                    } catch (\Error $e) {
+                        echo $e->getMessage() . "\n";
                     }
                 }
-            }
-            else
-            {
-                $this->findClasses($item , $exceptPath);
+            } else {
+                $this->findClasses($item, $exceptPath);
             }
         }
     }
+
     /**
      * Find PHP Classes
      * @param string $path
@@ -147,29 +149,27 @@ class Classmap
      * @param string $baseSpace
      * @throws \Exception
      */
-    protected function findPsr4Classes(string $path , string $exceptPath, string $baseSpace)
+    protected function findPsr4Classes(string $path, string $exceptPath, string $baseSpace)
     {
         $path = File::fillEndSep($path);
 
-        $items = File::scanFiles($path , ['.php'], false);
+        $items = File::scanFiles($path, ['.php'], false);
 
-        if(empty($items))
+        if (empty($items)) {
             return;
+        }
 
-        foreach ($items as $item)
-        {
-            if(File::getExt($item) === '.php')
-            {
-                $parts = explode('/', str_replace($exceptPath,'', substr($item,0,-4)));
+        foreach ($items as $item) {
+            if (File::getExt($item) === '.php') {
+                $parts = explode('/', str_replace($exceptPath, '', substr($item, 0, -4)));
                 $parts = array_map('ucfirst', $parts);
-                $class = $baseSpace.'\\'.implode('\\', $parts);
+                $class = $baseSpace . '\\' . implode('\\', $parts);
 
-                if(!isset($this->map[$class]))
+                if (!isset($this->map[$class])) {
                     $this->map[$class] = $item;
-            }
-            else
-            {
-                $this->findPsr4Classes($item , $exceptPath, $baseSpace);
+                }
+            } else {
+                $this->findPsr4Classes($item, $exceptPath, $baseSpace);
             }
         }
     }
@@ -180,7 +180,7 @@ class Classmap
      */
     public function save()
     {
-        $writePath = Config::storage()->getWrite() . $this->autoloaderCfg['map'];
+        $writePath = $this->configStorage->getWrite() . $this->autoloaderCfg['map'];
         return Utils::exportArray($writePath, $this->map);
     }
 }

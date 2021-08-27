@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -30,7 +31,6 @@ use Dvelum\Orm\RecordInterface;
 use \Exception;
 
 
-
 class Controller extends Backend\Controller
 {
     public function getModule(): string
@@ -47,7 +47,7 @@ class Controller extends Backend\Controller
      * Get controller configuration
      * @return Config\ConfigInterface
      */
-    protected function getConfig() : Config\ConfigInterface
+    protected function getConfig(): Config\ConfigInterface
     {
         return Config::storage()->get('backend/controller/settings.php');
     }
@@ -59,7 +59,7 @@ class Controller extends Backend\Controller
     {
         $themes = $this->backofficeConfig->get('themes');
         $data = [];
-        foreach ($themes as $item){
+        foreach ($themes as $item) {
             $data[] = ['id' => $item];
         }
         $this->response->success($data);
@@ -72,7 +72,7 @@ class Controller extends Backend\Controller
     {
         $languages = $this->backofficeConfig->get('languages');
         $data = [];
-        foreach ($languages as $item){
+        foreach ($languages as $item) {
             $data[] = ['id' => $item];
         }
         $this->response->success($data);
@@ -86,18 +86,18 @@ class Controller extends Backend\Controller
         $userData = Model::factory('User');
         $item = $userData->getCachedItem($this->user->getId());
 
-        if(empty($item)){
+        if (empty($item)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
 
         $userSettings = Model::factory('User_Settings')->getItemByField('user', $this->user->getId());
 
-        if(!isset($userSettings['theme']) || empty($userSettings['theme'])){
+        if (!isset($userSettings['theme']) || empty($userSettings['theme'])) {
             $userSettings['theme'] = $this->backofficeConfig->get('theme');
         }
 
-        if(!isset($userSettings['language']) || empty($userSettings['language'])){
+        if (!isset($userSettings['language']) || empty($userSettings['language'])) {
             $userSettings['language'] = $this->appConfig->get('language');
         }
 
@@ -117,7 +117,7 @@ class Controller extends Backend\Controller
      */
     public function userSaveAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -129,7 +129,7 @@ class Controller extends Backend\Controller
 
         $object = $this->getPostedData('User');
 
-        if (empty($object)){
+        if (empty($object)) {
             return;
         }
         /*
@@ -151,10 +151,10 @@ class Controller extends Backend\Controller
      * Get posted data and put it into Orm\Record
      * (in case of failure, JSON error message is sent)
      * @param string $objectName
-     * @throws Exception
      * @return Record | null
+     * @throws Exception
      */
-    public function getPostedData($objectName) : ?Record
+    public function getPostedData($objectName): ?Record
     {
         $formCfg = $this->config->get('form');
         $adapterConfig = Config::storage()->get($formCfg['config']);
@@ -189,19 +189,19 @@ class Controller extends Backend\Controller
      */
     public function settingsSaveAction()
     {
-        $theme = $this->request->post('theme','string','gray');
-        $lang = $this->request->post('language','string','ru');
+        $theme = $this->request->post('theme', 'string', 'gray');
+        $lang = $this->request->post('language', 'string', 'ru');
 
         $themes = $this->backofficeConfig->get('themes');
         $langs = $this->backofficeConfig->get('languages');
 
-        if(!in_array($theme, $themes, true)){
-            $this->response->error($this->lang->get('FILL_FORM'),['theme'=>$this->lang->get('INVALID_VALUE')]);
+        if (!in_array($theme, $themes, true)) {
+            $this->response->error($this->lang->get('FILL_FORM'), ['theme' => $this->lang->get('INVALID_VALUE')]);
             return;
         }
 
-        if(!in_array($lang, $langs, true)){
-            $this->response->error($this->lang->get('FILL_FORM'),['language'=>$this->lang->get('INVALID_VALUE')]);
+        if (!in_array($lang, $langs, true)) {
+            $this->response->error($this->lang->get('FILL_FORM'), ['language' => $this->lang->get('INVALID_VALUE')]);
             return;
         }
 
@@ -209,24 +209,24 @@ class Controller extends Backend\Controller
         $userSettings = $settingsModel->getItemByField('user', $this->user->getId());
         $settingId = null;
         $config = Record\Config::factory('User_Settings');
-        if(!empty($userSettings)){
+        if (!empty($userSettings)) {
             $settingId = $userSettings[$config->getPrimaryKey()];
         }
-        try{
+        try {
             /**
              * @var RecordInterface $object
              */
             $object = Record::factory('User_Settings', $settingId);
             $object->setValues([
-                'user' => $this->user->getId(),
-                'theme' => $theme,
-                'language' => $lang
-            ]);
-            if(!$object->save()){
-                throw new Exception('Cannot save settings for user '.$this->user->getId());
+                                   'user' => $this->user->getId(),
+                                   'theme' => $theme,
+                                   'language' => $lang
+                               ]);
+            if (!$object->save()) {
+                throw new Exception('Cannot save settings for user ' . $this->user->getId());
             }
             $this->response->success();
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $settingsModel->logError($e->getMessage());
             $this->response->error($this->lang->get('CANT_EXEC'));
         }
@@ -239,25 +239,25 @@ class Controller extends Backend\Controller
     {
         $moduleName = $this->getModule();
 
-        $modulesConfig = Config::factory(Config\Factory::File_Array , $this->appConfig->get('backend_modules'));
+        $modulesConfig = Config::factory(Config\Factory::File_Array, $this->appConfig->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($moduleName);
 
         $projectData = [];
 
-        if(strlen($moduleCfg['designer']))
-        {
+        if (strlen($moduleCfg['designer'])) {
             $manager = new Manager($this->appConfig);
             $project = $manager->findWorkingCopy($moduleCfg['designer']);
-            $projectData =  $manager->compileDesktopProject($project, 'app.__modules.'.$moduleName , $moduleName);
+            $projectData = $manager->compileDesktopProject($project, 'app.__modules.' . $moduleName, $moduleName);
             $projectData['isDesigner'] = true;
-            $modulesManager =$this->container->get(\Dvelum\App\Module\Manager::class);
+            $modulesManager = $this->container->get(\Dvelum\App\Module\Manager::class);
             $modulesList = $modulesManager->getList();
             $projectData['title'] = (isset($modulesList[$this->module])) ? $modulesList[$moduleName]['title'] : '';
-        }
-        else
-        {
-            if(file_exists($this->appConfig->get('jsPath').'app/system/desktop/' . strtolower($moduleName) . '.js'))
-                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($moduleName) .'.js';
+        } else {
+            if (file_exists(
+                $this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($moduleName) . '.js'
+            )) {
+                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($moduleName) . '.js';
+            }
         }
         return $projectData;
     }

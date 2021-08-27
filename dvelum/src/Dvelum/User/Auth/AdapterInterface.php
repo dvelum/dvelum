@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -29,7 +30,7 @@ interface AdapterInterface
      * @param string $password
      * @return bool
      */
-     public function auth($login, $password) : bool;
+    public function auth($login, $password): bool;
 
     /**
      * Get Dvelum user data (object User)

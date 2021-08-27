@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  * Copyright (C) 2011-2017  Kirill Yegorov
@@ -59,10 +60,12 @@ class Controller extends Backend\Controller
         $this->resource->addJs('/js/app/system/crud/modules.js', 2);
         $this->resource->addJs('/js/app/system/Modules.js', 3);
         $module = $this->getModule();
-        $this->resource->addInlineJs('
+        $this->resource->addInlineJs(
+            '
             var canEdit = ' . ((integer)$this->user->getModuleAcl()->canEdit($module)) . ';
             var canDelete = ' . ((integer)$this->user->getModuleAcl()->canDelete($module)) . ';
-        ');
+        '
+        );
         parent::indexAction();
     }
 
@@ -337,7 +340,7 @@ class Controller extends Backend\Controller
         $config = Config::storage()->get('backend.php');
         $systemObjects = $config->get('system_objects');
 
-        if(!empty($list)){
+        if (!empty($list)) {
             foreach ($list as $key) {
                 if (
                     // not system object
@@ -379,8 +382,8 @@ class Controller extends Backend\Controller
 
         if (class_exists($class)) {
             $this->response->error($this->lang->get('FILL_FORM'), [
-                    'id' => 'name',
-                    'msg' => $this->lang->get('SB_UNIQUE') . ' class ' . $class
+                'id' => 'name',
+                'msg' => $this->lang->get('SB_UNIQUE') . ' class ' . $class
             ]);
             return;
         }
@@ -388,7 +391,9 @@ class Controller extends Backend\Controller
         $designerConfig = Config::storage()->get('designer.php');
 
         $projectRelativePath = '/' . strtolower($object) . '.designer.dat';
-        $projectFile = Config::storage()->getWrite() . $designerConfig->get('configs') . strtolower($object) . '.designer.dat';
+        $projectFile = Config::storage()->getWrite() . $designerConfig->get('configs') . strtolower(
+                $object
+            ) . '.designer.dat';
 
         if (file_exists($projectFile)) {
             $this->response->error($this->lang->get('FILE_EXISTS') . '(' . $projectFile . ')');
@@ -400,8 +405,10 @@ class Controller extends Backend\Controller
         $manager = new Orm\Record\Manager();
 
         if (!$manager->objectExists($object)) {
-            $this->response->error($this->lang->get('FILL_FORM'),
-                ['id' => 'object', 'msg' => $this->lang->get('INVALID_VALUE')]);
+            $this->response->error(
+                $this->lang->get('FILL_FORM'),
+                ['id' => 'object', 'msg' => $this->lang->get('INVALID_VALUE')]
+            );
             return;
         }
 
@@ -421,7 +428,6 @@ class Controller extends Backend\Controller
             } else {
                 $codeGen->createModule($object, $class, $projectFile);
             }
-
         } catch (\Exception $e) {
             $this->response->error($e->getMessage());
             return;
@@ -550,8 +556,11 @@ class Controller extends Backend\Controller
     protected function getRelatedFiles($moduleConfig)
     {
         $relatedFiles = [];
-        $classFile = $this->appConfig->get('local_controllers') . str_replace('_', '/',
-                $moduleConfig['class']) . '.php';
+        $classFile = $this->appConfig->get('local_controllers') . str_replace(
+                '_',
+                '/',
+                $moduleConfig['class']
+            ) . '.php';
 
         if (empty($moduleConfig['dist']) && file_exists($classFile)) {
             $relatedFiles[] = $classFile;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -113,8 +114,10 @@ class Kerberos extends AbstractAdapter
      */
     private function saveCredentials($credentials)
     {
-        \Dvelum\Store\Factory::get(\Dvelum\Store\Factory::SESSION, $this->config->get('adapter'))->set('credentials',
-            $credentials);
+        \Dvelum\Store\Factory::get(\Dvelum\Store\Factory::SESSION, $this->config->get('adapter'))->set(
+            'credentials',
+            $credentials
+        );
     }
 
     /**
@@ -124,8 +127,10 @@ class Kerberos extends AbstractAdapter
     private function getCredentials()
     {
         if ($this->config->get('saveCredentials')) {
-            return \Dvelum\Store\Factory::get(\Dvelum\Store\Factory::SESSION,
-                $this->config->get('adapter'))->get('credentials');
+            return \Dvelum\Store\Factory::get(
+                \Dvelum\Store\Factory::SESSION,
+                $this->config->get('adapter')
+            )->get('credentials');
         } else {
             return false;
         }

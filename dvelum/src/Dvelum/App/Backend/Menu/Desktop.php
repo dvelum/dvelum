@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -33,7 +34,7 @@ class Desktop extends Menu
     /**
      * @return array
      */
-    public function getIncludes() : array
+    public function getIncludes(): array
     {
         return [
             'css' => [],
@@ -45,7 +46,7 @@ class Desktop extends Menu
      * @return string
      * @throws \Exception
      */
-    public function render() : string
+    public function render(): string
     {
         return '
         app.menuData = ' . json_encode($this->getData()) . ';

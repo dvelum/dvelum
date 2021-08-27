@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -66,7 +67,7 @@ class Manager
     private DependencyContainer $di;
 
     protected Lang\Dictionary $lang;
-    protected Config\Storage\StorageInterface  $configStorage;
+    protected Config\Storage\StorageInterface $configStorage;
 
     public function __construct(ConfigInterface $config, ContainerInterface $di)
     {
@@ -83,7 +84,7 @@ class Manager
      * Get autoloader
      * @return Autoload
      */
-    public function getAutoloader() : Autoload
+    public function getAutoloader(): Autoload
     {
         return $this->autoloader;
     }
@@ -117,7 +118,7 @@ class Manager
                     }
                     $mConfig = include $modulePath . '/config.php';
 
-                   // $module = basename($modulePath);
+                    // $module = basename($modulePath);
                     $moduleId = $mConfig['id'];
 
                     if (!$this->config->offsetExists($moduleId)) {
@@ -142,10 +143,10 @@ class Manager
 
     /**
      * Save modules configuration
-     * @throws \Exception
      * @return bool
+     * @throws \Exception
      */
-    public function saveConfig() : bool
+    public function saveConfig(): bool
     {
         if (!$this->configStorage->save($this->config)) {
             $writePath = $this->configStorage->getWrite();
@@ -159,12 +160,12 @@ class Manager
      * Add external module
      * @param string $id
      * @param array|null $config
-     * @throws \Exception
      * @return bool
+     * @throws \Exception
      */
-    public function add(string $id , ?array $config = null) : bool
+    public function add(string $id, ?array $config = null): bool
     {
-        if($this->moduleExists($id)){
+        if ($this->moduleExists($id)) {
             return false;
         }
 
@@ -196,7 +197,7 @@ class Manager
             }
 
             $path = File::fillEndSep($config['path']);
-            if(!file_exists( $path . '/config.php')){
+            if (!file_exists($path . '/config.php')) {
                 continue;
             }
             $modCfg = require $path . '/config.php';
@@ -208,7 +209,7 @@ class Manager
             }
 
             if (!empty($modCfg['autoloader-psr-4'])) {
-                foreach ($modCfg['autoloader-psr-4'] as $ns =>$classPath) {
+                foreach ($modCfg['autoloader-psr-4'] as $ns => $classPath) {
                     $autoLoadPathsPsr4[$ns] = str_replace('./', $path, $classPath);
                 }
             }
@@ -229,7 +230,7 @@ class Manager
         }
         // Add autoloader paths
         if (!empty($autoLoadPaths)) {
-            $autoloaderConfig =  $this->configStorage->get('autoloader.php');
+            $autoloaderConfig = $this->configStorage->get('autoloader.php');
             $autoloaderCfg = $autoloaderConfig->__toArray();
             $newСhain = $autoloaderCfg['priority'];
 
@@ -247,7 +248,7 @@ class Manager
             $autoloaderCfg['paths'] = $newСhain;
 
             // update autoloader paths
-            $this->autoloader->setConfig(['paths' => $autoloaderCfg['paths'], 'psr-4'=>$autoloaderCfg['psr-4']]);
+            $this->autoloader->setConfig(['paths' => $autoloaderCfg['paths'], 'psr-4' => $autoloaderCfg['psr-4']]);
             // update main configuration
             $autoloaderConfig->setData($autoloaderCfg);
         }
@@ -264,8 +265,8 @@ class Manager
                 $resultPaths[] = $path;
             }
 
-            foreach ($paths as $path){
-                if(!isset($lockedPathsIndex[$path])){
+            foreach ($paths as $path) {
+                if (!isset($lockedPathsIndex[$path])) {
                     $resultPaths[] = $path;
                 }
             }
@@ -276,12 +277,12 @@ class Manager
              */
             $dependency = $this->configStorage->get('dependency.php')->__toArray();
             $newDependency = [];
-            foreach ($dependency as $class => $value){
-                if(!$this->di->has($class)){
+            foreach ($dependency as $class => $value) {
+                if (!$this->di->has($class)) {
                     $newDependency[$class] = $value;
                 }
             }
-            if(!empty($newDependency)){
+            if (!empty($newDependency)) {
                 $this->di->bindArray($newDependency);
             }
         }
@@ -314,23 +315,23 @@ class Manager
      * @return bool
      * @throws \Exception
      */
-    public function hasModules() : bool
+    public function hasModules(): bool
     {
-        return (bool) $this->config->getCount();
+        return (bool)$this->config->getCount();
     }
 
     /**
      * Get modules info
      * @return array
      */
-    public function getModules() : array
+    public function getModules(): array
     {
         $list = $this->config->__toArray();
         $result = [];
 
         foreach ($list as $code => $config) {
             $path = $config['path'];
-            if(!file_exists($path . '/config.php')){
+            if (!file_exists($path . '/config.php')) {
                 continue;
             }
             $mod = require $path . '/config.php';
@@ -341,20 +342,21 @@ class Manager
 
         return $result;
     }
-    public function getComposerPackageName(string $id) : ?string
+
+    public function getComposerPackageName(string $id): ?string
     {
         $modInfo = $this->config->get($id);
 
         $path = $modInfo['path'];
         $composerFile = $path . '/composer.json';
 
-        if(!file_exists($composerFile)){
+        if (!file_exists($composerFile)) {
             return null;
         }
         $data = json_decode(file_get_contents($composerFile,), true);
-        return  $data['name'];
-
+        return $data['name'];
     }
+
     public function getModule($id)
     {
         $modInfo = $this->config->get($id);
@@ -390,7 +392,9 @@ class Manager
 
             if (is_dir($resources)) {
                 if (!File::copyDir($resources, $this->externalsConfig['resources_path'] . $id)) {
-                    $this->errors[] = $this->lang->get('CANT_WRITE_FS') . ' ' . $this->externalsConfig['resources_path'] . $id;
+                    $this->errors[] = $this->lang->get(
+                            'CANT_WRITE_FS'
+                        ) . ' ' . $this->externalsConfig['resources_path'] . $id;
                     return false;
                 }
             }
@@ -421,7 +425,6 @@ class Manager
 
         // build objects
         if (!empty($modConf['objects'])) {
-
             $builders = [];
             foreach ($modConf['objects'] as $object) {
                 try {
@@ -445,8 +448,7 @@ class Manager
                 return false;
             }
 
-            foreach($builders as $builder)
-            {
+            foreach ($builders as $builder) {
                 try {
                     /**
                      * @var Orm\Record\Builder\BuilderInterface $builder
@@ -507,7 +509,7 @@ class Manager
      * @param $id
      * @return bool
      */
-    public function uninstall($id) : bool
+    public function uninstall($id): bool
     {
         $modConf = $this->getModule($id);
 
@@ -561,7 +563,7 @@ class Manager
                 $this->errors[] = 'Class ' . $class . ' is not instance of Externals_Installer';
             }
 
-            $modConfig = \Dvelum\Config\Factory::create($modConf,$modConf['id'] . '_config');
+            $modConfig = \Dvelum\Config\Factory::create($modConf, $modConf['id'] . '_config');
 
             if (!$installer->uninstall($this->appConfig, $modConfig)) {
                 $errors = $installer->getErrors();
@@ -629,7 +631,7 @@ class Manager
      * Get default repo
      * @return string
      */
-    public function getComposerRepo() : string
+    public function getComposerRepo(): string
     {
         return $this->externalsConfig['composer_repo'];
     }
@@ -645,16 +647,16 @@ class Manager
     public function detectModuleInfo(string $vendor, string $module): ?array
     {
         $moduleDir = $this->getModulePath($vendor, $module);
-        if(!is_dir($moduleDir)){
+        if (!is_dir($moduleDir)) {
             return null;
         }
 
-        if(!file_exists($moduleDir.'/config.php')){
+        if (!file_exists($moduleDir . '/config.php')) {
             return null;
         }
 
         $moduleInfo = include $moduleDir . '/config.php';
-        if(!is_array($moduleInfo) || empty($moduleInfo)){
+        if (!is_array($moduleInfo) || empty($moduleInfo)) {
             return null;
         }
         return $moduleInfo;
@@ -667,7 +669,7 @@ class Manager
      * @return string
      * @throws \Exception
      */
-    public function getModulePath(string $vendor, string $module) : string
+    public function getModulePath(string $vendor, string $module): string
     {
         $externalsCfg = $this->appConfig->get('externals');
         return $externalsCfg['path'] . '/' . $vendor . '/' . $module;

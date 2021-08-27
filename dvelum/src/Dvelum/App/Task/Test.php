@@ -1,5 +1,7 @@
 <?php
+
 namespace Dvelum\App\Task;
+
 use Dvelum\BackgroundTask\AbstractTask;
 
 /**

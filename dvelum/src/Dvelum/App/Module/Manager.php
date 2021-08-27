@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  * Copyright (C) 2011-2017  Kirill Yegorov
@@ -62,13 +63,13 @@ class Manager
 
         $this->distConfig = new Config\File\AsArray(Config::storage()->getApplyTo() . $configPath);
 
-        if(file_exists(Config::storage()->getWrite() . $configPath)){
+        if (file_exists(Config::storage()->getWrite() . $configPath)) {
             $this->curConfig = new Config\File\AsArray(Config::storage()->getWrite() . $configPath);
         }
 
         $locale = $lang->getDictionary()->getName();
         $this->localeStorage = $lang->getStorage();
-        $this->modulesLocale = $this->localeStorage->get($locale.'/modules/'.basename($configPath));
+        $this->modulesLocale = $this->localeStorage->get($locale . '/modules/' . basename($configPath));
     }
 
     /**
@@ -77,17 +78,17 @@ class Manager
      * @return ConfigInterface|false
      * @throws \Exception
      */
-    public function getLocale($lang) : ConfigInterface
+    public function getLocale($lang): ConfigInterface
     {
         $configPath = $this->appConfig->get($this->mainConfigKey);
-        return $this->lang->get($lang.'/modules/'.basename($configPath));
+        return $this->lang->get($lang . '/modules/' . basename($configPath));
     }
 
     /**
      * Get registered modules
      * @return array
      */
-    public function getRegisteredModules() : array
+    public function getRegisteredModules(): array
     {
         $data = $this->config->__toArray();
         return array_keys($data);
@@ -98,7 +99,7 @@ class Manager
      * @param string $name
      * @return bool
      */
-    public function isValidModule($name) : bool
+    public function isValidModule($name): bool
     {
         return $this->config->offsetExists($name);
     }
@@ -108,13 +109,14 @@ class Manager
      * @param string $name
      * @return array
      */
-    public function getModuleConfig($name) : array
+    public function getModuleConfig($name): array
     {
         $data = $this->config->get($name);
         $data['title'] = $name;
 
-        if(isset($this->modulesLocale[$name]))
+        if (isset($this->modulesLocale[$name])) {
             $data['title'] = $this->modulesLocale[$name];
+        }
 
         return $data;
     }
@@ -124,16 +126,18 @@ class Manager
      * @param $name
      * @return null|string
      */
-    public function getModuleController($name) :?string
+    public function getModuleController($name): ?string
     {
-        if(!$this->isValidModule($name))
+        if (!$this->isValidModule($name)) {
             return null;
+        }
 
         $cfg = $this->config->get($name);
-        if(isset($cfg['class']) && !empty($cfg['class']))
+        if (isset($cfg['class']) && !empty($cfg['class'])) {
             return $cfg['class'];
-        else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -141,10 +145,10 @@ class Manager
      * @param string $class
      * @return string
      */
-    public function getModuleName($class) : string
+    public function getModuleName($class): string
     {
-        $class = str_replace(['\\','Backend_','_Controller','_App_','App_'], ['_','','','_',''], $class);
-        $class = trim(strtolower($class),'_');
+        $class = str_replace(['\\', 'Backend_', '_Controller', '_App_', 'App_'], ['_', '', '', '_', ''], $class);
+        $class = trim(strtolower($class), '_');
         return \Dvelum\Utils\Strings::formatClassName($class);
     }
 
@@ -155,44 +159,46 @@ class Manager
      */
     public function getControllerModule($controller): ?string
     {
-        if(!self::$classRoutes){
+        if (!self::$classRoutes) {
             $config = $this->config->__toArray();
 
-            foreach ($config as $module=>$cfg)
+            foreach ($config as $module => $cfg) {
                 self::$classRoutes[$cfg['class']] = $module;
+            }
         }
 
-        if(!isset(self::$classRoutes[$controller]))
+        if (!isset(self::$classRoutes[$controller])) {
             return null;
-        else
+        } else {
             return self::$classRoutes[$controller];
+        }
     }
 
     /**
      * Get modules list
      * @return array
      */
-    public function getList() : array
+    public function getList(): array
     {
         $data = $this->config->__toArray();
-        foreach ($data as $module=>&$cfg)
-        {
-            if($this->curConfig && $this->curConfig->offsetExists($module)){
+        foreach ($data as $module => &$cfg) {
+            if ($this->curConfig && $this->curConfig->offsetExists($module)) {
                 $cfg['dist'] = false;
-            }else{
+            } else {
                 $cfg['dist'] = true;
             }
 
-            if(!isset($cfg['in_menu']))
+            if (!isset($cfg['in_menu'])) {
                 $cfg['in_menu'] = true;
-
-            if($this->modulesLocale->offsetExists($module)){
-                $cfg['title'] = $this->modulesLocale->get($module);
-            }else{
-                $cfg['title'] = $module;
             }
 
-        }unset($cfg);
+            if ($this->modulesLocale->offsetExists($module)) {
+                $cfg['title'] = $this->modulesLocale->get($module);
+            } else {
+                $cfg['title'] = $module;
+            }
+        }
+        unset($cfg);
         return $data;
     }
 
@@ -201,16 +207,19 @@ class Manager
      * @param string $name
      * @return bool
      */
-    public function removeModule(string $name) : bool
+    public function removeModule(string $name): bool
     {
-        if($this->config->offsetExists($name))
+        if ($this->config->offsetExists($name)) {
             $this->config->remove($name);
+        }
 
-        if($this->modulesLocale->offsetExists($name))
+        if ($this->modulesLocale->offsetExists($name)) {
             $this->modulesLocale->remove($name);
+        }
 
-        if(!$this->localeStorage->save($this->modulesLocale))
+        if (!$this->localeStorage->save($this->modulesLocale)) {
             return false;
+        }
 
         return $this->save();
     }
@@ -221,14 +230,14 @@ class Manager
      * @param array $config
      * @return bool
      */
-    public function addModule(string $name , array $config) : bool
+    public function addModule(string $name, array $config): bool
     {
-        $this->config->set($name , $config);
+        $this->config->set($name, $config);
         $this->resetCache();
         $ret = $this->save();
-        if($ret && isset($config['title'])){
+        if ($ret && isset($config['title'])) {
             $this->modulesLocale->set($config['id'], $config['title']);
-            if(!$this->localeStorage->save($this->modulesLocale)){
+            if (!$this->localeStorage->save($this->modulesLocale)) {
                 return false;
             }
         }
@@ -241,22 +250,21 @@ class Manager
      * @param array $data
      * @return boolean
      */
-    public function updateModule(string $name , array $data) : bool
+    public function updateModule(string $name, array $data): bool
     {
-        if($name !== $data['id']){
+        if ($name !== $data['id']) {
             $this->modulesLocale->remove($name);
             $this->config->remove($name);
         }
 
-        if(isset($data['title']))
-        {
-            $this->modulesLocale->set($data['id'] , $data['title']);
-            if(!$this->localeStorage->save($this->modulesLocale)){
+        if (isset($data['title'])) {
+            $this->modulesLocale->set($data['id'], $data['title']);
+            if (!$this->localeStorage->save($this->modulesLocale)) {
                 return false;
             }
             unset($data['title']);
         }
-        $this->config->set($data['id'] , $data);
+        $this->config->set($data['id'], $data);
         return $this->save();
     }
 
@@ -264,23 +272,25 @@ class Manager
      * Save modules config
      * @return bool
      */
-    public function save() : bool
+    public function save(): bool
     {
         $this->resetCache();
         return Config::storage()->save($this->config);
     }
+
     /**
      * Reset modules cache
      */
-    public function resetCache() : void
+    public function resetCache(): void
     {
         self::$classRoutes = false;
     }
+
     /**
      * Get configuration object
      * @return ConfigInterface
      */
-    public function getConfig() : ConfigInterface
+    public function getConfig(): ConfigInterface
     {
         return $this->config;
     }
@@ -289,7 +299,7 @@ class Manager
      * Get list of Controllers
      * @return array
      */
-    public function getControllers() : array
+    public function getControllers(): array
     {
         $backendConfig = Config::storage()->get('backend.php');
         $autoloadCfg = Config::storage()->get('autoloader.php');
@@ -301,32 +311,29 @@ class Manager
 
         $data = [];
 
-        foreach($paths as $path)
-        {
-            if(basename($path) === 'modules')
-            {
+        foreach ($paths as $path) {
+            if (basename($path) === 'modules') {
                 $folders = File::scanFiles($path, false, true, File::DIRS_ONLY);
 
-                if(empty($folders))
+                if (empty($folders)) {
                     continue;
+                }
 
-                foreach($folders as $item)
-                {
-                    foreach ($dirs as $dir){
-                        if(!is_dir($item.'/'.$dir)){
+                foreach ($folders as $item) {
+                    foreach ($dirs as $dir) {
+                        if (!is_dir($item . '/' . $dir)) {
                             continue;
                         }
-                        $prefix = str_replace('/','_',ucfirst(basename($item)).'_'.$dir.'_');
-                        $this->findControllers($item.'/'.$dir, $systemControllers, $data , $prefix);
+                        $prefix = str_replace('/', '_', ucfirst(basename($item)) . '_' . $dir . '_');
+                        $this->findControllers($item . '/' . $dir, $systemControllers, $data, $prefix);
                     }
                 }
-            }else{
-
+            } else {
                 foreach ($dirs as $dir) {
                     if (!is_dir($path . '/' . $dir)) {
                         continue;
                     }
-                    $prefix = str_replace('/','_', $dir . '_');
+                    $prefix = str_replace('/', '_', $dir . '_');
                     $this->findControllers($path . '/' . $dir, $systemControllers, $data, $prefix);
                 }
             }
@@ -343,30 +350,30 @@ class Manager
      * @return void
      * @throws \Exception
      */
-    public function findControllers(string $path, $skipList, & $result, string $classPrefix = '') : void
+    public function findControllers(string $path, $skipList, &$result, string $classPrefix = ''): void
     {
         $folders = File::scanFiles($path, false, true, File::DIRS_ONLY);
 
-        if(empty($folders))
+        if (empty($folders)) {
             return;
+        }
 
-        foreach ($folders as $item)
-        {
-            if(file_exists($item.'/Controller.php'))
-            {
-                $name = str_replace($path.'/', '', $item.'/Controller.php');
+        foreach ($folders as $item) {
+            if (file_exists($item . '/Controller.php')) {
+                $name = str_replace($path . '/', '', $item . '/Controller.php');
                 $name = $classPrefix . Utils::classFromPath($name);
-                $namespaceName = '\\'.str_replace('_','\\',$name);
+                $namespaceName = '\\' . str_replace('_', '\\', $name);
                 /*
                  * Skip system controller
                  */
-                if(in_array($name, $skipList , true) || in_array($namespaceName, $skipList , true))
+                if (in_array($name, $skipList, true) || in_array($namespaceName, $skipList, true)) {
                     continue;
+                }
 
-                if(class_exists($name)){
-                    $result[$name] = ['id'=>$name,'title'=>$name];
-                }elseif(class_exists($namespaceName)){
-                    $result[$namespaceName] = ['id'=>$namespaceName,'title'=>$namespaceName];
+                if (class_exists($name)) {
+                    $result[$name] = ['id' => $name, 'title' => $name];
+                } elseif (class_exists($namespaceName)) {
+                    $result[$namespaceName] = ['id' => $namespaceName, 'title' => $namespaceName];
                 }
             }
             $this->findControllers($item, $skipList, $result, $classPrefix);
@@ -377,16 +384,16 @@ class Manager
      * Get list of controllers without modules
      * @return array
      */
-    public function getAvailableControllers() : array
+    public function getAvailableControllers(): array
     {
         $list = $this->getControllers();
 
         /*
          * Hide registered controllers
          */
-        $registered = array_flip(Utils::fetchCol('class' , $this->getConfig()->__toArray()));
-        foreach($list as $k=>$v){
-            if(isset($registered[$v['id']])){
+        $registered = array_flip(Utils::fetchCol('class', $this->getConfig()->__toArray()));
+        foreach ($list as $k => $v) {
+            if (isset($registered[$v['id']])) {
                 unset($list[$k]);
             }
         }
@@ -398,24 +405,24 @@ class Manager
      * @name string - module name
      * @return bool
      */
-    public function isVcModule(string $name) : bool
+    public function isVcModule(string $name): bool
     {
         $class = $this->getModuleController($name);
 
-        if(empty($class) || !class_exists($class)) {
+        if (empty($class) || !class_exists($class)) {
             return false;
         }
 
         $reflector = new \ReflectionClass($class);
 
-        if($reflector->isSubclassOf('\\Dvelum\\App\\Backend\\Controller')){
+        if ($reflector->isSubclassOf('\\Dvelum\\App\\Backend\\Controller')) {
             /**
              * @var \Dvelum\App\Backend\Controller $controller
              */
             $controller = new $class(Request::factory(), Response\Stub::factory());
             $object = $controller->getObjectName();
 
-            if(\Dvelum\Orm\Record\Config::configExists($object)){
+            if (\Dvelum\Orm\Record\Config::configExists($object)) {
                 $config = \Dvelum\Orm\Record\Config::factory($object);
                 return $config->isRevControl();
             }

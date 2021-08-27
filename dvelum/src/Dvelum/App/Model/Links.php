@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -20,6 +21,7 @@
 declare(strict_types=1);
 
 namespace Dvelum\App\Model;
+
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 
@@ -31,20 +33,24 @@ class Links extends Model
      */
     public function clearObjectLinks(Orm\Record $object)
     {
-        $this->db->delete($this->table(),'src = '.$this->db->quote($object->getName()).' AND src_id = '.intval($object->getId()));
+        $this->db->delete(
+            $this->table(),
+            'src = ' . $this->db->quote($object->getName()) . ' AND src_id = ' . intval($object->getId())
+        );
     }
+
     /**
      * Clear links for object list
      * @param string $objectName
      * @param array $objectsIds
      */
-    public function clearLinksFor($objectName , array $objectsIds)
+    public function clearLinksFor($objectName, array $objectsIds)
     {
-    	$this->db->delete(
-    		$this->table(),
-    		'`src` = ' . $this->db->quote($objectName).' 
+        $this->db->delete(
+            $this->table(),
+            '`src` = ' . $this->db->quote($objectName) . ' 
     			AND
-    		 `src_id` IN('.\Dvelum\Utils::listIntegers($objectsIds).')'
+    		 `src_id` IN(' . \Dvelum\Utils::listIntegers($objectsIds) . ')'
         );
     }
 }

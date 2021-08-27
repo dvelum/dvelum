@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -31,7 +32,7 @@ class Manager
     static public function factory(ConfigInterface $appConfig)
     {
         static $instance = null;
-        if(empty($instance)){
+        if (empty($instance)) {
             $instance = new static($appConfig);
         }
         return $instance;
@@ -48,20 +49,20 @@ class Manager
      */
     protected $modules = [];
 
-    public function getModuleConfig(string $vendor, string $module) : ?array
+    public function getModuleConfig(string $vendor, string $module): ?array
     {
         $vendor = strtolower($vendor);
         $module = strtolower($module);
 
-        if(isset($this->modules[$vendor][$module])){
+        if (isset($this->modules[$vendor][$module])) {
             return $this->modules[$vendor][$module];
         }
 
         $path = $this->externalsConfig['path'];
-        $composerPath = $path.'/'.$vendor.'/'.$module.'/'.'composer.json';
-        if(file_exists($composerPath)){
-            $config = json_decode(file_get_contents($composerPath),true);
-            if(!empty($config)){
+        $composerPath = $path . '/' . $vendor . '/' . $module . '/' . 'composer.json';
+        if (file_exists($composerPath)) {
+            $config = json_decode(file_get_contents($composerPath), true);
+            if (!empty($config)) {
                 $this->modules[$vendor][$module] = $config;
                 return $config;
             }

@@ -7,6 +7,7 @@ use Dvelum\Config\ConfigInterface;
 abstract class Installer
 {
     protected $errors = [];
+
     /**
      * Run module post-install actions
      * @param ConfigInterface $applicationConfig

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -28,9 +29,9 @@ class Vc extends Model
 {
     /**
      * Create new  version
-     * @property Orm\Record $object
      * @return int|false
      * @throws \Exception
+     * @property Orm\Record $object
      */
     public function newVersion(Orm\RecordInterface $object)
     {
@@ -62,13 +63,15 @@ class Vc extends Model
             $vObject->set('object_name', $object->getName());
             $vObject->set('date', date('Y-m-d H:i:s'));
 
-            if ($vObject->save())
+            if ($vObject->save()) {
                 return $newVersion;
+            }
 
             return false;
-
         } catch (\Exception $e) {
-            $this->logError('Cannot create new version for ' . $object->getName() . '::' . $object->getId() . ' ' . $e->getMessage());
+            $this->logError(
+                'Cannot create new version for ' . $object->getName() . '::' . $object->getId() . ' ' . $e->getMessage()
+            );
             return false;
         }
     }
@@ -82,7 +85,6 @@ class Vc extends Model
     public function getLastVersion($objectName, $record_id)
     {
         if (!is_array($record_id)) {
-
             $sql = $this->db->select()
                 ->from(
                     $this->table(),
@@ -91,7 +93,6 @@ class Vc extends Model
                 ->where('record_id =?', $record_id)
                 ->where('object_name =?', $objectName);
             return (integer)$this->db->fetchOne($sql);
-
         }
 
         $sql = $this->db->select()
@@ -102,15 +103,16 @@ class Vc extends Model
 
         $revs = $this->db->fetchAll($sql);
 
-        if (empty($revs))
+        if (empty($revs)) {
             return [];
+        }
 
         $data = [];
-        foreach ($revs as $v)
+        foreach ($revs as $v) {
             $data[$v['rec']] = $v['max_version'];
+        }
 
         return $data;
-
     }
 
     /**
@@ -143,10 +145,11 @@ class Vc extends Model
 
         $data = $this->db->fetchOne($sql);
 
-        if (!empty($data))
+        if (!empty($data)) {
             return unserialize(base64_decode($data));
-        else
+        } else {
             return [];
+        }
     }
 
     /**

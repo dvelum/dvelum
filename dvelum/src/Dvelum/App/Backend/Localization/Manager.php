@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -74,8 +75,10 @@ class Manager
         $data = [];
         foreach ($langs as $file) {
             $file = str_replace($paths, '', $file);
-            if (strpos($file, 'index') === false && basename($file) !== 'objects.php' && strpos($file,
-                    '/objects/') == false) {
+            if (strpos($file, 'index') === false && basename($file) !== 'objects.php' && strpos(
+                    $file,
+                    '/objects/'
+                ) == false) {
                 $data[] = substr($file, 0, -4);
             }
         }
@@ -164,9 +167,9 @@ class Manager
             $indexBaseName = $this->indexLanguage . '/' . $subPackage . '.php';
         }
 
-        try{
+        try {
             $indexBase = Lang::storage()->get($indexBaseName);
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $indexBaseName);
         }
 
@@ -180,9 +183,9 @@ class Manager
             }
         }
         $storage = Lang::storage();
-        try{
+        try {
             $indexConfig = $storage->get($indexName);
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $indexName);
         }
 
@@ -310,7 +313,7 @@ class Manager
          * @var array $index
          */
         $index = $this->getIndex($dictionary);
-        if(empty($index)){
+        if (empty($index)) {
             $index = [];
         }
 
@@ -333,7 +336,7 @@ class Manager
          * @var array $index
          */
         $index = $this->getIndex($dictionary);
-        if(empty($index)){
+        if (empty($index)) {
             $index = [];
         }
 
@@ -375,7 +378,7 @@ class Manager
         /**
          * @var array $index
          */
-        if(empty($index)){
+        if (empty($index)) {
             $index = [];
         }
 
@@ -393,9 +396,9 @@ class Manager
         if (!$isSub) {
             foreach ($langs as $langName => $value) {
                 $langFile = $writePath . $langName . '.php';
-                try{
+                try {
                     $langConfig = $storage->get($langName . '.php');
-                }catch (\Throwable $e){
+                } catch (\Throwable $e) {
                     throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $langName);
                 }
                 $langConfig->set($key, $value);
@@ -403,13 +406,12 @@ class Manager
                     throw new Exception($this->lang->get('CANT_WRITE_FS') . ' ' . $langFile);
                 }
             }
-
         } else {
             foreach ($langs as $langName => $value) {
                 $langFile = $writePath . $langName . '/' . $dictionaryName . '.php';
-                try{
+                try {
                     $langConfig = Lang::storage()->get($langName . '/' . $dictionaryName . '.php');
-                }catch (\Throwable $e){
+                } catch (\Throwable $e) {
                     throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $langName . '/' . $dictionaryName);
                 }
                 $langConfig->set($key, $value);
@@ -425,7 +427,7 @@ class Manager
      * @param string $file
      * @return bool
      */
-    protected function checkCanEdit($file) : bool
+    protected function checkCanEdit($file): bool
     {
         if (file_exists($file) && is_writable($file)) {
             return true;
@@ -448,7 +450,7 @@ class Manager
             $tmp = explode('/', $dictionary);
             $dictionaryName = $tmp[1];
             $isSub = true;
-        }else{
+        } else {
             $dictionaryName = $dictionary;
         }
 
@@ -465,9 +467,9 @@ class Manager
         if (!$isSub) {
             foreach ($mainLangs as $langName) {
                 $langFile = $writePath . $langName . '.php';
-                try{
+                try {
                     $langConfig = Lang::storage()->get($langName . '.php');
-                }catch (\Throwable $e){
+                } catch (\Throwable $e) {
                     throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $langName);
                 }
 
@@ -479,9 +481,9 @@ class Manager
         } else {
             foreach ($mainLangs as $langName) {
                 $langFile = $writePath . $langName . '/' . $dictionaryName . '.php';
-                try{
+                try {
                     $langConfig = Lang::storage()->get($langName . '/' . $dictionaryName . '.php');
-                }catch (\Throwable $e){
+                } catch (\Throwable $e) {
                     throw new Exception($this->lang->get('CANT_LOAD') . ' ' . $langName . '/' . $dictionaryName);
                 }
 

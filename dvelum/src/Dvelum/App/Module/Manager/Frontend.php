@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  * Copyright (C) 2011-2017  Kirill Yegorov
@@ -32,7 +33,7 @@ class Frontend extends Manager
      * Get list of Controllers
      * @return array
      */
-    public function getControllers() : array
+    public function getControllers(): array
     {
         $autoloadCfg = Config::storage()->get('autoloader.php');
         $paths = $autoloadCfg['paths'];
@@ -41,59 +42,57 @@ class Frontend extends Manager
 
         $data = [];
 
-        foreach($paths as $path)
-        {
-            if(basename($path) === 'modules')
-            {
+        foreach ($paths as $path) {
+            if (basename($path) === 'modules') {
                 $folders = File::scanFiles($path, false, true, File::DIRS_ONLY);
 
-                if(empty($folders))
+                if (empty($folders)) {
                     continue;
+                }
 
-                foreach($folders as $item)
-                {
-                    foreach ($dirs as $dir){
-                        if(!is_dir($item.'/'.$dir)){
+                foreach ($folders as $item) {
+                    foreach ($dirs as $dir) {
+                        if (!is_dir($item . '/' . $dir)) {
                             continue;
                         }
-                        $prefix = str_replace('/','_',ucfirst(basename($item)).'_'.$dir.'_');
-                        $this->findControllers($item.'/'.$dir, [], $data , $prefix);
+                        $prefix = str_replace('/', '_', ucfirst(basename($item)) . '_' . $dir . '_');
+                        $this->findControllers($item . '/' . $dir, [], $data, $prefix);
                     }
                 }
-            }else{
-
+            } else {
                 foreach ($dirs as $dir) {
                     if (!is_dir($path . '/' . $dir)) {
                         continue;
                     }
-                    $prefix = str_replace('/','_', $dir . '_');
+                    $prefix = str_replace('/', '_', $dir . '_');
                     $this->findControllers($path . '/' . $dir, [], $data, $prefix);
                 }
             }
         }
         return array_values($data);
     }
+
     /**
      * Update module data
      * @param string $name
      * @param array $data
      * @return bool
      */
-    public function updateModule(string $name , array $data) : bool
+    public function updateModule(string $name, array $data): bool
     {
-        if($name !== $data['code']){
+        if ($name !== $data['code']) {
             $this->modulesLocale->remove($name);
             $this->config->remove($name);
         }
 
-        if(isset($data['title'])){
-            $this->modulesLocale->set($data['code'] , $data['title']);
-            if(!$this->localeStorage->save($this->modulesLocale)){
+        if (isset($data['title'])) {
+            $this->modulesLocale->set($data['code'], $data['title']);
+            if (!$this->localeStorage->save($this->modulesLocale)) {
                 return false;
             }
             unset($data['title']);
         }
-        $this->config->set($data['code'] , $data);
+        $this->config->set($data['code'], $data);
         return $this->save();
     }
 
@@ -101,16 +100,14 @@ class Frontend extends Manager
      * Get modules list
      * @return array
      */
-    public function getList() : array
+    public function getList(): array
     {
         $list = parent::getList();
-        if(!empty($list))
-        {
-            foreach($list as $k=>&$v)
-            {
+        if (!empty($list)) {
+            foreach ($list as $k => &$v) {
                 $cfg['dist'] = true;
 
-                if($this->curConfig && $this->curConfig->offsetExists($k)){
+                if ($this->curConfig && $this->curConfig->offsetExists($k)) {
                     $cfg['dist'] = false;
                 }
 

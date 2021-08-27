@@ -1,4 +1,5 @@
 <?php
+
 namespace Dvelum\App\Task\Orm;
 
 use Dvelum\BackgroundTask\AbstractTask;
@@ -15,6 +16,7 @@ use Dvelum\Lang;
 class Encrypt extends AbstractTask
 {
     protected $buckedSize = 20;
+
     /**
      * (non-PHPdoc)
      * @see Bgtask_Abstract::getDescription()
@@ -22,23 +24,24 @@ class Encrypt extends AbstractTask
     public function getDescription()
     {
         $lang = Lang::lang();
-        return $lang->get('ENCRYPT_DATA') . ': ' .  $this->config['object'];
+        return $lang->get('ENCRYPT_DATA') . ': ' . $this->config['object'];
     }
 
     public function goBackground()
     {
-        ini_set('max_execution_time' , 0);
-        ini_set('ignore_user_abort' ,'On');
+        ini_set('max_execution_time', 0);
+        ini_set('ignore_user_abort', 'On');
         session_write_close();
 
-        echo json_encode(['success'=>true]);
+        echo json_encode(['success' => true]);
         echo ob_get_clean();
         flush();
-        if(function_exists('fastcgi_finish_request')){
+        if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
         }
         ob_start();
     }
+
     /**
      * (non-PHPdoc)
      * @see Bgtask_Abstract::run()
@@ -52,7 +55,7 @@ class Encrypt extends AbstractTask
          * Save task ID into session for UI
          */
         $session = Factory::get(Factory::SESSION);
-        $session->set($container , $this->pid);
+        $session->set($container, $this->pid);
         $this->goBackground();
 
         $objectConfig = Orm\Record\Config::factory($object);
@@ -60,28 +63,29 @@ class Encrypt extends AbstractTask
         $primaryKey = $objectConfig->getPrimaryKey();
 
         $model = Model::factory($object);
-        $count = Model::factory($object)->query()->filters([$ivField=>null])->getCount();
+        $count = Model::factory($object)->query()->filters([$ivField => null])->getCount();
         $this->setTotalCount($count);
 
-        if(!$count)
+        if (!$count) {
             $this->finish();
+        }
 
         $ignore = [];
-        $data = $model->query()->params(['limit'=>$this->buckedSize])->filters([$ivField=>null])->fields([$primaryKey])->fetchAll();
+        $data = $model->query()->params(['limit' => $this->buckedSize])->filters([$ivField => null])->fields(
+            [$primaryKey]
+        )->fetchAll();
 
-        while(!empty($data))
-        {
-            $ids = \Dvelum\Utils::fetchCol($primaryKey , $data);
+        while (!empty($data)) {
+            $ids = \Dvelum\Utils::fetchCol($primaryKey, $data);
 
-            $objectList = Orm\Record::factory($object , $ids);
+            $objectList = Orm\Record::factory($object, $ids);
             $count = 0;
-            foreach($objectList as $dataObject)
-            {
-                if(!$dataObject->save()){
+            foreach ($objectList as $dataObject) {
+                if (!$dataObject->save()) {
                     $ignore[] = $dataObject->getId();
-                    $this->log('Cannot encrypt '.$dataObject->getName() .' '.$dataObject->getId());
-                }else{
-                    $count ++;
+                    $this->log('Cannot encrypt ' . $dataObject->getName() . ' ' . $dataObject->getId());
+                } else {
+                    $count++;
                 }
             }
             /*
@@ -91,17 +95,18 @@ class Encrypt extends AbstractTask
             $this->updateState();
             $this->processSignals();
 
-            if(!empty($ignore)){
+            if (!empty($ignore)) {
                 $filters = array(
-                  $ivField => null,
-                  $primaryKey=> new \Dvelum\Db\Select\Filter($primaryKey,$ignore,\Dvelum\Db\Select\Filter::NOT_IN)
+                    $ivField => null,
+                    $primaryKey => new \Dvelum\Db\Select\Filter($primaryKey, $ignore, \Dvelum\Db\Select\Filter::NOT_IN)
                 );
-            }else{
+            } else {
                 $filters = array(
                     $ivField => null
                 );
             }
-            $data = $model->query()->params(['limit'=>$this->buckedSize])->filters($filters)->fields([$primaryKey])->fetchAll();
+            $data = $model->query()->params(['limit' => $this->buckedSize])->filters($filters)->fields([$primaryKey]
+            )->fetchAll();
         }
         $this->finish();
     }

@@ -16,15 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Dvelum\BackgroundTask;
 
 abstract class Launcher
 {
-	/**
-	 * Launch task
-	 * @param string $task  - task class name
-	 * @param array $config - task config
-	 * @return boolean
-	 */
-	abstract public function launch($task , array $config);
+    /**
+     * Launch task
+     * @param string $task - task class name
+     * @param array $config - task config
+     * @return boolean
+     */
+    abstract public function launch($task, array $config);
 }

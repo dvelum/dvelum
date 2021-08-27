@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2018  Kirill Yegorov
@@ -19,6 +20,7 @@
 declare(strict_types=1);
 
 namespace Dvelum\App\Backend\User;
+
 use Dvelum\App;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -81,14 +83,14 @@ class Controller extends App\Backend\Api\Controller
             ->params($pager)
             ->search($query)
             ->fields([
-                'id',
-                'group_id',
-                'name',
-                'login',
-                'email',
-                'enabled',
-                'admin'
-            ]);
+                         'id',
+                         'group_id',
+                         'name',
+                         'login',
+                         'email',
+                         'enabled',
+                         'admin'
+                     ]);
 
         $count = $dataQuery->getCount();
         $data = $dataQuery->fetchAll();
@@ -119,10 +121,10 @@ class Controller extends App\Backend\Api\Controller
     public function groupListAction()
     {
         $data = Model::factory('Group')->query()->fields([
-            'id',
-            'title',
-            'system'
-        ])->fetchAll();
+                                                             'id',
+                                                             'title',
+                                                             'system'
+                                                         ])->fetchAll();
 
         $this->response->success($data);
     }
@@ -176,7 +178,7 @@ class Controller extends App\Backend\Api\Controller
             if (!isset($moduleKeys[$v['module']])) {
                 unset($data[$k]);
             }
-            if($manager->isValidModule($k)){
+            if ($manager->isValidModule($k)) {
                 $v['title'] = $manager->getModuleConfig($k)['title'];
                 $v['rc'] = $manager->isVcModule($k);
             }
@@ -248,7 +250,6 @@ class Controller extends App\Backend\Api\Controller
                     $data[$item['module']]['g_' . $field] = (boolean)$item[$field];
                     continue;
                 }
-
             }
         }
         $this->response->success(array_values($data));
@@ -259,7 +260,7 @@ class Controller extends App\Backend\Api\Controller
      */
     public function savePermissionsAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -285,7 +286,7 @@ class Controller extends App\Backend\Api\Controller
 
     public function saveIndividualPermissionsAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
         $data = $this->request->post('data', 'raw', false);
@@ -313,7 +314,7 @@ class Controller extends App\Backend\Api\Controller
      */
     public function addGroupAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -339,7 +340,7 @@ class Controller extends App\Backend\Api\Controller
      */
     public function removeGroupAction()
     {
-        if(!$this->checkCanDelete()){
+        if (!$this->checkCanDelete()) {
             return;
         }
 
@@ -368,7 +369,7 @@ class Controller extends App\Backend\Api\Controller
      */
     public function userSaveAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -380,7 +381,7 @@ class Controller extends App\Backend\Api\Controller
 
         $object = $this->getPostedData($this->module);
 
-        if(empty($object)){
+        if (empty($object)) {
             return;
         }
         if (!$object->get('admin')) {
@@ -395,12 +396,12 @@ class Controller extends App\Backend\Api\Controller
             $ip = '127.0.0.1';
 
             $object->setValues([
-                'registration_date' => $date,
-                'confirmation_date' => $date,
-                'registration_ip' => $ip,
-                'confirmed' => true,
-                'last_ip' => $ip
-            ]);
+                                   'registration_date' => $date,
+                                   'confirmation_date' => $date,
+                                   'registration_ip' => $ip,
+                                   'confirmed' => true,
+                                   'last_ip' => $ip
+                               ]);
         }
 
         if (!$object->save()) {
@@ -416,7 +417,7 @@ class Controller extends App\Backend\Api\Controller
      */
     public function removeUserAction()
     {
-        if(!$this->checkCanDelete()){
+        if (!$this->checkCanDelete()) {
             return;
         }
 

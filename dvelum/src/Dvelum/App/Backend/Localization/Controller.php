@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -201,7 +202,9 @@ class Controller extends Backend\Controller
         $name = $this->request->post('name', Filter::FILTER_ALPHANUM, false);
 
         if (empty($name)) {
-            $this->response->error($this->lang->get('INVALID_VALUE_FOR_FIELD') . ' ' . $this->lang->get('DICTIONARY_NAME'));
+            $this->response->error(
+                $this->lang->get('INVALID_VALUE_FOR_FIELD') . ' ' . $this->lang->get('DICTIONARY_NAME')
+            );
             return;
         }
 

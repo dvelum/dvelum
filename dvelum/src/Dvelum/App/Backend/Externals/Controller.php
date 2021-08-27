@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -50,13 +51,17 @@ class Controller extends App\Backend\Controller
     public function __construct(Request $request, Response $response)
     {
         parent::__construct($request, $response);
-        
+
         /**
          * @var Lang $langService
          */
         $langService = Service::get('lang');
 
-        $langService->addLoader('externals', $this->appConfig->get('language').'/externals.php' , Config\Factory::File_Array);
+        $langService->addLoader(
+            'externals',
+            $this->appConfig->get('language') . '/externals.php',
+            Config\Factory::File_Array
+        );
         $this->externalsManager = Manager::factory();
 
         $this->externalsManager->scan();
@@ -69,13 +74,14 @@ class Controller extends App\Backend\Controller
     {
         $result = [];
 
-        if($this->externalsManager->hasModules()){
+        if ($this->externalsManager->hasModules()) {
             $result = $this->externalsManager->getModules();
         }
 
-        foreach($result as $k=>&$v) {
+        foreach ($result as $k => &$v) {
             unset($v['autoloader']);
-        }unset($v);
+        }
+        unset($v);
 
         $this->response->success($result);
     }
@@ -85,20 +91,20 @@ class Controller extends App\Backend\Controller
      */
     public function reinstallAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $id = $this->request->post('id', Filter::FILTER_STRING, false);
 
-        if(!$this->externalsManager->moduleExists($id)){
+        if (!$this->externalsManager->moduleExists($id)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        if(!$this->externalsManager->install($id)) {
+        if (!$this->externalsManager->install($id)) {
             $errors = $this->externalsManager->getErrors();
-            $this->response->error($this->lang->get('CANT_EXEC').' '.implode(', ', $errors));
+            $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(', ', $errors));
             return;
         }
 
@@ -110,28 +116,28 @@ class Controller extends App\Backend\Controller
      */
     public function postInstallAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $id = $this->request->post('id', Filter::FILTER_STRING, false);
 
-        if(!$this->externalsManager->moduleExists($id)){
+        if (!$this->externalsManager->moduleExists($id)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
         $langManager = new App\Backend\Localization\Manager($this->appConfig);
-        try{
+        try {
             $langManager->compileLangFiles();
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->response->error($e->getMessage());
             return;
         }
 
-        if(!$this->externalsManager->postInstall($id)) {
+        if (!$this->externalsManager->postInstall($id)) {
             $errors = $this->externalsManager->getErrors();
-            $this->response->error($this->lang->get('CANT_EXEC').' '.implode(', ', $errors));
+            $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(', ', $errors));
             return;
         }
 
@@ -143,22 +149,22 @@ class Controller extends App\Backend\Controller
      */
     public function enableAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $this->externalsManager->scan();
 
-        $id =  $this->request->post('id', Filter::FILTER_STRING, false);
+        $id = $this->request->post('id', Filter::FILTER_STRING, false);
 
-        if(!$this->externalsManager->moduleExists($id)){
+        if (!$this->externalsManager->moduleExists($id)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        if(!$this->externalsManager->setEnabled($id , true)){
+        if (!$this->externalsManager->setEnabled($id, true)) {
             $errors = $this->externalsManager->getErrors();
-            $this->response->error($this->lang->get('CANT_EXEC').' '.implode(', ', $errors));
+            $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(', ', $errors));
             return;
         }
 
@@ -170,19 +176,19 @@ class Controller extends App\Backend\Controller
      */
     public function disableAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
-        $id =  $this->request->post('id', Filter::FILTER_STRING, false);
+        $id = $this->request->post('id', Filter::FILTER_STRING, false);
 
-        if(!$this->externalsManager->moduleExists($id)){
+        if (!$this->externalsManager->moduleExists($id)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        if(!$this->externalsManager->setEnabled($id , false)){
+        if (!$this->externalsManager->setEnabled($id, false)) {
             $errors = $this->externalsManager->getErrors();
-            $this->response->error($this->lang->get('CANT_EXEC').' '.implode(', ', $errors));
+            $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(', ', $errors));
             return;
         }
         $this->response->success();
@@ -193,34 +199,34 @@ class Controller extends App\Backend\Controller
      */
     public function deleteAction()
     {
-        $repo =  $this->externalsManager->getComposerRepo();
+        $repo = $this->externalsManager->getComposerRepo();
 
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
-        $id =  $this->request->post('id', Filter::FILTER_STRING, false);
+        $id = $this->request->post('id', Filter::FILTER_STRING, false);
         $composerPackageName = $this->externalsManager->getComposerPackageName($id);
 
-        if(!$this->externalsManager->uninstall($id)){
+        if (!$this->externalsManager->uninstall($id)) {
             $errors = $this->externalsManager->getErrors();
-            $this->response->error($this->lang->get('CANT_EXEC').' '.json_encode($errors));
+            $this->response->error($this->lang->get('CANT_EXEC') . ' ' . json_encode($errors));
             return;
         }
 
         // Composer package
-        if(!empty($composerPackageName)){
+        if (!empty($composerPackageName)) {
             $client = $this->getClient($repo);
-            if(!$client){
+            if (!$client) {
                 $this->response->error($this->lang->get('WRONG_REQUEST'));
                 return;
             }
-            try{
-                if(!$client->remove($composerPackageName)){
-                    throw new \Exception('Composer: cant delete '.$composerPackageName);
+            try {
+                if (!$client->remove($composerPackageName)) {
+                    throw new \Exception('Composer: cant delete ' . $composerPackageName);
                 }
-            }catch (\Exception $e){
-                $this->response->error($this->lang->get('CANT_EXEC').' '.implode(', ', $e->getMessage()));
+            } catch (\Exception $e) {
+                $this->response->error($this->lang->get('CANT_EXEC') . ' ' . implode(', ', $e->getMessage()));
                 return;
             }
         }
@@ -233,14 +239,14 @@ class Controller extends App\Backend\Controller
      */
     public function buildMapAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
         $mapBuilder = new App\Classmap($this->appConfig);
         $mapBuilder->update();
 
-        if(!$mapBuilder->save()){
-            $this->response->error($this->lang->get('CANT_EXEC').' Build Map');
+        if (!$mapBuilder->save()) {
+            $this->response->error($this->lang->get('CANT_EXEC') . ' Build Map');
             return;
         }
 
@@ -254,7 +260,7 @@ class Controller extends App\Backend\Controller
     {
         $repoList = $this->externalsManager->getRepoList();
         $data = [];
-        foreach ($repoList as $key=>$info){
+        foreach ($repoList as $key => $info) {
             $data[] = [
                 'id' => $key,
                 'title' => $info['title']
@@ -268,21 +274,21 @@ class Controller extends App\Backend\Controller
      */
     public function repoItemsListAction()
     {
-        $repo =  $this->request->post('repo', Filter::FILTER_STRING, false);
-        $params =  $this->request->post('pager' , Filter::FILTER_ARRAY, []);
+        $repo = $this->request->post('repo', Filter::FILTER_STRING, false);
+        $params = $this->request->post('pager', Filter::FILTER_ARRAY, []);
 
         $externalsLang = Lang::lang('externals');
 
 
         $client = $this->getClient($repo);
-        if(!$client){
+        if (!$client) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        try{
-           $list = $client->getList($params);
-        }catch (\Exception $e){
+        try {
+            $list = $client->getList($params);
+        } catch (\Exception $e) {
             $this->response->error($e->getMessage());
             return;
         }
@@ -296,13 +302,13 @@ class Controller extends App\Backend\Controller
      * @return ClientInterface|null
      * @throws \Exception
      */
-    protected function getClient(string $repo) : ?ClientInterface
+    protected function getClient(string $repo): ?ClientInterface
     {
         $externalsLang = Lang::lang('externals');
         $repoList = $this->externalsManager->getRepoList();
 
-        if(!isset($repoList[$repo])){
-           return null;
+        if (!isset($repoList[$repo])) {
+            return null;
         }
 
         $config = \Dvelum\Config\Factory::create($repoList[$repo]['adapterConfig']);
@@ -323,27 +329,27 @@ class Controller extends App\Backend\Controller
      */
     public function downloadAction()
     {
-        $repo =  $this->request->post('repo', Filter::FILTER_STRING, false);
-        $app =  $this->request->post('app', Filter::FILTER_STRING, false);
+        $repo = $this->request->post('repo', Filter::FILTER_STRING, false);
+        $app = $this->request->post('app', Filter::FILTER_STRING, false);
 
-        if(empty($app) || empty($repo)){
+        if (empty($app) || empty($repo)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
         $client = $this->getClient($repo);
-        if(!$client){
+        if (!$client) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        try{
-           if($client->download($app)){
-               $this->response->json(['success'=>true,'msg'=>Lang::lang('externals')->get('package_downloaded')]);
-           }else{
-               $this->response->error($this->lang->get('CANT_EXEC'));
-           }
-        }catch (\Exception $e){
+        try {
+            if ($client->download($app)) {
+                $this->response->json(['success' => true, 'msg' => Lang::lang('externals')->get('package_downloaded')]);
+            } else {
+                $this->response->error($this->lang->get('CANT_EXEC'));
+            }
+        } catch (\Exception $e) {
             $this->response->error($e->getMessage());
             return;
         }

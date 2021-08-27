@@ -16,13 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Dvelum\BackgroundTask;
+
 abstract class Log
 {
-	/**
-	 * Log
-	 * @param string $message
-	 */
-	public function log($message){}
+    /**
+     * Log
+     * @param string $message
+     */
+    public function log($message)
+    {
+    }
 
 }

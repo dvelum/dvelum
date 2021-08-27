@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -59,23 +60,24 @@ class Historylog extends Model
      * @param integer $record_id
      * @param integer $type
      * @param string $object
-     * @throws Exception
      * @return bool
+     * @throws Exception
      */
-    public function log($user_id, $record_id, $type, $object) : bool
+    public function log($user_id, $record_id, $type, $object): bool
     {
-        if (!is_integer($type))
+        if (!is_integer($type)) {
             throw new Exception('History::log Invalid type');
+        }
 
         $obj = Orm\Record::factory($this->name);
         $obj->setValues(array(
-            'user_id' => intval($user_id),
-            'record_id' => intval($record_id),
-            'type' => intval($type),
-            'date' => date('Y-m-d H:i:s'),
-            'object' => $object
-        ));
-        return (bool) $obj->save(false);
+                            'user_id' => intval($user_id),
+                            'record_id' => intval($record_id),
+                            'type' => intval($type),
+                            'date' => date('Y-m-d H:i:s'),
+                            'object' => $object
+                        ));
+        return (bool)$obj->save(false);
     }
 
     /**
@@ -86,7 +88,7 @@ class Historylog extends Model
      * @param integer $limit - optional
      * @return array
      */
-    public function getLog($table_name, $record_id, $start = 0, $limit = 25) : array
+    public function getLog($table_name, $record_id, $start = 0, $limit = 25): array
     {
         $db = $this->getDbConnection();
         $sql = $db->select()
@@ -94,8 +96,8 @@ class Historylog extends Model
             ->where('l.table_name = ?', $table_name)
             ->where('l.record_id = ?', $record_id)
             ->joinLeft(array('u' => Model::factory('User')->table()),
-                ' l.user_id = u.id',
-                array('user' => 'u.name)')
+                       ' l.user_id = u.id',
+                       array('user' => 'u.name)')
             )
             ->order('l.date DESC')
             ->limit($limit, $start);
@@ -138,18 +140,19 @@ class Historylog extends Model
         try {
             $o = Orm\Record::factory('Historylog');
             $o->setValues(array(
-                'type' => $operation,
-                'object' => $objectName,
-                'record_id' => $objectId,
-                'user_id' => $userId,
-                'date' => $date,
-                'before' => $before,
-                'after' => $after
-            ));
+                              'type' => $operation,
+                              'object' => $objectName,
+                              'record_id' => $objectId,
+                              'user_id' => $userId,
+                              'date' => $date,
+                              'before' => $before,
+                              'after' => $after
+                          ));
 
             $id = $o->save(false);
-            if (!$id)
+            if (!$id) {
                 throw new Exception('Cannot save object state ' . $objectName . '::' . $objectId);
+            }
 
             return $id;
         } catch (Exception $e) {

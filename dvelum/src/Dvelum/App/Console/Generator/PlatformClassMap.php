@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -21,18 +22,24 @@ declare(strict_types=1);
 namespace Dvelum\App\Console\Generator;
 
 use Dvelum\App\Console;
+use Dvelum\Config\Storage\StorageInterface;
+use Dvelum\Externals\Manager;
+use Dvelum\App\PlatformClassMap as ClassMap;
 
 /**
  * Class ClassMap
  * Generate class map for Autoloader
  * @package Dvelum\App\Console\Generator
  */
-class ClassMap extends Console\Action
+class PlatformClassMap extends Console\Action
 {
     public function action(): bool
     {
-        throw new \Exception('not implemented yet');
-        $mapBuilder = new \Dvelum\App\Classmap($this->appConfig);
+        $mapBuilder = new ClassMap(
+            $this->appConfig,
+            $this->diContainer->get(StorageInterface::class),
+            $this->diContainer->get(Manager::class)
+        );
         $mapBuilder->update();
         return $mapBuilder->save();
     }

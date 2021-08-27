@@ -156,11 +156,11 @@ return array(
     /*
      * Application class
      */
-    'application' => '\\Dvelum\\App\\Application\\Platform',
+    'application' => \Dvelum\App\Application\Platform::class,
     /*
      * DB Manager
      */
-    'db_manager' => '\\Dvelum\\Db\\OrmManager',
+    'db_manager' => \Dvelum\Db\OrmManager::class,
     /*
      * Vendor library path
      */
@@ -184,10 +184,10 @@ return array(
         'repo' => [
             'dvelum-packagist'=> [
                 'title' => 'DVelum official',
-                'adapter' => '\\Dvelum\\Externals\\Client\\Composer',
+                'adapter' => \Dvelum\Externals\Client\Composer::class,
                 'adapterConfig' => [
                     'vendor' => 'dvelum',
-                    'type'=>'dvelum3-module',
+                    'type'=>'dvelum4-module',
                     //Path to composer command
                     'composer_path' => 'composer',
                     'download_path' => './modules'

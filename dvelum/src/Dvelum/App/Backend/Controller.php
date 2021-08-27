@@ -132,9 +132,13 @@ class Controller extends App\Controller
             $this->appConfig->set('language', $userLang);
             Lang::addDictionaryLoader((string)$userLang, $userLang . '.php', Config\Factory::File_Array);
             Service::get('Lang')->setDefaultDictionary((string)$userLang);
-            Service::get('Dictionary')->setConfig(Config\Factory::create([
-                'configPath' => $this->appConfig->get('dictionary_folder') . $this->appConfig->get('language') . '/'
-            ]));
+            Service::get('Dictionary')->setConfig(
+                Config\Factory::create([
+                                           'configPath' => $this->appConfig->get(
+                                                   'dictionary_folder'
+                                               ) . $this->appConfig->get('language') . '/'
+                                       ])
+            );
         }
 
         // switch theme
@@ -233,9 +237,9 @@ class Controller extends App\Controller
     {
         $csrf = new Csrf();
         $csrf->setOptions([
-            'lifetime' => $this->backofficeConfig->get('use_csrf_token_lifetime'),
-            'cleanupLimit' => $this->backofficeConfig->get('use_csrf_token_garbage_limit')
-        ]);
+                              'lifetime' => $this->backofficeConfig->get('use_csrf_token_lifetime'),
+                              'cleanupLimit' => $this->backofficeConfig->get('use_csrf_token_garbage_limit')
+                          ]);
 
         if (!$csrf->checkHeader() && !$csrf->checkPost()) {
             $this->response->error($this->lang->get('MSG_NEED_CSRF_TOKEN'));
@@ -248,7 +252,11 @@ class Controller extends App\Controller
     {
         $moduleManager = $this->container->get(\Dvelum\App\Module\Manager::class);
 
-        if (in_array($this->module, $this->backofficeConfig->get('system_controllers'), true) || $this->module == 'index') {
+        if (in_array(
+                $this->module,
+                $this->backofficeConfig->get('system_controllers'),
+                true
+            ) || $this->module == 'index') {
             return true;
         }
 
@@ -293,8 +301,8 @@ class Controller extends App\Controller
 
     /**
      * Get module name of the current class
-     * @throws \Exception
      * @return string
+     * @throws \Exception
      */
     public function getModule(): string
     {
@@ -324,19 +332,23 @@ class Controller extends App\Controller
 
         $this->includeScripts();
 
-        $this->resource->addInlineJs('
+        $this->resource->addInlineJs(
+            '
             var canEdit = ' . intval($this->moduleAcl->canEdit($module)) . ';
             var canDelete = ' . intval($this->moduleAcl->canDelete($module)) . ';
-        ');
+        '
+        );
 
         $objectName = $this->getObjectName();
         if (!empty($objectName)) {
             $objectConfig = \Dvelum\Orm\Record\Config::factory($this->getObjectName());
 
             if ($objectConfig->isRevControl()) {
-                $this->resource->addInlineJs('
+                $this->resource->addInlineJs(
+                    '
                     var canPublish = ' . intval($this->moduleAcl->canPublish($this->module)) . ';
-                ');
+                '
+                );
             }
         }
 
@@ -345,11 +357,13 @@ class Controller extends App\Controller
         $modulesConfig = Config\Factory::config(Config\Factory::File_Array, $this->appConfig->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($this->module);
 
-        if (strlen($moduleCfg['designer']))
+        if (strlen($moduleCfg['designer'])) {
             $this->runDesignerProject($moduleCfg['designer']);
-        else
-            if (file_exists($this->appConfig->get('jsPath') . 'app/system/crud/' . strtolower($this->module) . '.js'))
+        } else {
+            if (file_exists($this->appConfig->get('jsPath') . 'app/system/crud/' . strtolower($this->module) . '.js')) {
                 $this->resource->addJs('/js/app/system/crud/' . strtolower($this->module) . '.js', 4);
+            }
+        }
     }
 
     /**
@@ -361,14 +375,18 @@ class Controller extends App\Controller
 
         if ($cfg->getCount()) {
             $js = $cfg->get('js');
-            if (!empty($js))
-                foreach ($js as $file => $config)
+            if (!empty($js)) {
+                foreach ($js as $file => $config) {
                     $this->resource->addJs($file, $config['order'], $config['minified']);
+                }
+            }
 
             $css = $cfg->get('css');
-            if (!empty($css))
-                foreach ($css as $file => $config)
+            if (!empty($css)) {
+                foreach ($css as $file => $config) {
                     $this->resource->addCss($file, $config['order']);
+                }
+            }
         }
     }
 
@@ -385,7 +403,7 @@ class Controller extends App\Controller
          * @var string $projectPath
          */
         $projectPath = $manager->findWorkingCopy($project);
-        if(empty($projectPath)){
+        if (empty($projectPath)) {
             throw new \Exception('Undefined working copy for ' . $project);
         }
         $manager->renderProject($projectPath, $renderTo, $this->module);
@@ -400,8 +418,9 @@ class Controller extends App\Controller
         $template = View::factory();
         $templateData['wwwRoot'] = $this->appConfig->get('wwwroot');
         $templateData['backendPath'] = str_replace(
-            '//', '/',
-            $templateData['wwwRoot'].'/'.$this->appConfig->get('adminPath')
+            '//',
+            '/',
+            $templateData['wwwRoot'] . '/' . $this->appConfig->get('adminPath')
         );
 
         if ($this->backofficeConfig->get('use_csrf_token')) {
@@ -432,12 +451,14 @@ class Controller extends App\Controller
          * Define frontend JS variables
          */
         $res = Resource::factory();
-        $res->addInlineJs('
+        $res->addInlineJs(
+            '
             app.wwwRoot = "' . $wwwRoot . '";
         	app.admin = "' . $this->request->url([$adminPath]) . '";
         	app.delimiter = "' . $urlDelimiter . '";
         	app.root = "' . $this->request->url([$adminPath, $controllerCode, '']) . '";
-        ');
+        '
+        );
 
         $modulesManager = $this->container->get(\Dvelum\App\Module\Manager::class);
         /*
@@ -446,30 +467,32 @@ class Controller extends App\Controller
         $template = View::factory();
         $template->disableCache();
         $template->setData(array(
-            'wwwRoot' => $this->appConfig->get('wwwroot'),
-            'page' => $page,
-            'urlPath' => $controllerCode,
-            'resource' => $res,
-            'request' => $this->request,
-            'path' => $templatesPath,
-            'user' => $this->user,
-            'adminPath' => $this->appConfig->get('adminPath'),
-            'development' => $this->appConfig->get('development'),
-            'version' => Config::storage()->get('versions.php')->get('platform'),
-            'lang' => $this->appConfig->get('language'),
-            'modules' => $modulesManager->getList(),
-            'userModules' => Session\User::factory()->getModuleAcl()->getAvailableModules(),
-            'useCSRFToken' => $this->backofficeConfig->get('use_csrf_token'),
-            'theme' => $this->backofficeConfig->get('theme')
-        ));
+                               'wwwRoot' => $this->appConfig->get('wwwroot'),
+                               'page' => $page,
+                               'urlPath' => $controllerCode,
+                               'resource' => $res,
+                               'request' => $this->request,
+                               'path' => $templatesPath,
+                               'user' => $this->user,
+                               'adminPath' => $this->appConfig->get('adminPath'),
+                               'development' => $this->appConfig->get('development'),
+                               'version' => Config::storage()->get('versions.php')->get('platform'),
+                               'lang' => $this->appConfig->get('language'),
+                               'modules' => $modulesManager->getList(),
+                               'userModules' => Session\User::factory()->getModuleAcl()->getAvailableModules(),
+                               'useCSRFToken' => $this->backofficeConfig->get('use_csrf_token'),
+                               'theme' => $this->backofficeConfig->get('theme')
+                           ));
 
-        $res->addInlineJs('
+        $res->addInlineJs(
+            '
             app.permissions = Ext.create("app.PermissionsStorage");
-            var rights = '.json_encode($this->user->getModuleAcl()->getPermissions()).';
+            var rights = ' . json_encode($this->user->getModuleAcl()->getPermissions()) . ';
             app.permissions.setData(rights);
-        ');
+        '
+        );
 
-        $res->addInlineJs('var developmentMode = '.intval($this->appConfig->get('development')).';');
+        $res->addInlineJs('var developmentMode = ' . intval($this->appConfig->get('development')) . ';');
 
         $menuAdapterClass = $this->backofficeConfig->get('menu_adapter');
         /**
@@ -477,37 +500,39 @@ class Controller extends App\Controller
          */
         $menuAdapter = new $menuAdapterClass($this->user, $modulesManager, $this->appConfig, $this->request);
         $menuAdapter->setOptions([
-            'development' => $this->appConfig->get('development'),
-            'isVertical' => true,
-            'stateful' => true,
-        ]);
+                                     'development' => $this->appConfig->get('development'),
+                                     'isVertical' => true,
+                                     'stateful' => true,
+                                 ]);
         $menuIncludes = $menuAdapter->getIncludes();
 
-        if(!empty($menuIncludes['css'])){
-            foreach($menuIncludes['css'] as $path => $options){
+        if (!empty($menuIncludes['css'])) {
+            foreach ($menuIncludes['css'] as $path => $options) {
                 $defaults = [
                     'minified' => false,
                 ];
                 $options = array_merge($defaults, $options);
-                $this->resource->addCss($path,  $options['minified']);
+                $this->resource->addCss($path, $options['minified']);
             }
         }
 
-        if(!empty($menuIncludes['js'])){
-            foreach($menuIncludes['js'] as $path => $options){
+        if (!empty($menuIncludes['js'])) {
+            foreach ($menuIncludes['js'] as $path => $options) {
                 $defaults = [
-                  'order' => 0,
-                  'minified' => false,
-                  'tag' => false
+                    'order' => 0,
+                    'minified' => false,
+                    'tag' => false
                 ];
                 $options = array_merge($defaults, $options);
-                $this->resource->addJs($path,$options['order'], $options['minified'], $options['tag']);
+                $this->resource->addJs($path, $options['order'], $options['minified'], $options['tag']);
             }
         }
 
-        $res->addInlineJs('
-            app.menu = '.$menuAdapter->render().';
-        ');
+        $res->addInlineJs(
+            '
+            app.menu = ' . $menuAdapter->render() . ';
+        '
+        );
 
         $this->response->put($template->render($templatesPath . 'layout.php'));
     }
@@ -533,8 +558,11 @@ class Controller extends App\Controller
             $modulesList = $modulesManager->getList();
             $projectData['title'] = (isset($modulesList[$this->module])) ? $modulesList[$moduleName]['title'] : '';
         } else {
-            if (file_exists($this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($moduleName) . '.js'))
+            if (file_exists(
+                $this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($moduleName) . '.js'
+            )) {
                 $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($moduleName) . '.js';
+            }
         }
         return $projectData;
     }

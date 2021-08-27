@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Dvelum\App\Console\Orm;
@@ -22,14 +23,12 @@ class BuildShards extends Console\Action
         $shardsConfig = Config::storage()->get($shardsFile);
         $registeredObjects = $dbObjectManager->getRegisteredObjects();
 
-        foreach ($shardsConfig as $item)
-        {
+        foreach ($shardsConfig as $item) {
             $shardId = $item['id'];
-            echo  $shardId . ' ' . PHP_EOL;
+            echo $shardId . ' ' . PHP_EOL;
             echo "\t Tables" . PHP_EOL;
             //build objects
-            foreach ($registeredObjects as $index => $object)
-            {
+            foreach ($registeredObjects as $index => $object) {
                 if (!Orm\Record\Config::factory($object)->isDistributed()) {
                     unset($registeredObjects[$index]);
                     continue;
@@ -47,12 +46,10 @@ class BuildShards extends Console\Action
                 }
             }
             //build foreign keys
-            if ($ormConfig->get('foreign_keys'))
-            {
+            if ($ormConfig->get('foreign_keys')) {
                 echo "\t Foreign Keys " . PHP_EOL;
 
-                foreach ($registeredObjects as $index => $object)
-                {
+                foreach ($registeredObjects as $index => $object) {
                     echo "\t\t" . $object . ' : ';
 
                     $builder = Orm\Record\Builder::factory($object);

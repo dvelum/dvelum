@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -27,71 +28,79 @@ use Dvelum\Utils;
 
 class Group extends Model
 {
-	/**
-	 * Get group names indexed by group id
-	 * @return array
-	 */
-	public function getGroups() : array
-	{
-		/*
-		 * Check cache
-		 */
-		if($this->cache && $data = $this->cache->load('groups_list'))
-			return $data;
+    /**
+     * Get group names indexed by group id
+     * @return array
+     */
+    public function getGroups(): array
+    {
+        /*
+         * Check cache
+         */
+        if ($this->cache && $data = $this->cache->load('groups_list')) {
+            return $data;
+        }
 
-		$sql = $this->db->select()->from($this->table() , ['id' , 'title']);
-		$data = $this->db->fetchAll($sql);
+        $sql = $this->db->select()->from($this->table(), ['id', 'title']);
+        $data = $this->db->fetchAll($sql);
 
-		if(!empty($data))
-			$data = Utils::collectData('id', 'title', $data);
-		/*
-		 * Store cache
-		 */
-		if($this->cache)
-			$this->cache->save($data, 'groups_list');
+        if (!empty($data)) {
+            $data = Utils::collectData('id', 'title', $data);
+        }
+        /*
+         * Store cache
+         */
+        if ($this->cache) {
+            $this->cache->save($data, 'groups_list');
+        }
 
-		return $data;
-	}
+        return $data;
+    }
 
-	/**
-	 * Add users group
-	 * @param string  $title - group name
+    /**
+     * Add users group
+     * @param string $title - group name
      * @return mixed
-	 */
-	public function addGroup(string $title)
-	{
-		$obj = Orm\Record::factory($this->name);
-		$obj->set('title', $title);
+     */
+    public function addGroup(string $title)
+    {
+        $obj = Orm\Record::factory($this->name);
+        $obj->set('title', $title);
 
-		if(!$obj->save())
-			return false;
+        if (!$obj->save()) {
+            return false;
+        }
 
-		/**
-		 * Invalidate cache
-		 */
-		if($this->cache)
-			$this->cache->remove('groups_list');
+        /**
+         * Invalidate cache
+         */
+        if ($this->cache) {
+            $this->cache->remove('groups_list');
+        }
 
-		return $obj->getId();
-	}
-	/**
-	 * Remove users Group
-	 * @param integer $id
-	 * @return bool
-	 */
-	public function removeGroup($id) : bool
-	{
-		$obj = Orm\Record::factory($this->name, $id);
+        return $obj->getId();
+    }
 
-		if(!$obj->delete())
-			return false;
+    /**
+     * Remove users Group
+     * @param integer $id
+     * @return bool
+     */
+    public function removeGroup($id): bool
+    {
+        $obj = Orm\Record::factory($this->name, $id);
 
-		/**
-		 * Invalidate cache
-		 */
-		if($this->cache)
-			$this->cache->remove('groups_list');
+        if (!$obj->delete()) {
+            return false;
+        }
 
-		return true;
-	}
+        /**
+         * Invalidate cache
+         */
+        if ($this->cache) {
+            $this->cache->remove('groups_list');
+        }
+
+        return true;
+    }
 }

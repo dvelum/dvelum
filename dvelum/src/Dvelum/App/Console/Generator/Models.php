@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -40,7 +41,7 @@ class Models extends Console\Action
             $class = 'Model_' . implode('_', $list);
 
             $path = str_replace(['_', '\\'], '/', $class);
-            $namespace = str_replace('/', '\\' , dirname($path));
+            $namespace = str_replace('/', '\\', dirname($path));
             $fileName = basename($path);
 
             $path = $modelPath . $path . '.php';

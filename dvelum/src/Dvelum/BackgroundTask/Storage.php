@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Dvelum\BackgroundTask;
+
 /**
  * Abstract class for Background Storage
  * @author Kirill A Egorov 2011
@@ -24,109 +26,109 @@ namespace Dvelum\BackgroundTask;
  */
 abstract class Storage
 {
-	/**
-	 * Get current task list
-	 * @return array
-	 */
-	abstract public function getList();
+    /**
+     * Get current task list
+     * @return array
+     */
+    abstract public function getList();
 
-	/**
-	 * Get Task info by Id
-	 * @param integer $pid
-	 * @return array
-	 */
-	abstract public function get($pid);
+    /**
+     * Get Task info by Id
+     * @param integer $pid
+     * @return array
+     */
+    abstract public function get($pid);
 
-	/**
-	 * Send signal
-	 * @param integer $pid
-	 * @param integer $signal - const
-	 * @return bool
-	 */
-	abstract public function signal($pid , $signal);
+    /**
+     * Send signal
+     * @param integer $pid
+     * @param integer $signal - const
+     * @return bool
+     */
+    abstract public function signal($pid, $signal);
 
-	/**
-	 * Kill task
-	 * @param integer $pid
-	 * @return boolean
-	 */
-	abstract public function kill($pid);
+    /**
+     * Kill task
+     * @param integer $pid
+     * @return boolean
+     */
+    abstract public function kill($pid);
 
-	/**
-	 * Get task signals
-	 * @param integer $pid
-	 * @param boolean $clean - remove signals after reading
-	 * @return array();
-	 */
-	abstract public function getSignals($pid , $clean = false);
+    /**
+     * Get task signals
+     * @param integer $pid
+     * @param boolean $clean - remove signals after reading
+     * @return array();
+     */
+    abstract public function getSignals($pid, $clean = false);
 
-	/**
-	 * Remove signals
-	 * @param integer $pid
-	 * @param array $sigId - optional
-	 * @return void
-	 */
-	abstract public function clearSignals($pid , $sigId = false);
+    /**
+     * Remove signals
+     * @param integer $pid
+     * @param array $sigId - optional
+     * @return void
+     */
+    abstract public function clearSignals($pid, $sigId = false);
 
-	/**
-	 * Update task state
-	 * @param integer $pid
-	 * @param integer $opTotal
-	 * @param integer $opFinished
-	 * @param integer $status
-	 */
-	abstract public function updateState($pid , $opTotal , $opFinished , $status , $memoryPeak , $memoryAllocated);
+    /**
+     * Update task state
+     * @param integer $pid
+     * @param integer $opTotal
+     * @param integer $opFinished
+     * @param integer $status
+     */
+    abstract public function updateState($pid, $opTotal, $opFinished, $status, $memoryPeak, $memoryAllocated);
 
-	/**
-	 * Teminate process
-	 */
-	protected function terminate()
-	{
-		/**
-		 * @todo log termination
-		 */
-		exit();
-	}
+    /**
+     * Teminate process
+     */
+    protected function terminate()
+    {
+        /**
+         * @todo log termination
+         */
+        exit();
+    }
 
-	/**
-	 * Check task record
-	 * @param integer $pid
-	 * @return boolean
-	 */
-	abstract public function isLive($pid);
+    /**
+     * Check task record
+     * @param integer $pid
+     * @return boolean
+     */
+    abstract public function isLive($pid);
 
-	/**
-	 * Set task finished
-	 * @param integer $pid
-	 * @param string $time
-	 */
-	abstract public function setStarted($pid , $time);
+    /**
+     * Set task finished
+     * @param integer $pid
+     * @param string $time
+     */
+    abstract public function setStarted($pid, $time);
 
-	/**
-	 * Set task finished
-	 * @param integer $pid
-	 * @param string $time
-	 */
-	abstract public function setFinished($pid , $time);
+    /**
+     * Set task finished
+     * @param integer $pid
+     * @param string $time
+     */
+    abstract public function setFinished($pid, $time);
 
-	/**
-	 * Set task stopped
-	 * @param integer $pid
-	 * @param string $time
-	 */
-	abstract public function setStoped($pid , $time);
-	
-	/**
-	 * Set task stopped with error
-	 * @param integer $pid
-	 * @param string $time
-	 */
-	abstract public function setError($pid , $time);
+    /**
+     * Set task stopped
+     * @param integer $pid
+     * @param string $time
+     */
+    abstract public function setStoped($pid, $time);
 
-	/**
-	 * Add task record
-	 * @param string $description
-	 * @return integer  - task pid
-	 */
-	abstract public function addTaskRecord($description);
+    /**
+     * Set task stopped with error
+     * @param integer $pid
+     * @param string $time
+     */
+    abstract public function setError($pid, $time);
+
+    /**
+     * Add task record
+     * @param string $description
+     * @return integer  - task pid
+     */
+    abstract public function addTaskRecord($description);
 }

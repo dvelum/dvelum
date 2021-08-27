@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -34,34 +35,34 @@ class Add extends Console\Action
         $vendor = Filter::filterString($request->getPart(1));
         $module = Filter::filterString($request->getPart(2));
 
-        if(empty($vendor) || empty($module)){
+        if (empty($vendor) || empty($module)) {
             return false;
         }
 
         $moduleDir = $this->appConfig->get('externals')['path'] . '/' . $vendor . '/' . $module;
 
-        if(!is_dir($moduleDir)){
+        if (!is_dir($moduleDir)) {
             return false;
         }
 
-        if(!file_exists($moduleDir.'/config.php')){
+        if (!file_exists($moduleDir . '/config.php')) {
             return false;
         }
 
         $moduleInfo = include $moduleDir . '/config.php';
-        if(!is_array($moduleInfo) || empty($moduleInfo)){
+        if (!is_array($moduleInfo) || empty($moduleInfo)) {
             return false;
         }
 
         $manager = Manager::factory();
-        if($manager->moduleExists($moduleInfo['id'])){
+        if ($manager->moduleExists($moduleInfo['id'])) {
             return true;
         }
 
-        return $manager->add($moduleInfo['id'],[
+        return $manager->add($moduleInfo['id'], [
             'enabled' => true,
             'installed' => false,
-            'path' =>$moduleDir
+            'path' => $moduleDir
         ]);
     }
 }

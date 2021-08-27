@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -20,33 +21,36 @@
 declare(strict_types=1);
 
 namespace Dvelum\User\Auth;
+
 /**
  * User Auth provider for internal Dvelum authentification (object User)
  * @author Sergey Leschenko
  */
+
 use Dvelum\Orm\Model;
 
 class Dvelum extends AbstractAdapter
 {
-	/**
-	 * Auth user
-	 * @param string $login
-	 * @param string $password
-	 * @return bool
-	 */
-	public function auth($login,$password) : bool
-	{
-		$sql = $this->orm->model('User')->getDbConnection()->select()
-			->from($this->orm->model('User')->table())
-			->where('`login` =?' , $login)
-			->where('`enabled` = 1');
+    /**
+     * Auth user
+     * @param string $login
+     * @param string $password
+     * @return bool
+     */
+    public function auth($login, $password): bool
+    {
+        $sql = $this->orm->model('User')->getDbConnection()->select()
+            ->from($this->orm->model('User')->table())
+            ->where('`login` =?', $login)
+            ->where('`enabled` = 1');
 
-		$data = $this->orm->model('User')->getDbConnection()->fetchRow($sql);
+        $data = $this->orm->model('User')->getDbConnection()->fetchRow($sql);
 
-		if(empty($data) || !password_verify($password , $data['pass']))
-			return false;
+        if (empty($data) || !password_verify($password, $data['pass'])) {
+            return false;
+        }
 
-		$this->userData = $data;
-		return true;
-	}
+        $this->userData = $data;
+        return true;
+    }
 }

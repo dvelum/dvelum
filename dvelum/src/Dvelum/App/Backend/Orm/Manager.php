@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -70,7 +71,7 @@ class Manager
                      * @var string $relatedObject
                      */
                     $relatedObject = $objectConfig->getRelationsObject($field);
-                    if(empty($relatedObject)){
+                    if (empty($relatedObject)) {
                         return self::ERROR_EXEC;
                     }
                     $result = $this->removeObject($relatedObject, $deleteTable);
@@ -215,7 +216,7 @@ class Manager
         }
 
         $indexManager = new Orm\Record\Config\IndexManager();
-        if (!$indexManager->indexExists($cfg,$index)) {
+        if (!$indexManager->indexExists($cfg, $index)) {
             return false;
         }
 
@@ -230,7 +231,7 @@ class Manager
      * @param string $fieldName
      * @return int  - 0 - success or error code
      */
-    public function removeField($objectName, $fieldName) : int
+    public function removeField($objectName, $fieldName): int
     {
         try {
             $objectCfg = Orm\Record\Config::factory($objectName);
@@ -283,10 +284,10 @@ class Manager
      * @param Orm\Record\Config $cfg
      * @param string $oldName
      * @param string $newName
-     * @throws \Exception
      * @return int 0 on success or error code
+     * @throws \Exception
      */
-    public function renameField(Orm\Record\Config $cfg, string $oldName, string $newName) : int
+    public function renameField(Orm\Record\Config $cfg, string $oldName, string $newName): int
     {
         $localisations = $this->getLocalisations();
         $langWritePath = Lang::storage()->getWrite();
@@ -330,9 +331,9 @@ class Manager
         }
 
         $fieldManager = new Orm\Record\Config\FieldManager();
-        try{
+        try {
             $fieldManager->renameField($cfg, $oldName, $newName);
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             return self::ERROR_EXEC;
         }
 
@@ -340,8 +341,8 @@ class Manager
             return self::ERROR_EXEC;
         }
         // Rebuild database
-        $builder = Builder::factory($cfg->getName() , false);
-        if(!$builder->renameField($oldName , $newName)){
+        $builder = Builder::factory($cfg->getName(), false);
+        if (!$builder->renameField($oldName, $newName)) {
             return self::ERROR_EXEC;
         }
 
@@ -356,7 +357,7 @@ class Manager
      * @return int 0 on success or error code
      * @throws \Exception
      */
-    public function renameObject($path, $oldName, $newName) : int
+    public function renameObject($path, $oldName, $newName): int
     {
         $objectConfig = Orm\Record\Config::factory($oldName);
         /*

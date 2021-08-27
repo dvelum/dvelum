@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -39,10 +40,10 @@ class Backend extends \Dvelum\App\Router
      * Route request to the Controller
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
-     * @throws \Exception
      * @return ResponseInterface
+     * @throws \Exception
      */
-    public function route(ServerRequestInterface $request , ResponseInterface $response) : ResponseInterface
+    public function route(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $requestHelper = new Request($request);
         $responseHelper = new Response($response);
@@ -60,13 +61,15 @@ class Backend extends \Dvelum\App\Router
 
         $coreClass = '\\Dvelum\\App\\Backend\\' . $controller . '\\Controller';
 
-        if(in_array($coreClass, $configBackend->get('system_controllers'))  && class_exists($coreClass)) {
+        if (in_array($coreClass, $configBackend->get('system_controllers')) && class_exists($coreClass)) {
             $controller = $coreClass;
         } else {
             $manager = $this->container->get(\Dvelum\App\Module\Manager::class);
             $controller = $manager->getModuleController($controller);
             if (empty($controller)) {
-                $responseHelper->error($this->container->get(Lang::class)->lang()->get('WRONG_REQUEST') . ' ' . $requestHelper->getUri());
+                $responseHelper->error(
+                    $this->container->get(Lang::class)->lang()->get('WRONG_REQUEST') . ' ' . $requestHelper->getUri()
+                );
                 return $responseHelper->getPsrResponse();
             }
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -51,8 +52,8 @@ class Platform extends Application
 
         \Dvelum\View::setContainer($this->diContainer);
         \Dvelum\Orm::setContainer($this->diContainer);
-
     }
+
     /**
      * Init additional external modules
      * defined in external_modules option
@@ -77,18 +78,18 @@ class Platform extends Application
      * @return ManagerInterface
      * @throws Exception
      */
-    protected function initDb() : ManagerInterface
+    protected function initDb(): ManagerInterface
     {
         $manager = parent::initDb();
 
         $dev = $this->config->get('development');
-        $dbErrorHandler = function ( \Dvelum\Db\Adapter\Event $e) use( $dev){
+        $dbErrorHandler = function (\Dvelum\Db\Adapter\Event $e) use ($dev) {
             $response = Response::factory();
             $request = Request::factory();
-            if($request->isAjax()){
+            if ($request->isAjax()) {
                 $response->error(Lang::lang()->get('CANT_CONNECT'));
                 exit();
-            }else{
+            } else {
                 $tpl = View::factory();
                 $tpl->set('error_msg', ' ' . $e->getData()['message']);
                 $tpl->set('development', $dev);
@@ -113,7 +114,7 @@ class Platform extends Application
 
         if ($page === $this->config->get('adminPath')) {
             $response = $this->routeBackOffice($request, $response);
-        }else{
+        } else {
             $response = $this->routeFrontend($request, $response);
         }
 
@@ -148,9 +149,9 @@ class Platform extends Application
             $tplService = $this->diContainer->get(\Dvelum\Template\Service::class);
             $tpl = $tplService->getTemplate();
             $tpl->setData([
-                'request' => new Request($request),
-                'msg' => $this->diContainer->get(Lang::class)->getDictionary()->get('MAINTENANCE')
-            ]);
+                              'request' => new Request($request),
+                              'msg' => $this->diContainer->get(Lang::class)->getDictionary()->get('MAINTENANCE')
+                          ]);
 
             $response->getBody()->write($tpl->render('public/maintenance.php'));
             return $response;

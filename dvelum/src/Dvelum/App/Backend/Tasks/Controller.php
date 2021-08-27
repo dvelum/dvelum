@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -46,8 +47,8 @@ class Controller extends Backend\Controller
     {
         parent::__construct($request, $response);
 
-        $bgStorage = new  \Dvelum\BackgroundTask\Storage\Orm(Model::factory('bgtask') , Model::factory('Bgtask_Signal'));
-        $logger = new File('./.log/test'.date('YmdHis').'.txt');
+        $bgStorage = new  \Dvelum\BackgroundTask\Storage\Orm(Model::factory('bgtask'), Model::factory('Bgtask_Signal'));
+        $logger = new File('./.log/test' . date('YmdHis') . '.txt');
         $this->tManager = Manager::factory();
         $this->tManager->setStorage($bgStorage);
         $this->tManager->setLogger($logger);
@@ -60,7 +61,7 @@ class Controller extends Backend\Controller
     {
         return 'Tasks';
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -71,12 +72,14 @@ class Controller extends Backend\Controller
 
     public function indexAction()
     {
-        $this->resource->addInlineJs('
-            var canEdit = '.($this->user->getModuleAcl()->canEdit($this->getModule())).';
-            var canDelete = '.($this->user->getModuleAcl()->canDelete($this->getModule())).';
-        ');
+        $this->resource->addInlineJs(
+            '
+            var canEdit = ' . ($this->user->getModuleAcl()->canEdit($this->getModule())) . ';
+            var canDelete = ' . ($this->user->getModuleAcl()->canDelete($this->getModule())) . ';
+        '
+        );
         $this->resource->addJs('/js/app/system/Tasks.js', 4);
-        $this->resource->addJs('/js/app/system/crud/'.strtolower($this->getModule()).'.js', 4);
+        $this->resource->addJs('/js/app/system/crud/' . strtolower($this->getModule()) . '.js', 4);
     }
 
     /**
@@ -90,15 +93,16 @@ class Controller extends Backend\Controller
          */
         $dictionaryService = Service::get('dictionary');
 
-        if(!empty($data)){
-            $dict =  $dictionaryService->get('task');
-            foreach ($data as $k=>&$v){
+        if (!empty($data)) {
+            $dict = $dictionaryService->get('task');
+            foreach ($data as $k => &$v) {
                 $v['status_code'] = $v['status'];
-                if($dict->isValidKey($v['status']))
+                if ($dict->isValidKey($v['status'])) {
                     $v['status'] = $dict->getValue($v['status']);
+                }
 
                 $finish = strtotime((string)$v['time_finished']);
-                if($finish<=0){
+                if ($finish <= 0) {
                     $finish = time();
                 }
 
@@ -106,11 +110,13 @@ class Controller extends Backend\Controller
 
                 $v['memory'] = \Dvelum\Utils::formatFileSize($v['memory']);
                 $v['memory_peak'] = \Dvelum\Utils::formatFileSize($v['memory_peak']);
-                if($v['op_total']==0)
+                if ($v['op_total'] == 0) {
                     $v['progress'] = 0;
-                else
-                    $v['progress'] = round(($v['op_finished']) / $v['op_total'] , 2) * 100 ;
-            }unset($v);
+                } else {
+                    $v['progress'] = round(($v['op_finished']) / $v['op_total'], 2) * 100;
+                }
+            }
+            unset($v);
         }
         $this->response->success($data);
     }
@@ -123,7 +129,7 @@ class Controller extends Backend\Controller
         /**
          * @var \Dvelum\Orm\Orm $service
          */
-        $this->tManager->launch(Manager::LAUNCHER_JSON, '\\Dvelum\\App\\Task\\Test' , []);
+        $this->tManager->launch(Manager::LAUNCHER_JSON, '\\Dvelum\\App\\Task\\Test', []);
     }
 
     /**
@@ -131,21 +137,20 @@ class Controller extends Backend\Controller
      */
     public function killAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $pid = $this->request->post('pid', 'integer', 0);
-        
-        if(!$pid){
-           $this->response->error($this->lang->get('WRONG_REQUEST'));
+
+        if (!$pid) {
+            $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        if($this->tManager->kill($pid)){
+        if ($this->tManager->kill($pid)) {
             $this->response->success();
-        }
-        else{
+        } else {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -156,20 +161,21 @@ class Controller extends Backend\Controller
      */
     public function pauseAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $pid = $this->request->post('pid', 'integer', 0);
-        if(!$pid){
+        if (!$pid) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        if($this->tManager->signal($pid, AbstractTask::SIGNAL_SLEEP))
+        if ($this->tManager->signal($pid, AbstractTask::SIGNAL_SLEEP)) {
             $this->response->success();
-        else
-           $this->response->error($this->lang->get('CANT_EXEC'));
+        } else {
+            $this->response->error($this->lang->get('CANT_EXEC'));
+        }
     }
 
     /**
@@ -177,20 +183,21 @@ class Controller extends Backend\Controller
      */
     public function resumeAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $pid = $this->request->post('pid', 'integer', 0);
-        if(!$pid){
+        if (!$pid) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        if($this->tManager->signal($pid, AbstractTask::SIGNAL_CONTINUE))
+        if ($this->tManager->signal($pid, AbstractTask::SIGNAL_CONTINUE)) {
             $this->response->success();
-        else
-           $this->response->error($this->lang->get('CANT_EXEC'));
+        } else {
+            $this->response->error($this->lang->get('CANT_EXEC'));
+        }
     }
 
     /**
@@ -198,20 +205,21 @@ class Controller extends Backend\Controller
      */
     public function stopAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $pid = $this->request->post('pid', 'integer', 0);
-        if(!$pid){
+        if (!$pid) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        if($this->tManager->signal($pid, AbstractTask::SIGNAL_STOP))
+        if ($this->tManager->signal($pid, AbstractTask::SIGNAL_STOP)) {
             $this->response->success();
-        else
-           $this->response->error($this->lang->get('CANT_EXEC'));
+        } else {
+            $this->response->error($this->lang->get('CANT_EXEC'));
+        }
     }
 
     /**
@@ -220,12 +228,15 @@ class Controller extends Backend\Controller
     public function desktopModuleInfo()
     {
         $projectData = [];
-        $projectData['includes']['js'][] =  '/js/app/system/Tasks.js';
+        $projectData['includes']['js'][] = '/js/app/system/Tasks.js';
         /*
          * Module bootstrap
          */
-        if(file_exists($this->appConfig->get('jsPath').'app/system/desktop/' . strtolower($this->getModule()) . '.js'))
-            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->getModule()) .'.js';
+        if (file_exists(
+            $this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($this->getModule()) . '.js'
+        )) {
+            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->getModule()) . '.js';
+        }
 
         return $projectData;
     }

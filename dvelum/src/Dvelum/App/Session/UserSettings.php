@@ -44,7 +44,7 @@ class UserSettings
 
     public function get(string $name)
     {
-        if(isset($this->data[$name])){
+        if (isset($this->data[$name])) {
             return $this->data[$name];
         }
 

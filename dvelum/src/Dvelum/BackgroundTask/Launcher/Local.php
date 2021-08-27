@@ -16,18 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Dvelum\BackgroundTask\Launcher;
+
 use Dvelum\BackgroundTask\Launcher;
+
 /**
  * Task launcher
  * @package Bgtask
  */
 abstract class Local extends Launcher
 {
-	public function __construct()
-	{
-		ini_set('max_execution_time' , 0);
-        ini_set('ignore_user_abort' ,'On');
+    public function __construct()
+    {
+        ini_set('max_execution_time', 0);
+        ini_set('ignore_user_abort', 'On');
         session_write_close();
-	}
+    }
 }

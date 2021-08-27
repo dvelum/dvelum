@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  * Copyright (C) 2011-2017  Kirill Yegorov
@@ -17,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
+
 namespace Dvelum\App\Module\Generator;
 
 use Dvelum\Config\ConfigInterface;
@@ -30,5 +32,6 @@ interface GeneratorInterface
     );
 
     public function createVcModule(string $object, string $controllerClass, string $projectFile);
-    public function createModule(string $object,  string $controllerClass, string $projectFile);
+
+    public function createModule(string $object, string $controllerClass, string $projectFile);
 }

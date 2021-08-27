@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -30,7 +31,7 @@ use Dvelum\Config;
  */
 class Controller extends App\Backend\Controller
 {
-    public function getModule() : string
+    public function getModule(): string
     {
         return 'index';
     }
@@ -39,7 +40,7 @@ class Controller extends App\Backend\Controller
     {
         $config = Config::storage()->get('backend.php');
         $this->includeScripts();
-        if(!in_array($config->get('theme') , $config->get('desktop_themes') , true)){
+        if (!in_array($config->get('theme'), $config->get('desktop_themes'), true)) {
             $this->resource->addJs('js/app/system/crud/index.js', 4);
             return;
         }
@@ -56,35 +57,33 @@ class Controller extends App\Backend\Controller
 
         $modules = $this->user->getModuleAcl()->getAvailableModules();
 
-        $data = \Dvelum\Utils::sortByField($data  , 'title');
+        $data = \Dvelum\Utils::sortByField($data, 'title');
 
-        $isDev = (boolean) $this->appConfig->get('development');
+        $isDev = (boolean)$this->appConfig->get('development');
         $wwwRoot = $this->appConfig->get('wwwroot');
-        $adminPath =  $this->appConfig->get('adminPath');
+        $adminPath = $this->appConfig->get('adminPath');
 
         $result = [];
         $devItems = [];
 
-        foreach($data as $config)
-        {
-            if(!$config['active'] || !$config['in_menu'] || ($config['dev'] && !$isDev) || !isset($modules[$config['id']])){
+        foreach ($data as $config) {
+            if (!$config['active'] || !$config['in_menu'] || ($config['dev'] && !$isDev) || !isset($modules[$config['id']])) {
                 continue;
             }
-            $item =[
+            $item = [
                 'id' => $config['id'],
-                'icon'=> $wwwRoot.$config['icon'],
-                'title'=> $config['title'],
-                'url'=> $this->request->url([$adminPath , $config['id']]),
-                'itemCls'=>$config['dev']?'dev':''
+                'icon' => $wwwRoot . $config['icon'],
+                'title' => $config['title'],
+                'url' => $this->request->url([$adminPath, $config['id']]),
+                'itemCls' => $config['dev'] ? 'dev' : ''
             ];
-            if($config['dev']){
+            if ($config['dev']) {
                 $devItems[] = $item;
-            }else{
+            } else {
                 $result[] = $item;
             }
-
         }
-        $this->response->success(array_merge($result,$devItems));
+        $this->response->success(array_merge($result, $devItems));
     }
 
     /**
@@ -92,30 +91,30 @@ class Controller extends App\Backend\Controller
      */
     public function moduleInfoAction()
     {
-        $module = $this->request->post('id' , \Dvelum\Filter::FILTER_STRING , false);
+        $module = $this->request->post('id', \Dvelum\Filter::FILTER_STRING, false);
 
         $manager = $this->container->get(\Dvelum\App\Module\Manager::class);
         $moduleCfg = $manager->getModuleConfig($module);
 
         $info = [];
 
-        if(!$module || !$this->user->getModuleAcl()->canView($module) || !$moduleCfg['active']){
+        if (!$module || !$this->user->getModuleAcl()->canView($module) || !$moduleCfg['active']) {
             $this->response->error($this->lang->get('CANT_VIEW'));
             return;
         }
 
         $controller = $moduleCfg['class'];
 
-        if(!class_exists($controller)){
+        if (!class_exists($controller)) {
             $this->response->error('Undefined controller');
             return;
         }
 
         $controller = new $controller($this->request, $this->response);
 
-        if(method_exists($controller,'desktopModuleInfo')){
+        if (method_exists($controller, 'desktopModuleInfo')) {
             $info['layout'] = $controller->desktopModuleInfo();
-        }else{
+        } else {
             $info['layout'] = false;
         }
 

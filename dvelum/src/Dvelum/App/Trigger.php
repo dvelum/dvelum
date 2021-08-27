@@ -105,16 +105,18 @@ class Trigger
             }
         }
 
-        if (!$this->cache)
+        if (!$this->cache) {
             return;
+        }
 
         $this->cache->remove($this->getItemCacheKey($object));
     }
 
     public function onAfterUpdate(Orm\RecordInterface $object)
     {
-        if (!$this->cache)
+        if (!$this->cache) {
             return;
+        }
 
         $this->cache->remove($this->getItemCacheKey($object));
     }
@@ -145,8 +147,9 @@ class Trigger
             }
         }
 
-        if (!$this->cache)
+        if (!$this->cache) {
             return;
+        }
 
         $this->cache->remove($this->getItemCacheKey($object));
     }

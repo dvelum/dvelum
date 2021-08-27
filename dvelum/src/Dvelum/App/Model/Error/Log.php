@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -23,4 +24,6 @@ namespace Dvelum\App\Model\Error;
 
 use Dvelum\Orm\Model;
 
-class Log extends Model {}
+class Log extends Model
+{
+}

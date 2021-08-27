@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -27,6 +28,6 @@ class Settings extends Adapter\Orm\Record
 {
     protected function getFields(Orm\RecordInterface $object): array
     {
-        return ['email','pass','login','name'];
+        return ['email', 'pass', 'login', 'name'];
     }
 }

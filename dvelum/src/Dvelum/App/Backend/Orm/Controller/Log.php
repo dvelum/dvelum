@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -33,7 +34,9 @@ class Log extends Controller
         return 'Orm';
     }
 
-    public function indexAction(){}
+    public function indexAction()
+    {
+    }
 
     /**
      * Get DB_Object_Builder log contents
@@ -52,7 +55,7 @@ class Log extends Controller
         } else {
             $data = '';
         }
-        $this->response->json(['success'=>true, 'data'=>$data]);
+        $this->response->json(['success' => true, 'data' => $data]);
     }
 
     public function getLogFilesAction()

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -54,7 +55,9 @@ abstract class Controller extends Backend\Api\Controller
         );
 
         if ($objectConfig->isRevControl()) {
-            $this->resource->addInlineJs(PHP_EOL . ' var canPublish =  ' . intval($moduleAcl->canPublish($moduleName)) . ';');
+            $this->resource->addInlineJs(
+                PHP_EOL . ' var canPublish =  ' . intval($moduleAcl->canPublish($moduleName)) . ';'
+            );
             $this->resource->addJs('/js/app/system/ContentWindow.js', 1);
             $this->resource->addJs('/js/app/system/RevisionPanel.js', 2);
         }

@@ -27,11 +27,11 @@ use Dvelum;
 
 class Orm extends AbstractAdapter
 {
-    public function loadService() : Dvelum\Orm\Orm
+    public function loadService(): Dvelum\Orm\Orm
     {
         $cache = null;
 
-        if($this->config->offsetExists('cache')){
+        if ($this->config->offsetExists('cache')) {
             $cache = $this->config->get('cache');
         }
 

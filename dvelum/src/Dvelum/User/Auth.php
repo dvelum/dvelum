@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2019  Kirill Yegorov
@@ -20,6 +21,7 @@
 declare(strict_types=1);
 
 namespace Dvelum\User;
+
 /**
  * Factory class for auth providers
  * @author Sergey Leschenko
@@ -32,19 +34,20 @@ use Dvelum\User\Auth\AdapterInterface;
 
 class Auth
 {
-	/**
-	 * Factory method of User_Auth instantiation
-	 * @param ConfigInterface $config — auth provider config
+    /**
+     * Factory method of User_Auth instantiation
+     * @param ConfigInterface $config — auth provider config
+     * @return AbstractAdapter
      * @throws \Exception
-	 * @return AbstractAdapter
-	 */
-	static public function factory(ConfigInterface $config, Orm $orm) : AdapterInterface
-	{
-		$providerAdapter = $config->get('adapter');
+     */
+    static public function factory(ConfigInterface $config, Orm $orm): AdapterInterface
+    {
+        $providerAdapter = $config->get('adapter');
 
-		if (!class_exists($providerAdapter))
-			throw new \Exception('Unknown auth adapter ' . $providerAdapter);
+        if (!class_exists($providerAdapter)) {
+            throw new \Exception('Unknown auth adapter ' . $providerAdapter);
+        }
 
-		return new $providerAdapter($config, $orm);
-	}
+        return new $providerAdapter($config, $orm);
+    }
 }

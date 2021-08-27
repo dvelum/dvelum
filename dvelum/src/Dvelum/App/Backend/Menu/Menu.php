@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov, Sergey Leschenko
@@ -91,34 +92,33 @@ class Menu
         $menuData = [];
         $modules = $this->moduleManager->getList();
         $userModules = $this->user->getModuleAcl()->getAvailableModules();
-        foreach($modules as $data)
-        {
-            if(!$data['active'] || !$data['in_menu'] || !isset($userModules[$data['id']])){
+        foreach ($modules as $data) {
+            if (!$data['active'] || !$data['in_menu'] || !isset($userModules[$data['id']])) {
                 continue;
             }
             $menuData[] = [
                 'id' => $data['id'],
                 'dev' => $data['dev'],
-                'url' =>  $this->request->url(array($this->appConfig->get('adminPath'),$data['id'])),
-                'title'=> $data['title'],
-                'icon'=> $this->request->wwwRoot().$data['icon']
+                'url' => $this->request->url(array($this->appConfig->get('adminPath'), $data['id'])),
+                'title' => $data['title'],
+                'icon' => $this->request->wwwRoot() . $data['icon']
             ];
         }
         $menuData[] = [
             'id' => 'logout',
             'dev' => false,
-            'url' =>  $this->request->url([$this->appConfig->get('adminPath'),'']) . 'login/logout',
-            'title'=> Lang::lang()->get('LOGOUT'),
+            'url' => $this->request->url([$this->appConfig->get('adminPath'), '']) . 'login/logout',
+            'title' => Lang::lang()->get('LOGOUT'),
             'icon' => $this->request->wwwRoot() . 'i/system/icons/logout.png'
         ];
-        return  $menuData;
+        return $menuData;
     }
 
     /**
      * @return array
      * @throws \Exception
      */
-    public function getIncludes() : array
+    public function getIncludes(): array
     {
         $wwwRoot = $this->appConfig->get('wwwroot');
         $data = [
@@ -134,7 +134,7 @@ class Menu
      * @return string
      * @throws \Exception
      */
-    public function render() : string
+    public function render(): string
     {
         $menuData = $this->getData();
 

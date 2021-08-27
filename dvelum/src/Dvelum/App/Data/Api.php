@@ -41,7 +41,7 @@ class Api
 
         $model = Model::factory($object);
 
-        if($ormObjectConfig->isDistributed() && empty($this->apiRequest->getShard())){
+        if ($ormObjectConfig->isDistributed() && empty($this->apiRequest->getShard())) {
             $model = Model::factory($ormObjectConfig->getDistributedIndexObject());
         }
 
@@ -49,8 +49,8 @@ class Api
         $permissions = $user->getModuleAcl()->getModulePermissions($request->getObjectName());
 
         // Check permissions if user can see only own records
-        if($permissions && $permissions->isOnlyOwn()){
-            $filters['author_id']=$user->getId();
+        if ($permissions && $permissions->isOnlyOwn()) {
+            $filters['author_id'] = $user->getId();
         }
 
         $this->dataQuery = $model->query()
@@ -58,38 +58,38 @@ class Api
             ->filters($this->apiRequest->getFilters())
             ->search($this->apiRequest->getQuery());
 
-        if($ormObjectConfig->isDistributed() && !empty($this->apiRequest->getShard())){
+        if ($ormObjectConfig->isDistributed() && !empty($this->apiRequest->getShard())) {
             $this->dataQuery->setShard($this->apiRequest->getShard());
         }
     }
 
     public function getList()
     {
-        if(empty($this->fields)){
+        if (empty($this->fields)) {
             $fields = $this->getDefaultFields();
-        }else{
+        } else {
             $fields = $this->fields;
         }
 
         $object = $this->apiRequest->getObjectName();
         $ormObjectConfig = Orm\Record\Config::factory($object);
-        if($ormObjectConfig->isDistributed() && empty($this->apiRequest->getShard())){
+        if ($ormObjectConfig->isDistributed() && empty($this->apiRequest->getShard())) {
             $indexConfig = Orm\Record\Config::factory($ormObjectConfig->getDistributedIndexObject());
             $fields = array_keys($indexConfig->getFields());
         }
-        return  $this->dataQuery->fields($fields)->fetchAll();
+        return $this->dataQuery->fields($fields)->fetchAll();
     }
 
-    public function getCount() : int
+    public function getCount(): int
     {
-        return  $this->dataQuery->getCount($this->isUseApproximateCount());
+        return $this->dataQuery->getCount($this->isUseApproximateCount());
     }
 
     /**
      * Set fields to be fetched
      * @param array $fields
      */
-    public function setFields(array $fields) : void
+    public function setFields(array $fields): void
     {
         $this->fields = $fields;
     }
@@ -98,9 +98,9 @@ class Api
      * Get list of fields to be fetched
      * @return array
      */
-    public function getFields() : array
+    public function getFields(): array
     {
-        if(empty($this->fields)){
+        if (empty($this->fields)) {
             return $this->getDefaultFields();
         }
         return $this->fields;
@@ -110,16 +110,15 @@ class Api
      * Get default field list
      * @return array
      */
-    protected function getDefaultFields() : array
+    protected function getDefaultFields(): array
     {
         $result = [];
         $objectName = $this->apiRequest->getObjectName();
         $config = Orm\Record\Config::factory($objectName);
 
         $fields = $config->getFields();
-        foreach($fields as $v)
-        {
-            if($v->isText() || $v->isMultiLink()){
+        foreach ($fields as $v) {
+            if ($v->isText() || $v->isMultiLink()) {
                 continue;
             }
             $result[] = $v->getName();

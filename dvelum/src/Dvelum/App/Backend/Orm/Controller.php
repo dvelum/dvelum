@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Dvelum\App\Backend\Orm;
@@ -13,6 +14,8 @@ use Dvelum\Response;
 use Dvelum\App\Router\RouterInterface;
 use Dvelum\Service;
 use Dvelum\Utils;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Controller extends \Dvelum\App\Backend\Controller implements RouterInterface
 {
@@ -21,15 +24,14 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
      */
     protected $routes;
 
-    public function route(Request $request, Response $response): void
+    public function route(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $this->routes = Config::storage()->get('orm/routes.php');
 
         $action = $request->getPart(2);
         if (isset($this->routes[$action])) {
             $router = new \Dvelum\App\Router\Backend();
-            $router->runController($this->routes[$action], $request->getPart(3), $request, $response);
-            return;
+            return $router->runController($this->routes[$action], $request->getPart(3), $request, $response);
         }
 
         if (method_exists($this, $action . 'Action')) {
@@ -37,6 +39,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         } else {
             $this->indexAction();
         }
+        return $response;
     }
 
     public function getModule(): string
@@ -81,7 +84,8 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         $langService = Service::get('lang');
         $langService->addLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
 
-        $this->resource->addInlineJs('
+        $this->resource->addInlineJs(
+            '
           var canPublish =  ' . ((integer)$this->moduleAcl->canPublish($this->module)) . ';
           var canEdit = ' . ((integer)$this->moduleAcl->canEdit($this->module)) . ';
           var canDelete = ' . ((integer)$this->moduleAcl->canDelete($this->module)) . ';
@@ -90,9 +94,10 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
           var dbConfigsList = ' . json_encode($dbConfigs) . ';
           var ormTooltips = ' . Lang::lang('orm_tooltips')->getJson() . ';
           var shardingEnabled = ' . intval(Config::storage()->get('orm.php')->get('sharding')) . ';
-          var ormActionsList = '.json_encode($this->getActions()).';
-          var ormAddObjectFields = ['.$this->getAdditionalObjectFields().'];
-        ');
+          var ormActionsList = ' . json_encode($this->getActions()) . ';
+          var ormAddObjectFields = [' . $this->getAdditionalObjectFields() . '];
+        '
+        );
 
         $this->resource->addJs('/js/app/system/SearchPanel.js', 0);
         $this->resource->addJs('/js/app/system/ORM.js', 2, true);
@@ -114,7 +119,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
          * include Media Library if html editor installed
          *  moved to dvelum/module-cms
          */
-        if($designerConfig->get('html_editor')){
+        if ($designerConfig->get('html_editor')) {
             Model::factory('Medialib')->includeScripts();
         }
 
@@ -130,7 +135,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
     /**
      * Get list of ORM actions
      */
-    protected function getActions() : array
+    protected function getActions(): array
     {
         $controllerCode = $this->request->getPart(1);
         $adminPath = $this->appConfig->get('adminPath');
@@ -138,17 +143,17 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         $config = Config::storage()->get('orm/actions.php');
         $list = $config->__toArray();
-        foreach ($list as &$v){
+        foreach ($list as &$v) {
             $v = $appRoot . $v;
         }
         return $list;
     }
 
-    protected function getAdditionalObjectFields():string
+    protected function getAdditionalObjectFields(): string
     {
         $config = Config::storage()->get('orm/properties.php')->__toArray();
 
-        if(empty($config)){
+        if (empty($config)) {
             return '';
         }
         $fieldsJs = Utils::fetchCol('js_field', $config);
@@ -209,7 +214,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
 
         $dbObjectManager = new Orm\Record\Manager();
         $names = $dbObjectManager->getRegisteredObjects();
-        if(empty($names)){
+        if (empty($names)) {
             $names = [];
         }
 
@@ -227,9 +232,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
                     $flag = true;
                 }
             }
-           /*
-            * Add foreign keys
-            */
+            /*
+             * Add foreign keys
+             */
             foreach ($names as $name) {
                 try {
                     $builder = Orm\Record\Builder::factory($name);
@@ -241,14 +246,14 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
                 }
             }
         } else {
-                foreach ($names as $name) {
-                    try {
-                        $builder = Orm\Record\Builder::factory($name);
-                        $builder->build();
-                    } catch (\Exception $e) {
-                        $flag = true;
-                    }
+            foreach ($names as $name) {
+                try {
+                    $builder = Orm\Record\Builder::factory($name);
+                    $builder->build();
+                } catch (\Exception $e) {
+                    $flag = true;
                 }
+            }
         }
 
         if ($ormConfig->get('sharding')) {
@@ -256,7 +261,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             $shardsFile = $sharding->get('shards');
             $shardsConfig = Config::storage()->get($shardsFile);
             $registeredObjects = $dbObjectManager->getRegisteredObjects();
-            if(empty($registeredObjects)){
+            if (empty($registeredObjects)) {
                 $registeredObjects = [];
             }
 
@@ -385,7 +390,7 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
             Compilation time: ' . number_format(microtime(true) - $time, 5) . ' sec<br>
             Files compiled: ' . sizeof($sources) . ' <br>
             Total size: ' . Utils::formatFileSize($totalSize) . '<br>
-            Compiled File size: ' . Utils::formatFileSize((int) filesize($wwwPath . 'js/app/system/ORM.js')) . ' <br>
+            Compiled File size: ' . Utils::formatFileSize((int)filesize($wwwPath . 'js/app/system/ORM.js')) . ' <br>
         ';
         exit;
     }
@@ -414,11 +419,13 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         //tooltips
         $lPath = $this->appConfig->get('language') . '/orm.php';
         Lang::addDictionaryLoader('orm_tooltips', $lPath, Config\Factory::File_Array);
-        $projectData['includes']['js'][] = $this->resource->cacheJs('
+        $projectData['includes']['js'][] = $this->resource->cacheJs(
+            '
            var useForeignKeys = ' . ((integer)$this->appConfig['foreign_keys']) . ';
            var dbConfigsList = ' . json_encode($dbConfigs) . ';
            var ormTooltips = ' . Lang::lang('orm_tooltips')->getJson() . ';
-        ');
+        '
+        );
 
         $projectData['includes']['css'][] = '/css/system/joint.min.css';
         $projectData['includes']['js'][] = '/js/lib/uml/lodash.min.js';
@@ -429,7 +436,9 @@ class Controller extends \Dvelum\App\Backend\Controller implements RouterInterfa
         /*
          * Module bootstrap
          */
-        if (file_exists($this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($this->getModule()) . '.js')) {
+        if (file_exists(
+            $this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($this->getModule()) . '.js'
+        )) {
             $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->getModule()) . '.js';
         }
         return $projectData;

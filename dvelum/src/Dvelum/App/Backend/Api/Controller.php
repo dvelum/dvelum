@@ -131,12 +131,12 @@ class Controller extends App\Backend\Controller
             return;
         }
 
-        try{
+        try {
             $result = $this->getLinkedList();
-        }catch (LoadException $e){
+        } catch (LoadException $e) {
             $this->response->error($e->getMessage());
             return;
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
@@ -158,7 +158,7 @@ class Controller extends App\Backend\Controller
      * @return array
      * @throws Exception|LoadException
      */
-    public function getLinkedList() : array
+    public function getLinkedList(): array
     {
         $object = $this->request->post('object', 'string', false);
         $filter = $this->request->post('filter', 'array', []);
@@ -178,16 +178,16 @@ class Controller extends App\Backend\Controller
         $objectCfg = Orm\Record\Config::factory($object);
         $primaryKey = $objectCfg->getPrimaryKey();
 
-        if(isset($pager['sort']) ){
-            if($pager['sort'] ==='title'){
+        if (isset($pager['sort'])) {
+            if ($pager['sort'] === 'title') {
                 $linkTitle = $objectCfg->getLinkTitle();
-            }else{
+            } else {
                 $linkTitle = $pager['sort'];
             }
 
-            if($objectCfg->fieldExists($linkTitle)){
+            if ($objectCfg->fieldExists($linkTitle)) {
                 $pager['sort'] = $linkTitle;
-            }else{
+            } else {
                 unset($pager['sort']);
             }
         }
@@ -208,7 +208,7 @@ class Controller extends App\Backend\Controller
 
 
         $dataModel = $model;
-        if($objectConfig->isDistributed()){
+        if ($objectConfig->isDistributed()) {
             $dataModel = Model::factory($objectConfig->getDistributedIndexObject());
         }
 
@@ -247,12 +247,11 @@ class Controller extends App\Backend\Controller
                     } else {
                         $item['title'] = $item['id'];
                     }
-
                 }
                 unset($item);
             }
         }
-        return ['data'=>$data, 'count'=>$count];
+        return ['data' => $data, 'count' => $count];
     }
 
     /**
@@ -303,8 +302,8 @@ class Controller extends App\Backend\Controller
      * Filtering, pagination and search are available
      * Sends JSON reply in the result
      * and closes the application (by default).
-     * @throws \Exception
      * @return void
+     * @throws \Exception
      */
     public function listAction()
     {
@@ -380,13 +379,13 @@ class Controller extends App\Backend\Controller
      */
     public function createAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $object = $this->getPostedData($this->objectName);
 
-        if(empty($object)){
+        if (empty($object)) {
             return;
         }
         $this->insertObject($object);
@@ -399,12 +398,12 @@ class Controller extends App\Backend\Controller
      */
     public function updateAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
         $object = $this->getPostedData($this->objectName);
-        if(empty($object)){
+        if (empty($object)) {
             return;
         }
         $this->updateObject($object);
@@ -417,7 +416,7 @@ class Controller extends App\Backend\Controller
      */
     public function deleteAction()
     {
-        if(!$this->checkCanDelete()){
+        if (!$this->checkCanDelete()) {
             return;
         }
         $id = $this->request->post('id', 'integer', false);
@@ -474,7 +473,7 @@ class Controller extends App\Backend\Controller
         $objectConfig = $object->getConfig();
         $isRevControl = $objectConfig->isRevControl();
 
-        if($isRevControl) {
+        if ($isRevControl) {
             $author = $object->get('author_id');
             if (empty($author)) {
                 $object->set('author_id', $this->user->getId());
@@ -506,7 +505,6 @@ class Controller extends App\Backend\Controller
                 'published' => $object->get('published'),
                 'staging_url' => $stagingUrl
             ];
-
         } else {
             if (!$recId = $object->save(false)) {
                 $this->response->error($this->lang->get('CANT_EXEC'));
@@ -516,7 +514,7 @@ class Controller extends App\Backend\Controller
             $result = ['id' => $recId];
         }
 
-        if($objectConfig->isShardRequired()){
+        if ($objectConfig->isShardRequired()) {
             /**
              * @var Orm\Distributed\Record $object
              */
@@ -547,7 +545,7 @@ class Controller extends App\Backend\Controller
         $objectConfig = $object->getConfig();
         $isRevControl = $objectConfig->isRevControl();
 
-        if($isRevControl) {
+        if ($isRevControl) {
             $author = $object->get('author_id');
             if (empty($author)) {
                 $object->set('author_id', $this->user->getId());
@@ -565,7 +563,6 @@ class Controller extends App\Backend\Controller
 
         $result = [];
         if ($isRevControl) {
-
             if (!$object->saveVersion(false)) {
                 $this->response->error($this->lang->get('CANT_CREATE'));
                 $db->rollback();
@@ -578,9 +575,7 @@ class Controller extends App\Backend\Controller
                 'published_version' => $object->get('published_version'),
                 'published' => $object->get('published')
             ];
-
         } else {
-
             if (!$object->save(false)) {
                 $this->response->error($this->lang->get('CANT_EXEC'));
                 $db->rollback();
@@ -589,7 +584,7 @@ class Controller extends App\Backend\Controller
             $result = ['id' => $object->getId()];
         }
 
-        if($objectConfig->isShardRequired()){
+        if ($objectConfig->isShardRequired()) {
             $result['shard'] = $object->getShard();
         }
 
@@ -610,10 +605,10 @@ class Controller extends App\Backend\Controller
      * Get posted data and put it into Orm\Record
      * (in case of failure, JSON error message is sent)
      * @param string $objectName
-     * @throws Exception
      * @return Record | null
+     * @throws Exception
      */
-    public function getPostedData($objectName) : ?Record
+    public function getPostedData($objectName): ?Record
     {
         $formCfg = $this->config->get('form');
         $adapterConfig = Config::storage()->get($formCfg['config']);
@@ -696,9 +691,9 @@ class Controller extends App\Backend\Controller
         $objectName = $this->getObjectName();
         $objectConfig = Orm\Record\Config::factory($objectName);
         $shard = false;
-        if($objectConfig->isShardRequired()){
+        if ($objectConfig->isShardRequired()) {
             $shard = $this->request->post('shard', 'string', '');
-            if(empty($shard)){
+            if (empty($shard)) {
                 return [];
             }
         }
@@ -733,7 +728,9 @@ class Controller extends App\Backend\Controller
             try {
                 $obj->loadVersion($version);
             } catch (\Exception $e) {
-                Model::factory($objectName)->logError('Cannot load version ' . $version . ' for ' . $objectName . ':' . $obj->getId());
+                Model::factory($objectName)->logError(
+                    'Cannot load version ' . $version . ' for ' . $objectName . ':' . $obj->getId()
+                );
                 throw new LoadException($e->getMessage());
             }
 
@@ -742,7 +739,6 @@ class Controller extends App\Backend\Controller
             $data['version'] = $version;
             $data['published'] = $obj->get('published');
             $data['staging_url'] = $this->getStagingUrl($obj);
-
         } else {
             $data = $obj->getData();
             $data['id'] = $obj->getId();
@@ -771,7 +767,7 @@ class Controller extends App\Backend\Controller
      * @param string $pKey - name of Primary Key field in $data
      * @throws \Exception
      */
-    protected function addLinkedInfo(Orm\Record\Config $cfg, array $fieldsToShow, array & $data, $pKey)
+    protected function addLinkedInfo(Orm\Record\Config $cfg, array $fieldsToShow, array &$data, $pKey)
     {
         $fieldsToKeys = [];
         foreach ($fieldsToShow as $key => $val) {
@@ -783,10 +779,10 @@ class Controller extends App\Backend\Controller
         }
 
         $links = $cfg->getLinks([
-            Orm\Record\Config::LINK_OBJECT,
-            Orm\Record\Config::LINK_OBJECT_LIST,
-            Orm\Record\Config::LINK_DICTIONARY
-        ], false);
+                                    Orm\Record\Config::LINK_OBJECT,
+                                    Orm\Record\Config::LINK_OBJECT_LIST,
+                                    Orm\Record\Config::LINK_DICTIONARY
+                                ], false);
 
         foreach ($fieldsToShow as $objectField) {
             if (!isset($links[$objectField])) {
@@ -820,8 +816,10 @@ class Controller extends App\Backend\Controller
                     if (!is_array($oVal)) {
                         $oVal = [$oVal];
                     }
-                    $listedObjects[$config['object']] = array_merge($listedObjects[$config['object']],
-                        array_values($oVal));
+                    $listedObjects[$config['object']] = array_merge(
+                        $listedObjects[$config['object']],
+                        array_values($oVal)
+                    );
                 }
             }
         }
@@ -860,8 +858,11 @@ class Controller extends App\Backend\Controller
 
                     foreach ($value as $oId) {
                         if (isset($listedObjects[$config['object']][$oId])) {
-                            $list[] = $this->linkedInfoObjectRenderer($rowObject, $field,
-                                $listedObjects[$config['object']][$oId]);
+                            $list[] = $this->linkedInfoObjectRenderer(
+                                $rowObject,
+                                $field,
+                                $listedObjects[$config['object']][$oId]
+                            );
                         } else {
                             $list[] = '[' . $oId . '] (' . $this->lang->get('DELETED') . ')';
                         }
@@ -906,7 +907,6 @@ class Controller extends App\Backend\Controller
                         'title' => $list[$id]->getTitle(),
                         'published' => $isVc ? $list[$id]->get('published') : 1
                     ];
-
                 } else {
                     $result[] = [
                         'id' => $id,
@@ -939,7 +939,8 @@ class Controller extends App\Backend\Controller
      */
     protected function checkOwner(RecordInterface $object): bool
     {
-        if ($this->moduleAcl->onlyOwnRecords($this->getModule()) && $object->get('author_id') !== $this->user->getId()) {
+        if ($this->moduleAcl->onlyOwnRecords($this->getModule()) && $object->get('author_id') !== $this->user->getId(
+            )) {
             return false;
         }
         return true;
@@ -971,7 +972,7 @@ class Controller extends App\Backend\Controller
             return $this->request->url(['/']);
         }
 
-        return $this->request->url([$stagingUrl, 'item', $object->getId(),'']);
+        return $this->request->url([$stagingUrl, 'item', $object->getId(), '']);
     }
 
     /**
@@ -989,7 +990,7 @@ class Controller extends App\Backend\Controller
             return;
         }
 
-        if(!$this->checkCanPublish()){
+        if (!$this->checkCanPublish()) {
             return;
         }
 
@@ -1052,25 +1053,25 @@ class Controller extends App\Backend\Controller
             return;
         }
 
-        if(!$this->checkCanPublish()){
+        if (!$this->checkCanPublish()) {
             return;
         }
 
-        try{
+        try {
             /**
              * @var Orm\RecordInterface $object
              */
-            $object = Orm\Record::factory($objectName , $id);
-        }catch(\Exception $e){
+            $object = Orm\Record::factory($objectName, $id);
+        } catch (\Exception $e) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
 
-        if(!$this->checkOwner($object)){
+        if (!$this->checkOwner($object)) {
             return;
         }
 
-        if($this->unpublishObject($object)){
+        if ($this->unpublishObject($object)) {
             $this->response->success();
         }
     }
@@ -1082,14 +1083,14 @@ class Controller extends App\Backend\Controller
      * @param RecordInterface $object
      * @return bool
      */
-    public function unpublishObject(RecordInterface $object) : bool
+    public function unpublishObject(RecordInterface $object): bool
     {
-        if(!$object->get('published')){
+        if (!$object->get('published')) {
             $this->response->error($this->lang->get('NOT_PUBLISHED'));
             return false;
         }
 
-        if(!$object->unpublish()){
+        if (!$object->unpublish()) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return false;
         }
@@ -1104,25 +1105,25 @@ class Controller extends App\Backend\Controller
     {
         $moduleName = $this->getModule();
 
-        $modulesConfig = Config::factory(Config\Factory::File_Array , $this->appConfig->get('backend_modules'));
+        $modulesConfig = Config::factory(Config\Factory::File_Array, $this->appConfig->get('backend_modules'));
         $moduleCfg = $modulesConfig->get($moduleName);
 
         $projectData = [];
 
-        if(strlen($moduleCfg['designer']))
-        {
+        if (strlen($moduleCfg['designer'])) {
             $manager = new Manager($this->appConfig);
             $project = $manager->findWorkingCopy($moduleCfg['designer']);
-            $projectData =  $manager->compileDesktopProject($project, 'app.__modules.'.$moduleName , $moduleName);
+            $projectData = $manager->compileDesktopProject($project, 'app.__modules.' . $moduleName, $moduleName);
             $projectData['isDesigner'] = true;
             $modulesManager = $this->container->get(\Dvelum\App\Module\Manager::class);
             $modulesList = $modulesManager->getList();
             $projectData['title'] = (isset($modulesList[$this->module])) ? $modulesList[$moduleName]['title'] : '';
-        }
-        else
-        {
-            if(file_exists($this->appConfig->get('jsPath').'app/system/desktop/' . strtolower($moduleName) . '.js'))
-                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($moduleName) .'.js';
+        } else {
+            if (file_exists(
+                $this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($moduleName) . '.js'
+            )) {
+                $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($moduleName) . '.js';
+            }
         }
         return $projectData;
     }

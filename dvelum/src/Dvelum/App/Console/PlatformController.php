@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -25,6 +26,7 @@ use Dvelum\App;
 use Dvelum\Orm\Model;
 use Dvelum\Request;
 use Dvelum\Response;
+use Psr\Container\ContainerInterface;
 
 class PlatformController extends Controller
 {
@@ -34,9 +36,9 @@ class PlatformController extends Controller
      */
     protected $user;
 
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, ContainerInterface $container)
     {
-        parent::__construct($request, $response);
+        parent::__construct($request, $response, $container);
         $this->authorize();
     }
 
@@ -45,8 +47,9 @@ class PlatformController extends Controller
      */
     protected function authorize()
     {
+        $orm = $this->container->get(\Dvelum\Orm\Orm::class);
         $userId = $this->consoleConfig->get('user_id');
-        if ($userId && Model::factory('User')->query()->filters(['id' => $userId])->getCount()) {
+        if ($userId && $orm->model('User')->query()->filters(['id' => $userId])->getCount()) {
             $curUser = App\Session\User::factory();
             $curUser->setId($userId);
             $curUser->setAuthorized();

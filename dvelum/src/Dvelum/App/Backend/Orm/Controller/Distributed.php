@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -18,6 +19,7 @@
  *
  */
 declare(strict_types=1);
+
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Orm\Manager;
@@ -35,53 +37,54 @@ class Distributed extends Controller
         return 'Orm';
     }
 
-    public function indexAction(){}
+    public function indexAction()
+    {
+    }
+
     /**
      * Add distributed index
      */
     public function addDistributedIndexAction()
     {
         $object = $this->request->post('object', 'string', false);
-        $field = $this->request->post('field','string',false);
+        $field = $this->request->post('field', 'string', false);
 
-        if(!$object){
+        if (!$object) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }
-           
 
-        try{
+
+        try {
             $objectConfig = Record\Config::factory($object);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }
 
-        if(!$objectConfig->fieldExists($field)){
+        if (!$objectConfig->fieldExists($field)) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }
 
         $indexManager = new Record\Config\IndexManager();
-        $indexManager->setDistributedIndexConfig($objectConfig, $field, ['field'=>$field,'is_system'=>false]);
+        $indexManager->setDistributedIndexConfig($objectConfig, $field, ['field' => $field, 'is_system' => false]);
 
         $manager = new Manager();
 
-        if($objectConfig->save()){
-
-            try{
-                if(!$manager->syncDistributedIndex($object)){
+        if ($objectConfig->save()) {
+            try {
+                if (!$manager->syncDistributedIndex($object)) {
                     $this->response->error($this->lang->get('CANT_WRITE_FS'));
                     return;
                 }
                 $this->response->success();
-            }catch (Exception $e){
+            } catch (Exception $e) {
                 $this->response->error($e->getMessage());
             }
-        } else{
+        } else {
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
         }
-
     }
 
     /**
@@ -91,12 +94,13 @@ class Distributed extends Controller
     {
         $object = $this->request->post('object', 'string', false);
 
-        if(!$object)
+        if (!$object) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
+        }
 
-        try{
-            $objectConfig =  Record\Config::factory($object);
-        }catch (Exception $e){
+        try {
+            $objectConfig = Record\Config::factory($object);
+        } catch (Exception $e) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }
@@ -104,9 +108,9 @@ class Distributed extends Controller
         $list = [];
         $indexCfg = $objectConfig->getDistributedIndexesConfig();
 
-        if(!empty($indexCfg)){
-            foreach ($indexCfg as $v){
-                $list[] = ['field'=>$v['field'],'is_system'=>$v['is_system']];
+        if (!empty($indexCfg)) {
+            foreach ($indexCfg as $v) {
+                $list[] = ['field' => $v['field'], 'is_system' => $v['is_system']];
             }
         }
         $this->response->json(array_values($list));
@@ -117,22 +121,22 @@ class Distributed extends Controller
      */
     public function deleteDistributedIndexAction()
     {
-        if(!$this->checkCanDelete()){
+        if (!$this->checkCanDelete()) {
             return;
         }
 
-        $object =  $this->request->post('object', 'string', false);
-        $index =   $this->request->post('name', 'string', false);
+        $object = $this->request->post('object', 'string', false);
+        $index = $this->request->post('name', 'string', false);
 
-        if(!$object || !$index){
+        if (!$object || !$index) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        try{
-            $objectCfg =  Record\Config::factory($object);
-        }catch (Exception $e){
-            $this->response->error($this->lang->get('WRONG_REQUEST '.' code 2'));
+        try {
+            $objectCfg = Record\Config::factory($object);
+        } catch (Exception $e) {
+            $this->response->error($this->lang->get('WRONG_REQUEST ' . ' code 2'));
             return;
         }
 
@@ -140,10 +144,11 @@ class Distributed extends Controller
         $indexManager->removeDistributedIndex($objectCfg, $index);
 
         $manager = new Manager();
-        if($objectCfg->save() && $manager->syncDistributedIndex($object))
+        if ($objectCfg->save() && $manager->syncDistributedIndex($object)) {
             $this->response->success();
-        else
+        } else {
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
+        }
     }
 
     /**
@@ -156,8 +161,8 @@ class Distributed extends Controller
 
         $config = Config::storage()->get('sharding.php')->get('sharding_types');
         $data = [];
-        foreach ($config as $index => $item){
-            $data[] =[
+        foreach ($config as $index => $item) {
+            $data[] = [
                 'id' => $index,
                 'title' => $lang->get($item['title'])
             ];
@@ -171,14 +176,14 @@ class Distributed extends Controller
      */
     public function listShardingFieldsAction()
     {
-        $object = $this->request->post('object','string','');
+        $object = $this->request->post('object', 'string', '');
 
-        if(empty($object)){
+        if (empty($object)) {
             $this->response->success([]);
             return;
         }
 
-        if(!Orm\Record\Config::configExists($object)){
+        if (!Orm\Record\Config::configExists($object)) {
             $this->response->success([]);
             return;
         }
@@ -188,24 +193,23 @@ class Distributed extends Controller
 
         $data = [];
 
-        foreach ($fields as $item)
-        {
+        foreach ($fields as $item) {
             /**
              * @var Orm\Record\Config\Field $item
              */
-            if($item->isSystem() || $item->isBoolean() || $item->isText()){
+            if ($item->isSystem() || $item->isBoolean() || $item->isText()) {
                 continue;
             }
             $data[] = [
                 'id' => $item->getName(),
-                'title' => $item->getName() .' ('. $item->getTitle().')'
+                'title' => $item->getName() . ' (' . $item->getTitle() . ')'
             ];
         }
 
-        $pk =  $config->getPrimaryKey();
+        $pk = $config->getPrimaryKey();
         $data[] = [
             'id' => $pk,
-            'title' => $pk .' ('. $config->getField($pk)->getTitle().')'
+            'title' => $pk . ' (' . $config->getField($pk)->getTitle() . ')'
         ];
 
         $this->response->success($data);
@@ -217,15 +221,15 @@ class Distributed extends Controller
     public function acceptedDistributedFieldsAction()
     {
         $object = $this->request->post('object', 'string', false);
-        
-        if(!$object){
+
+        if (!$object) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }
 
-        try{
-            $objectConfig =  Record\Config::factory($object);
-        }catch (Exception $e){
+        try {
+            $objectConfig = Record\Config::factory($object);
+        } catch (Exception $e) {
             $this->response->error($this->lang->get('INVALID_VALUE'));
             return;
         }
@@ -234,19 +238,19 @@ class Distributed extends Controller
         $fields = $objectConfig->getFieldsConfig();
 
         $data = [];
-        foreach ($fields as $name=>$config){
-            if(isset($indexCfg[$name])){
+        foreach ($fields as $name => $config) {
+            if (isset($indexCfg[$name])) {
                 continue;
             }
             $dbType = $config['db_type'];
-            if(
+            if (
                 in_array($dbType, Record\Builder::$charTypes, true)
                 ||
                 in_array($dbType, Record\Builder::$numTypes, true)
                 ||
                 in_array($dbType, Record\Builder::$dateTypes, true)
-            ){
-                $data[] = ['name'=>$name];
+            ) {
+                $data[] = ['name' => $name];
             }
         }
         $this->response->success($data);

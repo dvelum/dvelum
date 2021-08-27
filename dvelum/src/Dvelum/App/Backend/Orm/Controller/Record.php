@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -18,6 +19,7 @@
  *
  */
 declare(strict_types=1);
+
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Orm\Manager;
@@ -52,10 +54,10 @@ class Record extends Controller
 
     public function validateRecordAction()
     {
-        $object = $this->request->post('object','string', '');
-        $shard = $this->request->post('shard','string','');
+        $object = $this->request->post('object', 'string', '');
+        $shard = $this->request->post('shard', 'string', '');
 
-        if(!Orm\Record\Config::configExists($object)){
+        if (!Orm\Record\Config::configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -68,9 +70,9 @@ class Record extends Controller
 //            $validateShard = true;
 //        }
 
-        if($config->isDistributed()){
+        if ($config->isDistributed()) {
             $data = $stat->validateDistributed($object, $shard);
-        }else{
+        } else {
             $data = $stat->validate($object);
         }
         $this->response->success($data);
@@ -114,19 +116,19 @@ class Record extends Controller
         $checkColumns = false;
         $tableExists = false;
 
-        if(strlen($shard) && $objectConfig->isDistributed()){
+        if (strlen($shard) && $objectConfig->isDistributed()) {
             $model = Orm\Model::factory($name);
             $connectionName = $model->getConnectionName();
-            $db = $model->getDbManager()->getDbConnection($connectionName,null,$shard);
+            $db = $model->getDbManager()->getDbConnection($connectionName, null, $shard);
             $builder->setConnection($db);
             $checkColumns = true;
-        }elseif ($objectConfig->isDistributed()){
+        } elseif ($objectConfig->isDistributed()) {
             $tableExists = true;
-        }else{
+        } else {
             $checkColumns = true;
         }
 
-        if($checkColumns){
+        if ($checkColumns) {
             $tableExists = $builder->tableExists();
             if ($tableExists) {
                 $colUpd = $builder->prepareColumnUpdates();
@@ -142,7 +144,7 @@ class Record extends Controller
         $objects = $builder->getRelationUpdates();
         $ormConfig = Config::storage()->get('sharding.php');
 
-        if($objConfig->isDistributed() && $ormConfig->get('dist_index_enabled')){
+        if ($objConfig->isDistributed() && $ormConfig->get('dist_index_enabled')) {
             $shardObjects = $builder->getDistributedObjectsUpdatesInfo();
         }
 
@@ -154,16 +156,16 @@ class Record extends Controller
         $template = \Dvelum\View::factory();
         $template->disableCache();
         $template->setData([
-            'engineUpdate' => $engineUpdate,
-            'columns' => $colUpd,
-            'indexes' => $indUpd,
-            'objects' => $objects,
-            'keys' => $keyUpd,
-            'tableExists' => $tableExists,
-            'tableName' => Orm\Model::factory($name)->table(),
-            'lang' => $this->lang,
-            'shardObjects' => $shardObjects
-        ]);
+                               'engineUpdate' => $engineUpdate,
+                               'columns' => $colUpd,
+                               'indexes' => $indUpd,
+                               'objects' => $objects,
+                               'keys' => $keyUpd,
+                               'tableExists' => $tableExists,
+                               'tableName' => Orm\Model::factory($name)->table(),
+                               'lang' => $this->lang,
+                               'shardObjects' => $shardObjects
+                           ]);
         $cfgBackend = Config\Factory::storage()->get('backend.php');
         $templatesPath = 'system/' . $cfgBackend->get('theme') . '/';
         $msg = $template->render($templatesPath . 'orm_validate_msg.php');
@@ -175,7 +177,7 @@ class Record extends Controller
      */
     public function buildAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -198,11 +200,11 @@ class Record extends Controller
         $config = Orm\Record\Config::factory($name);
 
         $buildShard = false;
-        if(strlen($shard) && $config->isDistributed()){
+        if (strlen($shard) && $config->isDistributed()) {
             $buildShard = true;
             $model = Orm\Model::factory($name);
             $connectionName = $model->getConnectionName();
-            $builder->setConnection($model->getDbManager()->getDbConnection($connectionName,null,$shard));
+            $builder->setConnection($model->getDbManager()->getDbConnection($connectionName, null, $shard));
         }
 
         if (!$builder->build(true, $buildShard)) {
@@ -303,7 +305,7 @@ class Record extends Controller
      */
     public function removeAction()
     {
-        if(!$this->checkCanDelete()){
+        if (!$this->checkCanDelete()) {
             return;
         }
 
@@ -340,7 +342,9 @@ class Record extends Controller
                 $this->response->error($this->lang->get('CANT_WRITE_DB'));
                 break;
             case Manager::ERROR_FS_LOCALISATION:
-                $this->response->error($this->lang->get('CANT_WRITE_FS') . ' (' . $this->lang->get('LOCALIZATION_FILE') . ')');
+                $this->response->error(
+                    $this->lang->get('CANT_WRITE_FS') . ' (' . $this->lang->get('LOCALIZATION_FILE') . ')'
+                );
                 break;
             case Manager::ERROR_HAS_LINKS:
                 $this->response->error($this->lang->get('MSG_ORM_CAND_DELETE_LINKED'));
@@ -384,7 +388,7 @@ class Record extends Controller
      */
     public function saveAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
@@ -407,9 +411,9 @@ class Record extends Controller
 
         $detalization = $this->request->post('log_detalization', 'string', 'default');
 
-        $distributed = $this->request->post('distributed','boolean',false);
+        $distributed = $this->request->post('distributed', 'boolean', false);
 
-        $shardingType = $this->request->post('sharding_type','string', null);
+        $shardingType = $this->request->post('sharding_type', 'string', null);
         $shardingKey = $this->request->post('sharding_key', 'string', null);
 
 
@@ -441,7 +445,7 @@ class Record extends Controller
             $this->response->error($this->lang->get('FILL_FORM'), $errors);
         }
 
-        if(!$distributed){
+        if (!$distributed) {
             $shardingType = $shardingKey = null;
         }
 
@@ -480,25 +484,23 @@ class Record extends Controller
     /**
      * Check properties from external modules (plugins)
      */
-    protected function checkExternalProperties( array & $data, array & $errors)
+    protected function checkExternalProperties(array &$data, array &$errors)
     {
         $properties = Config::storage()->get('orm/properties.php')->__toArray();
-        if(empty($properties)){
+        if (empty($properties)) {
             return;
         }
 
-        foreach ($properties as $name => $item)
-        {
-            if(!empty($item['validator']))
-            {
+        foreach ($properties as $name => $item) {
+            if (!empty($item['validator'])) {
                 $validationClass = $item['validator'];
                 /**
                  * @var Orm\Property\ValidatorInterface $validationObject
                  */
                 $validationObject = new $validationClass($this->request, $this->lang);
-                if($validationObject->isValid()){
+                if ($validationObject->isValid()) {
                     $data[$name] = $validationObject->getValue();
-                }else{
+                } else {
                     $errors[$name] = $validationObject->getError();
                 }
             }
@@ -536,14 +538,18 @@ class Record extends Controller
         }
 
         if (in_array($tableName, $tables, true)) {
-            $this->response->error($this->lang->get('FILL_FORM'),
-                array(array('id' => 'table', 'msg' => $this->lang->get('SB_UNIQUE'))));
+            $this->response->error(
+                $this->lang->get('FILL_FORM'),
+                array(array('id' => 'table', 'msg' => $this->lang->get('SB_UNIQUE')))
+            );
             return;
         }
 
         if (file_exists($configDir . strtolower($name) . '.php')) {
-            $this->response->error($this->lang->get('FILL_FORM'),
-                array(array('id' => 'name', 'msg' => $this->lang->get('SB_UNIQUE'))));
+            $this->response->error(
+                $this->lang->get('FILL_FORM'),
+                array(array('id' => 'name', 'msg' => $this->lang->get('SB_UNIQUE')))
+            );
         }
 
         if (!is_dir($configDir) && !@mkdir($configDir, 0655, true)) {
@@ -556,7 +562,7 @@ class Record extends Controller
          */
         $newConfig = Config\Factory::create([], $configDir . $name . '.php');
 
-        if (!Config::storage()->save($newConfig)){
+        if (!Config::storage()->save($newConfig)) {
             $this->response->error($this->lang->get('CANT_WRITE_FS') . ' ' . $configDir . $name . '.php');
         }
 
@@ -583,7 +589,6 @@ class Record extends Controller
             */
             $builder = Orm\Record\Builder::factory($name);
             $builder->build();
-
         } catch (\Exception $e) {
             $this->response->error($this->lang->get('CANT_EXEC') . 'code 2');
             return;
@@ -631,8 +636,10 @@ class Record extends Controller
          */
         if ($config->get('table') !== $data['table']) {
             if ($builder->tableExists($data['table'], true)) {
-                $this->response->error($this->lang->get('FILL_FORM'),
-                    array(array('id' => 'table', 'msg' => $this->lang->get('SB_UNIQUE'))));
+                $this->response->error(
+                    $this->lang->get('FILL_FORM'),
+                    array(array('id' => 'table', 'msg' => $this->lang->get('SB_UNIQUE')))
+                );
                 return;
             }
 
@@ -683,8 +690,10 @@ class Record extends Controller
         //$oldFileName = $this->appConfig->get('object_configs').$oldName.'.php';
 
         if (file_exists($newFileName)) {
-            $this->response->error($this->lang->get('FILL_FORM'),
-                array(array('id' => 'name', 'msg' => $this->lang->get('SB_UNIQUE'))));
+            $this->response->error(
+                $this->lang->get('FILL_FORM'),
+                array(array('id' => 'name', 'msg' => $this->lang->get('SB_UNIQUE')))
+            );
             return;
         }
 
@@ -698,7 +707,9 @@ class Record extends Controller
                 $this->response->error($this->lang->get('CANT_WRITE_FS'));
                 break;
             case Manager::ERROR_FS_LOCALISATION:
-                $this->response->error($this->lang->get('CANT_WRITE_FS') . ' (' . $this->lang->get('LOCALIZATION_FILE') . ')');
+                $this->response->error(
+                    $this->lang->get('CANT_WRITE_FS') . ' (' . $this->lang->get('LOCALIZATION_FILE') . ')'
+                );
                 break;
             default:
                 $this->response->error($this->lang->get('CANT_EXEC') . ' code 5');

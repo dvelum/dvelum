@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -18,6 +19,7 @@
  *
  */
 declare(strict_types=1);
+
 namespace Dvelum\App\Backend\Orm\Controller;
 
 use Dvelum\App\Backend\Controller;
@@ -46,12 +48,12 @@ class Crypt extends Controller
      */
     public function decryptAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
-        $object = $this->request->post('object' , 'string' , false);
+        $object = $this->request->post('object', 'string', false);
 
-        if(!$object || !Orm\Record\Config::configExists($object)){
+        if (!$object || !Orm\Record\Config::configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -63,14 +65,16 @@ class Crypt extends Controller
         $signalModel = Model::factory('Bgtask_Signal');
 
         //disable profiling in dev mode
-       // if($this->appConfig->get('development')) {
-            //$taskModel->getDbConnection()->getProfiler()->setEnabled(false);
-            //$signalModel->getDbConnection()->getProfiler()->setEnabled(false);
-            //$objectModel->getDbConnection()->getProfiler()->setEnabled(false);
-       // }
+        // if($this->appConfig->get('development')) {
+        //$taskModel->getDbConnection()->getProfiler()->setEnabled(false);
+        //$signalModel->getDbConnection()->getProfiler()->setEnabled(false);
+        //$objectModel->getDbConnection()->getProfiler()->setEnabled(false);
+        // }
 
-        $logger =  new \Dvelum\BackgroundTask\Log\File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
-        $bgStorage = new  \Dvelum\BackgroundTask\Storage\Orm($taskModel , $signalModel);
+        $logger = new \Dvelum\BackgroundTask\Log\File(
+            $this->appConfig['task_log_path'] . $container . '_' . date('d_m_Y__H_i_s')
+        );
+        $bgStorage = new  \Dvelum\BackgroundTask\Storage\Orm($taskModel, $signalModel);
         $tm = Manager::factory();
         $tm->setStorage($bgStorage);
         $tm->setLogger($logger);
@@ -78,10 +82,10 @@ class Crypt extends Controller
         // Start encryption task
         $tm->launch(
             Manager::LAUNCHER_SIMPLE,
-            '\\Dvelum\\App\\Task\\Orm\\Decrypt' ,
+            '\\Dvelum\\App\\Task\\Orm\\Decrypt',
             [
-                'object'=>$object,
-                'session_container'=>$container
+                'object' => $object,
+                'session_container' => $container
             ]
         );
     }
@@ -91,13 +95,13 @@ class Crypt extends Controller
      */
     public function encryptAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
-        $object = $this->request->post('object' , 'string' , false);
+        $object = $this->request->post('object', 'string', false);
 
-        if(!$object || !Orm\Record\Config::configExists($object)){
+        if (!$object || !Orm\Record\Config::configExists($object)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -113,10 +117,12 @@ class Crypt extends Controller
 //            $taskModel->getDbConnection()->getProfiler()->setEnabled(false);
 //            $signalModel->getDbConnection()->getProfiler()->setEnabled(false);
 //            $objectModel->getDbConnection()->getProfiler()->setEnabled(false);
-      //  }
+        //  }
 
-        $logger =  new \Dvelum\BackgroundTask\Log\File($this->appConfig['task_log_path'] . $container .'_' . date('d_m_Y__H_i_s'));
-        $bgStorage = new \Dvelum\BackgroundTask\Storage\Orm($taskModel , $signalModel);
+        $logger = new \Dvelum\BackgroundTask\Log\File(
+            $this->appConfig['task_log_path'] . $container . '_' . date('d_m_Y__H_i_s')
+        );
+        $bgStorage = new \Dvelum\BackgroundTask\Storage\Orm($taskModel, $signalModel);
         $tm = Manager::factory();
         $tm->setStorage($bgStorage);
         $tm->setLogger($logger);
@@ -124,11 +130,11 @@ class Crypt extends Controller
         // Start encryption task
         $tm->launch(
             Manager::LAUNCHER_SIMPLE,
-            '\\Dvelum\\App\\Task\\Orm\\Encrypt' ,
-             [
-                'object'=>$object,
-                'session_container'=>$container
-             ]
+            '\\Dvelum\\App\\Task\\Orm\\Encrypt',
+            [
+                'object' => $object,
+                'session_container' => $container
+            ]
         );
     }
 
@@ -137,15 +143,15 @@ class Crypt extends Controller
      */
     public function taskStatAction()
     {
-        $object = $this->request->post('object' , 'string' , false);
-        $type = $this->request->post('type' , 'string' , false);
+        $object = $this->request->post('object', 'string', false);
+        $type = $this->request->post('type', 'string', false);
 
-        if(!$object || ! $type) {
+        if (!$object || !$type) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
 
-        switch($type){
+        switch ($type) {
             case 'encrypt':
                 $container = $this->encryptContainerPrefix . $object;
                 break;
@@ -159,7 +165,7 @@ class Crypt extends Controller
 
         $session = Factory::get(Factory::SESSION);
 
-        if(!$session->keyExists($container)){
+        if (!$session->keyExists($container)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
         }
@@ -168,15 +174,15 @@ class Crypt extends Controller
         $taskModel = Model::factory('bgtask');
         $statusData = $taskModel->getItem($pid);
 
-        if(empty($statusData)){
+        if (empty($statusData)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }
 
         $this->response->success([
-            'status' =>  $statusData['status'],
-            'op_total' =>  $statusData['op_total'],
-            'op_finished' =>  $statusData['op_finished']
-        ]);
+                                     'status' => $statusData['status'],
+                                     'op_total' => $statusData['op_total'],
+                                     'op_finished' => $statusData['op_finished']
+                                 ]);
     }
 }

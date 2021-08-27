@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -135,7 +136,7 @@ class DataView extends ApiController
             $fields = Orm\Record\Config::factory($objectConfig->getDistributedIndexObject())->getFields();
             if ($shadrdingType == Orm\Record\Config::SHARDING_TYPE_VIRTUAL_BUCKET) {
                 $fieldName = $objectConfig->getBucketMapperKey();
-                if(empty($fieldName)){
+                if (empty($fieldName)) {
                     $this->response->error($this->lang->get('CANT_EXEC'));
                     return;
                 }
@@ -208,7 +209,9 @@ class DataView extends ApiController
             }
 
             if ($field->isSearch()) {
-                $col->text = '<img data-qtip="' . $this->lang->get('SEARCH') . '" src="' . $this->appConfig->get('wwwroot') . 'i/system/search.png" height="10"/> ' . $col->text;
+                $col->text = '<img data-qtip="' . $this->lang->get('SEARCH') . '" src="' . $this->appConfig->get(
+                        'wwwroot'
+                    ) . 'i/system/search.png" height="10"/> ' . $col->text;
             }
 
             if ($field->isMultiLink()) {
@@ -278,16 +281,16 @@ class DataView extends ApiController
         $tab = \Ext_Factory::object('Panel');
         $tab->setName('_generalTab');
         $tab->setValues([
-            'frame' => false,
-            'border' => false,
-            'layout' => 'anchor',
-            'bodyPadding' => 3,
-            'scrollable' => true,
-            'bodyCls' => 'formBody',
-            'anchor' => '100%',
-            'title' => $this->lang->get('GENERAL'),
-            'fieldDefaults' => "{labelAlign: \"right\",labelWidth: 160,anchor: \"100%\"}"
-        ]);
+                            'frame' => false,
+                            'border' => false,
+                            'layout' => 'anchor',
+                            'bodyPadding' => 3,
+                            'scrollable' => true,
+                            'bodyCls' => 'formBody',
+                            'anchor' => '100%',
+                            'title' => $this->lang->get('GENERAL'),
+                            'fieldDefaults' => "{labelAlign: \"right\",labelWidth: 160,anchor: \"100%\"}"
+                        ]);
 
         $tabs[] = $tab;
         $related = [];
@@ -316,7 +319,7 @@ class DataView extends ApiController
 
             if ($fieldObj->isMultiLink()) {
                 $linkedObject = $fieldObj->getLinkedObject();
-                if(empty($linkedObject)){
+                if (empty($linkedObject)) {
                     $this->response->error($this->lang->get('CANT_EXEC'));
                     return;
                 }
@@ -337,12 +340,13 @@ class DataView extends ApiController
 									fieldLabel:"' . $fieldCfg['title'] . '"
 								}';
                 } else {
-
                     $data[] = '
 						{
 							xtype:"objectfield",
 							objectName:"' . $fieldObj->getLinkedObject() . '",
-							controllerUrl:"' . $this->request->url([$this->appConfig->get('adminPath'), 'orm', 'dataview', '']) . '",
+							controllerUrl:"' . $this->request->url(
+                            [$this->appConfig->get('adminPath'), 'orm', 'dataview', '']
+                        ) . '",
 							fieldLabel:"' . $fieldCfg['title'] . '",
 							name:"' . $field . '",
 							anchor:"100%",
@@ -385,13 +389,13 @@ class DataView extends ApiController
             }
         }
         $this->response->success([
-            'related' => $related,
-            'fields' => str_replace(["\n", "\t"], '', '[' . implode(',', $tabs) . ']'),
-            'readOnly' => intval($readOnly),
-            'primaryKey' => $objectConfig->getPrimaryKey(),
-            'shardKey' => $shardKey,
-            'readOnlyAfterCreate' => [$mapKey]
-        ]);
+                                     'related' => $related,
+                                     'fields' => str_replace(["\n", "\t"], '', '[' . implode(',', $tabs) . ']'),
+                                     'readOnly' => intval($readOnly),
+                                     'primaryKey' => $objectConfig->getPrimaryKey(),
+                                     'shardKey' => $shardKey,
+                                     'readOnlyAfterCreate' => [$mapKey]
+                                 ]);
     }
 
     public function checkCanEdit(): bool
@@ -445,7 +449,7 @@ class DataView extends ApiController
         $objectConfig = $this->ormService->config($object);
         $mapField = $objectConfig->getBucketMapperKey();
 
-        if(empty($mapField)){
+        if (empty($mapField)) {
             $this->response->error($this->lang->get('CANT_EXEC'));
             return;
         }

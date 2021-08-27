@@ -51,7 +51,7 @@ class Controller
     protected $wwwRoot;
     protected $wwwPath;
     protected $_action;
-    
+
     protected $request;
     protected $response;
 
@@ -66,27 +66,25 @@ class Controller
         $this->response = Response::factory();
 
         $this->response->setFormat('json');
-        
-        $this->session = Store\Factory::get(Store\Factory::SESSION , 'install');
-        $this->appConfig = Config::storage()->get('main.php' , false , false);
+
+        $this->session = Store\Factory::get(Store\Factory::SESSION, 'install');
+        $this->appConfig = Config::storage()->get('main.php', false, false);
         $this->wwwPath = DVELUM_WWW_PATH;
         $this->docRoot = DVELUM_ROOT;
         $this->wwwRoot = '/';
 
         $uri = $_SERVER['REQUEST_URI'];
         $parts = explode('/', $uri);
-        for($i=1;$i<sizeof($parts);$i++)
-        {
-            if($parts[$i]==='install'){
+        for ($i = 1; $i < sizeof($parts); $i++) {
+            if ($parts[$i] === 'install') {
                 break;
             }
-            $this->wwwRoot.=$parts[$i].'/';
+            $this->wwwRoot .= $parts[$i] . '/';
         }
         /*
          * Set template storage options
          */
         View::storage()->setConfig(Config::storage()->get('template_storage.php')->__toArray());
-
     }
 
     public function setAutoloader(Autoload $autoloader)
@@ -99,10 +97,11 @@ class Controller
         $action = $this->request->post('action', 'string', false);
         $lang = $this->session->get('lang');
 
-        if(!empty($lang))
+        if (!empty($lang)) {
             $this->lang = $lang;
-        else
+        } else {
             $this->lang = 'en';
+        }
 
 
         $lang = $this->lang;
@@ -113,18 +112,19 @@ class Controller
         \Dvelum\Service::register(
             Config::storage()->get('services.php'),
             Config\Factory::create([
-                'appConfig' => $this->appConfig,
-                'dbManager' => false,
-                'cache' => false
-            ])
+                                       'appConfig' => $this->appConfig,
+                                       'dbManager' => false,
+                                       'cache' => false
+                                   ])
         );
 
-        $this->localization = Lang::storage()->get($this->lang  . '/install.php');
+        $this->localization = Lang::storage()->get($this->lang . '/install.php');
 
-        if($action !== false && method_exists($this, $action . 'Action'))
+        if ($action !== false && method_exists($this, $action . 'Action')) {
             $this->_action = strtolower($action) . 'Action';
-        else
+        } else {
             $this->_action = 'indexAction';
+        }
 
         $this->{$this->_action}();
     }
@@ -133,8 +133,9 @@ class Controller
     {
         $lang = $this->request->post('lang', 'string', false);
 
-        if(empty($lang))
+        if (empty($lang)) {
             $this->response->error('');
+        }
 
         $this->session->set('lang', $lang);
         $this->response->success();
@@ -148,21 +149,23 @@ class Controller
         $this->template->dictionary = $this->localization;
         $this->template->wwwRoot = $this->wwwRoot;
 
-        if($this->lang == 'ru')
+        if ($this->lang == 'ru') {
             $this->template->license = file_get_contents('./data/gpl-3.0_ru.txt');
-        else
+        } else {
             $this->template->license = file_get_contents('./data/gpl-3.0_en.txt');
+        }
 
         echo $this->template->render('install/install.php');
     }
 
-    protected function _checkWritable($path, $required, $msg){
+    protected function _checkWritable($path, $required, $msg)
+    {
         $data = array();
         $data['title'] = $this->localization->get('WRITE_PERMISSIONS') . ' ' . $path;
-       // @chmod($this->docRoot . $path, 0775);
-        if(is_writable($path)){
+        // @chmod($this->docRoot . $path, 0775);
+        if (is_writable($path)) {
             $data['success'] = true;
-        }else{
+        } else {
             $data['success'] = !$required;
             $data['error'] = $msg;
         }
@@ -171,16 +174,15 @@ class Controller
 
     protected function _checkExtension($extension, $required, $msg = false)
     {
-        if(!is_array($extension)){
+        if (!is_array($extension)) {
             $extension = [$extension];
         }
 
-        $data['title'] = $this->localization->get('LIBRARY_CHECK') . ' ' . implode(' / ',$extension);
+        $data['title'] = $this->localization->get('LIBRARY_CHECK') . ' ' . implode(' / ', $extension);
         $exists = false;
 
-        foreach($extension as $item)
-        {
-            if(in_array($item, $this->phpExt, true)){
+        foreach ($extension as $item) {
+            if (in_array($item, $this->phpExt, true)) {
                 $exists = true;
             }
         }
@@ -194,7 +196,8 @@ class Controller
         return $data;
     }
 
-    public function firstcheckAction() {
+    public function firstcheckAction()
+    {
         $data = array();
         $this->phpExt = get_loaded_extensions();
 
@@ -205,91 +208,92 @@ class Controller
         if (version_compare(PHP_VERSION, '7.2.0', '<')) {
             $data['items'][0]['success'] = false;
             $data['items'][0]['error'] = $this->localization->get('UR_PHP_V') . ' ' . PHP_VERSION;
-        } else
+        } else {
             $data['items'][0]['success'] = true;
+        }
 
         $extensions = [
             [
-                'name'=>'mysqli',
-                'accessType'=>'required',
-                'msg'=>false
+                'name' => 'mysqli',
+                'accessType' => 'required',
+                'msg' => false
             ],
             [
-                'name'=>['memcache','memcached'],
-                'accessType'=>'allowed',
-                'msg'=>$this->localization->get('PERFORMANCE_WARNING')
+                'name' => ['memcache', 'memcached'],
+                'accessType' => 'allowed',
+                'msg' => $this->localization->get('PERFORMANCE_WARNING')
             ],
             [
-                'name'=>'gd',
-                'accessType'=>'required',
-                'msg'=>false
+                'name' => 'gd',
+                'accessType' => 'required',
+                'msg' => false
             ],
             [
-                'name'=>'mbstring',
-                'accessType'=>'required',
-                'msg'=>false
+                'name' => 'mbstring',
+                'accessType' => 'required',
+                'msg' => false
             ],
             [
-               'name' => 'openssl',
-               'accessType'=>'allowed',
-               'msg'=>$this->localization->get('WARNING')
+                'name' => 'openssl',
+                'accessType' => 'allowed',
+                'msg' => $this->localization->get('WARNING')
             ],
             [
-                'name'=>'json',
-                'accessType'=>'required',
-                'msg'=>false
+                'name' => 'json',
+                'accessType' => 'required',
+                'msg' => false
             ]
         ];
 
         $writablePaths = array(
             array(
-                'path'=>'application/configs',
-                'accessType'=>'required'
+                'path' => 'application/configs',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>'application/locales/local',
-                'accessType'=>'required'
+                'path' => 'application/locales/local',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>'temp',
-                'accessType'=>'required'
+                'path' => 'temp',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>'data/logs',
-                'accessType'=>'required'
+                'path' => 'data/logs',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>'data/key',
-                'accessType'=>'required'
+                'path' => 'data/key',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>'modules',
-                'accessType'=>'required'
+                'path' => 'modules',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>$this->wwwPath . 'js/lang',
-                'accessType'=>'required'
+                'path' => $this->wwwPath . 'js/lang',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>$this->wwwPath . 'js/cache',
-                'accessType'=>'required'
+                'path' => $this->wwwPath . 'js/cache',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>$this->wwwPath . 'css/cache',
-                'accessType'=>'required'
+                'path' => $this->wwwPath . 'css/cache',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>$this->wwwPath . 'media',
-                'accessType'=>'required'
+                'path' => $this->wwwPath . 'media',
+                'accessType' => 'required'
             ),
             array(
-                'path'=>$this->wwwPath . 'resources',
-                'accessType'=>'required'
+                'path' => $this->wwwPath . 'resources',
+                'accessType' => 'required'
             ),
         );
 
-        foreach ($extensions as $v){
-            switch ($v['accessType']){
+        foreach ($extensions as $v) {
+            switch ($v['accessType']) {
                 case 'required':
                     $data['items'][] = $this->_checkExtension($v['name'], true, $v['msg']);
                     break;
@@ -299,13 +303,21 @@ class Controller
             }
         }
 
-        foreach ($writablePaths as $v){
-            switch ($v['accessType']){
+        foreach ($writablePaths as $v) {
+            switch ($v['accessType']) {
                 case 'required':
-                    $data['items'][] = $this->_checkWritable($v['path'], true, $this->localization->get('RECORDING_IS_PROHIBITED'));
+                    $data['items'][] = $this->_checkWritable(
+                        $v['path'],
+                        true,
+                        $this->localization->get('RECORDING_IS_PROHIBITED')
+                    );
                     break;
                 case 'allowed':
-                    $data['items'][] = $this->_checkWritable($v['path'], false, $this->localization->get('RECORDING_IS_PROHIBITED_OK'));
+                    $data['items'][] = $this->_checkWritable(
+                        $v['path'],
+                        false,
+                        $this->localization->get('RECORDING_IS_PROHIBITED_OK')
+                    );
                     break;
             }
         }
@@ -314,6 +326,7 @@ class Controller
 
         $this->response->success($data);
     }
+
     public function dbcheckAction()
     {
         $host = $this->request->post('host', 'str', '');
@@ -321,20 +334,21 @@ class Controller
         $prefix = $this->request->post('prefix', 'str', '');
 
         $params = array(
-            'host'           => $host,
-            'username'       => $this->request->post('username', 'str', false),
-            'password'       => $this->request->post('password', 'str', false),
-            'dbname'         => $this->request->post('dbname', 'str', false),
-            'driver'  => 'Mysqli',
-            'adapter'  => 'Mysqli',
+            'host' => $host,
+            'username' => $this->request->post('username', 'str', false),
+            'password' => $this->request->post('password', 'str', false),
+            'dbname' => $this->request->post('dbname', 'str', false),
+            'driver' => 'Mysqli',
+            'adapter' => 'Mysqli',
             'transactionIsolationLevel' => 'default'
         );
 
-        if ($port != 0)
+        if ($port != 0) {
             $params['port'] = $port;
+        }
 
         $flag = false;
-        if ($params['host'] && $params['username'] && $params['dbname'])
+        if ($params['host'] && $params['username'] && $params['dbname']) {
             try {
                 $db = new \Laminas\Db\Adapter\Adapter($params);
                 @$db->getDriver()->getConnection()->getCurrentSchema();
@@ -345,18 +359,17 @@ class Controller
                 $data['success'] = false;
                 $data['msg'] = $this->localization->get('FAILURE_DB_CHECK') . ' ' . $e->getMessage();
             }
-        else {
+        } else {
             $data['success'] = false;
             $data['msg'] = $this->localization->get('REQUIRED_DB_SETTINGS');
         }
 
-        if ($flag){
+        if ($flag) {
             try {
-
                 $configs = array(
-                     './application/configs/prod/db/default.php',
-                     './application/configs/prod/db/error.php',
-                     './application/configs/prod/db/sharding_index.php',
+                    './application/configs/prod/db/default.php',
+                    './application/configs/prod/db/error.php',
+                    './application/configs/prod/db/sharding_index.php',
 
                     './application/configs/dev/db/default.php',
                     './application/configs/dev/db/error.php',
@@ -373,19 +386,19 @@ class Controller
                 $params['prefix'] = $prefix;
                 $params['charset'] = 'UTF8';
                 $storage = Config::storage();
-                foreach($configs as $item) {
+                foreach ($configs as $item) {
                     $cfg = Config\Factory::create($params, $item);
 
                     $dirName = dirname($item);
-                    if(!file_exists($dirName)){
-                        if(!mkdir($dirName,0775,true)){
-                            throw new \Exception('Cant write '.$dirName);
+                    if (!file_exists($dirName)) {
+                        if (!mkdir($dirName, 0775, true)) {
+                            throw new \Exception('Cant write ' . $dirName);
                         }
                     }
-                    if (!$storage->save($cfg))
+                    if (!$storage->save($cfg)) {
                         throw new \Exception();
+                    }
                 }
-
             } catch (\Throwable $e) {
                 $data['success'] = false;
                 $data['msg'] = $this->localization->get('CONNECTION_SAVE_FAIL');
@@ -393,16 +406,20 @@ class Controller
         }
         $this->response->success($data);
     }
+
     /**
      * Create Database tables
      */
     public function createtablesAction()
     {
-        $mainConfig = Config::storage()->get('main.php', false ,true);
+        $mainConfig = Config::storage()->get('main.php', false, true);
 
         $appClass = $mainConfig->get('application');
-        if(!class_exists($appClass))
-            throw new \Exception('Application class '.$appClass.' does not exist! Check config "application" option!');
+        if (!class_exists($appClass)) {
+            throw new \Exception(
+                'Application class ' . $appClass . ' does not exist! Check config "application" option!'
+            );
+        }
 
         $app = new $appClass($mainConfig);
         $app->setAutoloader($this->autoloader);
@@ -411,24 +428,25 @@ class Controller
         $dbObjectManager = new Orm\Record\Manager();
         $objects = $dbObjectManager->getRegisteredObjects();
 
-        foreach ($objects as $name)
-        {
+        foreach ($objects as $name) {
             $dbObjectBuilder = Orm\Record\Builder::factory($name);
-            if(!$dbObjectBuilder->build(false))
-                $buildErrors[] = $name; // . ': '.$dbObjectBuilder->getErrors()."<br>".PHP_EOL;
+            if (!$dbObjectBuilder->build(false)) {
+                $buildErrors[] = $name;
+            } // . ': '.$dbObjectBuilder->getErrors()."<br>".PHP_EOL;
         }
 
-        foreach ($objects as $name)
-        {
+        foreach ($objects as $name) {
             $dbObjectBuilder = Orm\Record\Builder::factory($name);
-            if(!$dbObjectBuilder->buildForeignKeys())
-                $buildErrors[] = $name; // . ': '.$dbObjectBuilder->getErrors()."<br>".PHP_EOL;
+            if (!$dbObjectBuilder->buildForeignKeys()) {
+                $buildErrors[] = $name;
+            } // . ': '.$dbObjectBuilder->getErrors()."<br>".PHP_EOL;
         }
 
-        if(!empty($buildErrors))
+        if (!empty($buildErrors)) {
             $this->response->error($this->localization->get('BUILD_ERR') . ' ' . implode(', ', $buildErrors));
-        else
-            $this->response->success([], array('msg'=>$this->localization->get('DB_DONE')));
+        } else {
+            $this->response->success([], array('msg' => $this->localization->get('DB_DONE')));
+        }
     }
 
     public function setuserpassAction()
@@ -438,80 +456,87 @@ class Controller
         $lang = $this->request->post('lang', 'string', 'en');
         $timezone = $this->request->post('timezone', 'string', '');
         $adminpath = strtolower($this->request->post('adminpath', 'string', ''));
-        $user = $this->request->post('user',  'str', '');
+        $user = $this->request->post('user', 'str', '');
 
         $errors = array();
 
-        if(!strlen($user))
+        if (!strlen($user)) {
             $errors[] = $this->localization->get('INVALID_USERNAME');
+        }
 
-        if(empty($pass) || empty($passConfirm) || $pass != $passConfirm)
+        if (empty($pass) || empty($passConfirm) || $pass != $passConfirm) {
             $errors[] = $this->localization->get('PASS_MISMATCH');
+        }
 
         $timezones = timezone_identifiers_list();
-        if(empty($timezone) || !in_array($timezone, $timezones, true))
+        if (empty($timezone) || !in_array($timezone, $timezones, true)) {
             $errors[] = $this->localization->get('TIMEZOME_REQUIRED');
+        }
 
-        if(!Validator\Alphanum::validate($adminpath)  || is_dir('./dvelum/app/Backend/'.ucfirst($adminpath)))
+        if (!Validator\Alphanum::validate($adminpath) || is_dir('./dvelum/app/Backend/' . ucfirst($adminpath))) {
             $errors[] = $this->localization->get('INVALID_ADMINPATH');
+        }
 
-        if(!empty($errors))
+        if (!empty($errors)) {
             $this->response->error(implode(', ', $errors));
+        }
 
         $mainConfig = array(
             'development' => 1,
             'timezone' => $timezone,
-            'adminPath'=> $adminpath,
-            'language' =>$lang,
+            'adminPath' => $adminpath,
+            'language' => $lang,
             'wwwroot' => $this->wwwRoot
         );
 
         $mainCfgStorage = Config::storage();
-        $mainCfg = $mainCfgStorage->get('main.php' , false , false);
+        $mainCfg = $mainCfgStorage->get('main.php', false, false);
         $ormCfg = $mainCfgStorage->get('orm.php');
         $writePath = $mainCfgStorage->getWrite();
 
-        if(!is_dir(dirname($writePath)) && !@mkdir($writePath , 0755, true)){
-            $this->response->error($this->localization->get('CANT_WRITE_FS').' '.dirname($writePath));
+        if (!is_dir(dirname($writePath)) && !@mkdir($writePath, 0755, true)) {
+            $this->response->error($this->localization->get('CANT_WRITE_FS') . ' ' . dirname($writePath));
         }
 
-        if(!Utils::exportArray($writePath . 'main.php' , $mainConfig))
-            $this->response->error($this->localization->get('CANT_WRITE_FS').' '.$writePath);
+        if (!Utils::exportArray($writePath . 'main.php', $mainConfig)) {
+            $this->response->error($this->localization->get('CANT_WRITE_FS') . ' ' . $writePath);
+        }
 
         $key = '';
-        if(extension_loaded('openssl')){
+        if (extension_loaded('openssl')) {
             $service = new CryptService($mainCfgStorage->get('crypt.php'));
-            if($service->canCrypt()){
-                try{
+            if ($service->canCrypt()) {
+                try {
                     $key = $service->createPrivateKey();
-                }catch (\Exception $e){
+                } catch (\Exception $e) {
                     $key = md5(uniqid(md5(time())));
                 }
             }
-        }else{
+        } else {
             $key = md5(uniqid(md5(time())));
         }
 
         $cryptConfig = $mainCfgStorage->get('crypt.php');
 
-        if(!file_put_contents($cryptConfig->get('key'), $key)){
+        if (!file_put_contents($cryptConfig->get('key'), $key)) {
             $this->response->error($this->localization->get('CANT_WRITE_FS') . ' ' . $cryptConfig->get('key'));
         }
 
-        $mainConfig = Config::storage()->get('main.php', false ,true);
+        $mainConfig = Config::storage()->get('main.php', false, true);
 
         /*
          * Starting the application
          */
         $appClass = $mainConfig->get('application');
-        if(!class_exists($appClass))
-            throw new \Exception('Core class '.$appClass.' does not exist! Check config "application" option!');
+        if (!class_exists($appClass)) {
+            throw new \Exception('Core class ' . $appClass . ' does not exist! Check config "application" option!');
+        }
 
         $app = new $appClass($mainConfig);
         $app->setAutoloader($this->autoloader);
         $app->runInstallMode();
 
-        if(!$this->prepareRecords($pass, $user)){
+        if (!$this->prepareRecords($pass, $user)) {
             $this->response->error($this->localization->get('CANT_WRITE_TO_DB'));
         }
         // compile javascript language files
@@ -519,50 +544,61 @@ class Controller
         // install required external modules
         $this->addExternals();
 
-        $this->response->success(['link'=>$adminpath]);
+        $this->response->success(['link' => $adminpath]);
     }
+
     protected function addExternals()
     {
         $externals = [
-            ['dvelum','module-designer']
+            ['dvelum', 'module-designer']
         ];
 
         $manager = Manager::factory();
-        foreach ($externals as $data){
+        foreach ($externals as $data) {
             $vendor = $data[0];
             $module = $data[1];
             $moduleInfo = $manager->detectModuleInfo($vendor, $module);
 
-            if(empty($moduleInfo)){
-                $this->response->error($this->lang->get('CANT_INSTALL_MODULE').' '.$vendor.'/'.$module .' [info]');
+            if (empty($moduleInfo)) {
+                $this->response->error(
+                    $this->lang->get('CANT_INSTALL_MODULE') . ' ' . $vendor . '/' . $module . ' [info]'
+                );
             }
 
-            $added = $manager->add($moduleInfo['id'],[
+            $added = $manager->add($moduleInfo['id'], [
                 'enabled' => true,
                 'installed' => false,
                 'path' => $manager->getModulePath($vendor, $module)
             ]);
 
-            if(!$added){
-                $this->response->error($this->lang->get('CANT_INSTALL_MODULE').' '.$vendor.'/'.$module.' [add]');
+            if (!$added) {
+                $this->response->error(
+                    $this->lang->get('CANT_INSTALL_MODULE') . ' ' . $vendor . '/' . $module . ' [add]'
+                );
             }
 
-            if(!$manager->install($moduleInfo['id'])){
-                $this->response->error($this->lang->get('CANT_INSTALL_MODULE').' '.$vendor.'/'.$module.' [install]');
+            if (!$manager->install($moduleInfo['id'])) {
+                $this->response->error(
+                    $this->lang->get('CANT_INSTALL_MODULE') . ' ' . $vendor . '/' . $module . ' [install]'
+                );
             }
             // load new module
             $manager->loadModules();
 
-            if(!$manager->postInstall($moduleInfo['id'])){
-                $this->response->error($this->lang->get('CANT_INSTALL_MODULE').' '.$vendor.'/'.$module.' [post-install]');
+            if (!$manager->postInstall($moduleInfo['id'])) {
+                $this->response->error(
+                    $this->lang->get('CANT_INSTALL_MODULE') . ' ' . $vendor . '/' . $module . ' [post-install]'
+                );
             }
         }
     }
-    protected function compileLangs($mainConfig){
+
+    protected function compileLangs($mainConfig)
+    {
         $langManager = new Localization\Manager($mainConfig);
-        try{
+        try {
             $langManager->compileLangFiles();
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->response->error($e->getMessage());
         }
     }
@@ -575,9 +611,8 @@ class Controller
             'Permissions',
         ];
 
-        try
-        {
-            foreach ($objectToClean as $object){
+        try {
+            foreach ($objectToClean as $object) {
                 $model = Model::factory($object);
                 $model->getDbConnection()->delete($model->table());
             }
@@ -585,12 +620,12 @@ class Controller
             // Add user. User cannot be created using ORM it causes HistoryLog error
             $userModel = Model::factory('User');
             $db = $userModel->getDbConnection();
-            try{
+            try {
                 $db->beginTransaction();
-                $db->insert($userModel->table(),[
-                    'name' =>'Admin',
+                $db->insert($userModel->table(), [
+                    'name' => 'Admin',
                     'login' => $adminName,
-                    'pass' => password_hash($adminPass , PASSWORD_DEFAULT),
+                    'pass' => password_hash($adminPass, PASSWORD_DEFAULT),
                     'enabled' => true,
                     'admin' => true,
                     'registration_date' => date('Y-m-d H:i:s'),
@@ -600,27 +635,27 @@ class Controller
                     'avatar' => '',
                     'registration_ip' => $_SERVER['REMOTE_ADDR'],
                     'last_ip' => $_SERVER['REMOTE_ADDR'],
-                    'confirmation_date' =>date('Y-m-d H:i:s')
+                    'confirmation_date' => date('Y-m-d H:i:s')
                 ]);
                 $userId = $db->lastInsertId($userModel->table());
                 $db->commit();
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
                 return false;
             }
 
             // Add group
             $group = Orm\Record::factory('Group');
             $group->setValues(array(
-                'title'=>$this->localization->get('ADMINISTRATORS') ,
-                'system'=>true
-            ));
+                                  'title' => $this->localization->get('ADMINISTRATORS'),
+                                  'system' => true
+                              ));
             $group->save(true);
             $groupId = $group->getId();
 
             // Set user group
-            try{
-                $db->update($userModel->table(),['group_id'=>$groupId],'id = '.$userId);
-            }catch (\Exception $e){
+            try {
+                $db->update($userModel->table(), ['group_id' => $groupId], 'id = ' . $userId);
+            } catch (\Exception $e) {
                 return false;
             }
 
@@ -629,17 +664,18 @@ class Controller
             $modulesManager = $this->container->get(\Dvelum\App\Module\Manager::class);
             $modules = $modulesManager->getList();
 
-            foreach ($modules as $name=>$config)
-                if(!$permissionsModel->setGroupPermissions($groupId , $name , true, true , true , true))
+            foreach ($modules as $name => $config) {
+                if (!$permissionsModel->setGroupPermissions($groupId, $name, true, true, true, true)) {
                     return false;
+                }
+            }
 
             $u = Session\User::factory();
             $u->setId($userId);
             $u->setAuthorized();
 
             return true;
-
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->response->error($e->getMessage());
             return false;
         }

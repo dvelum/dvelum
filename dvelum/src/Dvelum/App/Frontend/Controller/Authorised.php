@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -44,10 +45,10 @@ abstract class Authorised extends Controller
         $this->lang = Lang::lang();
         parent::__construct($request, $response);
 
-        if($this->request->get('logout','boolean', false)){
+        if ($this->request->get('logout', 'boolean', false)) {
             User::factory()->logout();
             session_destroy();
-            if(!$this->request->isAjax()){
+            if (!$this->request->isAjax()) {
                 $this->response->redirect($this->request->url(['index']));
                 return;
             }
@@ -69,8 +70,8 @@ abstract class Authorised extends Controller
 
         if (!$uid) {
             if ($this->request->isAjax()) {
-               $this->response->error($this->lang->get('MSG_AUTHORIZE'));
-               return;
+                $this->response->error($this->lang->get('MSG_AUTHORIZE'));
+                return;
             } else {
                 $this->loginAction();
             }
@@ -96,7 +97,7 @@ abstract class Authorised extends Controller
         $this->authorised = true;
     }
 
-    public function isAuthorised() : bool
+    public function isAuthorised(): bool
     {
         return $this->authorised;
     }

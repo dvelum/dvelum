@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -40,7 +41,7 @@ class Controller extends App\Backend\Api\Controller
      * Check view permissions
      * @return bool
      */
-    protected function checkCanView() : bool
+    protected function checkCanView(): bool
     {
         return true;
     }
@@ -50,8 +51,8 @@ class Controller extends App\Backend\Api\Controller
         $object = $this->request->post('object', 'string', false);
 
         if (!$object) {
-           $this->response->success([]);
-           return;
+            $this->response->success([]);
+            return;
         }
 
         $pager = $this->request->post('pager', 'array', null);
@@ -61,12 +62,14 @@ class Controller extends App\Backend\Api\Controller
 
         $model = Model::factory('Vc');
 
-        $data = $model->query()->params($pager)->filters($filter)->fields(['version', 'date', 'id', 'record_id', 'user_id'])->fetchAll();
+        $data = $model->query()->params($pager)->filters($filter)->fields(
+            ['version', 'date', 'id', 'record_id', 'user_id']
+        )->fetchAll();
 
         $objectConfig = Orm\Record\Config::factory('Vc');
         $this->addLinkedInfo($objectConfig, ['user_name' => 'user_id'], $data, $objectConfig->getPrimaryKey());
 
 
-       $this->response->success($data,['count'=>$model->query()->filters($filter)->getCount()]);
+        $this->response->success($data, ['count' => $model->query()->filters($filter)->getCount()]);
     }
 }

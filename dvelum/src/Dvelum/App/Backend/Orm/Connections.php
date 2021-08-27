@@ -41,27 +41,29 @@ class Connections
     {
         return isset($this->config[$devType]);
     }
+
     /**
      * Get connections list
      * @param integer $devType
-     * @throws \Exception
      * @return array
+     * @throws \Exception
      */
     public function getConnections($devType)
     {
-        if(!$this->typeExists($devType))
+        if (!$this->typeExists($devType)) {
             throw new \Exception('Backend_Orm_Connections_Manager :: getConnections undefined dev type ' . $devType);
+        }
 
         $dbPath = Config::storage()->get('main.php')->get('db_config_path');
 
-        $dir = dirname($this->config[$devType]['dir'] .'/'. $dbPath);
+        $dir = dirname($this->config[$devType]['dir'] . '/' . $dbPath);
 
-        $files = \Dvelum\File::scanFiles($dir , array('.php'), false ,  \Dvelum\File::FILES_ONLY);
+        $files = \Dvelum\File::scanFiles($dir, array('.php'), false, \Dvelum\File::FILES_ONLY);
         $result = [];
-        if(!empty($files)){
-            foreach($files as $path){
+        if (!empty($files)) {
+            foreach ($files as $path) {
                 $data = include $path;
-                $result[substr(basename($path),0,-4)] =  Config\Factory::create($data , $path);
+                $result[substr(basename($path), 0, -4)] = Config\Factory::create($data, $path);
             }
         }
         return $result;
@@ -79,20 +81,20 @@ class Connections
         /*
          * Check for write permissions before operation
          */
-        foreach ($this->config as $devType =>$data)
-        {
-            $file = $data['dir'] . $id .'.php';
-            if(!file_exists($file) && !is_writable($file))
+        foreach ($this->config as $devType => $data) {
+            $file = $data['dir'] . $id . '.php';
+            if (!file_exists($file) && !is_writable($file)) {
                 $errors[] = $file;
+            }
         }
 
-        if(!empty($errors))
-            throw new \Exception(Lang::lang()->get('CANT_WRITE_FS') . ' ' . implode(', ',$errors));
+        if (!empty($errors)) {
+            throw new \Exception(Lang::lang()->get('CANT_WRITE_FS') . ' ' . implode(', ', $errors));
+        }
 
-        foreach ($this->config as $devType=>$data)
-        {
-            $file = $data['dir'] . $id .'.php';
-            if(!@unlink($file)){
+        foreach ($this->config as $devType => $data) {
+            $file = $data['dir'] . $id . '.php';
+            if (!@unlink($file)) {
                 throw new \Exception(Lang::lang()->get('CANT_WRITE_FS') . ' ' . $file);
             }
         }
@@ -104,89 +106,96 @@ class Connections
      * @param string $id
      * @return ConfigInterface|null
      */
-    public function getConnection(int $devType , string $id) : ?ConfigInterface
+    public function getConnection(int $devType, string $id): ?ConfigInterface
     {
-        if(!$this->typeExists($devType))
+        if (!$this->typeExists($devType)) {
             return null;
+        }
 
         $path = $this->config[$devType]['dir'] . $id . '.php';
 
         $data = include $path;
 
-        $cfg = Config\Factory::create($data , $path);
+        $cfg = Config\Factory::create($data, $path);
 
-        if(empty($cfg))
+        if (empty($cfg)) {
             return null;
+        }
 
         return $cfg;
     }
 
     public function createConnection($id)
     {
-        foreach ($this->config as $devType=>$data)
-            if($this->connectionExists($devType , $id))
+        foreach ($this->config as $devType => $data) {
+            if ($this->connectionExists($devType, $id)) {
                 return false;
+            }
+        }
 
-        foreach ($this->config as $devType=>$data)
-        {
+        foreach ($this->config as $devType => $data) {
             $path = $this->config[$devType]['dir'] . $id . '.php';
 
             $c = Config\Factory::create([
-                'username' => '',
-                'password' => '',
-                'dbname'   => '',
-                'host'     => '',
-                'charset'  => 'UTF8',
-                'prefix'   => '',
-                'adapter'  => 'Mysqli',
-                'driver'  => 'Mysqli',
-                'transactionIsolationLevel' => 'default'
-            ],$path);
+                                            'username' => '',
+                                            'password' => '',
+                                            'dbname' => '',
+                                            'host' => '',
+                                            'charset' => 'UTF8',
+                                            'prefix' => '',
+                                            'adapter' => 'Mysqli',
+                                            'driver' => 'Mysqli',
+                                            'transactionIsolationLevel' => 'default'
+                                        ], $path);
 
-            if(!Config::storage()->save($c))
+            if (!Config::storage()->save($c)) {
                 return false;
+            }
         }
         return true;
     }
+
     /**
      * Rename DB connection config
      * @param string $oldId
      * @param string $newId
      * @return boolean
      */
-    public function renameConnection($oldId , $newId)
+    public function renameConnection($oldId, $newId)
     {
         /**
          * Check permissions
          */
-        foreach ($this->config as $devType=>$data)
-        {
-            if(!is_writable($data['dir'])
+        foreach ($this->config as $devType => $data) {
+            if (!is_writable($data['dir'])
                 || $this->connectionExists($devType, $newId)
                 || !file_exists($data['dir'] . $oldId . '.php')
                 || !is_writable($data['dir'] . $oldId . '.php')
-            ){
+            ) {
                 return false;
             }
         }
-        foreach ($this->config as $devType=>$data){
+        foreach ($this->config as $devType => $data) {
             rename($this->config[$devType]['dir'] . $oldId . '.php', $this->config[$devType]['dir'] . $newId . '.php');
         }
         return true;
     }
+
     /**
      * Check if DB Connection exists
      * @param integer $devType
      * @param string $id
      * @return boolean
      */
-    public function connectionExists($devType , $id)
+    public function connectionExists($devType, $id)
     {
-        if(!$this->typeExists($devType))
+        if (!$this->typeExists($devType)) {
             return false;
+        }
 
         return file_exists($this->config[$devType]['dir'] . $id . '.php');
     }
+
     /**
      * Get connections config
      * @return array
