@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
  *  Copyright (C) 2011-2017  Kirill Yegorov
@@ -31,35 +32,48 @@ class Dictionary extends Controller
         return 'Orm';
     }
 
-    public function indexAction(){}
+    public function indexAction()
+    {
+    }
 
     /**
      * Create new dictionary or rename existed
      */
     public function updateAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
-        
-        $id = $this->request->post('id','string',false);
-        $name = strtolower($this->request->post('name','string',false));
+
+        $id = $this->request->post('id', 'string', false);
+        $name = strtolower($this->request->post('name', 'string', false));
 
         $manager = Manager::factory();
-        if(!$name)
+        if (!$name) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
-
-        if(!$id){
-            if(!$manager->create($name)){
-                $this->response->error($this->lang->get('CANT_WRITE_FS') .' '. $this->lang->get('OR') .' '. $this->lang->get('DICTIONARY_EXISTS'));
-            }
-        }else{
-            if(!$manager->rename($id, $name))
-                $this->response->error($this->lang->get('CANT_WRITE_FS'));
+            return;
         }
 
-       $this->response->success();
+
+        if (!$id) {
+            if (!$manager->create($name)) {
+                $this->response->error(
+                    $this->lang->get('CANT_WRITE_FS') . ' ' . $this->lang->get('OR') . ' ' . $this->lang->get(
+                        'DICTIONARY_EXISTS'
+                    )
+                );
+                return;
+            }
+        } else {
+            if (!$manager->rename($id, $name)) {
+                $this->response->error($this->lang->get('CANT_WRITE_FS'));
+                return;
+            }
+        }
+
+        $this->response->success();
     }
+
     /**
      * Remove dictionary
      */
@@ -67,19 +81,24 @@ class Dictionary extends Controller
     {
         $manager = Manager::factory();
 
-        if(!$this->checkCanDelete()){
+        if (!$this->checkCanDelete()) {
             return;
         }
 
-        $name = strtolower($this->request->post('name','string',false));
-        if(empty($name))
+        $name = strtolower($this->request->post('name', 'string', false));
+        if (empty($name)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
-        if(!$manager->remove($name))
+        if (!$manager->remove($name)) {
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
-        else
-           $this->response->success();
+            return;
+        } else {
+            $this->response->success();
+        }
     }
+
     /**
      * Get dictionary list
      */
@@ -89,78 +108,97 @@ class Dictionary extends Controller
         $data = [];
         $list = $manager->getList();
 
-        if(!empty($list))
-            foreach ($list as $v)
-                $data[] = ['id' => $v,'title' => $v];
+        if (!empty($list)) {
+            foreach ($list as $v) {
+                $data[] = ['id' => $v, 'title' => $v];
+            }
+        }
 
-       $this->response->success($data);
+        $this->response->success($data);
     }
+
     /**
      * Get dictionary records list
      */
     public function recordsAction()
     {
-        $name = strtolower($this->request->post('dictionary','string',false));
-        if (empty($name))
+        $name = strtolower($this->request->post('dictionary', 'string', false));
+        if (empty($name)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
         $list = \Dvelum\App\Dictionary::factory($name)->getData();
 
         $data = [];
 
-        if(!empty($list))
-            foreach ($list as $k=>$v)
-                $data[] = ['id' => $k,'key' => $k,'value' => $v];
+        if (!empty($list)) {
+            foreach ($list as $k => $v) {
+                $data[] = ['id' => $k, 'key' => $k, 'value' => $v];
+            }
+        }
 
-       $this->response->success($data);
+        $this->response->success($data);
     }
+
     /**
      * Update dictionary records
      */
     public function updateRecordsAction()
     {
-        if(!$this->checkCanEdit()){
+        if (!$this->checkCanEdit()) {
             return;
         }
 
-        $dictionaryName = strtolower($this->request->post('dictionary','string',false));
-        $data = $this->request->post('data','raw',false);
+        $dictionaryName = strtolower($this->request->post('dictionary', 'string', false));
+        $data = $this->request->post('data', 'raw', false);
         $data = json_decode($data, true);
 
-        if(empty($data) || !strlen($dictionaryName))
+        if (empty($data) || !strlen($dictionaryName)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
         $dictionary = \Dvelum\App\Dictionary::factory($dictionaryName);
-        foreach ($data as $v)
-        {
-            if($dictionary->isValidKey($v['key']) && $v['key'] != $v['id'])
+        foreach ($data as $v) {
+            if ($dictionary->isValidKey($v['key']) && $v['key'] != $v['id']) {
                 $this->response->error($this->lang->get('WRONG_REQUEST'));
+                return;
+            }
 
-            if(!empty($v['id']))
+            if (!empty($v['id'])) {
                 $dictionary->removeRecord($v['id']);
+            }
             $dictionary->addRecord($v['key'], $v['value']);
         }
-        if(!Manager::factory()->saveChanges($dictionaryName))
+        if (!Manager::factory()->saveChanges($dictionaryName)) {
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
-       $this->response->success();
+            return;
+        }
+        $this->response->success();
     }
+
     /**
      * Remove dictionary record
      */
     public function removeRecordsAction()
     {
-        $dictionaryName = strtolower($this->request->post('dictionary','string',false));
-        $name = $this->request->post('name','string',false);
+        $dictionaryName = strtolower($this->request->post('dictionary', 'string', false));
+        $name = $this->request->post('name', 'string', false);
 
-        if(!strlen($name) || !strlen($dictionaryName))
+        if (!strlen($name) || !strlen($dictionaryName)) {
             $this->response->error($this->lang->get('WRONG_REQUEST'));
+            return;
+        }
 
         $dictionary = \Dvelum\App\Dictionary::factory($dictionaryName);
         $dictionary->removeRecord($name);
 
-        if(!Manager::factory()->saveChanges($dictionaryName))
+        if (!Manager::factory()->saveChanges($dictionaryName)) {
             $this->response->error($this->lang->get('CANT_WRITE_FS'));
+            return;
+        }
 
-       $this->response->success();
+        $this->response->success();
     }
 }
